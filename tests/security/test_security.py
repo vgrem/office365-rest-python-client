@@ -39,8 +39,8 @@ class TestSecurity(TestCase):
         ).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    #@requires_app_permission("SecurityIncident.Read.All")
-    #@requires_app_permission("SecurityIncident.ReadWrite.All")
+    # @requires_app_permission("SecurityIncident.Read.All")
+    # @requires_app_permission("SecurityIncident.ReadWrite.All")
     def test2_list_incidents(self):
         col = self.client.security.incidents.top(10).get().execute_query()
         self.assertIsNotNone(col.resource_path)

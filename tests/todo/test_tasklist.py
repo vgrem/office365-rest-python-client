@@ -1,24 +1,29 @@
 from office365.todo.tasks.list import TodoTaskList
 from tests import create_unique_name
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestTaskList(GraphTestCase):
     task_list = None  # type: TodoTaskList
 
+    @requires_delegated_permission("Tasks.ReadWrite")
     def test1_create_task_list(self):
         name = create_unique_name("TaskList")
         task_list = self.client.me.todo.lists.add(name).execute_query()
         self.__class__.task_list = task_list
 
+    @requires_delegated_permission("Tasks.Read", "Tasks.ReadWrite")
     def test2_get_task_lists(self):
         task_lists = self.client.me.todo.lists.get().execute_query()
         self.assertIsNotNone(task_lists.resource_path)
 
+    @requires_delegated_permission("Tasks.ReadWrite")
     def test3_create_task(self):
         task = self.__class__.task_list.tasks.add(title="A new task").execute_query()
         self.assertIsNotNone(task.resource_path)
 
+    @requires_delegated_permission("Tasks.Read", "Tasks.ReadWrite")
     def test4_list_tasks(self):
         tasks = self.__class__.task_list.tasks.get().execute_query()
         self.assertIsNotNone(tasks.resource_path)

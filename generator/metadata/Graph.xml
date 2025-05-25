@@ -40138,6 +40138,10 @@ within the time frame of their original request."/>
             <Parameter Name="bindingParameter" Type="Collection(graph.riskyUser)"/>
             <Parameter Name="userIds" Type="Collection(Edm.String)" Unicode="false"/>
          </Action>
+         <Action Name="confirmSafe" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(graph.riskyUser)"/>
+            <Parameter Name="userIds" Type="Collection(Edm.String)" Unicode="false"/>
+         </Action>
          <Action Name="reprocess" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.accessPackageAssignmentRequest"/>
          </Action>
@@ -41381,6 +41385,7 @@ within the time frame of their original request."/>
          <Action Name="clockIn" IsBound="true">
             <Parameter Name="bindingParameter" Type="Collection(graph.timeCard)"/>
             <Parameter Name="isAtApprovedLocation" Type="Edm.Boolean"/>
+            <Parameter Name="onBehalfOfUserId" Type="Edm.String" Unicode="false"/>
             <Parameter Name="notes" Type="graph.itemBody"/>
             <ReturnType Type="graph.timeCard"/>
          </Action>

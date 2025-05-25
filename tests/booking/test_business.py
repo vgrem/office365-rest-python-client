@@ -34,7 +34,7 @@ class TestBusiness(GraphTestCase):
         result = self.__class__.business.get().execute_query_retry()
         self.assertIsNotNone(result.resource_path)
 
-    #def test4_get_staff_availability(self):
+    # def test4_get_staff_availability(self):
     #    result = self.__class__.business.get_staff_availability().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 

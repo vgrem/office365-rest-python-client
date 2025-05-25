@@ -16,6 +16,9 @@ class MailFolder(Entity):
     """A mail folder in a user's mailbox, such as Inbox and Drafts. Mail folders can contain messages,
     other Outlook items, and child mail folders."""
 
+    def __str__(self):
+        return self.display_name or self.entity_type_name
+
     def copy(self, destination_id):
         """
         Copy a mailfolder and its contents to another mailfolder.
@@ -60,6 +63,12 @@ class MailFolder(Entity):
             [m.set_property("isRead", False).update() for m in col.current_page]
 
         self.messages.get_all(page_loaded=_mark_all_items_as_unread)
+        return self
+
+    def permanent_delete(self):
+        """Permanently delete a mail folder and remove its items from the user's mailbox."""
+        qry = ServiceOperationQuery(self, "permanentDelete")
+        self.context.add_query(qry)
         return self
 
     @property

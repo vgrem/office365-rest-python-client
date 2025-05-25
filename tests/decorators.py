@@ -30,16 +30,12 @@ def requires_app_permission(app_role):
             if not client:
                 self.skipTest("No client available for permission check")
 
-            try:
-                permissions = _get_cached_permissions(client, test_client_id)
+            permissions = _get_cached_permissions(client, test_client_id)
 
-                if not any(role.value == app_role for role in permissions):
-                    self.skipTest(f"Required app permission '{app_role}' not granted")
+            if not any(role.value == app_role for role in permissions):
+                self.skipTest(f"Required app permission '{app_role}' not granted")
 
-                return test_method(self, *args, **kwargs)
-
-            except Exception as e:
-                self.skipTest(f"Permission check failed: {str(e)}")
+            return test_method(self, *args, **kwargs)
 
         return wrapper
 
@@ -68,19 +64,15 @@ def requires_delegated_permission(*scopes):
             if not client:
                 self.skipTest("No client available for permission check")
 
-            try:
-                # Get permissions from cache or API
-                granted_scopes = _get_cached_delegated_permissions(client, test_client_id)
+            # Get permissions from cache or API
+            granted_scopes = _get_cached_delegated_permissions(client, test_client_id)
 
-                if not any(scope in granted_scopes for scope in scopes):
-                    self.skipTest(
-                        f"Required delegated permission '{', '.join(scopes)}' not granted"
-                    )
+            if not any(scope in granted_scopes for scope in scopes):
+                self.skipTest(
+                    f"Required delegated permission '{', '.join(scopes)}' not granted"
+                )
 
-                return test_method(self, *args, **kwargs)
-
-            except Exception as e:
-                self.skipTest(f"Permission check failed: {str(e)}")
+            return test_method(self, *args, **kwargs)
 
         return wrapper  # type: ignore[return-value]
 
