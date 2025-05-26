@@ -22,7 +22,7 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
 resource = client.service_principals.get_by_name("Microsoft Graph")
 app_role = "Place.Read.All"  # "Bookings.Read.All"
 result = resource.get_application_permissions(test_client_id).execute_query()
-#if app_role not in result.value:
+# if app_role not in result.value:
 if not any(role.value == app_role for role in result.value):
     print("Application permission '{0}' is not granted".format(app_role))
 else:

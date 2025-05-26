@@ -21,12 +21,24 @@ class SitesWithRoot(EntityCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
+    def get_by_path(self, path):
+        """Address Site resource by server relative path
+
+        :param str path: Server relative path
+        """
+        tenant_part = self.context.tenant_name.split(".")[0]
+        host_name = "{0}.sharepoint.com".format(tenant_part)
+        return_type = Site(self.context, SitePath(host_name, path, self.resource_path))
+        qry = ReadEntityQuery(return_type)
+        self.context.add_query(qry)
+        return return_type
+
     def get_by_url(self, url):
         """Address Site resource by absolute url
 
         :param str url: Site absolute url
         """
-        return_type = Site(self.context, SitePath(url, self.resource_path))
+        return_type = Site(self.context, SitePath.from_url(url, self.resource_path))
         qry = ReadEntityQuery(return_type)
         self.context.add_query(qry)
         return return_type

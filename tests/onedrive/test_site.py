@@ -1,4 +1,6 @@
 from office365.onedrive.sites.site import Site
+from tests import test_team_site_url
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
@@ -18,38 +20,52 @@ class TestSite(GraphTestCase):
     def tearDownClass(cls):
         pass
 
+    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test1_get_root_site(self):
-        root_site = self.test_site.get().execute_query()
-        assert root_site.id is not None
+        result = self.client.sites.root.get().execute_query()
+        assert result.id is not None
 
+    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test2_get_site_by_path(self):
-        pass
+        result = self.client.sites.get_by_path("/sites/team").execute_query()
+        self.assertIsNotNone(result.resource_path)
 
-    def test3_get_activities_by_interval(self):
+    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    def test3_get_site_by_url(self):
+        result = self.client.sites.get_by_url(test_team_site_url).execute_query()
+        self.assertIsNotNone(result.resource_path)
+
+    @requires_delegated_permission(
+        "Files.Read",
+        "Files.ReadWrite",
+        "Files.Read.All",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+    )
+    def test4_get_activities_by_interval(self):
         col = self.test_site.get_activities_by_interval().execute_query()
         self.assertIsNotNone(col)
 
-    def test4_list_followed_sites(self):
+    @requires_delegated_permission("Sites.ReadWrite.All")
+    def test5_follow(self):
+        self.client.me.follow_site(self.test_site).execute_query()
+
+    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    def test6_list_followed_sites(self):
         sites = self.client.me.followed_sites.get().execute_query()
         self.followed_sites_count = len(sites)
+        self.assertGreaterEqual(len(sites), 1, "No followed sites were returned")
 
-    def test5_follow(self):
-        pass
+    @requires_delegated_permission("Sites.ReadWrite.All")
+    def test7_unfollow(self):
+        self.client.me.unfollow_site(self.test_site).execute_query()
 
-    def test6_unfollow(self):
-        pass
-
-    def test7_get_applicable_content_types_for_list(self):
-        site = self.client.sites.root
-        doc_lib = site.lists["Documents"].get().execute_query()
-        cts = site.get_applicable_content_types_for_list(doc_lib.id).execute_query()
-        self.assertIsNotNone(cts.resource_path)
-
-    def test8_get_operations(self):
+    def test9_get_operations(self):
         ops = self.client.sites.root.operations.get().execute_query()
         self.assertIsNotNone(ops.resource_path)
 
-    def test9_get_analytics(self):
+    def test_10_get_analytics(self):
         site = self.client.sites.root
         result = site.analytics.last_seven_days.get().execute_query()
         self.assertIsNotNone(result.resource_path)

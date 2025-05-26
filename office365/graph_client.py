@@ -527,3 +527,7 @@ class GraphClient(ClientRuntimeContext):
     def schema_extensions(self):
         """Get a list of schemaExtension objects in your tenant"""
         return EntityCollection(self, SchemaExtension, ResourcePath("schemaExtensions"))
+
+    @property
+    def tenant_name(self):
+        return self._tenant

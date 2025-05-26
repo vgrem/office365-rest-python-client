@@ -1,4 +1,4 @@
-from office365.runtime.compat import is_absolute_url, urlparse
+from office365.runtime.compat import urlparse
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 
@@ -6,16 +6,12 @@ from office365.runtime.paths.v4.entity import EntityPath
 class SitePath(EntityPath):
     """Resource path for addressing Site resource"""
 
-    @property
-    def segment(self):
-        if is_absolute_url(self._key):
-            url_result = urlparse(self._key)
-            return ":".join([url_result.hostname, url_result.path])
-        else:
-            return super(SitePath, self).segment
+    def __init__(self, host_name, relative_path, parent=None):
+        super(SitePath, self).__init__(
+            ":".join([host_name, relative_path]), parent, ResourcePath("sites")
+        )
 
-    @property
-    def collection(self):
-        if self._collection is None:
-            self._collection = ResourcePath("sites")
-        return self._collection
+    @staticmethod
+    def from_url(url, parent=None):
+        url_result = urlparse(url)
+        return SitePath(url_result.hostname, url_result.path, parent)

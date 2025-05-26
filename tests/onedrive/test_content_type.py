@@ -45,3 +45,9 @@ class TestContentType(TestCase):
     def test5_delete(self):
         ct_to_del = self.__class__.target_ct
         ct_to_del.delete_object().execute_query()
+
+    def test6_get_applicable_content_types_for_list(self):
+        site = self.client.sites.root
+        doc_lib = site.lists["Documents"].get().execute_query()
+        cts = site.get_applicable_content_types_for_list(doc_lib.id).execute_query()
+        self.assertIsNotNone(cts.resource_path)

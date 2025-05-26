@@ -2,12 +2,14 @@ from datetime import datetime, timedelta
 
 from office365.outlook.calendar.events.event import Event
 from tests import test_user_principal_name
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestOutlookEvent(GraphTestCase):
     target_event = None  # type: Event
 
+    @requires_delegated_permission("Calendars.ReadWrite", "Calendars.ReadWrite.Shared")
     def test2_create_event(self):
         when = datetime.now() + timedelta(days=1)
         new_event = self.client.me.calendar.events.add(

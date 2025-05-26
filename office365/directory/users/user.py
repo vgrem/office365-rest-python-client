@@ -233,6 +233,59 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    def follow_site(self, site):
+        # type: (str|Site) -> None
+        """follow a site"""
+
+        def _follow_site(site_id):
+            # type: (str) -> None
+            payload = {
+                "value": [
+                    {
+                        "id": site_id,
+                    }
+                ]
+            }
+            query = ServiceOperationQuery(self.followed_sites, "add", None, payload)
+            self.context.add_query(query)
+
+        if isinstance(site, Site):
+
+            def _user_loaded():
+                _follow_site(site.id)
+
+            site.ensure_property("id", _user_loaded)
+        else:
+            _follow_site(site)
+        return self
+
+    def unfollow_site(self, site):
+        # type: (str|Site) -> None
+        """Unfollow a user's site or multiple sites."""
+
+        def _unfollow_site(site_id):
+            # type: (str) -> None
+            payload = {
+                "value": [
+                    {
+                        "id": site_id,
+                    }
+                ]
+            }
+            query = ServiceOperationQuery(self.followed_sites, "remove", None, payload)
+            self.context.add_query(query)
+
+        if isinstance(site, Site):
+
+            def _user_loaded():
+                _unfollow_site(site.id)
+
+            site.ensure_property("id", _user_loaded)
+        else:
+            _unfollow_site(site)
+
+        return self
+
     def get_mail_tips(self, email_addresses, mail_tips_options=None):
         """Get the MailTips of one or more recipients as available to the signed-in user.
         :param list[str] email_addresses: A collection of SMTP addresses of recipients to get MailTips for.
