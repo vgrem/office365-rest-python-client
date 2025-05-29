@@ -25,16 +25,34 @@ P_T = TypeVar("P_T")
 """Property Type."""
 
 
+def persist_property(property_name=None):
+    # type: (Optional[str]) -> Callable[[Callable[..., P_T]], Callable[..., P_T]]
+    """Decorator to automatically track property access for persistence"""
+
+    def decorator(method):
+        # type: (Callable[..., P_T]) -> Callable[..., P_T]
+        def wrapper(self, *args, **kwargs):
+            # type: (ClientObject, *Any, **Any) -> P_T
+            name = property_name if property_name is not None else method.__name__
+            if name not in self._properties_to_persist:
+                self._properties_to_persist.append(name)
+            return method(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 class ClientObject(Generic[T]):
     def __init__(self, context, resource_path=None, parent_collection=None):
         # type: (ClientRuntimeContext, Optional[ResourcePath], Optional[ClientObjectCollection]) -> None
         """Base client object which define named properties and relationships of an entity."""
-        self._properties = {}
-        self._properties_to_persist = []
+        self._properties = {}  # type: dict[str, Any]
+        self._properties_to_persist = []  # type: list[str]
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context
-        self._entity_type_name = None
+        self._entity_type_name = None  # type: Optional[str]
         self._resource_path = resource_path
 
     def clear_state(self):

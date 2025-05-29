@@ -1,5 +1,6 @@
 from office365.onedrive.sitepages.site_page import SitePage
 from tests import create_unique_name, test_team_site_url
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
@@ -43,6 +44,7 @@ class TestSitePage(GraphTestCase):
     #    result = page.publish().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test6_list_site_pages(self):
         result = self.test_site.pages.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)

@@ -27,10 +27,10 @@ class TestTermStore(GraphTestCase):
     def tearDownClass(cls):
         pass
 
-    def test1_get_groups(self):
-        groups = self.target_store.groups.top(1).get().execute_query()
-        self.assertLessEqual(len(groups), 1)
-        for group in groups:
+    def test1_list_groups(self):
+        result = self.target_store.groups.top(1).get().execute_query()
+        self.assertLessEqual(len(result), 1)
+        for group in result:
             self.assertIsNotNone(group.resource_path)
 
     def test2_create_group(self):

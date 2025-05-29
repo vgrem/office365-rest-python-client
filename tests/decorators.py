@@ -19,8 +19,8 @@ def _get_cached_permissions(client, client_id):
     return result.value
 
 
-def requires_app_permission(app_role):
-    # type: (str) -> Callable[[T], T]
+def requires_app_permission(*app_roles):
+    # type: (*str) -> Callable[[T], T]
     def decorator(test_method):
         # type: (T) -> T
         @wraps(test_method)
@@ -32,8 +32,9 @@ def requires_app_permission(app_role):
 
             permissions = _get_cached_permissions(client, test_client_id)
 
-            if not any(role.value == app_role for role in permissions):
-                self.skipTest(f"Required app permission '{app_role}' not granted")
+            if not any(role.value in app_roles for role in permissions):
+                required_roles = ", ".join(f"'{role}'" for role in app_roles)
+                self.skipTest(f"Required app permission '{required_roles}' not granted")
 
             return test_method(self, *args, **kwargs)
 

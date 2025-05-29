@@ -3,6 +3,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.predicates import MessageRulePredicates
+from office365.runtime.client_object import persist_property
 
 
 class MessageRule(Entity):
@@ -12,6 +13,7 @@ class MessageRule(Entity):
     upon certain conditions."""
 
     @property
+    @persist_property()
     def actions(self):
         """Actions to be taken on a message when the corresponding conditions are fulfilled."""
         return self.properties.get("actions", MessageRuleActions())

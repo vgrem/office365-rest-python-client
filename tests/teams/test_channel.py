@@ -5,6 +5,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.teams.channels.channel import Channel
 from office365.teams.chats.messages.message import ChatMessage
 from office365.teams.team import Team
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
@@ -30,7 +31,16 @@ class TestGraphChannel(GraphTestCase):
         team = self.__class__.target_team.get().execute_query()
         self.assertIsNotNone(team.id)
 
-    def test2_get_channels(self):
+    @requires_delegated_permission(
+        "Channel.ReadBasic.All",
+        "ChannelSettings.Read.All",
+        "ChannelSettings.ReadWrite.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
+        "Group.Read.All",
+        "Group.ReadWrite.All",
+    )
+    def test2_list_channels(self):
         channels = self.__class__.target_team.channels.get().execute_query()
         self.assertGreater(len(channels), 0)
 

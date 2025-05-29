@@ -4,12 +4,14 @@ import io
 from office365.outlook.mail.messages.message import Message
 from office365.outlook.mail.recipient import Recipient
 from tests import test_user_principal_name, test_user_principal_name_alt
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestOutlookMessages(GraphTestCase):
     target_message = None  # type: Message
 
+    @requires_delegated_permission("Mail.ReadWrite")
     def test2_create_draft_message(self):
         draft_message = self.client.me.messages.add(
             subject="Meet for lunch?", body="The new cafeteria is open."
@@ -24,20 +26,24 @@ class TestOutlookMessages(GraphTestCase):
     # def test4_forward_message(self):
     #    self.__class__.target_message.forward([test_user_principal_name_alt]).execute_query()
 
-    def test5_get_my_messages(self):
+    @requires_delegated_permission("Mail.ReadBasic", "Mail.ReadWrite", "Mail.Read")
+    def test5_list_my_messages(self):
         messages = self.client.me.messages.top(1).get().execute_query()
         self.assertLessEqual(1, len(messages))
         self.assertIsNotNone(messages[0].resource_path)
 
+    @requires_delegated_permission("Mail.ReadWrite")
     def test6_update_message(self):
         message_to_update = self.__class__.target_message
         message_to_update.body = "The new cafeteria is close."
         message_to_update.update().execute_query()
 
+    @requires_delegated_permission("Mail.ReadWrite")
     def test7_delete_message(self):
         message_to_delete = self.__class__.target_message
         message_to_delete.delete_object().execute_query()
 
+    @requires_delegated_permission("Mail.ReadWrite")
     def test8_create_draft_message_with_attachments(self):
         content = base64.b64encode(
             io.BytesIO(b"This is some file content").read()
@@ -57,6 +63,7 @@ class TestOutlookMessages(GraphTestCase):
         )
         draft.delete_object().execute_query()
 
+    @requires_delegated_permission("Mail.Send", "Mail.ReadWrite")
     def test9_send_message(self):
         message = self.client.me.messages.add(
             subject="Meet for lunch?", body="The new cafeteria is open."
