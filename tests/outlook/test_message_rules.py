@@ -15,7 +15,7 @@ class TestMessageRules(GraphTestCase):
             stop_processing_rules=True,
             mark_importance="normal",
         )
-        result  = (
+        result = (
             self.client.me.mail_folders["inbox"]
             .message_rules.add("From partner", 2, actions)
             .execute_query()
@@ -43,5 +43,5 @@ class TestMessageRules(GraphTestCase):
 
     @requires_delegated_permission("MailboxSettings.ReadWrite")
     def test5_delete_rule(self):
-        rule =self.__class__.target_message_rule
+        rule = self.__class__.target_message_rule
         rule.delete_object().execute_query()

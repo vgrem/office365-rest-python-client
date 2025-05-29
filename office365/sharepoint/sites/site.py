@@ -28,6 +28,7 @@ from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
 from office365.sharepoint.sites.copy_job_progress import CopyJobProgress
+from office365.sharepoint.sites.copy_migration_iInfo import CopyMigrationInfo
 from office365.sharepoint.sites.home.site import SPHSite
 from office365.sharepoint.sites.html_field_security_setting import (
     HTMLFieldSecuritySetting,
@@ -68,6 +69,20 @@ class Site(Entity):
         qry = ServiceOperationQuery(self, "CancelSetVersionPolicyForDocLibs")
         self.context.add_query(qry)
         return self
+
+    def create_copy_job(self, export_object_uris, destination_uri, options=None):
+        """"""
+        return_type = ClientResult(self.context, CopyMigrationInfo())
+        payload = {
+            "exportObjectUris": export_object_uris,
+            "destinationUri": destination_uri,
+            "options": options,
+        }
+        qry = ServiceOperationQuery(
+            self, "CreateCopyJob", None, payload, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
 
     def create_migration_ingestion_job(
         self,

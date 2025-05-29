@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -29,6 +31,17 @@ class WebPartDefinition(Entity):
         self.context.add_query(qry)
         return self
 
+    def open_web_part(self):
+        """
+        Opens the Web Part. If the Web Part is already open, this method does nothing.
+
+        If the current user does not have permissions to modify the Web Part, the protocol server MUST ignore the
+        call to this method.
+        """
+        qry = ServiceOperationQuery(self, "OpenWebPart")
+        self.context.add_query(qry)
+        return self
+
     def save_web_part_changes(self):
         """
         Saves changes to the Web Part made by using other properties and methods on the WebPartDefinition object (1).
@@ -42,6 +55,8 @@ class WebPartDefinition(Entity):
 
     @property
     def id(self):
+        # type: () -> Optional[str]
+        """Gets a value that specifies the identifier of the Web Part."""
         return self.properties.get("Id", None)
 
     @property

@@ -158,20 +158,10 @@ json = json.loads(response.content)
 web_title = json['d']['Title']
 print("Web title: {0}".format(web_title))
 ```
-
-The list of examples:
-
-- Working with files
-  - [download a file](examples/sharepoint/files/download.py) 
-  - [upload a file](examples/sharepoint/files/upload.py)
-
-- Working with lists and list items
-  -  [create a list item](examples/sharepoint/lists/data_generator.py)
-  -  [read a list item](examples/sharepoint/lists/read_paged.py)   
-  -  [update a list item](examples/sharepoint/listitems/update_batch.py)
-  -  [delete a list item](examples/sharepoint/listitems/delete.py) 
   
-Refer [examples section](examples/sharepoint) for another scenarios
+For SharePoint-specific examples, see:  
+📌 **[SharePoint examples guide](examples/sharepoint/README.md)**  
+
 
 ### Support for Azure environments
 
