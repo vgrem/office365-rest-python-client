@@ -12,10 +12,10 @@ class TestGraphUser(GraphTestCase):
     test_user = None  # type: User
     test_extension = None  # type: OpenTypeExtension
 
-    def test1_get_user_list(self):
-        users = self.client.users.top(1).get().execute_query()
-        self.assertEqual(len(users), 1)
-        for user in users:
+    def test1_list_users(self):
+        result = self.client.users.top(1).get().execute_query()
+        self.assertEqual(len(result), 1)
+        for user in result:
             self.assertIsNotNone(user.id)
 
     def test2_create_user(self):

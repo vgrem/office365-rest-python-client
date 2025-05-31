@@ -5,7 +5,7 @@ from typing_extensions import Self
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
-P_T = TypeVar("P_T", int, float, str, bool, "ClientValue")
+ClientValueT = TypeVar("ClientValueT", int, float, str, bool, "ClientValue")
 
 
 class ClientValue(object):
@@ -34,11 +34,11 @@ class ClientValue(object):
         return self
 
     def get_property(self, k):
-        # type: (str) -> P_T
+        # type: (str) -> ClientValueT
         return getattr(self, k)
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[str, P_T]]
+        # type: () -> Iterator[Tuple[str, ClientValueT]]
         for n, v in vars(self).items():
             yield n, v
 

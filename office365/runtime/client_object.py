@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Callable, Generic, List, Optional, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 from requests import Response
 from typing_extensions import Self
@@ -20,27 +29,8 @@ if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
 
 
-T = TypeVar("T")
-P_T = TypeVar("P_T")
-"""Property Type."""
-
-
-def persist_property(property_name=None):
-    # type: (Optional[str]) -> Callable[[Callable[..., P_T]], Callable[..., P_T]]
-    """Decorator to automatically track property access for persistence"""
-
-    def decorator(method):
-        # type: (Callable[..., P_T]) -> Callable[..., P_T]
-        def wrapper(self, *args, **kwargs):
-            # type: (ClientObject, *Any, **Any) -> P_T
-            name = property_name if property_name is not None else method.__name__
-            if name not in self._properties_to_persist:
-                self._properties_to_persist.append(name)
-            return method(self, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
+T = TypeVar("T", bound="ClientObject")
+PropertyT = Union[bool, int, float, str, bytes, ClientValue]
 
 
 class ClientObject(Generic[T]):
@@ -66,6 +56,9 @@ class ClientObject(Generic[T]):
         self._properties_to_persist = []
         self._query_options = QueryOptions()
         return self
+
+    # @overload
+    # def execute_query(self: T) -> T: ...
 
     def execute_query(self):
         # type: () -> Self
@@ -112,6 +105,9 @@ class ClientObject(Generic[T]):
         """Attach an event handler to client object which gets triggered after query is submitted to server"""
         self.context.after_query_execute(action, execute_first, include_response)
         return self
+
+    # @overload
+    # def get(self: T) -> T: ...
 
     def get(self):
         # type: () -> Self
@@ -162,7 +158,7 @@ class ClientObject(Generic[T]):
         return self
 
     def get_property(self, name, default_value=None):
-        # type: (str, P_T) -> P_T
+        # type: (str, PropertyT) -> PropertyT
         """Gets property value."""
         if default_value is None:
             normalized_name = name[0].lower() + name[1:]
@@ -170,7 +166,7 @@ class ClientObject(Generic[T]):
         return self._properties.get(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        # type: (str|int, P_T, bool) -> Self
+        # type: (str|int, PropertyT, bool) -> Self
         """Sets property value"""
         if persist_changes:
             self._properties_to_persist.append(name)

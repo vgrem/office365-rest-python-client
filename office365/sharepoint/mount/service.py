@@ -7,6 +7,7 @@ from office365.sharepoint.mount.requests.get_remote_item_Info import (
 
 
 class MountService(Entity):
+
     @staticmethod
     def get_remote_item_info(context, remote_item_unique_ids):
         """

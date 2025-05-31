@@ -22,6 +22,12 @@ class TestOutlookEvent(GraphTestCase):
         self.assertIsNotNone(new_event.id)
         self.__class__.target_event = new_event
 
+    @requires_delegated_permission(
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
+    )
     def test3_list_my_events(self):
         events = self.client.me.events.get().execute_query()
         self.assertGreaterEqual(len(events), 1)

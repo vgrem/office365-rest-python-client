@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.entity import Entity
 
 
@@ -11,3 +13,18 @@ class Community(Entity):
 
     This resource is an open type that allows other properties to be passed in.
     """
+
+    def __str__(self):
+        return self.display_name or self.entity_type_name
+
+    @property
+    def display_name(self):
+        # type: () -> Optional[str]
+        """The name of the community. The maximum length is 255 characters."""
+        return self.properties.get("displayName", None)
+
+    @property
+    def description(self):
+        # type: () -> Optional[str]
+        """The description of the community. The maximum length is 1,024 characters."""
+        return self.properties.get("description", None)

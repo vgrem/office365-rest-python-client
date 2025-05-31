@@ -3,7 +3,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.predicates import MessageRulePredicates
-from office365.runtime.client_object import persist_property
+from office365.runtime.client_object_meta import persist_property
 
 
 class MessageRule(Entity):

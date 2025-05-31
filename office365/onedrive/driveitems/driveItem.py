@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from functools import partial
 from os.path import isfile, join
-from typing import IO, AnyStr, Callable, Optional, TypeVar
+from typing import IO, AnyStr, Callable, Optional
 
 import requests
 from typing_extensions import Self
@@ -57,8 +57,6 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
 from office365.subscriptions.collection import SubscriptionCollection
-
-P_T = TypeVar("P_T")
 
 
 class DriveItem(BaseItem):
@@ -931,7 +929,6 @@ class DriveItem(BaseItem):
         return self
 
     def get_property(self, name, default_value=None):
-        # type: (str, P_T) -> P_T
         if default_value is None:
             property_mapping = {
                 "fileSystemInfo": self.file_system_info,

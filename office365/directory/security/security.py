@@ -6,6 +6,9 @@ from office365.directory.security.hunting_query_results import HuntingQueryResul
 from office365.directory.security.incidents.incident import Incident
 from office365.directory.security.labels.root import LabelsRoot
 from office365.directory.security.scorecontrol.profile import SecureScoreControlProfile
+from office365.directory.security.subjectrightsrequests.request import (
+    SubjectRightsRequest,
+)
 from office365.directory.security.threatintelligence.threat_intelligence import (
     ThreatIntelligence,
 )
@@ -94,6 +97,19 @@ class Security(Entity):
         )
 
     @property
+    def subject_rights_requests(self):
+        # type: () -> EntityCollection[SubjectRightsRequest]
+        """Get a list of the subjectRightsRequest objects and their properties."""
+        return self.properties.get(
+            "subjectRightsRequests",
+            EntityCollection(
+                self.context,
+                SubjectRightsRequest,
+                ResourcePath("subjectRightsRequests", self.resource_path),
+            ),
+        )
+
+    @property
     def secure_score_control_profiles(self):
         """"""
         return self.properties.get(
@@ -128,6 +144,7 @@ class Security(Entity):
             property_mapping = {
                 "alerts_v2": self.alerts_v2,
                 "attackSimulation": self.attack_simulation,
+                "subjectRightsRequests": self.subject_rights_requests,
                 "secureScoreControlProfiles": self.secure_score_control_profiles,
                 "threatIntelligence": self.threat_intelligence,
             }

@@ -1,7 +1,11 @@
+from office365.directory.synchronization.attribute_mapping_function_schema import (
+    AttributeMappingFunctionSchema,
+)
 from office365.directory.synchronization.directory_definition import DirectoryDefinition
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 
 
 class SynchronizationSchema(Entity):
@@ -12,6 +16,13 @@ class SynchronizationSchema(Entity):
 
     The following sections describe the high-level components of the synchronization schema.
     """
+
+    def functions(self):
+        """List all the functions currently supported in the attributeMappingSource."""
+        return_type = EntityCollection(self.context, AttributeMappingFunctionSchema)
+        qry = FunctionQuery(self, "functions", None, return_type)
+        self.context.add_query(qry)
+        return return_type
 
     @property
     def directories(self):

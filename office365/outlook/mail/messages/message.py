@@ -17,7 +17,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
 from office365.outlook.mail.recipient import Recipient
-from office365.runtime.client_object import persist_property
+from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

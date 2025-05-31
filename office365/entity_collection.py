@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 from typing_extensions import Self
 
@@ -12,7 +12,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
-T = TypeVar("T")
+from office365.runtime.client_object import T
 
 
 class EntityCollection(ClientObjectCollection[T]):
@@ -26,6 +26,7 @@ class EntityCollection(ClientObjectCollection[T]):
         self._delta_request_url = None
 
     def token(self, value):
+        # type: (str) -> T
         """
         Apply delta query
 

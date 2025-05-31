@@ -27,13 +27,13 @@ class TestGraphTeam(GraphTestCase):
         "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All"
     )
     def test3_list_all_teams_in_org(self):
-        teams = self.client.teams.get_all().execute_query()
-        self.assertGreater(len(teams), 0)
+        result = self.client.teams.get_all().execute_query()
+        self.assertGreater(len(result), 0)
 
     def test4_list_joined_teams(self):
-        my_teams = self.client.me.joined_teams.get().execute_query()
-        self.assertIsNotNone(my_teams.resource_path)
-        self.assertGreater(len(my_teams), 0)
+        result = self.client.me.joined_teams.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+        self.assertGreater(len(result), 0)
 
     @requires_delegated_permission(
         "Team.ReadBasic.All",
@@ -60,19 +60,25 @@ class TestGraphTeam(GraphTestCase):
         "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"
     )
     def test6_update_team(self):
-        team_id = self.__class__.target_team.id
-        team_to_update = self.client.teams[team_id]
-        team_to_update.fun_settings.allowGiphy = False
-        team_to_update.update().execute_query()
+        team = self.__class__.target_team
+        team.fun_settings.allowGiphy = False
+        team.update().execute_query()
 
     @requires_delegated_permission(
         "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"
     )
     def test7_archive_team(self):
-        team_id = self.__class__.target_team.id
-        self.client.teams[team_id].archive().execute_query()
+        team = self.__class__.target_team
+        team.archive().execute_query()
+
+    # @requires_delegated_permission(
+    #    "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"
+    # )
+    # def test8_unarchive_team(self):
+    #    team_id = self.__class__.target_team.id
+    #    self.client.teams[team_id].unarchive().execute_query()
 
     @requires_delegated_permission("Group.ReadWrite.All")
-    def test8_delete_team(self):
+    def test9_delete_team(self):
         team_to_delete = self.__class__.target_team
         team_to_delete.delete_object().execute_query_retry()

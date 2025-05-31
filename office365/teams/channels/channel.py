@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
@@ -9,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
+from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
 from office365.teams.chats.messages.message import ChatMessage
 from office365.teams.members.conversation import ConversationMember
 from office365.teams.tabs.tab import TeamsTab
@@ -16,6 +18,9 @@ from office365.teams.tabs.tab import TeamsTab
 
 class Channel(Entity):
     """Teams are made up of channels, which are the conversations you have with your teammates"""
+
+    def __str__(self):
+        return self.display_name or self.entity_type_name
 
     def does_user_have_access(
         self, user_id=None, tenant_id=None, user_principal_name=None
@@ -69,6 +74,72 @@ class Channel(Entity):
         return self
 
     @property
+    def created_datetime(self):
+        # type: () -> Optional[datetime]
+        """
+        Read only. Timestamp at which the channel was created.
+        """
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def description(self):
+        # type: () -> Optional[str]
+        """Optional textual description for the channel."""
+        return self.properties.get("Description", None)
+
+    @property
+    def display_name(self):
+        # type: () -> Optional[str]
+        """Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def email(self):
+        # type: () -> Optional[str]
+        """The email address for sending messages to the channel. Read-only."""
+        return self.properties.get("email", None)
+
+    @property
+    def is_archived(self):
+        # type: () -> Optional[bool]
+        """Indicates whether the channel is archived. Read-only."""
+        return self.properties.get("isArchived", None)
+
+    @property
+    def is_favorite_by_default(self):
+        # type: () -> Optional[bool]
+        """Indicates whether the channel should be marked as recommended for all members of the team to show in
+        their channel list. Note: All recommended channels automatically show in the channels list for
+        education and frontline worker users. The property can only be set programmatically via the Create team method.
+        The default value is false"""
+        return self.properties.get("isFavoriteByDefault", None)
+
+    @property
+    def tenant_id(self):
+        # type: () -> Optional[str]
+        """The ID of the Microsoft Entra tenant."""
+        return self.properties.get("tenantId", None)
+
+    @property
+    def membership_type(self):
+        # type: () -> Optional[str]
+        """
+        The type of the channel. Can be set during creation and can't be changed.
+        The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
+        Note that you must use the Prefer: include-unknown-enum-members request header to get the following value
+        in this evolvable enum: shared.
+        """
+        return self.properties.get("membershipType", None)
+
+    @property
+    def web_url(self):
+        # type: () -> Optional[str]
+        """A hyperlink that will navigate to the channel in Microsoft Teams. This is the URL that you get when you
+        right-click a channel in Microsoft Teams and select Get link to channel. This URL should be treated as an
+        opaque blob, and not parsed. Read-only."""
+        return self.properties.get("webUrl", None)
+
+    @property
     def files_folder(self):
         """Get the metadata for the location where the files of a channel are stored."""
         return self.properties.get(
@@ -112,28 +183,24 @@ class Channel(Entity):
         )
 
     @property
-    def membership_type(self):
-        # type: () -> Optional[str]
-        """
-        The type of the channel. Can be set during creation and can't be changed.
-        The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
-        Note that you must use the Prefer: include-unknown-enum-members request header to get the following value
-        in this evolvable enum: shared.
-        """
-        return self.properties.get("membershipType", None)
-
-    @property
-    def web_url(self):
-        # type: () -> Optional[str]
-        """A hyperlink that will navigate to the channel in Microsoft Teams. This is the URL that you get when you
-        right-click a channel in Microsoft Teams and select Get link to channel. This URL should be treated as an
-        opaque blob, and not parsed. Read-only."""
-        return self.properties.get("webUrl", None)
+    def shared_with_teams(self):
+        # type: () -> EntityCollection[ConversationMember]
+        """A collection of teams with which a channel is shared."""
+        return self.properties.get(
+            "sharedWithTeams",
+            EntityCollection(
+                self.context,
+                SharedWithChannelTeamInfo,
+                ResourcePath("sharedWithTeams", self.resource_path),
+            ),
+        )
 
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
+                "createdDateTime": self.created_datetime,
                 "filesFolder": self.files_folder,
+                "sharedWithTeams": self.shared_with_teams,
             }
             default_value = property_mapping.get(name, None)
         return super(Channel, self).get_property(name, default_value)
