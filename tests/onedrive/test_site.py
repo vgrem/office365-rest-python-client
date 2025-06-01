@@ -61,11 +61,16 @@ class TestSite(GraphTestCase):
     def test7_unfollow(self):
         self.client.me.unfollow_site(self.test_site).execute_query()
 
+    @requires_delegated_permission(
+        "Sites.Read.All",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.ReadWrite.All",
+    )
     def test9_get_operations(self):
-        ops = self.client.sites.root.operations.get().execute_query()
+        ops = self.test_site.operations.get().execute_query()
         self.assertIsNotNone(ops.resource_path)
 
     def test_10_get_analytics(self):
-        site = self.client.sites.root
-        result = site.analytics.last_seven_days.get().execute_query()
+        result = self.test_site.analytics.last_seven_days.get().execute_query()
         self.assertIsNotNone(result.resource_path)

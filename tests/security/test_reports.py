@@ -3,13 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestSecurityReports(GraphTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestSecurityReports, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     # @requires_delegated_permission("AttackSimulation.Read.All")
     def test1_get_attack_simulation_repeat_offenders(self):

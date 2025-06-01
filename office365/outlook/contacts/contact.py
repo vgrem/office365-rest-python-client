@@ -12,11 +12,21 @@ from office365.outlook.item import OutlookItem
 from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 
 
 class Contact(OutlookItem):
     """User's contact."""
+
+    def permanent_delete(self):
+        """Permanently delete a contact and place it in the purges folder in the dumpster in the user's mailbox.
+        Email clients such as outlook or outlook on the web can't access permanently deleted items. Unless there's
+        a hold set on the mailbox, the items are permanently deleted after a set period of time.
+        """
+        qry = ServiceOperationQuery(self, "permanentDelete")
+        self.context.add_query(qry)
+        return self
 
     @property
     def business_phones(self):

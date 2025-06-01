@@ -34,6 +34,7 @@ class Entity(ClientObject):
         return self
 
     def delete_object(self):
+        # type: () -> Self
         """The recommended way to delete a SharePoint entity"""
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
@@ -53,6 +54,7 @@ class Entity(ClientObject):
 
     @property
     def entity_type_name(self):
+        # type: () -> str
         if self._entity_type_name is None:
             self._entity_type_name = ".".join(["SP", type(self).__name__])
         return self._entity_type_name
@@ -69,8 +71,6 @@ class Entity(ClientObject):
                     self._resource_path = EntityPath(
                         value, self.parent_collection.resource_path
                     )
-                else:
-                    pass
             else:
                 self._resource_path.patch(value)
         return self

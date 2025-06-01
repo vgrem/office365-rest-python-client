@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Type, TypeVar
 
+from office365.runtime.client_object import T
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -7,8 +8,6 @@ from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
-
-T = TypeVar("T")
 
 
 class EntityCollection(ClientObjectCollection[T]):

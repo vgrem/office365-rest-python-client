@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING, Optional, TypeVar
+from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject
+from office365.runtime.client_object import ClientObject, PropertyT
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
@@ -12,10 +12,7 @@ if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
-T = TypeVar("T")
-
-
-class Entity(ClientObject[T]):
+class Entity(ClientObject):
     """Base entity"""
 
     def update(self):
@@ -59,7 +56,7 @@ class Entity(ClientObject[T]):
         return "id"
 
     def set_property(self, name, value, persist_changes=True):
-        # type: (str, T, bool) -> Self
+        # type: (str, PropertyT, bool) -> Self
         super(Entity, self).set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self._resource_path is None:

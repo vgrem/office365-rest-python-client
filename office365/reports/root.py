@@ -1,3 +1,5 @@
+from typing import AnyStr
+
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.entity import Entity
 from office365.partners.partners import Partners
@@ -156,6 +158,17 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def get_m365_app_user_detail(self, period_or_date=None):
+        """
+        Get a report that provides the details about which apps and platforms users have used.
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getM365AppUserDetail", {"period": period_or_date}, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
     def get_office365_activation_counts(self):
         """Get the count of Microsoft 365 activations on desktops and devices."""
         qry = create_report_query(self, "getOffice365ActivationCounts")
@@ -279,6 +292,16 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
+    def get_teams_user_activity_user_counts(self, period):
+        """Get the number of Microsoft Teams users by activity type. The activity types are number
+        of teams chat messages, private chat messages, calls, or meetings.
+
+        :param str period: Specifies the length of time over which the report is aggregated.
+        """
+        qry = create_report_query(self, "getTeamsUserActivityUserCounts", period)
+        self.context.add_query(qry)
+        return qry.return_type
+
     def get_sharepoint_activity_user_counts(self, period):
         """
         Get the trend in the number of active users. A user is considered active if he or she has executed a
@@ -338,6 +361,18 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(
             self, "getTeamsTeamCounts", period, return_stream=True
+        )
+        self.context.add_query(qry)
+        return qry.return_type
+
+    def get_teams_user_activity_counts(self, period):
+        # type: (str) -> ClientResult[AnyStr]
+        """
+        Get the number of Microsoft Teams activities by activity type.
+        The activities are performed by Microsoft Teams licensed users.
+        """
+        qry = create_report_query(
+            self, "getTeamsUserActivityCounts", period, return_stream=True
         )
         self.context.add_query(qry)
         return qry.return_type

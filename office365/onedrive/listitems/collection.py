@@ -10,6 +10,11 @@ class ListItemCollection(EntityCollection[ListItem]):
         super(ListItemCollection, self).__init__(context, ListItem, resource_path)
         self._honor_nonindexed = True
 
+    def add(self, **kwargs):
+        """Create a new listItem in a list."""
+        payload = {"fields": kwargs}
+        return super(ListItemCollection, self).add(**payload)
+
     def honor_nonindexed(self, value):
         # type: (bool) -> "ListItemCollection"
         """Sets if true HonorNonIndexedQueriesWarningMayFailRandomly header

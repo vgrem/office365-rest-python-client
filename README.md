@@ -76,7 +76,7 @@ Steps to access:
    - [Granting access using SharePoint App-Only](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs)  
    - [wiki](https://github.com/vgrem/office365-rest-python-client/wiki/How-to-connect-to-SharePoint-Online-and-and-SharePoint-2013-2016-2019-on-premises--with-app-principal)
   
-   Example: [connect_with_app_principal.py](examples/sharepoint/auth_app_only.py)
+   Example: [connect_with_app_principal.py](examples/sharepoint/auth/with_app_only.py)
   
 #### 2. Using username and password 
 
@@ -86,7 +86,7 @@ Steps to access:
    ctx = ClientContext('{url}').with_credentials(user_credentials)
    ```
   
-   Example: [connect_with_user_credential.py](examples/sharepoint/auth_user_credential.py)
+   Example: [connect_with_user_credential.py](examples/sharepoint/auth/with_user_credential.py)
   
 #### 3. Using an Azure AD application (certificate credentials flow) 
 
@@ -94,7 +94,7 @@ Steps to access:
    - [Granting access via Azure AD App-Only](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread)  
    - [wiki](https://github.com/vgrem/office365-rest-python-client/wiki/How-to-connect-to-SharePoint-Online-with-certificate-credentials) 
   
-  Example: [with_certificate.py](examples/sharepoint/auth_certificate.py)
+  Example: [with_certificate.py](examples/sharepoint/auth/with_certificate.py)
 
 #### 4. Interactive
 
@@ -105,7 +105,7 @@ Steps to access:
    > In Azure Portal, configure the Redirect URI of your
    "Mobile and Desktop application" as ``http://localhost``.
 
-  Example: [connect_interactive.py](examples/sharepoint/auth_interactive.py)
+  Example: [connect_interactive.py](examples/sharepoint/auth/with_interactive.py)
 
   Usage:
 ```python

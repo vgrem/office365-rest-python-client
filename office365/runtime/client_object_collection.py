@@ -1,16 +1,14 @@
-from typing import Callable, Generic, Iterator, List, Optional, Type, TypeVar
+from typing import Callable, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject
+from office365.runtime.client_object import ClientObject, T
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
-
-T = TypeVar("T")
 
 
 class ClientObjectCollection(ClientObject, Generic[T]):
@@ -27,6 +25,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self._parent = parent
 
     def clear_state(self):
+        # type: () -> Self
         """Clears client object collection"""
         if not self._paged_mode:
             self._data = []

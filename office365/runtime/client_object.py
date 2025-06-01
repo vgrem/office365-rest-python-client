@@ -5,7 +5,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Generic,
     List,
     Optional,
     TypeVar,
@@ -30,10 +29,10 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[bool, int, float, str, bytes, ClientValue]
+PropertyT = Union[bool, int, float, str, bytes, dict| ClientValue]
 
 
-class ClientObject(Generic[T]):
+class ClientObject(object):
     def __init__(self, context, resource_path=None, parent_collection=None):
         # type: (ClientRuntimeContext, Optional[ResourcePath], Optional[ClientObjectCollection]) -> None
         """Base client object which define named properties and relationships of an entity."""
@@ -58,7 +57,9 @@ class ClientObject(Generic[T]):
         return self
 
     # @overload
-    # def execute_query(self: T) -> T: ...
+    # def execute_query(self):
+    #    # type: () -> T
+    #    ...
 
     def execute_query(self):
         # type: () -> Self
@@ -107,7 +108,9 @@ class ClientObject(Generic[T]):
         return self
 
     # @overload
-    # def get(self: T) -> T: ...
+    # def get(self):
+    #    # type: () -> T
+    #    ...
 
     def get(self):
         # type: () -> Self
