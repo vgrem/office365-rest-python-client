@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[bool, int, float, str, bytes, dict| ClientValue]
+PropertyT = Union[bool, int, float, str, bytes, dict | ClientValue]
 
 
 class ClientObject(object):
@@ -55,11 +55,6 @@ class ClientObject(object):
         self._properties_to_persist = []
         self._query_options = QueryOptions()
         return self
-
-    # @overload
-    # def execute_query(self):
-    #    # type: () -> T
-    #    ...
 
     def execute_query(self):
         # type: () -> Self
@@ -106,11 +101,6 @@ class ClientObject(object):
         """Attach an event handler to client object which gets triggered after query is submitted to server"""
         self.context.after_query_execute(action, execute_first, include_response)
         return self
-
-    # @overload
-    # def get(self):
-    #    # type: () -> T
-    #    ...
 
     def get(self):
         # type: () -> Self

@@ -1,9 +1,17 @@
+from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
 class TargetApplicationField(Entity):
     """A name of a credential field and its associated credential type."""
+
+    def __init__(self, context, name=None, masked=None, credential_type=None):
+        params = {"name": name, "masked": masked, "credentialType": credential_type}
+        static_path = ServiceOperationPath(
+            "Microsoft.Office.SecureStoreService.Server.TargetApplicationField", params
+        )
+        super(TargetApplicationField, self).__init__(context, static_path)
 
     @staticmethod
     def create(context, name, masked, credential_type):

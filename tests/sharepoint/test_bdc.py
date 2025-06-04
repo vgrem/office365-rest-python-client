@@ -6,7 +6,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestBdc(SPTestCase):
     app_site_url = None
 
-    def test_1_get_corporate_catalog_url(self):
+    def test1_get_corporate_catalog_url(self):
         admin_client = ClientContext(test_admin_site_url).with_credentials(
             test_admin_credentials
         )
@@ -14,9 +14,9 @@ class TestBdc(SPTestCase):
         self.assertIsNotNone(return_type.corporate_catalog_url)
         self.__class__.app_site_url = return_type.corporate_catalog_url
 
-    # def test_2_get_app_bdc_catalog(self):
+    # def test2_get_app_bdc_catalog(self):
     #    client = ClientContext(self.app_site_url).with_credentials(
-    #        test_user_credentials
+    #        test_admin_credentials
     #    )
     #    result = client.web.get_app_bdc_catalog().execute_query()
     #    self.assertIsNotNone(result.resource_path)

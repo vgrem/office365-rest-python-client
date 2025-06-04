@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
+from office365.onedrive.lists.template_type import ListTemplateType
 from tests import create_unique_name
 from tests.graph_case import GraphTestCase
 
@@ -20,7 +21,7 @@ class TestFile(GraphTestCase):
         super(TestFile, cls).setUpClass()
         lib_name = create_unique_name("Lib")
         lib = cls.client.sites.root.lists.add(
-            lib_name, "documentLibrary"
+            lib_name, ListTemplateType.documentLibrary
         ).execute_query()
         cls.target_drive = lib.drive
 

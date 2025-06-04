@@ -12,6 +12,7 @@ from tests import (
     test_tenant,
     test_user_principal_name_alt,
 )
+from tests.decorators import requires_app_permission
 
 
 class TestPermissions(TestCase):
@@ -35,6 +36,7 @@ class TestPermissions(TestCase):
         item_to_delete = cls.target_drive_item.get().execute_query()
         item_to_delete.delete_object().execute_query()
 
+    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_anonymous_link(self):
         permission = self.__class__.target_drive_item.create_link(
             "view", "anonymous"
@@ -42,6 +44,7 @@ class TestPermissions(TestCase):
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "read")
 
+    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test2_create_company_link(self):
         permission = self.__class__.target_drive_item.create_link(
             "edit", "organization"
@@ -49,11 +52,17 @@ class TestPermissions(TestCase):
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "write")
 
+    @requires_app_permission(
+        "Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"
+    )
     def test4_driveitem_list_permissions(self):
         permissions = self.__class__.target_drive_item.permissions.get().execute_query()
         self.assertIsNotNone(permissions.resource_path)
         self.assertGreater(len(permissions), 0)
 
+    @requires_app_permission(
+        "Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"
+    )
     def test5_driveitem_get_permission(self):
         result = (
             self.__class__.target_drive_item.permissions.get().top(1).execute_query()
@@ -72,6 +81,7 @@ class TestPermissions(TestCase):
         # perm_to_update.update().execute_query()
         pass
 
+    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test7_driveitem_delete_permission(self):
         perm_to_delete = self.__class__.target_permission
         perm_to_delete.delete_object().execute_query()

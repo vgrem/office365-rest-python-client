@@ -7,14 +7,6 @@ from tests.graph_case import GraphTestCase
 class TestNotebook(GraphTestCase):
     target_notebook = None  # type: Notebook
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestNotebook, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     @requires_delegated_permission(
         "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"
     )

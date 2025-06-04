@@ -21,7 +21,7 @@ class TestOutlookUser(GraphTestCase):
         result = self.client.me.outlook.supported_time_zones().execute_query()
         self.assertIsNotNone(result.value)
 
-    #@requires_delegated_permission("Mail.Read",	"Mail.Read.Shared")
+    # @requires_delegated_permission("Mail.Read",	"Mail.Read.Shared")
     def test4_get_mail_tips(self):
         result = self.client.me.get_mail_tips(
             [test_user_principal_name]

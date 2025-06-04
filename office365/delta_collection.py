@@ -1,11 +1,10 @@
-from typing import TYPE_CHECKING, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Optional, Type
 
 from office365.delta_path import DeltaPath
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_object import T
 from office365.runtime.paths.resource_path import ResourcePath
-
-T = TypeVar("T")
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
@@ -27,7 +26,7 @@ class DeltaCollection(EntityCollection[T]):
 
     @property
     def delta(self):
-        # type: () -> DeltaCollection[T]
+        # type: () -> "DeltaCollection[T]"
         """
         Get newly created, updated, or deleted entities (changes)
         """

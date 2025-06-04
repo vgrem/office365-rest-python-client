@@ -32,6 +32,7 @@ class TestOutlookEvent(GraphTestCase):
         events = self.client.me.events.get().execute_query()
         self.assertGreaterEqual(len(events), 1)
 
+    @requires_delegated_permission("Calendars.ReadWrite", "Calendars.ReadWrite.Shared")
     def test4_update_event(self):
         event = self.__class__.target_event
         event.subject = "Let's go for lunch (updated)"
@@ -41,6 +42,7 @@ class TestOutlookEvent(GraphTestCase):
     #    event = self.__class__.target_event
     #    event.cancel().execute_query()
 
+    @requires_delegated_permission("Calendars.ReadWrite", "Calendars.ReadWrite.Shared")
     def test6_delete_event(self):
         event_to_delete = self.__class__.target_event
         event_to_delete.delete_object().execute_query()

@@ -14,7 +14,7 @@ class TestExcelCharts(GraphTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestExcelCharts, cls).setUpClass()
-        path = "{0}/../../examples/data/templates/Weight loss tracker.xlsx".format(
+        path = "{0}/../../../examples/data/templates/Weight loss tracker.xlsx".format(
             os.path.dirname(__file__)
         )
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()

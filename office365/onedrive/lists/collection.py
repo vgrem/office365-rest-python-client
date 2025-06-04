@@ -1,5 +1,6 @@
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
+from office365.onedrive.lists.template_type import ListTemplateType
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -10,7 +11,7 @@ class ListCollection(EntityCollection[List]):
     def __init__(self, context, resource_path=None):
         super(ListCollection, self).__init__(context, List, resource_path)
 
-    def add(self, display_name, list_template="genericList"):
+    def add(self, display_name, list_template=ListTemplateType.genericList):
         """
         Create a new list.
 

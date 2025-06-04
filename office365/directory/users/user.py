@@ -616,6 +616,7 @@ class User(DirectoryObject):
 
     @property
     def created_objects(self):
+        # type: () -> DirectoryObjectCollection
         """Directory objects created by this user."""
         return self.properties.get(
             "createdObjects",
@@ -649,6 +650,7 @@ class User(DirectoryObject):
 
     @property
     def app_role_assignments(self):
+        # type: () -> AppRoleAssignmentCollection
         """Get the apps and app roles which this user has been assigned."""
         return self.properties.get(
             "appRoleAssignments",

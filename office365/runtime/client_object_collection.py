@@ -145,6 +145,11 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self.top(page_size)
         return self
 
+    # @overload
+    # def get(self):
+    #    # type: () -> "ClientObjectCollection[T]"
+    #    ...
+
     def get(self):
         # type: () -> Self
 
