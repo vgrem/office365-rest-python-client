@@ -160,6 +160,22 @@ class SearchEntity(Entity):
             region=region,
         )
 
+    def query_chat_messages(self, query_string, page_from=None, size=None, region=None):
+        """Searches Teams chat messages. Alias to query method
+
+        :param str query_string: Contains the query terms.
+        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
+        :param int size: The size of the page to be retrieved. The maximum value is 500.
+        :param str region: The geographic location for the search. Required for searches that use application
+        """
+        return self.query(
+            query_string,
+            entity_types=[EntityType.chatMessage],
+            page_from=page_from,
+            size=size,
+            region=region,
+        )
+
     @property
     def acronyms(self):
         """Administrative answer in Microsoft Search results to define common acronyms in an organization."""

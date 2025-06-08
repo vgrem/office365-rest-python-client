@@ -1186,7 +1186,7 @@ class Tenant(Entity):
     def crawl_versions_info_provider(self):
         """Retrieves information about crawl versions for a tenant in SharePoint"""
 
-        from office365.sharepoint.search.administration.tenant_crawl_versions_info_provider import (
+        from office365.sharepoint.search.administration.providers import (
             TenantCrawlVersionsInfoProvider,
         )
 

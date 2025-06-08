@@ -372,6 +372,13 @@ class ServicePrincipal(DirectoryObject):
         """The unique identifier for the associated application (its appId property)."""
         return self.properties.get("appId", None)
 
+    def app_role_assignment_required(self):
+        # type: () -> Optional[bool]
+        """Specifies whether users or other service principals need to be granted an app role assignment for
+        this service principal before users can sign in or apps can get tokens. The default value is false.
+        Not nullable."""
+        return self.properties.get("appRoleAssignmentRequired", None)
+
     @property
     def app_role_assigned_to(self):
         """

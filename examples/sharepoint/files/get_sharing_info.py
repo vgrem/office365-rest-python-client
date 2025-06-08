@@ -3,7 +3,6 @@ Enumerates files along with role assignments
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.principal.type import PrincipalType
 from tests import test_client_credentials, test_team_site_url
 
@@ -19,7 +18,7 @@ items = (
 
 # per every list item (file facet) retrieve role assignments (where role assignment is associated with a principal,
 # which could be a user or a group)
-for item in items:  # type: ListItem
+for item in items:
     role_assignments = item.role_assignments.expand(["Member"]).get().execute_query()
     print("File: {0}".format(item.properties["EncodedAbsUrl"]))
     for ra in role_assignments:

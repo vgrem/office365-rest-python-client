@@ -41620,6 +41620,12 @@ within the time frame of their original request."/>
             <Member Name="allVersions" Value="1"/>
             <Member Name="linkedFiles" Value="2"/>
             <Member Name="unknownFutureValue" Value="4"/>
+            <Member Name="advancedIndexing" Value="8"/>
+            <Member Name="listAttachments" Value="16"/>
+            <Member Name="htmlTranscripts" Value="32"/>
+            <Member Name="messageConversationExpansion" Value="64"/>
+            <Member Name="locationsWithoutHits" Value="256"/>
+            <Member Name="allItemsInFolder" Value="512"/>
          </EnumType>
          <EnumType Name="additionalOptions" IsFlags="true">
             <Member Name="none" Value="0"/>
@@ -41629,6 +41635,14 @@ within the time frame of their original request."/>
             <Member Name="subfolderContents" Value="8"/>
             <Member Name="listAttachments" Value="16"/>
             <Member Name="unknownFutureValue" Value="32"/>
+            <Member Name="htmlTranscripts" Value="64"/>
+            <Member Name="advancedIndexing" Value="128"/>
+            <Member Name="allItemsInFolder" Value="256"/>
+            <Member Name="includeFolderAndPath" Value="512"/>
+            <Member Name="condensePaths" Value="1024"/>
+            <Member Name="friendlyName" Value="2048"/>
+            <Member Name="splitSource" Value="4096"/>
+            <Member Name="includeReport" Value="16384"/>
          </EnumType>
          <EnumType Name="caseAction">
             <Member Name="contentExport" Value="0"/>
@@ -41666,6 +41680,13 @@ within the time frame of their original request."/>
             <Member Name="Many" Value="1"/>
             <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
+         <EnumType Name="cloudAttachmentVersion">
+            <Member Name="latest" Value="1"/>
+            <Member Name="recent10" Value="2"/>
+            <Member Name="recent100" Value="3"/>
+            <Member Name="all" Value="4"/>
+            <Member Name="unknownFutureValue" Value="5"/>
+         </EnumType>
          <EnumType Name="dataSourceContainerStatus">
             <Member Name="active" Value="1"/>
             <Member Name="released" Value="2"/>
@@ -41687,6 +41708,13 @@ within the time frame of their original request."/>
             <Member Name="allCaseNoncustodialDataSources" Value="8"/>
             <Member Name="unknownFutureValue" Value="16"/>
          </EnumType>
+         <EnumType Name="documentVersion">
+            <Member Name="latest" Value="1"/>
+            <Member Name="recent10" Value="2"/>
+            <Member Name="recent100" Value="3"/>
+            <Member Name="all" Value="4"/>
+            <Member Name="unknownFutureValue" Value="5"/>
+         </EnumType>
          <EnumType Name="exportCriteria" IsFlags="true">
             <Member Name="searchHits" Value="1"/>
             <Member Name="partiallyIndexed" Value="2"/>
@@ -41697,6 +41725,7 @@ within the time frame of their original request."/>
             <Member Name="directory" Value="1"/>
             <Member Name="pst" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
+            <Member Name="msg" Value="4"/>
          </EnumType>
          <EnumType Name="exportFormat">
             <Member Name="pst" Value="0"/>
@@ -41715,6 +41744,15 @@ within the time frame of their original request."/>
             <Member Name="pdfReplacement" Value="4"/>
             <Member Name="tags" Value="16"/>
             <Member Name="unknownFutureValue" Value="32"/>
+            <Member Name="splitSource" Value="64"/>
+            <Member Name="includeFolderAndPath" Value="128"/>
+            <Member Name="friendlyName" Value="256"/>
+            <Member Name="condensePaths" Value="512"/>
+         </EnumType>
+         <EnumType Name="itemsToInclude" IsFlags="true">
+            <Member Name="searchHits" Value="1"/>
+            <Member Name="partiallyIndexed" Value="2"/>
+            <Member Name="unknownFutureValue" Value="4"/>
          </EnumType>
          <EnumType Name="purgeAreas" IsFlags="true">
             <Member Name="mailboxes" Value="1"/>
@@ -41730,6 +41768,14 @@ within the time frame of their original request."/>
             <Member Name="mailbox" Value="1"/>
             <Member Name="site" Value="2"/>
             <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="statisticsOptions" IsFlags="true">
+            <Member Name="includeRefiners" Value="1"/>
+            <Member Name="includeQueryStats" Value="2"/>
+            <Member Name="includeUnindexedStats" Value="4"/>
+            <Member Name="advancedIndexing" Value="8"/>
+            <Member Name="locationsWithoutHits" Value="16"/>
+            <Member Name="unknownFutureValue" Value="32"/>
          </EnumType>
          <EnumType Name="deploymentStatus">
             <Member Name="upToDate" Value="1"/>
@@ -42319,6 +42365,10 @@ within the time frame of their original request."/>
             <Property Name="status" Type="microsoft.graph.security.dataSourceContainerStatus"/>
          </EntityType>
          <EntityType Name="ediscoveryAddToReviewSetOperation" BaseType="microsoft.graph.security.caseOperation">
+            <Property Name="additionalDataOptions" Type="microsoft.graph.security.additionalDataOptions"/>
+            <Property Name="cloudAttachmentVersion" Type="microsoft.graph.security.cloudAttachmentVersion"/>
+            <Property Name="documentVersion" Type="microsoft.graph.security.documentVersion"/>
+            <Property Name="itemsToInclude" Type="microsoft.graph.security.itemsToInclude"/>
             <NavigationProperty Name="reviewSet" Type="microsoft.graph.security.ediscoveryReviewSet"/>
             <NavigationProperty Name="search" Type="microsoft.graph.security.ediscoverySearch"/>
          </EntityType>
@@ -42388,6 +42438,7 @@ within the time frame of their original request."/>
             <Property Name="indexedItemsSize" Type="Edm.Int64"/>
             <Property Name="mailboxCount" Type="Edm.Int32"/>
             <Property Name="siteCount" Type="Edm.Int32"/>
+            <Property Name="statisticsOptions" Type="microsoft.graph.security.statisticsOptions"/>
             <Property Name="unindexedItemCount" Type="Edm.Int64"/>
             <Property Name="unindexedItemsSize" Type="Edm.Int64"/>
             <NavigationProperty Name="search" Type="microsoft.graph.security.ediscoverySearch"/>
@@ -42406,8 +42457,10 @@ within the time frame of their original request."/>
          <EntityType Name="ediscoveryPurgeDataOperation" BaseType="microsoft.graph.security.caseOperation"/>
          <EntityType Name="ediscoverySearchExportOperation" BaseType="microsoft.graph.security.caseOperation">
             <Property Name="additionalOptions" Type="microsoft.graph.security.additionalOptions"/>
+            <Property Name="cloudAttachmentVersion" Type="microsoft.graph.security.cloudAttachmentVersion"/>
             <Property Name="description" Type="Edm.String"/>
             <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="documentVersion" Type="microsoft.graph.security.documentVersion"/>
             <Property Name="exportCriteria" Type="microsoft.graph.security.exportCriteria"/>
             <Property Name="exportFileMetadata" Type="Collection(microsoft.graph.security.exportFileMetadata)"/>
             <Property Name="exportFormat" Type="microsoft.graph.security.exportFormat"/>
@@ -43336,6 +43389,9 @@ within the time frame of their original request."/>
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoveryReviewSet"/>
             <Parameter Name="search" Type="microsoft.graph.security.ediscoverySearch"/>
             <Parameter Name="additionalDataOptions" Type="microsoft.graph.security.additionalDataOptions"/>
+            <Parameter Name="itemsToInclude" Type="microsoft.graph.security.itemsToInclude"/>
+            <Parameter Name="cloudAttachmentVersion" Type="microsoft.graph.security.cloudAttachmentVersion"/>
+            <Parameter Name="documentVersion" Type="microsoft.graph.security.documentVersion"/>
          </Action>
          <Action Name="export" IsBound="true">
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoveryReviewSet"/>
@@ -43364,6 +43420,7 @@ within the time frame of their original request."/>
          </Action>
          <Action Name="estimateStatistics" IsBound="true">
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoverySearch"/>
+            <Parameter Name="statisticsOptions" Type="microsoft.graph.security.statisticsOptions"/>
          </Action>
          <Action Name="exportReport" IsBound="true">
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoverySearch"/>
@@ -43372,6 +43429,8 @@ within the time frame of their original request."/>
             <Parameter Name="exportCriteria" Type="microsoft.graph.security.exportCriteria"/>
             <Parameter Name="exportLocation" Type="microsoft.graph.security.exportLocation"/>
             <Parameter Name="additionalOptions" Type="microsoft.graph.security.additionalOptions"/>
+            <Parameter Name="cloudAttachmentVersion" Type="microsoft.graph.security.cloudAttachmentVersion"/>
+            <Parameter Name="documentVersion" Type="microsoft.graph.security.documentVersion"/>
          </Action>
          <Action Name="exportResult" IsBound="true">
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoverySearch"/>
@@ -43382,6 +43441,8 @@ within the time frame of their original request."/>
             <Parameter Name="additionalOptions" Type="microsoft.graph.security.additionalOptions"/>
             <Parameter Name="exportFormat" Type="microsoft.graph.security.exportFormat"/>
             <Parameter Name="exportSingleItems" Type="Edm.Boolean"/>
+            <Parameter Name="cloudAttachmentVersion" Type="microsoft.graph.security.cloudAttachmentVersion"/>
+            <Parameter Name="documentVersion" Type="microsoft.graph.security.documentVersion"/>
          </Action>
          <Action Name="purgeData" IsBound="true">
             <Parameter Name="bindingParameter" Type="microsoft.graph.security.ediscoverySearch"/>

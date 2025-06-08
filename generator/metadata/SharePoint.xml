@@ -598,6 +598,10 @@
             <Property Name="LanguageCode" Type="Edm.String"/>
             <Property Name="WebRelativePath" Type="SP.ResourcePath"/>
          </ComplexType>
+         <ComplexType Name="RestrictContentOrgWidePolicyUpdate">
+            <Property Name="IsPolicyEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="Justification" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="ReviewConfigurationPayload">
             <Property Name="CategoryId" Type="Edm.String"/>
             <Property Name="Reviewers" Type="Collection(Edm.String)"/>
@@ -1881,6 +1885,7 @@
             <Property Name="ReadOnly" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="RelatedGroupId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="RequiredDesignerVersion" Type="Edm.String"/>
+            <Property Name="RestrictContentOrgWideSearchUpdate" Type="SP.RestrictContentOrgWidePolicyUpdate"/>
             <Property Name="RestrictedAccessControlGroupsEnforcedOnSite" Type="Collection(Edm.String)"/>
             <Property Name="SandboxedCodeActivationCapability" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ScheduledDateForRemoval" Type="Edm.String"/>
@@ -2784,7 +2789,7 @@
             <NavigationProperty Name="DescriptionResource" Relationship="SP.SP_UserCustomAction_DescriptionResource_SP_UserResource_DescriptionResourcePartner" ToRole="DescriptionResource" FromRole="DescriptionResourcePartner"/>
             <NavigationProperty Name="TitleResource" Relationship="SP.SP_UserCustomAction_TitleResource_SP_UserResource_TitleResourcePartner" ToRole="TitleResource" FromRole="TitleResourcePartner"/>
          </EntityType>
-         <EntityType Name="VersionPolicyManager">
+         <EntityType Name="VersionPolicyManager" Abstract="true">
             <Key>
                <PropertyRef Name="DefaultExpireAfterDays"/>
             </Key>
@@ -3016,7 +3021,7 @@
             <NavigationProperty Name="Fields" Relationship="SP.SP_ListItemVersion_Fields_SP_Field_FieldsPartner" ToRole="Fields" FromRole="FieldsPartner"/>
             <NavigationProperty Name="FileVersion" Relationship="SP.SP_ListItemVersion_FileVersion_SP_FileVersion_FileVersionPartner" ToRole="FileVersion" FromRole="FileVersionPartner"/>
          </EntityType>
-         <EntityType Name="SiteVersionPolicyManager">
+         <EntityType Name="SiteVersionPolicyManager" Abstract="true">
             <Key>
                <PropertyRef Name="MajorVersionLimit"/>
             </Key>
@@ -5349,6 +5354,7 @@
             <EntitySet Name="SitePageMetadatas" EntityType="SP.Publishing.SitePageMetadata"/>
             <EntitySet Name="CanCreatePageResponses" EntityType="SP.Publishing.CanCreatePageResponse"/>
             <EntitySet Name="CommunicationSites" EntityType="SP.Publishing.CommunicationSite"/>
+            <EntitySet Name="DynamicContentSignals" EntityType="SP.Publishing.DynamicContentSignal"/>
             <EntitySet Name="EmbedDataV1s" EntityType="SP.Publishing.EmbedDataV1"/>
             <EntitySet Name="EmbedServices" EntityType="SP.Publishing.EmbedService"/>
             <EntitySet Name="HighlightsInfos" EntityType="SP.Publishing.HighlightsInfo"/>
@@ -9288,6 +9294,25 @@
                <Parameter Name="this" Type="SP.Publishing.CommunicationSite"/>
                <Parameter Name="url" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="Create" ReturnType="SP.Publishing.DynamicContentSignal" IsBindable="true" EntitySet="DynamicContentSignals">
+               <Parameter Name="this" Type="Collection(SP.Publishing.DynamicContentSignal)"/>
+               <Parameter Name="signals" Type="SP.Publishing.DynamicContentSignalsPayload"/>
+            </FunctionImport>
+            <FunctionImport Name="GetById" ReturnType="SP.Publishing.DynamicContentSignal" IsComposable="true" IsBindable="true" EntitySet="DynamicContentSignals">
+               <Parameter Name="this" Type="Collection(SP.Publishing.DynamicContentSignal)"/>
+               <Parameter Name="id" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="AddQuestion" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
+               <Parameter Name="question" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="Delete" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
+            </FunctionImport>
+            <FunctionImport Name="SendSignal" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
+               <Parameter Name="action" Type="SP.Publishing.FaqSignalActionPayload"/>
+            </FunctionImport>
             <FunctionImport Name="SP_Publishing_EmbedService" ReturnType="SP.Publishing.EmbedService" IsComposable="true" EntitySet="EmbedServices"/>
             <FunctionImport Name="EmbedData" ReturnType="SP.Publishing.EmbedDataV1" IsComposable="true" IsBindable="true" EntitySet="EmbedDataV1s">
                <Parameter Name="this" Type="SP.Publishing.EmbedService"/>
@@ -11977,6 +12002,9 @@
                <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
             </FunctionImport>
             <FunctionImport Name="EnsureRetirePageFeature" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
+            </FunctionImport>
+            <FunctionImport Name="EnsureSuggestionListFeature" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
             </FunctionImport>
             <FunctionImport Name="RetirablePages" ReturnType="Microsoft.SharePoint.SiteManager.RetirablePagesQueryResult" IsSideEffecting="false" IsBindable="true">
@@ -14981,6 +15009,9 @@
                <Parameter Name="benefactorHexCid" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_DigitalLegacy_CheckConvergeStatus" ReturnType="Edm.Boolean" IsSideEffecting="false"/>
+            <FunctionImport Name="SP_DigitalLegacy_GetAccessCode" ReturnType="Edm.Stream">
+               <Parameter Name="beneficiaryHexCid" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="SP_DigitalLegacy_GetConvergeStatus" ReturnType="Edm.Boolean" IsSideEffecting="false">
                <Parameter Name="emailAddress" Type="Edm.String"/>
             </FunctionImport>
@@ -14988,10 +15019,18 @@
             <FunctionImport Name="SP_DigitalLegacy_NominateBeneficiary" ReturnType="Edm.Stream">
                <Parameter Name="beneficiaryEmail" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SP_DigitalLegacy_RequestAccess" ReturnType="Edm.Stream">
+               <Parameter Name="benefactorHexCid" Type="Edm.String"/>
+               <Parameter Name="accessCodeString" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="SP_DigitalLegacy_SetBenefactorOnNomination" ReturnType="Edm.Boolean">
                <Parameter Name="benefactorName" Type="Edm.String"/>
                <Parameter Name="benefactorEmail" Type="Edm.String"/>
                <Parameter Name="benefactorCid" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_DigitalLegacy_UpdateBeneficiaryOnAccessRequest" ReturnType="Edm.Boolean">
+               <Parameter Name="beneficiaryHexCid" Type="Edm.String"/>
+               <Parameter Name="accessCode" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_DigitalLegacy_UpdateDigitalLegacySetting" ReturnType="Edm.Boolean">
                <Parameter Name="objectType" Type="Edm.Int32" Nullable="false"/>
@@ -17818,6 +17857,10 @@
                <Parameter Name="orgAssetType" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="defaultOriginAdded" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="configParam" Type="Microsoft.SharePoint.BrandCenter.OrgAssetsLibraryConfigParam"/>
+            </FunctionImport>
+            <FunctionImport Name="ArchiveContainer" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="containerId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="ArchiveSiteById" ReturnType="Microsoft.Online.SharePoint.TenantAdministration.SpoOperation" IsBindable="true" EntitySet="SpoOperations">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -22395,6 +22438,9 @@
          <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/MySiteUrl">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/PreferredLocationRootSiteUrl">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/SearchCenterUrl">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -25972,6 +26018,12 @@
          <Annotations Target="SP.Publishing.SitePage/CreationMode">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.Publishing.DynamicContentSignal">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Publishing.SitePage/DynamicContentSignals">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.Publishing.SitePage/IsLikedByCurrentUser">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -27638,6 +27690,18 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Enable(SP.Publishing.CommunicationSite, Edm.Guid)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/Create(Collection(SP.Publishing.DynamicContentSignal), SP.Publishing.DynamicContentSignalsPayload)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/AddQuestion(SP.Publishing.DynamicContentSignal, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/Delete(SP.Publishing.DynamicContentSignal)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SendSignal(SP.Publishing.DynamicContentSignal, SP.Publishing.FaqSignalActionPayload)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_Publishing_EmbedService()">
@@ -29866,6 +29930,9 @@
          <Annotations Target="SP.ApiData/SP_DigitalLegacy_CheckConvergeStatus()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SP_DigitalLegacy_GetAccessCode(Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SP_DigitalLegacy_GetConvergeStatus(Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29875,7 +29942,13 @@
          <Annotations Target="SP.ApiData/SP_DigitalLegacy_NominateBeneficiary(Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SP_DigitalLegacy_RequestAccess(Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SP_DigitalLegacy_SetBenefactorOnNomination(Edm.String, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_DigitalLegacy_UpdateBeneficiaryOnAccessRequest(Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_DigitalLegacy_UpdateDigitalLegacySetting(Edm.Int32, Edm.String, Edm.Int32)">
@@ -34737,6 +34810,10 @@
             <Property Name="Lcid" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Text" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="DynamicFaqSingalsData">
+            <Property Name="SubmittedAt" Type="Edm.DateTime" Nullable="false"/>
+            <Property Name="SubmittedQuestion" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="AmplifyPublishingHistoryResult">
             <Property Name="PageId" Type="Edm.Int32" Nullable="false"/>
             <Property Name="PublicationMetadata" Type="Edm.String"/>
@@ -34939,8 +35016,28 @@
          <ComplexType Name="DateTimeCustomProperty" BaseType="SP.Publishing.ProfileDateTime">
             <Property Name="CustomPropertyName" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="DynamicContentSignalsPayload">
+            <Property Name="AdditionalData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
+            <Property Name="FaqSignals" Type="Collection(SP.Publishing.FaqSignalData)"/>
+            <Property Name="Id" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="FaqSignalData">
+            <Property Name="QuestionId" Type="Edm.String"/>
+            <Property Name="SignalType" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="Submits" Type="Collection(SP.Publishing.SubmitInfo)"/>
+            <Property Name="Value" Type="Edm.Int64" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="SubmitInfo">
+            <Property Name="SubmittedAt" Type="Edm.DateTime" Nullable="false"/>
+            <Property Name="SubmittedBy" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="Error">
             <Property Name="Details" Type="Collection(Edm.String)"/>
+         </ComplexType>
+         <ComplexType Name="FaqSignalActionPayload">
+            <Property Name="ActionType" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="QuestionId" Type="Edm.String"/>
+            <Property Name="SignalType" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="RepostPageFieldsData" BaseType="SP.Publishing.SitePageFieldsData"/>
          <ComplexType Name="FeedVideoPageFieldsData" BaseType="SP.Publishing.RepostPageFieldsData"/>
@@ -35404,7 +35501,16 @@
             <Property Name="PublicationRecipients" Type="Edm.String"/>
             <Property Name="SitePageFlags" Type="Edm.String"/>
             <Property Name="SourceDynamicSectionId" Type="Edm.String"/>
+            <NavigationProperty Name="DynamicContentSignals" Relationship="SP.Publishing.SP_Publishing_SitePage_DynamicContentSignals_SP_Publishing_DynamicContentSignal_DynamicContentSignalsPartner" ToRole="DynamicContentSignals" FromRole="DynamicContentSignalsPartner"/>
             <NavigationProperty Name="Translations" Relationship="SP.SP_Publishing_SitePage_Translations_SP_TranslationStatusCollection_TranslationsPartner" ToRole="Translations" FromRole="TranslationsPartner"/>
+         </EntityType>
+         <EntityType Name="DynamicContentSignal">
+            <Key>
+               <PropertyRef Name="Id"/>
+            </Key>
+            <Property Name="AdditionalData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
+            <Property Name="FaqSignals" Type="Collection(SP.Publishing.FaqSignalData)"/>
+            <Property Name="Id" Type="Edm.String" Nullable="false"/>
          </EntityType>
          <EntityType Name="CampaignPublication" BaseType="SP.Publishing.SitePage">
             <Property Name="EmailEndpoint" Type="Edm.String"/>
@@ -35804,6 +35910,10 @@
          <Association Name="SP_Publishing_SitePageMetadata_LastModifiedBy_SP_Publishing_UserInfo_LastModifiedByPartner">
             <End Type="SP.Publishing.UserInfo" Role="LastModifiedBy" Multiplicity="0..1"/>
             <End Type="SP.Publishing.SitePageMetadata" Role="LastModifiedByPartner" Multiplicity="0..1"/>
+         </Association>
+         <Association Name="SP_Publishing_SitePage_DynamicContentSignals_SP_Publishing_DynamicContentSignal_DynamicContentSignalsPartner">
+            <End Type="SP.Publishing.DynamicContentSignal" Role="DynamicContentSignals" Multiplicity="*"/>
+            <End Type="SP.Publishing.SitePage" Role="DynamicContentSignalsPartner" Multiplicity="0..1"/>
          </Association>
          <Association Name="SP_Publishing_PointPublishingPostServiceManager_contributors_SP_Publishing_PointPublishingUser_contributorsPartner">
             <End Type="SP.Publishing.PointPublishingUser" Role="contributors" Multiplicity="*"/>
@@ -36925,6 +37035,7 @@
             <Property Name="MicroserviceFlights" Type="Collection(Edm.String)"/>
             <Property Name="MicroserviceUrl" Type="Edm.String"/>
             <Property Name="MySiteUrl" Type="Edm.String"/>
+            <Property Name="PreferredLocationRootSiteUrl" Type="Edm.String"/>
             <Property Name="SearchCenterUrl" Type="Edm.String"/>
             <Property Name="ShowCreateNewsTeachingBubble" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ShowFirstRunExperience" Type="Edm.Boolean" Nullable="false"/>
@@ -36987,6 +37098,7 @@
             <Property Name="RequiresYammerConnected" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SiteScriptIds" Type="Collection(Edm.Guid)" Nullable="false"/>
             <Property Name="SupportedWebTemplates" Type="Collection(Edm.String)"/>
+            <Property Name="SupportedWebTemplateSubtypes" Type="Collection(Edm.String)"/>
             <Property Name="TargetPlatforms" Type="Collection(Edm.String)"/>
             <Property Name="TeamChannels" Type="Collection(Edm.String)"/>
             <Property Name="TeamImageAltText" Type="Edm.String"/>
@@ -38908,7 +39020,9 @@
          </ComplexType>
          <ComplexType Name="BaseRawDataSources">
             <Property Name="DisplayMessage" Type="Edm.String"/>
+            <Property Name="Metadata" Type="Microsoft.SharePoint.Administration.TenantAdmin.Copilot.BaseMetadata"/>
          </ComplexType>
+         <ComplexType Name="BaseMetadata"/>
          <ComplexType Name="CopilotTranspilerPayload">
             <Property Name="StatementList" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.Copilot.TranspilerStatement)"/>
          </ComplexType>
@@ -38933,6 +39047,7 @@
          <ComplexType Name="ReportRow">
             <Property Name="Row" Type="Collection(Edm.String)"/>
          </ComplexType>
+         <ComplexType Name="ReportMetadata" BaseType="Microsoft.SharePoint.Administration.TenantAdmin.Copilot.BaseMetadata"/>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="SP.SiteHealth">
          <ComplexType Name="SiteHealthResult">
@@ -40496,6 +40611,7 @@
             <Property Name="Classification" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ContainerTypeId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="ContainerTypeName" Type="Edm.String"/>
+            <Property Name="CopilotEmbeddedChatHosts" Type="Collection(Edm.String)"/>
             <Property Name="IsDiscoverablilityDisabled" Type="Edm.Int32" Nullable="false"/>
             <Property Name="IsMoveDisabled" Type="Edm.Int32" Nullable="false"/>
             <Property Name="IsRenameDisabled" Type="Edm.Int32" Nullable="false"/>
@@ -43240,6 +43356,7 @@
             </Key>
             <Property Name="ErrorCode" Type="Edm.Int32" Nullable="false"/>
             <Property Name="InitialCreation" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ListItemId" Type="Edm.Int32"/>
             <Property Name="ParentListId" Type="Edm.Guid"/>
             <Property Name="Path" Type="SP.ResourcePath"/>
             <Property Name="Succeeded" Type="Edm.Boolean" Nullable="false"/>
@@ -43760,6 +43877,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -43883,6 +44001,7 @@
             <Property Name="OData__Level" Type="Edm.Int32"/>
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="GroupLink" Type="Edm.String"/>
@@ -43953,6 +44072,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -44008,6 +44128,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44079,6 +44200,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -44138,6 +44260,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -44197,6 +44320,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -44267,6 +44391,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_ContentTypeSyncLogListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -44333,6 +44458,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_ContentTypeAppLogListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -44387,6 +44513,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44478,6 +44605,7 @@
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
             <Property Name="OData__DisplayName" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44559,6 +44687,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_EnterpriseContentTypesUsageListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
             <NavigationProperty Name="Editor" Relationship="SP.Data.SP_Data_EnterpriseContentTypesUsageListItem_Editor_SP_Data_UserInfoItem_EditorPartner" ToRole="Editor" FromRole="EditorPartner"/>
          </EntityType>
@@ -44629,6 +44758,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44701,6 +44831,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44782,6 +44913,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44882,6 +45014,7 @@
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
             <Property Name="OData__DisplayName" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -44951,6 +45084,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -45029,6 +45163,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -45116,6 +45251,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -45232,6 +45368,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="LikedBy" Relationship="SP.Data.SP_Data_PublishedFeedListItem_LikedBy_SP_Data_UserInfoItem_LikedByPartner" ToRole="LikedBy" FromRole="LikedByPartner"/>
@@ -45402,6 +45539,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_TaxonomyHiddenListListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -45476,6 +45614,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_PackagesMetaInfoListListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
             <NavigationProperty Name="Editor" Relationship="SP.Data.SP_Data_PackagesMetaInfoListListItem_Editor_SP_Data_UserInfoItem_EditorPartner" ToRole="Editor" FromRole="EditorPartner"/>
          </EntityType>
@@ -45544,6 +45683,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_ProjectPolicyItemListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -45602,6 +45742,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -45671,6 +45812,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_PackageListListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -45733,6 +45875,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_SharePointHomeOrgLinksListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -45796,6 +45939,7 @@
             <Property Name="OData__Level" Type="Edm.Int32"/>
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_Sharing__x0020__LinksItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
@@ -45850,6 +45994,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -45955,6 +46100,7 @@
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
             <Property Name="OData__DisplayName" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -46023,6 +46169,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -46096,6 +46243,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -46198,6 +46346,7 @@
             <Property Name="OData__Level" Type="Edm.Int32"/>
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <NavigationProperty Name="Predecessors" Relationship="SP.Data.SP_Data_Tasks__x0020__NKIBINUE6ListItem_Predecessors_SP_Data_Tasks__x0020__NKIBINUE6ListItem_PredecessorsPartner" ToRole="Predecessors" FromRole="PredecessorsPartner"/>
@@ -46257,6 +46406,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -46334,6 +46484,7 @@
             <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
             <Property Name="OData__IsRecord" Type="Edm.String"/>
             <Property Name="OData__DisplayName" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>
@@ -46406,6 +46557,7 @@
             <Property Name="OData__ColorHex" Type="Edm.String"/>
             <Property Name="OData__ColorTag" Type="Edm.String"/>
             <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="ComplianceAssetId" Type="Edm.String"/>
@@ -46482,6 +46634,7 @@
             <Property Name="OData__Emoji" Type="Edm.String"/>
             <Property Name="MediaGeneratedMetadata" Type="Edm.String"/>
             <Property Name="MediaUserMetadata" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
             <Property Name="AppAuthorId" Type="Edm.Int32"/>
             <Property Name="AppEditorId" Type="Edm.Int32"/>
             <Property Name="SelectTitle" Type="Edm.String"/>

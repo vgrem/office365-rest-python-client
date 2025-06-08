@@ -9,6 +9,7 @@ from office365.outlook.calendar.events.event import Event
 from office365.outlook.mail.messages.message import Message
 from office365.outlook.person import Person
 from office365.search.external.item import ExternalItem
+from office365.teams.chats.messages.message import ChatMessage
 
 
 class EntityType:
@@ -24,6 +25,7 @@ class EntityType:
         "driveItem": DriveItem,
         "externalItem": ExternalItem,
         "person": Person,
+        "chatMessage": ChatMessage,
     }
 
     def __init__(self):
@@ -52,3 +54,5 @@ class EntityType:
     externalItem = "externalItem"
 
     person = "person"
+
+    chatMessage = "chatMessage"
