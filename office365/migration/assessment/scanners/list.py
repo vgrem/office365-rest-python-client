@@ -1,11 +1,35 @@
-from typing import Dict, Self
+from typing import Self
 
-from office365.migration.assessment.base_scanner import BaseScanner
+from office365.migration.assessment.scanners.base import BaseScanner, mapped_property
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.lists.list import List
 
 
 class ListScanner(BaseScanner[List]):
+
+    @property
+    def files_count(self):
+        return self._properties.get("FilesCount", None)
+
+    @property
+    def folders_count(self):
+        return self._properties.get("FoldersCount", None)
+
+    @mapped_property("ItemsCount")
+    def items_count(self):
+        return self.source.item_count
+
+    @mapped_property("FieldsCount")
+    def fields_count(self):
+        return len(self.source.fields)
+
+    @mapped_property("ContentTypesCount")
+    def content_types_count(self):
+        return len(self.source.content_types)
+
+    @property
+    def list_template(self):
+        return self.source.base_template
 
     def build_query(self):
         # type: () -> Self
@@ -14,28 +38,6 @@ class ListScanner(BaseScanner[List]):
         self._query_list_items()
 
         return self
-
-    def process(self):
-        # type: () -> Dict
-        return {
-            "ListTemplate": self.source.base_template,
-            "NumOfAllItems": self.source.item_count,
-            # "NumOfPages": -1,
-            # "NumOfCheckedOutFiles": -1,
-            # "NumOfItems_HasUniquePermission": -1,
-            "NumOfUniquePermissions": (
-                len(self.source.role_assignments)
-                if self.source.has_unique_role_assignments
-                else 0
-            ),
-            "NumOfContentTypes": len(self.source.content_types),
-            "NumOfFields": len(self.source.fields),
-            # "NumOfLookupFields": -1,
-            # "TotalFileVersions": -1,
-            # "Size": -1,
-            "NumOfFiles": self._result["NumOfFiles"],
-            "NumOfFolders": self._result["NumOfFolders"],
-        }
 
     def _query_list_metadata(self):
         self.source.select(
@@ -60,10 +62,10 @@ class ListScanner(BaseScanner[List]):
 
     def _process_item(self, items):
         # type: (ListItemCollection) -> None
-        self._result.setdefault("NumOfFiles", 0)
-        self._result.setdefault("NumOfFolders", 0)
+        self._properties.setdefault("FilesCount", 0)
+        self._properties.setdefault("FoldersCount", 0)
 
         file_count = sum(1 for item in items if item.properties.get("FSObjType") == 0)
         folder_count = sum(1 for item in items if item.properties.get("FSObjType") == 1)
-        self._result["NumOfFiles"] += file_count
-        self._result["NumOfFolders"] += folder_count
+        self._properties["FilesCount"] += file_count
+        self._properties["FoldersCount"] += folder_count

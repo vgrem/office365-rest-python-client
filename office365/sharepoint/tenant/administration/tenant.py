@@ -7,6 +7,9 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.administration.archiving.file_size_metric import (
+    ArchiveFileSizeMetric,
+)
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.gtp.request_options import ChatGptRequestOptions
@@ -81,6 +84,9 @@ from office365.sharepoint.tenant.administration.sites.properties_enumerable_filt
 from office365.sharepoint.tenant.administration.spo_operation import SpoOperation
 from office365.sharepoint.tenant.administration.syntex.billing_context import (
     SyntexBillingContext,
+)
+from office365.sharepoint.tenant.administration.syntex.power_apps import (
+    SyntexPowerAppsEnvironmentsContext,
 )
 from office365.sharepoint.tenant.administration.types import (
     CreatePolicyRequest,
@@ -991,6 +997,12 @@ class Tenant(Entity):
         self.update()
         return self
 
+    def update_site_activity_data(self):
+        """ """
+        qry = ServiceOperationQuery(self, "UpdateSiteActivityData")
+        self.context.add_query(qry)
+        return self
+
     @property
     def app_service_principal(self):
         """ """
@@ -1176,6 +1188,30 @@ class Tenant(Entity):
         )
 
     @property
+    def total_tenant_archive_file_size_aggregation(self):
+        """ """
+        return self.properties.get(
+            "TotalTenantArchiveFileSizeAggregation",
+            ArchiveFileSizeMetric(
+                self.context,
+                ResourcePath(
+                    "TotalTenantArchiveFileSizeAggregation", self.resource_path
+                ),
+            ),
+        )
+
+    def syntex_power_apps_environments_context(self):
+        """ """
+        return self.properties.get(
+            "SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext()
+        )
+
+    def taxonomy_tagging_enabled(self):
+        # type: () -> Optional[bool]
+        """ """
+        return self.properties.get("TaxonomyTaggingEnabled", None)
+
+    @property
     def cdn_api(self):
         """ """
         from office365.sharepoint.tenant.cdn_api import TenantCdnApi
@@ -1186,7 +1222,7 @@ class Tenant(Entity):
     def crawl_versions_info_provider(self):
         """Retrieves information about crawl versions for a tenant in SharePoint"""
 
-        from office365.sharepoint.search.administration.providers import (
+        from office365.sharepoint.search.administration.providers.crawl_versions_info import (
             TenantCrawlVersionsInfoProvider,
         )
 

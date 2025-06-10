@@ -21,6 +21,8 @@ from office365.sharepoint.entity import Entity
 
 
 class SPMachineLearningHub(Entity):
+    """ """
+
     def get_by_content_type_id(self, content_type_id):
         """
         :param str content_type_id:
@@ -58,6 +60,7 @@ class SPMachineLearningHub(Entity):
         return return_type
 
     def get_retention_labels(self):
+        """ """
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
         qry = ServiceOperationQuery(
             self, "GetRetentionLabels", None, None, None, return_type
@@ -87,6 +90,7 @@ class SPMachineLearningHub(Entity):
 
     @property
     def machine_learning_enabled(self):
+        """ """
         return self.properties.get(
             "MachineLearningEnabled",
             SPMachineLearningEnabled(
@@ -96,6 +100,7 @@ class SPMachineLearningHub(Entity):
 
     @property
     def models(self):
+        """ """
         return self.properties.get(
             "Models",
             SPMachineLearningModelCollection(
@@ -105,6 +110,7 @@ class SPMachineLearningHub(Entity):
 
     @property
     def samples(self):
+        """ """
         return self.properties.get(
             "Samples",
             SPMachineLearningSampleCollection(
