@@ -1,10 +1,10 @@
-from office365.delta_collection import DeltaCollection
+from office365.count_collection import CountCollection
 from office365.directory.users.user import User
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 
-class UserCollection(DeltaCollection[User]):
+class UserCollection(CountCollection[User]):
     """User's collection"""
 
     def __init__(self, context, resource_path=None):

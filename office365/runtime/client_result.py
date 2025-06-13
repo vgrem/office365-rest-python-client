@@ -1,5 +1,5 @@
 import copy
-from typing import TYPE_CHECKING, Callable, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union
 
 from typing_extensions import Self
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext  # noqa
     from office365.runtime.client_value import ClientValue  # noqa
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Union[int, bool, str, bytes, float, "ClientValue"])
 
 
 class ClientResult(Generic[T]):
@@ -35,7 +35,7 @@ class ClientResult(Generic[T]):
         return self
 
     def set_property(self, key, value, persist_changes=False):
-        # type: (str, T, bool) -> Self
+        # type: (str, Any, bool) -> Self
         from office365.runtime.client_value import ClientValue  # noqa
 
         if isinstance(self._value, ClientValue):
@@ -43,8 +43,18 @@ class ClientResult(Generic[T]):
         elif isinstance(self._value, dict):
             self._value[key] = value
         else:
-            self._value = value
+            self._value = self._try_cast(value)
         return self
+
+    def _try_cast(self, value):
+        # type: (Any) -> Optional[T]
+
+        if isinstance(self._value, (int, float)) and isinstance(value, bytes):
+            try:
+                return type(self._value)(value.decode("utf-8"))
+            except (UnicodeDecodeError, ValueError):
+                return None
+        return value
 
     @property
     def value(self):

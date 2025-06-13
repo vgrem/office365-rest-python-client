@@ -2,12 +2,19 @@ from datetime import datetime, timedelta
 from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.search.administration.document_crawl_log import DocumentCrawlLog
+from office365.sharepoint.search.administration.document_crawl_log import (
+    DocumentCrawlLog,
+)
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
-from tests import test_admin_credentials, test_admin_site_url, test_site_url, test_user_credentials
+from tests import (
+    test_admin_credentials,
+    test_admin_site_url,
+    test_site_url,
+    test_user_credentials,
+)
 
 
 class TestSearch(TestCase):
@@ -89,14 +96,14 @@ class TestSearch(TestCase):
     #    result = self.client.search.auto_completions("guide", number_of_completions=10).execute_query()
     #    self.assertIsNotNone(result.value)
 
-    #def test_11_create_document_crawl_log(self):
+    # def test_11_create_document_crawl_log(self):
     #    admin_client = ClientContext(test_admin_site_url).with_credentials(
     #        test_admin_credentials
     #    )
     #    result = DocumentCrawlLog.create(admin_client).execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    #def test_12_get_crawled_urls(self):
+    # def test_12_get_crawled_urls(self):
     #    result = self.client.document_crawl_log.get_crawled_urls().execute_query()
     #    self.assertIsNotNone(result.value)
 

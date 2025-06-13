@@ -12,6 +12,12 @@ class Alert(Entity):
     or a security provider integrated with Microsoft 365 Defender, has identified."""
 
     @property
+    def activity_group_name(self):
+        # type: () -> Optional[str]
+        """"""
+        return self.properties.get("activityGroupName", None)
+
+    @property
     def actor_display_name(self):
         # type: () -> Optional[str]
         """The adversary or activity group that is associated with this alert."""

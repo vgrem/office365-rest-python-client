@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import AnyStr, Optional
 
+from office365.communications.onlinemeetings.base import OnlineMeetingBase
 from office365.communications.onlinemeetings.participants import MeetingParticipants
 from office365.communications.onlinemeetings.recordings.call import CallRecording
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_result import ClientResult
@@ -12,7 +12,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 
 
-class OnlineMeeting(Entity):
+class OnlineMeeting(OnlineMeetingBase):
     """
     Contains information about a meeting, including the URL used to join a meeting,
     the attendees list, and the description.

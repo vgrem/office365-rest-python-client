@@ -1,6 +1,6 @@
 from typing_extensions import Self
 
-from office365.delta_collection import DeltaCollection
+from office365.count_collection import CountCollection
 from office365.directory.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.runtime.http.http_method import HttpMethod
@@ -8,7 +8,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
-class DirectoryObjectCollection(DeltaCollection[DirectoryObject]):
+class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     """DirectoryObject's collection"""
 
     def __init__(self, context, resource_path=None):

@@ -29,9 +29,9 @@ class TestSearchOneDrive(GraphTestCase):
         result = self.client.search.query_sites("team").execute_query()
         self.assertIsNotNone(result.value)
 
-    #@requires_delegated_permission(
+    # @requires_delegated_permission(
     #    "Chat.Read", "Chat.ReadWrite", "ChannelMessage.Read.All"
-    #)
-    #def test7_search_chat_messages(self):
+    # )
+    # def test7_search_chat_messages(self):
     #    result = self.client.search.query_chat_messages("message").execute_query()
     #    self.assertIsNotNone(result.value)

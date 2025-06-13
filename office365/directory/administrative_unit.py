@@ -14,6 +14,9 @@ class AdministrativeUnit(DirectoryObject):
     departmental administrator. This resource is an open type that allows other properties to be passed in.
     """
 
+    def __str__(self):
+        return self.display_name or self.entity_type_name
+
     @property
     def display_name(self):
         # type: () -> Optional[str]
