@@ -43,18 +43,8 @@ class ClientResult(Generic[T]):
         elif isinstance(self._value, dict):
             self._value[key] = value
         else:
-            self._value = self._try_cast(value)
+            self._value = value
         return self
-
-    def _try_cast(self, value):
-        # type: (Any) -> Optional[T]
-
-        if isinstance(self._value, (int, float)) and isinstance(value, bytes):
-            try:
-                return type(self._value)(value.decode("utf-8"))
-            except (UnicodeDecodeError, ValueError):
-                return None
-        return value
 
     @property
     def value(self):

@@ -2,6 +2,7 @@ from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from tests import create_unique_name
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
@@ -27,11 +28,21 @@ class TestServicePrincipal(GraphTestCase):
         self.assertIsNotNone(service_principal.resource_path)
         self.__class__.target_object = service_principal
 
+    @requires_delegated_permission(
+        "Application.Read.All",
+        "Application.ReadWrite.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
+    )
     def test2_list_service_principals(self):
-        principals = self.client.service_principals.get().execute_query()
-        self.assertIsNotNone(principals.resource_path)
+        result = self.client.service_principals.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
-    def test3_get_by_app_id(self):
+    def test3_get_service_principals_count(self):
+        result = self.client.service_principals.count().execute_query()
+        self.assertIsNotNone(result.value)
+
+    def test4_get_by_app_id(self):
         principal = (
             self.client.service_principals.get_by_app_id(self.target_app.app_id)
             .get()
@@ -39,21 +50,21 @@ class TestServicePrincipal(GraphTestCase):
         )
         self.assertIsNotNone(principal.resource_path)
 
-    def test4_add_password(self):
+    def test5_add_password(self):
         result = self.__class__.target_object.add_password(
             "Password friendly name"
         ).execute_query()
         self.assertIsNotNone(result.value)
         self.__class__.password_creds = result.value
 
-    def test5_remove_password(self):
+    def test6_remove_password(self):
         key_id = self.__class__.password_creds.keyId
         self.__class__.target_object.remove_password(key_id).execute_query()
 
-    def test6_delete_service_principal(self):
+    def test7_delete_service_principal(self):
         self.__class__.target_object.delete_object().execute_query()
 
-    def test7_list_deleted(self):
+    def test8_list_deleted(self):
         result = (
             self.__class__.client.directory.deleted_service_principals.get().execute_query()
         )

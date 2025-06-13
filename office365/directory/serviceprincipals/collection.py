@@ -1,10 +1,10 @@
-from office365.delta_collection import DeltaCollection
+from office365.count_collection import CountCollection
 from office365.directory.applications.application import Application
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from office365.runtime.paths.appid import AppIdPath
 
 
-class ServicePrincipalCollection(DeltaCollection[ServicePrincipal]):
+class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
     """Service Principal's collection"""
 
     def __init__(self, context, resource_path=None):

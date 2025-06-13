@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
+from tests.decorators import requires_app_permission
 
 
 class TestIdentity(TestCase):
@@ -11,6 +12,9 @@ class TestIdentity(TestCase):
             test_client_id, test_client_secret
         )
 
+    @requires_app_permission(
+        "IdentityProvider.Read.All", "IdentityProvider.ReadWrite.All"
+    )
     def test1_list_identity_providers(self):
         result = self.client.identity.identity_providers.get().execute_query()
         self.assertIsNotNone(result.resource_path)
