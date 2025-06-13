@@ -176,6 +176,32 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    def copy(self, destination):
+        """
+        Copy a message to another folder within the specified user's mailbox.
+        This creates a new copy of the message in the destination folder.
+
+        :param str or MailFolder destination: The destination folder ID, or a well-known folder name.
+            For a list of supported well-known folder names, see mailFolder resource type.
+        """
+        from office365.outlook.mail.folders.folder import MailFolder
+
+        def _copy(destination_id):
+            # type: (str) -> None
+            payload = {"DestinationId": destination_id}
+            qry = ServiceOperationQuery(self, "copy", None, payload, None, None)
+            self.context.add_query(qry)
+
+        if isinstance(destination, MailFolder):
+
+            def _loaded():
+                _copy(destination.id)
+
+            destination.ensure_property("id", _loaded)
+        else:
+            _copy(destination)
+        return self
+
     def move(self, destination):
         """
         Move a message to another folder within the specified user's mailbox.
