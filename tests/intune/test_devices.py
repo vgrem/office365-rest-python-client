@@ -13,7 +13,7 @@ class TestDevices(GraphTestCase):
         result = self.client.devices.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    # @requires_delegated_permission("Device.Read.All")
+    #@requires_delegated_permission("Device.Read.All")
     def test4_get_delta(self):
         result = self.client.devices.delta.get().execute_query()
         self.assertIsNotNone(result.resource_path)

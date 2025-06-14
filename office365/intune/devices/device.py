@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from office365.directory.object import DirectoryObject
@@ -18,11 +19,34 @@ class Device(DirectoryObject):
         return self.device_id or self.entity_type_name
 
     @property
+    def account_enabled(self):
+        # type: () -> Optional[bool]
+        """true if the account is enabled; otherwise, false. Required. Default is true.
+
+        Supports $filter (eq, ne, not, in). Only callers with at least the Cloud Device Administrator
+        role can set this property."""
+        return self.properties.get("accountEnabled", None)
+
+    @property
     def alternative_security_ids(self):
         """For internal use only."""
         return self.properties.get(
             "alternativeSecurityIds", ClientValueCollection(AlternativeSecurityId)
         )
+
+    @property
+    def approximate_last_signin_datetime(self):
+        """The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+        Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby."""
+        return self.properties.get("approximateLastSignInDateTime", datetime.min)
+
+    @property
+    def compliance_expiration_datetime(self):
+        """	The timestamp when the device is no longer deemed compliant. The timestamp type represents date and
+        time information using ISO 8601 format and is always in UTC time.
+        For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only."""
+        return self.properties.get("complianceExpirationDateTime", datetime.min)
 
     @property
     def device_id(self):
@@ -86,6 +110,8 @@ class Device(DirectoryObject):
         if default_value is None:
             property_mapping = {
                 "alternativeSecurityIds": self.alternative_security_ids,
+                "approximateLastSignInDateTime": self.approximate_last_signin_datetime,
+                "complianceExpirationDateTime": self.compliance_expiration_datetime,
                 "memberOf": self.member_of,
                 "registeredOwners": self.registered_owners,
                 "registeredUsers": self.registered_users,

@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.alerts.collection import AlertCollection
@@ -30,6 +31,7 @@ class User(Principal):
         return return_type
 
     def get_recent_files(self, top=100):
+        # type: (int) -> ClientResult[str]
         """"""
         from office365.sharepoint.files.recent_file_collection import (
             RecentFileCollection,

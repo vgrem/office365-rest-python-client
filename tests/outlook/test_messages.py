@@ -28,20 +28,25 @@ class TestOutlookMessages(GraphTestCase):
 
     @requires_delegated_permission("Mail.ReadBasic", "Mail.ReadWrite", "Mail.Read")
     def test5_list_my_messages(self):
-        messages = self.client.me.messages.top(1).get().execute_query()
-        self.assertLessEqual(1, len(messages))
-        self.assertIsNotNone(messages[0].resource_path)
+        result = self.client.me.messages.top(1).get().execute_query()
+        self.assertLessEqual(1, len(result))
+        self.assertIsNotNone(result[0].resource_path)
+
+    def test6_search_messages(self):
+        result = self.client.me.messages.search("Meet for lunch").execute_query()
+        self.assertLessEqual(1, len(result))
+        self.assertIsNotNone(result[0].resource_path)
 
     @requires_delegated_permission("Mail.ReadWrite")
     def test6_update_message(self):
-        message_to_update = self.__class__.target_message
-        message_to_update.body = "The new cafeteria is close."
-        message_to_update.update().execute_query()
+        message = self.__class__.target_message
+        message.body = "The new cafeteria is close."
+        message.update().execute_query()
 
     @requires_delegated_permission("Mail.ReadWrite")
     def test7_delete_message(self):
-        message_to_delete = self.__class__.target_message
-        message_to_delete.delete_object().execute_query()
+        message = self.__class__.target_message
+        message.delete_object().execute_query()
 
     @requires_delegated_permission("Mail.ReadWrite")
     def test8_create_draft_message_with_attachments(self):

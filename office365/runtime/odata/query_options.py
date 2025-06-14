@@ -1,4 +1,7 @@
 class QueryOptions(object):
+    """
+    """
+
     def __init__(
         self,
         select=None,

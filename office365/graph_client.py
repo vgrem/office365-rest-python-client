@@ -175,6 +175,7 @@ class GraphClient(ClientRuntimeContext):
             self._pending_request.beforeExecute += self._build_specific_query
         return self._pending_request
 
+    @property
     def service_root_url(self):
         # type: () -> str
         return self.pending_request().service_root_url

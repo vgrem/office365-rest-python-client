@@ -1,4 +1,4 @@
-import abc
+from abc import ABC, abstractmethod
 from time import sleep
 from typing import TYPE_CHECKING, AnyStr, Callable, List
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_object import T
 
 
-class ClientRuntimeContext(object):
+class ClientRuntimeContext(ABC):
     def __init__(self):
         self._queries = []
         self._current_query = None
@@ -70,12 +70,13 @@ class ClientRuntimeContext(object):
                     failure_callback(retry, e)
                 sleep(timeout_secs)
 
-    @abc.abstractmethod
+    @abstractmethod
     def pending_request(self):
         # type: () -> ClientRequest
         pass
 
-    @abc.abstractmethod
+    @property
+    @abstractmethod
     def service_root_url(self):
         # type: () -> str
         pass
@@ -162,7 +163,7 @@ class ClientRuntimeContext(object):
 
     def execute_request_direct(self, path):
         # type: (str) -> Response
-        full_url = "".join([self.service_root_url(), "/", path])
+        full_url = "".join([self.service_root_url, "/", path])
         request = RequestOptions(full_url)
         return self.pending_request().execute_request_direct(request)
 

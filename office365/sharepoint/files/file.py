@@ -614,7 +614,7 @@ class File(AbstractFile):
             decoded_server_relative_url = server_relative_url
         url = quote(
             r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url(), decoded_server_relative_url
+                context.service_root_url, decoded_server_relative_url
             ),
             safe=":/",
         )
@@ -640,7 +640,7 @@ class File(AbstractFile):
             decoded_server_relative_url = server_relative_url
         url = quote(
             r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url(), decoded_server_relative_url
+                context.service_root_url, decoded_server_relative_url
             ),
             safe=":/",
         )

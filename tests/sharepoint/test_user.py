@@ -51,3 +51,7 @@ class TestSharePointUser(SPTestCase):
     # def test7_get_user_directory_info_by_email(self):
     #    result = SharingUtility.get_user_directory_info_by_email(self.client, test_user_principal_name).execute_query()
     #    self.assertIsNotNone(result.value)
+
+    #def test8_get_user_recent_files(self):
+    #    result = self.client.web.current_user.get_recent_files().execute_query()
+    #    self.assertIsNotNone(result.value)

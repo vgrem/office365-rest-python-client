@@ -8,8 +8,8 @@ from tests import test_client_credentials, test_team_site_url
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 items = (
     ctx.web.lists.get_by_title("Site Pages")
-    .items.get()
-    .expand(["Versions"])
+    .items.expand(["Versions"])
+    .get()
     .top(10)
     .execute_query()
 )

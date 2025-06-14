@@ -1,14 +1,18 @@
 from tests import test_user_principal_name
+from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestRoleManagement(GraphTestCase):
 
+    @requires_delegated_permission(
+        "EntitlementManagement.Read.All", "EntitlementManagement.ReadWrite.All"
+    )
     def test1_list_role_definitions(self):
-        col = (
+        result = (
             self.client.role_management.directory.role_definitions.get().execute_query()
         )
-        self.assertIsNotNone(col.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test2_get_role_definition(self):
         result = (

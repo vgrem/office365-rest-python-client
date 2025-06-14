@@ -2714,6 +2714,6 @@ class Web(SecurableObject):
         orig_resource_url = super(Web, self).resource_url
         if self._web_url is not None:
             orig_resource_url = orig_resource_url.replace(
-                self.context.service_root_url(), self._web_url + "/_api"
+                self.context.service_root_url, self._web_url + "/_api"
             )
         return orig_resource_url

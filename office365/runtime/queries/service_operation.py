@@ -42,7 +42,7 @@ class ServiceOperationQuery(ClientQuery[T]):
     def url(self):
         orig_url = super(ServiceOperationQuery, self).url
         if self.static:
-            return "".join([self.context.service_root_url(), str(self.path)])
+            return "".join([self.context.service_root_url, str(self.path)])
         else:
             return "/".join([orig_url, self.path.segment])
 

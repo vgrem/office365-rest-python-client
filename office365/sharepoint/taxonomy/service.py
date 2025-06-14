@@ -17,7 +17,7 @@ class TaxonomyService(ClientRuntimeContext):
         self._pending_request.beforeExecute += (
             context.authentication_context.authenticate_request
         )
-        self._service_root_url = "{0}/v2.1".format(context.service_root_url())
+        self._service_root_url = "{0}/v2.1".format(context.service_root_url)
 
     def pending_request(self):
         return self._pending_request

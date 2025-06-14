@@ -58,6 +58,9 @@ class Site(Entity):
     def __init__(self, context, resource_path=None):
         super(Site, self).__init__(context, ResourcePath("Site", resource_path))
 
+    def __repr__(self):
+        return self.url or self.entity_type_name
+
     def cancel_delete_file_versions(self):
         """ """
         qry = ServiceOperationQuery(self, "CancelDeleteFileVersions")

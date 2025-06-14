@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext  # noqa
     from office365.runtime.client_value import ClientValue  # noqa
 
-T = TypeVar("T", bound=Union[int, bool, str, bytes, float, "ClientValue"])
+T = TypeVar("T", bound=Union[int, bool, str, bytes, float, dict, "ClientValue"])
 
 
 class ClientResult(Generic[T]):

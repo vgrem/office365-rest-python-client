@@ -42,6 +42,11 @@ class ListItemVersion(Entity):
         return self.properties.get("Created", datetime.datetime.min)
 
     @property
+    def modified(self):
+        """Gets the modified date and time for the item version."""
+        return self.properties.get("Modified", datetime.datetime.min)
+
+    @property
     def created_by(self):
         """Gets the user that created the item version."""
         from office365.sharepoint.principal.users.user import User

@@ -231,7 +231,7 @@ class ClientObject(object):
         """Returns resource url"""
         if self.resource_path is None:
             return None
-        return self.context.service_root_url() + str(self.resource_path)
+        return self.context.service_root_url + str(self.resource_path)
 
     @property
     def context(self):

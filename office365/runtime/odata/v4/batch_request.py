@@ -63,7 +63,7 @@ class ODataV4BatchRequest(ODataRequest):
 
         request_json = {
             "id": query_id,
-            "url": request.url.replace(query.context.service_root_url(), ""),
+            "url": request.url.replace(query.context.service_root_url, ""),
             "method": request.method,
             "headers": request.headers,
         }

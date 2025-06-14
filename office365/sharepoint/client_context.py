@@ -223,7 +223,7 @@ class ClientContext(ClientRuntimeContext):
         for e in self.pending_request().beforeExecute:
             if not EventHandler.is_system(e):
                 client.beforeExecute += e
-        request = RequestOptions("{0}/contextInfo".format(self.service_root_url()))
+        request = RequestOptions("{0}/contextInfo".format(self.service_root_url))
         request.method = HttpMethod.Post
         response = client.execute_request_direct(request)
         json_format = JsonLightFormat()
@@ -812,5 +812,6 @@ class ClientContext(ClientRuntimeContext):
     def authentication_context(self):
         return self._auth_context
 
+    @property
     def service_root_url(self):
         return "{0}/_api".format(self.base_url)

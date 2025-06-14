@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, AnyStr, Dict, Generic, Optional, TypeVar, Unio
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
-    from office365.runtime.client_result import ClientResult
     from office365.runtime.client_runtime_context import ClientRuntimeContext
     from office365.runtime.client_value import ClientValue
 
@@ -44,7 +43,7 @@ class ClientQuery(Generic[T]):
         if self.binding_type is not None:
             return self.binding_type.resource_url
         else:
-            return self.context.service_root_url()
+            return self.context.service_root_url
 
     @property
     def query_options(self):

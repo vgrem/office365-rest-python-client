@@ -20,7 +20,7 @@ class RecentFileCollection(Entity):
         payload = {"top": top}
         binding_type = RecentFileCollection(context)
         qry = ServiceOperationQuery(
-            binding_type, "GetRecentFiles", None, payload, None, return_type, True
+            binding_type, "GetRecentFiles", payload, None, None, return_type, True
         )
         context.add_query(qry)
         return return_type

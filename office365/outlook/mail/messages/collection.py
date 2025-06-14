@@ -8,6 +8,8 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class MessageCollection(DeltaCollection[Message]):
+    """ """
+
     def __init__(self, context, resource_path=None):
         super(MessageCollection, self).__init__(context, Message, resource_path)
 
@@ -30,3 +32,15 @@ class MessageCollection(DeltaCollection[Message]):
             kwargs["subject"] = subject
 
         return super(MessageCollection, self).add(**kwargs)
+
+    def search(self, query_text):
+        """
+        search messages based on a value in specific message properties.
+        The results of the search are sorted by the date and time that the message was sent.
+        A $search request returns up to 1,000 results
+        """
+
+        return_type = MessageCollection(self.context, self.resource_path)
+        return_type.query_options.custom["search"] = query_text
+        return_type.get()
+        return return_type

@@ -11,11 +11,20 @@ class PersonProperties(Entity):
     (see section 3.1.5.58).
     """
 
+    def __str__(self):
+        return self.display_name or self.entity_type_name
+
     @property
     def account_name(self):
         # type: () -> Optional[str]
         """The AccountName property specifies the person's account name."""
         return self.properties.get("AccountName", None)
+
+    @property
+    def display_name(self):
+        # type: () -> Optional[str]
+        """The DisplayName property specifies the person's display name."""
+        return self.properties.get("DisplayName", None)
 
     @property
     def email(self):

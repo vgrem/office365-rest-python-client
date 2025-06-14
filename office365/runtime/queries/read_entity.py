@@ -11,10 +11,15 @@ class ReadEntityQuery(ClientQuery[T]):
         super(ReadEntityQuery, self).__init__(
             return_type.context, return_type, None, None, return_type
         )
-        self._query_options = QueryOptions.build(return_type, properties_to_include)
+        self._query_options = None
+        self._properties_to_include = properties_to_include
 
     @property
     def query_options(self):
+        if self._query_options is None:
+            self._query_options = QueryOptions.build(
+                self._return_type, self._properties_to_include
+            )
         return self._query_options
 
     @property
