@@ -15,15 +15,13 @@ if TYPE_CHECKING:
 class Entity(ClientObject):
     """Base entity"""
 
-    def update(self):
-        # type: () -> Self
+    def update(self) -> Self:
         """Updates the entity."""
         qry = UpdateEntityQuery(self)
         self.context.add_query(qry)
         return self
 
-    def delete_object(self):
-        # type: () -> Self
+    def delete_object(self) -> Self:
         """Deletes the entity."""
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
@@ -31,32 +29,30 @@ class Entity(ClientObject):
         return self
 
     @property
-    def context(self):
-        # type: () -> GraphClient
+    def context(self) -> "GraphClient":
         """Return the Graph Client context."""
         return self._context
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
+        """The Microsoft Graph type name for this entity."""
         if self._entity_type_name is None:
             name = type(self).__name__
             self._entity_type_name = "microsoft.graph." + name[0].lower() + name[1:]
         return self._entity_type_name
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """The unique identifier of the entity."""
         return self.properties.get("id", None)
 
     @property
-    def property_ref_name(self):
-        # type: () -> str
+    def property_ref_name(self) -> str:
         return "id"
 
-    def set_property(self, name, value, persist_changes=True):
-        # type: (str, PropertyT, bool) -> Self
+    def set_property(
+        self, name: str, value: PropertyT, persist_changes: bool = True
+    ) -> Self:
         super(Entity, self).set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self._resource_path is None:

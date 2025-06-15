@@ -10,8 +10,7 @@ class Notebook(OnenoteEntityHierarchyModel):
     """A OneNote notebook."""
 
     @property
-    def sections(self):
-        # type: () -> EntityCollection[OnenoteSection]
+    def sections(self) -> EntityCollection[OnenoteSection]:
         """
         Retrieve a list of onenoteSection objects from the specified notebook.
         """

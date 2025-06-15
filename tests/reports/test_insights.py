@@ -1,9 +1,18 @@
+from unittest import skipIf
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestInsights(GraphTestCase):
+    insights_enabled = False
 
+    def test0_if_insights_disabled(self):
+        result = self.client.me.settings.item_insights.get().execute_query()
+        self.assertIsNotNone(result.is_enabled)
+        self.insights_enabled = result.is_enabled
+
+    @skipIf(not insights_enabled, "Item insights are disabled")
     @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test1_list_trending(self):
         result = self.client.me.insights.trending.get().execute_query()
