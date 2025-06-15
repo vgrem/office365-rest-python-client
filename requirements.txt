@@ -1,11 +1,6 @@
-requests==2.32.4
+requests>=2.32.4,<3.0.0
 requests_ntlm [NTLMAuthentication]
 setuptools==78.1.1
-msal==1.28.0
-pytz==2021.1
-# The codebase uses "Self" and "Required" available in the typing module
-# since Python 3.11. Therefore, typing_extensions is required as long
-# as office365-rest-python-client supports Python versions < 3.11.
-# On Python versions >= 3.11, typing_extensions re-exports these names
-# from the standard library typing module.
-typing_extensions>=4.0.0
+msal>=1.28.0,<2.0.0
+pytz>=2023.3
+typing_extensions>=4.5.0
