@@ -1,4 +1,4 @@
-from typing import Callable, Generic, Iterator, List, Optional, Type
+from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type, Union
 
 from typing_extensions import Self
 
@@ -12,9 +12,32 @@ from office365.runtime.types.exceptions import NotFoundException
 
 
 class ClientObjectCollection(ClientObject, Generic[T]):
-    def __init__(self, context, item_type, resource_path=None, parent=None):
-        # type: (ClientRuntimeContext, Type[T], Optional[ResourcePath], Optional[ClientObject]) -> None
-        """A collection container which represents a named collections of objects."""
+    """
+    A strongly-typed collection container for SharePoint client objects.
+
+    This collection supports:
+    - Server-driven paging for large result sets
+    - LINQ-style query operations (filter, order, skip, top)
+    - Type-safe object creation and manipulation
+    - Event-based loading notifications
+    """
+
+    def __init__(
+        self,
+        context: ClientRuntimeContext,
+        item_type: Type[T],
+        resource_path: Optional[ResourcePath] = None,
+        parent: Optional[ClientObject] = None,
+    ) -> None:
+        """
+        Initialize a new collection of client objects.
+
+        Args:
+            context: Client context for API operations
+            item_type: The class type of items in this collection
+            resource_path: Relative API path for this collection
+            parent: Parent object that owns this collection
+        """
         super(ClientObjectCollection, self).__init__(context, resource_path)
         self._data = []  # type: list[T]
         self._item_type = item_type
@@ -24,21 +47,43 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self._next_request_url = None
         self._parent = parent
 
-    def clear_state(self):
-        # type: () -> Self
-        """Clears client object collection"""
+    def clear_state(self) -> Self:
+        """
+        Reset the collection's internal state while maintaining configuration.
+
+        Note:
+            In paged mode, only clears the next page pointer, preserving loaded items.
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         if not self._paged_mode:
             self._data = []
         self._next_request_url = None
         self._current_pos = len(self._data)
         return self
 
-    def create_typed_object(self, initial_properties=None, resource_path=None):
-        # type: (Optional[dict], Optional[ResourcePath]) -> T
-        """Create an object from the item_type."""
+    def create_typed_object(
+        self,
+        initial_properties: Optional[Dict] = None,
+        resource_path: Optional[ResourcePath] = None,
+    ) -> T:
+        """
+        Factory method to create a new item of the collection's type.
+
+        Args:
+            initial_properties: Property values to initialize the object with
+            resource_path: Custom API path for the new object
+
+        Returns:
+            T: New instance of the collection's item type
+
+        Raises:
+            AttributeError: If no item type was specified for the collection
+        """
         if self._item_type is None:
             raise AttributeError(
-                "No class model for entity type '{0}' was found".format(self._item_type)
+                "Cannot create object - no type specified for collection"
             )
         if resource_path is None:
             resource_path = ResourcePath(None, self.resource_path)
@@ -53,8 +98,23 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             ]
         return client_object
 
-    def set_property(self, key, value, persist_changes=False):
-        # type: (str | int, dict, bool) -> Self
+    def set_property(
+        self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False
+    ):
+        """
+        Set a property on the collection or handle special properties.
+
+        Special Cases:
+            - "__nextLinkUrl": Stores pagination URL for server-driven paging
+
+        Args:
+            key: Property name or index
+            value: Property value to set
+            persist_changes: Whether to mark the change for server update
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         if key == "__nextLinkUrl":
             self._next_request_url = value
         else:
@@ -66,78 +126,139 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             ]
         return self
 
-    def add_child(self, client_object):
-        # type: (T) -> Self
-        """Adds client object into collection"""
+    def add_child(self, client_object: T) -> Self:
+        """
+        Add an item to the collection and set its parent reference.
+
+        Args:
+            client_object: The item to add to the collection
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         client_object._parent_collection = self
         self._data.append(client_object)
         return self
 
-    def remove_child(self, client_object):
-        # type: (T) -> Self
+    def remove_child(self, client_object: T) -> Self:
+        """
+        Remove an item from the collection.
+
+        Args:
+            client_object: The item to remove
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         self._data = [item for item in self._data if item != client_object]
         return self
 
-    def __iter__(self):
-        # type: () -> Iterator[T]
+    def __iter__(self) -> Iterator[T]:
+        """Iterate through all items, automatically handling paged results."""
         yield from self._data
+
+        # Handle server-side paging
         if self._paged_mode:
             while self.has_next:
                 self._get_next().execute_query()
                 next_items = self._data[self._current_pos :]
                 yield from next_items
 
-    def __len__(self):
-        # type: () -> int
+    def __len__(self) -> int:
+        """Get the current number of loaded items in the collection."""
         return len(self._data)
 
-    def __repr__(self):
-        # type: () -> str
-        return repr(self._data)
+    def __repr__(self) -> str:
+        """Developer-friendly string representation of the collection."""
+        return f"entity_type_name={self.entity_type_name}(count={len(self)})"
 
     def __getitem__(self, index):
         # type: (int) -> T
+        """Get an item by its index position."""
         return self._data[index]
 
-    def to_json(self, json_format=None):
-        # type: (Optional[ODataJsonFormat]) -> List[dict]
-        """Serializes the collection into JSON."""
+    def to_json(
+        self, json_format: Optional[ODataJsonFormat] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Serialize the collection to JSON format.
+
+        Args:
+            json_format: Serialization options
+
+        Returns:
+            JSON-serializable list of item dictionaries
+        """
         return [item.to_json(json_format) for item in self._data]
 
-    def filter(self, expression):
-        # type: (str) -> Self
+    def filter(self, expression: str) -> Self:
         """
-        Allows clients to filter a collection of resources that are addressed by a request URL
-        :param str expression: Filter expression, for example: 'Id eq 123'
+        Get the first item matching the filter criteria.
+
+        Args:
+            expression: OData filter expression
+
+        Returns:
+            T: The first matching item
+
+        Raises:
+            ValueError: If no matching items found
         """
         self.query_options.filter = expression
         return self
 
-    def order_by(self, value):
-        # type: (str) -> Self
+    def order_by(self, value: str) -> Self:
         """
-        Allows clients to request resources in either ascending order using asc or descending order using desc
+        Add sorting to the query.
+
+        Args:
+            value: OData order expression (e.g. "CreatedDate desc")
+
+        Returns:
+            self: Supports fluent method chaining
         """
         self.query_options.orderBy = value
         return self
 
-    def skip(self, value):
-        # type: (int) -> Self
+    def skip(self, value: int) -> Self:
         """
-        Requests the number of items in the queried collection that are to be skipped and not included in the result
+        Skip the specified number of items in the query results.
+
+        Args:
+            value: Number of items to skip
+
+        Returns:
+            self: Supports fluent method chaining
         """
         self.query_options.skip = value
         return self
 
-    def top(self, value):
-        # type: (int) -> Self
-        """Specifies the number of items in the queried collection to be included in the result"""
+    def top(self, value: int) -> Self:
+        """
+        Limit the number of items returned by the query.
+
+        Args:
+            value: Maximum number of items to return
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         self.query_options.top = value
         return self
 
-    def paged(self, page_size=None, page_loaded=None):
-        # type: (int, Callable[[Self], None] | None) -> Self
-        """Retrieves via server-driven paging mode"""
+    def paged(
+        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
+    ) -> Self:
+        """
+        Enable server-driven paging mode.
+
+        Args:
+            page_size: Items per page (uses server default if None)
+            page_loaded: Callback when each page loads
+
+        Returns:
+            self: Supports fluent method chaining
+        """
         self._paged_mode = True
         if callable(page_loaded):
             self._page_loaded += page_loaded
@@ -145,13 +266,13 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self.top(page_size)
         return self
 
-    # @overload
-    # def get(self):
-    #    # type: () -> "ClientObjectCollection[T]"
-    #    ...
+    def get(self) -> Self:
+        """
+        Load the collection data from the server.
 
-    def get(self):
-        # type: () -> Self
+        Returns:
+            self: Supports fluent method chaining
+        """
 
         def _loaded(col):
             # type: (Self) -> None
@@ -160,9 +281,19 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.context.load(self).after_query_execute(_loaded)
         return self
 
-    def get_all(self, page_size=None, page_loaded=None):
-        # type: (int, Callable[[Self], None] | None) -> Self
-        """Gets all the items in a collection, regardless of the size."""
+    def get_all(
+        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
+    ) -> Self:
+        """
+        Load all items in the collection, automatically handling paging.
+
+        Args:
+            page_size: Items per page (uses server default if None)
+            page_loaded: Callback when each page loads
+
+        Returns:
+            self: Supports fluent method chaining
+        """
 
         def _page_loaded(col):
             # type: (Self) -> None
@@ -182,10 +313,18 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
         return self.get().before_execute(_construct_request)
 
-    def first(self, expression):
-        # type: (str) -> T
-        """Return the first Entity instance that matches current query
-        :param str expression: Filter expression
+    def first(self, expression: str) -> Optional[T]:
+        """
+        Get the first item matching the filter criteria.
+
+        Args:
+            expression: OData filter expression
+
+        Returns:
+            T: The first matching item
+
+        Raises:
+            ValueError: If no matching items found
         """
         return_type = self.create_typed_object()
         self.add_child(return_type)
@@ -203,12 +342,19 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
-    def single(self, expression):
-        # type: (str) -> T
+    def single(self, expression: str) -> Optional[T]:
         """
-        Return only one resulting Entity
+        Get exactly one item matching the filter criteria.
 
-        :param str expression: Filter expression
+        Args:
+            expression: OData filter expression
+
+        Returns:
+            T: The single matching item
+
+        Raises:
+            NotFoundException: If no items match
+            ValueError: If multiple items match
         """
         return_type = self.create_typed_object()
         self.add_child(return_type)
@@ -229,25 +375,23 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         return return_type
 
     @property
-    def parent(self):
-        # type: () -> ClientObject
+    def parent(self) -> ClientObject:
+        """Get the parent object that owns this collection."""
         return self._parent
 
     @property
-    def has_next(self):
-        # type: () -> bool
-        """Determines whether the collection contains a next page of data."""
+    def has_next(self) -> bool:
+        """Check if more pages are available in server-driven paging."""
         return self._next_request_url is not None
 
     @property
-    def current_page(self):
-        # type: () -> List[T]
+    def current_page(self) -> List[T]:
+        """Get items from the most recently loaded page."""
         return self._data[self._current_pos :]
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
-        """Returns server type name for the collection of entities"""
+    def entity_type_name(self) -> str:
+        """Get the OData type name for this collection."""
         if self._entity_type_name is None:
             client_object = self.create_typed_object()
             self._entity_type_name = "Collection({0})".format(

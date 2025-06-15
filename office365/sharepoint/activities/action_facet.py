@@ -31,10 +31,10 @@ class ActionFacet(ClientValue):
         edit=EditFacet(),
         mention=GetMentionFacet(),
         move=MoveFacet(),
-        pointInTimeRestore=PointInTimeRestoreFacet(),
+        point_in_time_restore=PointInTimeRestoreFacet(),
         rename=RenameFacet(),
         share=SharingFacet(),
-        taskCompleted=TaskCompletedFacet(),
+        task_completed=TaskCompletedFacet(),
         version=VersionFacet(),
     ):
         """
@@ -56,10 +56,10 @@ class ActionFacet(ClientValue):
         self.edit = edit
         self.mention = mention
         self.move = move
-        self.pointInTimeRestore = pointInTimeRestore
+        self.pointInTimeRestore = point_in_time_restore
         self.rename = rename
         self.share = share
-        self.taskCompleted = taskCompleted
+        self.taskCompleted = task_completed
         self.version = version
 
     def __repr__(self):
