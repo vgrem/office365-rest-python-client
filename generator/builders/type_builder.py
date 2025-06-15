@@ -25,7 +25,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def build(self):
         if self.state == "attached":
-            with open(self.file) as f:
+            with open(self.file, encoding="utf-8") as f:
                 self._source_tree = ast.parse(f.read())
             self._status = "updated"
         else:

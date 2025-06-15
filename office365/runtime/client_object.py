@@ -5,6 +5,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
+    Dict,
     List,
     Optional,
     TypeVar,
@@ -29,7 +30,7 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[bool, int, float, str, bytes, dict | ClientValue]
+PropertyT = Union[bool, int, float, str, bytes, Dict[str, Any], ClientValue]
 
 
 class ClientObject(object):

@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 import requests
 from requests import HTTPError
@@ -10,7 +10,7 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.types.event_handler import EventHandler
 
 
-class ClientRequest(object):
+class ClientRequest(ABC):
     def __init__(self):
         """
         Abstract request client
@@ -19,18 +19,26 @@ class ClientRequest(object):
         self.afterExecute = EventHandler()
 
     @abstractmethod
-    def build_request(self, query):
-        # type: (ClientQuery) -> RequestOptions
-        """Builds a request"""
+    def build_request(self, query: ClientQuery) -> RequestOptions:
+        """Transform query into request options
+
+        Args:
+            query: The client query to execute
+
+        Returns:
+            Configured RequestOptions object"""
         pass
 
     @abstractmethod
-    def process_response(self, response, query):
-        # type: (requests.Response, ClientQuery) -> None
+    def process_response(self, response: requests.Response, query: ClientQuery) -> None:
+        """Handle and transform the response
+
+        Args:
+            response: Raw HTTP response
+            query: Original query that generated this response"""
         pass
 
-    def execute_query(self, query):
-        # type: (ClientQuery) -> None
+    def execute_query(self, query: ClientQuery) -> None:
         """Submits a pending request to the server"""
         try:
             request = self.build_request(query)
@@ -40,8 +48,7 @@ class ClientRequest(object):
         except HTTPError as e:
             raise ClientRequestException(*e.args, response=e.response)
 
-    def execute_request_direct(self, request):
-        # type: (RequestOptions) -> requests.Response
+    def execute_request_direct(self, request: RequestOptions) -> requests.Response:
         """Execute the client request"""
         self.beforeExecute.notify(request)
         if request.method == HttpMethod.Post:

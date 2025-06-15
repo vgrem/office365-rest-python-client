@@ -1441,13 +1441,12 @@ class Web(SecurableObject):
 
         return_type = SharingResult(self.context)
 
-        def _share(picker_result):
-            # type: (ClientResult[str]) -> None
-            groups = {
+        def _share(picker_result: ClientResult[str]) -> None:
+            groups: dict[ExternalSharingSiteOption, Group] = {
                 ExternalSharingSiteOption.View: self.associated_visitor_group,
                 ExternalSharingSiteOption.Edit: self.associated_member_group,
                 ExternalSharingSiteOption.Owner: self.associated_owner_group,
-            }  # type: dict[ExternalSharingSiteOption, Group]
+            }
 
             picker_input = "[{0}]".format(picker_result.value)
             role_value = "group:{groupId}".format(groupId=groups[share_option].id)
@@ -1492,19 +1491,36 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_document_libraries(context, web_full_url):
+    def get_document_libraries(
+        context: "ClientContext",
+        web_full_url: str,
+        return_type: ClientResult[
+            ClientValueCollection[DocumentLibraryInformation]
+        ] = None,
+    ) -> ClientResult[ClientValueCollection[DocumentLibraryInformation]]:
         """
-        Returns the document libraries of a SharePoint site, specifically a list of objects that represents
-        document library information. Document libraries that are private—picture library, catalog library,
-        asset library, application list, form template or libraries—for whom the user does not have permission to view
-        the items are not included.
+            Returns the document libraries of a SharePoint site, specifically a list of objects that represents
+            document library information. Document libraries that are private—picture library, catalog library,
+            asset library, application list, form template or libraries—for whom the user does not have permission to
+            view the items are not included.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str web_full_url: The URL of the web.
+        Args:
+            context: Authenticated SharePoint client context
+            web_full_url: Absolute URL of the target web (site)
+            return_type: Optional return type
+
+        Returns:
+            ClientResult containing collection of DocumentLibraryInformation objects
+
+        Example:
+            >>> result = Web.get_document_libraries(context, "https://contoso.sharepoint.com/sites/mysite")
+            >>> for lib in result.value:
+            ...     print(lib.Title, lib.Url)
         """
-        return_type = ClientResult(
-            context, ClientValueCollection(DocumentLibraryInformation)
-        )
+        if return_type is None:
+            return_type = ClientResult(
+                context, ClientValueCollection(DocumentLibraryInformation)
+            )
         payload = {"webFullUrl": web_full_url}
         qry = ServiceOperationQuery(
             context.web, "GetDocumentLibraries", None, payload, None, return_type

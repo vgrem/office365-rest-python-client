@@ -12,11 +12,11 @@ from tests import (
 )
 
 
-def export_to_file(path, content):
+def export_to_file(path: str, content: bytes) -> None:
     metadata_xml = minidom.parseString(content.decode("utf-8")).toprettyxml(
         indent="   "
     )
-    with open(path, "w") as fh:
+    with open(path, "w", encoding="utf-8") as fh:
         fh.write(metadata_xml)
 
 
