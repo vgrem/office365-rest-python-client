@@ -1,18 +1,18 @@
 from email.message import Message
 from typing import AnyStr
 
-from office365.runtime.compat import get_mime_type, message_as_bytes_or_string
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.batch import create_boundary
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.utilis import get_mime_type, message_to_bytes
 
 
 def _message_to_payload(message):
     # type: (Message) -> AnyStr
     lf = b"\n"
     crlf = b"\r\n"
-    payload = message_as_bytes_or_string(message)
+    payload = message_to_bytes(message)
     lines = payload.split(lf)
     payload = bytes.join(crlf, lines[2:]) + crlf
     return payload

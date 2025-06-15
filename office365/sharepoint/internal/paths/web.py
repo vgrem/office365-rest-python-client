@@ -1,5 +1,5 @@
-from office365.runtime.compat import is_absolute_url, urlparse
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.utilis import is_absolute_url, urlparse
 
 
 class WebPath(ResourcePath):

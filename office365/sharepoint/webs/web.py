@@ -241,12 +241,12 @@ class Web(SecurableObject):
             include_regional_settings,
         )
 
-        def _web_loaded():
+        def _get_site_script():
             SiteScriptUtility.get_site_script_from_web(
                 self.context, self.url, info, return_type=result
             )
 
-        self.ensure_property("Url", _web_loaded)
+        self.ensure_property("Url", _get_site_script)
         return result
 
     def consent_to_power_platform(self):
@@ -1513,15 +1513,38 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
+    def get_default_document_library_url(
+        self,
+    ) -> ClientResult[DocumentLibraryInformation]:
+        """
+        Retrieves the URL of the default document library (typically "Shared Documents")
+        as a ClientResult containing DocumentLibraryInformation.
+
+        Returns:
+            ClientResult[DocumentLibraryInformation]:
+                A result object containing the default document library's information,
+                including its URL and other metadata.
+
+        """
+        return_type = ClientResult(self.context, DocumentLibraryInformation())
+
+        def _get_default_document_library_url() -> None:
+            Web.default_document_library_url(self.context, self.url, return_type)
+
+        self.ensure_property("Url", _get_default_document_library_url)
+        return return_type
+
     @staticmethod
-    def default_document_library_url(context, web_url):
+    def default_document_library_url(context, web_url, return_type=None):
         """
         Returns the default document library URL.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str web_url:  URL of the web.
+        :param return_type: Return type of the returned document
         """
-        return_type = ClientResult(context, DocumentLibraryInformation())
+        if return_type is None:
+            return_type = ClientResult(context, DocumentLibraryInformation())
         payload = {
             "webUrl": web_url,
         }

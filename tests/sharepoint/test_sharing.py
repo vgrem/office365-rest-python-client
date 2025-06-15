@@ -1,6 +1,6 @@
 from unittest import TestCase
+from urllib.parse import urljoin
 
-from office365.runtime.compat import urljoin
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager

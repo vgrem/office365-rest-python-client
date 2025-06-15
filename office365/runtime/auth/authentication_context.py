@@ -11,8 +11,8 @@ from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
-from office365.runtime.compat import get_absolute_url
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.utilis import get_absolute_url
 
 JSONToken = TypedDict(
     "JSONToken",

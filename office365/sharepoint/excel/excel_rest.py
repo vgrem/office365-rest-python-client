@@ -21,6 +21,7 @@ class ExcelService(ClientRuntimeContext):
     def authenticate_request(self, request):
         pass
 
+    @property
     def service_root_url(self):
         return "{0}/_vti_bin/ExcelRest.aspx"
 

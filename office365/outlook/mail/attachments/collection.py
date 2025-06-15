@@ -5,11 +5,11 @@ import requests
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.attachments.attachment import Attachment
 from office365.runtime.client_result import ClientResult
-from office365.runtime.compat import parse_query_string
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.utilis import parse_query_param
 
 
 class AttachmentCollection(EntityCollection[Attachment]):
@@ -72,7 +72,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
                 def _construct_request(request):
                     # type: (RequestOptions) -> None
-                    auth_token = parse_query_string(request.url, "authtoken")
+                    auth_token = parse_query_param(request.url, "authtoken")
                     request.set_header("Authorization", "Bearer {0}".format(auth_token))
 
                 def _process_response(response):

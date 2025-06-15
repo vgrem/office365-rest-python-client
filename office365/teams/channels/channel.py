@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
+from urllib.parse import quote
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.runtime.client_result import ClientResult
-from office365.runtime.compat import quote
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery

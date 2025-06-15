@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
-from office365.runtime.compat import get_absolute_url, is_absolute_url, urlparse
+from office365.runtime.utilis import get_absolute_url, is_absolute_url, urlparse
 
 
 class ResourcePath(ClientValue):

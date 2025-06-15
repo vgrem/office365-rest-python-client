@@ -6,8 +6,8 @@ import office365.logger
 from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
 from office365.runtime.auth.token_response import TokenResponse
-from office365.runtime.compat import urlparse
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.utilis import urlparse
 
 
 class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):

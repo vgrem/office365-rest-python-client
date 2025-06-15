@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from office365.azure_env import AzureEnvironment
-from office365.runtime.compat import timezone, urlparse
+from office365.runtime.utilis import urlparse
 
 
 class STSProfile(object):

@@ -1,5 +1,6 @@
 import json
 import re
+from email import message_from_bytes
 from email.message import Message
 from typing import AnyStr, Iterator, List, Tuple
 
@@ -7,15 +8,12 @@ import requests
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 
-from office365.runtime.compat import (
-    message_as_bytes_or_string,
-    message_from_bytes_or_string,
-)
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.queries.batch import BatchQuery, create_boundary
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.utilis import message_to_bytes
 
 
 class ODataBatchV3Request(ODataRequest):
@@ -45,7 +43,7 @@ class ODataBatchV3Request(ODataRequest):
         content_type = response.headers["Content-Type"].encode("ascii")
         http_body = b"Content-Type: " + content_type + b"\r\n\r\n" + response.content
 
-        message = message_from_bytes_or_string(http_body)  # type: Message
+        message = message_from_bytes(http_body)
 
         query_id = 0
         for raw_response in message.get_payload():
@@ -78,7 +76,7 @@ class ODataBatchV3Request(ODataRequest):
             message = self._serialize_request(request)
             main_message.attach(message)
 
-        return message_as_bytes_or_string(main_message)
+        return message_to_bytes(main_message)
 
     @staticmethod
     def _normalize_headers(headers_raw):
