@@ -18,8 +18,7 @@ class UserCollection(EntityCollection[User]):
         return_type = User(self.context)
         self.add_child(return_type)
 
-        def _create_and_add_query(login_name):
-            # type: (str) -> None
+        def _add_user(login_name: str):
             return_type.set_property("LoginName", login_name)
             qry = CreateEntityQuery(self, return_type, return_type)
             self.context.add_query(qry)
@@ -27,15 +26,14 @@ class UserCollection(EntityCollection[User]):
         if isinstance(user, User):
 
             def _user_loaded():
-                _create_and_add_query(user.login_name)
+                _add_user(user.login_name)
 
             user.ensure_property("LoginName", _user_loaded)
         else:
-            _create_and_add_query(user)
+            _add_user(user)
         return return_type
 
-    def get_by_principal_name(self, value):
-        # type: (str) -> User
+    def get_by_principal_name(self, value: str) -> User:
         """Returns the user with the specified principal name."""
         return self.single("UserPrincipalName eq '{0}'".format(value))
 
@@ -80,7 +78,7 @@ class UserCollection(EntityCollection[User]):
     def remove_by_login_name(self, login_name):
         """
         Remove User object by login name
-        :param str login_name: A string that contains the user name.
+        :param str login_name: A string that contains the username.
         """
         qry = ServiceOperationQuery(self, "RemoveByLoginName", [login_name])
         self.context.add_query(qry)

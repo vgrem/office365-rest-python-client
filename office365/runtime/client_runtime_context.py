@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import TYPE_CHECKING, AnyStr, Callable, List
+from typing import TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Type, Union
 
-import requests
-from requests import Response
+from requests import RequestException, Response
 from typing_extensions import Self
 
 from office365.runtime.client_request import ClientRequest
@@ -15,26 +14,37 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 if TYPE_CHECKING:
-    from office365.runtime.client_object import T
+    from office365.runtime.client_object import ClientObject, T
 
 
 class ClientRuntimeContext(ABC):
-    def __init__(self):
+    """Abstract base class for client runtime context.
+
+    Provides core functionality for executing queries and managing request lifecycle.
+    """
+
+    def __init__(self) -> None:
         self._queries = []
         self._current_query = None
 
     @property
-    def current_query(self):
-        # type: () -> ClientQuery
+    def current_query(self) -> ClientQuery:
         return self._current_query
 
     @property
     def has_pending_request(self) -> bool:
+        """Whether there are pending queries to execute."""
         return len(self._queries) > 0
 
-    def build_request(self, query):
-        # type: (ClientQuery) -> RequestOptions
-        """Builds a request"""
+    def build_request(self, query: ClientQuery) -> RequestOptions:
+        """Builds a request from the given query.
+
+        Args:
+            query: The query to build request for
+
+        Returns:
+            Configured request options
+        """
         self._current_query = query
         request = self.pending_request().build_request(query)
         self.pending_request().beforeExecute.notify(request)
@@ -42,20 +52,20 @@ class ClientRuntimeContext(ABC):
 
     def execute_query_retry(
         self,
-        max_retry=5,
-        timeout_secs=5,
-        success_callback=None,
-        failure_callback=None,
-        exceptions=(ClientRequestException,),
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        success_callback: Optional[Callable[["ClientObject"], None]] = None,
+        failure_callback: Optional[Callable[[int, RequestException], None]] = None,
+        exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
     ):
-        """
-        Executes the current set of data retrieval queries and method invocations and retries it if needed.
+        """Executes pending queries with retry logic.
 
-        :param int max_retry: Number of times to retry the request
-        :param int timeout_secs: Seconds to wait before retrying the request.
-        :param (office365.runtime.client_object.ClientObject)-> None success_callback:
-        :param (int, requests.exceptions.RequestException)-> None failure_callback:
-        :param exceptions: tuple of exceptions that we retry
+        Args:
+            max_retry: Maximum number of retry attempts
+            timeout_secs: Delay between retries in seconds
+            success_callback: Called on successful execution
+            failure_callback: Called after each failed attempt
+            exceptions: Exception types that trigger retries
         """
 
         for retry in range(1, max_retry + 1):
@@ -71,37 +81,43 @@ class ClientRuntimeContext(ABC):
                 sleep(timeout_secs)
 
     @abstractmethod
-    def pending_request(self):
-        # type: () -> ClientRequest
+    def pending_request(self) -> ClientRequest:
+        """Gets the pending client request."""
         pass
 
     @property
     @abstractmethod
-    def service_root_url(self):
-        # type: () -> str
+    def service_root_url(self) -> str:
+        """Gets the service root URL."""
         pass
 
-    def load(self, client_object, properties_to_retrieve=None):
-        # type: (T, List[str]) -> Self
-        """Prepare retrieval query"""
+    def load(
+        self, client_object: "T", properties_to_retrieve: List[str] = None
+    ) -> Self:
+        """Prepares retrieval query for the specified client object.
+
+        Args:
+            client_object: The client object to load
+            properties_to_retrieve: Specific properties to retrieve
+
+        Returns:
+            Self for method chaining
+        """
         qry = ReadEntityQuery(client_object, properties_to_retrieve)
         self.add_query(qry)
         return self
 
-    def before_query_execute(self, action, once=True):
-        # type: (Callable[[RequestOptions], None], bool) -> Self
+    def before_query_execute(
+        self, action: Callable[[RequestOptions], None], once: bool = True
+    ) -> Self:
         """
         Attach an event handler which is triggered before query is submitted to server
-
-        :type action: (office365.runtime.http.request_options.RequestOptions, *args, **kwargs) -> None
-        :param bool once: Flag which determines whether action is executed once or multiple times
         """
         if len(self._queries) == 0:
             return self
         query = self._queries[-1]
 
-        def _prepare_request(request):
-            # type: (RequestOptions) -> None
+        def _prepare_request(request: RequestOptions) -> None:
             if self.current_query.id == query.id:
                 if once:
                     self.pending_request().beforeExecute -= _prepare_request
@@ -110,16 +126,20 @@ class ClientRuntimeContext(ABC):
         self.pending_request().beforeExecute += _prepare_request
         return self
 
-    def before_execute(self, action, once=True):
-        # type: (Callable[[RequestOptions], None], bool) -> Self
-        """
-        Attach an event handler which is triggered before request is submitted to server
-        :param (office365.runtime.http.request_options.RequestOptions, any) -> None action:
-        :param bool once: Flag which determines whether action is executed once or multiple times
+    def before_execute(
+        self, action: Callable[[RequestOptions], None], once: bool = True
+    ) -> Self:
+        """Attaches pre-query execution handler.
+
+        Args:
+            action: Callback to execute before query
+            once: Whether to execute only once
+
+        Returns:
+            Self for method chaining
         """
 
-        def _process_request(request):
-            # type: (RequestOptions) -> None
+        def _process_request(request: RequestOptions):
             if once:
                 self.pending_request().beforeExecute -= _process_request
             action(request)
@@ -127,15 +147,27 @@ class ClientRuntimeContext(ABC):
         self.pending_request().beforeExecute += _process_request
         return self
 
-    def after_query_execute(self, action, execute_first=False, include_response=False):
-        # type: (Callable[[T|Response], None], bool, bool) -> Self
-        """Attach an event handler which is triggered after query is submitted to server"""
+    def after_query_execute(
+        self,
+        action: Callable[[Union["T", Response]], None],
+        execute_first: bool = False,
+        include_response: bool = False,
+    ) -> Self:
+        """Attaches post-query execution handler.
+
+        Args:
+            action: Callback to execute after query
+            execute_first: Whether to prioritize this query
+            include_response: Whether to pass raw response
+
+        Returns:
+            Self for method chaining
+        """
         if len(self._queries) == 0:
             return self
         query = self._queries[-1]
 
-        def _process_response(resp):
-            # type: (Response) -> None
+        def _process_response(resp: Response) -> None:
             resp.raise_for_status()
             if self.current_query.id == query.id:
                 self.pending_request().afterExecute -= _process_response
@@ -148,12 +180,20 @@ class ClientRuntimeContext(ABC):
 
         return self
 
-    def after_execute(self, action, once=True):
-        # type: (Callable[[Response], None], bool) -> Self
-        """Attach an event handler which is triggered after request is submitted to server"""
+    def after_execute(
+        self, action: Callable[[Response], None], once: bool = True
+    ) -> Self:
+        """Attaches post-execution handler for all requests.
 
-        def _process_response(response):
-            # type: (Response) -> None
+        Args:
+            action: Callback to execute after request
+            once: Whether to execute only once
+
+        Returns:
+            Self for method chaining
+        """
+
+        def _process_response(response: Response) -> None:
             if once:
                 self.pending_request().afterExecute -= _process_response
             action(response)
@@ -161,41 +201,65 @@ class ClientRuntimeContext(ABC):
         self.pending_request().afterExecute += _process_response
         return self
 
-    def execute_request_direct(self, path):
-        # type: (str) -> Response
+    def execute_request_direct(self, path: str) -> Response:
+        """Executes request directly against the specified path.
+
+        Args:
+            path: The URL path to request
+
+        Returns:
+            Raw response from server
+        """
         full_url = "".join([self.service_root_url, "/", path])
         request = RequestOptions(full_url)
         return self.pending_request().execute_request_direct(request)
 
-    def execute_query(self):
-        """Submit request(s) to the server"""
+    def execute_query(self) -> Self:
+        """Executes all pending queries.
+
+        Returns:
+            Self for method chaining
+        """
         while self.has_pending_request:
             qry = self._get_next_query()
             self.pending_request().execute_query(qry)
         return self
 
-    def add_query(self, query):
-        # type: (ClientQuery) ->Self
+    def add_query(self, query: ClientQuery) -> Self:
+        """Adds query to the pending queue.
+
+        Args:
+            query: The query to add
+
+        Returns:
+            Self for method chaining
+        """
         self._queries.append(query)
         return self
 
-    def clear(self):
+    def clear(self) -> Self:
+        """Clears all pending queries.
+
+        Returns:
+            Self for method chaining
+        """
         self._current_query = None
         self._queries = []
         return self
 
-    def get_metadata(self):
-        # type: () -> ClientResult[AnyStr]
-        """Loads API metadata"""
+    def get_metadata(self) -> ClientResult[AnyStr]:
+        """Retrieves service metadata.
+
+        Returns:
+            ClientResult containing metadata XML
+        """
         return_type = ClientResult(self)
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.url += "/$metadata"
             request.method = HttpMethod.Get
 
-        def _process_response(response):
-            # type: (requests.Response) -> None
+        def _process_response(response: Response) -> None:
             response.raise_for_status()
             return_type.set_property("__value", response.content)
 
@@ -207,8 +271,15 @@ class ClientRuntimeContext(ABC):
         )
         return return_type
 
-    def _get_next_query(self, count=1):
-        # type: (int) -> ClientQuery
+    def _get_next_query(self, count: int = 1) -> ClientQuery:
+        """Gets the next query(s) to execute.
+
+        Args:
+            count: Number of queries to batch together
+
+        Returns:
+            The next query to execute
+        """
         if count == 1:
             qry = self._queries.pop(0)
         else:

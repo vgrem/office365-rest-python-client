@@ -6,7 +6,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointGroup(SPTestCase):
-    target_group = None  # type: Group
+    target_group: Group = None
 
     @classmethod
     def setUpClass(cls):
