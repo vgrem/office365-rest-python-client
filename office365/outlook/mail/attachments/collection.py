@@ -9,7 +9,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.queries.upload_session import UploadSessionQuery
-from office365.runtime.utilis import parse_query_param
+from office365.runtime.utilities import parse_query_param
 
 
 class AttachmentCollection(EntityCollection[Attachment]):

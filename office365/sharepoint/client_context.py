@@ -20,7 +20,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.types.event_handler import EventHandler
-from office365.runtime.utilis import get_absolute_url, urlparse
+from office365.runtime.utilities import get_absolute_url, urlparse
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
 from office365.sharepoint.portal.sites.status import SiteStatus

@@ -13,7 +13,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.queries.batch import BatchQuery, create_boundary
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.utilis import message_to_bytes
+from office365.runtime.utilities import message_to_bytes
 
 
 class ODataBatchV3Request(ODataRequest):

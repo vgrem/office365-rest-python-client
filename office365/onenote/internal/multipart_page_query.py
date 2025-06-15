@@ -5,7 +5,7 @@ from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.batch import create_boundary
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.utilis import get_mime_type, message_to_bytes
+from office365.runtime.utilities import get_mime_type, message_to_bytes
 
 
 def _message_to_payload(message):

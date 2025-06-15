@@ -8,7 +8,7 @@ from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
-from office365.runtime.utilis import is_string
+from office365.runtime.utilities import is_string
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient

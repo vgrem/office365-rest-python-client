@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar
+from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Union
 
 from typing_extensions import Self
 
@@ -8,14 +8,15 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, "ClientValue")
 
 
-class ClientValue(object):
+class ClientValue:
     """Represent complex type.
     Complex types consist of a list of properties with no key, and can therefore only exist as properties of a
     containing entity or as a temporary value
     """
 
-    def set_property(self, k, v, persist_changes=True):
-        # type: (str|int, Any, bool) -> Self
+    def set_property(
+        self, k: Union[str, int], v: Any, persist_changes: bool = True
+    ) -> Self:
         prop_type = getattr(self, k, None)
         if isinstance(prop_type, ClientValue) and v is not None:
             if isinstance(v, list):
@@ -33,18 +34,33 @@ class ClientValue(object):
             setattr(self, k, v)
         return self
 
-    def get_property(self, k):
-        # type: (str) -> ClientValueT
-        return getattr(self, k)
+    def get_property(self, name: str) -> ClientValueT:
+        """Gets a property value.
 
-    def __iter__(self):
-        # type: () -> Iterator[Tuple[str, ClientValueT]]
+        Args:
+            name: Name of the property to retrieve
+
+        Returns:
+            The property value
+
+        Raises:
+            AttributeError: If property doesn't exist
+        """
+        return getattr(self, name)
+
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
         for n, v in vars(self).items():
             yield n, v
 
-    def to_json(self, json_format=None):
-        # type: (Optional[ODataJsonFormat]) -> Dict
-        """Serializes a client value"""
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any]:
+        """Serializes the ClientValue to JSON format.
+
+        Args:
+            json_format: Optional OData JSON formatting options
+
+        Returns:
+            Dictionary representing the JSON-serialized object
+        """
 
         def _is_valid_value(val):
             from office365.runtime.client_value_collection import ClientValueCollection
@@ -68,7 +84,10 @@ class ClientValue(object):
         return json
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
-        """Returns server type name of value"""
+    def entity_type_name(self) -> str:
+        """The server-side type name for client value.
+
+        Returns:
+            Defaults to the class name
+        """
         return type(self).__name__

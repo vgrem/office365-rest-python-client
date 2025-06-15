@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.utilis import is_string
+from office365.runtime.utilities import is_string
 
 if TYPE_CHECKING:
     from office365.runtime.paths.service_operation import ServiceOperationPath

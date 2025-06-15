@@ -1,8 +1,6 @@
-# ruff: noqa
-# pylint: skip-file
 import mimetypes
-from urllib.parse import urlparse, parse_qs
 from email.message import Message
+from urllib.parse import parse_qs, urlparse
 
 
 def message_to_bytes(message: Message) -> bytes:
@@ -19,7 +17,7 @@ def message_to_bytes(message: Message) -> bytes:
 
 def is_string(value) -> bool:
     """Check if value is a string type"""
-    return type(value) is str
+    return isinstance(value, str)
 
 
 def is_absolute_url(url: str) -> bool:
