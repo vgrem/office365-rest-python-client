@@ -5,10 +5,10 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointFolder(SPTestCase):
-    parent_folder = None  # type: Folder
-    input_folder = None  # type: Folder
-    output_folder = None  # type: Folder
-    deleted_folder_guid = None
+    parent_folder: Folder = None
+    input_folder: Folder = None
+    output_folder: Folder = None
+    deleted_folder_guid: str = None
 
     @classmethod
     def setUpClass(cls):
@@ -52,11 +52,10 @@ class TestSharePointFolder(SPTestCase):
         list_item.set_property("Title", "New folder title").update().execute_query()
 
     def test8_upload_file_into_folder(self):
-        uploaded_file = self.__class__.input_folder.upload_file(
+        result = self.__class__.input_folder.upload_file(
             "sample.txt", "Some content goes here..."
-        )
-        self.client.execute_query()
-        self.assertIsNotNone(uploaded_file.serverRelativeUrl)
+        ).execute_query()
+        self.assertIsNotNone(result.serverRelativeUrl)
 
     def test9_list_files(self):
         folder = self.__class__.input_folder

@@ -44,12 +44,11 @@ class ClientContext(ClientRuntimeContext):
     def __init__(
         self,
         base_url,
-        auth_context=None,
-        environment=None,
-        allow_ntlm=False,
-        browser_mode=False,
-    ):
-        # type: (str, Optional[AuthenticationContext], str, bool, bool) -> None
+        auth_context: Optional[AuthenticationContext] = None,
+        environment: str = None,
+        allow_ntlm: bool = False,
+        browser_mode: bool = False,
+    ) -> None:
         """
         Instantiates a SharePoint client context
 

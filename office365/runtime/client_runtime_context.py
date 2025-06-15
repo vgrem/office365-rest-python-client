@@ -29,7 +29,7 @@ class ClientRuntimeContext(ABC):
         return self._current_query
 
     @property
-    def has_pending_request(self):
+    def has_pending_request(self) -> bool:
         return len(self._queries) > 0
 
     def build_request(self, query):
