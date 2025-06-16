@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, AnyStr, Dict, Generic, Optional, TypeVar, Union
 
 from office365.runtime.http.request_options import RequestOptions
@@ -17,10 +19,10 @@ class ClientQuery(Generic[T]):
 
     def __init__(
         self,
-        context: "ClientRuntimeContext",
-        binding_type: Optional["ClientObject"] = None,
+        context: ClientRuntimeContext,
+        binding_type: Optional[ClientObject] = None,
         parameters_type: Optional[
-            Union["ClientObject", "ClientValue", Dict, AnyStr]
+            Union[ClientObject, ClientValue, Dict, AnyStr]
         ] = None,
         parameters_name: Optional[str] = None,
         return_type: Optional[T] = None,
@@ -69,7 +71,7 @@ class ClientQuery(Generic[T]):
         return self.binding_type.query_options
 
     @property
-    def path(self) -> Optional["ResourcePath"]:
+    def path(self) -> Optional[ResourcePath]:
         """The resource path for this query.
 
         Returns:
@@ -81,7 +83,7 @@ class ClientQuery(Generic[T]):
             return None
 
     @property
-    def context(self) -> "ClientRuntimeContext":
+    def context(self) -> ClientRuntimeContext:
         """The client runtime context."""
         return self._context
 

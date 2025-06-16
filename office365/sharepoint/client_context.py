@@ -1,5 +1,5 @@
 import copy
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 from requests import RequestException
 from typing_extensions import Self
@@ -284,8 +284,9 @@ class ClientContext(ClientRuntimeContext):
                 request.ensure_header("X-HTTP-Method", "MERGE")
                 request.ensure_header("IF-MATCH", "*")
 
-    def create_modern_site(self, title, alias, owner=None):
-        # type: (str, str, Optional[str | User]) -> Site
+    def create_modern_site(
+        self, title: str, alias: str, owner: Optional[Union[str, User]] = None
+    ) -> Site:
         """
         Creates a modern (Communication) site
         https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest#create-a-modern-site
@@ -302,12 +303,14 @@ class ClientContext(ClientRuntimeContext):
         def _after_site_create(result):
             # type: (ClientResult[SPSiteCreationResponse]) -> None
             if result.value.SiteStatus == SiteStatus.Error:
-                raise ValueError(result.value.ErrorMessage)
+                raise ValueError(result.value)
             elif result.value.SiteStatus == SiteStatus.Ready:
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
-        self.site_manager.create(title, site_url, owner).after_execute(
-            _after_site_create
+        (
+            self.site_manager.create(title, site_url, owner).after_execute(
+                _after_site_create
+            )
         )
         return return_type
 

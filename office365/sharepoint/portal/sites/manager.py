@@ -32,7 +32,7 @@ class SPSiteManager(Entity):
         """
         return_type = ClientResult(self.context, SPSiteCreationResponse())
 
-        def _create(owner_string=None):
+        def _create(owner_string:str=None):
             request = SPSiteCreationRequest(title, site_url, owner_string)
             payload = {"request": request}
             qry = ServiceOperationQuery(

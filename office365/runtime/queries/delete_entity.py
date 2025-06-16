@@ -4,12 +4,24 @@ from office365.runtime.queries.client_query import ClientQuery
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.sharepoint.client_context import ClientContext
 
 
 class DeleteEntityQuery(ClientQuery):
-    def __init__(self, delete_type):
-        # type: (ClientObject) -> None
+    """A query to delete an entity from the server."""
+
+    def __init__(self, delete_type: "ClientObject") -> None:
         """
-        Delete entity query
+        Initialize a delete operation for the specified entity.
+
+        Args:
+            delete_type: The client object to be deleted. Must be a valid entity
+                         with a context and resource path.
+
+        Example:
+            >>> ctx = ClientContext()
+            >>> file = ctx.web.get_file_by_server_relative_url()
+            >>> item = file.delete_object()  # Creates a DeleteEntityQuery
+            >>> ctx.execute_query()  # Executes the deletion
         """
         super(DeleteEntityQuery, self).__init__(delete_type.context, delete_type)

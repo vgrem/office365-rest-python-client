@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -5,37 +10,62 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.list import List
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class ListCollection(EntityCollection[List]):
-    """Specifies a collection of lists."""
+    """Represents a collection of SharePoint lists."""
 
-    def __init__(self, context, resource_path=None):
-        super(ListCollection, self).__init__(context, List, resource_path)
-
-    def get_by_title(self, list_title):
-        # type: (str) -> List
+    def __init__(
+        self,
+        context: ClientContext,
+        resource_path: Optional[ResourcePath] = None,
+    ):
         """
-        Returns the list with the specified display name.
-        :param str list_title: Specifies the display name
+        Initialize a new list collection instance.
+
+        Args:
+            context: SharePoint client context
+            resource_path: Resource path for the list collection
+        """
+        super().__init__(context, List, resource_path)
+
+    def get_by_title(self, list_title: str) -> List:
+        """
+        Get a list by its display title.
+
+        Args:
+            list_title: The display name of the list
+
+        Returns:
+            List: The requested list instance
         """
         return List(
             self.context,
             ServiceOperationPath("GetByTitle", [list_title], self.resource_path),
         )
 
-    def get_by_id(self, list_id):
-        # type: (str) -> List
+    def get_by_id(self, list_id: str) -> List:
         """
-        Returns the list with the specified list identifier.
-        :param str list_id: Specifies the list identifier
+        Get a list by its unique identifier.
+
+        Args:
+            list_id: The GUID identifier of the list
+
+        Returns:
+            List: The requested list instance
         """
         return List(
             self.context, ServiceOperationPath("GetById", [list_id], self.resource_path)
         )
 
-    def ensure_client_rendered_site_pages_library(self):
+    def ensure_client_rendered_site_pages_library(self) -> List:
         """
-        Returns a list that is designated as a default location for site pages.
+        Gets or creates the default client-rendered site pages library.
+
+        Returns:
+            List: The site pages library list
         """
         return_type = List(self.context)
         self.add_child(return_type)
@@ -45,8 +75,13 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_events_list(self):
-        """Returns a list that is designated as a default location for events."""
+    def ensure_events_list(self) -> List:
+        """
+        Gets or creates the default events list for the site.
+
+        Returns:
+            List: The events list
+        """
         return_type = List(self.context)
         self.add_child(return_type)
         qry = ServiceOperationQuery(
@@ -55,9 +90,13 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_site_assets_library(self):
-        """Gets a list that is the default asset location for images or other files, which the users
-        upload to their wiki pages."""
+    def ensure_site_assets_library(self) -> List:
+        """
+        Gets or creates the default site assets library for images and files.
+
+        Returns:
+            List: The site assets library
+        """
         return_type = List(self.context)
         self.add_child(return_type)
         qry = ServiceOperationQuery(
@@ -66,8 +105,13 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_site_pages_library(self):
-        """Gets a list that is the default location for wiki pages."""
+    def ensure_site_pages_library(self) -> List:
+        """
+        Gets or creates the default wiki pages library.
+
+        Returns:
+            List: The site pages library
+        """
         return_type = List(self.context)
         self.add_child(return_type)
         qry = ServiceOperationQuery(
@@ -76,9 +120,16 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, list_creation_information):
-        # type: (ListCreationInformation) -> List
-        """Creates a List resource"""
+    def add(self, list_creation_information: ListCreationInformation) -> List:
+        """
+        Creates a new list in the collection.
+
+        Args:
+            list_creation_information: List creation parameters
+
+        Returns:
+            List: The newly created list
+        """
         return_type = List(self.context)
         self.add_child(return_type)
         qry = CreateEntityQuery(self, list_creation_information, return_type)

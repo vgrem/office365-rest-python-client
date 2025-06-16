@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 from typing import TYPE_CHECKING, Any, Callable, Generic, Optional
 
@@ -17,7 +19,7 @@ class ClientResult(Generic[ClientValueT]):
 
     def __init__(
         self,
-        context: "ClientRuntimeContext",
+        context: ClientRuntimeContext,
         default_value: Optional[ClientValueT] = None,
     ) -> None:
         """Client result"""
