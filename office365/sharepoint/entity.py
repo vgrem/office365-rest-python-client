@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, List
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -17,32 +17,72 @@ if TYPE_CHECKING:
 class Entity(ClientObject):
     """SharePoint specific entity"""
 
-    def execute_query_with_incremental_retry(self, max_retry=5):
-        """Handles throttling requests."""
+    def execute_query_with_incremental_retry(self, max_retry: int = 5) -> Self:
+        """
+        Execute query with incremental retry handling for throttling requests
+
+        Args:
+            max_retry: Maximum number of retry attempts (default: 5)
+
+        Returns:
+            self: Supports method chaining
+        """
         self.context.execute_query_with_incremental_retry(max_retry)
         return self
 
-    def execute_batch(self, items_per_batch=100, success_callback=None):
-        # type: (int, Callable[[List[ClientObject|ClientResult]], None]) -> Self
-        """Construct and submit to a server a batch request"""
+    def execute_batch(
+        self,
+        items_per_batch: int = 100,
+        success_callback: Optional[
+            Callable[[List[Union[ClientObject, ClientResult]]], None]
+        ] = None,
+    ) -> Self:
+        """
+        Construct and submit a batch request to the server
+
+        Args:
+            items_per_batch: Number of items per batch (default: 100)
+            success_callback: Callback function for successful batch execution
+
+        Returns:
+            self: Supports method chaining
+        """
         return self.context.execute_batch(items_per_batch, success_callback)
 
-    def with_credentials(self, credentials):
-        # type: (UserCredential|ClientCredential) -> Self
-        """Initializes a client to acquire a token via user or client credentials"""
+    def with_credentials(
+        self, credentials: Union[UserCredential, ClientCredential]
+    ) -> Self:
+        """
+        Initialize authentication with user or client credentials
+
+        Args:
+            credentials: Authentication credentials
+
+        Returns:
+            self: Supports method chaining
+        """
         self.context.with_credentials(credentials)
         return self
 
-    def delete_object(self):
-        # type: () -> Self
-        """The recommended way to delete a SharePoint entity"""
+    def delete_object(self) -> Self:
+        """
+        Delete the SharePoint entity
+
+        Returns:
+            self: Supports method chaining
+        """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
         self.remove_from_parent_collection()
         return self
 
-    def update(self, *args):
-        """The recommended way to update a SharePoint entity"""
+    def update(self, *args: Any) -> Self:
+        """
+        Update the SharePoint entity
+
+        Returns:
+            self: Supports method chaining
+        """
         qry = UpdateEntityQuery(self)
         self.context.add_query(qry)
         return self
@@ -50,20 +90,32 @@ class Entity(ClientObject):
     @property
     def context(self):
         # type: () -> ClientContext
+        """Get the client context"""
         return self._context
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
+        """Get the entity type name"""
         if self._entity_type_name is None:
             self._entity_type_name = ".".join(["SP", type(self).__name__])
         return self._entity_type_name
 
     @property
-    def property_ref_name(self):
+    def property_ref_name(self) -> str:
         return "Id"
 
-    def set_property(self, name, value, persist_changes=True):
+    def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
+        """
+        Set a property value
+
+        Args:
+            name: Property name
+            value: Property value
+            persist_changes: Whether to persist changes
+
+        Returns:
+            self: Supports method chaining
+        """
         super(Entity, self).set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self.resource_path is None:

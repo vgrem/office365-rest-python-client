@@ -34,6 +34,9 @@ from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.hubsites.collection import (
     HubSiteCollection,
 )
+from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
+    PeoplePickerWebServiceInterface,
+)
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 from office365.sharepoint.webs.web import Web
 
@@ -43,7 +46,7 @@ class ClientContext(ClientRuntimeContext):
 
     def __init__(
         self,
-        base_url,
+        base_url: str,
         auth_context: Optional[AuthenticationContext] = None,
         environment: str = None,
         allow_ntlm: bool = False,
@@ -209,8 +212,7 @@ class ClientContext(ClientRuntimeContext):
             self._pending_request.beforeExecute += self._build_modification_query
         return self._pending_request
 
-    def _ensure_form_digest(self, request):
-        # type: (RequestOptions) -> None
+    def _ensure_form_digest(self, request: RequestOptions) -> None:
         if not self.context_info.is_valid:
             self._ctx_web_info = self._get_context_web_information()
         request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
@@ -265,8 +267,7 @@ class ClientContext(ClientRuntimeContext):
             ctx.clear()
         return ctx
 
-    def _authenticate_request(self, request):
-        # type: (RequestOptions) -> None
+    def _authenticate_request(self, request: RequestOptions) -> None:
         """Authenticate request"""
         self.authentication_context.authenticate_request(request)
 
@@ -675,12 +676,8 @@ class ClientContext(ClientRuntimeContext):
         return SPHSite(self, ResourcePath("SPHSite"))
 
     @property
-    def people_picker(self):
+    def people_picker(self) -> PeoplePickerWebServiceInterface:
         """Query principals service alias"""
-
-        from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
-            PeoplePickerWebServiceInterface,
-        )
 
         return PeoplePickerWebServiceInterface(self)
 

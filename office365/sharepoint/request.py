@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 from requests import Response
 from typing_extensions import Self
@@ -14,18 +14,31 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
 
 class SharePointRequest(ODataRequest):
+    """Client request for SharePoint REST API
+
+
+    Typical usage:
+        >>> request = SharePointRequest()
+        >>> response = request.execute_request("web/currentUser")
+        >>> json = json.loads(response.content)
+        >>> prop_val = json["d"]["UserPrincipalName"]
+    """
+
     def __init__(
         self,
-        base_url,
-        environment=AzureEnvironment.Global,
-        allow_ntlm=False,
-        browser_mode=False,
+        base_url: str,
+        environment: str = AzureEnvironment.Global,
+        allow_ntlm: bool = False,
+        browser_mode: bool = False,
     ):
         """
-        :param str base_url: Absolute Web or Site Url
-        :param str environment: The Office 365 Cloud Environment endpoint used for authentication
-        :param bool allow_ntlm: Flag indicates whether NTLM scheme is enabled. Disabled by default
-        :param bool browser_mode: Allow browser authentication
+        Initialize SharePoint request client
+
+        Args:
+            base_url: Absolute Web or Site URL
+            environment: Office 365 Cloud Environment endpoint (default: AzureEnvironment.Global)
+            allow_ntlm: Whether NTLM authentication is enabled (default: False)
+            browser_mode: Enable browser authentication (default: False)
         """
         super().__init__(JsonLightFormat())
         self._auth_context = AuthenticationContext(
@@ -36,89 +49,118 @@ class SharePointRequest(ODataRequest):
         )
         self.beforeExecute += self._authenticate_request
 
-    def execute_request(self, path):
-        # type: (str) -> Response
+    def execute_request(self, path: str) -> Response:
+        """
+        Execute direct request to SharePoint REST endpoint
+
+        Args:
+            path: Relative API path
+
+        Returns:
+            HTTP response
+        """
         request_url = "{0}/{1}".format(self.service_root_url, path)
         return self.execute_request_direct(RequestOptions(request_url))
 
-    def with_credentials(self, credentials):
-        # type: (UserCredential|ClientCredential) -> Self
+    def with_credentials(
+        self, credentials: Union[UserCredential, ClientCredential]
+    ) -> Self:
         """
-        Initializes a client to acquire a token via user or client credentials
+        Initialize authentication with user or client credentials
+
+        Args:
+            credentials: Authentication credentials
+
+        Returns:
+            Self: Supports method chaining
         """
         self._auth_context.with_credentials(credentials)
         return self
 
     def with_client_certificate(
         self,
-        tenant,
-        client_id,
-        thumbprint,
-        cert_path=None,
-        private_key=None,
-        scopes=None,
-        passphrase=None,
-    ):
-        # type: (str, str, str, Optional[str], Optional[str], Optional[List[str]], Optional[str]) -> Self
+        tenant: str,
+        client_id: str,
+        thumbprint: str,
+        cert_path: Optional[str] = None,
+        private_key: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        passphrase: Optional[str] = None,
+    ) -> Self:
         """
-        Creates authenticated SharePoint context via certificate credentials
+        Authenticate using client certificate
 
-        :param str tenant: Tenant name
-        :param str or None cert_path: Path to A PEM encoded certificate private key.
-        :param str or None private_key: A PEM encoded certificate private key.
-        :param str thumbprint: Hex encoded thumbprint of the certificate.
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
-        :param str passphrase: Passphrase if the private_key is encrypted
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            thumbprint: Certificate thumbprint
+            cert_path: Path to PEM encoded certificate (optional)
+            private_key: PEM encoded private key (optional)
+            scopes: Requested permission scopes (optional)
+            passphrase: Private key passphrase (optional)
+
+        Returns:
+            Self: Supports method chaining
         """
         self._auth_context.with_client_certificate(
             tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase
         )
         return self
 
-    def with_device_flow(self, tenant, client_id, scopes=None):
-        # type: (str, str, Optional[List[str]]) -> Self
+    def with_device_flow(
+        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
+    ) -> Self:
         """
-        Initializes a client to acquire a token via device flow auth.
+        Authenticate using device flow
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            scopes: Requested permission scopes (optional)
+
+        Returns:
+            Self: Supports method chaining
         """
         self._auth_context.with_device_flow(tenant, client_id, scopes)
         return self
 
-    def with_interactive(self, tenant, client_id, scopes=None):
-        # type: (str, str, Optional[List[str]]) -> Self
+    def with_interactive(
+        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
+    ) -> Self:
         """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        Authenticate interactively via browser
 
-        Prerequisite: In Azure Portal, configure the Redirect URI of your
-        "Mobile and Desktop application" as ``http://localhost``.
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            scopes: Requested permission scopes (optional)
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Returns:
+            Self: Supports method chaining
         """
         self._auth_context.with_interactive(tenant, client_id, scopes)
         return self
 
-    def with_access_token(self, token_func):
-        # type: (Callable[[], TokenResponse]) -> Self
+    def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
         """
-        Initializes a client to acquire a token from a callback
-        :param () -> TokenResponse token_func: A token callback
+        Initialize with token callback function
+
+        Args:
+            token_func: Function that returns a token response
+
+        Returns:
+            Self: Supports method chaining
         """
         self._auth_context.with_access_token(token_func)
         return self
 
-    def _authenticate_request(self, request):
-        # type: (RequestOptions) -> None
-        """Authenticate request"""
+    def _authenticate_request(self, request: RequestOptions) -> None:
+        """Authenticate the request by adding authorization headers"""
         self._auth_context.authenticate_request(request)
 
     @property
-    def authentication_context(self):
+    def authentication_context(self) -> AuthenticationContext:
+        """Get the authentication context"""
         return self._auth_context
 
     @property
@@ -127,5 +169,6 @@ class SharePointRequest(ODataRequest):
         return self._auth_context.url
 
     @property
-    def service_root_url(self):
-        return "{0}/_api".format(self._auth_context.url)
+    def service_root_url(self) -> str:
+        """Get the SharePoint REST API service root URL"""
+        return f"{self._auth_context.url}/_api"

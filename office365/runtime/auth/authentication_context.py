@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 import sys
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable
+from typing import Any, Callable, List, Union
 
-from typing_extensions import Required, Self, TypedDict
+from typing_extensions import Self
 
 from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.client_credential import ClientCredential
@@ -14,14 +16,6 @@ from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.utilities import get_absolute_url
 
-JSONToken = TypedDict(
-    "JSONToken",
-    {
-        "tokenType": Required[str],
-        "accessToken": Required[str],
-    },
-)
-
 
 def _get_authorization_header(token):
     # type: (Any) -> str
@@ -30,16 +24,24 @@ def _get_authorization_header(token):
     )
 
 
-class AuthenticationContext(object):
-    """Authentication context for SharePoint Online/OneDrive For Business"""
+class AuthenticationContext:
+    """Authentication context for SharePoint OnPremise/SharePoint Online/OneDrive For Business"""
 
-    def __init__(self, url, environment=None, allow_ntlm=False, browser_mode=False):
+    def __init__(
+        self,
+        url: str,
+        environment: str = None,
+        allow_ntlm: bool = False,
+        browser_mode: bool = False,
+    ):
         """
-        :param str url: SharePoint absolute web or site Url
-        :param str environment: The Office 365 Cloud Environment endpoint used for authentication
-            defaults to 'Azure Global'.
-        :param bool allow_ntlm: Flag indicates whether NTLM scheme is enabled. Disabled by default
-        :param bool browser_mode: Allow browser authentication
+        Initialize authentication context
+
+        Args:
+            url: SharePoint absolute web or site URL
+            environment: Office 365 Cloud Environment endpoint (default: AzureEnvironment.Global)
+            allow_ntlm: Whether NTLM authentication is enabled (default: False)
+            browser_mode: Enable browser authentication (default: False)
         """
         self.url = url.rstrip("/")
         self._authenticate = None
@@ -51,23 +53,28 @@ class AuthenticationContext(object):
 
     def with_client_certificate(
         self,
-        tenant,
-        client_id,
-        thumbprint,
-        cert_path=None,
-        private_key=None,
-        scopes=None,
-        passphrase=None,
+        tenant: str,
+        client_id: str,
+        thumbprint: str,
+        cert_path: str = None,
+        private_key: str = None,
+        scopes: List[str] = None,
+        passphrase: str = None,
     ):
-        """Initializes a client to acquire a token via certificate credentials
+        """
+        Authenticate using client certificate
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param str thumbprint: Hex encoded thumbprint of the certificate.
-        :param str or None cert_path: Path to A PEM encoded certificate private key.
-        :param str or None private_key: A PEM encoded certificate private key.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
-        :param str passphrase: Passphrase if the private_key is encrypted
+        Args:
+            tenant: Tenant name (e.g., "contoso.onmicrosoft.com")
+            client_id: Application client ID
+            thumbprint: Certificate thumbprint
+            cert_path: Path to PEM encoded certificate (optional)
+            private_key: PEM encoded private key (optional)
+            scopes: Requested permission scopes (optional)
+            passphrase: Private key passphrase (optional)
+
+        Returns:
+            Self: Supports method chaining
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
@@ -102,16 +109,19 @@ class AuthenticationContext(object):
         self.with_access_token(_acquire_token)
         return self
 
-    def with_interactive(self, tenant, client_id, scopes=None):
+    def with_interactive(
+        self, tenant: str, client_id: str, scopes: List[str] = None
+    ) -> Self:
         """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        Authenticate interactively via browser
 
-        Prerequisite: In Azure Portal, configure the Redirect URI of your
-        "Mobile and Desktop application" as ``http://localhost``.
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            scopes: Requested permission scopes (optional)
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Returns:
+            Self: Supports method chaining
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
@@ -133,13 +143,17 @@ class AuthenticationContext(object):
         self.with_access_token(_acquire_token)
         return self
 
-    def with_device_flow(self, tenant, client_id, scopes=None):
+    def with_device_flow(self, tenant: str, client_id: str, scopes: List[str] = None):
         """
-        Obtain token by a device flow object, with customizable polling effect.
+        Authenticate using device flow
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            scopes: Requested permission scopes (optional)
+
+        Returns:
+            Self: Supports method chaining
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
@@ -171,15 +185,18 @@ class AuthenticationContext(object):
         self.with_access_token(_acquire_token)
         return self
 
-    def with_access_token(self, token_func):
-        # type: (Callable[[], JSONToken]) -> None
+    def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
         """
-        Initializes a client to acquire a token from a callback
+        Initialize with token callback function
 
-        :param () -> dict token_func: A token callback
+        Args:
+            token_func: Function that returns a token response
+
+        Returns:
+            Self: Supports method chaining
         """
 
-        def _authenticate(request):
+        def _authenticate(request: RequestOptions):
 
             request_time = datetime.now(timezone.utc)
 
@@ -196,10 +213,17 @@ class AuthenticationContext(object):
         self._authenticate = _authenticate
         return self
 
-    def with_credentials(self, credentials):
-        # type: (UserCredential | ClientCredential) -> "AuthenticationContext"
+    def with_credentials(
+        self, credentials: Union[UserCredential, ClientCredential]
+    ) -> AuthenticationContext:
         """
-        Initializes a client to acquire a token via user or client credentials
+        Initialize authentication with user or client credentials
+
+        Args:
+            credentials: Authentication credentials
+
+        Returns:
+            Self: Supports method chaining
         """
         if isinstance(credentials, ClientCredential):
             provider = ACSTokenProvider(
@@ -267,9 +291,15 @@ class AuthenticationContext(object):
         self._authenticate = _authenticate
         return self
 
-    def authenticate_request(self, request):
-        # type: (RequestOptions) -> None
-        """Authenticate request"""
+    def authenticate_request(self, request: RequestOptions) -> None:
+        """Authenticate the HTTP request
+
+        Args:
+            request: The request to authenticate
+
+        Raises:
+            ValueError: If authentication credentials are missing or invalid
+        """
         if self._authenticate is None:
             raise ValueError("Authentication credentials are missing or invalid")
         self._authenticate(request)
