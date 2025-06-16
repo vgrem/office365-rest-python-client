@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Type
 
 from typing_extensions import Self
@@ -28,7 +29,7 @@ class DeltaCollection(EntityCollection[T]):
 
     def __init__(
         self,
-        context: "GraphClient",
+        context: GraphClient,
         item_type: Type[T],
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[Entity] = None,
@@ -54,7 +55,7 @@ class DeltaCollection(EntityCollection[T]):
         return self
 
     @property
-    def delta(self) -> "DeltaCollection[T]":
+    def delta(self) -> DeltaCollection[T]:
         """
         Gets a new delta collection for tracking subsequent changes.
 

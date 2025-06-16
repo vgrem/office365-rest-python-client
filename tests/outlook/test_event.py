@@ -7,20 +7,20 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookEvent(GraphTestCase):
-    target_event = None  # type: Event
+    target_event: Event = None
 
     @requires_delegated_permission("Calendars.ReadWrite", "Calendars.ReadWrite.Shared")
     def test2_create_event(self):
         when = datetime.now() + timedelta(days=1)
-        new_event = self.client.me.calendar.events.add(
+        result = self.client.me.calendar.events.add(
             subject="Let's go for lunch",
             body="Does mid month work for you?",
             start=when,
             end=when + timedelta(hours=1),
             attendees=[test_user_principal_name],
         ).execute_query()
-        self.assertIsNotNone(new_event.id)
-        self.__class__.target_event = new_event
+        self.assertIsNotNone(result.id)
+        self.__class__.target_event = result
 
     @requires_delegated_permission(
         "Calendars.ReadBasic",

@@ -28,7 +28,7 @@ class TestCalendar(GraphTestCase):
         "Calendars.ReadWrite.Shared",
     )
     def test2_get_my_schedule(self):
-        end_time = datetime.utcnow()
+        end_time = datetime.now()
         start_time = end_time - timedelta(days=7)
         result = self.client.me.calendar.get_schedule(
             schedules=[test_user_principal_name],
@@ -61,7 +61,7 @@ class TestCalendar(GraphTestCase):
         "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite"
     )
     def test5_list_my_cal_view(self):
-        end_time = datetime.utcnow()
+        end_time = datetime.now()
         start_time = end_time - timedelta(days=14)
         result = self.client.me.get_calendar_view(
             start_dt=start_time, end_dt=end_time
@@ -69,7 +69,7 @@ class TestCalendar(GraphTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test6_get_my_reminder_view(self):
-        end_time = datetime.utcnow()
+        end_time = datetime.now()
         start_time = end_time - timedelta(days=14)
         result = self.client.me.get_reminder_view(
             start_dt=start_time, end_dt=end_time

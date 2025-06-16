@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
@@ -29,7 +30,7 @@ class Entity(ClientObject):
         return self
 
     @property
-    def context(self) -> "GraphClient":
+    def context(self) -> GraphClient:
         """Return the Graph Client context."""
         return self._context
 
