@@ -23,8 +23,8 @@ class CheckedOutFile(Entity):
         return self.properties.get("CheckedOutById", None)
 
     @property
-    def checked_out_by(self):
-        """Returns the user name of the account used to check out the file."""
+    def checked_out_by(self) -> User:
+        """Returns the username of the account used to check out the file."""
         return self.properties.get(
             "CheckedOutBy",
             User(self.context, ResourcePath("CheckedOutBy", self.resource_path)),

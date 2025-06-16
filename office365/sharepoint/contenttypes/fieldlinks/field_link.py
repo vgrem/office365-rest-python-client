@@ -7,14 +7,12 @@ class FieldLink(Entity):
     """Specifies a reference to a field or field definition for a content type."""
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """Gets a value that specifies the GUID of the FieldLink."""
         return self.properties.get("Id", None)
 
     @property
-    def field_internal_name(self):
-        # type: () -> Optional[str]
+    def field_internal_name(self) -> Optional[str]:
         """Gets a value that specifies field internal name"""
         return self.properties.get("FieldInternalName", None)
 

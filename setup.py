@@ -18,7 +18,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/vgrem/office365-rest-python-client",
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         "requests>=2.32.4,<3.0.0",
         "msal>=1.28.0,<2.0.0",
