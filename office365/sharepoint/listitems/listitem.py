@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import json
 from typing import TYPE_CHECKING
+
+from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -59,14 +63,14 @@ class ListItem(SecurableObject):
         if parent_list is not None:
             self.set_property("ParentList", parent_list, False)
 
-    def archive(self):
+    def archive(self) -> ClientResult[str]:
         """Archives the list item."""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Archive", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def lock_record_item(self):
+    def lock_record_item(self) -> ClientResult[int]:
         """Locks the list item."""
         list_folder = self.parent_list.root_folder
         return_type = ClientResult(self.context, int())
@@ -114,7 +118,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def unshare_link(self, link_kind, share_id=None):
+    def unshare_link(self, link_kind: int, share_id: str = None) -> Self:
         """
         Removes the specified tokenized sharing link of the list item.
 
@@ -394,7 +398,7 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["BaseTemplate"], _list_loaded)
         return self
 
-    def update_overwrite_version(self):
+    def update_overwrite_version(self) -> ListItem:
         """Updates the item without creating another version of the item."""
         qry = ServiceOperationQuery(self, "UpdateOverwriteVersion")
         self.context.add_query(qry)
@@ -421,7 +425,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def get_comments(self):
+    def get_comments(self) -> CommentCollection:
         """Retrieve ListItem comments"""
         return_type = CommentCollection(
             self.context, ServiceOperationPath("GetComments", [], self.resource_path)

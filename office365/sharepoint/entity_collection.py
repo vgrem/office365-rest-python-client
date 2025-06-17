@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Optional, Type
 
 from office365.runtime.client_object import T
 from office365.runtime.client_object_collection import ClientObjectCollection

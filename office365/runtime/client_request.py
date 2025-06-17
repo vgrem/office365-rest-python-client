@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 import requests
-from requests import HTTPError
+from requests import HTTPError, Response
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
@@ -48,7 +48,7 @@ class ClientRequest(ABC):
         except HTTPError as e:
             raise ClientRequestException(*e.args, response=e.response)
 
-    def execute_request_direct(self, request: RequestOptions) -> requests.Response:
+    def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
         self.beforeExecute.notify(request)
         if request.method == HttpMethod.Post:

@@ -12,11 +12,21 @@ from office365.runtime.queries.client_query import ClientQuery
 
 
 class ODataV4BatchRequest(ODataRequest):
-    """JSON batch request"""
+    """Handles JSON batch requests for OData v4 protocol.
 
-    def build_request(self, query):
-        # type: (BatchQuery) -> RequestOptions
-        """Builds a batch request"""
+    This class implements the OData batch processing specification for sending multiple
+    OData operations in a single HTTP request and processing the batched responses.
+    """
+
+    def build_request(self, query: BatchQuery) -> RequestOptions:
+        """Constructs a batch request from multiple individual queries.
+
+        Args:
+            query: A BatchQuery containing multiple individual queries
+
+        Returns:
+            RequestOptions: Configured batch request with proper headers and payload
+        """
         request = RequestOptions(query.url)
         request.method = HttpMethod.Post
         request.ensure_header("Content-Type", "application/json")
@@ -24,17 +34,33 @@ class ODataV4BatchRequest(ODataRequest):
         request.data = self._prepare_payload(query)
         return request
 
-    def process_response(self, response, query):
-        # type: (Response, BatchQuery) -> None
-        """Parses an HTTP response."""
+    def process_response(self, response: Response, query: BatchQuery) -> None:
+        """Processes the batch response and handles each individual response.
+
+        Args:
+            response: The raw HTTP response from the batch request
+            query: The original BatchQuery containing the individual queries
+
+        Raises:
+            HTTPError: If any sub-request in the batch fails
+        """
         for sub_qry, sub_resp in self._extract_response(response, query):
             sub_resp.raise_for_status()
             super(ODataV4BatchRequest, self).process_response(sub_resp, sub_qry)
 
     @staticmethod
-    def _extract_response(response, query):
-        # type: (Response, BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]
-        """ """
+    def _extract_response(
+        response: Response, query: BatchQuery
+    ) -> Iterator[Tuple[ClientQuery, Response]]:
+        """Extracts individual responses from the batch response.
+
+        Args:
+            response: The batch HTTP response
+            query: The original BatchQuery
+
+        Yields:
+            Tuples of (ClientQuery, Response) for each sub-request
+        """
         json_responses = response.json()
         for json_resp in json_responses["responses"]:
             resp = Response()
@@ -45,9 +71,15 @@ class ODataV4BatchRequest(ODataRequest):
             qry = query.ordered_queries[qry_id]
             yield qry, resp
 
-    def _prepare_payload(self, query):
-        # type: (BatchQuery) -> Dict
-        """Serializes a batch request body."""
+    def _prepare_payload(self, query: BatchQuery) -> Dict[str, Any]:
+        """Prepares the batch request payload.
+
+        Args:
+            query: The BatchQuery containing individual queries
+
+        Returns:
+            Dictionary containing the JSON batch request structure
+        """
         requests_json = []
         for qry in query.queries:
             qry_id = str(len(requests_json))
@@ -56,9 +88,19 @@ class ODataV4BatchRequest(ODataRequest):
         return {"requests": requests_json}
 
     @staticmethod
-    def _normalize_request(query, query_id, depends_on=None):
-        # type: (ClientQuery, str, Optional[List[str]]) -> Dict[str, Any]
-        """ """
+    def _normalize_request(
+        query: ClientQuery, query_id: str, depends_on: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Normalizes an individual query into batch request format.
+
+        Args:
+            query: The individual ClientQuery to normalize
+            query_id: Unique identifier for the sub-request
+            depends_on: List of query IDs this request depends on
+
+        Returns:
+            Dictionary representing the normalized request
+        """
         request = query.build_request()
 
         request_json = {

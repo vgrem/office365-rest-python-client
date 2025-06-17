@@ -6,7 +6,7 @@ class ODataV4Reader(ODataReader):
 
     _options = None
 
-    def __init__(self, metadata_path):
+    def __init__(self, metadata_path: str) -> None:
         super(ODataV4Reader, self).__init__(
             metadata_path,
             {

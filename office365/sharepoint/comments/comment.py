@@ -1,3 +1,7 @@
+from typing import Any
+
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -6,7 +10,7 @@ from office365.sharepoint.likes.user_entity import UserEntity
 
 
 class Comment(Entity):
-    def like(self):
+    def like(self) -> Self:
         """
         The Like method makes the current user a liker of the comment.
         """
@@ -14,7 +18,7 @@ class Comment(Entity):
         self.context.add_query(qry)
         return self
 
-    def unlike(self):
+    def unlike(self) -> Self:
         """
         The Unlike method removes the current user from the list of likers for the comment.
         """
@@ -23,7 +27,7 @@ class Comment(Entity):
         return self
 
     @property
-    def liked_by(self):
+    def liked_by(self) -> EntityCollection[UserEntity]:
         """
         List of like entries corresponding to individual likes. MUST NOT contain more than one entry
         for the same user in the set.
@@ -36,10 +40,10 @@ class Comment(Entity):
         )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Comments.comment"
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None):
         if default_value is None:
             property_mapping = {
                 "likedBy": self.liked_by,
