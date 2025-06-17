@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Union
 
 from typing_extensions import Self
 
-from office365.azure_env import AzureEnvironment
+from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
@@ -30,7 +30,7 @@ class AuthenticationContext:
     def __init__(
         self,
         url: str,
-        environment: str = None,
+        environment: AzureEnvironment = None,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ):
@@ -89,7 +89,7 @@ class AuthenticationContext:
 
         def _acquire_token():
             authority_url = "{0}/{1}".format(
-                AzureEnvironment.get_login_authority(self._environment), tenant
+                get_login_authority(self._environment), tenant
             )
             credentials = {
                 "thumbprint": thumbprint,
@@ -133,7 +133,7 @@ class AuthenticationContext:
             app = msal.PublicClientApplication(
                 client_id,
                 authority="{0}/{1}".format(
-                    AzureEnvironment.get_login_authority(self._environment), tenant
+                    get_login_authority(self._environment), tenant
                 ),
                 client_credential=None,
             )
@@ -165,7 +165,7 @@ class AuthenticationContext:
             app = msal.PublicClientApplication(
                 client_id,
                 authority="{0}/{1}".format(
-                    AzureEnvironment.get_login_authority(self._environment), tenant
+                    get_login_authority(self._environment), tenant
                 ),
                 client_credential=None,
             )

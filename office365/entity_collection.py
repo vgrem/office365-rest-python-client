@@ -24,8 +24,7 @@ class EntityCollection(ClientObjectCollection[T]):
         )
         self._delta_request_url = None
 
-    def token(self, value):
-        # type: (str) -> T
+    def token(self, value: str) -> Self:
         """
         Apply delta query
 

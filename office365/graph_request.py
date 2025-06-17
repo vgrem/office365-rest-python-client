@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Callable, Dict, Optional
 
-from office365.azure_env import AzureEnvironment
+from office365.azure_env import AzureEnvironment, get_graph_authority
+from office365.graph_version import GraphVersion
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
@@ -14,9 +15,9 @@ class GraphRequest(ODataRequest):
 
     def __init__(
         self,
-        version: str = "v1.0",
+        version: GraphVersion = GraphVersion.default(),
         tenant: str = None,
-        environment: str = AzureEnvironment.Global,
+        environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """
         Initialize a Microsoft Graph API request handler.
@@ -123,11 +124,19 @@ class GraphRequest(ODataRequest):
             request: The request to authenticate
         """
         token = self._auth_context.acquire_token()
-        request.ensure_header("Authorization", "Bearer {0}".format(token.accessToken))
+        request.set_header("Authorization", f"Bearer {token.accessToken}")
 
     @property
     def service_root_url(self) -> str:
         """Get the Microsoft Graph service root URL."""
-        return "{0}/{1}".format(
-            AzureEnvironment.get_graph_authority(self._environment), self._version
-        )
+        return f"{get_graph_authority(self._environment)}/{self._version.value}"
+
+    @property
+    def version(self) -> GraphVersion:
+        """Get the current Graph API version."""
+        return self._version
+
+    @version.setter
+    def version(self, value: GraphVersion) -> None:
+        """Set the Graph API version."""
+        self._version = value

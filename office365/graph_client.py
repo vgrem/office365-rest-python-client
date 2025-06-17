@@ -89,7 +89,7 @@ class GraphClient(ClientRuntimeContext):
         tenant: str = None,
         scopes: List[str] = None,
         token_cache: Any = None,
-        environment: str = AzureEnvironment.Global,
+        environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """
         Initialize Microsoft Graph client

@@ -1,6 +1,10 @@
 from typing import Optional
 
-from office365.azure_env import AzureEnvironment
+from office365.azure_env import (
+    AzureEnvironment,
+    get_graph_authority,
+    get_login_authority,
+)
 from office365.runtime.auth.token_response import TokenResponse
 
 
@@ -22,9 +26,7 @@ class AuthenticationContext(object):
         """
         self._tenant = tenant
         if scopes is None:
-            scopes = [
-                "{0}/.default".format(AzureEnvironment.get_graph_authority(environment))
-            ]
+            scopes = ["{0}/.default".format(get_graph_authority(environment))]
         self._scopes = scopes
         self._token_cache = token_cache
         self._token_callback = None
@@ -160,6 +162,4 @@ class AuthenticationContext(object):
 
     @property
     def authority_url(self):
-        return "{0}/{1}".format(
-            AzureEnvironment.get_login_authority(self._environment), self._tenant
-        )
+        return "{0}/{1}".format(get_login_authority(self._environment), self._tenant)

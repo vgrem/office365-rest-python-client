@@ -33,12 +33,20 @@ class TestIdentity(TestCase):
     #    result = self.client.identity_protection.risky_users.get().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
+    @requires_app_permission(
+        "Policy.ReadWrite.AuthenticationFlows",
+        "EventListener.Read.All",
+        "EventListener.ReadWrite.All",
+        "Application.Read.All",
+        "Application.ReadWrite.All",
+    )
     def test4_list_authentication_event_listeners(self):
         result = (
             self.client.identity.authentication_event_listeners.get().execute_query()
         )
         self.assertIsNotNone(result.resource_path)
 
+    @requires_app_permission("Policy.Read.All", "Policy.ReadWrite.ConditionalAccess")
     def test5_list_conditional_access_policies(self):
         result = self.client.identity.conditional_access.policies.get().execute_query()
         self.assertIsNotNone(result.resource_path)

@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
-from office365.azure_env import AzureEnvironment
+from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.utilities import urlparse
 
 
 class STSProfile(object):
-    def __init__(self, site_url, environment=None):
-        # type: (str, str) -> None
+    def __init__(self, site_url: str, environment: AzureEnvironment = None) -> None:
         self._site_url = site_url
         self._environment = environment
         self._created = datetime.now(tz=timezone.utc)
@@ -24,7 +23,7 @@ class STSProfile(object):
     @property
     def security_token_service_url(self):
         return "{0}/extSTS.srf".format(
-            AzureEnvironment.get_login_authority(self._environment),
+            get_login_authority(self._environment),
         )
 
     @property
@@ -37,7 +36,7 @@ class STSProfile(object):
     @property
     def user_realm_service_url(self):
         return "{0}/GetUserRealm.srf".format(
-            AzureEnvironment.get_login_authority(self._environment),
+            get_login_authority(self._environment),
         )
 
     @property

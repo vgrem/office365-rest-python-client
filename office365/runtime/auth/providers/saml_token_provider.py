@@ -39,7 +39,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         :param str username: Typically a UPN in the form of an email address
         :param str password: The password
         :param bool browser_mode:
-        :param str environment: The Office 365 Cloud Environment endpoint used for authentication.
+        :param AzureEnvironment environment: The Office 365 Cloud Environment endpoint used for authentication.
         """
         # Security Token Service info
         self._sts_profile = STSProfile(url, environment)

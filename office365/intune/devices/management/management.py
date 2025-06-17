@@ -89,11 +89,11 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def intune_brand(self):
+    def intune_brand(self) -> IntuneBrand:
         return self.properties.get("intuneBrand", IntuneBrand())
 
     @property
-    def managed_devices(self):
+    def managed_devices(self) -> EntityCollection[ManagedDevice]:
         """"""
         return self.properties.get(
             "managedDevices",
