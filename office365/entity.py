@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject, PropertyT, T
+from office365.runtime.client_object import ClientObject, PropertyT
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery

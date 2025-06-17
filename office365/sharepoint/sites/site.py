@@ -446,9 +446,8 @@ class Site(Entity):
         return_type = ClientResult(context, str())
         payload = {"id": site_id, "stopRedirect": stop_redirect}
         qry = ServiceOperationQuery(
-            context.site, "GetUrlById", None, payload, None, return_type
+            context.site, "GetUrlById", None, payload, None, return_type, True
         )
-        qry.static = True
         context.add_query(qry)
         return return_type
 

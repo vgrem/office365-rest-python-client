@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 from typing import Callable, List, Optional, Union
 
@@ -73,8 +75,7 @@ class ClientContext(ClientRuntimeContext):
         self._pending_request = None
 
     @staticmethod
-    def from_url(full_url):
-        # type: (str) -> ClientContext
+    def from_url(full_url: str) -> ClientContext:
         """
         Constructs a client from absolute resource url
 
@@ -143,8 +144,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_device_flow(tenant, client_id, scopes)
         return self
 
-    def with_access_token(self, token_func):
-        # type: (Callable[[], TokenResponse]) -> Self
+    def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
         """
         Initializes a client to acquire a token from a callback
         :param () -> TokenResponse token_func: A token callback
@@ -152,8 +152,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_access_token(token_func)
         return self
 
-    def with_user_credentials(self, username, password):
-        # type: (str, str) -> Self
+    def with_user_credentials(self, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via user credentials.
         :param str username: Typically, a UPN in the form of an email address
@@ -178,8 +177,9 @@ class ClientContext(ClientRuntimeContext):
         )
         return self
 
-    def with_credentials(self, credentials):
-        # type: (UserCredential|ClientCredential) -> Self
+    def with_credentials(
+        self, credentials: Union[UserCredential, ClientCredential]
+    ) -> Self:
         """
         Initializes a client to acquire a token via user or client credentials
         :type credentials: UserCredential or ClientCredential
@@ -204,7 +204,7 @@ class ClientContext(ClientRuntimeContext):
                 success_callback(qry.return_type)
         return self
 
-    def pending_request(self):
+    def pending_request(self) -> ODataRequest:
         """Provides access to underlying request instance"""
         if self._pending_request is None:
             self._pending_request = ODataRequest(JsonLightFormat())
@@ -361,7 +361,7 @@ class ClientContext(ClientRuntimeContext):
         return return_type
 
     @property
-    def context_info(self):
+    def context_info(self) -> ContextWebInformation:
         """Returns an ContextWebInformation object that specifies metadata about the site"""
         if self._ctx_web_info is None:
             self._ctx_web_info = ContextWebInformation()

@@ -1,9 +1,14 @@
+from typing import Optional
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery, T
 
 
 class ServiceOperationQuery(ClientQuery[T]):
-    """ "Service operation query"""
+    """Represents a service operation (function) call in OData.
+
+    Can handle both static methods (class-level) and instance methods.
+    """
 
     def __init__(
         self,
@@ -15,7 +20,7 @@ class ServiceOperationQuery(ClientQuery[T]):
         return_type=None,
         is_static=False,
     ):
-        super(ServiceOperationQuery, self).__init__(
+        super().__init__(
             binding_type.context,
             binding_type,
             parameters_type,
@@ -26,12 +31,14 @@ class ServiceOperationQuery(ClientQuery[T]):
         self._method_params = method_params
         self.static = is_static
 
+    def __repr__(self) -> str:
+        return f"ServiceOperationQuery(name={self.path.name}, " f"static={self.static}"
+
     @property
-    def path(self):
+    def path(self) -> ServiceOperationPath:
+        """Gets the service operation path for this query."""
         if self.static:
-            static_name = ".".join(
-                [self.binding_type.entity_type_name, self._method_name]
-            )
+            static_name = f"{self.binding_type.entity_type_name}.{self._method_name}"
             return ServiceOperationPath(static_name, self._method_params)
         else:
             return ServiceOperationPath(
@@ -39,13 +46,15 @@ class ServiceOperationQuery(ClientQuery[T]):
             )
 
     @property
-    def url(self):
-        orig_url = super(ServiceOperationQuery, self).url
+    def url(self) -> str:
+        """Gets the full URL for the service operation call."""
+        orig_url = super().url
         if self.static:
             return "".join([self.context.service_root_url, str(self.path)])
         else:
             return "/".join([orig_url, self.path.segment])
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
+        """Gets the name of the method being called."""
         return self._method_name

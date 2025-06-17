@@ -1,15 +1,19 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod, ABC
+
+from office365.runtime.http.request_options import RequestOptions
 
 
-class AuthenticationProvider(object):
-    """Base token provider"""
-
-    __metaclass__ = ABCMeta
+class AuthenticationProvider(ABC):
+    """Abstract base class for authentication providers."""
 
     @abstractmethod
-    def authenticate_request(self, request):
-        """
+    def authenticate_request(self, request: RequestOptions) -> None:
+        """Authenticate the outgoing request.
 
-        :type request: office365.runtime.http.request_options.RequestOptions
+        Args:
+            request: The request to authenticate
+
+        Raises:
+            AuthenticationError: If authentication fails
         """
         pass

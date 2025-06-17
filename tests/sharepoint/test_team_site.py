@@ -8,7 +8,7 @@ from tests import test_site_url, test_user_credentials
 
 
 class TestTeamSite(TestCase):
-    target_site = None  # type: Site
+    target_site: Site = None
 
     @classmethod
     def setUpClass(cls):

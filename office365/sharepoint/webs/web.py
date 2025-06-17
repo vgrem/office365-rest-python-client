@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, AnyStr, Optional
 
@@ -266,7 +267,7 @@ class Web(SecurableObject):
         """
         if view_xml is None:
             view_xml = "<View><Query></Query></View>"
-        return_type = ClientResult(self.context, {})
+        return_type = ClientResult(self.context, bytes())
 
         def _get_list_data_as_stream():
             list_abs_url = self.url + path
@@ -1156,7 +1157,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getUserById", [user_id], self.resource_path),
         )
 
-    def default_document_library(self):
+    def default_document_library(self) -> List:
         """Retrieves the default document library."""
         return List(
             self.context,
@@ -1399,7 +1400,7 @@ class Web(SecurableObject):
         display_format=DateTimeFieldFormatType.DateTime,
         calendar_type=CalendarType.None_,
     ):
-        # type: (str, int, int) -> ClientResult[str]
+        # type: (str, DateTimeFieldFormatType, int) -> ClientResult[str]
         """
         Returns parsed DateTime value.
 
@@ -1412,7 +1413,7 @@ class Web(SecurableObject):
         return_type = ClientResult(self.context)
         payload = {
             "value": value,
-            "displayFormat": display_format,
+            "displayFormat": display_format.value,
             "calendarType": calendar_type,
         }
         qry = ServiceOperationQuery(
@@ -1515,7 +1516,7 @@ class Web(SecurableObject):
         Example:
             >>> result = Web.get_document_libraries(context, "https://contoso.sharepoint.com/sites/mysite")
             >>> for lib in result.value:
-            ...     print(lib.Title, lib.Url)
+            ...     print(lib.Title, lib.AbsoluteUrl)
         """
         if return_type is None:
             return_type = ClientResult(
@@ -1957,7 +1958,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def sync_hub_site_theme(self):
+    def sync_hub_site_theme(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "SyncHubSiteTheme")
         self.context.add_query(qry)
@@ -2099,7 +2100,7 @@ class Web(SecurableObject):
         return self.properties.get("LastItemModifiedDate", datetime.datetime.min)
 
     @property
-    def access_requests_list(self):
+    def access_requests_list(self) -> List:
         """"""
         return self.properties.get(
             "AccessRequestsList",

@@ -450,7 +450,7 @@ class List(SecurableObject):
         :param ClientResult[dict] return_type: The return type.
         """
         if return_type is None:
-            return_type = ClientResult(context, {})
+            return_type = ClientResult(context, bytes())
         payload = {
             "listFullUrl": list_full_url,
             "parameters": parameters,
@@ -476,7 +476,7 @@ class List(SecurableObject):
         :param ClientResult[dict] return_type: The return type.
         """
         if return_type is None:
-            return_type = ClientResult(context, {})
+            return_type = ClientResult(context, bytes())
         payload = {
             "parameters": parameters,
         }
@@ -504,7 +504,7 @@ class List(SecurableObject):
         Validate and update multiple list items.
 
         :param list[int] item_ids: A collection of item Ids that need to be updated with the same formValues.
-        :param dict form_values: A collection of field internal names and values for the given field.
+        :param list[ListItemFormUpdateValue] form_values: A collection of field internal names and values for the given field.
             If the collection is empty, no update will take place.
         :param bool new_document_update: Indicates whether the list item is a document being updated after upload.
             A value of "true" means yes.
@@ -801,7 +801,7 @@ class List(SecurableObject):
         :param int render_options: Specifies the type of output to return.
         :param bool expand_groups: Specifies whether to expand the grouping or not.
         """
-        return_type = ClientResult(self.context, {})
+        return_type = ClientResult(self.context, bytes())
         if view_xml is None:
             view_xml = "<View/>"
         payload = {
