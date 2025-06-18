@@ -1,4 +1,4 @@
-from typing import Union, List, Dict, Optional
+from typing import Dict, List, Optional, Union
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue

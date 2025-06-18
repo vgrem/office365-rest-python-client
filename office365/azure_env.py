@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TypedDict, Final, Dict
+from typing import Dict, Final, TypedDict
 
 
 class AzureEnvironment(Enum):

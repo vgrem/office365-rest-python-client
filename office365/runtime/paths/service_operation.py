@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Dict
+from typing import Dict, List, Optional, Union
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.builder import ODataPathBuilder

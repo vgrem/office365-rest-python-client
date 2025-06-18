@@ -25,14 +25,13 @@ class SearchEntity(Entity):
 
     def query(
         self,
-        query_string,
-        entity_types=None,
-        page_from=None,
-        size=None,
-        enable_top_results=None,
-        region=None,
-    ):
-        # type: (str, Optional[List[str]], Optional[int], Optional[int], Optional[bool], Optional[str]) -> ClientResult[ClientValueCollection[SearchResponse]]
+        query_string: str,
+        entity_types: Optional[List[str]] = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        enable_top_results: Optional[bool] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """
         Runs the query specified in the request body. Search results are provided in the response.
 
@@ -54,8 +53,7 @@ class SearchEntity(Entity):
             region=region,
         )
 
-        def _patch_hit(search_hit):
-            # type: (SearchHit) -> None
+        def _patch_hit(search_hit: SearchHit) -> None:
             resource_type_name = search_hit.get_property("resource").get(
                 "@odata.type", None
             )
@@ -77,8 +75,12 @@ class SearchEntity(Entity):
         return return_type
 
     def query_messages(
-        self, query_string, page_from=None, size=None, enable_top_results=None
-    ):
+        self,
+        query_string: str,
+        page_from: int = None,
+        size: int = None,
+        enable_top_results: bool = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook messages. Alias to query method
         :param str query_string: Contains the query terms.
         :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
@@ -93,7 +95,9 @@ class SearchEntity(Entity):
             enable_top_results=enable_top_results,
         )
 
-    def query_events(self, query_string):
+    def query_events(
+        self, query_string: str
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook calendar events. Alias to query method
         :param str query_string: Contains the query terms.
         """
@@ -112,7 +116,13 @@ class SearchEntity(Entity):
             size=size,
         )
 
-    def query_list_items(self, query_string, page_from=None, size=None, region=None):
+    def query_list_items(
+        self,
+        query_string: str,
+        page_from: int = None,
+        size: int = None,
+        region: str = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches list items. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -128,7 +138,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_peoples(self, query_string, page_from=None, size=None, region=None):
+    def query_peoples(
+        self,
+        query_string: str,
+        page_from: int = None,
+        size: int = None,
+        region: str = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches peoples. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -144,7 +160,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_sites(self, query_string, page_from=None, size=None, region=None):
+    def query_sites(
+        self,
+        query_string: str,
+        page_from: int = None,
+        size: int = None,
+        region: str = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches sites. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -160,7 +182,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_chat_messages(self, query_string, page_from=None, size=None, region=None):
+    def query_chat_messages(
+        self,
+        query_string: str,
+        page_from: int = None,
+        size: int = None,
+        region: str = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Teams chat messages. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -177,7 +205,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def acronyms(self):
+    def acronyms(self) -> EntityCollection[Acronym]:
         """Administrative answer in Microsoft Search results to define common acronyms in an organization."""
         return self.properties.get(
             "acronyms",
@@ -189,7 +217,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def bookmarks(self):
+    def bookmarks(self) -> EntityCollection[Bookmark]:
         """Administrative answer in Microsoft Search results for common search queries in an organization."""
         return self.properties.get(
             "bookmarks",
@@ -201,7 +229,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def qnas(self):
+    def qnas(self) -> EntityCollection[Qna]:
         """Administrative answer in Microsoft Search results that provide answers for specific search keywords in
         an organization."""
         return self.properties.get(

@@ -1,24 +1,28 @@
+from typing import TYPE_CHECKING
+
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.internal.paths.web import WebPath
-from office365.sharepoint.webs.web import Web
+from office365.sharepoint.webs.creation_information import WebCreationInformation
+
+if TYPE_CHECKING:
+    from office365.sharepoint.webs.web import Web
 
 
-class WebCollection(EntityCollection[Web]):
+class WebCollection(EntityCollection["Web"]):
     """Web collection"""
 
-    def __init__(self, context, resource_path=None, parent_web=None):
-        """
-        :type parent_web: Web
-        """
+    def __init__(self, context, resource_path=None, parent_web: "Web" = None):
+        from office365.sharepoint.webs.web import Web
+
         super(WebCollection, self).__init__(context, Web, resource_path, parent_web)
 
-    def add(self, web_creation_information):
+    def add(self, web_creation_information: WebCreationInformation):
         """
         Create WebSite
-
-        :type web_creation_information: office365.sharepoint.webs.creation_information.WebCreationInformation
         """
+        from office365.sharepoint.webs.web import Web
+
         return_type = Web(self.context)
         self.add_child(return_type)
         payload = {"parameters": web_creation_information}
@@ -29,9 +33,7 @@ class WebCollection(EntityCollection[Web]):
     def create_typed_object(self, initial_properties=None, resource_path=None):
         if resource_path is None:
             resource_path = WebPath(self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super().create_typed_object(initial_properties, resource_path)
 
     @property
     def resource_url(self):

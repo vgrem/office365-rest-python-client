@@ -1,7 +1,10 @@
 # coding=utf-8
 from __future__ import annotations
+
 import datetime
 from typing import TYPE_CHECKING, AnyStr, Optional
+
+from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -106,6 +109,7 @@ from office365.sharepoint.usercustomactions.collection import UserCustomActionCo
 from office365.sharepoint.views.view import View
 from office365.sharepoint.webparts.client.collection import ClientWebPartCollection
 from office365.sharepoint.webs.calendar_type import CalendarType
+from office365.sharepoint.webs.collection import WebCollection
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 from office365.sharepoint.webs.dataleakage_prevention_status_info import (
     SPDataLeakagePreventionStatusInfo,
@@ -143,7 +147,7 @@ class Web(SecurableObject):
         self._web_url = None
 
     def __str__(self):
-        return self.title
+        return self.title or self.entity_type_name
 
     def add_list(self, title, template_type=ListTemplateType.GenericList):
         """
@@ -721,7 +725,6 @@ class Web(SecurableObject):
 
     def get_all_webs(self):
         """Returns a collection containing a flat list of all Web objects in the Web."""
-        from office365.sharepoint.webs.collection import WebCollection
 
         return_type = WebCollection(self.context, self.webs.resource_path)
 
@@ -731,11 +734,7 @@ class Web(SecurableObject):
         self.ensure_property("Webs", _webs_loaded)
         return return_type
 
-    def _load_sub_webs_inner(self, webs, all_webs):
-        """
-        :type webs: office365.sharepoint.webs.collection.WebCollection
-        :type all_webs: office365.sharepoint.webs.collection.WebCollection
-        """
+    def _load_sub_webs_inner(self, webs: WebCollection, all_webs: WebCollection):
         for cur_web in webs:
             all_webs.add_child(cur_web)
 
@@ -1233,7 +1232,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def apply_web_template(self, web_template):
+    def apply_web_template(self, web_template) -> Self:
         """
         Applies the specified site definition or site template to the website that has no template applied to it.
 
@@ -1245,7 +1244,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def get_custom_list_templates(self):
+    def get_custom_list_templates(self) -> ListTemplateCollection:
         """Specifies the collection of custom list templates for a given site."""
         return_type = ListTemplateCollection(self.context)
         qry = ServiceOperationQuery(
@@ -1254,7 +1253,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_by_guest_url(self, guest_url):
+    def get_file_by_guest_url(self, guest_url: str) -> File:
         """
         Returns the file object from the guest access URL.
         :param str guest_url: The guest access URL to get the file with.
@@ -1927,7 +1926,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def remove_supported_ui_language(self, lcid):
+    def remove_supported_ui_language(self, lcid: str) -> Self:
         """
         Removes a supported UI language by its language identifier.
         :param str lcid: Specifies the language identifier to be removed.
@@ -1948,7 +1947,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_global_nav_settings(self, title, source):
+    def set_global_nav_settings(self, title: str, source: str) -> Self:
         """
         :param str title:
         :param str source:
@@ -1995,7 +1994,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def activity_logger(self):
+    def activity_logger(self) -> ActivityLogger:
         """"""
         return self.properties.get(
             "ActivityLogger",
@@ -2028,7 +2027,7 @@ class Web(SecurableObject):
         return self.properties.get("AppInstanceId", None)
 
     @property
-    def author(self):
+    def author(self) -> User:
         """
         Gets a user object that represents the user who created the Web site.
         """
@@ -2138,7 +2137,7 @@ class Web(SecurableObject):
         return self.properties.get("AllowRevertFromTemplateForCurrentUser", None)
 
     @property
-    def effective_base_permissions(self):
+    def effective_base_permissions(self) -> BasePermissions:
         """Specifies the effective permissions that are assigned to the current user"""
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
@@ -2156,9 +2155,8 @@ class Web(SecurableObject):
         return self.properties.get("EnableMinimalDownload", None)
 
     @property
-    def webs(self):
+    def webs(self) -> WebCollection:
         """Specifies the collection of all child sites for the site"""
-        from office365.sharepoint.webs.collection import WebCollection
 
         return self.properties.get(
             "Webs",
@@ -2166,7 +2164,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def folders(self):
+    def folders(self) -> FolderCollection:
         """Specifies the collection of all first-level folders in the site"""
         return self.properties.get(
             "Folders",
@@ -2176,7 +2174,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def hosted_apps(self):
+    def hosted_apps(self) -> HostedAppsManager:
         """"""
         return self.properties.get(
             "HostedApps",
@@ -2280,7 +2278,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def can_modernize_homepage(self):
+    def can_modernize_homepage(self) -> ModernizeHomepageResult:
         """Specifies the site theme associated with the site"""
         return self.properties.get(
             "CanModernizeHomepage",
@@ -2319,7 +2317,7 @@ class Web(SecurableObject):
         return self.properties.get("Configuration", None)
 
     @property
-    def data_leakage_prevention_status_info(self):
+    def data_leakage_prevention_status_info(self) -> SPDataLeakagePreventionStatusInfo:
         return self.properties.get(
             "DataLeakagePreventionStatusInfo",
             SPDataLeakagePreventionStatusInfo(
@@ -2329,7 +2327,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def description_resource(self):
+    def description_resource(self) -> UserResource:
         """A UserResource object that represents the description of this web."""
         return self.properties.get(
             "DescriptionResource",
@@ -2361,7 +2359,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def client_web_parts(self):
+    def client_web_parts(self) -> ClientWebPartCollection:
         """
         Gets a collection of the ClientWebParts installed in this SP.Web. It can be used to get metadata of the
         ClientWebParts or render them. It is a read-only collection as ClientWebParts need to be installed in
@@ -2374,7 +2372,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def features(self):
+    def features(self) -> FeatureCollection:
         """Get web features"""
         return self.properties.get(
             "Features",
@@ -2384,7 +2382,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def tenant_app_catalog(self):
+    def tenant_app_catalog(self) -> TenantCorporateCatalogAccessor:
         """Returns the tenant app catalog for the given tenant if it exists."""
         return self.properties.get(
             "TenantAppCatalog",
@@ -2394,7 +2392,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def site_collection_app_catalog(self):
+    def site_collection_app_catalog(self) -> SiteCollectionCorporateCatalogAccessor:
         """Returns the site collection app catalog for the given web if it exists."""
         return self.properties.get(
             "SiteCollectionAppCatalog",
@@ -2405,7 +2403,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def web_infos(self):
+    def web_infos(self) -> WebInformationCollection:
         """Specifies the collection of all child sites for the site"""
         return self.properties.get(
             "WebInfos",
@@ -2415,7 +2413,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def theme_info(self):
+    def theme_info(self) -> ThemeInfo:
         """Specifies the site theme associated with the site"""
         return self.properties.get(
             "ThemeInfo",
@@ -2453,7 +2451,7 @@ class Web(SecurableObject):
         return self.properties.get("SiteLogoUrl", None)
 
     @property
-    def list_templates(self):
+    def list_templates(self) -> ListTemplateCollection:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
         lists on the site."""
         return self.properties.get(
@@ -2478,7 +2476,7 @@ class Web(SecurableObject):
         self.set_property("IsMultilingual", val)
 
     @property
-    def multilingual_settings(self):
+    def multilingual_settings(self) -> MultilingualSettings:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
         lists on the site."""
         return self.properties.get(
@@ -2495,7 +2493,7 @@ class Web(SecurableObject):
         return self.properties.get("WebTemplate", None)
 
     @property
-    def regional_settings(self):
+    def regional_settings(self) -> RegionalSettings:
         """Gets the regional settings that are currently implemented on the website."""
         return self.properties.get(
             "RegionalSettings",
@@ -2505,7 +2503,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def recycle_bin(self):
+    def recycle_bin(self) -> RecycleBinItemCollection:
         """Specifies the collection of Recycle Bin items of the Recycle Bin of the site"""
         return self.properties.get(
             "RecycleBin",
@@ -2560,7 +2558,7 @@ class Web(SecurableObject):
         return self.properties.get("SearchBoxPlaceholderText", None)
 
     @property
-    def navigation(self):
+    def navigation(self) -> Navigation:
         """Specifies the navigation structure on the site (2), including the Quick Launch area and the link bar."""
         return self.properties.get(
             "Navigation",
@@ -2568,7 +2566,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def push_notification_subscribers(self):
+    def push_notification_subscribers(self) -> PushNotificationSubscriberCollection:
         """Specifies the collection of push notification subscribers for the site"""
         return self.properties.get(
             "PushNotificationSubscribers",
@@ -2579,7 +2577,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def root_folder(self):
+    def root_folder(self) -> Folder:
         """Get a root folder"""
         return self.properties.get(
             "RootFolder",
@@ -2596,8 +2594,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def available_fields(self):
-        # type: () -> FieldCollection
+    def available_fields(self) -> FieldCollection:
         """
         Specifies the collection of all fields available for the current scope, including those of the
         current site, as well as any parent sites.
@@ -2610,8 +2607,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def available_content_types(self):
-        # type: () -> ContentTypeCollection
+    def available_content_types(self) -> ContentTypeCollection:
         """
         Specifies the collection of all site content types that apply to the current scope,
         including those of the current site (2), as well as any parent sites.
@@ -2624,7 +2620,7 @@ class Web(SecurableObject):
         )
 
     @property
-    def site_user_info_list(self):
+    def site_user_info_list(self) -> List:
         """
         Specifies the user information list for the site collection that contains the site
         """
@@ -2634,30 +2630,27 @@ class Web(SecurableObject):
         )
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Gets the title of the web."""
         return self.properties.get("Title", None)
 
     @property
-    def welcome_page(self):
-        # type: () -> Optional[str]
+    def welcome_page(self) -> Optional[str]:
         """Specifies the URL of the Welcome page for the site"""
         return self.properties.get("WelcomePage", None)
 
     @property
-    def supported_ui_language_ids(self):
+    def supported_ui_language_ids(self) -> ClientValueCollection[int]:
         """Specifies the language code identifiers (LCIDs) of the languages that are enabled for the site."""
         return self.properties.get("SupportedUILanguageIds", ClientValueCollection(int))
 
     @property
-    def ui_version(self):
-        # type: () -> Optional[int]
+    def ui_version(self) -> Optional[int]:
         """Gets or sets the user interface (UI) version of the Web site."""
         return self.properties.get("UIVersion", None)
 
     @property
-    def user_custom_actions(self):
+    def user_custom_actions(self) -> UserCustomActionCollection:
         """Specifies the collection of user custom actions for the site"""
         return self.properties.get(
             "UserCustomActions",
@@ -2667,18 +2660,17 @@ class Web(SecurableObject):
         )
 
     @property
-    def server_relative_path(self):
+    def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the Web."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
     @property
-    def syndication_enabled(self):
-        # type: () -> Optional[bool]
+    def syndication_enabled(self) -> Optional[bool]:
         """Specifies whether the [RSS2.0] feeds are enabled on the site"""
         return self.properties.get("SyndicationEnabled", None)
 
     @property
-    def title_resource(self):
+    def title_resource(self) -> UserResource:
         """A UserResource object that represents the title of this web."""
         return self.properties.get(
             "TitleResource",
@@ -2688,13 +2680,12 @@ class Web(SecurableObject):
         )
 
     @property
-    def treeview_enabled(self):
-        # type: () -> Optional[bool]
+    def treeview_enabled(self) -> Optional[bool]:
         """Specifies whether the tree view is enabled on the site"""
         return self.properties.get("TreeViewEnabled", None)
 
     @property
-    def taxonomy_list(self):
+    def taxonomy_list(self) -> List:
         """A special list that stores the mapping between taxonomy term IDs and their corresponding values"""
         return self.lists.get_by_title("TaxonomyHiddenList")
 
@@ -2749,7 +2740,7 @@ class Web(SecurableObject):
         return self
 
     @property
-    def resource_url(self):
+    def resource_url(self) -> str:
         """Returns Web url"""
         orig_resource_url = super(Web, self).resource_url
         if self._web_url is not None:

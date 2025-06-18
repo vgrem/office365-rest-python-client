@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 from office365.runtime.http.request_options import RequestOptions
 

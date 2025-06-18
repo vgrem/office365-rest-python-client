@@ -504,8 +504,8 @@ class List(SecurableObject):
         Validate and update multiple list items.
 
         :param list[int] item_ids: A collection of item Ids that need to be updated with the same formValues.
-        :param list[ListItemFormUpdateValue] form_values: A collection of field internal names and values for the given field.
-            If the collection is empty, no update will take place.
+        :param list[ListItemFormUpdateValue] form_values: A collection of field internal names and values
+            for the given field. If the collection is empty, no update will take place.
         :param bool new_document_update: Indicates whether the list item is a document being updated after upload.
             A value of "true" means yes.
         :param str checkin_comment: The comment of check in if any. It's only applicable when the item is checked out.

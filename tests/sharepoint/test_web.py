@@ -13,8 +13,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointWeb(SPTestCase):
-    target_web = None  # type: Web
-    target_user = None  # type: User
+    target_web: Web = None
+    target_user: User = None
 
     @classmethod
     def setUpClass(cls):
@@ -30,7 +30,7 @@ class TestSharePointWeb(SPTestCase):
         result = Web.get_web_url_from_page_url(self.client, page_url).execute_query()
         self.assertIsNotNone(result.value)
 
-    def test3_get_list_item_by_url(self):
+    def test3_get_list_item_by_abs_url(self):
         page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
         target_item = self.client.web.get_list_item(page_url).execute_query()
         self.assertIsNotNone(target_item.resource_path)
