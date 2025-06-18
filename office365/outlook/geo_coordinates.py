@@ -6,12 +6,12 @@ class OutlookGeoCoordinates(ClientValue):
 
     def __init__(
         self,
-        accuracy=None,
-        altitude=None,
-        altitude_accuracy=None,
-        latitude=None,
-        longitude=None,
-    ):
+        accuracy: float = None,
+        altitude: float = None,
+        altitude_accuracy: float = None,
+        latitude: float = None,
+        longitude: float = None,
+    ) -> None:
         """
         :param float accuracy: The accuracy of the latitude and longitude. As an example, the accuracy can be measured
             in meters, such as the latitude and longitude are accurate to within 50 meters.
