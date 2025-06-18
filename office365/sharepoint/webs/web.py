@@ -134,12 +134,8 @@ class Web(SecurableObject):
     Also referred to as web site.
     """
 
-    def __init__(self, context, resource_path=None):
+    def __init__(self, context: ClientContext, resource_path: ResourcePath = None):
         """
-        Specifies the push notification subscriber over the site for the specified device app instance identifier.
-
-        :type resource_path: ResourcePath or None
-        :type context: office365.sharepoint.client_context.ClientContext
         """
         if resource_path is None:
             resource_path = WebPath("Web")
@@ -184,7 +180,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_access_request_list(self):
+    def get_access_request_list(self) -> List:
         """ """
         return_type = List(self.context)
         self.lists.add_child(return_type)
@@ -254,7 +250,7 @@ class Web(SecurableObject):
         self.ensure_property("Url", _get_site_script)
         return result
 
-    def consent_to_power_platform(self):
+    def consent_to_power_platform(self) -> FlowSynchronizationResult:
         """"""
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(

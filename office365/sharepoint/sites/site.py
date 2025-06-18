@@ -1,6 +1,8 @@
 import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -61,13 +63,13 @@ class Site(Entity):
     def __repr__(self):
         return self.url or self.entity_type_name
 
-    def cancel_delete_file_versions(self):
+    def cancel_delete_file_versions(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "CancelDeleteFileVersions")
         self.context.add_query(qry)
         return self
 
-    def cancel_set_version_policy_for_doc_libs(self):
+    def cancel_set_version_policy_for_doc_libs(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "CancelSetVersionPolicyForDocLibs")
         self.context.add_query(qry)

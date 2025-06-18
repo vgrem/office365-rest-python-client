@@ -15,9 +15,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestView(SPTestCase):
-    target_list = None  # type: List
-    target_view = None  # type: View
-    target_field = None  # type: Field
+    target_list: List = None
+    target_view: View = None
+    target_field: Field = None
     view_fields_count = None
 
     @classmethod
@@ -37,11 +37,7 @@ class TestView(SPTestCase):
     def tearDownClass(cls):
         cls.target_list.delete_object().execute_query()
 
-    def test1_get_all_views(self):
-        all_views = self.target_list.views.get().execute_query()
-        self.assertGreater(len(all_views), 1)
-
-    def test2_create_view(self):
+    def test1_create_view(self):
         view_properties = ViewCreationInformation()
         view_properties.Title = create_unique_name("My Tasks")
         view_properties.PersonalView = True
@@ -53,6 +49,10 @@ class TestView(SPTestCase):
         new_view = self.target_list.views.add(view_properties).execute_query()
         self.assertEqual(view_properties.Title, new_view.properties["Title"])
         self.__class__.target_view = new_view
+
+    def test2_get_all_views(self):
+        all_views = self.target_list.views.get().execute_query()
+        self.assertGreater(len(all_views), 1)
 
     def test3_read_view(self):
         view_to_read = self.__class__.target_view.get().execute_query()
