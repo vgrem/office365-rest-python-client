@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, cast
 
 from typing_extensions import Self
 
@@ -55,7 +55,7 @@ class Entity(ClientObject):
         Returns:
             GraphClient: The parent client context
         """
-        return self._context
+        return cast("GraphClient", self._context)
 
     @property
     def entity_type_name(self) -> str:

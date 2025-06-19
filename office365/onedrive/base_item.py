@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.onedrive.listitems.item_reference import ItemReference
 from office365.runtime.paths.resource_path import ResourcePath
+
+if TYPE_CHECKING:
+    from office365.directory.users.user import User
 
 
 class BaseItem(Entity):
@@ -12,19 +17,17 @@ class BaseItem(Entity):
     other resources types"""
 
     @property
-    def etag(self):
-        # type: () -> Optional[str]
+    def etag(self) -> Optional[str]:
         """ETag for the item."""
         return self.properties.get("eTag", None)
 
     @property
-    def created_by(self):
-        # type: () -> IdentitySet
+    def created_by(self) -> IdentitySet:
         """Identity of the user, device, or application which created the item."""
         return self.properties.get("createdBy", IdentitySet())
 
     @property
-    def created_by_user(self):
+    def created_by_user(self) -> User:
         """Identity of the user who created the item"""
         from office365.directory.users.user import User
 
@@ -34,13 +37,12 @@ class BaseItem(Entity):
         )
 
     @property
-    def last_modified_by(self):
-        # type: () -> IdentitySet
+    def last_modified_by(self) -> IdentitySet:
         """Identity of the user, device, and application which last modified the item."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @property
-    def last_modified_by_user(self):
+    def last_modified_by_user(self) -> User:
         """Identity of the user who last modified the item."""
         from office365.directory.users.user import User
 
@@ -50,49 +52,41 @@ class BaseItem(Entity):
         )
 
     @property
-    def created_datetime(self):
-        # type: () -> Optional[datetime]
+    def created_datetime(self) -> Optional[datetime]:
         """Gets date and time of item creation."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def last_modified_datetime(self):
-        # type: () -> Optional[datetime]
+    def last_modified_datetime(self) -> Optional[datetime]:
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Gets the name of the item."""
         return self.properties.get("name", None)
 
     @name.setter
-    def name(self, value):
-        # type: (str) -> None
+    def name(self, value: str) -> None:
         """Sets the name of the item."""
         self.set_property("name", value)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """Provides a user-visible description of the item."""
         return self.properties.get("description", None)
 
     @description.setter
-    def description(self, value):
-        # type: (str) -> None
+    def description(self, value: str) -> None:
         self.set_property("description", value)
 
     @property
-    def web_url(self):
-        # type: () -> Optional[str]
+    def web_url(self) -> Optional[str]:
         """URL that displays the resource in the browser"""
         return self.properties.get("webUrl", None)
 
     @property
-    def parent_reference(self):
-        # type: () -> ItemReference
+    def parent_reference(self) -> ItemReference:
         """Parent information, if the item has a parent."""
         return self.properties.setdefault("parentReference", ItemReference())
 

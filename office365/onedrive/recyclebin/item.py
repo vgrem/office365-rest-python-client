@@ -9,21 +9,18 @@ class RecycleBinItem(BaseItem):
     Embedded fileStorageContainer."""
 
     @property
-    def deleted_datetime(self):
-        # type: () -> Optional[datetime]
+    def deleted_datetime(self) -> Optional[datetime]:
         """Date and time when the item was deleted. The timestamp type represents date and time information using
         ISO 8601 format and is always in UTC."""
         return self.properties.get("deletedDateTime", datetime.min)
 
     @property
-    def deleted_from_location(self):
-        # type: () -> Optional[str]
+    def deleted_from_location(self) -> Optional[str]:
         """Relative URL of the list or folder that originally contained the item."""
         return self.properties.get("deletedFromLocation", None)
 
     @property
-    def size(self):
-        # type: () -> Optional[int]
+    def size(self) -> Optional[int]:
         """Size of the item in bytes."""
         return self.properties.get("size", None)
 

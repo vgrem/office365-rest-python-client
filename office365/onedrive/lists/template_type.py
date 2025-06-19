@@ -1,4 +1,7 @@
-class ListTemplateType:
+from enum import Enum
+
+
+class ListTemplateType(Enum):
     """Specifies the base list template type to use when creating a list."""
 
     genericList = "genericList"

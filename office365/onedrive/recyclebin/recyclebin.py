@@ -10,8 +10,7 @@ class RecycleBin(BaseItem):
     SharePoint Embedded fileStorageContainer."""
 
     @property
-    def items(self):
-        # type: () -> EntityCollection[RecycleBinItem]
+    def items(self) -> EntityCollection[RecycleBinItem]:
         """List of the recycleBinItems deleted by a user."""
         return self.properties.setdefault(
             "items",
@@ -24,6 +23,6 @@ class RecycleBin(BaseItem):
         )
 
     @property
-    def settings(self):
+    def settings(self) -> RecycleBinSettings:
         """Settings for the recycleBin"""
         return self.properties.get("settings", RecycleBinSettings())

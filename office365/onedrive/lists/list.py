@@ -20,18 +20,17 @@ class List(BaseItem):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The displayable title of the list"""
         return self.properties.get("displayName", None)
 
     @property
-    def list(self):
+    def list(self) -> ListInfo:
         """Provides additional details about the list."""
         return self.properties.get("list", ListInfo())
 
     @property
-    def sharepoint_ids(self):
+    def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""
         return self.properties.get("sharepointIds", SharePointIds())
 
@@ -45,8 +44,7 @@ class List(BaseItem):
         )
 
     @property
-    def columns(self):
-        # type: () -> ColumnDefinitionCollection
+    def columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
         return self.properties.setdefault(
             "columns",
@@ -56,8 +54,7 @@ class List(BaseItem):
         )
 
     @property
-    def content_types(self):
-        # type: () -> ContentTypeCollection
+    def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
         return self.properties.get(
             "contentTypes",
@@ -67,8 +64,7 @@ class List(BaseItem):
         )
 
     @property
-    def items(self):
-        # type: () -> ListItemCollection
+    def items(self) -> ListItemCollection:
         """All items contained in the list."""
         return self.properties.get(
             "items",
@@ -76,8 +72,7 @@ class List(BaseItem):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[RichLongRunningOperation]
+    def operations(self) -> EntityCollection[RichLongRunningOperation]:
         """The collection of long-running operations on the list."""
         return self.properties.get(
             "operations",
@@ -89,8 +84,7 @@ class List(BaseItem):
         )
 
     @property
-    def subscriptions(self):
-        # type: () -> EntityCollection[Subscription]
+    def subscriptions(self) -> EntityCollection[Subscription]:
         """The set of subscriptions on the list."""
         return self.properties.get(
             "subscriptions",
