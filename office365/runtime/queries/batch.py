@@ -8,7 +8,7 @@ from office365.runtime.queries.client_query import ClientQuery, T
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 
-def create_boundary(prefix: str, compact: bool = False):
+def create_boundary(prefix: str, compact: bool = False) -> str:
     """Creates a string that can be used as a multipart request boundary.
 
     Args:

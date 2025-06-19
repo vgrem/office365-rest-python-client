@@ -182,4 +182,4 @@ class TestSPList(SPTestCase):
             .render_list_data_as_stream()
             .execute_query()
         )
-        self.assertIsInstance(result.value, dict)
+        self.assertIsInstance(result.value, str)

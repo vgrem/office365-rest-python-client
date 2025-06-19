@@ -801,7 +801,7 @@ class List(SecurableObject):
         :param int render_options: Specifies the type of output to return.
         :param bool expand_groups: Specifies whether to expand the grouping or not.
         """
-        return_type = ClientResult(self.context, bytes())
+        return_type = ClientResult(self.context)
         if view_xml is None:
             view_xml = "<View/>"
         payload = {

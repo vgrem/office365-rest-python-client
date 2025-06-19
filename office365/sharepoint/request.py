@@ -27,7 +27,7 @@ class SharePointRequest(ODataRequest):
     def __init__(
         self,
         base_url: str,
-        environment: str = AzureEnvironment.Global,
+        environment: AzureEnvironment = AzureEnvironment.Global,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ):
@@ -47,7 +47,7 @@ class SharePointRequest(ODataRequest):
             allow_ntlm=allow_ntlm,
             browser_mode=browser_mode,
         )
-        self.beforeExecute += self._authenticate_request
+        self.beforeExecute += self._auth_context.authenticate_request
 
     def execute_request(self, path: str) -> Response:
         """
@@ -154,17 +154,13 @@ class SharePointRequest(ODataRequest):
         self._auth_context.with_access_token(token_func)
         return self
 
-    def _authenticate_request(self, request: RequestOptions) -> None:
-        """Authenticate the request by adding authorization headers"""
-        self._auth_context.authenticate_request(request)
-
     @property
     def authentication_context(self) -> AuthenticationContext:
         """Get the authentication context"""
         return self._auth_context
 
     @property
-    def base_url(self):
+    def base_url(self) -> str:
         """Represents Base Url"""
         return self._auth_context.url
 

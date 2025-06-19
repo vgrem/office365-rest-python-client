@@ -8,8 +8,7 @@ class MailFolderCollection(DeltaCollection[MailFolder]):
     def __init__(self, context, resource_path=None):
         super(MailFolderCollection, self).__init__(context, MailFolder, resource_path)
 
-    def add(self, display_name, is_hidden=False):
-        # type: (str, bool) -> MailFolder
+    def add(self, display_name: str, is_hidden: bool = False) -> MailFolder:
         """
         Use this API to create a new mail folder in the root folder of the user's mailbox.
 

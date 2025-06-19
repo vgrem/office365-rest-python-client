@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, cast, Any
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from typing_extensions import Self
 
@@ -107,6 +107,7 @@ class View(Entity):
             ValueError: If parent collection is not initialized
         """
         from office365.sharepoint.views.collection import ViewCollection
+
         if self._parent_collection is None:
             raise ValueError("Parent collection is not initialized")
         return cast(ViewCollection, self._parent_collection)

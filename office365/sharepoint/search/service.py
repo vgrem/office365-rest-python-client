@@ -1,4 +1,5 @@
-from typing import Any, List
+from datetime import datetime
+from typing import Any, List, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -6,6 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.search.query.auto_completion_results import (
@@ -24,12 +26,12 @@ from office365.sharepoint.search.result import SearchResult
 class SearchService(Entity):
     """SearchService exposes OData Service Operations."""
 
-    def __init__(self, context):
+    def __init__(self, context: ClientContext):
         super(SearchService, self).__init__(
             context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchService")
         )
 
-    def export(self, user, start_time):
+    def export(self, user: Union[str, User], start_time: datetime) -> ClientResult[str]:
         """
         The operation is used by the administrator to retrieve the query log entries,
         issued after a specified date, for a specified user.
@@ -39,10 +41,7 @@ class SearchService(Entity):
         """
         return_type = ClientResult(self.context, str())
 
-        def _export(user_name):
-            """
-            :type user_name: str
-            """
+        def _export(user_name: str):
             payload = {"userName": user_name, "startTime": start_time.isoformat()}
             qry = ServiceOperationQuery(
                 self, "export", None, payload, None, return_type
@@ -233,7 +232,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def suggest(self, query_text):
+    def suggest(self, query_text: str):
         """
         :param str query_text: The query text of the search query. If this element is not present or a value
              is not specified, a default value of an empty string MUST be used, and the server MUST return a

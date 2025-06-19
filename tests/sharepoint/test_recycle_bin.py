@@ -6,7 +6,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointRecycleBin(SPTestCase):
-    target_file = None  # type: File
+    target_file: File = None
 
     @classmethod
     def setUpClass(cls):

@@ -12,7 +12,9 @@ import office365.logger
 from office365.runtime.auth.auth_cookies import AuthCookies
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
 from office365.runtime.auth.sts_profile import STSProfile
+from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.auth.user_realm_info import UserRealmInfo
+from office365.runtime.http.request_options import RequestOptions
 
 office365.logger.ensure_debug_secrets()
 
@@ -31,13 +33,12 @@ def datetime_escape(value):
 
 
 class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
-    def __init__(self, url, username, password, browser_mode, environment=None):
+    def __init__(self, url, credential: UserCredential, browser_mode, environment=None):
         """
         SAML Security Token Service provider (claims-based authentication)
 
         :param str url: Site or Web absolute url
-        :param str username: Typically a UPN in the form of an email address
-        :param str password: The password
+        :param UserCredential credential: User credentials
         :param bool browser_mode:
         :param AzureEnvironment environment: The Office 365 Cloud Environment endpoint used for authentication.
         """
@@ -47,9 +48,8 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         self._browser_mode = browser_mode
         # Last occurred error
         self.error = ""
-        self._username = username
-        self._password = password
-        self._cached_auth_cookies = None  # type: Optional[AuthCookies]
+        self._credential = credential
+        self._cached_auth_cookies: Optional[AuthCookies] = None
         self.__ns_prefixes = {
             "S": "{http://www.w3.org/2003/05/soap-envelope}",
             "s": "{http://www.w3.org/2003/05/soap-envelope}",
@@ -66,7 +66,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         for key in self.__ns_prefixes.keys():
             ElementTree.register_namespace(key, self.__ns_prefixes[key][1:-1])
 
-    def authenticate_request(self, request):
+    def authenticate_request(self, request: RequestOptions) -> None:
         """
         Authenticate request handler
         """
@@ -104,7 +104,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         """Get User Realm"""
         resp = requests.post(
             self._sts_profile.user_realm_service_url,
-            data="login={0}&xml=1".format(self._username),
+            data="login={0}&xml=1".format(self._credential.userName),
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         xml = ElementTree.fromstring(resp.content)
@@ -125,8 +125,8 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             {
                 "auth_url": adfs_url,
                 "message_id": str(uuid.uuid4()),
-                "username": string_escape(self._username),
-                "password": string_escape(self._password),
+                "username": string_escape(self._credential.userName),
+                "password": string_escape(self._credential.password),
                 "created": datetime_escape(self._sts_profile.created),
                 "expires": datetime_escape(self._sts_profile.expires),
                 "issuer": self._sts_profile.token_issuer,
@@ -177,8 +177,8 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             "SAML.xml",
             {
                 "auth_url": self._sts_profile.site_url,
-                "username": string_escape(self._username),
-                "password": string_escape(self._password),
+                "username": string_escape(self._credential.userName),
+                "password": string_escape(self._credential.password),
                 "message_id": str(uuid.uuid4()),
                 "created": datetime_escape(self._sts_profile.created),
                 "expires": datetime_escape(self._sts_profile.expires),

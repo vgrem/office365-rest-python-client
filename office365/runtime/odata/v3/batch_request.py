@@ -17,6 +17,8 @@ from office365.runtime.utilities import message_to_bytes
 
 
 class ODataBatchV3Request(ODataRequest):
+    """ """
+
     def build_request(self, query):
         # type: (BatchQuery) -> RequestOptions
         """Construct a OData v3 Batch request"""

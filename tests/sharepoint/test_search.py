@@ -2,16 +2,11 @@ from datetime import datetime, timedelta
 from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.search.administration.document_crawl_log import (
-    DocumentCrawlLog,
-)
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
 from tests import (
-    test_admin_credentials,
-    test_admin_site_url,
     test_site_url,
     test_user_credentials,
 )

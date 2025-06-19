@@ -1,19 +1,27 @@
+from typing import TYPE_CHECKING
+
+from typing_extensions import Self
+
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.recyclebin.item import RecycleBinItem
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
     """Represents a collection of View resources."""
 
-    def __init__(self, context, resource_path=None):
+    def __init__(self, context: "ClientContext", resource_path: ResourcePath = None):
         super(RecycleBinItemCollection, self).__init__(
             context, RecycleBinItem, resource_path
         )
 
-    def delete_all_second_stage_items(self):
+    def delete_all_second_stage_items(self) -> Self:
         """Permanently deletes all Recycle Bin items in the second-stage Recycle Bin"""
         qry = ServiceOperationQuery(self, "DeleteAllSecondStageItems")
         self.context.add_query(qry)
@@ -62,13 +70,13 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
             ServiceOperationPath("GetById", [recycle_bin_id], self.resource_path),
         )
 
-    def delete_all(self):
+    def delete_all(self) -> Self:
         """Permanently deletes all Recycle Bin items."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)
         return self
 
-    def restore_all(self):
+    def restore_all(self) -> Self:
         """Restores all Recycle Bin items to their original locations."""
         qry = ServiceOperationQuery(self, "RestoreAll")
         self.context.add_query(qry)

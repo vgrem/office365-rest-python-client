@@ -196,7 +196,7 @@ class AuthenticationContext:
             Self: Supports method chaining
         """
 
-        def _authenticate(request: RequestOptions):
+        def _authenticate(request: RequestOptions) -> Self:
 
             request_time = datetime.now(timezone.utc)
 
@@ -228,35 +228,28 @@ class AuthenticationContext:
         if isinstance(credentials, ClientCredential):
             provider = ACSTokenProvider(
                 self.url,
-                credentials.clientId,
-                credentials.clientSecret,
+                credentials,
                 self._environment,
             )
         elif isinstance(credentials, UserCredential):
             if self._allow_ntlm:
                 from office365.runtime.auth.providers.ntlm_provider import NtlmProvider
 
-                provider = NtlmProvider(credentials.userName, credentials.password)
+                provider = NtlmProvider(credentials)
             else:
                 provider = SamlTokenProvider(
                     self.url,
-                    credentials.userName,
-                    credentials.password,
+                    credentials,
                     self._browser_mode,
                     self._environment,
                 )
         else:
             raise ValueError("Unknown credential type")
 
-        def _authenticate(request):
-            # type: (RequestOptions) -> None
-            provider.authenticate_request(request)
-
-        self._authenticate = _authenticate
+        self._authenticate = provider.authenticate_request
         return self
 
-    def acquire_token_for_user(self, username, password):
-        # type: (str, str) -> Self
+    def acquire_token_for_user(self, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via user credentials
         Status: deprecated!
@@ -264,16 +257,13 @@ class AuthenticationContext:
         :param str password: The user password
         :param str username: Typically a UPN in the form of an email address
         """
-        provider = SamlTokenProvider(self.url, username, password, self._browser_mode)
-
-        def _authenticate(request):
-            # type: (RequestOptions) -> None
-            provider.authenticate_request(request)
-
-        self._authenticate = _authenticate
+        provider = SamlTokenProvider(
+            self.url, UserCredential(username, password), self._browser_mode
+        )
+        self._authenticate = provider.authenticate_request
         return self
 
-    def acquire_token_for_app(self, client_id, client_secret):
+    def acquire_token_for_app(self, client_id, client_secret) -> Self:
         """
         Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
@@ -282,13 +272,10 @@ class AuthenticationContext:
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
         """
-        provider = ACSTokenProvider(self.url, client_id, client_secret)
-
-        def _authenticate(request):
-            # type: (RequestOptions) -> None
-            provider.authenticate_request(request)
-
-        self._authenticate = _authenticate
+        provider = ACSTokenProvider(
+            self.url, ClientCredential(client_id, client_secret)
+        )
+        self._authenticate = provider.authenticate_request
         return self
 
     def authenticate_request(self, request: RequestOptions) -> None:
@@ -302,4 +289,5 @@ class AuthenticationContext:
         """
         if self._authenticate is None:
             raise ValueError("Authentication credentials are missing or invalid")
+
         self._authenticate(request)

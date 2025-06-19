@@ -4,6 +4,7 @@ import requests
 
 from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
+from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.utilities import urlparse
@@ -17,24 +18,21 @@ class ACSTokenProvider(AuthenticationProvider):
     def __init__(
         self,
         url: str,
-        client_id: str,
-        client_secret: str,
+        credential: ClientCredential,
         environment: AzureEnvironment = None,
     ):
         """Initialize ACS token provider.
 
         Args:
             url: SharePoint web or site URL
-            client_id: OAuth client ID of the calling application
-            client_secret: Client secret for proving application identity
+            credential: OAuth client credential of the calling application
             environment: Office 365 Cloud Environment endpoint (defaults to Azure Global)
         """
         self.url = url
         self.redirect_url = None
-        self.error = None
-        self._client_id = client_id
-        self._client_secret = client_secret
-        self._cached_token = None  # type: Optional[TokenResponse]
+        self._last_error = None
+        self._credential = credential
+        self._cached_token: Optional[TokenResponse] = None
         self._environment = environment
 
     def authenticate_request(self, request: RequestOptions) -> None:
@@ -54,12 +52,12 @@ class ACSTokenProvider(AuthenticationProvider):
             url_info = urlparse(self.url)
             return self._get_app_only_access_token(url_info.hostname, realm)
         except requests.exceptions.RequestException as e:
-            self.error = (
+            self._last_error = (
                 e.response.text
                 if e.response is not None
                 else "Acquire app-only access token failed."
             )
-            raise ValueError(self.error)
+            raise ValueError(self._last_error)
 
     def _get_app_only_access_token(
         self, target_host: str, target_realm: str
@@ -73,12 +71,14 @@ class ACSTokenProvider(AuthenticationProvider):
         resource = self.get_formatted_principal(
             self.SHAREPOINT_PRINCIPAL, target_host, target_realm
         )
-        principal_id = self.get_formatted_principal(self._client_id, None, target_realm)
+        principal_id = self.get_formatted_principal(
+            self._credential.client_id, None, target_realm
+        )
         sts_url = self.get_security_token_service_url(target_realm)
         oauth2_request = {
             "grant_type": "client_credentials",
             "client_id": principal_id,
-            "client_secret": self._client_secret,
+            "client_secret": self._credential.client_secret,
             "scope": resource,
             "resource": resource,
         }

@@ -135,8 +135,7 @@ class Web(SecurableObject):
     """
 
     def __init__(self, context: ClientContext, resource_path: ResourcePath = None):
-        """
-        """
+        """ """
         if resource_path is None:
             resource_path = WebPath("Web")
         super(Web, self).__init__(context, resource_path)

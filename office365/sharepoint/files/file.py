@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, AnyStr
 from urllib.parse import quote, unquote
 
 import requests
+from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -403,7 +404,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
         return self
 
-    def publish(self, comment):
+    def publish(self, comment) -> Self:
         """Submits the file for content approval with the specified comment.
         :param str comment: Specifies the comment.
         """
@@ -411,7 +412,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def unpublish(self, comment):
+    def unpublish(self, comment) -> Self:
         """Removes the file from content approval or unpublishes a major version.
         :param str comment: Specifies the comment for UnPublish. Its length MUST be equal to or less than 1023.
         """
@@ -419,7 +420,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def check_access_and_post_view_audit_event(self):
+    def check_access_and_post_view_audit_event(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(
@@ -709,7 +710,7 @@ class File(AbstractFile):
             self.ensure_property("ServerRelativeUrl", _download_as_stream)
         return self
 
-    def rename(self, new_file_name):
+    def rename(self, new_file_name: str) -> Self:
         """
         Rename a file
         :param str new_file_name: A new file name
@@ -721,7 +722,7 @@ class File(AbstractFile):
         return self
 
     @property
-    def activity_capabilities(self):
+    def activity_capabilities(self) -> ActivityCapabilities:
         """"""
         return self.properties.get("ActivityCapabilities", ActivityCapabilities())
 
@@ -739,14 +740,14 @@ class File(AbstractFile):
         return self.properties.get("ContentTag", None)
 
     @property
-    def author(self):
+    def author(self) -> User:
         """Specifies the user who added the file."""
         return self.properties.get(
             "Author", User(self.context, ResourcePath("Author", self.resource_path))
         )
 
     @property
-    def checked_out_by_user(self):
+    def checked_out_by_user(self) -> User:
         """Gets an object that represents the user who has checked out the file."""
         return self.properties.get(
             "CheckedOutByUser",
@@ -778,7 +779,9 @@ class File(AbstractFile):
         )
 
     @property
-    def effective_information_rights_management_settings(self):
+    def effective_information_rights_management_settings(
+        self,
+    ) -> EffectiveInformationRightsManagementSettings:
         """
         Returns the effective Information Rights Management (IRM) settings for the file.
 
@@ -795,7 +798,9 @@ class File(AbstractFile):
         )
 
     @property
-    def information_rights_management_settings(self):
+    def information_rights_management_settings(
+        self,
+    ) -> InformationRightsManagementFileSettings:
         """Returns the Information Rights Management (IRM) settings for the file."""
         return self.properties.get(
             "InformationRightsManagementSettings",
@@ -817,7 +822,7 @@ class File(AbstractFile):
         )
 
     @property
-    def version_expiration_report(self):
+    def version_expiration_report(self) -> FileVersionCollection:
         """"""
         return self.properties.get(
             "VersionExpirationReport",
@@ -839,7 +844,7 @@ class File(AbstractFile):
         )
 
     @property
-    def modified_by(self):
+    def modified_by(self) -> User:
         """Gets a value that returns the user who last modified the file."""
         return self.properties.get(
             "ModifiedBy",
@@ -847,7 +852,7 @@ class File(AbstractFile):
         )
 
     @property
-    def locked_by_user(self):
+    def locked_by_user(self) -> User:
         """Gets a value that returns the user that owns the current lock on the file."""
         return self.properties.get(
             "LockedByUser",
@@ -861,7 +866,7 @@ class File(AbstractFile):
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def server_relative_path(self):
+    def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
 

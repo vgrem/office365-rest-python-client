@@ -195,7 +195,7 @@ class ClientContext(ClientRuntimeContext):
         :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
         """
         batch_request = ODataBatchV3Request(JsonLightFormat())
-        batch_request.beforeExecute += self._authenticate_request
+        batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self._ensure_form_digest
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
@@ -208,7 +208,9 @@ class ClientContext(ClientRuntimeContext):
         """Provides access to underlying request instance"""
         if self._pending_request is None:
             self._pending_request = ODataRequest(JsonLightFormat())
-            self._pending_request.beforeExecute += self._authenticate_request
+            self._pending_request.beforeExecute += (
+                self.authentication_context.authenticate_request
+            )
             self._pending_request.beforeExecute += self._build_modification_query
         return self._pending_request
 
@@ -220,7 +222,7 @@ class ClientContext(ClientRuntimeContext):
     def _get_context_web_information(self):
         """Returns an ContextWebInformation object that specifies metadata about the site"""
         client = ODataRequest(JsonLightFormat())
-        client.beforeExecute += self._authenticate_request
+        client.beforeExecute += self.authentication_context.authenticate_request
         for e in self.pending_request().beforeExecute:
             if not EventHandler.is_system(e):
                 client.beforeExecute += e
@@ -266,10 +268,6 @@ class ClientContext(ClientRuntimeContext):
         if clear_queries:
             ctx.clear()
         return ctx
-
-    def _authenticate_request(self, request: RequestOptions) -> None:
-        """Authenticate request"""
-        self.authentication_context.authenticate_request(request)
 
     def _build_modification_query(self, request):
         # type: (RequestOptions) -> None
