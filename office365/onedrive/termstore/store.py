@@ -12,16 +12,14 @@ from office365.runtime.types.collections import StringCollection
 class Store(Entity):
     """Represents a taxonomy term store."""
 
-    def get_all_term_sets(self):
+    def get_all_term_sets(self) -> EntityCollection[Set]:
         """Returns a collection containing a flat list of all TermSet objects."""
         return_type = EntityCollection(self.context, Set)
 
-        def _sets_loaded(sets):
-            # type: (SetCollection) -> None
+        def _sets_loaded(sets: SetCollection) -> None:
             [return_type.add_child(s) for s in sets]
 
-        def _groups_loaded(groups):
-            # type: (GroupCollection) -> None
+        def _groups_loaded(groups: GroupCollection) -> None:
             [grp.sets.get().after_execute(_sets_loaded) for grp in groups]
 
         self.groups.get().after_execute(_groups_loaded)
@@ -29,19 +27,17 @@ class Store(Entity):
         return return_type
 
     @property
-    def default_language_tag(self):
-        # type: () -> Optional[str]
+    def default_language_tag(self) -> Optional[str]:
         """Default language of the term store."""
         return self.properties.get("defaultLanguageTag", None)
 
     @property
-    def language_tags(self):
+    def language_tags(self) -> StringCollection:
         """List of languages for the term store."""
         return self.properties.get("languageTags", StringCollection())
 
     @property
-    def groups(self):
-        # type: () -> GroupCollection
+    def groups(self) -> GroupCollection:
         """Collection of all groups available in the term store."""
         return self.properties.get(
             "groups",
@@ -49,7 +45,7 @@ class Store(Entity):
         )
 
     @property
-    def sets(self):
+    def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""
         return self.properties.get(
             "sets",

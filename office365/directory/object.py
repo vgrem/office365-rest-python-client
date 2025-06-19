@@ -1,4 +1,7 @@
 from datetime import datetime
+from typing import List
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
@@ -10,7 +13,9 @@ class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
     directory entity types."""
 
-    def check_member_objects(self, ids=None):
+    def check_member_objects(
+        self, ids: List[str] = None
+    ) -> ClientResult[StringCollection]:
         """
         Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
         the specified user, group, service principal, organizational contact, device, or directory object.
@@ -74,7 +79,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def restore(self):
+    def restore(self) -> Self:
         """
         Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from
         deleted items. If an item was accidentally deleted, you can fully restore the item. This is not applicable
@@ -87,6 +92,6 @@ class DirectoryObject(Entity):
         return self
 
     @property
-    def deleted_datetime(self):
+    def deleted_datetime(self) -> datetime:
         """Date and time when this object was deleted. Always null when the object hasn't been deleted."""
         return self.properties.get("deletedDateTime", datetime.min)

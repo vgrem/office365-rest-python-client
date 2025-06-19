@@ -7,7 +7,7 @@ from tests.graph_case import GraphTestCase
 class TestTeamApps(GraphTestCase):
     """Tests for team Apps"""
 
-    target_team = None  # type: Team
+    target_team: Team = None
 
     @classmethod
     def setUpClass(cls):

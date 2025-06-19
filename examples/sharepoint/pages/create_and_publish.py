@@ -9,6 +9,6 @@ from tests import create_unique_name, test_team_site_url, test_user_credentials
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
 page_title = create_unique_name("Site Page ")
-print("Creating and publishing a site page: {0} ...".format(page_title))
+print(f"Creating and publishing a site page: {page_title} ...")
 new_page = ctx.site_pages.create_and_publish_page(page_title).execute_query()
-print("A site page has been created at url: {0} ...".format(new_page.absolute_url))
+print(f"A site page has been created at url: {new_page.absolute_url} ...")

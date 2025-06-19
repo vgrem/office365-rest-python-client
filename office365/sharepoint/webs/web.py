@@ -453,7 +453,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_web_url_from_page_url(context, page_full_url):
+    def get_web_url_from_page_url(context, page_full_url) -> ClientResult[str]:
         """Returns the URL of the root folder for the site containing the specified URL
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -493,7 +493,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def create_group_based_environment(self):
+    def create_group_based_environment(self) -> FlowSynchronizationResult:
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(
             self, "CreateGroupBasedEnvironment", None, None, None, return_type
@@ -501,7 +501,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_group_based_environment(self):
+    def get_group_based_environment(self) -> FlowSynchronizationResult:
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(
             self, "GetGroupBasedEnvironment", None, None, None, return_type
@@ -524,7 +524,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_instances(self, target_web_url):
+    def sync_flow_instances(self, target_web_url: str) -> FlowSynchronizationResult:
         """
         :param str target_web_url:
         """
@@ -536,7 +536,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_templates(self, category):
+    def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """
         :param str category:
         """
@@ -548,7 +548,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_all_client_side_components(self):
+    def get_all_client_side_components(self) -> ClientResult[str]:
         """"""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(
@@ -577,7 +577,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_app_bdc_catalog(self):
+    def get_app_bdc_catalog(self) -> AppBdcCatalog:
         """
         Returns the Business Data Connectivity (BDC) MetadataCatalog for an application that gives access to the
         external content types defined in the BDC metadata model packaged by the application.<151>
@@ -609,7 +609,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_supported_ui_language(self, lcid):
+    def add_supported_ui_language(self, lcid) -> Self:
         """
         Adds a supported UI language by its language identifier.
         :param int lcid: Specifies the language identifier to be added.
@@ -618,7 +618,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def get_lists(self, row_limit=100):
+    def get_lists(self, row_limit: int = 100) -> ListCollection:
         """
         :param int row_limit: Specifies a limit for the number of lists in the query that are returned per page
         """
@@ -651,12 +651,12 @@ class Web(SecurableObject):
 
     def get_recycle_bin_items(
         self,
-        paging_info=None,
-        row_limit=100,
-        is_ascending=True,
-        order_by=None,
-        item_state=None,
-    ):
+        paging_info: str = None,
+        row_limit: int = 100,
+        is_ascending: bool = True,
+        order_by: int = None,
+        item_state: int = None,
+    ) -> RecycleBinItemCollection:
         """
         Gets the recycle bin items that are based on the specified query.
 
@@ -718,7 +718,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_all_webs(self):
+    def get_all_webs(self) -> WebCollection:
         """Returns a collection containing a flat list of all Web objects in the Web."""
 
         return_type = WebCollection(self.context, self.webs.resource_path)
@@ -739,7 +739,7 @@ class Web(SecurableObject):
 
             cur_web.ensure_property("Webs", _webs_loaded, cur_web)
 
-    def get_list_using_path(self, decoded_url):
+    def get_list_using_path(self, decoded_url: str):
         """
         Returns the list that is associated with the specified server-relative path.
 
@@ -754,7 +754,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_news_list(self, allow_create=False):
+    def get_news_list(self, allow_create: bool = False) -> List:
         """
         Returns the News List on this web, if it exists. If the list does not exist, the list will be created and
         then returned if allowCreate is set to true. The News List is a hidden SP.List in which News Posts are stored.
@@ -771,7 +771,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_view_from_url(self, list_url):
+    def get_view_from_url(self, list_url: str) -> View:
         """Returns a view of a list within the site based on the specified URL.
 
         :param str list_url: Contains either an absolute URL or a site-relative URL of a view.
@@ -781,7 +781,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetViewFromUrl", [list_url], self.resource_path),
         )
 
-    def get_view_from_path(self, decoded_url):
+    def get_view_from_path(self, decoded_url: str) -> View:
         """Returns a view of a list within the site based on the specified path.
 
         :param str decoded_url: Contains either an absolute path or a site-relative path of a view.
@@ -791,7 +791,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetViewFromPath", [decoded_url], self.resource_path),
         )
 
-    def get_regional_datetime_schema(self):
+    def get_regional_datetime_schema(self) -> ClientResult[str]:
         """Get DateTime Schema based on regional settings"""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(
@@ -800,8 +800,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_sharing_link_data(self, link_url):
-        # type: (str) -> ClientResult[SharingLinkData]
+    def get_sharing_link_data(self, link_url: str) -> ClientResult[SharingLinkData]:
         """
         This method determines basic information about the supplied link URL, including limited data about the object
         the link URL refers to and any additional sharing link data if the link URL is a tokenized sharing link
@@ -817,12 +816,9 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_context_web_theme_data(context):
-        # type: (ClientContext) -> ClientResult[str]
+    def get_context_web_theme_data(context: ClientContext) -> ClientResult[str]:
         """
         Get ThemeData for the context web.
-
-        :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, str())
         qry = ServiceOperationQuery(
@@ -955,8 +951,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_by_server_relative_url(self, server_relative_url):
-        # type: (str) -> File
+    def get_file_by_server_relative_url(self, server_relative_url: str) -> File:
         """
         Returns the file object located at the specified server-relative URL, for example:
             - "/sites/MySite/Shared Documents/MyDocument.docx"
@@ -973,8 +968,7 @@ class Web(SecurableObject):
             self.root_folder.files,
         )
 
-    def get_file_by_server_relative_path(self, path):
-        # type: (str) -> File
+    def get_file_by_server_relative_path(self, path: str) -> File:
         """Returns the file object located at the specified server-relative path, for example:
             - "/sites/MySite/Shared Documents/MyDocument.docx"
             - "Shared Documents/MyDocument.docx"
@@ -1066,7 +1060,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_user(self, login_name):
+    def ensure_user(self, login_name: str) -> User:
         """Checks whether the specified logon name belongs to a valid user of the website, and if the logon name does
         not already exist, adds it to the website.
 
@@ -1646,7 +1640,11 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_sharing_link_kind(context, file_url, return_type=None):
+    def get_sharing_link_kind(
+        context: ClientContext,
+        file_url: str,
+        return_type: Optional[ClientResult[int]] = None,
+    ):
         """
         This method determines the kind of tokenized sharing link represented by the supplied file URL.
 
@@ -1663,8 +1661,8 @@ class Web(SecurableObject):
             {"fileUrl": file_url},
             None,
             return_type,
+            True,
         )
-        qry.static = True
         context.add_query(qry)
         return return_type
 
@@ -1840,7 +1838,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_storage_entity(self, key):
+    def get_storage_entity(self, key: str) -> StorageEntity:
         """
         This will return the storage entity identified by the given key
 

@@ -78,7 +78,7 @@ class AuthenticationContext:
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
         if cert_path is None and private_key is None:
             raise ValueError(
                 "Private key is missing. Use either 'cert_path' or 'private_key' to pass the value"
@@ -125,16 +125,14 @@ class AuthenticationContext:
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
 
         def _acquire_token():
             import msal
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(
-                    get_login_authority(self._environment), tenant
-                ),
+                authority=f"{get_login_authority(self._environment)}/{tenant}",
                 client_credential=None,
             )
             result = app.acquire_token_interactive(scopes=scopes)
@@ -157,7 +155,7 @@ class AuthenticationContext:
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
 
         def _acquire_token():
             import msal

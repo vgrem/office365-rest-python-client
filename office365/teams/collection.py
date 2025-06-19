@@ -33,7 +33,7 @@ class TeamCollection(EntityCollection[Team]):
         self.context.groups.get_all(page_size, page_loaded=_init_teams)
         return self
 
-    def create(self, display_name, description=None):
+    def create(self, display_name: str, description: str = None):
         """Create a new team.
 
         This is async operation.

@@ -59,7 +59,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             HTTP response
         """
-        request_url = "{0}/{1}".format(self.service_root_url, path)
+        request_url = f"{self.service_root_url}/{path}"
         return self.execute_request_direct(RequestOptions(request_url))
 
     def with_credentials(

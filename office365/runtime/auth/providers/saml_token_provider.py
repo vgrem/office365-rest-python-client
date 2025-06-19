@@ -90,11 +90,11 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         try:
             logger.debug("Acquiring Access Token..")
             user_realm = self._get_user_realm()
-            if user_realm.IsFederated:
-                token = self._acquire_service_token_from_adfs(user_realm.STSAuthUrl)
+            if user_realm.is_federated:
+                token = self._acquire_service_token_from_adfs(user_realm.sts_auth_url)
             else:
                 token = self._acquire_service_token()
-            return self._get_authentication_cookie(token, user_realm.IsFederated)
+            return self._get_authentication_cookie(token, user_realm.is_federated)
         except requests.exceptions.RequestException as e:
             logger.error(e.response.text)
             self.error = "Error: {}".format(e)

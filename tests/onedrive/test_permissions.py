@@ -98,7 +98,7 @@ class TestPermissions(TestCase):
         self.assertIsNotNone(permissions.resource_path)
 
     def test9_create_site_permission(self):
-        app = self.client.applications.get_by_app_id(test_client_credentials.clientId)
+        app = self.client.applications.get_by_app_id(test_client_credentials.client_id)
         new_site_permission = self.client.sites.root.permissions.add(
             ["write"], app
         ).execute_query()

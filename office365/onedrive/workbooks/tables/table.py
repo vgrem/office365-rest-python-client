@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
 from office365.onedrive.workbooks.tables.columns.collection import (
@@ -20,7 +22,7 @@ class WorkbookTable(Entity):
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
-    def data_body_range(self):
+    def data_body_range(self) -> WorkbookRange:
         """Gets the range object associated with the data body of the table."""
         return_type = WorkbookRange(
             self.context, ResourcePath("dataBodyRange", self.resource_path)
@@ -29,7 +31,7 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def range(self):
+    def range(self) -> WorkbookRange:
         """Get the range object associated with the entire table."""
         return_type = WorkbookRange(
             self.context, ResourcePath("range", self.resource_path)
@@ -38,81 +40,72 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def total_row_range(self):
+    def total_row_range(self) -> WorkbookRange:
         """Gets the range object associated with totals row of the table."""
         return_type = WorkbookRange(self.context)
         qry = FunctionQuery(self, "totalRowRange", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def clear_filters(self):
+    def clear_filters(self) -> Self:
         """Clears all the filters currently applied on the table."""
         qry = ServiceOperationQuery(self, "clearFilters")
         self.context.add_query(qry)
         return self
 
-    def reapply_filters(self):
+    def reapply_filters(self) -> Self:
         """Reapplies all the filters currently on the table."""
         qry = ServiceOperationQuery(self, "reapplyFilters")
         self.context.add_query(qry)
         return self
 
     @property
-    def highlight_first_column(self):
-        # type: () -> Optional[bool]
+    def highlight_first_column(self) -> Optional[bool]:
         """Indicates whether the first column contains special formatting."""
         return self.properties.get("highlightFirstColumn", None)
 
     @property
-    def highlight_last_column(self):
-        # type: () -> Optional[bool]
+    def highlight_last_column(self) -> Optional[bool]:
         """Indicates whether the last column contains special formatting."""
         return self.properties.get("highlightLastColumn", None)
 
     @property
-    def legacy_id(self):
-        # type: () -> Optional[str]
+    def legacy_id(self) -> Optional[str]:
         """Legacy Id used in older Excel clients. The value of the identifier remains the same even when the table
         is renamed. This property should be interpreted as an opaque string value and shouldn't be parsed to any
         other type."""
         return self.properties.get("legacyId", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Name of the table."""
         return self.properties.get("name", None)
 
     @property
-    def show_banded_columns(self):
-        # type: () -> Optional[bool]
+    def show_banded_columns(self) -> Optional[bool]:
         """Indicates whether the columns show banded formatting in which odd columns are highlighted differently
         from even ones to make reading the table easier."""
         return self.properties.get("showBandedColumns", None)
 
     @property
-    def show_banded_rows(self):
-        # type: () -> Optional[bool]
+    def show_banded_rows(self) -> Optional[bool]:
         """Indicates whether the rows show banded formatting in which odd rows are highlighted differently from even
         ones to make reading the table easier."""
         return self.properties.get("showBandedRows", None)
 
     @property
-    def show_filter_button(self):
-        # type: () -> Optional[bool]
+    def show_filter_button(self) -> Optional[bool]:
         """Indicates whether the filter buttons are visible at the top of each column header. Setting this is only
         allowed if the table contains a header row."""
         return self.properties.get("showFilterButton", None)
 
     @property
-    def show_headers(self):
-        # type: () -> Optional[bool]
+    def show_headers(self) -> Optional[bool]:
         """Indicates whether the header row is visible or not. This value can be set to show or remove the header row"""
         return self.properties.get("showHeaders", None)
 
     @property
-    def columns(self):
-        # type: () -> WorkbookTableColumnCollection
+    def columns(self) -> WorkbookTableColumnCollection:
         """Represents a collection of all the columns in the table."""
         return self.properties.get(
             "columns",
@@ -122,8 +115,7 @@ class WorkbookTable(Entity):
         )
 
     @property
-    def rows(self):
-        # type: () -> WorkbookTableRowCollection
+    def rows(self) -> WorkbookTableRowCollection:
         """Represents a collection of all the rows in the table."""
         return self.properties.get(
             "rows",
@@ -133,8 +125,7 @@ class WorkbookTable(Entity):
         )
 
     @property
-    def sort(self):
-        # type: () -> WorkbookTableSort
+    def sort(self) -> WorkbookTableSort:
         """Represents the sorting for the table."""
         return self.properties.get(
             "sort",

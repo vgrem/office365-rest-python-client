@@ -6,7 +6,7 @@ from tests.graph_case import GraphTestCase
 class TestFileStorage(GraphTestCase):
     """File storage test case base class"""
 
-    target_container = None  # type: FileStorageContainer
+    target_container: FileStorageContainer = None
 
     @requires_delegated_permission("FileStorageContainer.Selected")
     def test1_create_file_storage_container(self):
