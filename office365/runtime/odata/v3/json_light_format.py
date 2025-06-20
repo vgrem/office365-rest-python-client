@@ -49,7 +49,7 @@ class JsonLightFormat(ODataJsonFormat):
 
     @property
     def media_type(self):
-        return "application/json;odata={0}".format(self.metadata_level)
+        return f"application/json;odata={self.metadata_level.value}"
 
     @property
     def include_control_information(self):

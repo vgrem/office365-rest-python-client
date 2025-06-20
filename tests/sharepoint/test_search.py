@@ -24,7 +24,6 @@ class TestSearch(TestCase):
         result = self.client.search.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-
     def test1_export_search_settings(self):
         current_user = self.client.web.current_user
         export_start_data = datetime.today() - timedelta(days=100)

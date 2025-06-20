@@ -217,7 +217,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         Returns:
             self: Supports fluent method chaining
         """
-        self.query_options.orderBy = value
+        self.query_options.order_by = value
         return self
 
     def skip(self, value: int) -> Self:

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
+
 
 class ODataJsonFormat(ABC):
     """
@@ -9,7 +11,7 @@ class ODataJsonFormat(ABC):
     ensuring they provide all required format properties and metadata handling.
     """
 
-    def __init__(self, metadata_level: str = None):
+    def __init__(self, metadata_level: ODataV3MetadataLevel = None):
         """
         Initialize the OData JSON format handler.
 

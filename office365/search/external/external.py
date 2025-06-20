@@ -8,8 +8,7 @@ class External(Entity):
     """A logical container  for external sources."""
 
     @property
-    def connections(self):
-        # type: () -> EntityCollection[ExternalConnection]
+    def connections(self) -> EntityCollection[ExternalConnection]:
         """Get a list of the externalConnection objects and their properties."""
         return self.properties.get(
             "connections",

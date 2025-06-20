@@ -1,5 +1,5 @@
 import types
-from typing import Any, Callable, Iterator, TypeVar
+from typing import Any, Callable, Iterator, List, TypeVar
 
 from typing_extensions import Self
 
@@ -9,7 +9,7 @@ F = TypeVar("F", bound=Callable[..., None])
 class EventHandler:
     def __init__(self, once=False):
         # type: (bool) -> None
-        self._listeners = []  # type: list[F]
+        self._listeners = []  # type: List[F]
         self._once = once
 
     def __contains__(self, listener):

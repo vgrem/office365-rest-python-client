@@ -1,78 +1,41 @@
-class QueryOptions(object):
-    """ """
+from dataclasses import dataclass, field
+from typing import Dict, Iterator, List, Optional, Tuple
 
-    def __init__(
-        self,
-        select=None,
-        expand=None,
-        filter_expr=None,
-        order_by=None,
-        top=None,
-        skip=None,
-        custom=None,
-    ):
-        """
-        A query option is a set of query string parameters applied to a resource that can help control the amount
-        of data being returned for the resource in the URL
 
-        :param list[str] select: The $select system query option allows the clients to requests a limited set of
-        properties for each entity or complex type.
-        :param list[str] expand: The $expand system query option specifies the related resources to be included in
-        line with retrieved resources.
-        :param str filter_expr: The $filter system query option allows clients to filter a collection of resources
-        that are addressed by a request URL.
-        :param str order_by: The $orderby system query option allows clients to request resources in either ascending
-        order using asc or descending order using desc
-        :param int top: The $top system query option requests the number of items in the queried collection to
-        be included in the result.
-        :param int skip: The $skip query option requests the number of items in the queried collection that
-        are to be skipped and not included in the result.
-        :param dict custom: A custom query options
-        """
-        if expand is None:
-            expand = []
-        if select is None:
-            select = []
-        self.select = select
-        self.expand = expand
-        self.filter = filter_expr
-        self.orderBy = order_by
-        self.skip = skip
-        self.top = top
-        if custom is None:
-            custom = {}
-        self.custom = custom
+@dataclass
+class QueryOptions:
+    """Represents OData query options for controlling data requests.
 
-    @staticmethod
-    def build(client_object, properties_to_include=None):
-        """
-        Builds query options
+    Encapsulates all standard OData system query options ($select, $filter, etc.)
+    and supports custom query parameters.
 
-        :param office365.runtime.client_object.ClientObject client_object: Client object
-        :param list[str] or None properties_to_include: The list of properties to include
-        """
-        query_options = client_object.query_options
-        if properties_to_include is None:
-            return query_options
+    Attributes:
+        select: List of properties to include ($select)
+        expand: List of related resources to expand ($expand)
+        filter: Filter expression ($filter)
+        order_by: Sorting criteria ($orderby)
+        top: Maximum items to return ($top)
+        skip: Number of items to skip ($skip)
+        custom: Dictionary of custom query parameters
+    """
 
-        for name in properties_to_include:
-            from office365.runtime.client_object import ClientObject
-            from office365.runtime.client_object_collection import (
-                ClientObjectCollection,
-            )
+    select: List[str] = field(default_factory=list)
+    expand: List[str] = field(default_factory=list)
+    filter: Optional[str] = None
+    order_by: Optional[str] = None
+    top: Optional[int] = None
+    skip: Optional[int] = None
+    custom: Dict[str, str] = field(default_factory=dict)
 
-            if name in query_options.select:
-                continue
-
-            if isinstance(client_object, ClientObjectCollection):
-                prop = client_object.create_typed_object().get_property(name)
-            else:
-                prop = client_object.get_property(name)
-
-            if name == "Properties" or isinstance(prop, ClientObject):
-                query_options.expand.append(name)
-            query_options.select.append(name)
-        return query_options
+    def reset(self) -> None:
+        """Resets all query options to default/empty values."""
+        self.select.clear()
+        self.expand.clear()
+        self.filter = None
+        self.order_by = None
+        self.skip = None
+        self.top = None
+        self.custom.clear()
 
     def __repr__(self):
         return self.to_url()
@@ -81,30 +44,26 @@ class QueryOptions(object):
         return self.to_url()
 
     @property
-    def is_empty(self):
-        result = {k: v for (k, v) in self}
-        return not result
+    def is_empty(self) -> bool:
+        """Checks if any query options are set."""
+        return not any(self.__dict__.values())
 
-    def reset(self):
-        self.select = []
-        self.expand = []
-        self.filter = None
-        self.orderBy = None
-        self.skip = None
-        self.top = None
-        self.custom = {}
+    def to_url(self) -> str:
+        """Generates URL query string from current options.
 
-    def to_url(self):
-        """Convert query options to url"""
+        Returns:
+            URL-encoded query string (without leading ?)
+        """
         return "&".join(["$%s=%s" % (key, value) for (key, value) in self])
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Tuple[str, str]]:
+        """Yields non-empty query options as key-value pairs."""
         for k, v in self.__dict__.items():
-            if v:
-                if k == "select" or k == "expand":
-                    yield k, ",".join(v)
-                elif k == "custom":
-                    for c_k, c_v in self.custom.items():
-                        yield c_k, c_v
-                else:
-                    yield k, v
+            if not v:
+                continue
+            if k in ("select", "expand"):
+                yield k, ",".join(v)
+            elif k == "custom":
+                yield from self.custom.items()
+            else:
+                yield k, str(v)

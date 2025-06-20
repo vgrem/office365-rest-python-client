@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
@@ -62,6 +64,8 @@ class ListItem(BaseItem):
     @property
     def drive_item(self) -> DriveItem:
         """For document libraries, the driveItem relationship exposes the listItem as a driveItem."""
+        from office365.onedrive.driveitems.driveItem import DriveItem
+
         return self.properties.get(
             "driveItem",
             DriveItem(self.context, ResourcePath("driveItem", self.resource_path)),
@@ -92,7 +96,7 @@ class ListItem(BaseItem):
             ),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "contentType": self.content_type,

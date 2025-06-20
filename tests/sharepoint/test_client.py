@@ -4,6 +4,7 @@ from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.query_options import QueryOptions
+from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
 from office365.runtime.odata.type import ODataType
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.client_context import ClientContext
@@ -155,7 +156,7 @@ class TestSharePointClient(TestCase):
     def test_15_build_query_options(self):
         client = ClientContext(test_site_url)
         lib = client.web.default_document_library()
-        options = QueryOptions.build(lib, ["Author", "Comments"])
+        options = QueryOptionsBuilder.build(lib, ["Author", "Comments"])
         self.assertEqual(str(options), "$select=Author,Comments&$expand=Author")
 
     def test_16_ensure_property(self):
