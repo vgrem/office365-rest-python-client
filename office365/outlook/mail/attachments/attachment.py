@@ -14,19 +14,16 @@ class Attachment(Entity):
     def __repr__(self):
         return self.name or self.id
 
-    def download(self, file_object):
-        # type: (IO) -> Self
+    def download(self, file_object: IO) -> Self:
         """Downloads raw contents of a file or item attachment"""
 
-        def _save_content(return_type):
-            # type: (ClientResult[AnyStr]) -> None
+        def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)
 
         self.get_content().after_execute(_save_content)
         return self
 
-    def get_content(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_content(self) -> ClientResult[AnyStr]:
         """Gets the raw contents of a file or item attachment"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
@@ -34,35 +31,29 @@ class Attachment(Entity):
         return return_type
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The attachment's file name."""
         return self.properties.get("name", None)
 
     @name.setter
-    def name(self, value):
-        # type: (str) -> None
+    def name(self, value: str) -> None:
         """Sets the attachment's file name."""
         self.set_property("name", value)
 
     @property
-    def content_type(self):
-        # type: () -> Optional[str]
+    def content_type(self) -> Optional[str]:
         return self.properties.get("contentType", None)
 
     @content_type.setter
-    def content_type(self, value):
-        # type: (str) -> None
+    def content_type(self, value: str) -> None:
         self.set_property("contentType", value)
 
     @property
-    def size(self):
-        # type: () -> Optional[int]
+    def size(self) -> Optional[int]:
         return self.properties.get("size", None)
 
     @property
-    def last_modified_datetime(self):
-        # type: () -> Optional[datetime.datetime]
+    def last_modified_datetime(self) -> Optional[datetime.datetime]:
         """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("lastModifiedDateTime", datetime.datetime.min)
 

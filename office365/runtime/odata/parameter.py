@@ -1,4 +1,8 @@
-class ODataParameter(object):
-    def __init__(self, name=None, type_full_name=None):
-        self.Name = name
-        self.ParameterTypeFullName = type_full_name
+from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
+class ODataParameter:
+    Name: Optional[str] = None
+    ParameterTypeFullName: Optional[str] = None

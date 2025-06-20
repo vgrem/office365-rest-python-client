@@ -1,20 +1,24 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, List, Union
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.mail.item_body import ItemBody
-from office365.outlook.mail.messages.message import Message
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
+    from office365.outlook.mail.messages.message import Message
 
 
-class MessageCollection(DeltaCollection[Message]):
+class MessageCollection(DeltaCollection["Message"]):
     """ """
 
-    def __init__(self, context: "GraphClient", resource_path: ResourcePath = None):
+    def __init__(self, context: GraphClient, resource_path: ResourcePath = None):
+        from office365.outlook.mail.messages.message import Message
+
         super(MessageCollection, self).__init__(context, Message, resource_path)
 
     def add(
@@ -22,7 +26,7 @@ class MessageCollection(DeltaCollection[Message]):
         subject: str = None,
         body: Union[str, ItemBody] = None,
         to_recipients: List[str] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Message:
         """
         Create a draft of a new message in either JSON or MIME format.
@@ -42,7 +46,7 @@ class MessageCollection(DeltaCollection[Message]):
 
         return super(MessageCollection, self).add(**kwargs)
 
-    def search(self, query_text: str) -> "MessageCollection":
+    def search(self, query_text: str) -> MessageCollection:
         """
         search messages based on a value in specific message properties.
         The results of the search are sorted by the date and time that the message was sent.

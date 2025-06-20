@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import os
 import uuid
 from datetime import datetime
-from typing import IO, AnyStr, List, Optional
+from typing import IO, Any, AnyStr, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
@@ -13,6 +15,7 @@ from office365.directory.extensions.extension import Extension
 from office365.entity_collection import EntityCollection
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
+from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
@@ -28,22 +31,25 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Message(OutlookItem):
     """A message in a mailbox folder."""
 
-    def add_extended_property(self, name, value):
-        # type: (str, str) -> Self
+    def add_extended_property(self, name: str, value: str) -> Self:
         """Create a single-value extended property for a message"""
         prop_id = str(uuid.uuid4())
         prop_type = "String"
         prop_value = [
             {
-                "id": "{0} {{{1}}} Name {2}".format(prop_type, prop_id, name),
+                "id": f"{prop_type} {{{prop_id}}} Name {name}",
                 "value": value,
             }
         ]
         self.set_property("singleValueExtendedProperties", prop_value)
         return self
 
-    def create_forward(self, to_recipients=None, message=None, comment=None):
-        # type: (List[Recipient], "Message", str) -> Message
+    def create_forward(
+        self,
+        to_recipients: List[Recipient] = None,
+        message: Message = None,
+        comment: str = None,
+    ) -> Message:
         """
         Create a draft to forward an existing message, in either JSON or MIME format.
 
@@ -63,19 +69,16 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def download(self, file_object):
-        # type: (IO) -> Self
+    def download(self, file_object: IO) -> Self:
         """Download MIME content of a message into a file"""
 
-        def _save_content(return_type):
-            # type: (ClientResult[AnyStr]) -> None
+        def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)
 
         self.get_content().after_execute(_save_content)
         return self
 
-    def get_content(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_content(self) -> ClientResult[AnyStr]:
         """Get MIME content of a message"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
@@ -146,13 +149,13 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return message
 
-    def reply_all(self):
+    def reply_all(self) -> Self:
         """Reply to all recipients of a message. The message is then saved in the Sent Items folder."""
         qry = ServiceOperationQuery(self, "replyAll")
         self.context.add_query(qry)
         return self
 
-    def create_reply(self, comment=None):
+    def create_reply(self, comment=None) -> Self:
         """
         Create a draft to reply to the sender of a message in either JSON or MIME format.
 
@@ -166,7 +169,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def create_reply_all(self):
+    def create_reply_all(self) -> Self:
         """
         Create a draft to reply to the sender and all the recipients of the specified message.
         You can then update the draft to add reply content to the body or change other message properties, or,
@@ -176,7 +179,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def copy(self, destination):
+    def copy(self, destination: Union[str, MailFolder]) -> Self:
         """
         Copy a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder.
@@ -186,8 +189,7 @@ class Message(OutlookItem):
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
-        def _copy(destination_id):
-            # type: (str) -> None
+        def _copy(destination_id: str) -> None:
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "copy", None, payload, None, None)
             self.context.add_query(qry)
@@ -202,7 +204,7 @@ class Message(OutlookItem):
             _copy(destination)
         return self
 
-    def move(self, destination):
+    def move(self, destination: Union[str, MailFolder]) -> Self:
         """
         Move a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder and removes the original message.
@@ -212,8 +214,7 @@ class Message(OutlookItem):
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
-        def _move(destination_id):
-            # type: (str) -> None
+        def _move(destination_id: str) -> None:
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "move", None, payload, None, None)
             self.context.add_query(qry)
@@ -228,7 +229,7 @@ class Message(OutlookItem):
             _move(destination)
         return self
 
-    def forward(self, to_recipients, comment=""):
+    def forward(self, to_recipients, comment="") -> Self:
         """
         Forward a message. The message is saved in the Sent Items folder.
         :param list[str] to_recipients: The list of recipients.
@@ -245,8 +246,7 @@ class Message(OutlookItem):
         return self
 
     @property
-    def has_attachments(self):
-        # type: () -> Optional[bool]
+    def has_attachments(self) -> Optional[bool]:
         """
         Indicates whether the message has attachments. This property doesn't include inline attachments,
         so if a message contains only inline attachments, this property is false. To verify the existence
@@ -257,8 +257,7 @@ class Message(OutlookItem):
 
     @property
     @persist_property()
-    def attachments(self):
-        # type: () -> AttachmentCollection
+    def attachments(self) -> AttachmentCollection:
         """The fileAttachment and itemAttachment attachments for the message."""
         return self.properties.setdefault(
             "attachments",
@@ -268,8 +267,7 @@ class Message(OutlookItem):
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the message. Nullable."""
         return self.properties.get(
             "extensions",
@@ -284,8 +282,7 @@ class Message(OutlookItem):
         return self.properties.setdefault("body", ItemBody())
 
     @body.setter
-    def body(self, value):
-        # type: (str|ItemBody|tuple) -> None
+    def body(self, value: Union[str, ItemBody, Tuple]) -> None:
         """Sets the body of the message. It can be in HTML or text format."""
         content_type = "Text"  # Default content type
         if isinstance(value, tuple):
@@ -303,25 +300,22 @@ class Message(OutlookItem):
         self.set_property("body", item_body)
 
     @property
-    def body_preview(self):
-        # type: () -> Optional[str]
+    def body_preview(self) -> Optional[str]:
         """The first 255 characters of the message body. It is in text format."""
         return self.properties.get("bodyPreview", None)
 
     @property
-    def conversation_id(self):
-        # type: () -> Optional[str]
+    def conversation_id(self) -> Optional[str]:
         """The ID of the conversation the email belongs to."""
         return self.properties.get("conversationId", None)
 
     @property
-    def conversation_index(self):
-        # type: () -> Optional[str]
+    def conversation_index(self) -> Optional[str]:
         """Indicates the position of the message within the conversation."""
         return self.properties.get("conversationIndex", None)
 
     @property
-    def flag(self):
+    def flag(self) -> FollowupFlag:
         """
         The flag value that indicates the status, start date, due date, or completion date for the message.
         """
@@ -337,14 +331,12 @@ class Message(OutlookItem):
         return self.properties.get("from", Recipient())
 
     @property
-    def importance(self):
-        # type: () -> Optional[str]
+    def importance(self) -> Optional[str]:
         """The importance of the message."""
         return self.properties.get("importance", None)
 
     @property
-    def inference_classification(self):
-        # type: () -> Optional[str]
+    def inference_classification(self) -> Optional[str]:
         """
         The classification of the message for the user, based on inferred relevance or importance,
         or on an explicit override. The possible values are: focused or other.
@@ -352,8 +344,7 @@ class Message(OutlookItem):
         return self.properties.get("inferenceClassification", None)
 
     @property
-    def internet_message_headers(self):
-        # type: () -> ClientValueCollection[InternetMessageHeader]
+    def internet_message_headers(self) -> ClientValueCollection[InternetMessageHeader]:
         """
         A collection of message headers defined by RFC5322. The set includes message headers indicating the network
         path taken by a message from the sender to the recipient. It can also contain custom message headers that
@@ -364,65 +355,58 @@ class Message(OutlookItem):
         )
 
     @property
-    def internet_message_id(self):
-        # type: () -> Optional[str]
+    def internet_message_id(self) -> Optional[str]:
         """The message ID in the format specified by RFC2822"""
         return self.properties.get("internetMessageId", None)
 
     @property
-    def is_delivery_receipt_requested(self):
-        # type: () -> Optional[bool]
+    def is_delivery_receipt_requested(self) -> Optional[bool]:
         """
         Indicates whether a read receipt is requested for the message.
         """
         return self.properties.get("isDeliveryReceiptRequested", None)
 
     @property
-    def is_draft(self):
-        # type: () -> Optional[bool]
+    def is_draft(self) -> Optional[bool]:
         """
         Indicates whether the message is a draft. A message is a draft if it hasn't been sent yet.
         """
         return self.properties.get("isDraft", None)
 
     @property
-    def is_read(self):
-        # type: () -> Optional[bool]
+    def is_read(self) -> Optional[bool]:
         """Indicates whether the message has been read."""
         return self.properties.get("isRead", None)
 
     @property
-    def is_read_receipt_requested(self):
-        # type: () -> Optional[bool]
+    def is_read_receipt_requested(self) -> Optional[bool]:
         """
         Indicates whether a read receipt is requested for the message.
         """
         return self.properties.get("isReadReceiptRequested", None)
 
     @property
-    def received_datetime(self):
+    def received_datetime(self) -> datetime:
         """The date and time the message was received."""
         return self.properties.get("receivedDateTime", datetime.min)
 
     @property
-    def sent_datetime(self):
+    def sent_datetime(self) -> datetime:
         """The date and time the message was sent."""
         return self.properties.get("sentDateTime", datetime.min)
 
     @property
-    def subject(self):
-        # type: () -> Optional[str]
+    def subject(self) -> Optional[str]:
         """The subject of the message."""
         return self.properties.get("subject", None)
 
     @subject.setter
-    def subject(self, value):
-        # type: (str) -> None
+    def subject(self, value: str) -> None:
         """Sets the subject of the message."""
         self.set_property("subject", value)
 
     @property
-    def to_recipients(self):
+    def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the message."""
         self._persist_changes("toRecipients")
         return self.properties.setdefault(
@@ -430,7 +414,7 @@ class Message(OutlookItem):
         )
 
     @property
-    def bcc_recipients(self):
+    def bcc_recipients(self) -> ClientValueCollection[Recipient]:
         """The BCC: recipients for the message."""
         self._persist_changes("bccRecipients")
         return self.properties.setdefault(
@@ -438,7 +422,7 @@ class Message(OutlookItem):
         )
 
     @property
-    def cc_recipients(self):
+    def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The CC: recipients for the message."""
         self._persist_changes("ccRecipients")
         return self.properties.setdefault(
@@ -446,13 +430,13 @@ class Message(OutlookItem):
         )
 
     @property
-    def reply_to(self):
+    def reply_to(self) -> ClientValueCollection[Recipient]:
         """The replyTo: recipients for the reply to the message."""
         self._persist_changes("replyTo")
         return self.properties.setdefault("replyTo", ClientValueCollection(Recipient))
 
     @property
-    def sender(self):
+    def sender(self) -> Recipient:
         """The account that is actually used to generate the message. In most cases, this value is the same as the
         from property. You can set this property to a different value when sending a message from a shared mailbox,
         for a shared calendar, or as a delegate. In any case, the value must correspond to the actual mailbox used.
@@ -460,14 +444,12 @@ class Message(OutlookItem):
         return self.properties.get("sender", Recipient())
 
     @property
-    def parent_folder_id(self):
-        # type: () -> Optional[str]
+    def parent_folder_id(self) -> Optional[str]:
         """The unique identifier for the message's parent mailFolder."""
         return self.properties.get("parentFolderId", None)
 
     @property
-    def web_link(self):
-        # type: () -> Optional[str]
+    def web_link(self) -> Optional[str]:
         """
         The URL to open the message in Outlook on the web.
 
@@ -483,8 +465,9 @@ class Message(OutlookItem):
         return self.properties.get("webLink", None)
 
     @property
-    def multi_value_extended_properties(self):
-        # type: () -> EntityCollection[MultiValueLegacyExtendedProperty]
+    def multi_value_extended_properties(
+        self,
+    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the event."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -496,8 +479,9 @@ class Message(OutlookItem):
         )
 
     @property
-    def single_value_extended_properties(self):
-        # type: () -> EntityCollection[SingleValueLegacyExtendedProperty]
+    def single_value_extended_properties(
+        self,
+    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the message"""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -508,7 +492,7 @@ class Message(OutlookItem):
             ),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_type_mapping = {
                 "toRecipients": self.to_recipients,

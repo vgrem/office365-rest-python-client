@@ -226,7 +226,7 @@ class ClientContext(ClientRuntimeContext):
         for e in self.pending_request().beforeExecute:
             if not EventHandler.is_system(e):
                 client.beforeExecute += e
-        request = RequestOptions("{0}/contextInfo".format(self.service_root_url))
+        request = RequestOptions(f"{self.service_root_url}/contextInfo")
         request.method = HttpMethod.Post
         response = client.execute_request_direct(request)
         json_format = JsonLightFormat()
@@ -334,7 +334,7 @@ class ClientContext(ClientRuntimeContext):
         )
         return return_type
 
-    def create_communication_site(self, alias, title):
+    def create_communication_site(self, alias: str, title: str) -> Site:
         """
         Creates a modern SharePoint Communication site
 
@@ -366,7 +366,7 @@ class ClientContext(ClientRuntimeContext):
         return self._ctx_web_info
 
     @property
-    def web(self):
+    def web(self) -> Web:
         """
         A group of related webpages that is hosted by a server on the World Wide Web or an intranet.
         Each website has its own entry points, metadata, administration settings, and workflows.
@@ -779,7 +779,7 @@ class ClientContext(ClientRuntimeContext):
             return Tenant(admin_ctx)
 
     @property
-    def tenant_url(self):
+    def tenant_url(self) -> str:
         root_url = get_absolute_url(self.base_url)
         if "-admin." in root_url:
             return root_url
@@ -789,26 +789,26 @@ class ClientContext(ClientRuntimeContext):
         return result.scheme + "://" + ".".join(names)
 
     @property
-    def site_path(self):
+    def site_path(self) -> str:
         root_url = get_absolute_url(self.base_url)
         return self.base_url.replace(root_url, "")
 
     @property
-    def is_tenant(self):
+    def is_tenant(self) -> bool:
         """
         Determines whether the current site is a tenant administration site
         """
         return self.tenant_url == self.base_url
 
     @property
-    def base_url(self):
+    def base_url(self) -> str:
         """Represents absolute Web or Site Url"""
         return self.authentication_context.url
 
     @property
-    def authentication_context(self):
+    def authentication_context(self) -> AuthenticationContext:
         return self._auth_context
 
     @property
-    def service_root_url(self):
+    def service_root_url(self) -> str:
         return "{0}/_api".format(self.base_url)

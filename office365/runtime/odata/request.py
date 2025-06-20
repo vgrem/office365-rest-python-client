@@ -48,7 +48,7 @@ class ODataRequest(ClientRequest):
         Returns:
             Configured request options
         """
-        request = RequestOptions(query.url)
+        request = RequestOptions(url=query.url)
         request.method = HttpMethod.Get
         if isinstance(query, DeleteEntityQuery):
             request.method = HttpMethod.Post

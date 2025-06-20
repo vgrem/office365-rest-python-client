@@ -22,7 +22,7 @@ class ODataBatchV3Request(ODataRequest):
     def build_request(self, query):
         # type: (BatchQuery) -> RequestOptions
         """Construct a OData v3 Batch request"""
-        request = RequestOptions(query.url)
+        request = RequestOptions(url=query.url)
         request.method = HttpMethod.Post
         media_type = "multipart/mixed"
         content_type = "; ".join(

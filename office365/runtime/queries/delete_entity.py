@@ -24,4 +24,4 @@ class DeleteEntityQuery(ClientQuery):
             >>> item = file.delete_object()  # Creates a DeleteEntityQuery
             >>> ctx.execute_query()  # Executes the deletion
         """
-        super(DeleteEntityQuery, self).__init__(delete_type.context, delete_type)
+        super().__init__(delete_type.context, delete_type)

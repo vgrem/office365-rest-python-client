@@ -1,22 +1,32 @@
+from __future__ import annotations
+
 import base64
+from typing import TYPE_CHECKING, Callable
 
 import requests
 
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.attachments.attachment import Attachment
+from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.upload_session import UploadSessionQuery
 from office365.runtime.utilities import parse_query_param
+
+if TYPE_CHECKING:
+    from office365.graph_client import GraphClient
 
 
 class AttachmentCollection(EntityCollection[Attachment]):
     """Attachment collection"""
 
-    def __init__(self, context, resource_path=None):
-        super(AttachmentCollection, self).__init__(context, Attachment, resource_path)
+    def __init__(
+        self, context: GraphClient, resource_path: ResourcePath = None
+    ) -> None:
+        super().__init__(context, Attachment, resource_path)
 
     def add_file(self, name, content=None, content_type=None, base64_content=None):
         """
@@ -43,7 +53,12 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self.add_child(return_type)
         return self
 
-    def resumable_upload(self, source_path, chunk_size=1000000, chunk_uploaded=None):
+    def resumable_upload(
+        self,
+        source_path: str,
+        chunk_size: int = 1000000,
+        chunk_uploaded: Callable[[int], None] = None,
+    ):
         """
         Create an upload session to allow your app to upload files up to the maximum file size.
         An upload session allows your app to upload ranges of the file in sequential API requests,
@@ -63,20 +78,17 @@ class AttachmentCollection(EntityCollection[Attachment]):
             self, {"AttachmentItem": AttachmentItem.create_file(source_path)}
         )
 
-        def _start_upload(result):
-            # type: (ClientResult[UploadSession]) -> None
+        def _start_upload(result: ClientResult[UploadSession]) -> None:
             with open(source_path, "rb") as local_file:
                 session_request = UploadSessionRequest(
                     local_file, chunk_size, chunk_uploaded
                 )
 
-                def _construct_request(request):
-                    # type: (RequestOptions) -> None
+                def _construct_request(request: RequestOptions) -> None:
                     auth_token = parse_query_param(request.url, "authtoken")
                     request.set_header("Authorization", "Bearer {0}".format(auth_token))
 
-                def _process_response(response):
-                    # type: (requests.Response) -> None
+                def _process_response(response: requests.Response) -> None:
                     location = response.headers.get("Location", None)
                     if location is None:
                         return
@@ -92,7 +104,9 @@ class AttachmentCollection(EntityCollection[Attachment]):
         )
         return self
 
-    def create_upload_session(self, attachment_item):
+    def create_upload_session(
+        self, attachment_item: AttachmentItem
+    ) -> ClientResult[UploadSession]:
         """
         Create an upload session that allows an app to iteratively upload ranges of a file,
              so as to attach the file to the specified Outlook item. The item can be a message or event.

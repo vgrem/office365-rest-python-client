@@ -211,7 +211,7 @@ class ClientRuntimeContext(ABC):
             Raw response from server
         """
         full_url = "".join([self.service_root_url, "/", path])
-        request = RequestOptions(full_url)
+        request = RequestOptions(url=full_url)
         return self.pending_request().execute_request_direct(request)
 
     def execute_query(self) -> Self:

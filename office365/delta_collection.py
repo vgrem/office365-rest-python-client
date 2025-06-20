@@ -25,7 +25,8 @@ class DeltaCollection(EntityCollection[T]):
 
     Typical usage:
         >>> client = GraphClient()
-        >>> changes = client.me.mail_folders["Inbox"].messages.delta.change_type("created").get().execute_query()
+        >>> inbox = client.me.mail_folders["Inbox"]
+        >>> changes = inbox.messages.delta.change_type("created").get().execute_query()
     """
 
     def __init__(
