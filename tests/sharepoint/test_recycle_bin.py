@@ -43,11 +43,12 @@ class TestSharePointRecycleBin(SPTestCase):
         items_after = self.client.web.recycle_bin.get().execute_query()
         self.assertEqual(len(items_after), len(items) - 1)
 
-    def test4_get_site_recycle_bin_items(self):
-        items = self.client.site.get_recycle_bin_items().execute_query()
-        self.assertIsInstance(items, RecycleBinItemCollection)
+    def test4_list_site_recycle_bin_items(self):
+        result = self.client.site.get_recycle_bin_items().execute_query()
+        self.assertIsInstance(result, RecycleBinItemCollection)
+        self.assertIsNotNone(result.resource_path)
 
-    def test5_get_web_recycle_bin_items(self):
+    def test5_list_web_recycle_bin_items(self):
         items = self.client.web.get_recycle_bin_items().execute_query()
         self.assertIsInstance(items, RecycleBinItemCollection)
 

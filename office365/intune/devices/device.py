@@ -19,8 +19,7 @@ class Device(DirectoryObject):
         return self.device_id or self.entity_type_name
 
     @property
-    def account_enabled(self):
-        # type: () -> Optional[bool]
+    def account_enabled(self) -> Optional[bool]:
         """true if the account is enabled; otherwise, false. Required. Default is true.
 
         Supports $filter (eq, ne, not, in). Only callers with at least the Cloud Device Administrator
@@ -28,41 +27,39 @@ class Device(DirectoryObject):
         return self.properties.get("accountEnabled", None)
 
     @property
-    def alternative_security_ids(self):
+    def alternative_security_ids(self) -> ClientValueCollection[AlternativeSecurityId]:
         """For internal use only."""
         return self.properties.get(
             "alternativeSecurityIds", ClientValueCollection(AlternativeSecurityId)
         )
 
     @property
-    def approximate_last_signin_datetime(self):
+    def approximate_last_signin_datetime(self) -> datetime:
         """The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
         Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby."""
         return self.properties.get("approximateLastSignInDateTime", datetime.min)
 
     @property
-    def compliance_expiration_datetime(self):
+    def compliance_expiration_datetime(self) -> datetime:
         """The timestamp when the device is no longer deemed compliant. The timestamp type represents date and
         time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only."""
         return self.properties.get("complianceExpirationDateTime", datetime.min)
 
     @property
-    def device_id(self):
-        # type: () -> Optional[str]
+    def device_id(self) -> Optional[str]:
         """Unique identifier set by Azure Device Registration Service at the time of registration.
         This is an alternate key that can be used to reference the device object."""
         return self.properties.get("deviceId", None)
 
     @property
-    def device_ownership(self):
-        # type: () -> Optional[str]
+    def device_ownership(self) -> Optional[str]:
         """Ownership of the device. This property is set by Intune. Possible values are: unknown, company, personal."""
         return self.properties.get("deviceOwnership", None)
 
     @property
-    def member_of(self):
+    def member_of(self) -> DirectoryObjectCollection:
         """Groups and administrative units that this device is a member of."""
         return self.properties.get(
             "memberOf",
@@ -72,7 +69,7 @@ class Device(DirectoryObject):
         )
 
     @property
-    def registered_owners(self):
+    def registered_owners(self) -> DirectoryObjectCollection:
         """The user that cloud joined the device or registered their personal device.
         The registered owner is set at the time of registration. Currently, there can be only one owner.
         """
@@ -84,7 +81,7 @@ class Device(DirectoryObject):
         )
 
     @property
-    def registered_users(self):
+    def registered_users(self) -> DirectoryObjectCollection:
         """Collection of registered users of the device. For cloud joined devices and registered personal devices,
         registered users are set to the same value as registered owners at the time of registration.
         """
@@ -96,7 +93,7 @@ class Device(DirectoryObject):
         )
 
     @property
-    def transitive_member_of(self):
+    def transitive_member_of(self) -> DirectoryObjectCollection:
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
         return all groups the user is a nested member of."""
         return self.properties.get(

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
@@ -15,14 +17,13 @@ class DocumentCrawlLog(Entity):
     about items that were crawled."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
+        static_path = StaticPath(
             "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
         )
         super(DocumentCrawlLog, self).__init__(context, static_path)
 
     @staticmethod
-    def create(context):
-        # type: (ClientContext) -> "DocumentCrawlLog"
+    def create(context: ClientContext) -> DocumentCrawlLog:
         """"""
         return_type = DocumentCrawlLog(context)
         qry = ServiceOperationQuery(

@@ -1,3 +1,7 @@
+from typing import Any
+
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onenote.notebooks.collection import NotebookCollection
@@ -13,8 +17,7 @@ class Onenote(Entity):
     """The entry point for OneNote resources."""
 
     @property
-    def notebooks(self):
-        # type: () -> NotebookCollection
+    def notebooks(self) -> NotebookCollection:
         """Retrieve a list of notebook objects."""
         return self.properties.get(
             "notebooks",
@@ -24,7 +27,7 @@ class Onenote(Entity):
         )
 
     @property
-    def operations(self):
+    def operations(self) -> EntityCollection[OnenoteOperation]:
         """Retrieve a list of OneNote operations."""
         return self.properties.get(
             "operations",
@@ -36,8 +39,7 @@ class Onenote(Entity):
         )
 
     @property
-    def pages(self):
-        # type: () -> OnenotePageCollection
+    def pages(self) -> OnenotePageCollection:
         """Retrieve a list of page objects."""
         return self.properties.get(
             "pages",
@@ -47,7 +49,7 @@ class Onenote(Entity):
         )
 
     @property
-    def resources(self):
+    def resources(self) -> EntityCollection[OnenoteResource]:
         """Retrieve a list of Resources objects from the specified notebook."""
         return self.properties.get(
             "resources",
@@ -59,8 +61,7 @@ class Onenote(Entity):
         )
 
     @property
-    def sections(self):
-        # type: () -> EntityCollection[OnenoteSection]
+    def sections(self) -> EntityCollection[OnenoteSection]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
             "sections",
@@ -72,7 +73,7 @@ class Onenote(Entity):
         )
 
     @property
-    def section_groups(self):
+    def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
             "sectionGroups",
@@ -83,7 +84,7 @@ class Onenote(Entity):
             ),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {"sectionGroups": self.section_groups}
             default_value = property_mapping.get(name, None)

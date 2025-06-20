@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Iterator, Optional, Union
 
 from typing_extensions import Self
@@ -43,7 +45,7 @@ class ResourcePath:
             self._key = key
         return self
 
-    def __iter__(self) -> Iterator["ResourcePath"]:
+    def __iter__(self) -> Iterator[ResourcePath]:
         """
         Iterates through the path hierarchy from leaf to root.
 
@@ -68,7 +70,7 @@ class ResourcePath:
         """String representation of the full path (same as to_url())."""
         return self.to_url()
 
-    def __eq__(self, other: "ResourcePath") -> bool:
+    def __eq__(self, other: ResourcePath) -> bool:
         """
         Compares two resource paths for equality based on their URL representation.
 
@@ -99,7 +101,7 @@ class ResourcePath:
         return "".join(segments)
 
     @property
-    def parent(self) -> Optional["ResourcePath"]:
+    def parent(self) -> Optional[ResourcePath]:
         """Gets the parent path segment."""
         return self._parent
 

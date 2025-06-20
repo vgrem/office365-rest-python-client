@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from typing_extensions import Self
 
@@ -38,7 +38,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def move_to_second_stage_by_ids(self, ids):
+    def move_to_second_stage_by_ids(self, ids: List[str]) -> Self:
         """
         Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their identifies
 
@@ -49,7 +49,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def move_all_to_second_stage(self):
+    def move_all_to_second_stage(self) -> Self:
         """
         Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin if the
         SecondStageRecycleBinQuota property of the current web application is not 0.
@@ -59,7 +59,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def get_by_id(self, recycle_bin_id):
+    def get_by_id(self, recycle_bin_id: str) -> RecycleBinItem:
         """
         Returns the recycle bin type with the given identifier from the collection.
 

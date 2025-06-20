@@ -1,4 +1,8 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -7,19 +11,21 @@ from office365.intune.devices.compliance.policy_state import DeviceCompliancePol
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
+if TYPE_CHECKING:
+    from office365.directory.users.collection import UserCollection
+
 
 class ManagedDevice(Entity):
     """Devices that are managed or pre-enrolled through Intune"""
 
-    def locate_device(self):
+    def locate_device(self) -> Self:
         """Locate a device"""
         qry = ServiceOperationQuery(self, "locateDevice")
         self.context.add_query(qry)
         return self
 
     @property
-    def activation_lock_bypass_code(self):
-        # type: () -> Optional[str]
+    def activation_lock_bypass_code(self) -> Optional[str]:
         """
         The code that allows the Activation Lock on managed device to be bypassed. Default,
         is Null (Non-Default property) for this property when returned as part of managedDevice entity in LIST call.
@@ -29,7 +35,7 @@ class ManagedDevice(Entity):
         return self.properties.get("activationLockBypassCode", None)
 
     @property
-    def device_category(self):
+    def device_category(self) -> DeviceCategory:
         """Device category"""
         return self.properties.get(
             "deviceCategory",
@@ -39,20 +45,19 @@ class ManagedDevice(Entity):
         )
 
     @property
-    def manufacturer(self):
-        # type: () -> Optional[str]
+    def manufacturer(self) -> Optional[str]:
         """Manufacturer of the device."""
         return self.properties.get("manufacturer", None)
 
     @property
-    def operating_system(self):
-        # type: () -> Optional[str]
+    def operating_system(self) -> Optional[str]:
         """Manufacturer of the device."""
         return self.properties.get("operatingSystem", None)
 
     @property
-    def device_compliance_policy_states(self):
-        # type: () -> EntityCollection[DeviceCompliancePolicyState]
+    def device_compliance_policy_states(
+        self,
+    ) -> EntityCollection[DeviceCompliancePolicyState]:
         """Device compliance policy states for this device"""
         return self.properties.get(
             "deviceCompliancePolicyStates",
@@ -64,7 +69,7 @@ class ManagedDevice(Entity):
         )
 
     @property
-    def users(self):
+    def users(self) -> UserCollection:
         """The primary users associated with the managed device."""
         from office365.directory.users.collection import UserCollection
 

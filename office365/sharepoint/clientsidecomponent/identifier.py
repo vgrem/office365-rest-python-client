@@ -9,7 +9,7 @@ class SPClientSideComponentIdentifier(ClientValue):
         self.version = version
 
     def __repr__(self):
-        return self.id
+        return self.id or self.entity_type_name
 
     @property
     def entity_type_name(self):

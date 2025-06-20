@@ -68,7 +68,7 @@ class TestSite(SPTestCase):
     #    self.assertIsNotNone(result.value)
 
     def test_11_create_site(self):
-        site_url = "{0}/sites/{1}".format(test_site_url, uuid.uuid4().hex)
+        site_url = f"{test_site_url}/sites/{uuid.uuid4().hex}"
         result = self.client.site_manager.create(
             "Comm Site", site_url, test_user_principal_name_alt
         ).execute_query()

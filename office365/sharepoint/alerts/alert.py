@@ -1,7 +1,12 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
+
+if TYPE_CHECKING:
+    from office365.sharepoint.listitems.listitem import ListItem
 
 
 class Alert(Entity):
@@ -15,25 +20,22 @@ class Alert(Entity):
     """
 
     @property
-    def alert_frequency(self):
-        # type: () -> Optional[int]
+    def alert_frequency(self) -> Optional[int]:
         """Gets the time interval for sending the alert."""
         return self.properties.get("AlertFrequency", None)
 
     @property
-    def alert_template_name(self):
-        # type: () -> Optional[int]
+    def alert_template_name(self) -> Optional[int]:
         """Gets the string representing the alert template name."""
         return self.properties.get("AlertTemplateName", None)
 
     @property
-    def always_notify(self):
-        # type: () -> Optional[bool]
+    def always_notify(self) -> Optional[bool]:
         """Gets a Boolean value that causes daily and weekly alerts to trigger, even if there is no matching event."""
         return self.properties.get("AlwaysNotify", None)
 
     @property
-    def item(self):
+    def item(self) -> ListItem:
         """Gets the list item or document to which the alert applies."""
         from office365.sharepoint.listitems.listitem import ListItem
 

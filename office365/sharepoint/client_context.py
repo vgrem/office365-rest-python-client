@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
 from requests import RequestException
 from typing_extensions import Self
@@ -41,6 +41,9 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface
 )
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 from office365.sharepoint.webs.web import Web
+
+if TYPE_CHECKING:
+    from office365.sharepoint.tenant.administration.tenant import Tenant
 
 
 class ClientContext(ClientRuntimeContext):
@@ -92,15 +95,14 @@ class ClientContext(ClientRuntimeContext):
 
     def with_client_certificate(
         self,
-        tenant,
-        client_id,
-        thumbprint,
-        cert_path=None,
-        private_key=None,
-        scopes=None,
-        passphrase=None,
-    ):
-        # type: (str, str, str, Optional[str], Optional[str], Optional[List[str]], Optional[str]) -> Self
+        tenant: str,
+        client_id: str,
+        thumbprint: str,
+        cert_path: Optional[str] = None,
+        private_key: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        passphrase: Optional[str] = None,
+    ) -> Self:
         """
         Creates authenticated SharePoint context via certificate credentials
 
@@ -117,8 +119,9 @@ class ClientContext(ClientRuntimeContext):
         )
         return self
 
-    def with_interactive(self, tenant, client_id, scopes=None):
-        # type: (str, str, Optional[List[str]]) -> Self
+    def with_interactive(
+        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
+    ) -> Self:
         """
         Initializes a client to acquire a token interactively i.e. via a local browser.
 
@@ -132,8 +135,9 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_interactive(tenant, client_id, scopes)
         return self
 
-    def with_device_flow(self, tenant, client_id, scopes=None):
-        # type: (str, str, Optional[List[str]]) -> Self
+    def with_device_flow(
+        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
+    ) -> Self:
         """
         Initializes a client to acquire a token via device flow auth.
 
@@ -161,8 +165,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(UserCredential(username, password))
         return self
 
-    def with_client_credentials(self, client_id, client_secret):
-        # type: (str, str) -> Self
+    def with_client_credentials(self, client_id: str, client_secret: str) -> Self:
         """
         Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
@@ -187,8 +190,11 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(credentials)
         return self
 
-    def execute_batch(self, items_per_batch=100, success_callback=None):
-        # type: (int, Callable[[List[ClientObject|ClientResult]], None]) -> Self
+    def execute_batch(
+        self,
+        items_per_batch: int = 100,
+        success_callback: Callable[[List[ClientObject | ClientResult]], None] = None,
+    ) -> Self:
         """
         Construct and submit to a server a batch request
         :param int items_per_batch: Maximum to be selected for bulk operation
@@ -239,8 +245,7 @@ class ClientContext(ClientRuntimeContext):
         """Handles throttling requests."""
         settings = {"timeout": 0}
 
-        def _try_process_if_failed(retry, ex):
-            # type: (int, RequestException) -> None
+        def _try_process_if_failed(retry: int, ex: RequestException) -> None:
             """
             check if request was throttled - http status code 429
             or check is request failed due to server unavailable - http status code 503
@@ -256,7 +261,7 @@ class ClientContext(ClientRuntimeContext):
             failure_callback=_try_process_if_failed,
         )
 
-    def clone(self, url, clear_queries=True):
+    def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
         """
         Creates a clone of ClientContext
         :param bool clear_queries:
@@ -269,8 +274,7 @@ class ClientContext(ClientRuntimeContext):
             ctx.clear()
         return ctx
 
-    def _build_modification_query(self, request):
-        # type: (RequestOptions) -> None
+    def _build_modification_query(self, request: RequestOptions) -> None:
         """Constructs SharePoint specific modification OData request"""
         if request.method == HttpMethod.Post:
             self._ensure_form_digest(request)
@@ -295,12 +299,9 @@ class ClientContext(ClientRuntimeContext):
         :param str or office365.sharepoint.principal.user.User owner: Site owner
         """
         return_type = Site(self)
-        site_url = "{base_url}/sites/{alias}".format(
-            base_url=get_absolute_url(self.base_url), alias=alias
-        )
+        site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
-        def _after_site_create(result):
-            # type: (ClientResult[SPSiteCreationResponse]) -> None
+        def _after_site_create(result: ClientResult[SPSiteCreationResponse]) -> None:
             if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError(result.value)
             elif result.value.SiteStatus == SiteStatus.Ready:
@@ -313,7 +314,7 @@ class ClientContext(ClientRuntimeContext):
         )
         return return_type
 
-    def create_team_site(self, alias, title, is_public=True):
+    def create_team_site(self, alias: str, title: str, is_public: bool = True) -> Site:
         """Creates a modern SharePoint Team site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
@@ -322,8 +323,7 @@ class ClientContext(ClientRuntimeContext):
         """
         return_type = Site(self)
 
-        def _after_site_created(result):
-            # type: (ClientResult[GroupSiteInfo]) -> None
+        def _after_site_created(result: ClientResult[GroupSiteInfo]) -> None:
             if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError(result.value.ErrorMessage)
             elif result.value.SiteStatus == SiteStatus.Ready:
@@ -342,12 +342,11 @@ class ClientContext(ClientRuntimeContext):
         :param str title: Site title
         """
         return_type = Site(self)
-        site_url = "{base_url}/sites/{alias}".format(
-            base_url=get_absolute_url(self.base_url), alias=alias
-        )
+        site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
-        def _after_site_created(result):
-            # type: (ClientResult[CommunicationSiteCreationResponse]) -> None
+        def _after_site_created(
+            result: ClientResult[CommunicationSiteCreationResponse],
+        ) -> None:
             if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError("Site creation error")
             elif result.value.SiteStatus == SiteStatus.Ready:
@@ -769,7 +768,7 @@ class ClientContext(ClientRuntimeContext):
         return SPMachineLearningWorkItemCollection(self, ResourcePath("workitems"))
 
     @property
-    def tenant(self):
+    def tenant(self) -> Tenant:
         from office365.sharepoint.tenant.administration.tenant import Tenant
 
         if self.is_tenant:
@@ -811,4 +810,4 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def service_root_url(self) -> str:
-        return "{0}/_api".format(self.base_url)
+        return f"{self.base_url}/_api"

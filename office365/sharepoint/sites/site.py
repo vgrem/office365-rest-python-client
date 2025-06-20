@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from typing_extensions import Self
@@ -277,7 +277,7 @@ class Site(Entity):
 
     def is_comm_site(self):
         """Determines whether a site is communication site"""
-        return_type = ClientResult(self.context)  # type: ClientResult[bool]
+        return_type: ClientResult[bool] = ClientResult(self.context)
 
         def _site_loaded():
             SPHSite.is_comm_site(self.context, self.url, return_type)
@@ -287,7 +287,7 @@ class Site(Entity):
 
     def is_valid_home_site(self):
         """Determines whether a site is landing site for your intranet."""
-        return_type = ClientResult(self.context)  # type: ClientResult[bool]
+        return_type: ClientResult[bool] = ClientResult(self.context)
 
         def _site_loaded():
             SPHSite.is_valid_home_site(self.context, self.url, return_type)
@@ -478,7 +478,7 @@ class Site(Entity):
         :type context: office365.sharepoint.client_context.ClientContext
         :param str url: The absolute url of a site.
         """
-        return_type = ClientResult(context)  # type: ClientResult[bool]
+        return_type: ClientResult[bool] = ClientResult(context)
         payload = {"url": url}
         qry = ServiceOperationQuery(
             context.site, "Exists", None, payload, None, return_type, True
@@ -522,7 +522,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def open_web_by_id(self, web_id):
+    def open_web_by_id(self, web_id: str):
         """Returns the specified Web site from the site collection.
 
         :param str web_id: An identifier of the Web site
@@ -575,7 +575,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def unregister_hub_site(self):
+    def unregister_hub_site(self) -> Self:
         """Disables the hub site feature on a site."""
         qry = ServiceOperationQuery(self, "UnRegisterHubSite")
         self.context.add_query(qry)
@@ -599,14 +599,12 @@ class Site(Entity):
         return self
 
     @property
-    def allow_create_declarative_workflow(self):
-        # type: () -> Optional[bool]
+    def allow_create_declarative_workflow(self) -> Optional[bool]:
         """Specifies whether a designer can be used to create declarative workflows on this site collection"""
         return self.properties.get("AllowCreateDeclarativeWorkflow", None)
 
     @property
-    def allow_designer(self):
-        # type: () -> Optional[bool]
+    def allow_designer(self) -> Optional[bool]:
         """
         Specifies whether a designer can be used on this site collection.
         See Microsoft.SharePoint.Client.Web.AllowDesignerForCurrentUser, which is the scalar property used
@@ -615,13 +613,11 @@ class Site(Entity):
         return self.properties.get("AllowDesigner", None)
 
     @property
-    def allowed_external_domains(self):
-        # type: () -> Optional[bool]
+    def allowed_external_domains(self) -> Optional[HTMLFieldSecuritySetting]:
         return self.properties.get("AllowedExternalDomains", HTMLFieldSecuritySetting())
 
     @property
-    def allow_master_page_editing(self):
-        # type: () -> Optional[bool]
+    def allow_master_page_editing(self) -> Optional[bool]:
         """
         Specifies whether master page editing is allowed on this site collection.
         See Web.AllowMasterPageEditingForCurrentUser, which is the scalar property used to
@@ -630,8 +626,7 @@ class Site(Entity):
         return self.properties.get("AllowMasterPageEditing", None)
 
     @property
-    def allow_revert_from_template(self):
-        # type: () -> Optional[bool]
+    def allow_revert_from_template(self) -> Optional[bool]:
         """
         Specifies whether this site collection can be reverted to its base template.
         See Web.AllowRevertFromTemplateForCurrentUser, which is the scalar property used to determine the behavior
@@ -640,15 +635,14 @@ class Site(Entity):
         return self.properties.get("AllowRevertFromTemplate", None)
 
     @property
-    def audit(self):
+    def audit(self) -> Audit:
         """Enables auditing of how site collection is accessed, changed, and used."""
         return self.properties.get(
             "Audit", Audit(self.context, ResourcePath("Audit", self.resource_path))
         )
 
     @property
-    def can_upgrade(self):
-        # type: () -> Optional[bool]
+    def can_upgrade(self) -> Optional[bool]:
         """
         Specifies whether this site collection is in an implementation-specific valid state for site collection upgrade,
          "true" if it is; otherwise, "false".
@@ -656,20 +650,17 @@ class Site(Entity):
         return self.properties.get("CanUpgrade", None)
 
     @property
-    def channel_group_id(self):
-        # type: () -> Optional[str]
+    def channel_group_id(self) -> Optional[str]:
         """ """
         return self.properties.get("ChannelGroupId", None)
 
     @property
-    def classification(self):
-        # type: () -> Optional[str]
+    def classification(self) -> Optional[str]:
         """Gets the classification of this site."""
         return self.properties.get("Classification", None)
 
     @property
-    def compatibility_level(self):
-        # type: () -> Optional[str]
+    def compatibility_level(self) -> Optional[str]:
         """
         Specifies the compatibility level of the site collection for the purpose of major version level compatibility
         checks
@@ -677,73 +668,63 @@ class Site(Entity):
         return self.properties.get("CompatibilityLevel", None)
 
     @property
-    def comments_on_site_pages_disabled(self):
-        # type: () -> Optional[bool]
+    def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Indicates whether comments on site pages are disabled or not."""
         return self.properties.get("CommentsOnSitePagesDisabled", None)
 
     @property
-    def current_change_token(self):
+    def current_change_token(self) -> ChangeToken:
         """Gets the current change token that is used in the change log for the site collection."""
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
     @property
-    def disable_flows(self):
-        # type: () -> Optional[bool]
+    def disable_flows(self) -> Optional[bool]:
         """"""
         return self.properties.get("DisableFlows", None)
 
     @property
-    def external_sharing_tips_enabled(self):
-        # type: () -> Optional[bool]
+    def external_sharing_tips_enabled(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether users will be greeted with a notification bar telling them that
         the site can be shared with external users. The value is true if the notification bar is enabled; otherwise,
         it is false."""
         return self.properties.get("ExternalSharingTipsEnabled", None)
 
     @property
-    def external_user_expiration_in_days(self):
-        # type: () -> Optional[int]
+    def external_user_expiration_in_days(self) -> Optional[int]:
         """"""
         return self.properties.get("ExternalUserExpirationInDays", None)
 
     @property
-    def geo_location(self):
-        # type: () -> Optional[str]
+    def geo_location(self) -> Optional[str]:
         """"""
         return self.properties.get("GeoLocation", None)
 
     @property
-    def group_id(self):
-        # type: () -> Optional[str]
+    def group_id(self) -> Optional[str]:
         """Group identifier"""
         return self.properties.get("GroupId", None)
 
     @property
-    def lock_issue(self):
-        # type: () -> Optional[str]
+    def lock_issue(self) -> Optional[str]:
         """Specifies the comment that is used when a site collection is locked"""
         return self.properties.get("LockIssue", None)
 
     @property
-    def root_web(self):
-        # type: () -> Web
+    def root_web(self) -> Web:
         """Get root web"""
         return self.properties.get(
             "RootWeb", Web(self.context, ResourcePath("RootWeb", self.resource_path))
         )
 
     @property
-    def owner(self):
-        # type: () -> User
+    def owner(self) -> User:
         """Gets or sets the owner of the site collection. (Read-only in sandboxed solutions.)"""
         return self.properties.get(
             "Owner", User(self.context, ResourcePath("Owner", self.resource_path))
         )
 
     @property
-    def read_only(self):
-        # type: () -> Optional[bool]
+    def read_only(self) -> Optional[bool]:
         """
         Gets a Boolean value that specifies whether the site collection is read-only,
         locked, and unavailable for write access.
@@ -751,8 +732,7 @@ class Site(Entity):
         return self.properties.get("ReadOnly", None)
 
     @property
-    def required_designer_version(self):
-        # type: () -> Optional[str]
+    def required_designer_version(self) -> Optional[str]:
         """
         Specifies the required minimum version of the designer that can be used on this site collection.
         The default, if not disabled on the Web application, is "15.0.0.0".
@@ -760,75 +740,64 @@ class Site(Entity):
         return self.properties.get("RequiredDesignerVersion", None)
 
     @property
-    def url(self):
-        # type: () -> Optional[str]
+    def url(self) -> Optional[str]:
         """Specifies the full URL of the site (2), including host name, port number and path"""
         return self.properties.get("Url", None)
 
     @property
-    def server_relative_url(self):
-        # type: () -> Optional[str]
+    def server_relative_url(self) -> Optional[str]:
         """Specifies the server-relative URL of the top-level site in the site collection."""
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def share_by_email_enabled(self):
-        # type: () -> Optional[bool]
+    def share_by_email_enabled(self) -> Optional[bool]:
         """
         When true, users will be able to grant permissions to guests for resources within the site collection.
         """
         return self.properties.get("ShareByEmailEnabled", None)
 
     @property
-    def status_bar_text(self):
-        # type: () -> Optional[str]
+    def status_bar_text(self) -> Optional[str]:
         """Gets or sets the status bar message text for this site."""
         return self.properties.get("StatusBarText", None)
 
     @property
-    def trim_audit_log(self):
-        # type: () -> Optional[bool]
+    def trim_audit_log(self) -> Optional[bool]:
         """When this flag is set for the site, the audit events are trimmed periodically."""
         return self.properties.get("TrimAuditLog", None)
 
     @property
-    def write_locked(self):
-        # type: () -> Optional[bool]
+    def write_locked(self) -> Optional[bool]:
         """ """
         return self.properties.get("WriteLocked", None)
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """Specifies the GUID that identifies the site collection."""
         return self.properties.get("Id", None)
 
     @property
-    def hub_site_id(self):
-        # type: () -> Optional[str]
+    def hub_site_id(self) -> Optional[str]:
         """ """
         return self.properties.get("HubSiteId", None)
 
     @property
-    def is_hub_site(self):
-        # type: () -> Optional[bool]
+    def is_hub_site(self) -> Optional[bool]:
         """Returns whether the specified site is a hub site"""
         return self.properties.get("IsHubSite", None)
 
     @property
-    def server_relative_path(self):
-        # type: () -> Optional[SPResPath]
+    def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the Site."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
     @property
-    def status_bar_link(self):
-        # type: () -> Optional[str]
+    def status_bar_link(self) -> Optional[str]:
         """Gets the status bar message link target for this site."""
         return self.properties.get("StatusBarLink", None)
 
     @property
-    def secondary_contact(self):
+    def secondary_contact(self) -> User:
         """Gets or sets the secondary contact that is used for the site collection."""
         return self.properties.get(
             "SecondaryContact",
@@ -836,7 +805,7 @@ class Site(Entity):
         )
 
     @property
-    def recycle_bin(self):
+    def recycle_bin(self) -> RecycleBinItemCollection:
         """Get recycle bin"""
         return self.properties.get(
             "RecycleBin",
@@ -846,8 +815,7 @@ class Site(Entity):
         )
 
     @property
-    def features(self):
-        # type: () -> FeatureCollection
+    def features(self) -> FeatureCollection:
         """Get features"""
         return self.properties.get(
             "Features",
@@ -857,8 +825,7 @@ class Site(Entity):
         )
 
     @property
-    def max_items_per_throttled_operation(self):
-        # type: () -> Optional[int]
+    def max_items_per_throttled_operation(self) -> Optional[int]:
         """
         Specifies the maximum number of list items allowed to be returned for each retrieve request before throttling
         occurs. If throttling occurs, list items MUST NOT be returned.
@@ -866,13 +833,12 @@ class Site(Entity):
         return self.properties.get("MaxItemsPerThrottledOperation", None)
 
     @property
-    def needs_b2b_upgrade(self):
-        # type: () -> Optional[bool]
+    def needs_b2b_upgrade(self) -> Optional[bool]:
         """Specifies whether the site needs a Build-to-Build upgrade."""
         return self.properties.get("NeedsB2BUpgrade", None)
 
     @property
-    def event_receivers(self):
+    def event_receivers(self) -> EventReceiverDefinitionCollection:
         """
         Provides event receivers for events that occur at the scope of the site collection.
         """
@@ -884,8 +850,7 @@ class Site(Entity):
         )
 
     @property
-    def show_url_structure(self):
-        # type: () -> Optional[bool]
+    def show_url_structure(self) -> Optional[bool]:
         """
         Specifies whether the URL structure of this site collection is viewable.
         See Web.ShowURLStructureForCurrentUser, which is the scalar property used to determine the behavior for the
@@ -894,15 +859,14 @@ class Site(Entity):
         return self.properties.get("ShowUrlStructure", None)
 
     @property
-    def ui_version_configuration_enabled(self):
-        # type: () -> Optional[bool]
+    def ui_version_configuration_enabled(self) -> Optional[bool]:
         """
         Specifies whether the visual upgrade UI for this site collection is displayed.
         """
         return self.properties.get("UIVersionConfigurationEnabled", None)
 
     @property
-    def usage_info(self):
+    def usage_info(self) -> UsageInfo:
         """Provides fields used to access information regarding site collection usage."""
         return self.properties.get("UsageInfo", UsageInfo())
 
@@ -912,15 +876,14 @@ class Site(Entity):
         return self.properties.get("UpgradeInfo", UpgradeInfo())
 
     @property
-    def upgrade_reminder_date(self):
+    def upgrade_reminder_date(self) -> Optional[datetime]:
         """
         Specifies a date, after which site collection administrators will be reminded to upgrade the site collection.
         """
-        return self.properties.get("UpgradeReminderDate", datetime.datetime.min)
+        return self.properties.get("UpgradeReminderDate", datetime.min)
 
     @property
-    def upgrade_scheduled(self):
-        # type: () -> Optional[bool]
+    def upgrade_scheduled(self) -> Optional[bool]:
         """
         Specifies whether the upgrade has been scheduled. It can only be set to false by a farm administrator.
         To set it to true, set the UpgradeScheduledDate to a future time.
@@ -928,24 +891,22 @@ class Site(Entity):
         return self.properties.get("UpgradeScheduled", None)
 
     @property
-    def upgrade_scheduled_date(self):
-        # type: () -> Optional[datetime.datetime]
+    def upgrade_scheduled_date(self) -> Optional[datetime]:
         """
         Specifies the upgrade scheduled date in UTC (Coordinated Universal Time). Only the Date part is used.
         If UpgradeScheduled is false, returns SqlDateTime.MinValue.
         """
-        return self.properties.get("UpgradeScheduledDate", datetime.datetime.min)
+        return self.properties.get("UpgradeScheduledDate", datetime.min)
 
     @property
-    def upgrading(self):
-        # type: () -> Optional[bool]
+    def upgrading(self) -> Optional[bool]:
         """
         Specifies whether the user will be able to share links to the documents that can be accessed without signing in.
         """
         return self.properties.get("Upgrading", None)
 
     @property
-    def user_custom_actions(self):
+    def user_custom_actions(self) -> UserCustomActionCollection:
         """Gets the User Custom Actions that are associated with the site."""
         return self.properties.get(
             "UserCustomActions",
@@ -955,7 +916,7 @@ class Site(Entity):
         )
 
     @property
-    def version_policy_for_new_libraries_template(self):
+    def version_policy_for_new_libraries_template(self) -> SiteVersionPolicyManager:
         """"""
         return self.properties.get(
             "VersionPolicyForNewLibrariesTemplate",

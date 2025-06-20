@@ -1,7 +1,10 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.alerts.alert import Alert
+from office365.sharepoint.alerts.creation_information import AlertCreationInformation
 from office365.sharepoint.entity_collection import EntityCollection
 
 
@@ -11,7 +14,7 @@ class AlertCollection(EntityCollection[Alert]):
     def __init__(self, context, resource_path=None):
         super(AlertCollection, self).__init__(context, Alert, resource_path)
 
-    def add(self, parameters):
+    def add(self, parameters: AlertCreationInformation) -> Alert:
         """
         Add an SP.Alert to SP.AlertCollection based on the given alertCreationInformation
 
@@ -25,8 +28,7 @@ class AlertCollection(EntityCollection[Alert]):
         self.context.add_query(qry)
         return return_type
 
-    def contains(self, id_alert):
-        # type: (str) -> ClientResult[bool]
+    def contains(self, id_alert: str) -> ClientResult[bool]:
         """
         Returns true if the given alert exists in the alert collection. False otherwise.
 
@@ -39,7 +41,7 @@ class AlertCollection(EntityCollection[Alert]):
         self.context.add_query(qry)
         return return_type
 
-    def delete_alert_at_index(self, index):
+    def delete_alert_at_index(self, index: int) -> Self:
         """Deletes the alert based on the given index.
 
         :param int index:  A 32-bit integer that is greater than or equal to 0 and less than the count of the
@@ -51,7 +53,7 @@ class AlertCollection(EntityCollection[Alert]):
         self.context.add_query(qry)
         return self
 
-    def get_by_id(self, id_alert):
+    def get_by_id(self, id_alert: str) -> Alert:
         """
         Gets an alert based on the Id.
 

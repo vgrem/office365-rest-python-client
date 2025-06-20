@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
@@ -11,15 +11,14 @@ class DeviceEnrollmentConfiguration(Entity):
         return self.display_name
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """
         Created date time in UTC of the device enrollment configuration
         """
-        return self.properties.get("createdDateTime", datetime.datetime.min)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The display name of the device enrollment configuration"""
         return self.properties.get("displayName", None)
 

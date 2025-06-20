@@ -42,8 +42,7 @@ class Organization(DirectoryObject):
         return self.properties.get("businessPhones", StringCollection())
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the message. Nullable."""
         return self.properties.get(
             "extensions",

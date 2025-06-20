@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -13,7 +15,7 @@ class RankingLabeling(Entity):
         )
         super(RankingLabeling, self).__init__(context, static_path)
 
-    def add_judgment(self, user_query, url, label_id):
+    def add_judgment(self, user_query: str, url: str, label_id: str) -> Self:
         """
         Adds a single relevance judgment for the specified query and URL pair.
 
@@ -27,8 +29,7 @@ class RankingLabeling(Entity):
         self.context.add_query(qry)
         return self
 
-    def normalize_result_url(self, url):
-        # type: (str) -> ClientResult[str]
+    def normalize_result_url(self, url: str) -> ClientResult[str]:
         """
         A URL string after normalization. The input and output URL strings MUST resolve to the same document.
 

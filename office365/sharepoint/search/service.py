@@ -3,7 +3,7 @@ from typing import Any, List, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -28,7 +28,7 @@ class SearchService(Entity):
 
     def __init__(self, context: ClientContext):
         super(SearchService, self).__init__(
-            context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchService")
+            context, StaticPath("Microsoft.Office.Server.Search.REST.SearchService")
         )
 
     def export(self, user: Union[str, User], start_time: datetime) -> ClientResult[str]:
@@ -58,7 +58,7 @@ class SearchService(Entity):
             _export(user)
         return return_type
 
-    def export_manual_suggestions(self):
+    def export_manual_suggestions(self) -> ClientResult[TenantCustomQuerySuggestions]:
         """ """
         return_type = ClientResult(self.context, TenantCustomQuerySuggestions())
         qry = ServiceOperationQuery(
@@ -148,22 +148,21 @@ class SearchService(Entity):
         if refiners:
             params["refiners"] = str(StringCollection(refiners))
         params.update(**kwargs)
-        return_type = ClientResult(
+        return_type: ClientResult[SearchResult] = ClientResult(
             self.context, SearchResult()
-        )  # type: ClientResult[SearchResult]
+        )
         qry = FunctionQuery(self, "query", params, return_type)
         self.context.add_query(qry)
         return return_type
 
     def post_query(
         self,
-        query_text,
-        select_properties=None,
-        trim_duplicates=None,
-        row_limit=None,
-        **kwargs
-    ):
-        # type: (str, List[str], bool, int, Any) -> ClientResult[SearchResult]
+        query_text: str,
+        select_properties: List[str] = None,
+        trim_duplicates: bool = None,
+        row_limit: int = None,
+        **kwargs: Any
+    ) -> ClientResult[SearchResult]:
         """The operation is used to retrieve search results through the use of the HTTP protocol
         with method type POST.
 
@@ -210,8 +209,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return self
 
-    def search_center_url(self):
-        # type: () -> ClientResult[str]
+    def search_center_url(self) -> ClientResult[str]:
         """The operation is used to get the URI address of the search center by using the HTTP protocol
         with the GET method. The operation returns the URI of the of the search center.
         """
@@ -222,7 +220,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def results_page_address(self):
+    def results_page_address(self) -> ClientResult[str]:
         """The operation is used to get the URI address of the result page by using the HTTP protocol
         with the GET method. The operation returns the URI of the result page."""
         return_type = ClientResult(self.context, str())
@@ -232,7 +230,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def suggest(self, query_text: str):
+    def suggest(self, query_text: str) -> ClientResult[QuerySuggestionResults]:
         """
         :param str query_text: The query text of the search query. If this element is not present or a value
              is not specified, a default value of an empty string MUST be used, and the server MUST return a
@@ -245,8 +243,12 @@ class SearchService(Entity):
         return return_type
 
     def auto_completions(
-        self, query_text, sources=None, number_of_completions=None, cursor_position=None
-    ):
+        self,
+        query_text: str,
+        sources: str = None,
+        number_of_completions: int = None,
+        cursor_position: int = None,
+    ) -> ClientResult[QueryAutoCompletionResults]:
         """
         The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
 
