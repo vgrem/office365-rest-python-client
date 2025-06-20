@@ -14,7 +14,7 @@ from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvid
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.utilities import get_absolute_url
+from office365.runtime.utilities import deprecated, get_absolute_url
 
 
 def _get_authorization_header(token):
@@ -247,10 +247,13 @@ class AuthenticationContext:
         self._authenticate = provider.authenticate_request
         return self
 
+    @deprecated(
+        reason="Use with_credentials(UserCredential(username, password)) instead",
+        version="3.0",
+    )
     def acquire_token_for_user(self, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via user credentials
-        Status: deprecated!
 
         :param str password: The user password
         :param str username: Typically a UPN in the form of an email address
@@ -264,8 +267,6 @@ class AuthenticationContext:
     def acquire_token_for_app(self, client_id, client_secret) -> Self:
         """
         Initializes a client to acquire a token via client credentials (SharePoint App-Only)
-
-        Status: deprecated!
 
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Secret string that the application uses to prove its identity when requesting a token

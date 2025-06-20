@@ -12,6 +12,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.creation_information import FileCreationInformation
 from office365.sharepoint.files.file import File
 from office365.sharepoint.files.publish.status import FileStatus
+from office365.sharepoint.pages.template_file_type import TemplateFileType
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
@@ -147,11 +148,11 @@ class FileCollection(EntityCollection[File]):
         self.context.add_query(qry)
         return return_type
 
-    def add_template_file(self, url_of_file, template_file_type):
+    def add_template_file(self, url_of_file: str, template_file_type: TemplateFileType):
         """Adds a ghosted file to an existing list or document library.
 
-        :param int template_file_type: refer TemplateFileType enum
         :param str url_of_file: server relative url of a file
+        :param int template_file_type: refer TemplateFileType enum
         """
         return_type = File(self.context)
         self.add_child(return_type)
@@ -163,7 +164,7 @@ class FileCollection(EntityCollection[File]):
                         self.parent.properties["ServerRelativeUrl"], url_of_file
                     )
                 ),
-                "templateFileType": template_file_type,
+                "templateFileType": template_file_type.value,
             }
             qry = ServiceOperationQuery(
                 self, "addTemplateFile", params, None, None, return_type

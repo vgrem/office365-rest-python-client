@@ -375,7 +375,7 @@ class ClientContext(ClientRuntimeContext):
         return self._web
 
     @property
-    def site(self):
+    def site(self) -> Site:
         """
         Represents a collection of sites in a Web application, including a top-level website and all its sub sites.
         """

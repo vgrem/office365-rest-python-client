@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional
+from typing import IO, AnyStr, Callable, Dict, Optional, Union
 
 from typing_extensions import Self
 
@@ -28,6 +28,7 @@ from office365.sharepoint.files.checked_out_file_collection import (
     CheckedOutFileCollection,
 )
 from office365.sharepoint.files.file import File
+from office365.sharepoint.flows.connector_result import ConnectorResult
 from office365.sharepoint.flows.synchronization_result import FlowSynchronizationResult
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.forms.collection import FormCollection
@@ -65,9 +66,6 @@ from office365.sharepoint.views.collection import ViewCollection
 from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
-if TYPE_CHECKING:
-    from office365.sharepoint.lists.collection import ListCollection
-
 
 class List(SecurableObject):
     """
@@ -83,8 +81,12 @@ class List(SecurableObject):
     def __repr__(self):
         return self.id or self.title or self.entity_type_name
 
-    def export(self, local_file, include_content=False, item_exported=None):
-        # type: (IO, bool, Callable[[ListItem|File|Folder], None]) -> Self
+    def export(
+        self,
+        local_file: IO,
+        include_content: bool = False,
+        item_exported: Callable[[Union[ListItem, File, Folder]], None] = None,
+    ) -> Self:
         """Exports SharePoint List"""
         from office365.sharepoint.lists.exporter import ListExporter
 
@@ -130,7 +132,7 @@ class List(SecurableObject):
         :param str document_template_type: A number representing the type of document to create.
         :param str template_url: Specifies the URL of the document template (2) to base the new document on.
         """
-        return_type = ClientResult(self.context, str())  # type: ClientResult[str]
+        return_type: ClientResult[str] = ClientResult(self.context, str())
         payload = {
             "fileName": file_name,
             "folderPath": folder_path,
@@ -143,7 +145,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def delete_rule(self, rule_id):
+    def delete_rule(self, rule_id) -> Self:
         """
         :param str rule_id:
         """
@@ -161,7 +163,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_bloom_filter(self, start_item_id=None):
+    def get_bloom_filter(self, start_item_id: int = None) -> ListBloomFilter:
         """
         Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current list
 
@@ -235,7 +237,7 @@ class List(SecurableObject):
         self.root_folder.ensure_property("ServerRelativeUrl", _loaded)
         return return_type
 
-    def get_flow_permission_level(self):
+    def get_flow_permission_level(self) -> ConnectorResult:
         """"""
         from office365.sharepoint.flows.connector_result import ConnectorResult
         from office365.sharepoint.flows.permissions import FlowPermissions
@@ -267,8 +269,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder", _get_sharing_settings)
         return return_type
 
-    def get_site_script(self, options=None):
-        # type: (Dict) -> ClientResult[str]
+    def get_site_script(self, options: Dict = None) -> ClientResult[str]:
         """Creates site script syntax
 
         :param dict or None options:
@@ -286,7 +287,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder", _list_loaded)
         return return_type
 
-    def ensure_signoff_status_field(self):
+    def ensure_signoff_status_field(self) -> Field:
         """"""
         return_type = Field(self.context)
         self.fields.add_child(return_type)
@@ -313,7 +314,7 @@ class List(SecurableObject):
         return return_type
 
     def search_lookup_field_choices(
-        self, target_field_name, begins_with_search_string, paging_info
+        self, target_field_name: str, begins_with_search_string: str, paging_info: str
     ):
         """
         :param str target_field_name:
@@ -332,7 +333,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_callback_url(self, flow_id):
+    def sync_flow_callback_url(self, flow_id: object) -> FlowSynchronizationResult:
         """
         :param str flow_id:
         """
@@ -343,7 +344,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_instance(self, flow_id):
+    def sync_flow_instance(self, flow_id: str) -> FlowSynchronizationResult:
         """
         :param str flow_id:
         """
@@ -386,7 +387,7 @@ class List(SecurableObject):
         :param str folder_path: The path within the current list at which to create the document.
         :param str extension: The file extension without dot prefix.
         """
-        return_type = ClientResult(self.context)  # type: ClientResult[str]
+        return_type: ClientResult[str] = ClientResult(self.context)
         payload = {"folderPath": folder_path, "extension": extension}
         qry = ServiceOperationQuery(
             self, "CreateDocumentWithDefaultName", None, payload, None, return_type
@@ -408,7 +409,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def render_list_data(self, view_xml):
+    def render_list_data(self, view_xml: str):
         """
         Returns the data for the specified query view. The result is implementation-specific, used for
         providing data to a user interface.
@@ -542,8 +543,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_list_item_changes_since_token(self, query):
-        # type: (ChangeLogItemQuery) -> ClientResult[AnyStr]
+    def get_list_item_changes_since_token(
+        self, query: ChangeLogItemQuery
+    ) -> ClientResult[AnyStr]:
         """
         Returns the changes made to the list since the date and time specified in the change token defined
         by the query input parameter.
@@ -610,8 +612,7 @@ class List(SecurableObject):
             ServiceOperationPath("getItemByUniqueId", [unique_id], self.resource_path),
         )
 
-    def get_web_dav_url(self, source_url):
-        # type: (str) -> ClientResult[str]
+    def get_web_dav_url(self, source_url: str) -> ClientResult[str]:
         """
         Gets the trusted URL for opening the folder in Explorer view.
         :param str source_url: The URL of the current folder the user is in.
@@ -625,8 +626,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_items(self, caml_query=None):
-        # type: (CamlQuery) -> ListItemCollection
+    def get_items(self, caml_query: CamlQuery = None) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query."""
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
@@ -636,8 +636,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_item(self, creation_information):
-        # type: (ListItemCreationInformation|dict) -> ListItem
+    def add_item(
+        self, creation_information: Union[ListItemCreationInformation, Dict]
+    ) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,
         as shown in ListItemCollection request examples."""
         return_type = ListItem(self.context, None, self)
@@ -683,7 +684,9 @@ class List(SecurableObject):
         self.ensure_property("RootFolder", _root_folder_loaded)
         return return_type
 
-    def add_item_using_path(self, leaf_name, object_type, folder_url):
+    def add_item_using_path(
+        self, leaf_name: str, object_type: int, folder_url: str
+    ) -> ListItem:
         """
         Adds a ListItem to an existing List.
 
@@ -707,7 +710,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_validate_update_item(self, create_info, form_values=None):
+    def add_validate_update_item(
+        self, create_info: ListItemCreationInformation, form_values: Dict = None
+    ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """
         Adds an item to an existing list and validate the list item update values. If all fields validated successfully,
          commit all changes. If there's any exception in any of the fields, the item will not be committed.
@@ -732,16 +737,14 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_item_by_id(self, item_id):
-        # type: (int) -> ListItem
+    def get_item_by_id(self, item_id: int) -> ListItem:
         """Returns the list item with the specified list item identifier."""
         return ListItem(
             self.context,
             ServiceOperationPath("getItemById", [item_id], self.resource_path),
         )
 
-    def get_item_by_url(self, url):
-        # type: (str) -> ListItem
+    def get_item_by_url(self, url: str) -> ListItem:
         """Returns the list item with the specified site or server relative url."""
         return_type = ListItem(self.context)
         self.items.add_child(return_type)
@@ -766,8 +769,7 @@ class List(SecurableObject):
             self,
         )
 
-    def get_changes(self, query=None):
-        # type: (ChangeQuery) -> ChangeCollection
+    def get_changes(self, query: ChangeQuery = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the list,
            based on the specified query.
 
@@ -817,8 +819,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def reserve_list_item_id(self):
-        # type: () -> ClientResult[int]
+    def reserve_list_item_id(self) -> ClientResult[int]:
         """Reserves the returned list item identifier for the idempotent creation of a list item."""
         return_type = ClientResult(self.context, int())
         qry = ServiceOperationQuery(
@@ -885,14 +886,12 @@ class List(SecurableObject):
         return self
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """Gets a value that specifies the list identifier."""
         return self.properties.get("Id", None)
 
     @property
-    def additional_ux_properties(self):
-        # type: () -> Optional[str]
+    def additional_ux_properties(self) -> Optional[str]:
         return self.properties.get("AdditionalUXProperties", None)
 
     @property
@@ -903,26 +902,22 @@ class List(SecurableObject):
         )
 
     @property
-    def allow_content_types(self):
-        # type: () -> Optional[bool]
+    def allow_content_types(self) -> Optional[bool]:
         """Specifies whether the list supports content types."""
         return self.properties.get("AllowContentTypes", None)
 
     @property
-    def allow_deletion(self):
-        # type: () -> Optional[bool]
+    def allow_deletion(self) -> Optional[bool]:
         """Specifies whether the list could be deleted."""
         return self.properties.get("AllowDeletion", None)
 
     @property
-    def base_template(self):
-        # type: () -> Optional[int]
+    def base_template(self) -> Optional[int]:
         """Specifies the list server template of the list."""
         return self.properties.get("BaseTemplate", None)
 
     @property
-    def base_type(self):
-        # type: () -> Optional[int]
+    def base_type(self) -> Optional[int]:
         """
         Specifies the base type of the list.
         It MUST be one of the following values: GenericList, DocumentLibrary, DiscussionBoard, Survey, or Issue.
@@ -930,8 +925,7 @@ class List(SecurableObject):
         return self.properties.get("BaseType", None)
 
     @property
-    def browser_file_handling(self):
-        # type: () -> Optional[int]
+    def browser_file_handling(self) -> Optional[int]:
         """
         Specifies the override at the list level for the BrowserFileHandling property of the Web application.
         If the BrowserFileHandling property of the Web application is BrowserFileHandling.Strict,
@@ -946,27 +940,24 @@ class List(SecurableObject):
         return self.properties.get("Created", datetime.min)
 
     @property
-    def default_display_form_url(self):
-        # type: () -> Optional[str]
+    def default_display_form_url(self) -> Optional[str]:
         """Specifies the location of the default display form for the list."""
         return self.properties.get("DefaultDisplayFormUrl", None)
 
     @property
-    def default_view_path(self):
+    def default_view_path(self) -> SPResPath:
         """Specifies the server-relative URL of the default view for the list."""
         return self.properties.get("DefaultViewPath", SPResPath())
 
     @property
-    def default_view_url(self):
-        # type: () -> Optional[str]
+    def default_view_url(self) -> Optional[str]:
         """
         Specifies the server-relative URL of the default view for the list.
         """
         return self.properties.get("DefaultViewUrl", None)
 
     @property
-    def crawl_non_default_views(self):
-        # type: () -> Optional[bool]
+    def crawl_non_default_views(self) -> Optional[bool]:
         """
         Specifies whether or not the crawler indexes the non-default views of the list.
         Specify a value of true if the crawler indexes the list's non-default views; specify false if otherwise.
@@ -1005,19 +996,16 @@ class List(SecurableObject):
         return self.properties.get("DataSource", ListDataSource())
 
     @property
-    def default_edit_form_url(self):
-        # type: () -> Optional[str]
+    def default_edit_form_url(self) -> Optional[str]:
         """Gets a value that specifies the URL of the edit form to use for list items in the list."""
         return self.properties.get("DefaultEditFormUrl", None)
 
     @property
-    def default_item_open_in_browser(self):
-        # type: () -> Optional[bool]
+    def default_item_open_in_browser(self) -> Optional[bool]:
         return self.properties.get("DefaultItemOpenInBrowser", None)
 
     @property
-    def default_item_open_use_list_setting(self):
-        # type: () -> Optional[bool]
+    def default_item_open_use_list_setting(self) -> Optional[bool]:
         """
         This property returns whether to use the List setting or the server wide setting for
         DefaultItemOpen (BrowserEnabledDocuments setting) in the Web application. This property can only be set to
@@ -1026,18 +1014,15 @@ class List(SecurableObject):
         return self.properties.get("DefaultItemOpenUseListSetting", None)
 
     @property
-    def disable_commenting(self):
-        # type: () -> Optional[bool]
+    def disable_commenting(self) -> Optional[bool]:
         return self.properties.get("DisableCommenting", None)
 
     @property
-    def disable_grid_editing(self):
-        # type: () -> Optional[bool]
+    def disable_grid_editing(self) -> Optional[bool]:
         return self.properties.get("DisableGridEditing", None)
 
     @property
-    def document_template_url(self):
-        # type: () -> Optional[str]
+    def document_template_url(self) -> Optional[str]:
         """Specifies the URL of the document template assigned to the list."""
         return self.properties.get("DocumentTemplateUrl", None)
 
@@ -1063,56 +1048,47 @@ class List(SecurableObject):
         return self.properties.get("EffectiveBasePermissionsForUI", BasePermissions())
 
     @property
-    def enable_assign_to_email(self):
-        # type: () -> Optional[bool]
+    def enable_assign_to_email(self) -> Optional[bool]:
         """
         Gets or sets a Boolean value specifying whether e-mail notification is enabled for the list.
         """
         return self.properties.get("EnableAssignToEmail", None)
 
     @property
-    def enable_attachments(self):
-        # type: () -> Optional[bool]
+    def enable_attachments(self) -> Optional[bool]:
         """Specifies whether list item attachments are enabled for the list"""
         return self.properties.get("EnableAttachments", None)
 
     @property
-    def enable_folder_creation(self):
-        # type: () -> Optional[bool]
+    def enable_folder_creation(self) -> Optional[bool]:
         """Specifies whether new list folders can be added to the list."""
         return self.properties.get("EnableFolderCreation", None)
 
     @enable_folder_creation.setter
-    def enable_folder_creation(self, value):
-        # type: (bool) -> None
+    def enable_folder_creation(self, value: bool) -> None:
         self.set_property("EnableFolderCreation", value, True)
 
     @property
-    def enable_minor_versions(self):
-        # type: () -> Optional[bool]
+    def enable_minor_versions(self) -> Optional[bool]:
         """Specifies whether minor versions are enabled for the list."""
         return self.properties.get("EnableMinorVersions", None)
 
     @property
-    def enable_moderation(self):
-        # type: () -> Optional[bool]
+    def enable_moderation(self) -> Optional[bool]:
         """Specifies whether content approval is enabled for the list."""
         return self.properties.get("EnableModeration", None)
 
     @property
-    def enable_request_sign_off(self):
-        # type: () -> Optional[bool]
+    def enable_request_sign_off(self) -> Optional[bool]:
         return self.properties.get("EnableRequestSignOff", None)
 
     @property
-    def enable_versioning(self):
-        # type: () -> Optional[bool]
+    def enable_versioning(self) -> Optional[bool]:
         """Specifies whether content approval is enabled for the list."""
         return self.properties.get("EnableVersioning", None)
 
     @property
-    def exclude_from_offline_client(self):
-        # type: () -> Optional[bool]
+    def exclude_from_offline_client(self) -> Optional[bool]:
         """
         This doesn't block sync but acts as a recommendation to the client to not take this list offline.
         This gets returned as part of list properties in GetListSchema soap call.
@@ -1120,8 +1096,7 @@ class List(SecurableObject):
         return self.properties.get("ExcludeFromOfflineClient", None)
 
     @property
-    def exempt_from_block_download_of_non_viewable_files(self):
-        # type: () -> Optional[bool]
+    def exempt_from_block_download_of_non_viewable_files(self) -> Optional[bool]:
         """
         Property indicating whether the list is exempt from the policy to block download of non-server handled files.
         This SHOULD be set using the SetExemptFromBlockDownloadOfNonViewableFiles (section 3.2.5.79.2.1.25) method.
@@ -1129,8 +1104,7 @@ class List(SecurableObject):
         return self.properties.get("ExemptFromBlockDownloadOfNonViewableFiles", None)
 
     @property
-    def file_save_post_processing_enabled(self):
-        # type: () -> Optional[bool]
+    def file_save_post_processing_enabled(self) -> Optional[bool]:
         """
         Specifies whether or not the files in the list can be processed in asynchronous manner
         Specify a value of true if the list files can be processed asynchronously; specify false if otherwise.
@@ -1138,48 +1112,41 @@ class List(SecurableObject):
         return self.properties.get("FileSavePostProcessingEnabled", None)
 
     @property
-    def force_checkout(self):
-        # type: () -> Optional[bool]
+    def force_checkout(self) -> Optional[bool]:
         """Specifies whether check out is required when adding or editing documents in the list"""
         return self.properties.get("ForceCheckout", None)
 
     @property
-    def has_content_assembly_templates(self):
-        # type: () -> Optional[bool]
+    def has_content_assembly_templates(self) -> Optional[bool]:
         """ """
         return self.properties.get("HasContentAssemblyTemplates", None)
 
     @property
-    def has_external_data_source(self):
-        # type: () -> Optional[bool]
+    def has_external_data_source(self) -> Optional[bool]:
         """
         Specifies whether the list is an external list.
         """
         return self.properties.get("HasExternalDataSource", None)
 
     @property
-    def has_folder_coloring_fields(self):
-        # type: () -> Optional[bool]
+    def has_folder_coloring_fields(self) -> Optional[bool]:
         """ """
         return self.properties.get("HasFolderColoringFields", None)
 
     @property
-    def irm_enabled(self):
-        # type: () -> Optional[bool]
+    def irm_enabled(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether Information Rights Management (IRM) is enabled for the list."""
         return self.properties.get("IrmEnabled", None)
 
     @property
-    def irm_expire(self):
-        # type: () -> Optional[bool]
+    def irm_expire(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether Information Rights Management (IRM) expiration is enabled
         for the list
         """
         return self.properties.get("IrmExpire", None)
 
     @property
-    def items(self):
-        # type: () -> ListItemCollection
+    def items(self) -> ListItemCollection:
         """Get list items"""
         return self.properties.get(
             "Items",
@@ -1187,8 +1154,7 @@ class List(SecurableObject):
         )
 
     @property
-    def root_folder(self):
-        # type: () -> Folder
+    def root_folder(self) -> Folder:
         """Get a root folder"""
         return self.properties.get(
             "RootFolder",
@@ -1196,8 +1162,7 @@ class List(SecurableObject):
         )
 
     @property
-    def fields(self):
-        # type: () -> FieldCollection
+    def fields(self) -> FieldCollection:
         """Gets a value that specifies the collection of all fields in the list."""
         return self.properties.get(
             "Fields",
@@ -1217,8 +1182,7 @@ class List(SecurableObject):
         )
 
     @property
-    def views(self):
-        # type: () -> ViewCollection
+    def views(self) -> ViewCollection:
         """Gets a value that specifies the collection of all public views on the list and personal views
         of the current user on the list."""
         return self.properties.get(
@@ -1247,14 +1211,12 @@ class List(SecurableObject):
         )
 
     @property
-    def content_types_enabled(self):
-        # type: () -> Optional[bool]
+    def content_types_enabled(self) -> Optional[bool]:
         """Specifies whether content types are enabled for the list."""
         return self.properties.get("ContentTypesEnabled", None)
 
     @property
-    def is_private(self):
-        # type: () -> Optional[bool]
+    def is_private(self) -> Optional[bool]:
         """
         Specifies whether the list is a private list with restricted permissions.
         True if the list is a private list, otherwise False.
@@ -1262,8 +1224,7 @@ class List(SecurableObject):
         return self.properties.get("IsPrivate", None)
 
     @property
-    def is_site_assets_library(self):
-        # type: () -> Optional[bool]
+    def is_site_assets_library(self) -> Optional[bool]:
         """
         Specifies whether the list is designated as a default asset location for images or other files which the
         users upload to their wiki pages.
@@ -1271,8 +1232,7 @@ class List(SecurableObject):
         return self.properties.get("IsSiteAssetsLibrary", None)
 
     @property
-    def is_system_list(self):
-        # type: () -> Optional[bool]
+    def is_system_list(self) -> Optional[bool]:
         """
         Indicates whether the list is system list that does not contain end user data and created by system account.
         A value of True means yes.
@@ -1334,8 +1294,7 @@ class List(SecurableObject):
         )
 
     @property
-    def item_count(self):
-        # type: () -> Optional[int]
+    def item_count(self) -> Optional[int]:
         """Gets a value that specifies the number of list items in the list"""
         return self.properties.get("ItemCount", None)
 
@@ -1365,30 +1324,26 @@ class List(SecurableObject):
         return self.properties.get("LastItemUserModifiedDate", datetime.min)
 
     @property
-    def list_experience_options(self):
-        # type: () -> Optional[int]
+    def list_experience_options(self) -> Optional[int]:
         """
         Gets or sets the list to new experience, classic experience or default experience set by my administrator.
         """
         return self.properties.get("ListExperienceOptions", None)
 
     @property
-    def list_form_customized(self):
-        # type: () -> Optional[bool]
+    def list_form_customized(self) -> Optional[bool]:
         """ """
         return self.properties.get("ListFormCustomized", None)
 
     @property
-    def list_item_entity_type_full_name(self):
-        # type: () -> Optional[str]
+    def list_item_entity_type_full_name(self) -> Optional[str]:
         """
         Specifies the full type name of the list item.
         """
         return self.properties.get("ListItemEntityTypeFullName", None)
 
     @property
-    def major_version_limit(self):
-        # type: () -> Optional[int]
+    def major_version_limit(self) -> Optional[int]:
         """
         Gets the maximum number of major versions allowed for an item in a document library that uses version
         control with major versions only.
@@ -1396,14 +1351,12 @@ class List(SecurableObject):
         return self.properties.get("MajorVersionLimit", None)
 
     @property
-    def list_schema_version(self):
-        # type: () -> Optional[str]
+    def list_schema_version(self) -> Optional[str]:
         """"""
         return self.properties.get("ListSchemaVersion", None)
 
     @property
-    def major_with_minor_versions_limit(self):
-        # type: () -> Optional[int]
+    def major_with_minor_versions_limit(self) -> Optional[int]:
         """
         Gets the maximum number of major versions that are allowed for an item in a document library that uses
         version control with both major and minor versions.
@@ -1411,16 +1364,14 @@ class List(SecurableObject):
         return self.properties.get("MajorWithMinorVersionsLimit", None)
 
     @property
-    def no_crawl(self):
-        # type: () -> Optional[bool]
+    def no_crawl(self) -> Optional[bool]:
         """
         Specifies that the crawler MUST NOT crawl the list.
         """
         return self.properties.get("NoCrawl", None)
 
     @property
-    def on_quick_launch(self):
-        # type: () -> Optional[bool]
+    def on_quick_launch(self) -> Optional[bool]:
         """
         Specifies whether the list appears on the Quick Launch of the site (2). If the value is set to "true",
         the protocol server MUST set the Hidden property of the list to "false".
@@ -1428,8 +1379,7 @@ class List(SecurableObject):
         return self.properties.get("OnQuickLaunch", None)
 
     @property
-    def page_render_type(self):
-        # type: () -> Optional[int]
+    def page_render_type(self) -> Optional[int]:
         """
         Returns the render type of the current file. If the file will render in the modern experience it will return
         ListPageRenderType.Modern. If the file will render in the classic experience, it will return the reason
@@ -1438,8 +1388,7 @@ class List(SecurableObject):
         return self.properties.get("PageRenderType", None)
 
     @property
-    def parent_web_url(self):
-        # type: () -> Optional[str]
+    def parent_web_url(self) -> Optional[str]:
         """
         Specifies the server-relative URL of the site (2) that contains the list.
         It MUST be a URL of server-relative form.
@@ -1447,8 +1396,7 @@ class List(SecurableObject):
         return self.properties.get("ParentWebUrl", None)
 
     @property
-    def parser_disabled(self):
-        # type: () -> Optional[str]
+    def parser_disabled(self) -> Optional[str]:
         """
         Specifies whether or not the document parser is enabled on the list.
         Specify a value of true if the document parser is enabled on the list; specify false if otherwise.
@@ -1456,27 +1404,23 @@ class List(SecurableObject):
         return self.properties.get("ParserDisabled", None)
 
     @property
-    def read_security(self):
-        # type: () -> Optional[int]
+    def read_security(self) -> Optional[int]:
         """Gets or sets the Read security setting for the list."""
         return self.properties.get("ReadSecurity", None)
 
     @property
-    def server_template_can_create_folders(self):
-        # type: () -> Optional[bool]
+    def server_template_can_create_folders(self) -> Optional[bool]:
         """
         Specifies whether the list template the list is based on allows the creation of folders.
         """
         return self.properties.get("ServerTemplateCanCreateFolders", None)
 
     @property
-    def show_hidden_fields_in_modern_form(self):
-        # type: () -> Optional[bool]
+    def show_hidden_fields_in_modern_form(self) -> Optional[bool]:
         return self.properties.get("ShowHiddenFieldsInModernForm", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Gets the displayed title for the list."""
         return self.properties.get("Title", None)
 
@@ -1486,8 +1430,7 @@ class List(SecurableObject):
         self.set_property("Title", val)
 
     @property
-    def default_content_approval_workflow_id(self):
-        # type: () -> Optional[str]
+    def default_content_approval_workflow_id(self) -> Optional[str]:
         """
         Specifies the default workflow identifier for content approval on the list. It MUST be an empty GUID
         if there is no default content approval workflow
@@ -1495,14 +1438,12 @@ class List(SecurableObject):
         return self.properties.get("DefaultContentApprovalWorkflowId", None)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """Gets the description for the list."""
         return self.properties.get("Description", None)
 
     @description.setter
-    def description(self, val):
-        # type: (str) -> None
+    def description(self, val: str) -> None:
         """Sets the description for the list."""
         self.set_property("Description", val)
 
@@ -1522,14 +1463,12 @@ class List(SecurableObject):
         return self.properties.get("ParentWebPath", SPResPath())
 
     @property
-    def schema_xml(self):
-        # type: () -> Optional[str]
+    def schema_xml(self) -> Optional[str]:
         """Specifies the list schema of the list."""
         return self.properties.get("SchemaXml", None)
 
     @property
-    def template_feature_id(self):
-        # type: () -> Optional[str]
+    def template_feature_id(self) -> Optional[str]:
         """
         Specifies the feature identifier of the feature that contains the list schema for the list.
         It MUST be an empty GUID if the list schema for the list is not contained within a feature.
@@ -1547,15 +1486,9 @@ class List(SecurableObject):
         )
 
     @property
-    def validation_formula(self):
-        # type: () -> Optional[str]
+    def validation_formula(self) -> Optional[str]:
         """Specifies the data validation criteria for a list item."""
         return self.properties.get("ValidationFormula", None)
-
-    @property
-    def parent_collection(self):
-        # type: () -> ListCollection
-        return self._parent_collection
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -1588,11 +1521,7 @@ class List(SecurableObject):
         super(List, self).set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
-            if name == "Id":
-                self._resource_path = self.parent_collection.get_by_id(
-                    value
-                ).resource_path
-            elif name == "Url":
+            if name == "Url":
                 self._resource_path = ServiceOperationPath(
                     "getList", [value], self.context.web.resource_path
                 )

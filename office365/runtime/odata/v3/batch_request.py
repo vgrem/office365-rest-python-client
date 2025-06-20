@@ -13,7 +13,6 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.queries.batch import BatchQuery, create_boundary
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.utilities import message_to_bytes
 
 
 class ODataBatchV3Request(ODataRequest):
@@ -107,7 +106,7 @@ class ODataBatchV3Request(ODataRequest):
             message = self._serialize_request(request)
             main_message.attach(message)
 
-        return message_to_bytes(main_message)
+        return main_message.as_bytes()
 
     @staticmethod
     def _normalize_headers(headers_raw: List[str]) -> CaseInsensitiveDict:

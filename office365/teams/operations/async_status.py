@@ -1,4 +1,7 @@
-class TeamsAsyncOperationStatus:
+from enum import Enum
+
+
+class TeamsAsyncOperationStatus(Enum):
     def __init__(self):
         """Describes the current status of a teamsAsyncOperation."""
         pass

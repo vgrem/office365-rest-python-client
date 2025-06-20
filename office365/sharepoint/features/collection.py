@@ -10,8 +10,13 @@ class FeatureCollection(EntityCollection[Feature]):
     def __init__(self, context, resource_path=None, parent=None):
         super(FeatureCollection, self).__init__(context, Feature, resource_path, parent)
 
-    def add(self, feature_id, force, featdef_scope, verify_if_activated=False):
-        # type: (str, bool, int, bool) -> Feature
+    def add(
+        self,
+        feature_id: str,
+        force: bool,
+        featdef_scope: int,
+        verify_if_activated: bool = False,
+    ) -> Feature:
         """
         Adds the feature to the collection of activated features and returns the added feature.
 
@@ -31,8 +36,7 @@ class FeatureCollection(EntityCollection[Feature]):
             }
             return ServiceOperationQuery(self, "Add", None, payload, None, return_type)
 
-        def _create_if_not_activated(f):
-            # type: (Feature) -> None
+        def _create_if_not_activated(f: Feature) -> None:
             if not f.properties:
                 self.context.add_query(_create_query())
 
@@ -43,8 +47,7 @@ class FeatureCollection(EntityCollection[Feature]):
 
         return return_type
 
-    def get_by_id(self, feature_id):
-        # type: (str) -> Feature
+    def get_by_id(self, feature_id: str) -> Feature:
         """Returns the feature for the given feature identifier. Returns NULL if no feature is available for the given
             feature identifier.
 

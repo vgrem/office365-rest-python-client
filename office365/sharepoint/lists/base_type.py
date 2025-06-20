@@ -1,4 +1,7 @@
-class BaseType:
+from enum import Enum
+
+
+class BaseType(Enum):
     """Specifies the base type for a list."""
 
     None_ = -1

@@ -23,8 +23,7 @@ class Attachment(Entity):
         :param bool use_path: Use Path instead of Url for addressing attachments
         """
 
-        def _save_content(return_type):
-            # type: (ClientResult[AnyStr]) -> None
+        def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)
 
         def _download_file_by_path():
@@ -45,8 +44,7 @@ class Attachment(Entity):
             self.ensure_property("ServerRelativeUrl", _download_file_by_url)
         return self
 
-    def get_content(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_content(self) -> ClientResult[AnyStr]:
         """Gets the raw contents of attachment"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
@@ -59,8 +57,7 @@ class Attachment(Entity):
         self.context.add_query(qry)
         return self
 
-    def upload(self, file_object, use_path=True):
-        # type: (IO, bool) -> Self
+    def upload(self, file_object: IO, use_path: bool = True) -> Self:
         """
         Upload attachment into list item
 
@@ -89,24 +86,22 @@ class Attachment(Entity):
         return self
 
     @property
-    def file_name(self):
-        # type: () -> Optional[str]
+    def file_name(self) -> Optional[str]:
         """Specifies the file name of the list item attachment."""
         return self.properties.get("FileName", None)
 
     @property
-    def file_name_as_path(self):
+    def file_name_as_path(self) -> SPResPath:
         """The file name of the attachment as a SP.ResourcePath."""
         return self.properties.get("FileNameAsPath", SPResPath())
 
     @property
-    def server_relative_url(self):
-        # type: () -> Optional[str]
+    def server_relative_url(self) -> Optional[str]:
         """The server-relative-url of the attachment"""
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def server_relative_path(self):
+    def server_relative_path(self) -> SPResPath:
         """The server-relative-path of the attachment."""
         return self.properties.get("ServerRelativePath", SPResPath())
 

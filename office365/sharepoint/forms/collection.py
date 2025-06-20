@@ -1,6 +1,7 @@
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.forms.form import Form
+from office365.sharepoint.pages.page_type import PageType
 
 
 class FormCollection(EntityCollection[Form]):
@@ -17,7 +18,7 @@ class FormCollection(EntityCollection[Form]):
             self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
         )
 
-    def get_by_page_type(self, form_type):
+    def get_by_page_type(self, form_type: PageType) -> Form:
         """
         Returns the list form with the specified page type. If there is more than one list form with
         the specified page type, the protocol server MUST return one list form as determined by the protocol server.
@@ -29,5 +30,7 @@ class FormCollection(EntityCollection[Form]):
         """
         return Form(
             self.context,
-            ServiceOperationPath("GetByPageType", [form_type], self.resource_path),
+            ServiceOperationPath(
+                "GetByPageType", [form_type.value], self.resource_path
+            ),
         )

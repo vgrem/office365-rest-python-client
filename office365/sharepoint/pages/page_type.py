@@ -1,7 +1,8 @@
-class PageType:
-    def __init__(self):
-        """As specified in [MS-WSSFO3] section 2.2.1.2.14."""
-        pass
+from enum import Enum
+
+
+class PageType(Enum):
+    """As specified in [MS-WSSFO3] section 2.2.1.2.14."""
 
     Invalid = -1
     """Specifies a page that does not correspond to a list view or a list form."""

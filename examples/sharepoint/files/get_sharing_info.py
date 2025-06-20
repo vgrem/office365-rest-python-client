@@ -20,7 +20,7 @@ items = (
 # which could be a user or a group)
 for item in items:
     role_assignments = item.role_assignments.expand(["Member"]).get().execute_query()
-    print("File: {0}".format(item.properties["EncodedAbsUrl"]))
+    print(f"File: {item.properties['EncodedAbsUrl']}")
     for ra in role_assignments:
         if ra.member.principal_type == PrincipalType.SharePointGroup:
             print(ra.member)

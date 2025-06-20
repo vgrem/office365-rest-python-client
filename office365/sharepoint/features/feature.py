@@ -7,13 +7,11 @@ class Feature(Entity):
     """Represents an activated feature."""
 
     @property
-    def definition_id(self):
-        # type: () -> Optional[str]
+    def definition_id(self) -> Optional[str]:
         """Gets the GUID that identifies this feature."""
         return self.properties.get("DefinitionId", None)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Gets the GUID that identifies this feature."""
         return self.properties.get("DisplayName", None)

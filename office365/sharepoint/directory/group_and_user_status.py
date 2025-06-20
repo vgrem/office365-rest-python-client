@@ -4,8 +4,10 @@ from office365.sharepoint.entity import Entity
 
 
 class GroupAndUserStatus(Entity):
+    """ """
+
     @property
-    def group(self):
+    def group(self) -> Group:
         """Get a Group"""
         return self.properties.get(
             "Group", Group(self.context, ResourcePath("Group", self.resource_path))

@@ -1,23 +1,7 @@
 import mimetypes
-from email.message import Message
+import warnings
+from functools import wraps
 from urllib.parse import parse_qs, urlparse
-
-
-def message_to_bytes(message: Message) -> bytes:
-    """Convert Message object to bytes representation.
-
-    Args:
-        message: Email message to convert
-
-    Returns:
-        Bytes representation of the message
-    """
-    return message.as_bytes()
-
-
-def is_string(value) -> bool:
-    """Check if value is a string type"""
-    return isinstance(value, str)
 
 
 def is_absolute_url(url: str) -> bool:
@@ -60,3 +44,26 @@ def get_mime_type(file_name: str) -> tuple[str, str]:
         Tuple of (type, encoding) where either may be None
     """
     return mimetypes.guess_type(file_name)
+
+
+def deprecated(reason: str, version: str = "next"):
+    """Mark functions/methods as deprecated with a warning.
+
+    Args:
+        reason: Explanation why this is deprecated
+        version: Version when this will be removed
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f"{func.__name__} is deprecated and will be removed in v{version}. {reason}",
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

@@ -73,7 +73,7 @@ class NavigationNode(Entity):
         return self._parent_collection
 
     @property
-    def title_resource(self):
+    def title_resource(self) -> UserResource:
         """Represents the title of this node."""
         return self.properties.get(
             "TitleResource",

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.utilities import is_string
 
 if TYPE_CHECKING:
     from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -53,7 +52,7 @@ class ODataPathBuilder(object):
 
     @staticmethod
     def _encode_method_value(value):
-        if is_string(value):
+        if isinstance(value, str):
             value = value.replace("'", "''")
 
             # Same replacements as SQL Server
