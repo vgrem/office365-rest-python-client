@@ -173,7 +173,7 @@ class ODataRequest(ClientRequest):
         """
 
         def _normalize_payload(payload):
-            # type: (ClientObject|ClientValue|dict|list) -> dict|list
+            # type: (ClientObject|ClientValue|Dict|List) -> Dict|List
             if isinstance(payload, (ClientObject, ClientValue)):
                 return payload.to_json(self._default_json_format)
             elif isinstance(payload, dict):

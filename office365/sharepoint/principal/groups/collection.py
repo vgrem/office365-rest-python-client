@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -17,7 +19,9 @@ class GroupCollection(EntityCollection[Group]):
     def __init__(self, context, resource_path=None):
         super(GroupCollection, self).__init__(context, Group, resource_path)
 
-    def expand_to_principals(self, max_count):
+    def expand_to_principals(
+        self, max_count: int
+    ) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
         """
         Expands groups to a collection of principals.
 
@@ -28,7 +32,7 @@ class GroupCollection(EntityCollection[Group]):
             return_type = cur_grp.expand_to_principals(max_count)
         return return_type
 
-    def add(self, title, description=None):
+    def add(self, title: str, description: str = None) -> Group:
         """
         Adds a group to the collection. A reference to the SP.Group that was added is returned.
 
@@ -44,7 +48,7 @@ class GroupCollection(EntityCollection[Group]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_id(self, group_id):
+    def get_by_id(self, group_id: str) -> Group:
         """Returns the list item with the specified list item identifier.
 
         :param str group_id: Specifies the member identifier.
@@ -54,7 +58,7 @@ class GroupCollection(EntityCollection[Group]):
             ServiceOperationPath("GetById", [group_id], self.resource_path),
         )
 
-    def get_by_name(self, group_name):
+    def get_by_name(self, group_name: str) -> Group:
         """Returns a cross-site group from the collection based on the name of the group.
 
         :param str group_name: A string that contains the name of the group.
@@ -64,7 +68,7 @@ class GroupCollection(EntityCollection[Group]):
             ServiceOperationPath("GetByName", [group_name], self.resource_path),
         )
 
-    def remove_by_id(self, group_id):
+    def remove_by_id(self, group_id) -> Self:
         """Removes the group with the specified member ID from the collection.
 
         :param int group_id: Specifies the member identifier.
@@ -73,7 +77,7 @@ class GroupCollection(EntityCollection[Group]):
         self.context.add_query(qry)
         return self
 
-    def remove_by_login_name(self, group_name):
+    def remove_by_login_name(self, group_name: str) -> Self:
         """Removes the cross-site group with the specified name from the collection.
 
         :param str group_name:  A string that contains the name of the group.

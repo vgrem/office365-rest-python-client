@@ -1,6 +1,5 @@
 from typing import Optional
 
-from office365.runtime.odata.type import ODataType
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.type import PrincipalType
@@ -21,64 +20,61 @@ class Principal(Entity):
         )
 
     @property
-    def id(self):
-        # type: () -> Optional[int]
+    def id(self) -> Optional[int]:
         """Gets a value that specifies the member identifier for the user or group."""
         return self.properties.get("Id", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Gets a value that specifies the name of the principal."""
         return self.properties.get("Title", None)
 
     @title.setter
-    def title(self, value):
-        # type: (str) -> None
+    def title(self, value: str) -> None:
         """Sets a value that specifies the name of the principal."""
         self.set_property("Title", value)
 
     @property
-    def login_name(self):
-        # type: () -> Optional[str]
+    def login_name(self) -> Optional[str]:
         """Gets the login name of the principal."""
         return self.properties.get("LoginName", None)
 
     @property
-    def user_principal_name(self):
-        # type: () -> Optional[str]
+    def user_principal_name(self) -> Optional[str]:
         """Gets the UPN of the principal."""
         return self.properties.get("UserPrincipalName", None)
 
     @property
-    def is_hidden_in_ui(self):
-        # type: () -> Optional[bool]
+    def is_hidden_in_ui(self) -> Optional[bool]:
         """Gets the login name of the principal."""
         return self.properties.get("IsHiddenInUI", None)
 
     @property
-    def principal_type(self):
-        # type: () -> Optional[int]
+    def principal_type(self) -> Optional[PrincipalType]:
         """Gets the type of the principal."""
-        return self.properties.get("PrincipalType", None)
+        return self.properties.get("PrincipalType", PrincipalType.None_)
 
     @property
-    def principal_type_name(self):
-        return ODataType.resolve_enum_key(PrincipalType, self.principal_type)
+    def principal_type_name(self) -> str:
+        return self.principal_type.name
 
     @property
     def property_ref_name(self):
         return "Id"
 
+    def get_property(self, name, default_value=None):
+        if default_value is None:
+            property_mapping = {
+                "PrincipalType": self.principal_type,
+            }
+            default_value = property_mapping.get(name, None)
+        return super().get_property(name, default_value)
+
     def set_property(self, name, value, persist_changes=True):
         super(Principal, self).set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
-            if name == "Id":
-                self._resource_path = ServiceOperationPath(
-                    "GetById", [value], self.parent_collection.resource_path
-                )
-            elif name == "LoginName":
+            if name == "LoginName":
                 self._resource_path = ServiceOperationPath(
                     "GetByName", [value], self.parent_collection.resource_path
                 )

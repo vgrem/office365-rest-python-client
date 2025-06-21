@@ -20,7 +20,7 @@ from tests import test_site_url, test_user_credentials
 
 
 class TestSharePointSharing(TestCase):
-    target_user = None  # type: User
+    target_user: User = None
     target_file_url = urljoin(test_site_url, "/SitePages/Home.aspx")
 
     @classmethod

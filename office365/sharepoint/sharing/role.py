@@ -1,10 +1,12 @@
-from office365.runtime.client_value import ClientValue
+from enum import Enum
 
 
-class Role(ClientValue):
+class Role(Enum):
     """
     Specifies a set of abstract roles that a user can be assigned to share a securable object in a document library
     """
+
+    None_ = 0
 
     View = 1
     """The user can only read a securable object."""

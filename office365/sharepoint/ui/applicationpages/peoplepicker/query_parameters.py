@@ -6,8 +6,8 @@ from office365.sharepoint.principal.type import PrincipalType
 class ClientPeoplePickerQueryParameters(ClientValue):
     def __init__(
         self,
-        query_string,
-        allow_emai_addresses=True,
+        query_string: str,
+        allow_emai_addresses: bool = True,
         allow_multiple_entities=True,
         allow_only_email_addresses=False,
         all_url_zones=False,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -21,9 +22,9 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
-from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.utilities import parse_datetime, parse_enum
 
 if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
@@ -275,7 +276,9 @@ class ClientObject:
                 self._properties[name] = value
         else:
             if isinstance(typed_value, datetime.datetime):
-                self._properties[name] = ODataType.try_parse_datetime(value)
+                self._properties[name] = parse_datetime(value)
+            elif isinstance(typed_value, Enum):
+                self._properties[name] = parse_enum(type(typed_value), value)
             else:
                 self._properties[name] = value
         return self

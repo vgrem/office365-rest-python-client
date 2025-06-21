@@ -1766,13 +1766,12 @@ class Web(SecurableObject):
             return_type = SharingResult(context)
         payload = {"url": url}
         qry = ServiceOperationQuery(
-            context.web, "UnshareObject", None, payload, None, return_type
+            context.web, "UnshareObject", None, payload, None, return_type, True
         )
-        qry.static = True
         context.add_query(qry)
         return return_type
 
-    def get_file_by_id(self, unique_id):
+    def get_file_by_id(self, unique_id: str) -> File:
         """Returns the file object with the specified GUID.
 
         :param str unique_id: A GUID that identifies the file object.
@@ -1809,7 +1808,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListItemUsingPath", params, self.resource_path),
         )
 
-    def get_catalog(self, type_catalog):
+    def get_catalog(self, type_catalog: int) -> List:
         """Gets the list template gallery, site template gallery, or Web Part gallery for the Web site.
 
         :param int type_catalog: The type of the gallery.
@@ -1873,7 +1872,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def remove_storage_entity(self, key):
+    def remove_storage_entity(self, key: str) -> Self:
         """
         This will remove the storage entity identified by the given key
         :param str key: Id of the storage entity to be removed.
@@ -1886,7 +1885,7 @@ class Web(SecurableObject):
         return self
 
     def register_push_notification_subscriber(
-        self, device_app_instance_id, service_token
+        self, device_app_instance_id: str, service_token: str
     ):
         """
         Registers the push notification subscriber for the site. If the registration already exists,
@@ -1905,7 +1904,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def unregister_push_notification_subscriber(self, device_app_instance_id):
+    def unregister_push_notification_subscriber(
+        self, device_app_instance_id: str
+    ) -> Self:
         """
         Unregisters the push notification subscriber from the site
         :param str device_app_instance_id: Device  app instance identifier.
@@ -1929,7 +1930,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_access_request_site_description_and_update(self, description=None):
+    def set_access_request_site_description_and_update(self, description: str = None):
         """
         :param str description:
         """

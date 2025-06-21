@@ -1,8 +1,10 @@
-class ChangeType:
+from enum import Enum
+
+
+class ChangeType(Enum):
     """Enumeration of the possible types of changes."""
 
-    def __init__(self):
-        pass
+    None_ = -1
 
     NoChange = 0
     """Indicates that no change has taken place."""
@@ -79,3 +81,10 @@ class ChangeType:
 
     Activity = 22
     """Specifies that an activity change as specified in section 3.2.5.462 has been made to the object """
+
+    def __str__(self):
+        """Returns the docstring description when printed."""
+        return self.__doc__ or self.name
+
+    def __repr__(self):
+        return f"<ChangeType.{self.name}>"

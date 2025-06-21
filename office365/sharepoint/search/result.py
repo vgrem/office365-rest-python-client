@@ -1,7 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.type import ODataType
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.utilities import parse_key_value_collection
 from office365.sharepoint.search.query_result import QueryResult
 
 
@@ -50,7 +50,7 @@ class SearchResult(ClientValue):
 
     def set_property(self, k, v, persist_changes=True):
         if k == "Properties":
-            v = ODataType.parse_key_value_collection(v)
+            v = parse_key_value_collection(v)
         super(SearchResult, self).set_property(k, v, persist_changes)
         return self
 

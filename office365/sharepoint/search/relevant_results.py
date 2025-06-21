@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
-from office365.runtime.odata.type import ODataType
+from office365.runtime.utilities import parse_key_value_collection
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 
@@ -12,8 +12,8 @@ class RelevantResults(ClientValue):
 
     def __init__(
         self,
-        group_template_id=None,
-        item_template_id=None,
+        group_template_id: str = None,
+        item_template_id: str = None,
         properties=None,
         result_title=None,
         result_title_url=None,
@@ -40,7 +40,7 @@ class RelevantResults(ClientValue):
             including duplicates, that match the conditions given in the search query and are of the type specified
             in the ResultType element
         """
-        super(RelevantResults, self).__init__()
+        super().__init__()
         self.GroupTemplateId = group_template_id
         self.ItemTemplateId = item_template_id
         self.Properties = properties
@@ -53,7 +53,7 @@ class RelevantResults(ClientValue):
 
     def set_property(self, k, v, persist_changes=True):
         if k == "Properties":
-            v = ODataType.parse_key_value_collection(v)
+            v = parse_key_value_collection(v)
         super(RelevantResults, self).set_property(k, v, persist_changes)
         return self
 

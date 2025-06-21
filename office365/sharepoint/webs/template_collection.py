@@ -11,7 +11,7 @@ class WebTemplateCollection(EntityCollection[WebTemplate]):
             context, WebTemplate, resource_path, parent
         )
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> WebTemplate:
         """Returns the SP.WebTemplate (section 3.2.5.151) specified by its name.
         :param str name: The name of the WebTemplate that is returned.
         """

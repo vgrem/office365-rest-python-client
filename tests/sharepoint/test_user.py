@@ -6,7 +6,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointUser(SPTestCase):
-    target_user = None  # type: User
+    target_user: User = None
 
     def test1_get_current_user(self):
         user = self.client.web.current_user.get().execute_query()
@@ -44,14 +44,19 @@ class TestSharePointUser(SPTestCase):
         self.assertIsInstance(perms_result.value, BasePermissions)
 
     def test6_get_user_changes(self):
-        changes = self.client.site.get_changes(ChangeQuery(user=True)).execute_query()
-        self.assertGreater(len(changes), 0)
+        result = self.client.site.get_changes(ChangeQuery(user=True)).execute_query()
+        self.assertGreater(len(result), 0)
         # self.assertEqual(changes.entity_type_name, "Collection(SP.Change)")
 
-    # def test7_get_user_directory_info_by_email(self):
+    def test7_list_site_users(self):
+        result = self.client.site.root_web.site_users.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+        self.assertEqual(result.entity_type_name, "Collection(SP.User)")
+
+    # def test8_get_user_directory_info_by_email(self):
     #    result = SharingUtility.get_user_directory_info_by_email(self.client, test_user_principal_name).execute_query()
     #    self.assertIsNotNone(result.value)
 
-    # def test8_get_user_recent_files(self):
+    # def test9_get_user_recent_files(self):
     #    result = self.client.web.current_user.get_recent_files().execute_query()
     #    self.assertIsNotNone(result.value)

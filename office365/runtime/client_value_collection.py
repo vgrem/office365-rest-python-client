@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 from typing import Any, Dict, Generic, Iterator, List, Optional, Type, TypeVar, Union
 
 from typing_extensions import Self
@@ -7,6 +8,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+from office365.runtime.utilities import parse_enum
 
 T = TypeVar("T")
 
@@ -156,6 +158,8 @@ class ClientValueCollection(ClientValue, Generic[T]):
             return uuid.uuid4() if self._item_type == uuid.UUID else self._item_type()
         elif self._item_type == uuid.UUID:
             return uuid.UUID(initial_value)
+        elif issubclass(self._item_type, Enum):
+            return parse_enum(self._item_type, initial_value)
         elif issubclass(self._item_type, ClientValue):
             value = self._item_type()
             [value.set_property(k, v, False) for k, v in initial_value.items()]

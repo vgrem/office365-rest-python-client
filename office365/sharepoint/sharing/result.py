@@ -16,46 +16,39 @@ class SharingResult(Entity):
     """Contains properties generated as a result of sharing."""
 
     @property
-    def url(self):
-        # type: () -> Optional[str]
+    def url(self) -> Optional[str]:
         """Gets the URL of the securable object being shared."""
         return self.properties.get("Url", None)
 
     @property
-    def error_message(self):
-        # type: () -> Optional[str]
+    def error_message(self) -> Optional[str]:
         """Gets an error message about the failure if sharing was unsuccessful."""
         return self.properties.get("ErrorMessage", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Gets the name of the securable object being shared."""
         return self.properties.get("Name", None)
 
     @property
-    def icon_url(self):
-        # type: () -> Optional[str]
+    def icon_url(self) -> Optional[str]:
         """Gets a URL to an icon that represents the securable object, if one exists."""
         return self.properties.get("IconUrl", None)
 
     @property
-    def status_code(self):
-        # type: () -> Optional[int]
+    def status_code(self) -> Optional[int]:
         """
         Gets the enumeration value which summarizes the result of the sharing operation.
         """
         return self.properties.get("StatusCode", None)
 
     @property
-    def permissions_page_relative_url(self):
-        # type: () -> Optional[str]
+    def permissions_page_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the page that shows permissions."""
         return self.properties.get("PermissionsPageRelativeUrl", None)
 
     @property
-    def invited_users(self):
-        # type: () ->  ClientValueCollection[SPInvitationCreationResult]
+    def invited_users(self) -> ClientValueCollection[SPInvitationCreationResult]:
         """
         Gets a list of SPInvitationCreationResult (section 3.2.5.325) objects representing the external users being
         invited to have access.
@@ -65,14 +58,13 @@ class SharingResult(Entity):
         )
 
     @property
-    def uniquely_permissioned_users(self):
-        # type: () ->  ClientValueCollection[UserSharingResult]
+    def uniquely_permissioned_users(self) -> ClientValueCollection[UserSharingResult]:
         return self.properties.get(
             "UniquelyPermissionedUsers", ClientValueCollection(UserSharingResult)
         )
 
     @property
-    def groups_shared_with(self):
+    def groups_shared_with(self) -> GroupCollection:
         return self.properties.get(
             "GroupsSharedWith",
             GroupCollection(
@@ -81,14 +73,14 @@ class SharingResult(Entity):
         )
 
     @property
-    def group_users_added_to(self):
+    def group_users_added_to(self) -> Group:
         return self.properties.get(
             "GroupUsersAddedTo",
             Group(self.context, ResourcePath("GroupUsersAddedTo", self.resource_path)),
         )
 
     @property
-    def users_with_access_requests(self):
+    def users_with_access_requests(self) -> UserCollection:
         return self.properties.get(
             "UsersWithAccessRequests",
             UserCollection(
@@ -98,8 +90,7 @@ class SharingResult(Entity):
         )
 
     @property
-    def users_added_to_group(self):
-        # type: () ->  ClientValueCollection[UserSharingResult]
+    def users_added_to_group(self) -> ClientValueCollection[UserSharingResult]:
         """Gets the list of users being added to the SharePoint permissions group."""
         return self.properties.get(
             "UsersAddedToGroup", ClientValueCollection(UserSharingResult)

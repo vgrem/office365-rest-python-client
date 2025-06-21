@@ -9,7 +9,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSite(SPTestCase):
-    site_response = None  # type: SPSiteCreationResponse
+    site_response: SPSiteCreationResponse = None
 
     def test1_if_site_loaded(self):
         site = self.client.site.get().execute_query()

@@ -1,5 +1,4 @@
 from office365.runtime.client_value import ClientValue
-from office365.runtime.odata.type import ODataType
 from office365.sharepoint.principal.type import PrincipalType
 
 
@@ -8,13 +7,13 @@ class PrincipalInfo(ClientValue):
 
     def __init__(
         self,
-        principal_id=None,
-        display_name=None,
-        email=None,
-        login_name=None,
-        department=None,
-        job_title=None,
-        principal_type=None,
+        principal_id: str = None,
+        display_name: str = None,
+        email: str = None,
+        login_name: str = None,
+        department: str = None,
+        job_title: str = None,
+        principal_type: PrincipalType = None,
     ):
         """
         :param str principal_id: Specifies an identifier for the principal. It MUST be -1 if the principal
@@ -40,7 +39,7 @@ class PrincipalInfo(ClientValue):
 
     @property
     def principal_type_name(self):
-        return ODataType.resolve_enum_key(PrincipalType, self.PrincipalType)
+        return self.PrincipalType.name
 
     def __str__(self):
         return "{0}: {1}".format(self.principal_type_name, self.DisplayName)

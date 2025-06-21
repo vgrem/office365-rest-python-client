@@ -1,8 +1,8 @@
-class PrincipalType:
-    """Specifies the type of a principal."""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class PrincipalType(Enum):
+    """Specifies the type of a principal."""
 
     None_ = 0
     """Do not specify a principal type."""

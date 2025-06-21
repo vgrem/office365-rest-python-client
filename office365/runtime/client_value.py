@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Union
 
 from typing_extensions import Self
@@ -75,6 +76,8 @@ class ClientValue:
         for n, v in json.items():
             if isinstance(v, ClientValue):
                 json[n] = v.to_json(json_format)
+            elif isinstance(v, Enum):
+                json[n] = v.value
         if (
             isinstance(json_format, JsonLightFormat)
             and json_format.include_control_information
