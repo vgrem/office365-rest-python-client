@@ -1,10 +1,16 @@
+from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.runtime.client_value import ClientValue
 
 
 class DocumentSetContent(ClientValue):
     """Represents the default content of document set in SharePoint."""
 
-    def __init__(self, content_type=None, file_name=None, folder_name=None):
+    def __init__(
+        self,
+        content_type: ContentTypeInfo = None,
+        file_name: str = None,
+        folder_name: str = None,
+    ):
         """
         :param ContentTypeInfo content_type: Content type information of the file.
         :param str file_name: Name of the file in resource folder that should be added as a default content or a

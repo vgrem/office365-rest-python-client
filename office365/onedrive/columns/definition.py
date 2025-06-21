@@ -39,48 +39,44 @@ class ColumnDefinition(BaseItem):
         return self.name or self.id or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The user-facing name of the column."""
         return self.properties.get("displayName", None)
 
     @property
-    def enforce_unique_values(self):
-        # type: () -> Optional[bool]
+    def enforce_unique_values(self) -> Optional[bool]:
         """If true, no two list items may have the same value for this column."""
         return self.properties.get("enforceUniqueValues", None)
 
     @property
-    def indexed(self):
-        # type: () -> Optional[bool]
+    def indexed(self) -> Optional[bool]:
         """Specifies whether the column values can used for sorting and searching."""
         return self.properties.get("indexed", None)
 
     @property
-    def content_approval_status(self):
+    def content_approval_status(self) -> ContentApprovalStatusColumn:
         """This column stores content approval status."""
         return self.properties.get(
             "contentApprovalStatus", ContentApprovalStatusColumn()
         )
 
     @property
-    def column_group(self):
-        # type: () -> Optional[str]
+    def column_group(self) -> Optional[str]:
         """For site columns, the name of the group this column belongs to. Helps organize related columns."""
         return self.properties.get("columnGroup", None)
 
     @property
-    def boolean(self):
+    def boolean(self) -> BooleanColumn:
         """This column stores boolean values."""
         return self.properties.get("boolean", BooleanColumn())
 
     @property
-    def geolocation(self):
+    def geolocation(self) -> GeolocationColumn:
         """This column stores a geolocation."""
         return self.properties.get("geolocation", GeolocationColumn())
 
     @property
-    def calculated(self):
+    def calculated(self) -> CalculatedColumn:
         """This column's data is calculated based on other columns."""
         return self.properties.get("calculated", CalculatedColumn())
 
@@ -90,83 +86,77 @@ class ColumnDefinition(BaseItem):
         return self.properties.get("choice", ChoiceColumn())
 
     @property
-    def currency(self):
+    def currency(self) -> CurrencyColumn:
         """This column stores currency values."""
         return self.properties.get("currency", CurrencyColumn())
 
     @property
-    def datetime(self):
+    def datetime(self) -> DateTimeColumn:
         """This column stores DateTime values."""
         return self.properties.get("dateTime", DateTimeColumn())
 
     @property
-    def person_or_group(self):
+    def person_or_group(self) -> PersonOrGroupColumn:
         """This column stores Person or Group values."""
         return self.properties.get("personOrGroup", PersonOrGroupColumn())
 
     @property
-    def text(self):
+    def text(self) -> TextColumn:
         """This column stores text values."""
         return self.properties.get("text", TextColumn())
 
     @property
-    def validation(self):
+    def validation(self) -> ColumnValidation:
         """This column stores validation formula and message for the column."""
         return self.properties.get("validation", ColumnValidation())
 
     @property
-    def number(self):
+    def number(self) -> NumberColumn:
         """This column stores number values."""
         return self.properties.get("number", NumberColumn())
 
     @property
-    def lookup(self):
+    def lookup(self) -> LookupColumn:
         """This column's data is looked up from another source in the site."""
         return self.properties.get("lookup", LookupColumn())
 
     @property
-    def default_value(self):
+    def default_value(self) -> DefaultColumnValue:
         """The default value for this column."""
         return self.properties.get("defaultValue", DefaultColumnValue())
 
     @property
-    def hyperlink_or_picture(self):
+    def hyperlink_or_picture(self) -> HyperlinkOrPictureColumn:
         """This column stores hyperlink or picture values."""
         return self.properties.get("hyperlinkOrPicture", HyperlinkOrPictureColumn())
 
     @property
-    def hidden(self):
-        # type: () -> Optional[bool]
+    def hidden(self) -> Optional[bool]:
         """Specifies whether the column is displayed in the user interface."""
         return self.properties.get("hidden", None)
 
     @property
-    def is_deletable(self):
-        # type: () -> Optional[bool]
+    def is_deletable(self) -> Optional[bool]:
         """Indicates whether this column can be deleted."""
         return self.properties.get("isDeletable", None)
 
     @property
-    def is_reorderable(self):
-        # type: () -> Optional[bool]
+    def is_reorderable(self) -> Optional[bool]:
         """Indicates whether values in the column can be reordered."""
         return self.properties.get("isReorderable", None)
 
     @property
-    def is_sealed(self):
-        # type: () -> Optional[bool]
+    def is_sealed(self) -> Optional[bool]:
         """Specifies whether the column can be changed."""
         return self.properties.get("isSealed", None)
 
     @property
-    def propagate_changes(self):
-        # type: () -> Optional[bool]
+    def propagate_changes(self) -> Optional[bool]:
         """If 'true', changes to this column will be propagated to lists that implement the column."""
         return self.properties.get("propagateChanges", None)
 
     @property
-    def read_only(self):
-        # type: () -> Optional[bool]
+    def read_only(self) -> Optional[bool]:
         """Specifies whether the column values can be modified."""
         return self.properties.get("readOnly", None)
 
@@ -176,8 +166,7 @@ class ColumnDefinition(BaseItem):
         return self.properties.get("thumbnail", ThumbnailColumn())
 
     @property
-    def source_column(self):
-        # type: () -> "ColumnDefinition"
+    def source_column(self) -> "ColumnDefinition":
         """The source column for the content type column."""
         return self.properties.get(
             "sourceColumn",
@@ -185,18 +174,17 @@ class ColumnDefinition(BaseItem):
         )
 
     @property
-    def source_content_type(self):
+    def source_content_type(self) -> ContentTypeInfo:
         """ContentType from which this column is inherited from. Present only in contentTypes columns response."""
         return self.properties.get("sourceContentType", ContentTypeInfo())
 
     @property
-    def term(self):
+    def term(self) -> TermColumn:
         """This column stores taxonomy terms."""
         return self.properties.get("term", TermColumn())
 
     @property
-    def type(self):
-        # type: () -> Optional[str]
+    def type(self) -> Optional[str]:
         """For site columns, the type of column."""
         return self.properties.get("type", None)
 

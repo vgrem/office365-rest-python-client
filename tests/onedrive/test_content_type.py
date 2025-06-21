@@ -8,7 +8,7 @@ from tests.decorators import requires_delegated_permission
 
 
 class TestContentType(TestCase):
-    target_ct = None  # type: ContentType
+    target_ct: ContentType = None
 
     @classmethod
     def setUpClass(cls):

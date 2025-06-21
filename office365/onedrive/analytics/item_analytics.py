@@ -10,7 +10,7 @@ class ItemAnalytics(Entity):
     """
 
     @property
-    def all_time(self):
+    def all_time(self) -> ItemActivityStat:
         """Analytics over the item's lifespan."""
         return self.properties.get(
             "allTime",
@@ -18,8 +18,7 @@ class ItemAnalytics(Entity):
         )
 
     @property
-    def item_activity_stats(self):
-        # type: () -> EntityCollection[ItemActivityStat]
+    def item_activity_stats(self) -> EntityCollection[ItemActivityStat]:
         return self.properties.get(
             "itemActivityStats",
             EntityCollection(
@@ -30,7 +29,7 @@ class ItemAnalytics(Entity):
         )
 
     @property
-    def last_seven_days(self):
+    def last_seven_days(self) -> ItemActivityStat:
         """Analytics for the last seven days."""
         return self.properties.get(
             "lastSevenDays",

@@ -13,49 +13,47 @@ class ItemActivityStat(Entity):
     within an interval of time."""
 
     @property
-    def access(self):
+    def access(self) -> ItemActionStat:
         """Statistics about the access actions in this interval."""
         return self.properties.get("access", ItemActionStat())
 
     @property
-    def create(self):
+    def create(self) -> ItemActionStat:
         """Statistics about the create actions in this interval."""
         return self.properties.get("create", ItemActionStat())
 
     @property
-    def delete(self):
+    def delete(self) -> ItemActionStat:
         """Statistics about the delete actions in this interval."""
         return self.properties.get("delete", ItemActionStat())
 
     @property
-    def edit(self):
+    def edit(self) -> ItemActionStat:
         """Statistics about the edit actions in this interval."""
         return self.properties.get("edit", ItemActionStat())
 
     @property
-    def end_datetime(self):
+    def end_datetime(self) -> datetime:
         """When the interval ends. Read-only."""
         return self.properties.get("endDateTime", datetime.min)
 
     @property
-    def is_trending(self):
-        # type: () -> Optional[bool]
+    def is_trending(self) -> Optional[bool]:
         """Indicates whether the item is trending."""
         return self.properties.get("isTrending", None)
 
     @property
-    def move(self):
+    def move(self) -> ItemActionStat:
         """Statistics about the move actions in this interval."""
         return self.properties.get("move", ItemActionStat())
 
     @property
-    def start_datetime(self):
+    def start_datetime(self) -> datetime:
         """When the interval starts."""
         return self.properties.get("startDateTime", datetime.min)
 
     @property
-    def activities(self):
-        # type: () -> EntityCollection[ItemActivity]
+    def activities(self) -> EntityCollection[ItemActivity]:
         """Exposes the itemActivities represented in this itemActivityStat resource."""
         return self.properties.get(
             "activities",

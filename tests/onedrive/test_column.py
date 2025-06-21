@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.onedrive.columns.definition import ColumnDefinition
 from tests import create_unique_name
 from tests.decorators import requires_delegated_permission
@@ -5,7 +7,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestColumn(GraphTestCase):
-    list_columns = []  # type: list[ColumnDefinition]
+    list_columns: List[ColumnDefinition] = []
 
     @classmethod
     def setUpClass(cls):

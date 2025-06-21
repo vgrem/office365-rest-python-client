@@ -10,7 +10,7 @@ class ItemActivity(Entity):
     """
 
     @property
-    def actor(self):
+    def actor(self) -> IdentitySet:
         """Identity of who performed the action."""
         return self.properties.get("actor", IdentitySet())
 

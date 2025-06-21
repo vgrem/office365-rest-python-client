@@ -21,7 +21,7 @@ class RequestOptions:
 
     url: str
     method: HttpMethod = HttpMethod.Get
-    data: Optional[Union[bytes, BinaryIO, Dict[str, Any]]] = None
+    data: Optional[Union[str, bytes, BinaryIO, Dict[str, Any]]] = None
     headers: Dict[str, str] = field(default_factory=dict)
     auth: Optional[Any] = None
     verify: bool = True

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.entity_collection import EntityCollection
@@ -61,7 +63,7 @@ class ContentType(BaseItem):
         return self
 
     @property
-    def associated_hubs_urls(self):
+    def associated_hubs_urls(self) -> StringCollection:
         """
         List of canonical URLs for hub sites with which this content type is associated to.
         This will contain all hub sites where this content type is queued to be enforced or is already enforced.
@@ -70,12 +72,12 @@ class ContentType(BaseItem):
         return self.properties.get("associatedHubsUrls", StringCollection())
 
     @property
-    def document_set(self):
+    def document_set(self) -> DocumentSet:
         """Document Set metadata."""
         return self.properties.get("documentSet", DocumentSet())
 
     @property
-    def document_template(self):
+    def document_template(self) -> DocumentSetContent:
         """
         Document template metadata. To make sure that documents have consistent content across a site and its subsites,
         you can associate a Word, Excel, or PowerPoint template with a site content type.
@@ -83,37 +85,32 @@ class ContentType(BaseItem):
         return self.properties.get("documentTemplate", DocumentSetContent())
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The name of the content type."""
         return self.properties.get("name", None)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """The descriptive text for the item."""
         return self.properties.get("description", None)
 
     @property
-    def parent_id(self):
-        # type: () -> Optional[str]
+    def parent_id(self) -> Optional[str]:
         """The unique identifier of the content type."""
         return self.properties.get("parentId", None)
 
     @property
-    def propagate_changes(self):
-        # type: () -> Optional[bool]
+    def propagate_changes(self) -> Optional[bool]:
         """If 'true', changes to this column will be propagated to lists that implement the column."""
         return self.properties.get("propagateChanges", None)
 
     @property
-    def read_only(self):
-        # type: () -> Optional[bool]
+    def read_only(self) -> Optional[bool]:
         """If true, the content type cannot be modified unless this value is first set to false."""
         return self.properties.get("readOnly", None)
 
     @property
-    def inherited_from(self):
+    def inherited_from(self) -> ItemReference:
         """
         If this content type is inherited from another scope (like a site),
         provides a reference to the item where the content type is defined.
@@ -121,8 +118,7 @@ class ContentType(BaseItem):
         return self.properties.get("inheritedFrom", ItemReference())
 
     @property
-    def column_links(self):
-        # type: () -> EntityCollection[ColumnLink]
+    def column_links(self) -> EntityCollection[ColumnLink]:
         """The collection of columns that are required by this content type"""
         return self.properties.get(
             "columnLinks",
@@ -134,15 +130,14 @@ class ContentType(BaseItem):
         )
 
     @property
-    def base(self):
+    def base(self) -> ContentType:
         """Parent contentType from which this content type is derived."""
         return self.properties.get(
             "base", ContentType(self.context, ResourcePath(self.resource_path))
         )
 
     @property
-    def base_types(self):
-        # type: () -> EntityCollection["ContentType"]
+    def base_types(self) -> EntityCollection[ContentType]:
         """The collection of content types that are ancestors of this content type."""
         return self.properties.get(
             "baseTypes",
@@ -152,8 +147,7 @@ class ContentType(BaseItem):
         )
 
     @property
-    def columns(self):
-        # type: () -> EntityCollection[ColumnDefinition]
+    def columns(self) -> EntityCollection[ColumnDefinition]:
         """The collection of column definitions for this contentType."""
         return self.properties.get(
             "columns",
@@ -165,8 +159,7 @@ class ContentType(BaseItem):
         )
 
     @property
-    def column_positions(self):
-        # type: () -> EntityCollection[ColumnDefinition]
+    def column_positions(self) -> EntityCollection[ColumnDefinition]:
         """Column order information in a content type."""
         return self.properties.get(
             "columnPositions",
@@ -178,7 +171,7 @@ class ContentType(BaseItem):
         )
 
     @property
-    def order(self):
+    def order(self) -> ContentTypeOrder:
         """Specifies the order in which the content type appears in the selection UI."""
         return self.properties.get("order", ContentTypeOrder())
 

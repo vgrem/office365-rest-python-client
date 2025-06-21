@@ -26,6 +26,7 @@ from office365.directory.object import DirectoryObject
 from office365.directory.object_collection import DirectoryObjectCollection
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.profile_photo import ProfilePhoto
+from office365.directory.rolemanagement.role import DirectoryRole
 from office365.directory.users.activities.collection import UserActivityCollection
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.settings import UserSettings
@@ -277,6 +278,35 @@ class User(DirectoryObject):
             _unfollow_site(site)
 
         return self
+
+    def get_directory_roles(self) -> EntityCollection[DirectoryRole]:
+        """
+        Fetches all directory roles assigned to the user.
+
+        Returns:
+            EntityCollection[DirectoryRole]: The directory roles the user is a member of.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0
+        """
+        return_type = EntityCollection(self.context, DirectoryRole)
+
+        def _directory_roles_loaded(directory_roles: List[DirectoryRole]):
+            role_template_map = {
+                role.role_template_id: role for role in directory_roles
+            }
+
+            def _memberships_loaded(memberships: DirectoryObjectCollection):
+                for item in memberships:
+                    role_id = item.properties.get("roleTemplateId")
+                    if role_id in role_template_map:
+                        return_type.add_child(role_template_map[role_id])
+
+            self.member_of.get().after_execute(_memberships_loaded)
+
+        self.context.directory_roles.get().after_execute(_directory_roles_loaded)
+
+        return return_type
 
     def get_mail_tips(
         self, email_addresses, mail_tips_options=None

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Union
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.contenttypes.content_type import ContentType
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -9,9 +13,15 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     """Content type collection"""
 
     def __init__(self, context, resource_path):
-        super(ContentTypeCollection, self).__init__(context, ContentType, resource_path)
+        super().__init__(context, ContentType, resource_path)
 
-    def add(self, name, parent, description=None, group=None):
+    def add(
+        self,
+        name: str,
+        parent: Union[str, ContentType],
+        description: str = None,
+        group: str = None,
+    ) -> ContentType:
         """Create a new contentType
 
         :param str name: The name of the content type.
@@ -47,7 +57,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
         return return_type
 
-    def add_copy(self, content_type):
+    def add_copy(self, content_type: str) -> ContentType:
         """
         Add a copy of a content type from a site to a list.
 
@@ -60,7 +70,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(qry)
         return return_type
 
-    def add_copy_from_content_type_hub(self, content_type_id):
+    def add_copy_from_content_type_hub(self, content_type_id: str) -> ContentType:
         """
         his method is part of the content type publishing changes to optimize the syncing of published content types
         to sites and lists, effectively switching from a "push everywhere" to "pull as needed" approach.
@@ -78,7 +88,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(qry)
         return return_type
 
-    def get_compatible_hub_content_types(self):
+    def get_compatible_hub_content_types(self) -> ContentTypeCollection:
         """
         Get a list of compatible content types from the content type hub that can be added to a target site or a list.
 

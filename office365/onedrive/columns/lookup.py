@@ -9,11 +9,11 @@ class LookupColumn(ClientValue):
 
     def __init__(
         self,
-        list_id=None,
-        column_name=None,
-        allow_multiple_values=None,
-        allow_unlimited_length=None,
-        primary_lookup_column_id=None,
+        list_id: str = None,
+        column_name: str = None,
+        allow_multiple_values: bool = None,
+        allow_unlimited_length: bool = None,
+        primary_lookup_column_id: bool = None,
     ):
         """
         :param str list_id: The unique identifier of the lookup source list.

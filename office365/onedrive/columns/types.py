@@ -1,4 +1,7 @@
-class ColumnTypes:
+from enum import Enum
+
+
+class ColumnTypes(Enum):
     text = "text"
     """Single line text."""
 

@@ -4,7 +4,7 @@ from office365.runtime.client_value import ClientValue
 class DisplayNameLocalization(ClientValue):
     """Provides the ability for an administrator to customize the string used in a shared Microsoft 365 experience."""
 
-    def __init__(self, display_name=None, language_tag=None):
+    def __init__(self, display_name: str = None, language_tag: str = None):
         """
         :param str display_name: If present, the value of this field contains the displayName string that has been
             set for the language present in the languageTag field.

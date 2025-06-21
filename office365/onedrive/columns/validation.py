@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.onedrive.columns.display_name_localization import DisplayNameLocalization
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -6,7 +8,12 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class ColumnValidation(ClientValue):
     """Represents properties that validates column values."""
 
-    def __init__(self, formula=None, descriptions=None, default_language=None):
+    def __init__(
+        self,
+        formula: str = None,
+        descriptions: List[DisplayNameLocalization] = None,
+        default_language: str = None,
+    ):
         """
         :param str formula: The formula to validate column value.
         :param list[DisplayNameLocalization] descriptions: The formula to validate column value.

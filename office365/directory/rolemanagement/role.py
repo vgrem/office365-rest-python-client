@@ -40,7 +40,11 @@ class DirectoryRole(DirectoryObject):
         )
 
     @property
-    def scoped_members(self):
+    def role_template_id(self) -> Optional[str]:
+        return self.properties.get("roleTemplateId", None)
+
+    @property
+    def scoped_members(self) -> EntityCollection[ScopedRoleMembership]:
         """Members of this directory role that are scoped to administrative units."""
 
         return self.properties.get(
