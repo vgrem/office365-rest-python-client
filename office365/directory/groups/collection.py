@@ -10,7 +10,7 @@ class GroupCollection(CountCollection[Group]):
     def __init__(self, context, resource_path=None):
         super(GroupCollection, self).__init__(context, Group, resource_path)
 
-    def add(self, group_properties):
+    def add(self, group_properties: GroupProfile) -> Group:
         """
         Create a Group resource.
         You can create the following types of groups:
@@ -25,7 +25,7 @@ class GroupCollection(CountCollection[Group]):
         self.context.add_query(qry)
         return return_type
 
-    def create_m365(self, name, description=None, owner=None):
+    def create_m365(self, name, description=None, owner=None) -> Group:
         """
         Creates a Microsoft 365 group.
         If the owners have not been specified, the calling user is automatically added as the owner of the group.
@@ -36,7 +36,7 @@ class GroupCollection(CountCollection[Group]):
         params = GroupProfile(name, description, True, False, ["Unified"])
         return self.add(params)
 
-    def create_security(self, name, description=None):
+    def create_security(self, name, description=None) -> Group:
         """
         Creates a Security group
         :param str name: The display name for the group
@@ -45,7 +45,7 @@ class GroupCollection(CountCollection[Group]):
         params = GroupProfile(name, description, False, True, [])
         return self.add(params)
 
-    def create_with_team(self, group_name):
+    def create_with_team(self, group_name: str) -> Group:
         """
         Provision a new group along with a team.
 
@@ -56,13 +56,11 @@ class GroupCollection(CountCollection[Group]):
         :param str group_name: The display name for the group
         """
 
-        def _after_group_created(return_type):
-            # type: (Group) -> None
+        def _after_group_created(return_type: Group) -> None:
             return_type.add_team()
 
         return self.create_m365(group_name).after_execute(_after_group_created)
 
-    def get_by_name(self, name):
-        # type: (str) -> Group
+    def get_by_name(self, name: str) -> Group:
         """Retrieves group by displayName"""
         return self.single("displayName eq '{0}'".format(name))

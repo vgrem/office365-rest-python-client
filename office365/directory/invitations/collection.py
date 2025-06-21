@@ -9,7 +9,7 @@ class InvitationCollection(EntityCollection[Invitation]):
     def __init__(self, context, resource_path=None):
         super(InvitationCollection, self).__init__(context, Invitation, resource_path)
 
-    def create(self, invited_user_email_address, invite_redirect_url=None):
+    def create(self, invited_user_email_address: str, invite_redirect_url: str = None):
         """
         Use this API to create a new invitation. Invitation adds an external user to the organization.
 

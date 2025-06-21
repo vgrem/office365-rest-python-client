@@ -11,7 +11,7 @@ class Admin(Entity):
     """Entity that acts as a container for administrator functionality."""
 
     @property
-    def microsoft365_apps(self):
+    def microsoft365_apps(self) -> AdminMicrosoft365Apps:
         """A container for the Microsoft 365 apps admin functionality."""
         return self.properties.get(
             "microsoft365Apps",
@@ -21,7 +21,7 @@ class Admin(Entity):
         )
 
     @property
-    def sharepoint(self):
+    def sharepoint(self) -> Sharepoint:
         """A container for administrative resources to manage tenant-level settings for SharePoint and OneDrive."""
         return self.properties.get(
             "sharepoint",
@@ -29,7 +29,7 @@ class Admin(Entity):
         )
 
     @property
-    def service_announcement(self):
+    def service_announcement(self) -> ServiceAnnouncement:
         """A container for service communications resources. Read-only."""
         return self.properties.get(
             "serviceAnnouncement",
@@ -39,7 +39,7 @@ class Admin(Entity):
         )
 
     @property
-    def report_settings(self):
+    def report_settings(self) -> AdminReportSettings:
         """A container for administrative resources to manage reports."""
         return self.properties.get(
             "reportSettings",
@@ -49,7 +49,7 @@ class Admin(Entity):
         )
 
     @property
-    def people(self):
+    def people(self) -> PeopleAdminSettings:
         """Represents a setting to control people-related admin settings in the tenant."""
         return self.properties.get(
             "people",

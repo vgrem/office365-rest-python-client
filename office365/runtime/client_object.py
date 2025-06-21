@@ -31,9 +31,7 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[
-    bool, int, float, str, bytes, Dict[str, Any], List[Dict[str, Any]], ClientValue
-]
+PropertyT = Union[bool, int, float, str, bytes, Dict[str, Any], List[Any], ClientValue]
 
 
 class ClientObject:

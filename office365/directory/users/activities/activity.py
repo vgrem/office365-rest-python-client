@@ -15,16 +15,14 @@ class UserActivity(Entity):
     """
 
     @property
-    def activation_url(self):
-        # type: () -> Optional[str]
+    def activation_url(self) -> Optional[str]:
         """URL used to launch the activity in the best native experience represented by the appId.
         Might launch a web-based app if no native app exists
         """
         return self.properties.get("activationUrl", None)
 
     @property
-    def activity_source_host(self):
-        # type: () -> Optional[str]
+    def activity_source_host(self) -> Optional[str]:
         """Required. URL for the domain representing the cross-platform identity mapping for the app.
         Mapping is stored either as a JSON file hosted on the domain or configurable via Windows Dev Center.
         The JSON file is named cross-platform-app-identifiers and is hosted at root of your HTTPS domain,
@@ -36,16 +34,14 @@ class UserActivity(Entity):
         return self.properties.get("activitySourceHost", None)
 
     @property
-    def app_activity_id(self):
-        # type: () -> Optional[str]
+    def app_activity_id(self) -> Optional[str]:
         """
         The unique activity ID in the context of the app - supplied by caller and immutable thereafter.
         """
         return self.properties.get("appActivityId", None)
 
     @property
-    def app_display_name(self):
-        # type: () -> Optional[str]
+    def app_display_name(self) -> Optional[str]:
         """
         Short text description of the app used to generate the activity for use in cases when the app is
         not installed on the user’s local device.
@@ -53,12 +49,12 @@ class UserActivity(Entity):
         return self.properties.get("appDisplayName", None)
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Set by the server. DateTime in UTC when the object was created on the server."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def expiration_datetime(self):
+    def expiration_datetime(self) -> datetime:
         """Set by the server. DateTime in UTC when the object was created on the server."""
         return self.properties.get("expirationDateTime", datetime.min)
 

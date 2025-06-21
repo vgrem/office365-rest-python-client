@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
@@ -46,13 +48,15 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def add_favorite(self):
+    def add_favorite(self) -> Self:
         """Add the group to the list of the current user's favorite groups. Supported for Microsoft 365 groups only."""
         qry = ServiceOperationQuery(self, "addFavorite")
         self.context.add_query(qry)
         return self
 
-    def check_granted_permissions_for_app(self):
+    def check_granted_permissions_for_app(
+        self,
+    ) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """"""
         return_type = EntityCollection(self.context, ResourceSpecificPermissionGrant)
         qry = ServiceOperationQuery(
@@ -61,7 +65,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def remove_favorite(self):
+    def remove_favorite(self) -> Self:
         """
         Remove the group from the list of the current user's favorite groups. Supported for Microsoft 365 groups only.
         """
@@ -69,7 +73,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def reset_unseen_count(self):
+    def reset_unseen_count(self) -> Self:
         """
         Reset the unseenCount of all the posts that the current user has not seen since their last visit.
         Supported for Microsoft 365 groups only.
@@ -78,7 +82,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def subscribe_by_mail(self):
+    def subscribe_by_mail(self) -> Self:
         """Calling this method will enable the current user to receive email notifications for this group,
         about new posts, events, and files in that group. Supported for Microsoft 365 groups only.
         """
@@ -86,7 +90,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def unsubscribe_by_mail(self):
+    def unsubscribe_by_mail(self) -> Self:
         """Calling this method will prevent the current user from receiving email notifications for this group
         about new posts, events, and files in that group. Supported for Microsoft 365 groups only.
         """
@@ -94,12 +98,11 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def add_team(self):
+    def add_team(self) -> Team:
         """Create a new team under a group."""
         qry = ServiceOperationQuery(self, "team", None, self.team, None, self.team)
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Put
             request.set_header("Content-Type", "application/json")
             request.data = json.dumps(request.data)
@@ -107,7 +110,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry).before_query_execute(_construct_request, once=False)
         return self.team
 
-    def delete_object(self, permanent_delete=False):
+    def delete_object(self, permanent_delete=False) -> Self:
         """
         :param permanent_delete: Permanently deletes the group from directory
         :type permanent_delete: bool
@@ -120,24 +123,21 @@ class Group(DirectoryObject):
         return self
 
     @property
-    def assigned_labels(self):
-        # type: () -> ClientValueCollection[AssignedLabel]
+    def assigned_labels(self) -> ClientValueCollection[AssignedLabel]:
         """The list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group."""
         return self.properties.get(
             "assignedLabels", ClientValueCollection(AssignedLabel)
         )
 
     @property
-    def classification(self):
-        # type: () -> Optional[str]
+    def classification(self) -> Optional[str]:
         """Describes a classification for the group (such as low, medium or high business impact). Valid values for
         this property are defined by creating a ClassificationList setting value, based on the template definition.
         """
         return self.properties.get("classification", None)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """
         The display name for the group. This property is required when a group is created and cannot be cleared during
         updates. Maximum length is 256 characters.
@@ -148,7 +148,7 @@ class Group(DirectoryObject):
         return self.properties.get("displayName", None)
 
     @property
-    def group_types(self):
+    def group_types(self) -> StringCollection:
         """
         Specifies the group type and its membership.
 
@@ -162,8 +162,7 @@ class Group(DirectoryObject):
         return self.properties.get("groupTypes", StringCollection())
 
     @property
-    def has_members_with_license_errors(self):
-        # type: () -> Optional[bool]
+    def has_members_with_license_errors(self) -> Optional[bool]:
         """
         Indicates whether there are members in this group that have license errors from its group-based license
         assignment.
@@ -174,8 +173,7 @@ class Group(DirectoryObject):
         return self.properties.get("hasMembersWithLicenseErrors", None)
 
     @property
-    def is_assignable_to_role(self):
-        # type: () -> Optional[bool]
+    def is_assignable_to_role(self) -> Optional[bool]:
         """
         Indicates whether this group can be assigned to an Azure Active Directory role or not. Optional.
 
@@ -190,31 +188,28 @@ class Group(DirectoryObject):
         return self.properties.get("isAssignableToRole", None)
 
     @property
-    def license_processing_state(self):
+    def license_processing_state(self) -> LicenseProcessingState:
         """Indicates status of the group license assignment to all members of the group. Default value is false.
         Read-only. Possible values: QueuedForProcessing, ProcessingInProgress, and ProcessingComplete.
         """
         return self.properties.get("licenseProcessingState", LicenseProcessingState())
 
     @property
-    def mail(self):
-        # type: () -> Optional[str]
+    def mail(self) -> Optional[str]:
         """
         The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
         """
         return self.properties.get("mail", None)
 
     @property
-    def mail_enabled(self):
-        # type: () -> Optional[bool]
+    def mail_enabled(self) -> Optional[bool]:
         """
         Specifies whether the group is mail-enabled. Required.
         """
         return self.properties.get("mailEnabled", None)
 
     @property
-    def mail_nickname(self):
-        # type: () -> Optional[str]
+    def mail_nickname(self) -> Optional[str]:
         """
         The mail alias for the group, unique for Microsoft 365 groups in the organization. Maximum length is 64
         characters.
@@ -222,13 +217,11 @@ class Group(DirectoryObject):
         return self.properties.get("mailNickname", None)
 
     @property
-    def on_premises_domain_name(self):
-        # type: () -> Optional[str]
+    def on_premises_domain_name(self) -> Optional[str]:
         return self.properties.get("onPremisesDomainName", None)
 
     @property
-    def conversations(self):
-        # type: () -> EntityCollection[Conversation]
+    def conversations(self) -> EntityCollection[Conversation]:
         """The group's conversations."""
         return self.properties.get(
             "conversations",
@@ -240,13 +233,12 @@ class Group(DirectoryObject):
         )
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Timestamp of when the group was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """
         The collection of open extensions defined for the group
         """
@@ -258,7 +250,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def members(self):
+    def members(self) -> DirectoryObjectCollection:
         """Users and groups that are members of this group."""
         return self.properties.get(
             "members",
@@ -268,7 +260,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def rejected_senders(self):
+    def rejected_senders(self) -> DirectoryObjectCollection:
         """
         The list of users or groups not allowed to create posts or calendar events in this group. Nullable
         """
@@ -280,7 +272,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def transitive_members(self):
+    def transitive_members(self) -> DirectoryObjectCollection:
         """
         Get a list of the group's members. A group can have members, devices, organizational contacts,
         and other groups as members. This operation is transitive and returns a flat list of all nested members.
@@ -293,7 +285,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def transitive_member_of(self):
+    def transitive_member_of(self) -> DirectoryObjectCollection:
         """
         Get groups that the group is a member of. This operation is transitive and will also include all groups that
         this groups is a nested member of. Unlike getting a user's Microsoft 365 groups, this returns all
@@ -307,8 +299,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def threads(self):
-        # type: () -> EntityCollection[ConversationThread]
+    def threads(self) -> EntityCollection[ConversationThread]:
         """The group's conversation threads"""
         return self.properties.get(
             "threads",
@@ -320,7 +311,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def owners(self):
+    def owners(self) -> DirectoryObjectCollection:
         """The owners of the group."""
         return self.properties.get(
             "owners",
@@ -330,8 +321,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def drives(self):
-        # type: () -> EntityCollection[Drive]
+    def drives(self) -> EntityCollection[Drive]:
         """
         The group's drives. Read-only.
         """
@@ -355,8 +345,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def events(self):
-        # type: () -> EventCollection
+    def events(self) -> EventCollection:
         """Get an event collection or an event."""
         return self.properties.get(
             "events",
@@ -364,7 +353,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def app_role_assignments(self):
+    def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
         return self.properties.get(
             "appRoleAssignments",
@@ -374,7 +363,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def onenote(self):
+    def onenote(self) -> Onenote:
         """Represents the Onenote services available to a group."""
         return self.properties.get(
             "onenote",
@@ -382,7 +371,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def planner(self):
+    def planner(self) -> PlannerGroup:
         """The plannerGroup resource provide access to Planner resources for a group."""
         return self.properties.get(
             "planner",
@@ -390,8 +379,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def permission_grants(self):
-        # type: () -> EntityCollection[ResourceSpecificPermissionGrant]
+    def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """List permissions that have been granted to apps to access the group."""
         return self.properties.setdefault(
             "permissionGrants",
@@ -403,7 +391,7 @@ class Group(DirectoryObject):
         )
 
     @property
-    def photo(self):
+    def photo(self) -> ProfilePhoto:
         """The group's profile photo"""
         return self.properties.get(
             "photo",
@@ -411,14 +399,14 @@ class Group(DirectoryObject):
         )
 
     @property
-    def team(self):
+    def team(self) -> Team:
         """The team associated with this group."""
         return self.properties.setdefault(
             "team", Team(self.context, ResourcePath(self.id, ResourcePath("teams")))
         )
 
     @property
-    def assigned_licenses(self):
+    def assigned_licenses(self) -> ClientValueCollection[AssignedLicense]:
         """
         The licenses that are assigned to the group.
         Returned only on $select. Supports $filter (eq).Read-only.

@@ -66,4 +66,5 @@ class ViewCollection(EntityCollection):
     def parent_list(self) -> List:
         """Parent List"""
         from office365.sharepoint.lists.list import List
+
         return cast(List, self._parent)

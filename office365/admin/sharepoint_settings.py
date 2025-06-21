@@ -9,61 +9,55 @@ class SharepointSettings(Entity):
     """Represents the tenant-level settings for SharePoint and OneDrive."""
 
     @property
-    def allowed_domain_guids_for_sync_app(self):
+    def allowed_domain_guids_for_sync_app(self) -> StringCollection:
         """Collection of trusted domain GUIDs for the OneDrive sync app."""
         return self.properties.get("allowedDomainGuidsForSyncApp", StringCollection())
 
     @property
-    def available_managed_paths_for_site_creation(self):
+    def available_managed_paths_for_site_creation(self) -> StringCollection:
         """Collection of managed paths available for site creation."""
         return self.properties.get(
             "availableManagedPathsForSiteCreation", StringCollection()
         )
 
     @property
-    def excluded_file_extensions_for_sync_app(self):
+    def excluded_file_extensions_for_sync_app(self) -> StringCollection:
         """Collection of file extensions not uploaded by the OneDrive sync app."""
         return self.properties.get(
             "excludedFileExtensionsForSyncApp", StringCollection()
         )
 
     @property
-    def idle_session_sign_out(self):
-        # type: () -> IdleSessionSignOut
+    def idle_session_sign_out(self) -> IdleSessionSignOut:
         """Specifies the idle session sign-out policies for the tenant."""
         return self.properties.get("idleSessionSignOut", IdleSessionSignOut())
 
     @property
-    def is_commenting_on_site_pages_enabled(self):
-        # type: () -> Optional[bool]
+    def is_commenting_on_site_pages_enabled(self) -> Optional[bool]:
         """Indicates whether comments are allowed on modern site pages in SharePoint."""
         return self.properties.get("isCommentingOnSitePagesEnabled", None)
 
     @property
-    def sharing_allowed_domain_list(self):
-        # type: () -> StringCollection
+    def sharing_allowed_domain_list(self) -> StringCollection:
         """
         Collection of email domains that are allowed for sharing outside the organization.
         """
         return self.properties.get("sharingAllowedDomainList", StringCollection())
 
     @property
-    def sharing_blocked_domain_list(self):
-        # type: () -> StringCollection
+    def sharing_blocked_domain_list(self) -> StringCollection:
         """
         Collection of email domains that are blocked for sharing outside the organization.
         """
         return self.properties.get("sharingBlockedDomainList", StringCollection())
 
     @sharing_blocked_domain_list.setter
-    def sharing_blocked_domain_list(self, value):
-        # type: (List[str]) -> None
+    def sharing_blocked_domain_list(self, value: List[str]) -> None:
         """Sets the collection of email domains that are blocked for sharing outside the organization."""
         self.set_property("sharingBlockedDomainList", value)
 
     @property
-    def sharing_capability(self):
-        # type: () -> Optional[str]
+    def sharing_capability(self) -> Optional[str]:
         """
         Sharing capability for the tenant.
         Possible values are:
@@ -75,30 +69,26 @@ class SharepointSettings(Entity):
         return self.properties.get("sharingCapability", None)
 
     @property
-    def sharing_domain_restriction_mode(self):
-        # type: () -> Optional[str]
+    def sharing_domain_restriction_mode(self) -> Optional[str]:
         """
         Specifies the external sharing mode for domains. Possible values are: none, allowList, blockList.
         """
         return self.properties.get("sharingDomainRestrictionMode", None)
 
     @property
-    def site_creation_default_managed_path(self):
-        # type: () -> Optional[str]
+    def site_creation_default_managed_path(self) -> Optional[str]:
         """
         The value of the team site managed path. This is the path under which new team sites will be created.
         """
         return self.properties.get("siteCreationDefaultManagedPath", None)
 
     @property
-    def site_creation_default_storage_limit_in_mb(self):
-        # type: () -> Optional[int]
+    def site_creation_default_storage_limit_in_mb(self) -> Optional[int]:
         """The default storage quota for a new site upon creation. Measured in megabytes (MB)."""
         return self.properties.get("siteCreationDefaultStorageLimitInMB", None)
 
     @property
-    def tenant_default_timezone(self):
-        # type: () -> Optional[str]
+    def tenant_default_timezone(self) -> Optional[str]:
         """
         The default timezone of a tenant for newly created sites. For a list of possible values,
         see SPRegionalSettings.TimeZones property.

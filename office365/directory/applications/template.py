@@ -28,8 +28,7 @@ class ApplicationTemplate(Entity):
         return return_type
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name of the application."""
         return self.properties.get("displayName", None)
 

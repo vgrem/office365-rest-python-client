@@ -13,14 +13,12 @@ class Trending(Entity):
     """
 
     @property
-    def last_modified_datetime(self):
-        # type: () -> Optional[datetime]
+    def last_modified_datetime(self) -> Optional[datetime]:
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
-    def resource_reference(self):
-        # type: () -> ResourceReference
+    def resource_reference(self) -> ResourceReference:
         """Reference properties of the trending document, such as the url and type of the document."""
         return self.properties.get("resourceReference", ResourceReference())
 

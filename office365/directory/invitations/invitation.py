@@ -45,7 +45,7 @@ class Invitation(Entity):
         return self.properties.get("invitedUserMessageInfo", InvitedUserMessageInfo())
 
     @property
-    def invited_user(self):
+    def invited_user(self) -> User:
         """The user created as part of the invitation creation."""
         return self.properties.get(
             "invitedUser",

@@ -8,7 +8,7 @@ class PeopleAdminSettings(Entity):
     """Represents a setting to control people-related admin settings in the tenant."""
 
     @property
-    def profile_card_properties(self):
+    def profile_card_properties(self) -> EntityCollection[ProfileCardProperty]:
         """Contains a collection of the properties an administrator has defined as visible on the
         Microsoft 365 profile card."""
         return self.properties.get(

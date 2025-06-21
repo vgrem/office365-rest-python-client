@@ -16,8 +16,7 @@ class ActivityHistoryItem(Entity):
     """
 
     @property
-    def active_duration_seconds(self):
-        # type: () -> Optional[int]
+    def active_duration_seconds(self) -> Optional[int]:
         """
         The duration of active user engagement. if not supplied, this is calculated from the startedDateTime
         and lastActiveDateTime.

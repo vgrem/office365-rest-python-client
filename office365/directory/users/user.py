@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from datetime import datetime
 from typing import Any, List, Optional, Union
@@ -13,6 +15,7 @@ from office365.directory.applications.roles.assignment_collection import (
 from office365.directory.audit.signins.activity import SignInActivity
 from office365.directory.authentication.authentication import Authentication
 from office365.directory.extensions.extension import Extension
+from office365.directory.extensions.open_type import OpenTypeExtension
 from office365.directory.identities.object_identity import ObjectIdentity
 from office365.directory.identitygovernance.termsofuse.agreement_acceptance import (
     AgreementAcceptance,
@@ -36,6 +39,7 @@ from office365.intune.devices.managed import ManagedDevice
 from office365.intune.devices.managed_app_diagnostic_status import (
     ManagedAppDiagnosticStatus,
 )
+from office365.intune.organizations.contact import OrgContact
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.sites.site import Site
@@ -139,7 +143,7 @@ class User(DirectoryObject):
         self.update().before_execute(_construct_request)
         return self
 
-    def add_extension(self, name):
+    def add_extension(self, name: str) -> OpenTypeExtension:
         """
         Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
         of a User resource.
@@ -154,7 +158,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def assign_license(self, add_licenses, remove_licenses):
+    def assign_license(
+        self, add_licenses: List[str], remove_licenses: List[str]
+    ) -> Self:
         """
         Add or remove licenses on the user.
 
@@ -170,7 +176,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def assign_manager(self, user):
+    def assign_manager(self, user: Union[str, User, OrgContact]):
         """
         Assign a user's manager.
 
@@ -1021,7 +1027,7 @@ class User(DirectoryObject):
         return self.properties.get("onPremisesDomainName", None)
 
     @property
-    def owned_devices(self):
+    def owned_devices(self) -> DirectoryObjectCollection:
         """Devices that are owned by the user. Read-only. Nullable.
         Supports $expand and $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1).
         """
@@ -1033,7 +1039,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def owned_objects(self):
+    def owned_objects(self) -> DirectoryObjectCollection:
         """Directory objects that are owned by the user. Read-only. Nullable. Supports $expand."""
         return self.properties.get(
             "ownedObjects",
@@ -1043,7 +1049,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def proxy_addresses(self):
+    def proxy_addresses(self) -> StringCollection:
         """
         For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"]. Changes to the mail property will
         also update this collection to include the value as an SMTP address. For more information, see mail and
@@ -1055,7 +1061,7 @@ class User(DirectoryObject):
         return self.properties.get("proxyAddresses", StringCollection())
 
     @property
-    def transitive_member_of(self):
+    def transitive_member_of(self) -> DirectoryObjectCollection:
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
         return all groups the user is a nested member of."""
         return self.properties.get(
@@ -1102,7 +1108,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def settings(self):
+    def settings(self) -> UserSettings:
         """Represents the user and organization settings object."""
         return self.properties.get(
             "settings",
@@ -1110,7 +1116,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def planner(self):
+    def planner(self) -> PlannerUser:
         """The plannerUser resource provide access to Planner resources for a user."""
         return self.properties.get(
             "planner",
@@ -1118,7 +1124,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def agreement_acceptances(self):
+    def agreement_acceptances(self) -> EntityCollection[AgreementAcceptance]:
         """
         The user's terms of use acceptance statuses
         """
@@ -1142,7 +1148,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def direct_reports(self):
+    def direct_reports(self) -> DirectoryObjectCollection:
         """Get a user's direct reports"""
         return self.properties.get(
             "directReports",
@@ -1279,10 +1285,10 @@ class User(DirectoryObject):
                 "signInActivity": self.sign_in_activity,
             }
             default_value = property_mapping.get(name, None)
-        return super(User, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(User, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "id" or name == "userPrincipalName":

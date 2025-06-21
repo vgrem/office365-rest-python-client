@@ -7,8 +7,7 @@ class Sharepoint(Entity):
     """A container for administrative resources to manage tenant-level settings for SharePoint and OneDrive."""
 
     @property
-    def settings(self):
-        # type: () -> SharepointSettings
+    def settings(self) -> SharepointSettings:
         """Represents the tenant-level settings for SharePoint and OneDrive."""
         return self.properties.get(
             "settings",
