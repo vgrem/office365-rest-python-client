@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.fields.type import FieldType
@@ -6,15 +8,15 @@ from office365.sharepoint.fields.type import FieldType
 class FieldCreationInformation(ClientValue):
     def __init__(
         self,
-        title,
-        field_type_kind,
-        description=None,
-        lookup_list_id=None,
-        lookup_field_name=None,
-        lookup_web_id=None,
-        required=False,
-        formula=None,
-        choices=None,
+        title: str,
+        field_type_kind: FieldType,
+        description: str = None,
+        lookup_list_id: str = None,
+        lookup_field_name: str = None,
+        lookup_web_id: str = None,
+        required: bool = False,
+        formula: str = None,
+        choices: List[str] = None,
     ):
         """
         Represents metadata about fields creation.

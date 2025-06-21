@@ -43,6 +43,8 @@ from office365.sharepoint.webs.context_web_information import ContextWebInformat
 from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
+    from office365.sharepoint.portal.theme_manager import ThemeManager
+    from office365.sharepoint.server_settings import ServerSettings
     from office365.sharepoint.tenant.administration.tenant import Tenant
 
 
@@ -690,7 +692,7 @@ class ClientContext(ClientRuntimeContext):
         )
 
     @property
-    def server_settings(self):
+    def server_settings(self) -> ServerSettings:
         """Provides methods for obtaining server properties"""
 
         from office365.sharepoint.server_settings import ServerSettings
@@ -705,7 +707,7 @@ class ClientContext(ClientRuntimeContext):
         return SocialFollowingManager(self)
 
     @property
-    def theme_manager(self):
+    def theme_manager(self) -> ThemeManager:
         """Alias to SP.Utilities.ThemeManager. Represents methods for creating and managing site theming"""
         from office365.sharepoint.portal.theme_manager import ThemeManager
 

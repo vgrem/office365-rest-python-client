@@ -6,12 +6,12 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestField(SPTestCase):
-    target_field = None  # type: Field
+    target_field: Field = None
     target_field_name = "Title"
 
     def test_1_get_site_fields(self):
-        site_fields = self.client.site.root_web.fields.top(2).get().execute_query()
-        self.assertGreater(len(site_fields), 0)
+        result = self.client.site.root_web.fields.top(10).get().execute_query()
+        self.assertGreater(len(result), 0)
 
     def test_2_get_field(self):
         field = (
