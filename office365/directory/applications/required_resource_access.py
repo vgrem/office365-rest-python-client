@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.directory.applications.resource_access import ResourceAccess
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -9,7 +11,9 @@ class RequiredResourceAccess(ClientValue):
     roles through the requiredResourceAccess property, which is a collection of requiredResourceAccess objects.
     """
 
-    def __init__(self, resource_access=None, resource_app_id=None):
+    def __init__(
+        self, resource_access: List[ResourceAccess] = None, resource_app_id: str = None
+    ):
         """
         :param list[ResourceAccess] resource_access: The list of OAuth2.0 permission scopes and app roles that
              the application requires from the specified resource.

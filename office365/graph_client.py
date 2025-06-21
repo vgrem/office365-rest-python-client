@@ -304,24 +304,24 @@ class GraphClient(ClientRuntimeContext):
         return ChatCollection(self, ResourcePath("chats"))
 
     @property
-    def group_setting_templates(self):
+    def group_setting_templates(self) -> EntityCollection[GroupSettingTemplate]:
         """Group setting templates represent system-defined settings available to the tenant."""
         return EntityCollection(
             self, GroupSettingTemplate, ResourcePath("groupSettingTemplates")
         )
 
     @property
-    def contacts(self):
+    def contacts(self) -> DeltaCollection[OrgContact]:
         """Get the list of organizational contacts for this organization."""
         return DeltaCollection(self, OrgContact, ResourcePath("contacts"))
 
     @property
-    def directory(self):
+    def directory(self) -> Directory:
         """Represents a deleted item in the directory"""
         return Directory(self, ResourcePath("directory"))
 
     @property
-    def directory_roles(self):
+    def directory_roles(self) -> DeltaCollection[DirectoryRole]:
         """Represents a directory roles in the directory"""
         return DeltaCollection(self, DirectoryRole, ResourcePath("directoryRoles"))
 
@@ -353,7 +353,9 @@ class GraphClient(ClientRuntimeContext):
         )
 
     @property
-    def authentication_method_configurations(self):
+    def authentication_method_configurations(
+        self,
+    ) -> EntityCollection[AuthenticationMethodConfiguration]:
         """Get the list of application templates in this organization."""
         return EntityCollection(
             self,
@@ -407,7 +409,7 @@ class GraphClient(ClientRuntimeContext):
         return GroupSetting(self, ResourcePath("groupSettings"))
 
     @property
-    def communications(self):
+    def communications(self) -> CloudCommunications:
         """Cloud communications API endpoint"""
         return CloudCommunications(self, ResourcePath("communications"))
 
@@ -424,7 +426,7 @@ class GraphClient(ClientRuntimeContext):
         return InformationProtection(self, ResourcePath("informationProtection"))
 
     @property
-    def storage(self):
+    def storage(self) -> Storage:
         """
         Facilitates the structures of fileStorageContainers.
         """
@@ -446,7 +448,7 @@ class GraphClient(ClientRuntimeContext):
         return EntityCollection(self, ExternalConnection, ResourcePath("connections"))
 
     @property
-    def tenant_relationships(self):
+    def tenant_relationships(self) -> TenantRelationship:
         """Represent the various type of tenant relationships."""
         return TenantRelationship(self, ResourcePath("tenantRelationships"))
 

@@ -3131,12 +3131,6 @@
             </Key>
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
-         <EntityType Name="CampainAnalytics" Abstract="true">
-            <Key>
-               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
-            </Key>
-            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
-         </EntityType>
          <EntityType Name="BrandCenter">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
@@ -3495,6 +3489,12 @@
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
          <EntityType Name="SearchResultItemCollection" Abstract="true">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+         <EntityType Name="SemanticSearchItemCollection" Abstract="true">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
             </Key>
@@ -5256,7 +5256,6 @@
             <EntitySet Name="NotificationCallbacks" EntityType="SP.BusinessData.Runtime.NotificationCallback"/>
             <EntitySet Name="Subscriptions1" EntityType="SP.BusinessData.Runtime.Subscription"/>
             <EntitySet Name="TypeDescriptors" EntityType="SP.BusinessData.TypeDescriptor"/>
-            <EntitySet Name="CampainAnalyticss" EntityType="SP.CampainAnalytics"/>
             <EntitySet Name="Changes" EntityType="SP.Change"/>
             <EntitySet Name="CheckedOutFiles" EntityType="SP.CheckedOutFile"/>
             <EntitySet Name="ClientWebParts" EntityType="SP.ClientWebPart"/>
@@ -5377,6 +5376,7 @@
             <EntitySet Name="SpotlightChannels" EntityType="SP.Publishing.SpotlightChannel"/>
             <EntitySet Name="SpotlightVideos" EntityType="SP.Publishing.SpotlightVideo"/>
             <EntitySet Name="SubtitleFiles" EntityType="SP.Publishing.SubtitleFile"/>
+            <EntitySet Name="TestTeamsMessageChannels" EntityType="SP.Publishing.TestTeamsMessageChannel"/>
             <EntitySet Name="UserInfos" EntityType="SP.Publishing.UserInfo"/>
             <EntitySet Name="VideoChannels" EntityType="SP.Publishing.VideoChannel"/>
             <EntitySet Name="VideoItems" EntityType="SP.Publishing.VideoItem"/>
@@ -5403,6 +5403,7 @@
             <EntitySet Name="ScriptSafeDomains" EntityType="SP.ScriptSafeDomain"/>
             <EntitySet Name="SearchResultItemCollections" EntityType="SP.SearchResultItemCollection"/>
             <EntitySet Name="SecurableObjects" EntityType="SP.SecurableObject"/>
+            <EntitySet Name="SemanticSearchItemCollections" EntityType="SP.SemanticSearchItemCollection"/>
             <EntitySet Name="SensitivityLabelCollections" EntityType="SP.SensitivityLabelCollection"/>
             <EntitySet Name="ServerSettingss" EntityType="SP.ServerSettings"/>
             <EntitySet Name="SharedWithMeItemCollections" EntityType="SP.SharedWithMeItemCollection"/>
@@ -9201,6 +9202,9 @@
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
                <Parameter Name="publishStartDate" Type="Edm.DateTime" Nullable="false"/>
             </FunctionImport>
+            <FunctionImport Name="AmplifySendTestEmailMessage" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
+            </FunctionImport>
             <FunctionImport Name="AmplifyValidate" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
             </FunctionImport>
@@ -10894,7 +10898,7 @@
                <Parameter Name="errorDescription" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_Client_Search_Administration_SiteProvisioningInfoProvider" ReturnType="Microsoft.SharePoint.Client.Search.Administration.SiteProvisioningInfoProvider" IsComposable="true" EntitySet="SiteProvisioningInfoProviders"/>
-            <FunctionImport Name="CheckSiteIngestionStatus" ReturnType="Edm.Boolean" IsBindable="true">
+            <FunctionImport Name="CheckSiteIngestionStatus" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Client.Search.Administration.SiteProvisioningInfoProvider"/>
                <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
             </FunctionImport>
@@ -12438,6 +12442,9 @@
             <FunctionImport Name="SP_KnowledgeSite_publish" ReturnType="Microsoft.SharePoint.KnowledgeSite.Models.DocumentPublishResponse" IsSideEffecting="false">
                <Parameter Name="documentPublishRequest" Type="Microsoft.SharePoint.KnowledgeSite.Models.DocumentPublishRequest"/>
             </FunctionImport>
+            <FunctionImport Name="SP_KnowledgeSite_unpublish" ReturnType="Microsoft.SharePoint.KnowledgeSite.Models.DocumentUnpublishResponse" IsSideEffecting="false">
+               <Parameter Name="documentUnpublishRequest" Type="Microsoft.SharePoint.KnowledgeSite.Models.DocumentUnpublishRequest"/>
+            </FunctionImport>
             <FunctionImport Name="SP_KnowledgeHub" ReturnType="SP.KnowledgeHub" IsComposable="true" EntitySet="KnowledgeHubs"/>
             <FunctionImport Name="AddOrUpdateSiteReference" IsBindable="true">
                <Parameter Name="this" Type="SP.KnowledgeHub"/>
@@ -12730,12 +12737,6 @@
             <FunctionImport Name="GetById" ReturnType="Microsoft.SharePoint.ClientSideComponent.HostedApp" IsComposable="true" IsBindable="true" EntitySet="HostedApps">
                <Parameter Name="this" Type="Microsoft.SharePoint.ClientSideComponent.HostedAppsManager"/>
                <Parameter Name="id" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_CampainAnalytics_GetDimensions" ReturnType="Microsoft.SharePoint.CampaignAnalytics.DimensionsResponse" IsSideEffecting="false">
-               <Parameter Name="request" Type="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsDimensionsRequest"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_CampainAnalytics_GetReport" ReturnType="Microsoft.SharePoint.CampaignAnalytics.ReportResponse">
-               <Parameter Name="request" Type="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportRequest"/>
             </FunctionImport>
             <FunctionImport Name="IndexStore" IsBindable="true">
                <Parameter Name="this" Type="SP.BusinessData.Infrastructure.ExternalSubscriptionStore"/>
@@ -14816,6 +14817,7 @@
                <Parameter Name="query" Type="Edm.String"/>
                <Parameter Name="entitytypes" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SP_SemanticSearchItemCollection_GetSemanticSearchResults"/>
             <FunctionImport Name="SP_SensitivityLabelCollection_GetSensitivityLabelsAsStream" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="expand" Type="Edm.String"/>
                <Parameter Name="filter" Type="Edm.String"/>
@@ -23226,24 +23228,6 @@
          <Annotations Target="Microsoft.SharePoint.Campaigns.CampaignSummary">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.DimensionsResponse">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.ReportResponse">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableElement">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableRow">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsDimensionsRequest">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportRequest">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
          <Annotations Target="Microsoft.SharePoint.Administration.OrgAssets">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -27712,6 +27696,9 @@
          <Annotations Target="SP.ApiData/AmplifySchedule(SP.Publishing.CampaignPublication, Edm.DateTime)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/AmplifySendTestEmailMessage(SP.Publishing.CampaignPublication)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/AmplifyValidate(SP.Publishing.CampaignPublication)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29257,6 +29244,9 @@
          <Annotations Target="SP.ApiData/SP_KnowledgeSite_publish(Microsoft.SharePoint.KnowledgeSite.Models.DocumentPublishRequest)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SP_KnowledgeSite_unpublish(Microsoft.SharePoint.KnowledgeSite.Models.DocumentUnpublishRequest)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SP_Internal_FlowPermissions_GetFlowPermissionLevelOnList(Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29375,12 +29365,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/AddEx(Microsoft.SharePoint.ClientSideComponent.HostedAppsManager, Edm.String, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/SP_CampainAnalytics_GetDimensions(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsDimensionsRequest)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/SP_CampainAnalytics_GetReport(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportRequest)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/AddSiteTheme(SP.BrandCenter, SP.ThemeData)">
@@ -29963,6 +29947,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_SearchResultItemCollection_GetSearchSuggestionsAsStream(Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_SemanticSearchItemCollection_GetSemanticSearchResults()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_SensitivityLabelCollection_GetSensitivityLabelsAsStream(Edm.String, Edm.String)">
@@ -35979,6 +35966,15 @@
             <Property Name="NativeLanguageName" Type="Edm.String"/>
             <Property Name="Url" Type="Edm.String"/>
          </EntityType>
+         <EntityType Name="TestTeamsMessageChannel">
+            <Key>
+               <PropertyRef Name="ChannelName"/>
+            </Key>
+            <Property Name="ChannelName" Type="Edm.String" Nullable="false"/>
+            <Property Name="GroupId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="TeamName" Type="Edm.String"/>
+            <Property Name="ThreadId" Type="Edm.String"/>
+         </EntityType>
          <EntityType Name="TopicSitePage" BaseType="SP.Publishing.SitePage">
             <Property Name="EntityId" Type="Edm.String"/>
             <Property Name="EntityRelations" Type="Edm.String"/>
@@ -37973,6 +37969,15 @@
             <Property Name="message" Type="Edm.String"/>
             <Property Name="publishedDate" Type="Edm.DateTime" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="DocumentUnpublishRequest">
+            <Property Name="fileName" Type="Edm.String"/>
+            <Property Name="unpublishReason" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="DocumentUnpublishResponse">
+            <Property Name="documentUrl" Type="Edm.String"/>
+            <Property Name="message" Type="Edm.String"/>
+            <Property Name="unpublishedDate" Type="Edm.DateTime" Nullable="false"/>
+         </ComplexType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="SP.Internal">
          <ComplexType Name="AppRenderInfo">
@@ -38585,32 +38590,6 @@
             <Property Name="status" Type="Edm.String"/>
             <Property Name="tags" Type="Collection(Edm.String)"/>
             <Property Name="title" Type="Edm.String"/>
-         </ComplexType>
-      </Schema>
-      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.CampaignAnalytics">
-         <ComplexType Name="DimensionsResponse">
-            <Property Name="application" Type="Collection(Edm.String)"/>
-         </ComplexType>
-         <ComplexType Name="ReportResponse">
-            <Property Name="dimensions" Type="Collection(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableElement)"/>
-            <Property Name="metrics" Type="Collection(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableElement)"/>
-            <Property Name="rows" Type="Collection(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableRow)"/>
-         </ComplexType>
-         <ComplexType Name="VinciAnalyticsReportTableElement">
-            <Property Name="name" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="VinciAnalyticsReportTableRow">
-            <Property Name="dimensionReport" Type="Edm.String"/>
-            <Property Name="metricReport" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="VinciAnalyticsDimensionsRequest">
-            <Property Name="campaignId" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="VinciAnalyticsReportRequest">
-            <Property Name="campaignId" Type="Edm.String"/>
-            <Property Name="communicationId" Type="Edm.String"/>
-            <Property Name="dimensions" Type="Collection(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableElement)"/>
-            <Property Name="metrics" Type="Collection(Microsoft.SharePoint.CampaignAnalytics.VinciAnalyticsReportTableElement)"/>
          </ComplexType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Administration">

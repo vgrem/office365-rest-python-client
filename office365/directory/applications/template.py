@@ -1,7 +1,9 @@
 from typing import Optional
 
+from office365.directory.applications.service_principal import (
+    ApplicationServicePrincipal,
+)
 from office365.entity import Entity
-from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -9,7 +11,7 @@ from office365.runtime.types.collections import StringCollection
 class ApplicationTemplate(Entity):
     """Represents an application in the Azure AD application gallery."""
 
-    def instantiate(self, display_name):
+    def instantiate(self, display_name: str) -> ApplicationServicePrincipal:
         """
         Add an instance of an application from the Azure AD application gallery into your directory. You can also use
         this API to instantiate non-gallery apps.
@@ -17,7 +19,7 @@ class ApplicationTemplate(Entity):
 
         :param str display_name: Custom name of the application
         """
-        return_type = ClientResult(self.context)
+        return_type = ApplicationServicePrincipal(self.context)
         payload = {"displayName": display_name}
         qry = ServiceOperationQuery(
             self, "instantiate", None, payload, None, return_type
@@ -32,7 +34,7 @@ class ApplicationTemplate(Entity):
         return self.properties.get("displayName", None)
 
     @property
-    def categories(self):
+    def categories(self) -> StringCollection:
         """
         The list of categories for the application. Supported values can be: Collaboration, Business Management,
         Consumer, Content management, CRM, Data services, Developer services, E-commerce, Education, ERP, Finance,
@@ -42,12 +44,12 @@ class ApplicationTemplate(Entity):
         return self.properties.get("categories", StringCollection())
 
     @property
-    def supported_provisioning_types(self):
+    def supported_provisioning_types(self) -> StringCollection:
         """The list of provisioning modes supported by this application"""
         return self.properties.get("supportedProvisioningTypes", StringCollection())
 
     @property
-    def supported_single_signon_modes(self):
+    def supported_single_signon_modes(self) -> StringCollection:
         """
         The list of single sign-on modes supported by this application.
         The supported values are oidc, password, saml, and notSupported.
