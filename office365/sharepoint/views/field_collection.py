@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from typing_extensions import Self
+
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -13,8 +15,7 @@ class ViewFieldCollection(Entity):
     def __len__(self):
         return len(self.items)
 
-    def __getitem__(self, index):
-        # type: (int) -> str
+    def __getitem__(self, index: int) -> str:
         """Gets view field by index"""
         return self.items[index]
 
@@ -22,14 +23,12 @@ class ViewFieldCollection(Entity):
         return repr(self.items)
 
     @property
-    def schema_xml(self):
-        # type: () -> Optional[str]
+    def schema_xml(self) -> Optional[str]:
         """Gets Schema Xml."""
         return self.properties.get("SchemaXml", None)
 
     @property
-    def items(self):
-        # type: () -> Optional[List[str]]
+    def items(self) -> Optional[List[str]]:
         """Gets items."""
         return self.properties.get("Items", None)
 
@@ -39,7 +38,7 @@ class ViewFieldCollection(Entity):
         super(ViewFieldCollection, self).set_property(name, value, persist_changes)
         return self
 
-    def add_view_field(self, field_name):
+    def add_view_field(self, field_name: str) -> Self:
         """
         Adds the field with the specified field internal name or display name to the collection.
         :param str field_name:
@@ -48,7 +47,7 @@ class ViewFieldCollection(Entity):
         self.context.add_query(qry)
         return self
 
-    def move_view_field_to(self, name, index):
+    def move_view_field_to(self, name: str, index: int) -> Self:
         """
         Moves the field with the specified field internal name to the specified position in the collection
         :param str name: Specifies the field internal name.
@@ -59,13 +58,13 @@ class ViewFieldCollection(Entity):
         self.context.add_query(qry)
         return self
 
-    def remove_all_view_fields(self):
+    def remove_all_view_fields(self) -> Self:
         """Removes all the fields from the collection."""
         qry = ServiceOperationQuery(self, "RemoveAllViewFields")
         self.context.add_query(qry)
         return self
 
-    def remove_view_field(self, field_name):
+    def remove_view_field(self, field_name: str) -> Self:
         """
         Removes the field with the specified field internal name or display name from the collection.
         :param str field_name:

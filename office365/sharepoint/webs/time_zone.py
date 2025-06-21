@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -8,11 +11,11 @@ from office365.sharepoint.webs.time_zone_information import TimeZoneInformation
 class TimeZone(Entity):
     """Represents the time zone setting that is implemented on a SharePoint Web site."""
 
-    def local_time_to_utc(self, date):
+    def local_time_to_utc(self, date: datetime) -> ClientResult[datetime]:
         """
         Converts the specified date from local time to Coordinated Universal Time (UTC).
 
-        :param datetime.datetime date: The local date and time value to convert.
+        :param datetime date: The local date and time value to convert.
         :return:
         """
         result = ClientResult(self.context)
@@ -34,12 +37,12 @@ class TimeZone(Entity):
         return self.properties.get("Id", None)
 
     @property
-    def description(self):
+    def description(self) -> Optional[str]:
         """Gets the description of the time zone."""
         return self.properties.get("Description", None)
 
     @property
-    def information(self):
+    def information(self) -> TimeZoneInformation:
         """Gets information about the time zone."""
         return self.properties.get("Information", TimeZoneInformation())
 

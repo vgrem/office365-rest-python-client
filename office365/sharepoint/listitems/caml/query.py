@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.listitems.collection_position import (
     ListItemCollectionPosition,
@@ -5,28 +7,28 @@ from office365.sharepoint.listitems.collection_position import (
 from office365.sharepoint.views.scope import ViewScope
 
 
-class WhereElement(object):
+class WhereElement:
     """Used within the context of a query to specify a filter."""
 
     def __str__(self):
         return "<Where></Where>"
 
 
-class OrderByElement(object):
+class OrderByElement:
     """Determines the sort order for a query"""
 
     def __str__(self):
         return "<OrderBy></OrderBy>"
 
 
-class GroupByElement(object):
+class GroupByElement:
     """Contains a Group By section for grouping the data returned through a query in a list view."""
 
     def __str__(self):
         return "<GroupBy></GroupBy>"
 
 
-class QueryElement(object):
+class QueryElement:
     """Defines the query for a view."""
 
     def __init__(self):
@@ -39,7 +41,7 @@ class QueryElement(object):
         return QueryElement()
 
     def __repr__(self):
-        return "<Query>{0}</Query>".format(str(self.Where))
+        return f"<Query>{str(self.Where)}</Query>"
 
 
 class RowLimitElement(object):
@@ -52,10 +54,10 @@ class RowLimitElement(object):
         self.Top = top
 
     def __str__(self):
-        return '<RowLimit Paged="TRUE">{0}</RowLimit>'.format(self.Top)
+        return f'<RowLimit Paged="TRUE">{self.Top}</RowLimit>'
 
 
-class ViewElement(object):
+class ViewElement:
     """"""
 
     def __init__(
@@ -69,19 +71,17 @@ class ViewElement(object):
         self.RowLimit = row_limit
 
     def __str__(self):
-        return '<View Scope="{0}"><Query>{1}</Query></View>'.format(
-            self.Scope, str(self.Query)
-        )
+        return f'<View Scope="{self.Scope}"><Query>{str(self.Query)}</Query></View>'
 
 
 class CamlQuery(ClientValue):
     def __init__(
         self,
-        dates_in_utc=True,
-        view_xml=None,
-        list_item_collection_position=None,
-        folder_server_relative_url=None,
-        allow_incremental_results=True,
+        dates_in_utc: bool = True,
+        view_xml: str = None,
+        list_item_collection_position: ListItemCollectionPosition = None,
+        folder_server_relative_url: str = None,
+        allow_incremental_results: bool = True,
     ):
         """
         Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
@@ -102,7 +102,7 @@ class CamlQuery(ClientValue):
         self.ListItemCollectionPosition = list_item_collection_position
 
     @staticmethod
-    def parse(query_expr, scope=ViewScope.DefaultValue):
+    def parse(query_expr: str, scope: ViewScope = ViewScope.DefaultValue) -> CamlQuery:
         """
         Creates a CamlQuery object from a query expression
 
@@ -110,27 +110,25 @@ class CamlQuery(ClientValue):
         :param ViewScope scope: Specifies whether and how files and subfolders are included in a view.
         """
         qry = CamlQuery()
-        qry.ViewXml = '<View Scope="{0}"><Query>{1}</Query></View>'.format(
-            scope, query_expr
-        )
+        qry.ViewXml = f'<View Scope="{scope}"><Query>{query_expr}</Query></View>'
         return qry
 
     @staticmethod
-    def create_all_items_query():
+    def create_all_items_query() -> CamlQuery:
         """Constructs a query"""
         return CamlQuery.parse("", ViewScope.RecursiveAll)
 
     @staticmethod
-    def create_all_folders_query():
+    def create_all_folders_query() -> CamlQuery:
         """Constructs a query to return folder objects"""
         qry_text = '<Where><Eq><FieldRef Name="FSObjType" /><Value Type="Integer">1</Value></Eq></Where>'
-        return CamlQuery.parse(qry_text, ViewScope.RecursiveAll)
+        return CamlQuery.parse(qry_text, ViewScope.DefaultValue)
 
     @staticmethod
-    def create_all_files_query():
+    def create_all_files_query() -> CamlQuery:
         """Constructs a query to return file objects"""
         qry_text = '<Where><Eq><FieldRef Name="FSObjType" /><Value Type="Integer">0</Value></Eq></Where>'
-        return CamlQuery.parse(qry_text, ViewScope.RecursiveAll)
+        return CamlQuery.parse(qry_text, ViewScope.DefaultValue)
 
     def __repr__(self):
         return self.ViewXml

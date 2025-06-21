@@ -75,7 +75,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def create_copy_job(self, export_object_uris, destination_uri, options=None):
+    def create_copy_job(
+        self, export_object_uris, destination_uri, options=None
+    ) -> ClientResult[CopyMigrationInfo]:
         """"""
         return_type = ClientResult(self.context, CopyMigrationInfo())
         payload = {
@@ -133,7 +135,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_preview_site(self, upgrade=None, sendemail=None):
+    def create_preview_site(self, upgrade: bool = None, sendemail: str = None) -> Self:
         """
         Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
         of the site collection to a newer version
@@ -159,16 +161,16 @@ class Site(Entity):
     def delete_object(self):
         """Deletes a site"""
 
-        def _site_resolved():
+        def _delete_object():
             if self.group_id == "00000000-0000-0000-0000-000000000000":
                 self.context.site_manager.delete(self.id)
             else:
                 self.context.group_site_manager.delete(self.url)
 
-        self.ensure_properties(["Url", "GroupId", "Id"], _site_resolved)
+        self.ensure_properties(["Url", "GroupId", "Id"], _delete_object)
         return self
 
-    def check_is_deletable(self):
+    def check_is_deletable(self) -> ClientResult[bool]:
         """Check Site Is Deletable"""
         return_type = ClientResult(self.context, bool())
 
@@ -180,7 +182,7 @@ class Site(Entity):
         self.ensure_property("Id", _check_is_deletable)
         return return_type
 
-    def extend_upgrade_reminder_date(self):
+    def extend_upgrade_reminder_date(self) -> Self:
         """
         Extend the upgrade reminder date for this site collection, so that site collection administrators will
         not be reminded to run a site collection upgrade before the new date
@@ -212,7 +214,7 @@ class Site(Entity):
         self.ensure_property("Url", _site_loaded)
         return return_type
 
-    def get_block_download_policy_for_files_data(self):
+    def get_block_download_policy_for_files_data(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(

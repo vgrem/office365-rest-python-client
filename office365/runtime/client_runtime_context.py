@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from time import sleep
 from typing import TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Type, Union
@@ -47,14 +49,14 @@ class ClientRuntimeContext(ABC):
         """
         self._current_query = query
         request = self.pending_request().build_request(query)
-        self.pending_request().beforeExecute.notify(request)
+        self.pending_request().beforeExecute(request)
         return request
 
     def execute_query_retry(
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
-        success_callback: Optional[Callable[["ClientObject"], None]] = None,
+        success_callback: Optional[Callable[[ClientObject], None]] = None,
         failure_callback: Optional[Callable[[int, RequestException], None]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
     ):
@@ -91,9 +93,7 @@ class ClientRuntimeContext(ABC):
         """Gets the service root URL."""
         pass
 
-    def load(
-        self, client_object: "T", properties_to_retrieve: List[str] = None
-    ) -> Self:
+    def load(self, client_object: T, properties_to_retrieve: List[str] = None) -> Self:
         """Prepares retrieval query for the specified client object.
 
         Args:
@@ -149,7 +149,7 @@ class ClientRuntimeContext(ABC):
 
     def after_query_execute(
         self,
-        action: Callable[[Union["T", Response]], None],
+        action: Callable[[Union[T, Response]], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:

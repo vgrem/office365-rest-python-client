@@ -276,7 +276,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
         def _loaded(col):
             # type: (Self) -> None
-            self._page_loaded.notify(self)
+            self._page_loaded(self)
 
         self.context.load(self).after_query_execute(_loaded)
         return self

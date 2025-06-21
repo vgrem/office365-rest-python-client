@@ -44,13 +44,13 @@ class ClientRequest(ABC):
             request = self.build_request(query)
             response = self.execute_request_direct(request)
             self.process_response(response, query)
-            self.afterExecute.notify(response)
+            self.afterExecute(response)
         except HTTPError as e:
             raise ClientRequestException(*e.args, response=e.response)
 
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
-        self.beforeExecute.notify(request)
+        self.beforeExecute(request)
         if request.method == HttpMethod.Post:
             if request.is_bytes or request.is_file:
                 response = requests.post(

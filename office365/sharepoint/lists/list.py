@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from datetime import datetime
 from typing import IO, AnyStr, Callable, Dict, Optional, Union
@@ -626,6 +628,18 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    # def get_files(self) -> ListItemCollection:
+    #    """Returns a list of files in the list"""
+    #    return self.items.expand(["File"]).get()
+
+    # def get_folders(self) -> ListItemCollection:
+    #    """Returns a list of folders in the list"""
+    #    return self.items.expand(["Folder"]).get()
+
+    def validate_broken_taxonomy_values(self) -> Self:
+        """Clears the broken taxonomy values"""
+        raise NotImplementedError("validate_broken_taxonomy_values")
+
     def get_items(self, caml_query: CamlQuery = None) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query."""
         if not caml_query:
@@ -666,7 +680,7 @@ class List(SecurableObject):
             self.root_folder.ensure_property("ServerRelativeUrl", _add_item)
         return return_type
 
-    def create_wiki_page(self, page_name, page_content):
+    def create_wiki_page(self, page_name: str, page_content: str) -> File:
         """
         Creates a wiki page.
         :param str page_name:
@@ -796,14 +810,14 @@ class List(SecurableObject):
 
     def render_list_data_as_stream(
         self, view_xml=None, render_options=None, expand_groups=None
-    ):
+    ) -> ClientResult[bytes]:
         """Returns the data for the specified query view.
 
         :param str view_xml: Specifies the CAML view XML.
         :param int render_options: Specifies the type of output to return.
         :param bool expand_groups: Specifies whether to expand the grouping or not.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         if view_xml is None:
             view_xml = "<View/>"
         payload = {
@@ -862,11 +876,11 @@ class List(SecurableObject):
         """"""
         from office365.sharepoint.documentmanagement.document_id import DocumentId
 
-        def _loaded():
+        def _reset_doc_id():
             doc_mng = DocumentId(self.context)
             doc_mng.reset_doc_ids_in_library(self.root_folder.serverRelativeUrl)
 
-        self.ensure_property("RootFolder", _loaded)
+        self.ensure_property("RootFolder", _reset_doc_id)
         return self
 
     def set_exempt_from_block_download_of_non_viewable_files(self, value):
@@ -895,7 +909,7 @@ class List(SecurableObject):
         return self.properties.get("AdditionalUXProperties", None)
 
     @property
-    def author(self):
+    def author(self) -> User:
         """Specifies the user who created the list."""
         return self.properties.get(
             "Author", User(self.context, ResourcePath("Author", self.resource_path))
