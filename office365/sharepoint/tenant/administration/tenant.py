@@ -117,7 +117,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def activate_application_billing_policy(self, billing_policy_id):
+    def activate_application_billing_policy(
+        self, billing_policy_id: str
+    ) -> ClientResult[SPOAppBillingProperties]:
         """ """
         payload = {"billingPolicyId": billing_policy_id}
         return_type = ClientResult(self.context, SPOAppBillingProperties())
@@ -127,7 +129,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def add_recent_admin_action_report(self):
+    def add_recent_admin_action_report(self) -> ClientResult[RecentAdminActionReport]:
         """Logs recent administrative actions within a SharePoint Online tenant"""
         return_type = ClientResult(self.context, RecentAdminActionReport())
         payload = {"payload": RecentAdminActionReportPayload()}
@@ -137,7 +139,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def check_m365_copilot_business_chat_license(self):
+    def check_m365_copilot_business_chat_license(self) -> ClientResult[bool]:
         """ """
         return_type = ClientResult(self.context, bool())
         from office365.sharepoint.policy.license_utilities import PolicyLicenseUtilities
@@ -147,7 +149,7 @@ class Tenant(Entity):
         )
         return return_type
 
-    def get_corporate_catalog_site(self):
+    def get_corporate_catalog_site(self) -> Site:
         """Retrieves Corporate Catalog Site"""
         settings = TenantSettings.current(self.context)
         return_type = Site(self.context)
@@ -158,7 +160,7 @@ class Tenant(Entity):
         settings.ensure_property("CorporateCatalogUrl", _settings_loaded)
         return return_type
 
-    def get_chat_gpt_response(self):
+    def get_chat_gpt_response(self) -> ClientResult[ChatGptRequestOptions]:
         """"""
         return_type = ClientResult(self.context)
         payload = {"requestOptions": ChatGptRequestOptions()}
@@ -168,7 +170,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_spo_copilot_promo_usage_statistics(self):
+    def get_spo_copilot_promo_usage_statistics(
+        self,
+    ) -> ClientResult[SPOCopilotPromoUsage]:
         """ """
         return_type = ClientResult(self.context, SPOCopilotPromoUsage())
         qry = ServiceOperationQuery(
@@ -190,7 +194,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def delete_recent_admin_action_report(self, report_id):
+    def delete_recent_admin_action_report(self, report_id: int):
         """
         :param int report_id:
         """
@@ -200,7 +204,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_spo_tenant_all_web_templates(self):
+    def get_spo_tenant_all_web_templates(self) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
         qry = ServiceOperationQuery(
@@ -289,8 +293,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_thumbnail_logo(self, site_url):
-        # type: (str) -> ClientResult[AnyStr]
+    def get_site_thumbnail_logo(self, site_url: str) -> ClientResult[AnyStr]:
         """
         :param str site_url:
         """
@@ -302,8 +305,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_home_site_url(self):
-        # type: () -> ClientResult[str]
+    def get_home_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -312,8 +314,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_home_sites(self):
-        # type: () -> ClientResult[ClientValueCollection[HomeSitesDetails]]
+    def get_home_sites(self) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
         """Retrieves the Home Site that has been designated for your Microsoft 365 tenant."""
         return_type = ClientResult(
             self.context,
@@ -447,8 +448,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_ransomware_activities(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_ransomware_activities(self) -> ClientResult[AnyStr]:
         """ """
         return_type = ClientResult(self.context)
         payload = {"parameters": RenderListDataParameters()}
@@ -458,8 +458,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_ransomware_events_overview(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_ransomware_events_overview(self) -> ClientResult[AnyStr]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -509,8 +508,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_sp_list_item_count(self, list_name):
-        # type: (str) -> ClientResult[int]
+    def get_sp_list_item_count(self, list_name: str) -> ClientResult[int]:
         """ """
         return_type = ClientResult(self.context)
         payload = {"listName": list_name}
@@ -520,8 +518,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_sp_list_root_folder_properties(self, list_name):
-        # type: (str) -> ClientResult[dict]
+    def get_sp_list_root_folder_properties(self, list_name: str) -> ClientResult[dict]:
         """ """
         return_type = ClientResult(self.context)
         payload = {"listName": list_name}
@@ -531,8 +528,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_spo_all_web_templates(self, culture_name=None, compatibility_level=None):
-        # type: (str, int) -> SPOTenantWebTemplateCollection
+    def get_spo_all_web_templates(
+        self, culture_name: str = None, compatibility_level: int = None
+    ) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
         payload = {
@@ -545,8 +543,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def check_tenant_intune_license(self):
-        # type: () -> ClientResult[bool]
+    def check_tenant_intune_license(self) -> ClientResult[bool]:
         """Checks whether a tenant has the Intune license."""
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -569,8 +566,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site(self, site_url):
-        # type: (str) -> ListItem
+    def get_site(self, site_url: str) -> ListItem:
         return self._aggregated_site_collections_list.items.single(
             "SiteUrl eq '{0}'".format(site_url.rstrip("/"))
         ).get()
@@ -590,8 +586,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def _poll_site_status(self, site_url, polling_interval_secs):
-        # type: (str, int) -> None
+    def _poll_site_status(self, site_url: str, polling_interval_secs: int) -> None:
         states = [0, 1, 2]
         time.sleep(polling_interval_secs)
 
@@ -642,8 +637,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_secondary_administrators(self, site_id):
-        # type: (str) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]
+    def get_site_secondary_administrators(
+        self, site_id: str
+    ) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]:
         """
         Gets site collection administrators
         :param str site_id: Site object or identifier
@@ -681,8 +677,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def register_hub_site(self, site_url):
-        # type: (str) -> HubSiteProperties
+    def register_hub_site(self, site_url: str) -> HubSiteProperties:
         """Registers an existing site as a hub site."""
         return_type = HubSiteProperties(self.context)
         params = {"siteUrl": site_url}
@@ -692,8 +687,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def unregister_hub_site(self, site_url):
-        # type: (str) -> Self
+    def unregister_hub_site(self, site_url: str) -> Self:
         """Unregisters a hub site so that it is no longer a hub site."""
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(
@@ -741,8 +735,7 @@ class Tenant(Entity):
         return_type = Site(self.context)
         return_type.set_property("__siteUrl", url)
 
-        def _ensure_status(op):
-            # type: (SpoOperation) -> None
+        def _ensure_status(op: SpoOperation) -> None:
             if not op.is_complete:
                 self._poll_site_status(url, op.polling_interval_secs)
 
@@ -841,8 +834,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_properties_by_site_id(self, site_id, include_detail=False):
-        # type: (str, bool) -> SiteProperties
+    def get_site_properties_by_site_id(
+        self, site_id: str, include_detail: bool = False
+    ) -> SiteProperties:
         """Gets the site properties for the specified site ID.
 
         :param str site_id: A string that represents the site identifier.
@@ -858,8 +852,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_properties_by_url(self, url, include_detail=False):
-        # type: (str, bool) -> SiteProperties
+    def get_site_properties_by_url(
+        self, url: str, include_detail: bool = False
+    ) -> SiteProperties:
         """
          Gets the site properties for the specified URL.
 
@@ -877,9 +872,8 @@ class Tenant(Entity):
         return return_type
 
     def get_site_properties_from_sharepoint_by_filters(
-        self, _filter=None, start_index=None, include_detail=False
-    ):
-        # type: (str, str, bool) -> SitePropertiesCollection
+        self, _filter: str = None, start_index: str = None, include_detail: bool = False
+    ) -> SitePropertiesCollection:
         """ """
         return_type = SitePropertiesCollection(self.context)
         payload = {
@@ -908,8 +902,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def connect_site_to_hub_site_by_id(self, site_url, hub_site_id):
-        # type: (str, str) -> Self
+    def connect_site_to_hub_site_by_id(self, site_url: str, hub_site_id: str) -> Self:
         """Connects Site to Hub Site
 
         :param str site_url:
@@ -937,8 +930,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def send_email(self, site_url, activity_event_json):
-        # type: (str, str) -> ClientResult[bool]
+    def send_email(self, site_url: str, activity_event_json: str) -> ClientResult[bool]:
         """Send Email"""
         return_type = ClientResult(self.context, bool())
         payload = {"siteUrl": site_url, "activityEventJson": activity_event_json}
@@ -946,16 +938,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def set_copilot_promo_optin_status(self, copilot_promo_optin_enabled):
-        # type: (bool) -> ClientResult[bool]
+    def set_copilot_promo_optin_status(self, copilot_promo_optin_enabled: bool) -> Self:
         """ """
         payload = {"copilotPromoOptInEnabled": copilot_promo_optin_enabled}
         qry = ServiceOperationQuery(self, "SetCopilotPromoOptInStatus", None, payload)
         self.context.add_query(qry)
         return self
 
-    def set_default_view(self, view_id, list_name):
-        # type: (str, str) -> Self
+    def set_default_view(self, view_id: str, list_name: str) -> Self:
         """ """
         payload = {"viewId": view_id, "listName": list_name}
         qry = ServiceOperationQuery(self, "SetDefaultView", None, payload)
@@ -972,8 +962,11 @@ class Tenant(Entity):
         return return_type
 
     def set_file_version_policy(
-        self, is_auto_trim_enabled, major_version_limit, expire_versions_after_days
-    ):
+        self,
+        is_auto_trim_enabled: bool,
+        major_version_limit: int,
+        expire_versions_after_days: int,
+    ) -> Self:
         """
         Automatically delete older versions of documents after a specified number of days.
         Specify the maximum number of major versions to retain and the number of major versions
@@ -1049,8 +1042,7 @@ class Tenant(Entity):
         return MultiGeoServices(self.context)
 
     @property
-    def ai_builder_enabled(self):
-        # type: () -> Optional[str]
+    def ai_builder_enabled(self) -> Optional[str]:
         """Gets the value if the AIBuilder settings should be shown in the tenant"""
         return self.properties.get("AIBuilderEnabled", None)
 
@@ -1069,8 +1061,7 @@ class Tenant(Entity):
         )
 
     @property
-    def allow_comments_text_on_email_enabled(self):
-        # type: () -> Optional[bool]
+    def allow_comments_text_on_email_enabled(self) -> Optional[bool]:
         """
         When enabled, the email notification that a user receives when is mentioned,
         includes the surrounding document context
@@ -1078,8 +1069,9 @@ class Tenant(Entity):
         return self.properties.get("AllowCommentsTextOnEmailEnabled", None)
 
     @property
-    def allow_everyone_except_external_users_claim_in_private_site(self):
-        # type: () -> Optional[bool]
+    def allow_everyone_except_external_users_claim_in_private_site(
+        self,
+    ) -> Optional[bool]:
         """
         Gets the value if EveryoneExceptExternalUsers claim is allowed or not in people picker in a private group site.
         False value means it is blocked
@@ -1089,8 +1081,7 @@ class Tenant(Entity):
         )
 
     @property
-    def allow_editing(self):
-        # type: () -> Optional[bool]
+    def allow_editing(self) -> Optional[bool]:
         """
         Prevents users from editing Office files in the browser and copying and pasting Office file contents
         out of the browser window.
@@ -1098,37 +1089,32 @@ class Tenant(Entity):
         return self.properties.get("AllowEditing", None)
 
     @property
-    def default_content_center_site(self):
+    def default_content_center_site(self) -> SiteInfoForSitePicker:
         """"""
         return self.properties.get("DefaultContentCenterSite", SiteInfoForSitePicker())
 
     @property
-    def file_version_policy_xml(self):
-        # type: () -> Optional[str]
+    def file_version_policy_xml(self) -> Optional[str]:
         """ """
         return self.properties.get("FileVersionPolicyXml", None)
 
     @property
-    def information_barriers_suspension(self):
-        # type: () -> Optional[bool]
+    def information_barriers_suspension(self) -> Optional[bool]:
         """Gets information barriers in SharePoint and OneDrive in your organization"""
         return self.properties.get("InformationBarriersSuspension", None)
 
     @property
-    def ip_address_allow_list(self):
-        # type: () -> Optional[str]
+    def ip_address_allow_list(self) -> Optional[str]:
         """Configures multiple IP addresses or IP address ranges (IPv4 or IPv6), that are recognized as trusted."""
         return self.properties.get("IPAddressAllowList", None)
 
     @property
-    def ip_address_enforcement(self):
-        # type: () -> Optional[bool]
+    def ip_address_enforcement(self) -> Optional[bool]:
         """Determines whether access from network locations that are defined by an administrator is allowed."""
         return self.properties.get("IPAddressEnforcement", None)
 
     @ip_address_enforcement.setter
-    def ip_address_enforcement(self, value):
-        # type: (bool) -> None
+    def ip_address_enforcement(self, value: bool) -> None:
         """
         Allows access from network locations that are defined by an administrator.
         Before the IPAddressEnforcement parameter is set, make sure you add a valid IPv4 or IPv6 address to the
@@ -1137,43 +1123,37 @@ class Tenant(Entity):
         self.set_property("IPAddressEnforcement", value)
 
     @property
-    def no_access_redirect_url(self):
-        # type: () -> Optional[bool]
+    def no_access_redirect_url(self) -> Optional[bool]:
         """Specifies the URL of the redirected site for those site collections which have the locked state "NoAccess"""
         return self.properties.get("NoAccessRedirectUrl", None)
 
     @property
-    def notifications_in_share_point_enabled(self):
-        # type: () -> Optional[bool]
+    def notifications_in_share_point_enabled(self) -> Optional[bool]:
         """Enables or disables notifications in SharePoint."""
         return self.properties.get("NotificationsInSharePointEnabled", None)
 
     @property
-    def notify_owners_when_invitations_accepted(self):
-        # type: () -> Optional[bool]
+    def notify_owners_when_invitations_accepted(self) -> Optional[bool]:
         """When this parameter is set to true and when an external user accepts an invitation to a resource
         in a user's OneDrive for Business, the OneDrive for Business owner is notified by e-mail.
         """
         return self.properties.get("NotifyOwnersWhenInvitationsAccepted", None)
 
     @property
-    def one_drive_storage_quota(self):
-        # type: () -> Optional[int]
+    def one_drive_storage_quota(self) -> Optional[int]:
         """Gets a default OneDrive for Business storage quota for the tenant. It will be used for new OneDrive
         for Business sites created."""
         return self.properties.get("OneDriveStorageQuota", None)
 
     @property
-    def notify_owners_when_items_reshared(self):
-        # type: () -> Optional[bool]
+    def notify_owners_when_items_reshared(self) -> Optional[bool]:
         """When is set to true and another user re-shares a document from a
         user's OneDrive for Business, the OneDrive for Business owner is notified by e-mail.
         """
         return self.properties.get("NotifyOwnersWhenItemsReshared", None)
 
     @property
-    def root_site_url(self):
-        # type: () -> Optional[str]
+    def root_site_url(self) -> Optional[str]:
         """The tenant's root site url"""
         return self.properties.get("RootSiteUrl", None)
 
@@ -1188,7 +1168,7 @@ class Tenant(Entity):
         )
 
     @property
-    def total_tenant_archive_file_size_aggregation(self):
+    def total_tenant_archive_file_size_aggregation(self) -> ArchiveFileSizeMetric:
         """ """
         return self.properties.get(
             "TotalTenantArchiveFileSizeAggregation",
@@ -1200,14 +1180,15 @@ class Tenant(Entity):
             ),
         )
 
-    def syntex_power_apps_environments_context(self):
+    def syntex_power_apps_environments_context(
+        self,
+    ) -> SyntexPowerAppsEnvironmentsContext:
         """ """
         return self.properties.get(
             "SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext()
         )
 
-    def taxonomy_tagging_enabled(self):
-        # type: () -> Optional[bool]
+    def taxonomy_tagging_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("TaxonomyTaggingEnabled", None)
 
@@ -1229,7 +1210,7 @@ class Tenant(Entity):
         return TenantCrawlVersionsInfoProvider(self.context)
 
     @property
-    def syntex_billing_subscription_settings(self):
+    def syntex_billing_subscription_settings(self) -> SyntexBillingContext:
         """
         Manages billing and subscription details for Microsoft Syntex in SharePoint Online or Microsoft 365 environments
         """

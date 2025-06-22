@@ -9,8 +9,7 @@ from office365.sharepoint.webs.web import Web
 class AppContextSite(Entity):
     """ """
 
-    def __init__(self, context, site_url):
-        # type: (ClientContext, str) -> None
+    def __init__(self, context: ClientContext, site_url: str) -> None:
         """"""
         static_path = ServiceOperationPath(
             "SP.AppContextSite",

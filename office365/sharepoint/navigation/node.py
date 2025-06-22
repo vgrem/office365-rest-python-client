@@ -1,8 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.translation.user_resource import UserResource
+
+if TYPE_CHECKING:
+    from office365.sharepoint.navigation.node_collection import (
+        NavigationNodeCollection,
+    )
 
 
 class NavigationNode(Entity):
@@ -18,13 +25,8 @@ class NavigationNode(Entity):
         return self.url or self.entity_type_name
 
     @property
-    def children(self):
-        # type: () -> 'NavigationNodeCollection'
+    def children(self) -> NavigationNodeCollection:
         """Gets the collection of child nodes of the navigation node."""
-        from office365.sharepoint.navigation.node_collection import (
-            NavigationNodeCollection,
-        )
-
         return self.properties.get(
             "Children",
             NavigationNodeCollection(
@@ -33,44 +35,34 @@ class NavigationNode(Entity):
         )
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Gets a value that specifies the anchor text for the navigation node link."""
         return self.properties.get("Title", None)
 
     @title.setter
-    def title(self, value):
+    def title(self, value: str) -> None:
         """Sets a value that specifies the anchor text for the navigation node link."""
         self.set_property("Title", value)
 
     @property
-    def url(self):
-        # type: () -> Optional[str]
+    def url(self) -> Optional[str]:
         """Gets a value that specifies the URL stored with the navigation node."""
         return self.properties.get("Url", None)
 
     @url.setter
-    def url(self, value):
-        # type: (str) -> None
+    def url(self, value: str) -> None:
         """Sets a value that specifies the URL stored with the navigation node."""
         self.set_property("Url", value)
 
     @property
-    def is_visible(self):
-        # type: () -> Optional[bool]
+    def is_visible(self) -> Optional[bool]:
         """Gets a value that specifies the anchor text for the navigation node link."""
         return self.properties.get("isVisible", None)
 
     @property
-    def is_external(self):
-        # type: () -> Optional[bool]
+    def is_external(self) -> Optional[bool]:
         """ """
         return self.properties.get("isExternal", None)
-
-    @property
-    def parent_collection(self):
-        # type: () -> 'NavigationNodeCollection'
-        return self._parent_collection
 
     @property
     def title_resource(self) -> UserResource:

@@ -22,8 +22,7 @@ class UserProfilePropertiesForUser(Entity):
         return return_type
 
     @property
-    def account_name(self):
-        # type: () -> Optional[str]
+    def account_name(self) -> Optional[str]:
         """The AccountName property specifies the account name of the user."""
         return self.properties.get("AccountName", None)
 

@@ -13,8 +13,7 @@ class BasePermissions(ClientValue):
         self.High = 0
         self.Low = 0
 
-    def __iter__(self):
-        # type: () -> Iterator[str]
+    def __iter__(self) -> Iterator[str]:
         for k, v in inspect.getmembers(PermissionKind):
             if isinstance(v, int) and self.has(v):
                 yield k
@@ -40,8 +39,7 @@ class BasePermissions(ClientValue):
                     return
                 self.High |= low << high - 32
 
-    def has(self, perm):
-        # type: (int) -> bool
+    def has(self, perm: int) -> bool:
         """Determines whether the current instance has the specified permission."""
         if perm == PermissionKind.EmptyMask:
             return True

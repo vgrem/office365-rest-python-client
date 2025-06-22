@@ -28,8 +28,7 @@ class CampaignPublication(SitePage):
         return return_type
 
     @property
-    def email_endpoint(self):
-        # type: () -> Optional[str]
+    def email_endpoint(self) -> Optional[str]:
         """"""
         return self.properties.get("EmailEndpoint", None)
 

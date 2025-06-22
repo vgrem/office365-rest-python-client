@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from typing import IO, TYPE_CHECKING, AnyStr, Callable
 
@@ -144,9 +146,11 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def download_folder(
-        remove_folder, download_file, after_file_downloaded=None, recursive=True
-    ):
-        # type: (Folder, IO, Callable[[File], None], bool) -> Folder
+        remove_folder: Folder,
+        download_file: IO,
+        after_file_downloaded: Callable[[File], None] = None,
+        recursive: bool = True,
+    ) -> Folder:
         """
         Downloads a folder into a zip file
         :param office365.sharepoint.folders.folder.Folder remove_folder: Parent folder
@@ -156,8 +160,7 @@ class MoveCopyUtil(Entity):
         """
         import zipfile
 
-        def _get_relative_file_path(file):
-            # type: (File) -> str
+        def _get_relative_file_path(file: File) -> str:
             return os.path.join(
                 file.parent_folder.serverRelativeUrl.replace(
                     remove_folder.serverRelativeUrl, ""
@@ -165,11 +168,9 @@ class MoveCopyUtil(Entity):
                 file.name,
             )
 
-        def _download_file(file):
-            # type: (File) -> None
+        def _download_file(file: File) -> None:
 
-            def _after_downloaded(result):
-                # type: (ClientResult[AnyStr]) -> None
+            def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
                     after_file_downloaded(file)
@@ -180,8 +181,7 @@ class MoveCopyUtil(Entity):
 
             file.get_content().after_execute(_after_downloaded)
 
-        def _download_folder(folder):
-            # type: (Folder) -> None
+        def _download_folder(folder: Folder) -> None:
 
             def _download_files(rt):
                 [_download_file(file) for file in folder.files]

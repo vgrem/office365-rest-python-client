@@ -12,8 +12,9 @@ class TargetApplication(Entity):
     """
 
     @staticmethod
-    def create(context, application_id, friendly_name):
-        # type: (ClientContext, str, str) -> "TargetApplication"
+    def create(
+        context: ClientContext, application_id: str, friendly_name: str
+    ) -> "TargetApplication":
         """
         Creates a target application
 
@@ -30,8 +31,7 @@ class TargetApplication(Entity):
         return return_type
 
     @property
-    def application_id(self):
-        # type: () -> Optional[str]
+    def application_id(self) -> Optional[str]:
         """"""
         return self.properties.get("ApplicationId", None)
 

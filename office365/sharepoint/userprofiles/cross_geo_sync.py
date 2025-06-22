@@ -11,8 +11,9 @@ class CrossGeoSync(Entity):
     """"""
 
     @staticmethod
-    def read_full_changes_batch(context, targetInstanceId, lastRecordId, batchSize):
-        # type: (ClientContext, str, str, str) -> ClientResult[CrossGeoSyncUserDataBatch]
+    def read_full_changes_batch(
+        context: ClientContext, targetInstanceId: str, lastRecordId: str, batchSize: str
+    ) -> ClientResult[CrossGeoSyncUserDataBatch]:
         """ """
         payload = {
             "targetInstanceId": targetInstanceId,

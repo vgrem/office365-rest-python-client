@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
@@ -12,13 +14,28 @@ if TYPE_CHECKING:
 class FontPackageCollection(EntityCollection):
     """Represents a collection of View resources."""
 
-    def __init__(self, context, resource_path=None):
-        # type: (ClientContext, Optional[ResourcePath]) -> None
-        super(FontPackageCollection, self).__init__(context, FontPackage, resource_path)
+    def __init__(
+        self, context: ClientContext, resource_path: Optional[ResourcePath] = None
+    ) -> None:
+        """Initialize a font package collection.
 
-    def get_by_title(self, title):
+        Args:
+            context: SharePoint client context
+            resource_path: Resource path for this collection
         """
-        :param str title: The title of the font package to return.
+        super().__init__(context, FontPackage, resource_path)
+
+    def get_by_title(self, title: str) -> FontPackage:
+        """Gets the font package with the specified title.
+
+        Args:
+            title: The case-sensitive title of the font package to retrieve
+
+        Returns:
+            FontPackage: The font package object (not yet loaded from server)
+
+        Raises:
+            ValueError: If title is empty or None
         """
         return FontPackage(
             self.context,

@@ -19,64 +19,54 @@ class ObjectSharingSettings(Entity):
     """
 
     @property
-    def web_url(self):
-        # type: () -> Optional[str]
+    def web_url(self) -> Optional[str]:
         """The URL pointing to the containing SP.Web object."""
         return self.properties.get("WebUrl", None)
 
     @property
-    def access_request_mode(self):
-        # type: () -> Optional[bool]
+    def access_request_mode(self) -> Optional[bool]:
         """Boolean indicating whether the sharing context operates under the access request mode."""
         return self.properties.get("AccessRequestMode", None)
 
     @property
-    def block_people_picker_and_sharing(self):
-        # type: () -> Optional[bool]
+    def block_people_picker_and_sharing(self) -> Optional[bool]:
         """Boolean indicating whether the current user can use the People Picker to do any sharing."""
         return self.properties.get("BlockPeoplePickerAndSharing", None)
 
     @property
-    def can_current_user_manage_organization_readonly_link(self):
-        # type: () -> Optional[bool]
+    def can_current_user_manage_organization_readonly_link(self) -> Optional[bool]:
         """Boolean indicating whether the current user can create or disable an organization View link."""
         return self.properties.get("CanCurrentUserManageOrganizationReadonlyLink", None)
 
     @property
-    def can_current_user_manage_organization_read_write_link(self):
-        # type: () -> Optional[bool]
+    def can_current_user_manage_organization_read_write_link(self) -> Optional[bool]:
         """Boolean indicating whether the current user can create or disable an organization Edit link."""
         return self.properties.get(
             "CanCurrentUserManageOrganizationReadWriteLink", None
         )
 
     @property
-    def can_current_user_manage_readonly_link(self):
-        # type: () -> Optional[bool]
+    def can_current_user_manage_readonly_link(self) -> Optional[bool]:
         """Boolean indicating whether the current user can create or disable an anonymous View link."""
         return self.properties.get("CanCurrentUserManageReadonlyLink", None)
 
     @property
-    def can_send_email(self):
-        # type: () -> Optional[bool]
+    def can_send_email(self) -> Optional[bool]:
         """Boolean indicating whether email invitations can be sent."""
         return self.properties.get("CanSendEmail", None)
 
     @property
-    def can_send_link(self):
-        # type: () -> Optional[bool]
+    def can_send_link(self) -> Optional[bool]:
         """Boolean indicating whether the current user can make use of Share-By-Link."""
         return self.properties.get("CanSendLink", None)
 
     @property
-    def is_user_site_admin(self):
-        # type: () -> Optional[bool]
+    def is_user_site_admin(self) -> Optional[bool]:
         """Boolean that indicates whether or not the current user is a site collection administrator"""
         return self.properties.get("IsUserSiteAdmin", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """The unique ID of the parent list (if applicable)."""
         return self.properties.get("ListId", None)
 

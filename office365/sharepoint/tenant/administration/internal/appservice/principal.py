@@ -39,20 +39,17 @@ class SPOWebAppServicePrincipal(Entity):
         return self
 
     @property
-    def account_enabled(self):
-        # type: () -> Optional[bool]
+    def account_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("AccountEnabled", False)
 
     @property
-    def app_id(self):
-        # type: () -> Optional[str]
+    def app_id(self) -> Optional[bool]:
         """ """
         return self.properties.get("AppId", False)
 
     @property
-    def reply_urls(self):
-        # type: () -> StringCollection
+    def reply_urls(self) -> StringCollection:
         """ """
         return self.properties.get("ReplyUrls", StringCollection())
 

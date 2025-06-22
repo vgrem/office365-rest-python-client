@@ -6,18 +6,17 @@ class PowerAppsEnvironment(ClientValue):
 
     def __init__(
         self,
-        AllocatedAICredits=None,
-        DisplayName=None,
-        IsDefault=None,
-        Name=None,
-        PurchasedAICredits=None,
-    ):
-        # type: (float, str, bool, str, float) -> None
-        self.AllocatedAICredits = AllocatedAICredits
-        self.DisplayName = DisplayName
-        self.IsDefault = IsDefault
-        self.Name = Name
-        self.PurchasedAICredits = PurchasedAICredits
+        allocated_ai_credits: float = None,
+        display_name: str = None,
+        is_default: bool = None,
+        name: str = None,
+        purchased_ai_credits: float = None,
+    ) -> None:
+        self.AllocatedAICredits = allocated_ai_credits
+        self.DisplayName = display_name
+        self.IsDefault = is_default
+        self.Name = name
+        self.PurchasedAICredits = purchased_ai_credits
 
     def __str__(self):
         return self.DisplayName or self.entity_type_name
@@ -26,6 +25,5 @@ class PowerAppsEnvironment(ClientValue):
         return self.Name or self.entity_type_name
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.PowerAppsEnvironment"

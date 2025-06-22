@@ -41,3 +41,9 @@ class TestUtility(SPTestCase):
     #        self.client, "App error"
     #    ).execute_query()
     #    self.assertIsNotNone(result.value)
+
+    def test7_resolve_principal_in_current_context(self):
+        result = Utility.resolve_principal_in_current_context(
+            self.client, "Jon Doe"
+        ).execute_query()
+        self.assertIsNotNone(result.value)

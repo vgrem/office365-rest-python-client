@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, Union
 
 from typing_extensions import Self
 
@@ -14,16 +16,17 @@ from office365.sharepoint.permissions.roles.assignments.collection import (
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.users.user import User
+from office365.sharepoint.sharing.role_type import RoleType
 
 
 class SecurableObject(Entity):
     """An object that can be assigned security permissions."""
 
-    def get_role_assignment(self, principal):
+    def get_role_assignment(self, principal: Principal) -> RoleAssignment:
         """
         Retrieves the role assignment object (1) based on the specified user or group
 
-        :param office365.sharepoint.principal.principal.Principal principal: Specifies the user or group of the
+        :param Principal principal: Specifies the user or group of the
             role assignment.
         """
         return_type = RoleAssignment(self.context)
@@ -35,8 +38,9 @@ class SecurableObject(Entity):
         principal.ensure_property("Id", _principal_loaded)
         return return_type
 
-    def add_role_assignment(self, principal, role):
-        # type: (Principal|str, RoleDefinition|int) -> Self
+    def add_role_assignment(
+        self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]
+    ) -> Self:
         """Adds a role assignment to securable resource.
 
         :param RoleDefinition or int principal: Specifies the role definition or role type.
@@ -58,8 +62,9 @@ class SecurableObject(Entity):
         principal.ensure_property("Id", _ensure_role_def)
         return self
 
-    def remove_role_assignment(self, principal, role_def):
-        # type: (Principal|str, RoleDefinition|int) -> Self
+    def remove_role_assignment(
+        self, principal: Principal | str, role_def: RoleDefinition | RoleType
+    ) -> Self:
         """Removes a role assignment from a securable resource.
         :param Principal principal: Specifies the user or group of the
         role assignment.
@@ -111,7 +116,7 @@ class SecurableObject(Entity):
         self.context.add_query(qry)
         return self
 
-    def reset_role_inheritance(self):
+    def reset_role_inheritance(self) -> Self:
         """Resets the role inheritance for the securable object and inherits role assignments from
         the parent securable object."""
         qry = ServiceOperationQuery(
@@ -120,8 +125,9 @@ class SecurableObject(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_user_effective_permissions(self, user):
-        # type: (str|User) -> ClientResult[BasePermissions]
+    def get_user_effective_permissions(
+        self, user: str | User
+    ) -> ClientResult[BasePermissions]:
         """
         Returns the user permissions for secured object.
 
@@ -129,8 +135,7 @@ class SecurableObject(Entity):
         """
         return_type = ClientResult(self.context, BasePermissions())
 
-        def _create_and_add_query(login_name):
-            # type: (str) -> None
+        def _create_and_add_query(login_name: str) -> None:
             qry = ServiceOperationQuery(
                 self,
                 "GetUserEffectivePermissions",
@@ -152,8 +157,7 @@ class SecurableObject(Entity):
         return return_type
 
     @property
-    def has_unique_role_assignments(self):
-        # type: () -> Optional[bool]
+    def has_unique_role_assignments(self) -> Optional[bool]:
         """Specifies whether the role assignments are uniquely defined for this securable object or inherited from a
         parent securable object. If the value is "false", role assignments are inherited from a parent securable
         object.
@@ -161,8 +165,7 @@ class SecurableObject(Entity):
         return self.properties.get("HasUniqueRoleAssignments", None)
 
     @property
-    def first_unique_ancestor_securable_object(self):
-        # type: () -> SecurableObject
+    def first_unique_ancestor_securable_object(self) -> SecurableObject:
         """Specifies the object where role assignments for this object are defined"""
         return self.properties.get(
             "FirstUniqueAncestorSecurableObject",
@@ -173,8 +176,7 @@ class SecurableObject(Entity):
         )
 
     @property
-    def role_assignments(self):
-        # type: () -> RoleAssignmentCollection
+    def role_assignments(self) -> RoleAssignmentCollection:
         """The role assignments for the securable object."""
         return self.properties.get(
             "RoleAssignments",

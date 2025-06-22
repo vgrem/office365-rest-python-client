@@ -10,8 +10,7 @@ class ChangeWeb(Change):
         return "Web: {0}, Action: {1}".format(self.web_id, self.change_type_name)
 
     @property
-    def web_id(self):
-        # type: () -> Optional[str]
+    def web_id(self) -> Optional[str]:
         """
         Identifies the site that has changed
         """

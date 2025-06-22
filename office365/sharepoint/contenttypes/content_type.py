@@ -44,7 +44,7 @@ class ContentType(Entity):
         with any changes made to the content type.
         :param bool update_children: Specifies whether changes propagate to child objects of the content type.
         """
-        super(ContentType, self).update()
+        super().update()
         if update_children:
             payload = {"updateChildren": update_children}
             qry = ServiceOperationQuery(self, "Update", None, payload)

@@ -77,14 +77,12 @@ class SPMachineLearningHub(Entity):
         return super(SPMachineLearningHub, self).get_property(name, default_value)
 
     @property
-    def is_default_content_center(self):
-        # type: () -> Optional[bool]
+    def is_default_content_center(self) -> Optional[bool]:
         """ """
         return self.properties.get("IsDefaultContentCenter", None)
 
     @property
-    def machine_learning_capture_enabled(self):
-        # type: () -> Optional[bool]
+    def machine_learning_capture_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("MachineLearningCaptureEnabled", None)
 

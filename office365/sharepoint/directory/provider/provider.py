@@ -19,8 +19,9 @@ class SharePointDirectoryProvider(Entity):
 
         return SPHelper.check_site_availability(self.context, site_url)
 
-    def read_directory_object(self, data):
-        # type: (DirectoryObjectData) -> ClientResult[DirectoryObjectData]
+    def read_directory_object(
+        self, data: DirectoryObjectData
+    ) -> ClientResult[DirectoryObjectData]:
         """"""
         return_type = ClientResult(self.context, DirectoryObjectData())
         payload = {"data": data}

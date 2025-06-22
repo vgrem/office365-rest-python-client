@@ -1,4 +1,7 @@
-class RoleType:
+from enum import Enum
+
+
+class RoleType(Enum):
     """Specifies the types of role definitions that are available for users and groups."""
 
     None_ = 0

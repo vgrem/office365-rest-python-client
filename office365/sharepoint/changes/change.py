@@ -19,7 +19,7 @@ class Change(Entity):
         return self.properties.get("ChangeToken", ChangeToken())
 
     @property
-    def change_type(self) -> Optional[ChangeType]:
+    def change_type(self) -> ChangeType:
         """
         Returns an SPChangeType that indicates the type of change, including adding, updating, deleting, or renaming
         changes, but also moving items away from or into lists and folders.

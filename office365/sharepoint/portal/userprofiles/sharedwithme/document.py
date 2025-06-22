@@ -12,28 +12,24 @@ class SharedWithMeDocument(Entity):
     """Represents a shared document."""
 
     @property
-    def authors(self):
-        # type: () -> ClientValueCollection[SharedWithMeDocumentUser]
+    def authors(self) -> ClientValueCollection[SharedWithMeDocumentUser]:
         """Specifies a list of users that authored the document."""
         return self.properties.get(
             "Authors", ClientValueCollection(SharedWithMeDocumentUser)
         )
 
     @property
-    def caller_stack(self):
-        # type: () -> Optional[str]
+    def caller_stack(self) -> Optional[str]:
         """ """
         return self.properties.get("CallerStack", None)
 
     @property
-    def content_type_id(self):
-        # type: () -> Optional[str]
+    def content_type_id(self) -> Optional[str]:
         """Specifies the identifier of the content type of the document."""
         return self.properties.get("ContentTypeId", None)
 
     @property
-    def doc_id(self):
-        # type: () -> Optional[str]
+    def doc_id(self) -> Optional[str]:
         """Specifies the document identifier."""
         return self.properties.get("DocId", None)
 
@@ -50,8 +46,7 @@ class SharedWithMeDocument(Entity):
         return self.properties.get("Modified", datetime.min)
 
     @property
-    def file_leaf_ref(self):
-        # type: () -> Optional[str]
+    def file_leaf_ref(self) -> Optional[str]:
         """Specifies the name of the document."""
         return self.properties.get("FileLeafRef", None)
 

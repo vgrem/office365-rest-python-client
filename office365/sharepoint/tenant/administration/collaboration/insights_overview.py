@@ -5,6 +5,5 @@ class CollaborationInsightsOverview(ClientValue):
     """"""
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsOverview"

@@ -11,7 +11,6 @@ class VideoServiceDiscoverer(Entity):
         )
 
     @property
-    def video_portal_url(self):
-        # type: () -> Optional[str]
+    def video_portal_url(self) -> Optional[str]:
         """ """
         return self.properties.get("VideoPortalUrl", None)

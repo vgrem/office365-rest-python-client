@@ -20,8 +20,7 @@ class SPO3rdPartyAADPermissionGrantCollection(
             context, SPO3rdPartyAADPermissionGrant, resource_path
         )
 
-    def add(self, service_principal_id, resource, scope):
-        # type: (str, str, str) -> Self
+    def add(self, service_principal_id: str, resource: str, scope: str) -> Self:
         payload = {
             "servicePrincipalId": service_principal_id,
             "resource": resource,

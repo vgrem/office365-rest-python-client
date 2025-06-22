@@ -3,7 +3,15 @@ from office365.sharepoint.principal.type import PrincipalType
 
 
 class PrincipalInfo(ClientValue):
-    """Provides access to information about a principal."""
+    """Represents principal information.
+
+    Provides comprehensive information about a SharePoint principal (user/group).
+    Handles null values safely and provides type-safe access to principal properties.
+
+    Example:
+        >>> info = PrincipalInfo(display_name="John Doe", principal_type=PrincipalType.User)
+        >>> print(info)  # "User: John Doe"
+    """
 
     def __init__(
         self,
@@ -15,15 +23,16 @@ class PrincipalInfo(ClientValue):
         job_title: str = None,
         principal_type: PrincipalType = None,
     ):
-        """
-        :param str principal_id: Specifies an identifier for the principal. It MUST be -1 if the principal
-            does not belong to the current site.
-        :param str display_name: Specifies the display name of the principal.
-        :param str email: Specifies the e-mail address of the principal.
-        :param str department: Specifies the department name of the principal.
-        :param str job_title: Specifies the job title of the principal.
-        :param str login_name: Specifies the login name of the principal.
-        :param int principal_type: Specifies the principal type.
+        """Initialize principal information.
+
+        Args:
+            principal_id: Unique identifier (-1 if external to site)
+            display_name: Human-readable display name
+            email: Email address
+            login_name: System login identifier
+            department: Organizational department
+            job_title: Job position title
+            principal_type: Type of principal (User/Group/etc)
         """
         self.PrincipalId = principal_id
         self.DisplayName = display_name
@@ -39,7 +48,19 @@ class PrincipalInfo(ClientValue):
 
     @property
     def principal_type_name(self):
-        return self.PrincipalType.name
+        """Gets the string name of the principal type if available.
+
+        Returns:
+            The principal type name or None if not set
+        """
+        return getattr(self.PrincipalType, "name", None)
 
     def __str__(self):
-        return "{0}: {1}".format(self.principal_type_name, self.DisplayName)
+        """Human-readable representation of the principal.
+
+        Returns:
+            String in format "{Type}: {Name}" or "Unknown Principal" if minimal data
+        """
+        type_name = self.principal_type_name or "Unknown"
+        name = self.DisplayName or "Principal"
+        return f"{type_name}: {name}"

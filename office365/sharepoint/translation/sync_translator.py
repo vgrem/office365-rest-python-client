@@ -46,8 +46,7 @@ class SyncTranslator(Entity):
         return return_type
 
     @property
-    def output_save_behavior(self):
-        # type: () -> Optional[int]
+    def output_save_behavior(self) -> Optional[int]:
         """
         The protocol client sets this property to determine the behavior of the protocol server in the case that
         the output file already exists when a translation occurs.

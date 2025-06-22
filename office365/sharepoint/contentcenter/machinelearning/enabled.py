@@ -5,8 +5,7 @@ from office365.sharepoint.entity import Entity
 
 class SPMachineLearningEnabled(Entity):
     @property
-    def is_syntex_payg_enabled(self):
-        # type: () -> Optional[bool]
+    def is_syntex_payg_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("IsSyntexPAYGEnabled", None)
 

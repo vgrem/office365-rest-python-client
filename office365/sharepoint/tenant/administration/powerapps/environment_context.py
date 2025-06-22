@@ -20,6 +20,5 @@ class PowerAppsEnvironmentContext(ClientValue):
         self.UpdatedUTC = updated_utc
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.PowerAppsEnvironmentContext"

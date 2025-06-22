@@ -1,15 +1,13 @@
-from typing import TYPE_CHECKING
+from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.navigation.node import NavigationNode
-
-if TYPE_CHECKING:
-    from office365.sharepoint.navigation.node_creation_information import (
-        NavigationNodeCreationInformation,  # noqa
-    )
+from office365.sharepoint.navigation.node_creation_information import (
+    NavigationNodeCreationInformation,
+)
 
 
 class NavigationNodeCollection(EntityCollection[NavigationNode]):
@@ -18,8 +16,9 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
             context, NavigationNode, resource_path
         )
 
-    def add(self, create_node_info):
-        # type: (NavigationNodeCreationInformation) -> NavigationNode
+    def add(
+        self, create_node_info: NavigationNodeCreationInformation
+    ) -> NavigationNode:
         """
         Creates a navigation node object and adds it to the collection.
         """
@@ -31,7 +30,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         self.context.add_query(qry)
         return return_type
 
-    def move_after(self, node_id, previous_node_id):
+    def move_after(self, node_id: int, previous_node_id: int) -> Self:
         """
         Moves a navigation node after a specified navigation node in the navigation node collection.
 
@@ -43,7 +42,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         self.context.add_query(qry)
         return self
 
-    def get_by_index(self, index):
+    def get_by_index(self, index: int) -> NavigationNode:
         """
         Returns the navigation node at the specified index.
 
@@ -57,7 +56,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_id(self, node_id):
+    def get_by_id(self, node_id: int) -> NavigationNode:
         """Returns the navigation node with the specified identifier.
         It MUST return NULL if no navigation node corresponds to the specified identifier.
 

@@ -54,8 +54,7 @@ class WebPartDefinition(Entity):
         return self
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """Gets a value that specifies the identifier of the Web Part."""
         return self.properties.get("Id", None)
 

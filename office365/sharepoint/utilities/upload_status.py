@@ -7,22 +7,19 @@ class UploadStatus(Entity):
     """The status of a chunk session upload."""
 
     @property
-    def expected_content_range(self):
-        # type: () -> Optional[str]
+    def expected_content_range(self) -> Optional[str]:
         """The string representation of the byte offset of the stream uploaded in chunk upload session that the
         next ContinueUpload (3.2.5.64.2.1.17) call uses to continue chunk upload.
         """
         return self.properties.get("ExpectedContentRange", None)
 
     @property
-    def expiration_date_time(self):
-        # type: () -> Optional[str]
+    def expiration_date_time(self) -> Optional[str]:
         """The earliest time at which the chunk upload session will be automatically expired and then deleted."""
         return self.properties.get("ExpirationDateTime", None)
 
     @property
-    def upload_id(self):
-        # type: () -> Optional[str]
+    def upload_id(self) -> Optional[str]:
         """Unique Id of the chunk session upload."""
         return self.properties.get("UploadId", None)
 

@@ -8,8 +8,7 @@ from office365.sharepoint.entity import Entity
 class TeamsPackageDownload(Entity):
     """"""
 
-    def download_teams(self):
-        # type: () -> ClientResult[AnyStr]
+    def download_teams(self) -> ClientResult[AnyStr]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(

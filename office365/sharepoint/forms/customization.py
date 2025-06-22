@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,8 +13,11 @@ if TYPE_CHECKING:
 class FormsCustomization(Entity):
 
     @staticmethod
-    def can_customize_forms(context, list_name, return_type=None):
-        # type: (ClientContext, str, Optional[ConnectorResult]) -> ConnectorResult
+    def can_customize_forms(
+        context: ClientContext,
+        list_name: str,
+        return_type: Optional[ConnectorResult] = None,
+    ) -> ConnectorResult:
         """"""
         if return_type is None:
             return_type = ConnectorResult(context)

@@ -7,8 +7,7 @@ class ChangeUser(Change):
     """Specifies a change on a user."""
 
     @property
-    def activate(self):
-        # type: () -> Optional[bool]
+    def activate(self) -> Optional[bool]:
         """
         Specifies whether a user has changed from an inactive state to an active state.
 
@@ -19,7 +18,6 @@ class ChangeUser(Change):
         return self.properties.get("Activate", None)
 
     @property
-    def user_id(self):
-        # type: () -> Optional[str]
+    def user_id(self) -> Optional[str]:
         """Uniquely identifies the changed user."""
         return self.properties.get("UserId", None)

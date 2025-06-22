@@ -1,11 +1,12 @@
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.kind import PermissionKind
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
+from office365.sharepoint.sharing.role_type import RoleType
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestRoles(SPTestCase):
-    target_object = None  # type: RoleDefinition
+    target_object: RoleDefinition = None
     role_name = "Create and Manage Alerts 123"
 
     def test1_create_role(self):
@@ -18,9 +19,13 @@ class TestRoles(SPTestCase):
         self.assertIsNotNone(result.resource_path)
         self.__class__.target_object = result
 
-    # def test2_get_by_type(self):
-    #    result = self.client.web.role_definitions.get_by_type(PermissionKind.CreateAlerts).get().execute_query()
-    #    self.assertIsNotNone(result.resource_path)
+    def test2_get_by_type(self):
+        result = (
+            self.client.web.role_definitions.get_by_type(RoleType.Contributor)
+            .get()
+            .execute_query()
+        )
+        self.assertIsNotNone(result.resource_path)
 
     def test3_get_by_name(self):
         result = (

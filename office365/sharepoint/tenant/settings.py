@@ -38,8 +38,7 @@ class TenantSettings(Entity):
         return self
 
     @property
-    def corporate_catalog_url(self):
-        # type: () -> Optional[str]
+    def corporate_catalog_url(self) -> Optional[str]:
         """Specifies the URL of the corporate catalog site collection."""
         return self.properties.get("CorporateCatalogUrl", None)
 

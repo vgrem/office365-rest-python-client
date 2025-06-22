@@ -9,20 +9,17 @@ class SiteHealthSummary(Entity):
     """Specifies a summary of the results of running a set of site collection sitehealth rules."""
 
     @property
-    def failed_error_count(self):
-        # type: () -> Optional[int]
+    def failed_error_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that failed with an error."""
         return self.properties.get("FailedErrorCount", None)
 
     @property
-    def failed_warning_count(self):
-        # type: () -> Optional[int]
+    def failed_warning_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that failed with a warning."""
         return self.properties.get("FailedWarningCount", None)
 
     @property
-    def passed_count(self):
-        # type: () -> Optional[int]
+    def passed_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that passed."""
         return self.properties.get("PassedCount", None)
 

@@ -15,8 +15,7 @@ class HubSiteProperties(Entity):
         )
 
     @property
-    def site_id(self):
-        # type: () -> Optional[str]
+    def site_id(self) -> Optional[str]:
         """Returns the Site identifier"""
         return self.properties.get("SiteId", None)
 

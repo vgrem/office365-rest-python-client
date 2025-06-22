@@ -21,23 +21,20 @@ class RoleDefinition(Entity):
         return self.properties.get("BasePermissions", BasePermissions())
 
     @property
-    def id(self):
-        # type: () -> Optional[int]
+    def id(self) -> Optional[int]:
         """Specifies the identifier of the role definition.
         Its value MUST be equal to or greater than 1073741824."""
         return self.properties.get("Id", None)
 
     @property
-    def role_type_kind(self):
-        # type: () -> Optional[int]
+    def role_type_kind(self) -> Optional[int]:
         """Specifies the type of the role definition.
         Its value MUST be equal to or greater than 0. Its value MUST be equal to or less than 5.
         """
         return self.properties.get("RoleTypeKind", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Gets a value that specifies the role definition name."""
         return self.properties.get("Name", None)
 
@@ -47,8 +44,7 @@ class RoleDefinition(Entity):
         self.set_property("Name", value)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """Gets or sets a value that specifies the description of the role definition."""
         return self.properties.get("Description", None)
 

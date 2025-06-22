@@ -41,14 +41,12 @@ class FollowedContent(Entity):
         return return_type
 
     @property
-    def followed_documents_url(self):
-        # type: () -> Optional[str]
+    def followed_documents_url(self) -> Optional[str]:
         """The FollowedDocumentsUrl property gets the location of the followed documents view."""
         return self.properties.get("FollowedDocumentsUrl", None)
 
     @property
-    def followed_sites_url(self):
-        # type: () -> Optional[str]
+    def followed_sites_url(self) -> Optional[str]:
         """The FollowedSitesUrl property gets the location of the followed sites view."""
         return self.properties.get("FollowedSitesUrl", None)
 

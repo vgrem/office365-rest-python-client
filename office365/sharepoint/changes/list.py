@@ -15,26 +15,22 @@ class ChangeList(Change):
         return "List: {0}".format(self.list_id)
 
     @property
-    def base_template(self):
-        # type: () -> Optional[int]
+    def base_template(self) -> Optional[int]:
         """An SP.ListTemplateType object that returns the list template type of the list."""
         return self.properties.get("BaseTemplate", None)
 
     @property
-    def editor(self):
-        # type: () -> Optional[str]
+    def editor(self) -> Optional[str]:
         """A string that returns the name of the user who modified the list."""
         return self.properties.get("Editor", None)
 
     @property
-    def hidden(self):
-        # type: () -> Optional[bool]
+    def hidden(self) -> Optional[bool]:
         """Returns a Boolean value that indicates whether a list is a hidden list."""
         return self.properties.get("Hidden", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """Identifies the changed list"""
         return self.properties.get("ListId", None)
 

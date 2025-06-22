@@ -10,8 +10,7 @@ class PickerEntityInformation(ClientObject):
     """Represents additional information about the principal."""
 
     @property
-    def total_member_count(self):
-        # type: () -> Optional[int]
+    def total_member_count(self) -> Optional[int]:
         """
         The count of members in a group. Valid when the principal is a SharePoint group or a security group.
         """

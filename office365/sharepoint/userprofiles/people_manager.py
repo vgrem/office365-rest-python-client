@@ -75,8 +75,9 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return result
 
-    def get_followers_for(self, account):
-        # type: (str|User) -> EntityCollection[PersonProperties]
+    def get_followers_for(
+        self, account: str | User
+    ) -> EntityCollection[PersonProperties]:
         """
         Gets the people who are following the specified user.
 
@@ -147,8 +148,9 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_user_profile_properties(self, user_or_name):
-        # type: (str|User) -> ClientResult[dict]
+    def get_user_profile_properties(
+        self, user_or_name: str | User
+    ) -> ClientResult[dict]:
         """
         Gets the specified user profile properties for the specified user.
 
@@ -156,8 +158,7 @@ class PeopleManager(Entity):
         """
         return_type = ClientResult(self.context, {})
 
-        def _user_resolved(account_name):
-            # type: (str) -> None
+        def _user_resolved(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(
                 self, "GetUserProfileProperties", params, None, None, return_type
@@ -174,8 +175,7 @@ class PeopleManager(Entity):
         """
         return_type = PersonProperties(self.context)
 
-        def _get_properties_for_inner(account_name):
-            # type: (str) -> None
+        def _get_properties_for_inner(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(
                 self, "GetPropertiesFor", params, None, None, return_type

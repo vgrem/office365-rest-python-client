@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
@@ -15,8 +17,11 @@ class SPPolicyStoreProxy(Entity):
     """ """
 
     @staticmethod
-    def check_site_is_deletable_by_id(context, site_id, return_type=None):
-        # type: (ClientContext, str, Optional[ClientResult[bool]]) -> ClientResult[bool]
+    def check_site_is_deletable_by_id(
+        context: ClientContext,
+        site_id: str,
+        return_type: Optional[ClientResult[bool]] = None,
+    ) -> ClientResult[bool]:
         """ """
         if return_type is None:
             return_type = ClientResult(context, bool())
@@ -34,8 +39,11 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def is_site_deletable(context, site_url, return_type=None):
-        # type: (ClientContext, str, Optional[ClientResult[bool]]) -> ClientResult[bool]
+    def is_site_deletable(
+        context: ClientContext,
+        site_url: str,
+        return_type: Optional[ClientResult[bool]] = None,
+    ) -> ClientResult[bool]:
         """ """
         if return_type is None:
             return_type = ClientResult(context, bool())
@@ -153,7 +161,11 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def lock_record_item(
-        context, list_url, item_id, refresh_labeled_time=None, return_type=None
+        context: ClientContext,
+        list_url: str,
+        item_id,
+        refresh_labeled_time=None,
+        return_type=None,
     ):
         """ """
         if return_type is None:

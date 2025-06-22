@@ -20,8 +20,7 @@ class MigrationTaskDefinition(ClientValue):
         self.TargetListName = target_list_name
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return (
             "Microsoft.Online.SharePoint.MigrationCenter.Common.MigrationTaskDefinition"
         )

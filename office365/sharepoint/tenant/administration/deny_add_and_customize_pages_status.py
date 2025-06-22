@@ -1,4 +1,7 @@
-class DenyAddAndCustomizePagesStatus:
+from enum import Enum
+
+
+class DenyAddAndCustomizePagesStatus(Enum):
     """Represents the status of DenyAddAndCustomizePages on a site collection."""
 
     Unknown = 0

@@ -20,20 +20,17 @@ class UserProfile(Entity):
         return self.account_name or self.entity_type_name
 
     @property
-    def account_name(self):
-        # type: () -> Optional[str]
+    def account_name(self) -> Optional[str]:
         """The account name of the user."""
         return self.properties.get("AccountName", None)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The title of the user."""
         return self.properties.get("DisplayName", None)
 
     @property
-    def follow_personal_site_url(self):
-        # type: () -> Optional[str]
+    def follow_personal_site_url(self) -> Optional[str]:
         """The FollowPersonalSiteUrl property specifies the URL to allow the current user to create a personal site.
         If there is no hybrid & cross-geo setting, it will return the same value as UrlToCreatePersonalSite,
         otherwise a URL to allow the current user to create a personal site on the remote host.
@@ -41,95 +38,80 @@ class UserProfile(Entity):
         return self.properties.get("FollowPersonalSiteUrl", None)
 
     @property
-    def is_default_document_library_blocked(self):
-        # type: () -> Optional[bool]
+    def is_default_document_library_blocked(self) -> Optional[bool]:
         """If true, indicates that the access of the user to the default document library in the user’s OneDrive
         is blocked."""
         return self.properties.get("IsDefaultDocumentLibraryBlocked", None)
 
     @property
-    def is_people_list_public(self):
-        # type: () -> Optional[bool]
+    def is_people_list_public(self) -> Optional[bool]:
         """Specifies whether the list of people that the user is following is public."""
         return self.properties.get("IsPeopleListPublic", None)
 
     @property
-    def is_privacy_setting_on(self):
-        # type: () -> Optional[bool]
+    def is_privacy_setting_on(self) -> Optional[bool]:
         """Specifies whether the privacy setting has been set for the site."""
         return self.properties.get("IsPrivacySettingOn", None)
 
     @property
-    def is_self(self):
-        # type: () -> Optional[bool]
+    def is_self(self) -> Optional[bool]:
         """Specifies whether the user profile is for the current user."""
         return self.properties.get("IsSelf", None)
 
     @property
-    def job_title(self):
-        # type: () -> Optional[str]
+    def job_title(self) -> Optional[str]:
         """Specifies the job title of the user."""
         return self.properties.get("JobTitle", None)
 
     @property
-    def my_site_first_run_experience(self):
-        # type: () -> Optional[int]
+    def my_site_first_run_experience(self) -> Optional[int]:
         """Specifies the personal site First Run flag of the user."""
         return self.properties.get("MySiteFirstRunExperience", None)
 
     @property
-    def my_site_host_url(self):
-        # type: () -> Optional[str]
+    def my_site_host_url(self) -> Optional[str]:
         """Specifies the URL for the personal site of the current user."""
         return self.properties.get("MySiteHostUrl", None)
 
     @property
-    def o15_first_run_experience(self):
-        # type: () -> Optional[int]
+    def o15_first_run_experience(self) -> Optional[int]:
         """Specifies the First Run flag of the user."""
         return self.properties.get("O15FirstRunExperience", None)
 
     @property
-    def personal_site_capabilities(self):
-        # type: () -> Optional[int]
+    def personal_site_capabilities(self) -> Optional[int]:
         """The PersonalSiteCapabilities property specifies attributes of the user's personal site."""
         return self.properties.get("PersonalSiteCapabilities", None)
 
     @property
-    def personal_site_first_creation_error(self):
-        # type: () -> Optional[str]
+    def personal_site_first_creation_error(self) -> Optional[str]:
         """Specifies the failure for the personal site first creation attempt."""
         return self.properties.get("PersonalSiteFirstCreationError", None)
 
     @property
-    def personal_site_first_creation_time(self):
-        # type: () -> Optional[datetime]
+    def personal_site_first_creation_time(self) -> Optional[datetime]:
         """Specifies the time for the personal site first creation attempt."""
         return self.properties.get("PersonalSiteFirstCreationTime", datetime.min)
 
     @property
-    def picture_url(self):
-        # type: () -> Optional[str]
+    def picture_url(self) -> Optional[str]:
         """Specifies the photo URL for the current user."""
         return self.properties.get("PictureUrl", None)
 
     @property
-    def public_url(self):
-        # type: () -> Optional[str]
+    def public_url(self) -> Optional[str]:
         """Specifies the public URL for the personal site of the current user."""
         return self.properties.get("PublicUrl", None)
 
     @property
-    def url_to_create_personal_site(self):
-        # type: () -> Optional[str]
+    def url_to_create_personal_site(self) -> Optional[str]:
         """
         The UrlToCreatePersonalSite property specifies the URL to allow the current user to create a personal site.
         """
         return self.properties.get("UrlToCreatePersonalSite", None)
 
     @property
-    def followed_content(self):
-        # type: () -> FollowedContent
+    def followed_content(self) -> FollowedContent:
         """Gets a FollowedContent object for the user."""
         return self.properties.get(
             "FollowedContent",
@@ -139,8 +121,7 @@ class UserProfile(Entity):
         )
 
     @property
-    def personal_site(self):
-        # type: () -> Site
+    def personal_site(self) -> Site:
         """The PersonalSite property specifies the user's personal site"""
         return self.properties.get(
             "PersonalSite",

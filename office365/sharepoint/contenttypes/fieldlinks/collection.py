@@ -1,3 +1,5 @@
+from typing import Union
+
 from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -13,9 +15,9 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
     """Specifies a Collection for field links."""
 
     def __init__(self, context, resource_path=None):
-        super(FieldLinkCollection, self).__init__(context, FieldLink, resource_path)
+        super().__init__(context, FieldLink, resource_path)
 
-    def add(self, field):
+    def add(self, field: Union[str, Field]) -> FieldLink:
         """
         Add a field link with the specified link information to the collection.
         A reference to the SP.Field that was added is returned.
@@ -23,8 +25,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         :param str or office365.sharepoint.fields.field.Field field: Specifies the internal name of the field or type
         """
 
-        def _add(field_internal_name):
-            # type: (str) -> None
+        def _add(field_internal_name: str) -> None:
             return_type.set_property("FieldInternalName", field_internal_name)
             qry = CreateEntityQuery(self, return_type, return_type)
             self.context.add_query(qry)
@@ -53,8 +54,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
             self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
         )
 
-    def reorder(self, internal_names):
-        # type: (list[str]) -> Self
+    def reorder(self, internal_names: list[str]) -> Self:
         """
         Rearranges the collection of field links in the order in which field internal names are specified.
 

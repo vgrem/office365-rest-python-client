@@ -94,7 +94,7 @@ class List(SecurableObject):
 
         return ListExporter.export(self, local_file, include_content, item_exported)
 
-    def can_customize_forms(self):
+    def can_customize_forms(self) -> ConnectorResult:
         """"""
         from office365.sharepoint.flows.connector_result import ConnectorResult
         from office365.sharepoint.forms.customization import FormsCustomization

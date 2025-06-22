@@ -7,13 +7,11 @@ class SPOWebAppServicePrincipalPermissionRequest(Entity):
     """ """
 
     @property
-    def client_component_item_unique_id(self):
-        # type: () -> Optional[str]
+    def client_component_item_unique_id(self) -> Optional[str]:
         return self.properties.get("ClientComponentItemUniqueId", False)
 
     @property
-    def is_domain_isolated(self):
-        # type: () -> Optional[bool]
+    def is_domain_isolated(self) -> Optional[bool]:
         return self.properties.get("IsDomainIsolated", False)
 
     @property

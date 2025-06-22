@@ -22,8 +22,7 @@ class PersonalCache(Entity):
         return self
 
     @property
-    def cache_name(self):
-        # type: () -> Optional[str]
+    def cache_name(self) -> Optional[str]:
         """"""
         return self.properties.get("CacheName", None)
 

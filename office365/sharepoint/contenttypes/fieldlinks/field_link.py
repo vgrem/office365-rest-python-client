@@ -17,25 +17,21 @@ class FieldLink(Entity):
         return self.properties.get("FieldInternalName", None)
 
     @property
-    def read_only(self):
-        # type: () -> Optional[bool]
+    def read_only(self) -> Optional[bool]:
         """ """
         return self.properties.get("ReadOnly", None)
 
     @property
-    def hidden(self):
-        # type: () -> Optional[bool]
+    def hidden(self) -> Optional[bool]:
         """Gets a value that specifies whether the field is displayed in forms that can be edited."""
         return self.properties.get("Hidden", None)
 
     @property
-    def required(self):
-        # type: () -> Optional[bool]
+    def required(self) -> Optional[bool]:
         """Gets a value that specifies whether the field (2) requires a value."""
         return self.properties.get("Required", None)
 
     @property
-    def show_in_display_form(self):
-        # type: () -> Optional[bool]
+    def show_in_display_form(self) -> Optional[bool]:
         """A Boolean value that indicates whether this field is shown in the display form."""
         return self.properties.get("ShowInDisplayForm", None)

@@ -34,18 +34,15 @@ class Office365Tenant(Entity):
         super(Office365Tenant, self).__init__(context, static_path)
 
     @property
-    def addressbar_link_permission(self):
-        # type: () -> Optional[int]
+    def addressbar_link_permission(self) -> Optional[int]:
         return self.properties.get("AddressbarLinkPermission", None)
 
     @property
-    def allow_comments_text_on_email_enabled(self):
-        # type: () -> Optional[bool]
+    def allow_comments_text_on_email_enabled(self) -> Optional[bool]:
         return self.properties.get("AllowCommentsTextOnEmailEnabled", None)
 
     @property
-    def allow_editing(self):
-        # type: () -> Optional[bool]
+    def allow_editing(self) -> Optional[bool]:
         return self.properties.get("AllowEditing", None)
 
     @property
@@ -108,11 +105,10 @@ class Office365Tenant(Entity):
 
     def set_block_download_file_type_policy_data(
         self,
-        block_download_file_type_policy,
-        file_type_ids,
-        excluded_block_download_group_ids,
-    ):
-        # type: (bool, list[int], list[str]) -> Self
+        block_download_file_type_policy: bool,
+        file_type_ids: list[int],
+        excluded_block_download_group_ids: list[str],
+    ) -> Self:
         """"""
         payload = {
             "blockDownloadFileTypePolicy": block_download_file_type_policy,

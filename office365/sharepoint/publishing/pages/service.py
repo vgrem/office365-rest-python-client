@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
@@ -31,8 +33,7 @@ class SitePageService(Entity):
         super(SitePageService, self).__init__(context, resource_path)
 
     @property
-    def pages(self):
-        # type: () -> SitePageCollection
+    def pages(self) -> SitePageCollection:
         """Gets the SitePageCollection for the current web."""
         return self.properties.get(
             "pages",
@@ -40,8 +41,7 @@ class SitePageService(Entity):
         )
 
     @property
-    def communication_site(self):
-        # type: () -> CommunicationSite
+    def communication_site(self) -> CommunicationSite:
         """Gets a CommunicationSite for the current web."""
         return self.properties.get(
             "CommunicationSite",
@@ -54,18 +54,15 @@ class SitePageService(Entity):
     def entity_type_name(self):
         return "SP.Publishing.SitePageService"
 
-    def create_page(self, title, language=None):
-        # type: (str, Optional[str]) -> SitePage
+    def create_page(self, title: str, language: Optional[str] = None) -> SitePage:
         """Create a new sitePage in the site pages list in a site.
         :param str title: The title of Site Page
         :param str language: The language of the Site Page.
         """
 
-        def _page_created(return_type):
-            # type: (SitePage) -> None
+        def _page_created(return_type: SitePage) -> None:
 
-            def _draft_saved(result):
-                # type: (ClientResult[bool]) -> None
+            def _draft_saved(result: ClientResult[bool]) -> None:
                 return_type.get()
 
             return_type.save_draft(title=title).after_execute(
@@ -80,11 +77,9 @@ class SitePageService(Entity):
         :param str title: The title of Site Page
         """
 
-        def _page_created(return_type):
-            # type: (SitePage) -> None
+        def _page_created(return_type: SitePage) -> None:
 
-            def _page_published(result):
-                # type: (ClientResult[bool]) -> None
+            def _page_published(result: ClientResult[bool]) -> None:
                 pass
 
             return_type.publish().after_execute(_page_published)
@@ -116,8 +111,9 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def get_current_user_memberships(context, scenario=None):
-        # type: (ClientContext, Optional[str]) -> ClientResult[StringCollection]
+    def get_current_user_memberships(
+        context: ClientContext, scenario: Optional[str] = None
+    ) -> ClientResult[StringCollection]:
         return_type = ClientResult(context, StringCollection())
         svc = SitePageService(context)
         qry = ServiceOperationQuery(
@@ -127,8 +123,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def get_time_zone(context, city_name):
-        # type: (ClientContext, str) -> PrimaryCityTime
+    def get_time_zone(context: ClientContext, city_name: str) -> PrimaryCityTime:
         """
         Gets time zone data for specified city.
         :param office365.sharepoint.client_context.ClientContext context:
@@ -144,8 +139,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def compute_file_name(context, title):
-        # type: (ClientContext, str) -> ClientResult[str]
+    def compute_file_name(context: ClientContext, title: str) -> ClientResult[str]:
         """
         :param office365.sharepoint.client_context.ClientContext context: Client context
         :param str title: The title of the page.
@@ -180,8 +174,9 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def is_file_picker_external_image_search_enabled(context):
-        # type: (ClientContext) -> ClientResult[bool]
+    def is_file_picker_external_image_search_enabled(
+        context: ClientContext,
+    ) -> ClientResult[bool]:
         return_type = ClientResult(context)
         binding_type = SitePageService(context)
         qry = ServiceOperationQuery(
@@ -197,8 +192,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def org_assets(context):
-        # type: (ClientContext) -> ClientResult[OrgAssets]
+    def org_assets(context: ClientContext) -> ClientResult[OrgAssets]:
         return_type = ClientResult(context, OrgAssets())
         svc = SitePageService(context)
         qry = ServiceOperationQuery(
@@ -208,8 +202,9 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def file_picker_tab_options(context):
-        # type: (ClientContext) -> ClientResult[FilePickerOptions]
+    def file_picker_tab_options(
+        context: ClientContext,
+    ) -> ClientResult[FilePickerOptions]:
         return_type = ClientResult(context, FilePickerOptions())
         svc = SitePageService(context)
         qry = ServiceOperationQuery(

@@ -75,8 +75,7 @@ class SPSiteManager(Entity):
             self, "Status", None, {"url": site_url}, None, response
         )
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Get
             request.url += "?url='{0}'".format(site_url)
 

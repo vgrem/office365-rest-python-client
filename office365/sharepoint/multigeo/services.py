@@ -26,8 +26,9 @@ class MultiGeoServices(Entity):
         )
         super(MultiGeoServices, self).__init__(context, static_path)
 
-    def user_personal_site_location(self, user_principal_name):
-        # type: (str) -> UserPersonalSiteLocation
+    def user_personal_site_location(
+        self, user_principal_name: str
+    ) -> UserPersonalSiteLocation:
         return_type = UserPersonalSiteLocation(self.context)
         qry = ServiceOperationQuery(
             self,
@@ -41,8 +42,7 @@ class MultiGeoServices(Entity):
         return return_type
 
     @property
-    def storage_quotas(self):
-        # type: () -> EntityCollection[UnifiedGroup]
+    def storage_quotas(self) -> EntityCollection[UnifiedGroup]:
         """ """
         return self.properties.get(
             "StorageQuotas",
@@ -54,8 +54,7 @@ class MultiGeoServices(Entity):
         )
 
     @property
-    def unified_groups(self):
-        # type: () -> EntityCollection[UnifiedGroup]
+    def unified_groups(self) -> EntityCollection[UnifiedGroup]:
         """ """
         return self.properties.get(
             "UnifiedGroups",

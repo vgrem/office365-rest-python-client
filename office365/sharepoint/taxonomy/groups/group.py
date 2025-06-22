@@ -22,8 +22,7 @@ class TermGroup(TaxonomyItem):
         """
         return_type = TermSetCollection(self.context)
 
-        def _sets_loaded(col):
-            # type: (TermSetCollection) -> None
+        def _sets_loaded(col: TermSetCollection) -> None:
             [
                 return_type.add_child(ts)
                 for ts in col
@@ -37,8 +36,7 @@ class TermGroup(TaxonomyItem):
         return return_type
 
     @property
-    def term_sets(self):
-        # type: () -> TaxonomyItemCollection[TermSet]
+    def term_sets(self) -> TaxonomyItemCollection[TermSet]:
         """
         Gets a collection of the child TermSet instances of this TermGroup object.
         """
@@ -50,8 +48,7 @@ class TermGroup(TaxonomyItem):
         )
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Gets the name of the Term Group"""
         return self.properties.get("displayName", None)
 

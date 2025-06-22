@@ -28,8 +28,7 @@ class SharingInformation(Entity):
         return self.properties.get("accessRequestSettings", AccessRequestSettings())
 
     @property
-    def anonymous_link_expiration_restriction_days(self):
-        # type: () -> Optional[int]
+    def anonymous_link_expiration_restriction_days(self) -> Optional[int]:
         """Tenant's anonymous link expiration restriction in days."""
         return self.properties.get("anonymousLinkExpirationRestrictionDays", None)
 

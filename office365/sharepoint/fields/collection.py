@@ -301,7 +301,7 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_id(self, id_: str) -> Field:
+    def get_by_id(self, id_: str) -> T:
         """
         Gets the fields with the specified ID.
 
@@ -311,7 +311,7 @@ class FieldCollection(EntityCollection[Field]):
             self.context, ServiceOperationPath("getById", [id_], self.resource_path)
         )
 
-    def get_by_internal_name_or_title(self, value: str) -> Field:
+    def get_by_internal_name_or_title(self, value: str) -> T:
         """Returns the first field in the collection based on the internal name or the title specified
         by the parameter.
 
@@ -324,7 +324,7 @@ class FieldCollection(EntityCollection[Field]):
             ),
         )
 
-    def get_by_title(self, title: str) -> Field:
+    def get_by_title(self, title: str) -> T:
         """
         Returns the first fields object in the collection based on the title of the specified fields.
 
@@ -349,7 +349,12 @@ class FieldCollection(EntityCollection[Field]):
         from office365.sharepoint.webs.web import Web
 
         if self._parent is None:
-            raise ValueError("Parent is not initialized")
+            raise RuntimeError(
+                "This collection must be associated with either:\n"
+                "1. A SharePoint List (for list fields)\n"
+                "2. A SharePoint Web (for site fields)\n"
+                "Current parent is not initialized."
+            )
 
         if isinstance(self._parent, (Web, List)):
             return cast(Union[Web, List], self._parent)

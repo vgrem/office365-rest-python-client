@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import uuid
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, cast
 
 from office365.sharepoint.fields.lookup import FieldLookup
+from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
 from office365.sharepoint.taxonomy.create_xml_parameters import (
     TaxonomyFieldCreateXmlParameters,
 )
+
+if TYPE_CHECKING:
+    from office365.sharepoint.fields.collection import FieldCollection
 
 
 class TaxonomyField(FieldLookup):
@@ -71,14 +77,14 @@ class TaxonomyField(FieldLookup):
 
                 fields.context.web.ensure_property("Id", _web_loaded)
 
-        def _after_text_field_created(text_field):
+        def _text_field_created(text_field: FieldMultiLineText) -> None:
             params.text_field_id = text_field.id
             _create_taxonomy_field_inner()
 
-        return_type._create_text_field(name).after_execute(_after_text_field_created)
+        return_type._create_text_field(name).after_execute(_text_field_created)
         return return_type
 
-    def _create_text_field(self, name):
+    def _create_text_field(self, name: str):
         """Creates hidden text field"""
         text_field_name = "{name}".format(name=uuid.uuid4().hex)
         text_field_schema = """
@@ -91,14 +97,12 @@ class TaxonomyField(FieldLookup):
         return self.parent_collection.create_field_as_xml(text_field_schema)
 
     @property
-    def anchor_id(self):
-        # type: () -> Optional[str]
+    def anchor_id(self) -> Optional[str]:
         """Gets or sets the GUID of the anchor Term object for a TaxonomyField object."""
         return self.properties.get("AnchorId", None)
 
     @property
-    def create_values_in_edit_form(self):
-        # type: () -> Optional[bool]
+    def create_values_in_edit_form(self) -> Optional[bool]:
         """
         Specifies a Boolean value that specifies whether the new Term  objects can be added to the
         TermSet while typing in the TaxonomyField editor control.
@@ -106,20 +110,17 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("CreateValuesInEditForm", None)
 
     @property
-    def is_anchor_valid(self):
-        # type: () -> Optional[bool]
+    def is_anchor_valid(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether the Term object identified by the AnchorId property is valid."""
         return self.properties.get("IsAnchorValid", None)
 
     @property
-    def is_doc_tags_enabled(self):
-        # type: () -> Optional[bool]
+    def is_doc_tags_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("IsDocTagsEnabled", None)
 
     @property
-    def is_keyword(self):
-        # type: () -> Optional[bool]
+    def is_keyword(self) -> Optional[bool]:
         """
         Specifies a Boolean value that indicates whether the TaxonomyField value points to the
         keywords term set  object.
@@ -127,8 +128,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("IsKeyword", None)
 
     @property
-    def is_path_rendered(self):
-        # type: () -> Optional[bool]
+    def is_path_rendered(self) -> Optional[bool]:
         """
         Specifies a Boolean value that specifies whether the default Label objects of all the parent
         Term objects of a Term in the TaxonomyField object will be rendered in
@@ -137,8 +137,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("IsPathRendered", None)
 
     @property
-    def is_term_set_valid(self):
-        # type: () -> Optional[bool]
+    def is_term_set_valid(self) -> Optional[bool]:
         """
         Gets a Boolean value that specifies whether the TermSet object identified by the TermSetId
         property exists and is available for tagging.
@@ -146,8 +145,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("IsTermSetValid", None)
 
     @property
-    def open(self):
-        # type: () -> Optional[bool]
+    def open(self) -> Optional[bool]:
         """
         Specifies a Boolean value that specifies whether the TaxonomyField object is linked to an
         open TermSet (section 3.1.5.20) object or a closed TermSet.
@@ -155,8 +153,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("Open", None)
 
     @property
-    def ssp_id(self):
-        # type: () -> Optional[str]
+    def ssp_id(self) -> Optional[str]:
         """
         Specifies the GUID that identifies the TermStore object, which contains the Enterprise
         keywords for the site that the current TaxonomyField belongs to.
@@ -164,8 +161,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("SspId", None)
 
     @property
-    def target_template(self):
-        # type: () -> Optional[str]
+    def target_template(self) -> Optional[str]:
         """
         Specifies the Web-relative Uniform Resource Locator (URL) of the target page that is used to construct the
         hyperlink on each Term object when the TaxonomyField (section 3.1.5.27) object is rendered.
@@ -173,8 +169,7 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("TargetTemplate", None)
 
     @property
-    def term_set_id(self):
-        # type: () -> Optional[str]
+    def term_set_id(self) -> Optional[str]:
         """
         Specifies the GUID of the TermSet object that contains the Term
         objects used by the current TaxonomyField () object.
@@ -182,26 +177,28 @@ class TaxonomyField(FieldLookup):
         return self.properties.get("TermSetId", None)
 
     @property
-    def text_field_id(self):
-        # type: () -> Optional[str]
+    def text_field_id(self) -> Optional[str]:
         """Gets the GUID that identifies the hidden text field in an item."""
         return self.properties.get("TextField", None)
 
     @property
-    def text_field(self):
-        """Gets the hidden text field in an item.
-        :rtype: office365.sharepoint.fields.multi_line_text.FieldMultiLineText
-        """
+    def text_field(self) -> FieldMultiLineText:
+        """Gets the hidden text field in an item."""
         return self.parent_collection.parent.fields.get_by_id(self.text_field_id)
 
     @property
-    def user_created(self):
-        # type: () -> Optional[bool]
+    def user_created(self) -> Optional[bool]:
         """
         Specifies a Boolean value that specifies whether the TaxonomyField object is linked to a
         customized TermSet object.
         """
         return self.properties.get("UserCreated", None)
+
+    @property
+    def parent_collection(self) -> FieldCollection:
+        from office365.sharepoint.fields.collection import FieldCollection
+
+        return cast(FieldCollection, self._parent_collection)
 
     @property
     def entity_type_name(self):

@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
@@ -13,19 +14,17 @@ from office365.sharepoint.taxonomy.terms.term import Term
 class TermStore(TaxonomyItem):
     """Represents a hierarchical or flat set of Term objects known as a 'TermSet'."""
 
-    def get_term_sets_by_name(self, label, lcid=1033):
+    def get_term_sets_by_name(self, label: str, lcid: int = 1033) -> TermSetCollection:
         """
         This method retrieves a collection of all TermSet objects in this TermStore
         that the current user has permissions to read that have a matching TermSet name in the provided LCID.
         """
         return_type = TermSetCollection(self.context)
 
-        def _sets_loaded(sets):
-            # type: (TermSetCollection) -> None
+        def _sets_loaded(sets: TermSetCollection) -> None:
             [return_type.add_child(ts) for ts in sets]
 
-        def _groups_loaded(col):
-            # type: (TermGroupCollection) -> None
+        def _groups_loaded(col: TermGroupCollection) -> None:
             [
                 grp.get_term_sets_by_name(label, lcid).after_execute(_sets_loaded)
                 for grp in col
@@ -57,8 +56,7 @@ class TermStore(TaxonomyItem):
         return return_type
 
     @property
-    def default_language_tag(self):
-        # type: () -> Optional[str]
+    def default_language_tag(self) -> Optional[str]:
         """Gets or sets the LCID of the default working language."""
         return self.properties.get("defaultLanguageTag", None)
 
@@ -68,8 +66,7 @@ class TermStore(TaxonomyItem):
         return self.properties.get("languageTags", StringCollection())
 
     @property
-    def term_groups(self):
-        # type: () -> TermGroupCollection
+    def term_groups(self) -> TermGroupCollection:
         """Gets a collection of the child Group objects"""
         return self.properties.get(
             "termGroups",

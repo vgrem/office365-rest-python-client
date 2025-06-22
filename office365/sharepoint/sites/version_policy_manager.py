@@ -10,13 +10,12 @@ class SiteVersionPolicyManager(Entity):
     """"""
 
     @property
-    def major_version_limit(self):
-        # type: () -> Optional[int]
+    def major_version_limit(self) -> Optional[int]:
         """ """
         return self.properties.get("MajorVersionLimit", None)
 
     @property
-    def version_policies(self):
+    def version_policies(self) -> VersionPolicyManager:
         return self.properties.get(
             "VersionPolicies",
             VersionPolicyManager(

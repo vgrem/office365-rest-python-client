@@ -21,14 +21,12 @@ class DocumentSet(Folder):
 
         return_type = DocumentSet(context)
 
-        def _create(target_list):
-            # type: (List) -> None
+        def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
             folder_url = parent_folder.serverRelativeUrl + "/" + name
             return_type.set_property("ServerRelativeUrl", folder_url)
 
-            def _construct_request(request):
-                # type: (RequestOptions) -> None
+            def _construct_request(request: RequestOptions) -> None:
                 list_name = target_list.title.replace(" ", "")
                 request.url = r"{0}/_vti_bin/listdata.svc/{1}".format(
                     context.base_url, list_name

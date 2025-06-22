@@ -15,14 +15,12 @@ class ConnectionSettings(Entity):
         super(ConnectionSettings, self).__init__(context, resource_path)
 
     @property
-    def authentication_mode(self):
-        # type: () -> Optional[str]
+    def authentication_mode(self) -> Optional[str]:
         """The authentication mode used by the endpoint"""
         return self.properties.get("AuthenticationMode", None)
 
     @property
-    def parent_name(self):
-        # type: () -> Optional[str]
+    def parent_name(self) -> Optional[str]:
         """The unique name used to identify the parent of the endpoint"""
         return self.properties.get("parentName", None)
 

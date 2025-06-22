@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -12,15 +14,14 @@ class MigrationUrlParser(Entity):
 
     def __init__(
         self,
-        context,
-        user_input_destination_url,
-        retrive_all_lists,
-        retrieve_all_lists_sub_folders,
-        force_my_site_default_list,
-        migration_type,
-        current_context_site_subscription_id,
-    ):
-        # type: (ClientContext, str, bool, bool, bool, str, str) -> None
+        context: ClientContext,
+        user_input_destination_url: str,
+        retrive_all_lists: bool,
+        retrieve_all_lists_sub_folders: bool,
+        force_my_site_default_list: bool,
+        migration_type: str,
+        current_context_site_subscription_id: str,
+    ) -> None:
         static_path = ServiceOperationPath(
             "SP.AppContextSite",
             {

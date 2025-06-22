@@ -9,8 +9,7 @@ class SharingPermissionInformation(Entity):
     """
 
     @property
-    def is_default_permission(self):
-        # type: () -> Optional[bool]
+    def is_default_permission(self) -> Optional[bool]:
         """
         Identifies whether or not the permission entity is a default SP.Group or role (meaning it is recommended
         for granting permissions).
@@ -27,8 +26,7 @@ class SharingPermissionInformation(Entity):
         return self.properties.get("IsDefaultPermission", None)
 
     @property
-    def permission_id(self):
-        # type: () -> Optional[str]
+    def permission_id(self) -> Optional[str]:
         """Gets the ID of this permission in the following formats: group:x, role: xxxxxx."""
         return self.properties.get("PermissionId", None)
 

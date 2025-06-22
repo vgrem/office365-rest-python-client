@@ -9,8 +9,7 @@ class Audit(Entity):
     """
 
     @property
-    def allow_designer(self):
-        # type: () -> Optional[bool]
+    def allow_designer(self) -> Optional[bool]:
         """
         Specifies whether a designer can be used on this site collection.
         See Microsoft.SharePoint.Client.Web.AllowDesignerForCurrentUser, which is the scalar property used

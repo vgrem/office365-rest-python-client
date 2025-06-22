@@ -12,16 +12,14 @@ class LimitedWebPartManager(Entity):
     """Provides operations to access and modify the existing Web Parts on a Web Part Page, and add new ones
     to the Web Part Page."""
 
-    def export_web_part(self, web_part):
-        # type: (str or WebPartDefinition) -> ClientResult[str]
+    def export_web_part(self, web_part: str or WebPartDefinition) -> ClientResult[str]:
         """Exports the specified Web Part, given its ID.
         :param str or WebPartDefinition web_part: The WebPartDefinition or  Id of the Web Part to export.
         """
         return_type = ClientResult(self.context, str())
         self.web_parts.add_child(return_type)
 
-        def _export_web_part(web_part_id):
-            # type: (str) -> None
+        def _export_web_part(web_part_id: str) -> None:
             params = {"webPartId": web_part_id}
             qry = ServiceOperationQuery(
                 self, "ExportWebPart", params, None, None, return_type

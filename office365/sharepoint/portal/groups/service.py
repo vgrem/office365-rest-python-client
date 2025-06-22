@@ -10,9 +10,12 @@ from office365.sharepoint.entity import Entity
 
 class GroupService(Entity):
     def get_group_image(
-        self, group_id, image_hash=None, image_color=None, return_type=None
-    ):
-        # type: (str, str, str, ClientResult) -> ClientResult[AnyStr]
+        self,
+        group_id: str,
+        image_hash: str = None,
+        image_color: str = None,
+        return_type: ClientResult = None,
+    ) -> ClientResult[AnyStr]:
         if return_type is None:
             return_type = ClientResult(self.context)
         if image_hash is None:
@@ -21,8 +24,7 @@ class GroupService(Entity):
             self, "GetGroupImage", None, None, None, return_type
         )
 
-        def _create_request(request):
-            # type: (RequestOptions) -> None
+        def _create_request(request: RequestOptions) -> None:
             request.url += "?id='{0}'&hash={1}".format(group_id, image_hash)
             request.method = HttpMethod.Get
 

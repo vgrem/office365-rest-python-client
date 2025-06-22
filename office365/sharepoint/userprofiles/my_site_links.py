@@ -24,8 +24,7 @@ class MySiteLinks(Entity):
         return return_type
 
     @property
-    def all_documents_link(self):
-        # type: () -> Optional[str]
+    def all_documents_link(self) -> Optional[str]:
         """
         This property value is the URL of the user’s document library on their personal site. This property value is
         null if the user does not have a personal site or the user does not have a document library in their personal
@@ -34,8 +33,7 @@ class MySiteLinks(Entity):
         return self.properties.get("AllDocumentsLink", None)
 
     @property
-    def all_sites_link(self):
-        # type: () -> Optional[str]
+    def all_sites_link(self) -> Optional[str]:
         """
         This property value is the URL of the user’s followed sites view on their personal site.  This property value
         is null if the user does not have a personal site or social features are not enabled on their personal site.

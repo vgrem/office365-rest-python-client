@@ -14,8 +14,13 @@ from office365.sharepoint.tenant.administration.datagovernance.client_base impor
 class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
     """"""
 
-    def __init__(self, context, authorization_header, url, user_agent):
-        # type: (ClientContext, str, str, str) -> None
+    def __init__(
+        self,
+        context: ClientContext,
+        authorization_header: str,
+        url: str,
+        user_agent: str,
+    ) -> None:
         static_path = ServiceOperationPath(
             "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightRestApiClient",
             {

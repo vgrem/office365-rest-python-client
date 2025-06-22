@@ -48,8 +48,7 @@ class TenantCorporateCatalogAccessor(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def app_from_path(self, path, overwrite):
-        # type: (str, bool) -> File
+    def app_from_path(self, path: str, overwrite: bool) -> File:
         """
         Adds a file to the corporate catalog.
         """

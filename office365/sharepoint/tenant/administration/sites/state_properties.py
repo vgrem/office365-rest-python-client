@@ -4,17 +4,16 @@ from office365.runtime.client_value import ClientValue
 class SiteStateProperties(ClientValue):
     def __init__(
         self,
-        GroupSiteRelationship=None,
-        IsArchived=None,
-        IsSiteOnHold=None,
-        LockState=None,
-    ):
-        # type: (int, bool, bool, int) -> None
-        super(SiteStateProperties, self).__init__()
-        self.GroupSiteRelationship = GroupSiteRelationship
-        self.IsArchived = IsArchived
-        self.IsSiteOnHold = IsSiteOnHold
-        self.LockState = LockState
+        group_site_relationship: int = None,
+        is_archived: bool = None,
+        is_site_on_hold: bool = None,
+        lock_state: int = None,
+    ) -> None:
+        super().__init__()
+        self.GroupSiteRelationship = group_site_relationship
+        self.IsArchived = is_archived
+        self.IsSiteOnHold = is_site_on_hold
+        self.LockState = lock_state
 
     @property
     def entity_type_name(self):

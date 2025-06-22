@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteCreationDefaultStorageQuota(ClientValue):
-    def __init__(self, IsReadOnly=None, Value=None):
-        # type: (bool, int) -> None
+    def __init__(self, IsReadOnly: bool = None, Value: int = None) -> None:
         self.IsReadOnly = IsReadOnly
         self.Value = Value
 

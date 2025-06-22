@@ -236,38 +236,32 @@ class SitePage(SitePageMetadata):
         return return_type
 
     @property
-    def canvas_content(self):
-        # type: () -> Optional[str]
+    def canvas_content(self) -> Optional[str]:
         """Gets the CanvasContent1 for the current Site Page"""
         return self.properties.get("CanvasContent1", None)
 
     @property
-    def language(self):
-        # type: () -> Optional[str]
+    def language(self) -> Optional[str]:
         """Gets the Language for the Site Page."""
         return self.properties.get("Language", None)
 
     @canvas_content.setter
-    def canvas_content(self, value):
-        # type: (str) -> None
+    def canvas_content(self, value: str) -> None:
         """Sets the CanvasContent1 for the current Site Page"""
         self.set_property("CanvasContent1", value)
 
     @property
-    def layout_web_parts_content(self):
-        # type: () -> Optional[str]
+    def layout_web_parts_content(self) -> Optional[str]:
         """Gets the LayoutWebPartsContent field for the current Site Page."""
         return self.properties.get("LayoutWebpartsContent", None)
 
     @layout_web_parts_content.setter
-    def layout_web_parts_content(self, value):
-        # type: (str) -> None
+    def layout_web_parts_content(self, value: str) -> None:
         """Sets the LayoutWebPartsContent field for the current Site Page."""
         self.set_property("LayoutWebpartsContent", value)
 
     @property
-    def translations(self):
-        # type: () -> TranslationStatusCollection
+    def translations(self) -> TranslationStatusCollection:
         return self.properties.get(
             "Translations",
             TranslationStatusCollection(
@@ -276,6 +270,5 @@ class SitePage(SitePageMetadata):
         )
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage"

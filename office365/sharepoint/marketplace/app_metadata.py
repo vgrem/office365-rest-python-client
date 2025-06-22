@@ -41,38 +41,32 @@ class CorporateCatalogAppMetadata(Entity):
         return self
 
     @property
-    def aad_permissions(self):
-        # type: () -> Optional[str]
+    def aad_permissions(self) -> Optional[str]:
         """ """
         return self.properties.get("AadPermissions", None)
 
     @property
-    def app_catalog_version(self):
-        # type: () -> Optional[str]
+    def app_catalog_version(self) -> Optional[str]:
         """The version of the app stored in the corporate catalog."""
         return self.properties.get("AppCatalogVersion", None)
 
     @property
-    def can_upgrade(self):
-        # type: () -> Optional[bool]
+    def can_upgrade(self) -> Optional[bool]:
         """Whether an existing instance of an app can be upgraded."""
         return self.properties.get("CanUpgrade", None)
 
     @property
-    def is_client_side_solution(self):
-        # type: () -> Optional[bool]
+    def is_client_side_solution(self) -> Optional[bool]:
         """Whether the app is a client-side solution."""
         return self.properties.get("IsClientSideSolution", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """The title of the app."""
         return self.properties.get("Title", None)
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """The identifier of the app."""
         return self.properties.get("ID", None)
 

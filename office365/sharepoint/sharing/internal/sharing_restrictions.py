@@ -17,6 +17,5 @@ class SharingRestrictions(Entity):
         return self.properties.get("anonymousLinkUseLimit", CAnonymousLinkUseLimit())
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Sharing.Internal.SharingRestrictions"

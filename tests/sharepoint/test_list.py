@@ -119,9 +119,9 @@ class TestSPList(SPTestCase):
         self.assertEqual(len(result), 1)
 
     def test_13_get_list_permissions(self):
-        current_user = self.client.web.current_user
+        user = self.client.web.current_user
         result = self.__class__.target_list.get_user_effective_permissions(
-            current_user
+            user
         ).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 

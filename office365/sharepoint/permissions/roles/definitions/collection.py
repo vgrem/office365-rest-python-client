@@ -1,22 +1,30 @@
+from typing_extensions import Self
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.roles.definitions.creation_information import (
     RoleDefinitionCreationInformation,
 )
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
+from office365.sharepoint.sharing.role_type import RoleType
 
 
 class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
     """Represents the collection of role definitions that are available within the site"""
 
     def __init__(self, context, resource_path=None):
-        super(RoleDefinitionCollection, self).__init__(
-            context, RoleDefinition, resource_path
-        )
+        super().__init__(context, RoleDefinition, resource_path)
 
-    def add(self, base_permissions, name, description=None, order=None):
+    def add(
+        self,
+        base_permissions: BasePermissions,
+        name: str,
+        description: str = None,
+        order: int = None,
+    ):
         """
         Adds a new role definition to the collection, based on the passed parameter.
 
@@ -35,7 +43,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self.context.add_query(qry)
         return return_type
 
-    def recreate_missing_default_role_definitions(self):
+    def recreate_missing_default_role_definitions(self) -> Self:
         """
         Recreates missing default role definitions. Requires that Microsoft.SharePoint.SPWeb has unique
         role definitions.
@@ -44,7 +52,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self.context.add_query(qry)
         return self
 
-    def remove_all(self):
+    def remove_all(self) -> Self:
         """
         Removes all role definitions.
         """
@@ -52,7 +60,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self.context.add_query(qry)
         return self
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> RoleDefinition:
         """Returns the role definition matching the name provided.
 
         :param str name: Specifies name of role definition.
@@ -61,24 +69,24 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
             self.context, ServiceOperationPath("GetByName", [name], self.resource_path)
         )
 
-    def get_by_id(self, _id):
+    def get_by_id(self, id_) -> RoleDefinition:
         """
         Retrieves the role definition with the specified Id property from the collection.
 
-        :param str _id: Specifies the unique identifier of the role definition searched. The value of id does not
+        :param str id_: Specifies the unique identifier of the role definition searched. The value of id does not
            correspond to the index of the role definition within the collection, but refers to the value of the
            Id property of the role definition.
         """
         return RoleDefinition(
-            self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
+            self.context, ServiceOperationPath("GetById", [id_], self.resource_path)
         )
 
-    def get_by_type(self, role_type):
+    def get_by_type(self, role_type: RoleType) -> RoleDefinition:
         """Returns role definition of the specified type from the collection.
 
         :param int role_type: Specifies the role type. Role type MUST NOT be None.
         """
         return RoleDefinition(
             self.context,
-            ServiceOperationPath("GetByType", [role_type], self.resource_path),
+            ServiceOperationPath("GetByType", [role_type.value], self.resource_path),
         )

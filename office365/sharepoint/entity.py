@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -88,10 +90,20 @@ class Entity(ClientObject):
         return self
 
     @property
-    def context(self):
-        # type: () -> ClientContext
-        """Get the client context"""
-        return self._context
+    def context(self) -> ClientContext:
+        """Gets the client context associated with this object.
+
+        Returns:
+            ClientContext: The SharePoint client context
+
+        Raises:
+            ValueError: If the context is not initialized
+        """
+        from office365.sharepoint.client_context import ClientContext
+
+        if self._context is None:
+            raise ValueError("Client context is not initialized")
+        return cast(ClientContext, self._context)
 
     @property
     def entity_type_name(self) -> str:

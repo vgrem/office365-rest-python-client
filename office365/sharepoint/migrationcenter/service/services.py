@@ -17,8 +17,7 @@ class MigrationCenterServices(Entity):
         super(MigrationCenterServices, self).__init__(context, resource_path)
 
     @property
-    def performance_data(self):
-        # type: () -> PerformanceDataCollection
+    def performance_data(self) -> PerformanceDataCollection:
         """"""
         return self.properties.get(
             "PerformanceData",
@@ -28,8 +27,7 @@ class MigrationCenterServices(Entity):
         )
 
     @property
-    def teams(self):
-        # type: () -> PerformanceDataCollection
+    def teams(self) -> PerformanceDataCollection:
         """"""
         return self.properties.get(
             "Teams",

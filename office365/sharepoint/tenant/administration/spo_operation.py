@@ -7,8 +7,7 @@ class SpoOperation(ClientObject):
     """Represents an operation on a site collection."""
 
     @property
-    def has_timedout(self):
-        # type: () -> Optional[bool]
+    def has_timedout(self) -> Optional[bool]:
         """Gets a value that indicates whether the maximum wait time for the operation has been exceeded."""
         return self.properties.get("HasTimedout", None)
 
