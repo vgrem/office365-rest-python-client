@@ -3,7 +3,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestPresence(GraphTestCase):
-    target_presence = None  # type: Presence
+    target_presence: Presence = None
 
     @classmethod
     def setUpClass(cls):
@@ -14,29 +14,27 @@ class TestPresence(GraphTestCase):
         pass
 
     def test1_get_my_presence(self):
-        my_presence = self.client.me.presence.get().execute_query()
-        self.assertIsNotNone(my_presence.resource_path)
+        result = self.client.me.presence.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test2_set_my_preferred_presence(self):
-        my_presence = (
-            self.client.me.presence.set_user_preferred_presence().execute_query()
-        )
-        self.assertIsNotNone(my_presence.resource_path)
+        result = self.client.me.presence.set_user_preferred_presence().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test3_get_presences_by_user_id(self):
         me = self.client.me.get().execute_query()
-        presences = self.client.communications.get_presences_by_user_id(
+        result = self.client.communications.get_presences_by_user_id(
             [me.id]
         ).execute_query()
-        self.assertIsNotNone(presences.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test4_set_status_message(self):
-        my_presence = self.client.me.presence.set_status_message(
+        result = self.client.me.presence.set_status_message(
             "Hey I'm currently in a meeting"
         ).execute_query()
-        self.assertIsNotNone(my_presence.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test5_clear_my_presence(self):
-        my_presence = self.client.me.presence
-        my_presence.clear_user_preferred_presence().execute_query()
-        self.assertIsNotNone(my_presence.resource_path)
+        result = self.client.me.presence
+        result.clear_user_preferred_presence().execute_query()
+        self.assertIsNotNone(result.resource_path)

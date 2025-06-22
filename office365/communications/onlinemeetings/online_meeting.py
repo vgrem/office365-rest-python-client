@@ -18,7 +18,7 @@ class OnlineMeeting(OnlineMeetingBase):
     the attendees list, and the description.
     """
 
-    def get_virtual_appointment_join_web_url(self):
+    def get_virtual_appointment_join_web_url(self) -> ClientResult[str]:
         """Get a join web URL for a Microsoft Virtual Appointment. This web URL includes enhanced
         business-to-customer experiences such as mobile browser join and virtual lobby rooms.
         With Teams Premium, you can configure a custom lobby room experience for attendees by adding your company
@@ -30,14 +30,12 @@ class OnlineMeeting(OnlineMeetingBase):
         return return_type
 
     @property
-    def allow_attendee_to_enable_camera(self):
-        # type: () -> Optional[bool]
+    def allow_attendee_to_enable_camera(self) -> Optional[bool]:
         """Indicates whether attendees can turn on their camera."""
         return self.properties.get("allowAttendeeToEnableCamera", None)
 
     @property
-    def allow_attendee_to_enable_mic(self):
-        # type: () -> Optional[bool]
+    def allow_attendee_to_enable_mic(self) -> Optional[bool]:
         """Indicates whether attendees can turn on their microphone."""
         return self.properties.get("allowAttendeeToEnableMic", None)
 
@@ -47,39 +45,34 @@ class OnlineMeeting(OnlineMeetingBase):
         return self.properties.get("allowedPresenters", StringCollection())
 
     @property
-    def allow_meeting_chat(self):
-        # type: () -> Optional[bool]
+    def allow_meeting_chat(self) -> Optional[bool]:
         """Specifies the mode of meeting chat."""
         return self.properties.get("allowMeetingChat", None)
 
     @property
-    def allow_participants_to_change_name(self):
-        # type: () -> Optional[bool]
+    def allow_participants_to_change_name(self) -> Optional[bool]:
         """Specifies if participants are allowed to rename themselves in an instance of the meeting."""
         return self.properties.get("allowParticipantsToChangeName", None)
 
     @property
-    def attendee_report(self):
-        # type: () -> Optional[AnyStr]
+    def attendee_report(self) -> Optional[AnyStr]:
         """The content stream of the attendee report of a Microsoft Teams live event."""
         return self.properties.get("attendeeReport", None)
 
     @property
-    def participants(self):
+    def participants(self) -> MeetingParticipants:
         """
         The participants associated with the online meeting. This includes the organizer and the attendees.
         """
         return self.properties.get("participants", MeetingParticipants())
 
     @property
-    def subject(self):
-        # type: () -> Optional[str]
+    def subject(self) -> Optional[str]:
         """The subject of the online meeting."""
         return self.properties.get("subject", None)
 
     @subject.setter
-    def subject(self, value):
-        # type: (str) -> None
+    def subject(self, value: str) -> None:
         self.set_property("subject", value)
 
     @property
@@ -88,8 +81,7 @@ class OnlineMeeting(OnlineMeetingBase):
         return self.properties.get("startDateTime", datetime.min)
 
     @start_datetime.setter
-    def start_datetime(self, value):
-        # type: (datetime) -> None
+    def start_datetime(self, value: datetime) -> None:
         """Sets the meeting start time in UTC."""
         self.set_property("startDateTime", value.isoformat())
 
@@ -99,8 +91,7 @@ class OnlineMeeting(OnlineMeetingBase):
         return self.properties.get("endDateTime", datetime.min)
 
     @end_datetime.setter
-    def end_datetime(self, value):
-        # type: (datetime) -> None
+    def end_datetime(self, value: datetime) -> None:
         """Sets the meeting end time in UTC."""
         self.set_property("endDateTime", value.isoformat())
 
@@ -110,20 +101,17 @@ class OnlineMeeting(OnlineMeetingBase):
         return self.properties.get("joinInformation", ItemBody())
 
     @property
-    def join_web_url(self):
-        # type: () -> Optional[str]
+    def join_web_url(self) -> Optional[str]:
         """The join URL of the online meeting. Read-only."""
         return self.properties.get("joinWebUrl", None)
 
     @property
-    def video_teleconference_id(self):
-        # type: () -> Optional[str]
+    def video_teleconference_id(self) -> Optional[str]:
         """The video teleconferencing ID."""
         return self.properties.get("videoTeleconferenceId", None)
 
     @property
-    def recordings(self):
-        # type: () -> EntityCollection[CallRecording]
+    def recordings(self) -> EntityCollection[CallRecording]:
         """The recordings of an online meeting"""
         return self.properties.get(
             "recordings",

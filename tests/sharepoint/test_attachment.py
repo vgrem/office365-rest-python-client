@@ -35,7 +35,9 @@ class TestListItemAttachment(SPTestCase):
 
     def test1_upload_attachment(self):
         with open(self.attachment_path, "rb") as f:
-           result = self.__class__.target_item.attachment_files.upload(f).execute_query()
+            result = self.__class__.target_item.attachment_files.upload(
+                f
+            ).execute_query()
         self.assertIsNotNone(result.file_name)
         self.__class__.target_attachment = result
 

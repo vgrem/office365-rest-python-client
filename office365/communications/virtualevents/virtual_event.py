@@ -13,8 +13,7 @@ class VirtualEvent(Entity):
     Base type of virtualEventTownhall and virtualEventWebinar."""
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """A description of the virtual event."""
         return self.properties.get("Description", ItemBody())
 

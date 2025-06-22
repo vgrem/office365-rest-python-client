@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from office365.communications.calls.invitation_participant_info import (
     InvitationParticipantInfo,
@@ -18,7 +18,9 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Participant(Entity):
     """Represents a participant in a call."""
 
-    def invite(self, participants, client_context):
+    def invite(
+        self, participants: List[InvitationParticipantInfo], client_context: str
+    ) -> InviteParticipantsOperation:
         """Invite participants to the active call.
 
         :param list[InvitationParticipantInfo] participants: Unique Client Context string. Max limit is 256 chars.
@@ -35,7 +37,9 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def start_hold_music(self, custom_prompt=None, client_context=None):
+    def start_hold_music(
+        self, custom_prompt: str = None, client_context: str = None
+    ) -> StartHoldMusicOperation:
         """
         Put a participant on hold and play music in the background.
 
@@ -50,7 +54,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def stop_hold_music(self, client_context=None):
+    def stop_hold_music(self, client_context: str = None) -> StopHoldMusicOperation:
         """
         Reincorporate a participant previously put on hold to the call.
 
@@ -65,13 +69,12 @@ class Participant(Entity):
         return return_type
 
     @property
-    def info(self):
+    def info(self) -> ParticipantInfo:
         """Information about the participant."""
         return self.properties.get("info", ParticipantInfo())
 
     @property
-    def metadata(self):
-        # type: () -> Optional[str]
+    def metadata(self) -> Optional[str]:
         """A blob of data provided by the participant in the roster."""
         return self.properties.get("metadata", None)
 

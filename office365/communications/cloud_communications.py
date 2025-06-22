@@ -25,7 +25,7 @@ class CloudCommunications(Entity):
         return return_type
 
     @property
-    def calls(self):
+    def calls(self) -> CallCollection:
         """ " """
         return self.properties.get(
             "calls",
@@ -33,7 +33,7 @@ class CloudCommunications(Entity):
         )
 
     @property
-    def call_records(self):
+    def call_records(self) -> CallRecordCollection:
         """ " """
         return self.properties.get(
             "callRecords",
@@ -44,7 +44,7 @@ class CloudCommunications(Entity):
         )
 
     @property
-    def online_meetings(self):
+    def online_meetings(self) -> OnlineMeetingCollection:
         """ " """
         return self.properties.get(
             "onlineMeetings",
@@ -54,7 +54,7 @@ class CloudCommunications(Entity):
         )
 
     @property
-    def presences(self):
+    def presences(self) -> EntityCollection[Presence]:
         """ " """
         return self.properties.get(
             "presences",

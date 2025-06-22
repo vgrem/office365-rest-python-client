@@ -15,12 +15,12 @@ class CallRecord(Entity):
         return self.properties.get("joinWebUrl", None)
 
     @property
-    def organizer(self):
+    def organizer(self) -> IdentitySet:
         """The organizing party's identity.."""
         return self.properties.get("organizer", IdentitySet())
 
     @property
-    def sessions(self):
+    def sessions(self) -> EntityCollection[Session]:
         """
         List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group
         calls typically have at least one session per participant.

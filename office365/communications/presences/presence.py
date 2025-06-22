@@ -10,7 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
-    def clear_presence(self, session_id=None):
+    def clear_presence(self, session_id: str = None):
         """
         Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
@@ -100,8 +100,7 @@ class Presence(Entity):
         return self
 
     @property
-    def activity(self):
-        # type: () -> Optional[str]
+    def activity(self) -> Optional[str]:
         """
         The supplemental information to a user's availability.
         Possible values are Available, Away, BeRightBack, Busy, DoNotDisturb, InACall, InAConferenceCall, Inactive,
@@ -110,8 +109,7 @@ class Presence(Entity):
         return self.properties.get("activity", None)
 
     @property
-    def availability(self):
-        # type: () -> Optional[str]
+    def availability(self) -> Optional[str]:
         """
         The base presence information for a user.
         Possible values are Available, AvailableIdle, Away, BeRightBack, Busy, BusyIdle, DoNotDisturb, Offline,
