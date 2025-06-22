@@ -27,9 +27,6 @@ class ServiceOperationPath(ResourcePath):
         super().__init__(name, parent)
         self._parameters = parameters
 
-    def __repr__(self) -> str:
-        return f"ServiceOperationPath(name={self.name}, parameters={self.parameters})"
-
     @property
     def segment(self) -> str:
         """Gets the OData path segment for this service operation."""

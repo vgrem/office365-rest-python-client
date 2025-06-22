@@ -773,7 +773,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder", _get_item_by_url)
         return return_type
 
-    def get_view(self, view_id):
+    def get_view(self, view_id: str) -> View:
         """Returns the list view with the specified view identifier.
         :type view_id: str
         """
@@ -799,9 +799,12 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_checked_out_files(self):
+    def get_checked_out_files(self) -> CheckedOutFileCollection:
         """Returns a collection of checked-out files as specified in section 3.2.5.381."""
-        return_type = CheckedOutFileCollection(self.context)
+        return_type = CheckedOutFileCollection(
+            self.context,
+            ServiceOperationPath("GetCheckedOutFiles", None, self.resource_path),
+        )
         qry = ServiceOperationQuery(
             self, "GetCheckedOutFiles", None, None, None, return_type
         )
@@ -842,7 +845,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_related_fields(self):
+    def get_related_fields(self) -> RelatedFieldCollection:
         """
         Returns a collection of lookup fields that use this list as a data source and
         that have FieldLookup.IsRelationship set to true.
@@ -852,7 +855,9 @@ class List(SecurableObject):
             ServiceOperationPath("getRelatedFields", [], self.resource_path),
         )
 
-    def get_special_folder_url(self, folder_type, force_create, existing_folder_guid):
+    def get_special_folder_url(
+        self, folder_type: int, force_create: bool, existing_folder_guid: str
+    ) -> ClientResult[str]:
         """
         Gets the relative URL of the Save to OneDrive folder.
 
@@ -883,7 +888,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder", _reset_doc_id)
         return self
 
-    def set_exempt_from_block_download_of_non_viewable_files(self, value):
+    def set_exempt_from_block_download_of_non_viewable_files(self, value: bool) -> Self:
         """
         Method to set the ExemptFromBlockDownloadOfNonViewableFiles property.
         Ensures that only a tenant administrator can set the exemption.
@@ -949,7 +954,7 @@ class List(SecurableObject):
         return self.properties.get("BrowserFileHandling", None)
 
     @property
-    def created(self):
+    def created(self) -> datetime:
         """Specifies when the list was created."""
         return self.properties.get("Created", datetime.min)
 
@@ -979,7 +984,7 @@ class List(SecurableObject):
         return self.properties.get("CrawlNonDefaultViews", None)
 
     @property
-    def creatables_info(self):
+    def creatables_info(self) -> CreatablesInfo:
         """
         Returns an object that describes what this list can create, and a collection of links to visit in order to
         create those things. If it can't create certain things, it contains an error message describing why.
@@ -997,12 +1002,12 @@ class List(SecurableObject):
         )
 
     @property
-    def current_change_token(self):
+    def current_change_token(self) -> ChangeToken:
         """Gets the current change token that is used in the change log for the list."""
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
     @property
-    def data_source(self):
+    def data_source(self) -> ListDataSource:
         """
         Specifies the data source of an external list.
         If HasExternalDataSource is "false", the server MUST return NULL.
@@ -1186,7 +1191,7 @@ class List(SecurableObject):
         )
 
     @property
-    def subscriptions(self):
+    def subscriptions(self) -> SubscriptionCollection:
         """Gets one or more webhook subscriptions on a SharePoint list."""
         return self.properties.get(
             "Subscriptions",
@@ -1207,7 +1212,7 @@ class List(SecurableObject):
         )
 
     @property
-    def default_view(self):
+    def default_view(self) -> View:
         """Gets or sets a value that specifies whether the list view is the default list view."""
         return self.properties.get(
             "DefaultView",
@@ -1215,7 +1220,7 @@ class List(SecurableObject):
         )
 
     @property
-    def content_types(self):
+    def content_types(self) -> ContentTypeCollection:
         """Gets the content types that are associated with the list."""
         return self.properties.get(
             "ContentTypes",
@@ -1254,7 +1259,7 @@ class List(SecurableObject):
         return self.properties.get("IsSystemList", None)
 
     @property
-    def user_custom_actions(self):
+    def user_custom_actions(self) -> UserCustomActionCollection:
         """Gets the User Custom Actions that are associated with the list."""
         return self.properties.get(
             "UserCustomActions",
@@ -1264,7 +1269,7 @@ class List(SecurableObject):
         )
 
     @property
-    def version_policies(self):
+    def version_policies(self) -> VersionPolicyManager:
         """ """
         return self.properties.get(
             "VersionPolicies",
@@ -1274,13 +1279,13 @@ class List(SecurableObject):
         )
 
     @property
-    def custom_action_elements(self):
+    def custom_action_elements(self) -> CustomActionElementCollection:
         return self.properties.get(
             "CustomActionElements", CustomActionElementCollection()
         )
 
     @property
-    def forms(self):
+    def forms(self) -> FormCollection:
         """Gets a value that specifies the collection of all list forms in the list."""
         return self.properties.get(
             "Forms",
@@ -1298,7 +1303,7 @@ class List(SecurableObject):
         )
 
     @property
-    def event_receivers(self):
+    def event_receivers(self) -> EventReceiverDefinitionCollection:
         """Get Event receivers"""
         return self.properties.get(
             "EventReceivers",
@@ -1313,7 +1318,7 @@ class List(SecurableObject):
         return self.properties.get("ItemCount", None)
 
     @property
-    def last_item_deleted_date(self):
+    def last_item_deleted_date(self) -> datetime:
         """
         Specifies the last time a list item was deleted from the list. It MUST return Created if no list item has
         been deleted from the list yet.
@@ -1321,7 +1326,7 @@ class List(SecurableObject):
         return self.properties.get("LastItemDeletedDate", datetime.min)
 
     @property
-    def last_item_modified_date(self):
+    def last_item_modified_date(self) -> datetime:
         """
         Specifies the last time a list item, field, or property of the list was modified.
         It MUST return Created if the list has not been modified.
@@ -1329,7 +1334,7 @@ class List(SecurableObject):
         return self.properties.get("LastItemModifiedDate", datetime.min)
 
     @property
-    def last_item_user_modified_date(self):
+    def last_item_user_modified_date(self) -> datetime:
         """
         Specifies when an item of the list was last modified by a non-system update. A non-system update is a change
         to a list item that is visible to end users. If no item has been created in the list, the list creation time
@@ -1462,7 +1467,7 @@ class List(SecurableObject):
         self.set_property("Description", val)
 
     @property
-    def description_resource(self):
+    def description_resource(self) -> UserResource:
         """Represents the description of this list."""
         return self.properties.get(
             "DescriptionResource",
@@ -1472,7 +1477,7 @@ class List(SecurableObject):
         )
 
     @property
-    def parent_web_path(self):
+    def parent_web_path(self) -> SPResPath:
         """Returns the path of the parent web for the list."""
         return self.properties.get("ParentWebPath", SPResPath())
 
@@ -1490,7 +1495,7 @@ class List(SecurableObject):
         return self.properties.get("TemplateFeatureId", None)
 
     @property
-    def title_resource(self):
+    def title_resource(self) -> UserResource:
         """Represents the title of this list."""
         return self.properties.get(
             "TitleResource",

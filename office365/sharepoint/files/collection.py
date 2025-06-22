@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import hashlib
 import os
 import uuid
-from typing import IO, TYPE_CHECKING, Callable
+from typing import IO, TYPE_CHECKING, Callable, Union, cast
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
@@ -22,11 +24,15 @@ if TYPE_CHECKING:
 class FileCollection(EntityCollection[File]):
     """Represents a collection of File resources."""
 
-    def __init__(self, context, resource_path=None, parent=None):
-        # type: (ClientContext, ResourcePath, Folder) -> None
+    def __init__(
+        self,
+        context: ClientContext,
+        resource_path: ResourcePath = None,
+        parent: Folder = None,
+    ) -> None:
         super(FileCollection, self).__init__(context, File, resource_path, parent)
 
-    def get_published_file(self, base_file_path):
+    def get_published_file(self, base_file_path: str) -> FileStatus:
         """ """
         return_type = FileStatus(self.context)
         qry = ServiceOperationQuery(
@@ -35,8 +41,7 @@ class FileCollection(EntityCollection[File]):
         self.context.add_query(qry)
         return return_type
 
-    def upload(self, path_or_file, file_name=None):
-        # type: (str|IO, str) -> File
+    def upload(self, path_or_file: Union[str, IO], file_name: str = None) -> File:
         """Uploads a file into folder.
 
         Note: This method only supports files up to 4MB in size!
@@ -54,15 +59,13 @@ class FileCollection(EntityCollection[File]):
             name = file_name or os.path.basename(path_or_file)
             return self.add(name, content, True)
 
-    def upload_with_checksum(self, file_object, chunk_size=1024):
-        # type: (IO, int) -> File
+    def upload_with_checksum(self, file_object: IO, chunk_size: int = 1024) -> File:
         """ """
         h = hashlib.md5()
         file_name = os.path.basename(file_object.name)
         upload_id = str(uuid.uuid4())
 
-        def _upload_session(return_type):
-            # type: (File) -> None
+        def _upload_session(return_type: File) -> None:
             content = file_object.read(chunk_size)
             h.update(content)
 
@@ -93,11 +96,9 @@ class FileCollection(EntityCollection[File]):
         file_name = file_name if file_name else os.path.basename(file.name)
         upload_id = str(uuid.uuid4())
 
-        def _upload(return_type):
-            # type: (File) -> None
+        def _upload(return_type: File) -> None:
 
-            def _after_uploaded(result):
-                # type: (ClientResult) -> None
+            def _after_uploaded(result: ClientResult) -> None:
                 _upload(return_type)
 
             uploaded_bytes = file.tell()
@@ -174,21 +175,20 @@ class FileCollection(EntityCollection[File]):
         self.parent.ensure_property("ServerRelativeUrl", _add_template_file)
         return return_type
 
-    def get_by_url(self, url):
-        # type: (str) -> File
+    def get_by_url(self, url: str) -> File:
         """Retrieve File object by url"""
         return File(
             self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
         )
 
-    def get_by_id(self, _id):
-        # type: (int) -> File
+    def get_by_id(self, id_: int) -> File:
         """Gets the File with the specified ID."""
         return File(
-            self.context, ServiceOperationPath("getById", [_id], self.resource_path)
+            self.context, ServiceOperationPath("getById", [id_], self.resource_path)
         )
 
     @property
-    def parent(self):
-        # type: () -> Folder
-        return self._parent
+    def parent(self) -> Folder:
+        from office365.sharepoint.folders.folder import Folder
+
+        return cast(Folder, self._parent)

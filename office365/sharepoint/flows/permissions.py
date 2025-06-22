@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,8 +13,11 @@ if TYPE_CHECKING:
 class FlowPermissions(Entity):
 
     @staticmethod
-    def get_flow_permission_level_on_list(context, list_name, return_type=None):
-        # type: (ClientContext, str, Optional[ConnectorResult]) -> ConnectorResult
+    def get_flow_permission_level_on_list(
+        context: ClientContext,
+        list_name: str,
+        return_type: Optional[ConnectorResult] = None,
+    ) -> ConnectorResult:
         """ """
         if return_type is None:
             return_type = ConnectorResult(context)

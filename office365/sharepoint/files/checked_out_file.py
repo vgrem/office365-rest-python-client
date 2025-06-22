@@ -1,7 +1,6 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
@@ -17,8 +16,7 @@ class CheckedOutFile(Entity):
         return self
 
     @property
-    def checked_out_by_id(self):
-        # type: () -> Optional[int]
+    def checked_out_by_id(self) -> Optional[int]:
         """Returns the user ID of the account used to check out the file."""
         return self.properties.get("CheckedOutById", None)
 
@@ -39,12 +37,3 @@ class CheckedOutFile(Entity):
             property_mapping = {"CheckedOutBy": self.checked_out_by}
             default_value = property_mapping.get(name, None)
         return super(CheckedOutFile, self).get_property(name, default_value)
-
-    def set_property(self, name, value, persist_changes=True):
-        super(CheckedOutFile, self).set_property(name, value, persist_changes)
-        # fallback: create a new resource path
-        if name == "CheckedOutById":
-            self._resource_path = EntityPath(
-                value, self.parent_collection.resource_path
-            )
-        return self

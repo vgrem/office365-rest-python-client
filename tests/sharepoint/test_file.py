@@ -9,15 +9,15 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointFile(SPTestCase):
-    folder_from = None  # type: Folder
-    folder_to = None  # type: Folder
-    file = None  # type: File
+    folder_from: Folder = None
+    folder_to: Folder = None
+    file: File = None
     deleted_file_guid = None
     text_content = b"updated content goes here..."
 
     @classmethod
     def setUpClass(cls):
-        super(TestSharePointFile, cls).setUpClass()
+        super().setUpClass()
         cls.folder_from = cls.client.web.default_document_library().root_folder.add(
             create_unique_name("from")
         )
@@ -31,7 +31,7 @@ class TestSharePointFile(SPTestCase):
         cls.folder_to.delete_object().execute_query()
 
     def test1_upload_file_as_content(self):
-        path = "{0}/../data/Sample.txt".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../data/Sample.txt"
         uploaded_file = self.folder_from.files.upload(path).execute_query()
         self.assertEqual(uploaded_file.name, os.path.basename(path))
         self.assertIsNotNone(uploaded_file.resource_path)

@@ -1,8 +1,6 @@
 import json
 from typing import IO, AnyStr, Callable
 
-from typing_extensions import Self
-
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.files.system_object_type import FileSystemObjectType
 from office365.sharepoint.listitems.collection import ListItemCollection
@@ -15,9 +13,11 @@ class ListExporter(object):
 
     @staticmethod
     def export(
-        source_list, destination_file, include_content=False, item_exported=None
-    ):
-        # type: (List, IO, bool, Callable[[ListItem], None]) -> Self
+        source_list: List,
+        destination_file: IO,
+        include_content: bool = False,
+        item_exported: Callable[[ListItem], None] = None,
+    ) -> List:
         """Exports SharePoint List"""
         import zipfile
 
@@ -27,10 +27,8 @@ class ListExporter(object):
             ) as zf:
                 zf.writestr(name, data)
 
-        def _download_content(list_item):
-            # type: (ListItem) -> None
-            def _after_downloaded(result):
-                # type: (ClientResult[AnyStr]) -> None
+        def _download_content(list_item: ListItem) -> None:
+            def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 item_path = list_item.properties["FileRef"].replace(
                     source_list.root_folder.serverRelativeUrl, ""
                 )
@@ -38,8 +36,7 @@ class ListExporter(object):
 
             list_item.file.get_content().after_execute(_after_downloaded)
 
-        def _export_items(items):
-            # type: (ListItemCollection) -> None
+        def _export_items(items: ListItemCollection) -> None:
 
             for item in items:
                 item_path = str(item.id) + ".json"

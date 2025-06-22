@@ -1,10 +1,13 @@
-import datetime
-from typing import TYPE_CHECKING, Optional
+from __future__ import annotations
+
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional, cast
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
+    from office365.sharepoint.fields.collection import FieldCollection
     from office365.sharepoint.listitems.versions.collection import (
         ListItemVersionCollection,
     )
@@ -19,32 +22,29 @@ class ListItemVersion(Entity):
         )
 
     @property
-    def version_id(self):
-        # type: () -> Optional[int]
+    def version_id(self) -> Optional[int]:
         """Gets the ID of the version."""
-        return int(self.properties.get("VersionId", None))
+        return int(self.properties.get("VersionId", -1))
 
     @property
-    def version_label(self):
-        # type: () -> Optional[str]
+    def version_label(self) -> Optional[str]:
         """Gets the version number of the item version."""
         return self.properties.get("VersionLabel", None)
 
     @property
-    def is_current_version(self):
-        # type: () -> Optional[bool]
+    def is_current_version(self) -> Optional[bool]:
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
 
     @property
-    def created(self):
+    def created(self) -> datetime:
         """Gets the creation date and time for the item version."""
-        return self.properties.get("Created", datetime.datetime.min)
+        return self.properties.get("Created", datetime.min)
 
     @property
-    def modified(self):
+    def modified(self) -> datetime:
         """Gets the modified date and time for the item version."""
-        return self.properties.get("Modified", datetime.datetime.min)
+        return self.properties.get("Modified", datetime.min)
 
     @property
     def created_by(self):
@@ -57,7 +57,7 @@ class ListItemVersion(Entity):
         )
 
     @property
-    def fields(self):
+    def fields(self) -> FieldCollection:
         """Gets the collection of fields that are used in the list that contains the item version."""
         from office365.sharepoint.fields.collection import FieldCollection
 
@@ -81,9 +81,12 @@ class ListItemVersion(Entity):
         return "VersionId"
 
     @property
-    def parent_collection(self):
-        # type: () -> ListItemVersionCollection
-        return self._parent_collection
+    def parent_collection(self) -> ListItemVersionCollection:
+        from office365.sharepoint.listitems.versions.collection import (
+            ListItemVersionCollection,
+        )
+
+        return cast(ListItemVersionCollection, self._parent_collection)
 
     def get_property(self, name, default_value=None):
         if default_value is None:

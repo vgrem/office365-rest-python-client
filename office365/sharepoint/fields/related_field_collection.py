@@ -11,9 +11,9 @@ class RelatedFieldCollection(EntityCollection[RelatedField]):
             context, RelatedField, resource_path
         )
 
-    def get_by_field_id(self, _id):
+    def get_by_field_id(self, id_: str) -> RelatedField:
         """Gets the RelatedField with the specified ID."""
         return RelatedField(
             self.context,
-            ServiceOperationPath("GetByFieldId", [_id], self.resource_path),
+            ServiceOperationPath("GetByFieldId", [id_], self.resource_path),
         )

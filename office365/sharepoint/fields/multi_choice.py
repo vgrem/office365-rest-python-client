@@ -8,8 +8,7 @@ class FieldMultiChoice(Field):
     """Specifies a field that contains one or more values from a set of specified values."""
 
     @property
-    def fill_in_choice(self):
-        # type: () -> Optional[bool]
+    def fill_in_choice(self) -> Optional[bool]:
         """
         Specifies whether the field can accept values other than those specified in
         Microsoft.Sharepoint.Client.FieldMultiChoice.Choices, as specified in section 3.2.5.51.1.1.2.
@@ -17,8 +16,7 @@ class FieldMultiChoice(Field):
         return self.properties.get("FillInChoice", None)
 
     @property
-    def mappings(self):
-        # type: () -> Optional[str]
+    def mappings(self) -> Optional[str]:
         """Specifies the internal values corresponding to Choices."""
         return self.properties.get("Mappings", None)
 

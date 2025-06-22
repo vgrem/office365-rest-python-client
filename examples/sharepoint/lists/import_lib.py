@@ -34,9 +34,7 @@ def run_folders_import(
         folder_name = fake.date()
         target_folder = target_lib.root_folder.add(folder_name).execute_query()
         print(
-            "({0} of {1}) Folder '{2}' has been created".format(
-                folder_index, folders_amount, target_folder.serverRelativeUrl
-            )
+            f"({folder_index} of {folders_amount}) Folder '{target_folder.serverRelativeUrl}' has been created"
         )
 
         if include_files:

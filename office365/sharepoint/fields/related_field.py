@@ -8,26 +8,22 @@ class RelatedField(Entity):
     """Represents a Lookup Field that points to a given list on a Web site."""
 
     @property
-    def field_id(self):
-        # type: () -> Optional[str]
+    def field_id(self) -> Optional[str]:
         """Gets the field id of the corresponding Lookup Field."""
         return self.properties.get("FieldId", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """Gets the ID of the List containing the corresponding Lookup Field."""
         return self.properties.get("ListId", None)
 
     @property
-    def web_id(self):
-        # type: () -> Optional[str]
+    def web_id(self) -> Optional[str]:
         """Gets the ID of the Web containing the corresponding Lookup Field."""
         return self.properties.get("WebId", None)
 
     @property
-    def relationship_delete_behavior(self):
-        # type: () -> Optional[int]
+    def relationship_delete_behavior(self) -> Optional[int]:
         """Gets delete behavior of the corresponding Lookup Field."""
         return self.properties.get("RelationshipDeleteBehavior", None)
 
@@ -41,9 +37,13 @@ class RelatedField(Entity):
             List(self.context, ResourcePath("LookupList", self.resource_path)),
         )
 
+    @property
+    def property_ref_name(self) -> str:
+        return "FieldId"
+
     def set_property(self, name, value, persist_changes=True):
         super(RelatedField, self).set_property(name, value, persist_changes)
-        if name == "FieldId" and self._resource_path is None:
+        if name == self.property_ref_name and self._resource_path is None:
             self._resource_path = self.parent_collection.get_by_field_id(
                 value
             ).resource_path

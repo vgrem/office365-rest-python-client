@@ -3,7 +3,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.definitions.definition import FeatureDefinition
 
 
-class FeatureDefinitionCollection(EntityCollection):
+class FeatureDefinitionCollection(EntityCollection[FeatureDefinition]):
     """Represents a collection of feature's definitions"""
 
     def __init__(self, context, resource_path=None, parent=None):

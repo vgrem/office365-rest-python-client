@@ -51,12 +51,12 @@ class ClientObject:
             resource_path: The path to this resource in the API
             parent_collection: The collection that contains this object
         """
-        self._properties = {}  # type: dict[str, Any]
-        self._properties_to_persist = []  # type: list[str]
+        self._properties: dict[str, Any] = {}
+        self._properties_to_persist: list[str] = []
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context
-        self._entity_type_name = None  # type: Optional[str]
+        self._entity_type_name: Optional[str] = None
         self._resource_path = resource_path
 
     def clear_state(self) -> Self:

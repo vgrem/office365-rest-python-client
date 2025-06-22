@@ -8,13 +8,11 @@ class FieldCurrency(FieldNumber):
     (section 3.2.5.43.2.1.5)."""
 
     @property
-    def currency_locale_id(self):
-        # type: () -> Optional[int]
+    def currency_locale_id(self) -> Optional[int]:
         """Gets the language code identifier (LCID) used to format the value of the field."""
         return self.properties.get("CurrencyLocaleId", None)
 
     @currency_locale_id.setter
-    def currency_locale_id(self, value):
-        # type: (int) -> None
+    def currency_locale_id(self, value: int) -> None:
         """Sets the language code identifier (LCID) used to format the value of the field."""
         self.set_property("CurrencyLocaleId", value)

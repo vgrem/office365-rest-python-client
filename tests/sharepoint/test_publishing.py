@@ -1,4 +1,3 @@
-from office365.sharepoint.publishing.pages.collection import SitePageCollection
 from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.publishing.video.service_discoverer import (
     VideoServiceDiscoverer,
@@ -69,7 +68,12 @@ class TestPublishing(SPTestCase):
         self.assertIsNotNone(page.resource_path)
         self.assertTrue(page.is_page_checked_out_to_current_user)
 
-    def test_13_discard_page(self):
+    def test_13_list_checkout_pages(self):
+        pages_list = self.client.web.lists.get_by_title("Site Pages")
+        result = pages_list.get_checked_out_files().execute_query()
+        self.assertIsNotNone(result.resource_path)
+
+    def test_14_discard_page(self):
         page = self.client.site_pages.pages.get_by_name("Home.aspx")
         page.discard_page().execute_query()
         self.assertFalse(
@@ -77,7 +81,7 @@ class TestPublishing(SPTestCase):
             "Page is expected to be checked in",
         )
 
-    # def test_12_share_page_preview_by_email(self):
+    # def test15_share_page_preview_by_email(self):
     #    page = self.client.site_pages.pages.get_by_url("/sites/team/SitePages/Home.aspx")
     #    page.share_page_preview_by_email("This page has been shared with you",
     #                                     [test_user_principal_name_alt]).execute_query()

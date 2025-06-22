@@ -10,7 +10,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPList(SPTestCase):
-    target_list = None  # type: List
+    target_list: List = None
     target_list_title = "Tasks" + str(randint(0, 10000))
 
     @classmethod

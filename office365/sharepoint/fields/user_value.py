@@ -8,8 +8,7 @@ class FieldUserValue(FieldLookupValue):
         super(FieldUserValue, self).__init__(user_id)
 
     @staticmethod
-    def from_user(user):
-        # type: (User) -> "FieldUserValue"
+    def from_user(user: User) -> "FieldUserValue":
         """
         Initialize field value from User
         :param User user: User object

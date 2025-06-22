@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from typing_extensions import Self
 
@@ -87,8 +87,13 @@ class ListItem(SecurableObject):
         list_folder.ensure_property("ServerRelativeUrl", _lock_record_item)
         return return_type
 
-    def share_link(self, link_kind, expiration=None, role=None, password=None):
-        # type: (int, Optional[datetime.datetime], Optional[int], Optional[str]) -> ClientResult[ShareLinkResponse]
+    def share_link(
+        self,
+        link_kind: int,
+        expiration: Optional[datetime.datetime] = None,
+        role: Optional[int] = None,
+        password: Optional[str] = None,
+    ) -> ClientResult[ShareLinkResponse]:
         """Creates a tokenized sharing link for a list item based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
@@ -203,7 +208,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return result
 
-    def get_changes(self, query=None):
+    def get_changes(self, query=None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the ListItem,
            based on the specified query.
 
@@ -221,12 +226,12 @@ class ListItem(SecurableObject):
 
     def share(
         self,
-        user_principal_name,
+        user_principal_name: str,
         share_option=ExternalSharingSiteOption.View,
-        send_email=True,
-        email_subject=None,
-        email_body=None,
-    ):
+        send_email: bool = True,
+        email_subject: str = None,
+        email_body: str = None,
+    ) -> SharingResult:
         """
         Share a ListItem (file or folder facet)
 
@@ -243,10 +248,9 @@ class ListItem(SecurableObject):
             ExternalSharingSiteOption.Edit: "role:1073741827",
         }
 
-        def _picker_value_resolved(picker_result):
-            # type: (ClientResult) -> None
+        def _picker_value_resolved(picker_result: ClientResult) -> None:
             abs_url = self.get_property("EncodedAbsUrl")
-            picker_value = "[{0}]".format(picker_result.value)
+            picker_value = f"[{picker_result.value}]"
             from office365.sharepoint.webs.web import Web
 
             Web.share_object(
@@ -271,7 +275,7 @@ class ListItem(SecurableObject):
         self.ensure_property("EncodedAbsUrl", _url_resolved)
         return return_type
 
-    def unshare(self):
+    def unshare(self) -> SharingResult:
         """Unshare a ListItem (file or folder facet)"""
         return_type = SharingResult(self.context)
 
@@ -284,7 +288,7 @@ class ListItem(SecurableObject):
         self.ensure_property("EncodedAbsUrl", _property_resolved)
         return return_type
 
-    def get_sharing_information(self):
+    def get_sharing_information(self) -> ObjectSharingInformation:
         """
         Retrieves information about the sharing state for a given list item.
         """
@@ -300,11 +304,11 @@ class ListItem(SecurableObject):
 
     def validate_update_list_item(
         self,
-        form_values,
-        new_document_update=False,
-        checkin_comment=None,
-        dates_in_utc=None,
-    ):
+        form_values: Dict,
+        new_document_update: bool = False,
+        checkin_comment: str = None,
+        dates_in_utc: bool = None,
+    ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """Validates and sets the values of the specified collection of fields for the list item.
 
         :param dict form_values: Specifies a collection of field internal names and values for the given field
@@ -330,7 +334,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def update(self):
+    def update(self) -> Self:
         """
         Updates the item without creating another version of the item.
         Exceptions:
@@ -363,8 +367,9 @@ class ListItem(SecurableObject):
 
         sys_metadata = ["EditorId", "Modified"]
 
-        def _after_system_update(result):
-            # type: (ClientResult[ClientValueCollection[ListItemFormUpdateValue]]) -> None
+        def _after_system_update(
+            result: ClientResult[ClientValueCollection[ListItemFormUpdateValue]],
+        ) -> None:
             has_any_error = any(item.HasException for item in result.value)
             if has_any_error:
                 raise ValueError("Update ListItem failed")
@@ -432,8 +437,7 @@ class ListItem(SecurableObject):
         )
         qry = ServiceOperationQuery(self, "GetComments", [], None, None, return_type)
 
-        def _create_request(request):
-            # type: (RequestOptions) -> None
+        def _create_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Get
 
         self.context.add_query(qry).before_query_execute(_create_request)
@@ -467,8 +471,7 @@ class ListItem(SecurableObject):
         return self
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Specifies the display name of the list item."""
         return self.properties.get("DisplayName", None)
 
@@ -501,8 +504,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def attachment_files(self):
-        # type: () -> AttachmentCollection
+    def attachment_files(self) -> AttachmentCollection:
         """Specifies the collection of attachments that are associated with the list item.<62>"""
         from office365.sharepoint.attachments.collection import (
             AttachmentCollection,  # noqa
@@ -545,55 +547,47 @@ class ListItem(SecurableObject):
         return self.properties.get("EffectiveBasePermissionsForUI", BasePermissions())
 
     @property
-    def field_values(self):
-        # type: () -> Optional[dict]
+    def field_values(self) -> Optional[dict]:
         """Gets a collection of key/value pairs containing the names and values for the fields of the list item."""
         return self.properties.get("FieldValues", None)
 
     @property
-    def comments_disabled(self):
-        # type: () -> Optional[bool]
+    def comments_disabled(self) -> Optional[bool]:
         """Indicates whether comments for this item are disabled or not."""
         return self.properties.get("CommentsDisabled", None)
 
     @property
-    def file_system_object_type(self):
-        # type: () -> Optional[str]
+    def file_system_object_type(self) -> Optional[str]:
         """Gets a value that specifies whether the list item is a file or a list folder"""
         return self.properties.get("FileSystemObjectType", None)
 
     @property
-    def icon_overlay(self):
-        # type: () -> Optional[str]
+    def icon_overlay(self) -> Optional[str]:
         """This is an overlay icon for the item. If the parent list of the item does not already have the IconOverlay
         field and The user setting the property does not have rights to add the field to the list then the property
         will not be set for the item."""
         return self.properties.get("IconOverlay", None)
 
     @property
-    def id(self):
-        # type: () -> Optional[int]
+    def id(self) -> Optional[int]:
         """Gets a value that specifies the list item identifier."""
         return self.properties.get("Id", None)
 
     @property
-    def server_redirected_embed_uri(self):
-        # type: () -> Optional[str]
+    def server_redirected_embed_uri(self) -> Optional[str]:
         """Returns the path for previewing a document in the browser, often in an interactive way, if
         that feature exists."""
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
     @property
-    def server_redirected_embed_url(self):
-        # type: () -> Optional[str]
+    def server_redirected_embed_url(self) -> Optional[str]:
         """Returns the URL for previewing a document in the browser, often in an interactive way, if that feature
         exists. This is currently used in the hovering panel of search results and document library.
         """
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
     @property
-    def client_title(self):
-        # type: () -> Optional[str]
+    def client_title(self) -> Optional[str]:
         """ """
         return self.properties.get("Client_Title", None)
 
@@ -602,8 +596,7 @@ class ListItem(SecurableObject):
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
     @property
-    def comments_disabled_scope(self):
-        # type: () -> Optional[str]
+    def comments_disabled_scope(self) -> Optional[str]:
         """Indicates at what scope comments are disabled."""
         return self.properties.get("CommentsDisabledScope", None)
 
@@ -628,7 +621,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def liked_by_information(self):
+    def liked_by_information(self) -> LikedByInformation:
         """Gets a value that specifies the list item identifier."""
         return self.properties.get(
             "LikedByInformation",
@@ -638,7 +631,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def versions(self):
+    def versions(self) -> ListItemVersionCollection:
         """Gets the collection of item version objects that represent the versions of the item."""
         return self.properties.get(
             "Versions",
@@ -648,14 +641,12 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def doc_id(self):
-        # type: () -> Optional[str]
+    def doc_id(self) -> Optional[str]:
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocId", None)
 
     @property
-    def doc_id_url(self):
-        # type: () -> Optional[FieldUrlValue]
+    def doc_id_url(self) -> Optional[FieldUrlValue]:
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocIdUrl", FieldUrlValue())
 
@@ -718,8 +709,9 @@ class ListItem(SecurableObject):
                 self._resource_path.patch(value)
         return self
 
-    def _set_taxonomy_field_value(self, name, value):
-        # type: (str, TaxonomyFieldValueCollection) -> None
+    def _set_taxonomy_field_value(
+        self, name: str, value: TaxonomyFieldValueCollection
+    ) -> None:
         """
         Sets taxonomy field value
         :param str name: Taxonomy field name

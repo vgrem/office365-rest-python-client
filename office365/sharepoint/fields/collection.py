@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional, Union, cast
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -51,8 +53,9 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_datetime(self, title, description=None):
-        # type: (str, Optional[str]) -> FieldDateTime
+    def add_datetime(
+        self, title: str, description: Optional[str] = None
+    ) -> FieldDateTime:
         """
         Creates DateTime field
         :param str title: Specifies the display name of the field
@@ -67,8 +70,9 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_geolocation_field(self, title, description=None):
-        # type: (str, Optional[str]) -> FieldGeolocation
+    def add_geolocation_field(
+        self, title: str, description: Optional[str] = None
+    ) -> FieldGeolocation:
         """
         Creates Geolocation field
 
@@ -84,8 +88,7 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_number(self, title, description=None):
-        # type: (str, Optional[str]) -> FieldNumber
+    def add_number(self, title: str, description: Optional[str] = None) -> FieldNumber:
         """
         Creates Number field
         :param str title: Specifies the display name of the field
@@ -100,8 +103,7 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_url_field(self, title, description=None):
-        # type: (str, Optional[str]) -> FieldUrl
+    def add_url_field(self, title: str, description: Optional[str] = None) -> FieldUrl:
         """
         Creates Url field
         :param str title: Specifies the display name of the field
@@ -130,8 +132,7 @@ class FieldCollection(EntityCollection[Field]):
 
         return_type = FieldLookup(self.context)
 
-        def _add_lookup_field(lookup_list_id):
-            # type: (str) -> None
+        def _add_lookup_field(lookup_list_id: str) -> None:
             if allow_multiple_values:
                 field_schema = """
                         <Field Type="LookupMulti" Mult="TRUE" DisplayName="{title}" Required="FALSE" Hidden="TRUE" \
@@ -177,8 +178,7 @@ class FieldCollection(EntityCollection[Field]):
         [create_field_info.Choices.add(choice) for choice in values]
         return self.add_field(create_field_info)
 
-    def add_user_field(self, title):
-        # type: (str) -> FieldUser
+    def add_user_field(self, title: str) -> FieldUser:
         """
         Creates a User field
 
@@ -336,6 +336,22 @@ class FieldCollection(EntityCollection[Field]):
         )
 
     @property
-    def parent(self):
-        # type: () -> Web|List
-        return self._parent
+    def parent(self) -> Union[Web, List]:
+        """Gets the parent object which must be either a Web or List.
+
+        Returns:
+            The parent Web or List object
+
+        Raises:
+            TypeError: If parent is not set or is of unexpected type
+        """
+        from office365.sharepoint.lists.list import List
+        from office365.sharepoint.webs.web import Web
+
+        if self._parent is None:
+            raise ValueError("Parent is not initialized")
+
+        if isinstance(self._parent, (Web, List)):
+            return cast(Union[Web, List], self._parent)
+
+        raise TypeError(f"Unexpected parent type: {type(self._parent).__name__}")

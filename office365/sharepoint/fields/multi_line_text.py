@@ -9,50 +9,42 @@ class FieldMultiLineText(Field):
         super(FieldMultiLineText, self).__init__(context)
 
     @property
-    def allow_hyperlink(self):
-        # type: () -> Optional[bool]
+    def allow_hyperlink(self) -> Optional[bool]:
         """Gets a value that specifies whether a hyperlink is allowed as a value of the field."""
         return self.properties.get("AllowHyperlink", None)
 
     @allow_hyperlink.setter
-    def allow_hyperlink(self, val):
-        # type: (bool) -> None
+    def allow_hyperlink(self, val: bool) -> None:
         """Sets a value that specifies whether a hyperlink is allowed as a value of the field."""
         self.set_property("AllowHyperlink", val)
 
     @property
-    def number_of_lines(self):
-        # type: () -> Optional[int]
+    def number_of_lines(self) -> Optional[int]:
         """Gets the number of lines to display in the field."""
         return self.properties.get("NumberOfLines", None)
 
     @number_of_lines.setter
-    def number_of_lines(self, val):
-        # type: (int) -> None
+    def number_of_lines(self, val: int) -> None:
         """Set the number of lines to display in the field."""
         self.set_property("NumberOfLines", val)
 
     @property
-    def restricted_mode(self):
-        # type: () -> Optional[bool]
+    def restricted_mode(self) -> Optional[bool]:
         """Specifies whether the field supports a subset of rich text formatting."""
         return self.properties.get("RestrictedMode", None)
 
     @property
-    def rich_text(self):
-        # type: () -> Optional[bool]
+    def rich_text(self) -> Optional[bool]:
         """Specifies whether the field supports rich text formatting."""
         return self.properties.get("RichText", None)
 
     @property
-    def unlimited_length_in_document_library(self):
-        # type: () -> Optional[bool]
+    def unlimited_length_in_document_library(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether to allow unlimited field length in document libraries."""
         return self.properties.get("UnlimitedLengthInDocumentLibrary", None)
 
     @property
-    def wiki_linking(self):
-        # type: () -> Optional[bool]
+    def wiki_linking(self) -> Optional[bool]:
         """Specifies whether an implementation-specific mechanism for linking wiki pages is supported.
         It MUST be "false" if RichText is "false"."""
         return self.properties.get("WikiLinking", None)

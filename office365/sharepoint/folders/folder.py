@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -12,6 +14,7 @@ from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
@@ -23,6 +26,7 @@ from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.collection import FileCollection
+    from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.collection import FolderCollection
 
 
@@ -69,8 +73,7 @@ class Folder(Entity):
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
-        def _get_folders(parent):
-            # type: ("Folder") -> None
+        def _get_folders(parent: "Folder") -> None:
             [return_type.add_child(f) for f in parent.folders]
             if recursive:
                 for folder in parent.folders:
@@ -88,8 +91,7 @@ class Folder(Entity):
 
         return_type = FileCollection(self.context, self.files.resource_path, self)
 
-        def _get_files(parent):
-            # type: ("Folder") -> None
+        def _get_files(parent: "Folder") -> None:
             [return_type.add_child(f) for f in parent.files]
             if recursive:
                 for folder in parent.folders:
@@ -115,8 +117,7 @@ class Folder(Entity):
             where to move a folder.
         """
 
-        def _move_to(destination_folder):
-            # type: ("Folder") -> None
+        def _move_to(destination_folder: Folder) -> None:
             destination_url = "/".join(
                 [destination_folder.serverRelativeUrl, self.name]
             )
@@ -145,8 +146,7 @@ class Folder(Entity):
             where to move a folder.
         """
 
-        def _move_to_using_path(destination_folder):
-            # type: ("Folder") -> None
+        def _move_to_using_path(destination_folder: Folder) -> None:
             destination_path = "/".join(
                 [str(destination_folder.server_relative_path), self.name]
             )
@@ -197,8 +197,13 @@ class Folder(Entity):
         self.ensure_property("ServerRelativePath", _move_folder)
         return return_type
 
-    def share_link(self, link_kind, expiration=None, role=None, password=None):
-        # type: (int, Optional[datetime], Optional[int], Optional[str]) -> ClientResult[ShareLinkResponse]
+    def share_link(
+        self,
+        link_kind: int,
+        expiration: Optional[datetime] = None,
+        role: Optional[int] = None,
+        password: Optional[str] = None,
+    ) -> ClientResult[ShareLinkResponse]:
         """Creates a tokenized sharing link for a folder based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
@@ -227,21 +232,23 @@ class Folder(Entity):
         """
         return self.list_item_all_fields.unshare_link(link_kind, share_id)
 
-    def recycle(self):
+    def recycle(self) -> ClientResult[str]:
         """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
 
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def recycle_with_parameters(self, parameters):
+    def recycle_with_parameters(
+        self, parameters: FolderDeleteParameters
+    ) -> ClientResult[str]:
         """
         Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
 
-        :type parameters: office365.sharepoint.folders.delete_parameters.FolderDeleteParameters
+        :type parameters: FolderDeleteParameters
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
         payload = {"parameters": parameters}
         qry = ServiceOperationQuery(
             self, "RecycleWithParameters", None, payload, None, return_type
@@ -249,11 +256,11 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_changes(self, query=None):
+    def get_changes(self, query: ChangeQuery = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the folder,
            based on the specified query.
 
-        :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
+        :param ChangeQuery query: Specifies which changes to return
         """
         if query is None:
             query = ChangeQuery(folder=True)
@@ -265,12 +272,12 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_list_item_changes(self, query):
+    def get_list_item_changes(self, query: ChangeQuery) -> ChangeCollection:
         """
         Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
         folder based on the specified query.
 
-        :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
+        :param ChangeQuery query: Specifies which changes to return
         """
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
@@ -280,13 +287,11 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, name):
-        # type: (str) -> Self
+    def add(self, name: str) -> Self:
         """Adds the folder that is located under a current folder"""
         return self.folders.add(name)
 
-    def rename(self, name):
-        # type: (str) -> Self
+    def rename(self, name: str) -> Self:
         """Rename a Folder resource"""
         item = self.list_item_all_fields
         item.set_property("Title", name)
@@ -295,7 +300,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return self
 
-    def upload_file(self, file_name, content):
+    def upload_file(self, file_name: str, content: Union[str, bytes]) -> File:
         """Uploads a file into folder.
         Note: This method only supports files up to 4MB in size!
 
@@ -367,8 +372,12 @@ class Folder(Entity):
         self.ensure_property("ServerRelativePath", _loaded)
         return return_type
 
-    def copy_to(self, destination, keep_both=False, reset_author_and_created=False):
-        # type: (str|"Folder", bool, bool) -> "Folder"
+    def copy_to(
+        self,
+        destination: Union[str, Folder],
+        keep_both: bool = False,
+        reset_author_and_created: bool = False,
+    ) -> Folder:
         """Copies the folder with files to the destination URL.
 
         :param str or Folder destination: Parent folder object or server relative folder url
@@ -378,8 +387,7 @@ class Folder(Entity):
         return_type = Folder(self.context)
         self.parent_collection.add_child(return_type)
 
-        def _copy_to(destination_folder):
-            # type: ("Folder") -> None
+        def _copy_to(destination_folder: Folder) -> None:
             destination_url = "/".join(
                 [destination_folder.serverRelativeUrl, self.name]
             )
@@ -402,9 +410,11 @@ class Folder(Entity):
         return return_type
 
     def copy_to_using_path(
-        self, destination, keep_both=False, reset_author_and_created=False
-    ):
-        # type: (str|"Folder", bool, bool) -> "Folder"
+        self,
+        destination: Union[str, "Folder"],
+        keep_both: bool = False,
+        reset_author_and_created: bool = False,
+    ) -> "Folder":
         """Copies the folder with files to the destination Path.
 
         :param str or Folder destination: Parent folder object or server relative folder url
@@ -415,8 +425,7 @@ class Folder(Entity):
         return_type = Folder(self.context)
         self.parent_collection.add_child(return_type)
 
-        def _copy_folder_by_path(destination_folder):
-            # type: ("Folder") -> None
+        def _copy_folder_by_path(destination_folder: Folder) -> None:
             destination_url = "/".join(
                 [str(destination_folder.server_relative_path), self.name]
             )
@@ -443,8 +452,7 @@ class Folder(Entity):
         return return_type
 
     @property
-    def storage_metrics(self):
-        # type: () -> StorageMetrics
+    def storage_metrics(self) -> StorageMetrics:
         """Specifies the storage-related metrics for list folders in the site"""
         return self.properties.get(
             "StorageMetrics",
@@ -454,8 +462,7 @@ class Folder(Entity):
         )
 
     @property
-    def list_item_all_fields(self):
-        # type: () -> ListItem
+    def list_item_all_fields(self) -> ListItem:
         """Specifies the list item fields values for the list item corresponding to the folder."""
         return self.properties.get(
             "ListItemAllFields",
@@ -465,8 +472,7 @@ class Folder(Entity):
         )
 
     @property
-    def files(self):
-        # type: () -> FileCollection
+    def files(self) -> FileCollection:
         """Specifies the collection of files contained in the list folder."""
         from office365.sharepoint.files.collection import FileCollection  # noqa
 
@@ -478,8 +484,7 @@ class Folder(Entity):
         )
 
     @property
-    def folders(self):
-        # type: () -> FolderCollection
+    def folders(self) -> FolderCollection:
         """Specifies the collection of list folders contained within the list folder."""
         from office365.sharepoint.folders.collection import FolderCollection  # noqa
 
@@ -491,8 +496,7 @@ class Folder(Entity):
         )
 
     @property
-    def parent_folder(self):
-        # type: () -> "Folder"
+    def parent_folder(self) -> Folder:
         """Specifies the list folder."""
         return self.properties.get(
             "ParentFolder",
@@ -500,78 +504,67 @@ class Folder(Entity):
         )
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Specifies the list folder name."""
         return self.properties.get("Name", None)
 
     @property
-    def is_wopi_enabled(self):
-        # type: () -> Optional[bool]
+    def is_wopi_enabled(self) -> Optional[bool]:
         """Indicates whether the folder is enabled for WOPI default action."""
         return self.properties.get("IsWOPIEnabled", None)
 
     @property
-    def prog_id(self):
-        # type: () -> Optional[str]
+    def prog_id(self) -> Optional[str]:
         """Gets the identifier (ID) of the application in which the folder was created."""
         return self.properties.get("ProgID", None)
 
     @property
-    def unique_id(self):
-        # type: () -> Optional[str]
+    def unique_id(self) -> Optional[str]:
         """Gets the unique ID of the folder."""
         return self.properties.get("UniqueId", None)
 
     @property
-    def exists(self):
-        # type: () -> Optional[bool]
+    def exists(self) -> Optional[bool]:
         """Gets a Boolean value that indicates whether the folder exists."""
         return self.properties.get("Exists", None)
 
     @property
-    def welcome_page(self):
-        # type: () -> Optional[str]
+    def welcome_page(self) -> Optional[str]:
         """Specifies the server-relative URL for the list folder Welcome page."""
         return self.properties.get("WelcomePage", None)
 
     @property
-    def unique_content_type_order(self):
+    def unique_content_type_order(self) -> ContentTypeId:
         """Specifies the content type order for the list folder."""
         return self.properties.get("UniqueContentTypeOrder", ContentTypeId())
 
     @property
-    def content_type_order(self):
+    def content_type_order(self) -> ContentTypeId:
         """Specifies the content type order for the list folder."""
         return self.properties.get("ContentTypeOrder", ContentTypeId())
 
     @property
-    def time_last_modified(self):
-        # type: () -> Optional[datetime]
+    def time_last_modified(self) -> Optional[datetime]:
         """Gets the last time this folder or a direct child was modified in UTC."""
         return self.properties.get("TimeLastModified", datetime.min)
 
     @property
-    def time_created(self):
-        # type: () -> Optional[datetime]
+    def time_created(self) -> Optional[datetime]:
         """Gets when the folder was created in UTC."""
         return self.properties.get("TimeCreated", datetime.min)
 
     @property
-    def serverRelativeUrl(self):
-        # type: () -> Optional[str]
+    def serverRelativeUrl(self) -> Optional[str]:
         """Gets the server-relative URL of the list folder."""
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def server_relative_path(self):
-        # type: () -> Optional[SPResPath]
+    def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
     @property
-    def property_ref_name(self):
-        # type: () -> Optional[str]
+    def property_ref_name(self) -> Optional[str]:
         return None
 
     def get_property(self, name, default_value=None):

@@ -31,8 +31,7 @@ class ListTemplate(Entity):
         return return_type
 
     @property
-    def internal_name(self):
-        # type: () -> Optional[str]
+    def internal_name(self) -> Optional[str]:
         """Gets a value that specifies the identifier for the list template."""
         return self.properties.get("InternalName", None)
 

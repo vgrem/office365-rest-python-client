@@ -15,7 +15,7 @@ class FolderCollection(EntityCollection[Folder]):
     def __init__(self, context, resource_path=None, parent=None):
         super(FolderCollection, self).__init__(context, Folder, resource_path, parent)
 
-    def add_using_path(self, decoded_url, overwrite):
+    def add_using_path(self, decoded_url: str, overwrite: bool):
         """
         Adds the folder located at the specified path to the collection.
         :param str decoded_url: Specifies the path for the folder.
@@ -29,7 +29,7 @@ class FolderCollection(EntityCollection[Folder]):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_path(self, path):
+    def ensure_path(self, path: str) -> Folder:
         """
         Ensures a folder exist
         :param str path: server or site relative url to a folder
@@ -45,7 +45,7 @@ class FolderCollection(EntityCollection[Folder]):
             folder = folder.add(name)
         return folder
 
-    def add(self, name, color_hex=None):
+    def add(self, name: str, color_hex: str = None) -> Folder:
         """Adds the folder that is located at the specified URL to the collection.
         :param str name: Specifies the Name or Path of the folder.
         :param str color_hex: Specifies the color of the folder.
@@ -69,7 +69,7 @@ class FolderCollection(EntityCollection[Folder]):
             self.context.add_query(qry)
         return return_type
 
-    def get_by_url(self, url):
+    def get_by_url(self, url: str) -> Folder:
         """Retrieve Folder resource by url
         :param str url: Specifies the URL of the list folder. The URL MUST be an absolute URL, a server-relative URL,
             a site-relative URL relative to the site (2) containing the collection of list folders, or relative to the
@@ -79,7 +79,7 @@ class FolderCollection(EntityCollection[Folder]):
             self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
         )
 
-    def get_by_path(self, decoded_url):
+    def get_by_path(self, decoded_url: str) -> Folder:
         """
         Get folder at the specified path.
         :param str decoded_url: Specifies the path for the folder.
