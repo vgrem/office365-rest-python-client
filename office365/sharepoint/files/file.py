@@ -22,6 +22,7 @@ from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.irm.effective_settings import (
     EffectiveInformationRightsManagementSettings,
 )
@@ -163,6 +164,12 @@ class File(AbstractFile):
     def get_sharing_information(self) -> ObjectSharingInformation:
         """Gets the sharing information for a file."""
         return self.listItemAllFields.get_sharing_information()
+
+    def get_user_effective_permissions(
+        self, user: str | User
+    ) -> ClientResult[BasePermissions]:
+        """Returns the user permissions for a file"""
+        return self.listItemAllFields.get_user_effective_permissions(user)
 
     def get_wopi_frame_url(
         self, action: SPWOPIFrameAction = SPWOPIFrameAction.View

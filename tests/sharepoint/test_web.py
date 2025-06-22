@@ -38,6 +38,7 @@ class TestSharePointWeb(SPTestCase):
     def test4_does_user_has_perms(self):
         perms = BasePermissions()
         perms.set(PermissionKind.ManageWeb)
+        perms.set(PermissionKind.AddListItems)
         result = self.client.web.does_user_have_permissions(perms).execute_query()
         self.assertIsInstance(result.value, bool)
 

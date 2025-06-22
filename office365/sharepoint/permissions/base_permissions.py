@@ -1,5 +1,4 @@
-import inspect
-from typing import Iterator
+from typing import Any, Iterator, Self, Union
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.permissions.kind import PermissionKind
@@ -9,59 +8,73 @@ class BasePermissions(ClientValue):
     """Specifies a set of built-in permissions."""
 
     def __init__(self):
-        super(BasePermissions, self).__init__()
-        self.High = 0
-        self.Low = 0
+        super().__init__()
+        self.Low: int = 0
+        self.High: int = 0
+
+    def __repr__(self):
+        perms = self.permission_levels
+        return (
+            f"BasePermissions({', '.join(perms)})"
+            if perms
+            else "BasePermissions(Empty)"
+        )
 
     def __iter__(self) -> Iterator[str]:
-        for k, v in inspect.getmembers(PermissionKind):
-            if isinstance(v, int) and self.has(v):
-                yield k
+        for perm in PermissionKind:
+            if perm != PermissionKind.EmptyMask and self.has(perm):
+                yield perm.name
 
-    def set(self, perm):
-        """
-        Assigns the permission
-        :type perm: int
-        """
+    def __contains__(self, perm: Union[PermissionKind, int]) -> bool:
+        return self.has(perm)
+
+    def set(self, perm: Union[PermissionKind, int]) -> None:
+        """Sets a permission with support for both enum and raw integer values."""
+        if isinstance(perm, int):
+            perm = PermissionKind(perm)
+
         if perm == PermissionKind.FullMask:
-            self.Low = 65535
-            self.High = 65535
+            self.Low = self.High = 0xFFFF
         elif perm == PermissionKind.EmptyMask:
-            self.Low = 0
-            self.High = 0
+            self.Low = self.High = 0
         else:
-            high = perm - 1
-            low = 1
-            if 0 <= high < 32:
-                self.Low |= low << high
-            else:
-                if high < 32 or high >= 64:
-                    return
-                self.High |= low << high - 32
+            bit_pos = perm.value - 1
+            mask = 1 << (bit_pos % 32)
 
-    def has(self, perm: int) -> bool:
-        """Determines whether the current instance has the specified permission."""
+            if bit_pos < 32:
+                self.High |= mask
+            elif 32 <= bit_pos < 64:
+                self.Low |= mask
+
+    def has(self, perm: Union[PermissionKind, int]) -> bool:
+        """Checks if permission is set with support for both enum and integer values."""
+        if isinstance(perm, int):
+            perm = PermissionKind(perm)
+
         if perm == PermissionKind.EmptyMask:
             return True
         if perm == PermissionKind.FullMask:
-            if int(self.High) & 32767 == 32767:
-                return int(self.Low) == 65535
+            return self.Low == 0xFFFF and self.High == 0xFFFF
+
+        bit_pos = perm.value - 1
+        if not 0 <= bit_pos < 64:
             return False
-        high = perm - 1
-        low = 1
-        if 0 <= high < 32:
-            return 0 != (int(self.Low) & (low << high))
-        if 32 <= high < 64:
-            return 0 != (int(self.High) & (low << high - 32))
-        return False
+
+        mask = 1 << (bit_pos % 32)
+        return bool(self.High & mask) if bit_pos < 32 else bool(self.Low & mask)
 
     def clear_all(self):
         """Clears all permissions for the current instance."""
-        self.Low = 0
         self.High = 0
+        self.Low = 0
 
     def to_json(self, json_format=None):
-        return {"Low": str(self.High), "High": str(self.Low)}
+        return {"Low": str(self.Low), "High": str(self.High)}
+
+    def set_property(self, k: str, v: Any, persist_changes: bool = True) -> Self:
+        if k in ("Low", "High"):
+            setattr(self, k, int(v))
+        return self
 
     @property
     def permission_levels(self):

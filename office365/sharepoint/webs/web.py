@@ -1094,7 +1094,9 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListByTitle", [title], self.resource_path),
         )
 
-    def does_user_have_permissions(self, permission_mask):
+    def does_user_have_permissions(
+        self, permission_mask: BasePermissions
+    ) -> ClientResult[bool]:
         """Returns whether the current user has the given set of permissions.
 
         :param BasePermissions permission_mask: Specifies the set of permissions to verify.
