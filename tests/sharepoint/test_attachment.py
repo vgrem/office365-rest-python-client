@@ -3,9 +3,6 @@ from io import BytesIO
 from random import randint
 
 from office365.sharepoint.attachments.attachment import Attachment
-from office365.sharepoint.attachments.creation_information import (
-    AttachmentCreationInformation,
-)
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.template_type import ListTemplateType
@@ -14,11 +11,11 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 class TestListItemAttachment(SPTestCase):
     attachment_file_name = "Sample.txt"
-    target_item = None  # type: ListItem
+    target_item: ListItem = None
     attachment_path = "{0}/../data/{1}".format(
         os.path.dirname(__file__), attachment_file_name
     )
-    target_attachment = None  # type: Attachment
+    target_attachment: Attachment = None
 
     @classmethod
     def setUpClass(cls):
@@ -34,30 +31,23 @@ class TestListItemAttachment(SPTestCase):
     @classmethod
     def tearDownClass(cls):
         cls.target_item.delete_object().execute_query()
+        cls.target_item.parent_list.delete_object().execute_query()
 
     def test1_upload_attachment(self):
-        with open(self.attachment_path, "rb") as content_file:
-            file_content = content_file.read()
-        attachment_file_information = AttachmentCreationInformation(
-            self.attachment_file_name, file_content
-        )
-        attachment = self.__class__.target_item.attachment_files.add(
-            attachment_file_information
-        ).execute_query()
-        self.assertIsNotNone(attachment.file_name)
-        self.__class__.target_attachment = attachment
+        with open(self.attachment_path, "rb") as f:
+           result = self.__class__.target_item.attachment_files.upload(f).execute_query()
+        self.assertIsNotNone(result.file_name)
+        self.__class__.target_attachment = result
 
     def test2_list_attachments(self):
-        attachment_files = (
-            self.__class__.target_item.attachment_files.get().execute_query()
-        )
-        self.assertEqual(len(attachment_files), 1)
+        result = self.__class__.target_item.attachment_files.get().execute_query()
+        self.assertEqual(len(result), 1)
 
     def test3_get_by_filename(self):
-        attachment_file = self.__class__.target_item.attachment_files.get_by_filename(
+        result = self.__class__.target_item.attachment_files.get_by_filename(
             self.attachment_file_name
         )
-        self.assertIsNotNone(attachment_file.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test4_download_attachment(self):
         f = BytesIO()
@@ -76,7 +66,5 @@ class TestListItemAttachment(SPTestCase):
 
     def test6_delete_attachments(self):
         self.__class__.target_attachment.delete_object().execute_query()
-        attachment_files = (
-            self.__class__.target_item.attachment_files.get().execute_query()
-        )
-        self.assertEqual(len(attachment_files), 0)
+        result = self.__class__.target_item.attachment_files.get().execute_query()
+        self.assertEqual(len(result), 0)

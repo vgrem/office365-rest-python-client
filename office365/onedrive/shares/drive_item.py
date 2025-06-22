@@ -14,8 +14,7 @@ class SharedDriveItem(BaseItem):
     """The sharedDriveItem resource is returned when using the Shares API to access a shared driveItem."""
 
     @property
-    def items(self):
-        # type: () -> EntityCollection[DriveItem]
+    def items(self) -> EntityCollection[DriveItem]:
         """All driveItems contained in the sharing root. This collection cannot be enumerated."""
         return self.properties.get(
             "items",
@@ -25,8 +24,7 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def list_item(self):
-        # type: () -> ListItem
+    def list_item(self) -> ListItem:
         """Used to access the underlying listItem"""
         return self.properties.get(
             "listItem",
@@ -34,16 +32,14 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def list(self):
-        # type: () -> List
+    def list(self) -> List:
         """Used to access the underlying list"""
         return self.properties.get(
             "list", List(self.context, ResourcePath("list", self.resource_path))
         )
 
     @property
-    def drive_item(self):
-        # type: () -> DriveItem
+    def drive_item(self) -> DriveItem:
         """Used to access the underlying driveItem"""
         return self.properties.get(
             "driveItem",
@@ -51,12 +47,12 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def owner(self):
+    def owner(self) -> IdentitySet:
         """Information about the owner of the shared item being referenced."""
         return self.properties.get("owner", IdentitySet())
 
     @property
-    def root(self):
+    def root(self) -> DriveItem:
         """Used to access the underlying driveItem.
         Deprecated -- use driveItem instead.
         """
@@ -68,14 +64,14 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def site(self):
+    def site(self) -> Site:
         """Used to access the underlying site"""
         return self.properties.get(
             "site", Site(self.context, ResourcePath("site", self.resource_path))
         )
 
     @property
-    def permission(self):
+    def permission(self) -> Permission:
         """Used to access the permission representing the underlying sharing link"""
         return self.properties.get(
             "permission",

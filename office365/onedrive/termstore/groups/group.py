@@ -9,23 +9,20 @@ class Group(Entity):
     """Term Group"""
 
     def __str__(self):
-        return self.display_name
+        return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Name of the group."""
         return self.properties.get("displayName", None)
 
     @property
-    def parent_site_id(self):
-        # type: () -> Optional[str]
+    def parent_site_id(self) -> Optional[str]:
         """ID of the parent site of this group."""
         return self.properties.get("parentSiteId", None)
 
     @property
-    def sets(self):
-        # type: () -> SetCollection
+    def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""
         return self.properties.get(
             "sets",

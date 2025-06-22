@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
@@ -32,7 +32,7 @@ class ListCollection(EntityCollection[List]):
     def add(
         self,
         display_name: str,
-        list_template: ListTemplateType = ListTemplateType.genericList,
+        list_template: Union[ListTemplateType, str] = ListTemplateType.genericList,
     ) -> List:
         """Create a new list with the specified properties.
 
@@ -47,7 +47,7 @@ class ListCollection(EntityCollection[List]):
         self.add_child(return_type)
         payload = {
             "displayName": display_name,
-            "list": {"template": list_template.value},
+            "list": {"template": str(list_template)},
         }
         qry = CreateEntityQuery(self, payload, return_type)
         self.context.add_query(qry)

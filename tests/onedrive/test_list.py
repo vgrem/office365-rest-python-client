@@ -1,5 +1,6 @@
 from office365.onedrive.columns.definition import ColumnDefinition
 from office365.onedrive.lists.list import List
+from office365.onedrive.lists.template_type import ListTemplateType
 from tests import create_unique_name
 from tests.graph_case import GraphTestCase
 
@@ -7,8 +8,8 @@ from tests.graph_case import GraphTestCase
 class TestList(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_list = None  # type: List
-    target_column = None  # type: ColumnDefinition
+    target_list: List = None
+    target_column: ColumnDefinition = None
     list_name = create_unique_name("Documents")
 
     @classmethod
@@ -21,7 +22,7 @@ class TestList(GraphTestCase):
 
     def test1_create_list(self):
         result = self.client.sites.root.lists.add(
-            self.list_name, "documentLibrary"
+            self.list_name, ListTemplateType.documentLibrary
         ).execute_query()
         self.__class__.target_list = result
 
@@ -30,18 +31,18 @@ class TestList(GraphTestCase):
         self.assertIsNotNone(target_list.resource_path)
 
     def test3_get_list_items(self):
-        items = self.target_list.items.get().execute_query()
-        self.assertIsNotNone(items.resource_path)
+        result = self.target_list.items.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test4_get_list_columns(self):
-        columns = self.target_list.columns.get().execute_query()
-        self.assertIsNotNone(columns.resource_path)
+        result = self.target_list.columns.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test5_create_list_column(self):
         column_name = create_unique_name("Text")
-        text_column = self.target_list.columns.add_text(column_name).execute_query()
-        self.assertIsNotNone(text_column.resource_path)
-        self.__class__.target_column = text_column
+        result = self.target_list.columns.add_text(column_name).execute_query()
+        self.assertIsNotNone(result.resource_path)
+        self.__class__.target_column = result
 
     def test6_delete_list_column(self):
         column_to_del = self.__class__.target_column

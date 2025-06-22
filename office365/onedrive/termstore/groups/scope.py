@@ -1,4 +1,7 @@
-class TermGroupScope:
+from enum import Enum
+
+
+class TermGroupScope(Enum):
     """Specifies the values different group types can take within the termStore."""
 
     global_ = 0

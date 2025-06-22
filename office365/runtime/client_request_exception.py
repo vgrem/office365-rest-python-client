@@ -1,42 +1,44 @@
+from typing import Any, Dict, Optional
+
 from requests import RequestException
 
 
 class ClientRequestException(RequestException):
+    """Custom exception for client requests with enhanced error handling."""
+
     def __init__(self, *args, **kwargs):
-        super(ClientRequestException, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self._error_info = self._get_error_info()
+        self.args = (self.code, self.message) + args
+
+    def _get_error_info(self) -> Dict[str, Any]:
+        """Extract and parse error info from response."""
+        if not getattr(self, "response", None):
+            return {}
+
         content_type = (
-            self.response.headers.get("Content-Type", "").lower().split(";")[0]
+            self.response.headers.get("Content-Type", "").split(";")[0].lower()
         )
-        if self.response.content and content_type == "application/json":
-            self.payload = self.response.json()
-        else:
-            self.payload = None
-        args = (self.code, self.message) + args
-        self.args = args
+        if content_type == "application/json" and self.response.content:
+            try:
+                payload = self.response.json()
+                return payload.get("error", {})
+            except ValueError:
+                pass
+        return {}
 
     @property
-    def code(self):
-        if self.payload:
-            error = self.payload.get("error")
-            if error:
-                return error.get("code")
+    def code(self) -> Optional[str]:
+        return self._error_info.get("code")
 
     @property
-    def message_lang(self):
-        if self.payload:
-            error = self.payload.get("error")
-            if error:
-                message = error.get("message")
-                if isinstance(message, dict):
-                    return message.get("lang")
+    def message_lang(self) -> Optional[str]:
+        msg = self._error_info.get("message")
+        return msg.get("lang") if isinstance(msg, dict) else None
 
     @property
-    def message(self):
-        # type: () -> str
-        if self.payload:
-            error = self.payload.get("error")
-            if error:
-                message = error.get("message")
-                if isinstance(message, dict):
-                    return message.get("value")
-                return message
+    def message(self) -> str:
+        msg = self._error_info.get("message")
+        if isinstance(msg, dict):
+            return str(msg.get("value", ""))
+        return str(msg or self.args[0] if self.args else "")

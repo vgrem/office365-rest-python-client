@@ -10,7 +10,7 @@ from tests import test_client_credentials, test_team_site_url
 class SPTestCase(TestCase):
     """SharePoint specific test case base class"""
 
-    client = None  # type: ClientContext
+    client: ClientContext = None
 
     @classmethod
     def setUpClass(cls):

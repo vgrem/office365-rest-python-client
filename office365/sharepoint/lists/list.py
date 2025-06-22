@@ -584,7 +584,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def save_as_template(self, file_name, name, description, save_data):
+    def save_as_template(
+        self, file_name: str, name: str, description: str, save_data: bool
+    ) -> Self:
         """
         Saves the list as a template in the list template gallery and includes the option of saving with or
         without the data that is contained in the current list.
@@ -604,7 +606,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def get_item_by_unique_id(self, unique_id):
+    def get_item_by_unique_id(self, unique_id: str) -> ListItem:
         """
         Returns the list item with the specified ID.
         :param str unique_id: The unique ID that is associated with the list item.
@@ -812,7 +814,10 @@ class List(SecurableObject):
         return return_type
 
     def render_list_data_as_stream(
-        self, view_xml=None, render_options=None, expand_groups=None
+        self,
+        view_xml: str = None,
+        render_options: int = None,
+        expand_groups: bool = None,
     ) -> ClientResult[bytes]:
         """Returns the data for the specified query view.
 

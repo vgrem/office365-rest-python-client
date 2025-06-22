@@ -29,3 +29,6 @@ class ListTemplateType(Enum):
     webTemplateCatalog = "webTemplateCatalog"
 
     userInformation = "userInformation"
+
+    def __str__(self):
+        return self.value

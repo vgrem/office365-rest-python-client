@@ -366,7 +366,9 @@ class File(AbstractFile):
         """
 
         def _moveto(destination_folder: Folder) -> None:
-            file_url = "/".join([str(destination_folder.server_relative_url), self.name])
+            file_url = "/".join(
+                [str(destination_folder.server_relative_url), self.name]
+            )
 
             params = {"newurl": file_url, "flags": flag}
             qry = ServiceOperationQuery(self, "moveto", params)

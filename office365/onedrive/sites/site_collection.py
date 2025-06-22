@@ -19,7 +19,7 @@ class SiteCollection(ClientValue):
         :param str data_location_code: The geographic region code for where this site collection resides
         :param str archival_details: Represents the archival details of a siteCollection.
         """
-        super(SiteCollection, self).__init__()
+        super().__init__()
         self.root = root
         self.hostname = hostname
         self.dataLocationCode = data_location_code

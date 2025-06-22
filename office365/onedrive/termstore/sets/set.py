@@ -18,8 +18,7 @@ class Set(Entity):
         return repr(self.localized_names)
 
     @property
-    def children(self):
-        # type: () -> TermCollection
+    def children(self) -> TermCollection:
         """Children terms of set in term store."""
         return self.properties.get(
             "children",
@@ -31,8 +30,7 @@ class Set(Entity):
         )
 
     @property
-    def localized_names(self):
-        # type: () -> ClientValueCollection[LocalizedName]
+    def localized_names(self) -> ClientValueCollection[LocalizedName]:
         """"""
         return self.properties.get(
             "localizedNames", ClientValueCollection(LocalizedName)
@@ -49,8 +47,7 @@ class Set(Entity):
         )
 
     @property
-    def relations(self):
-        # type: () -> EntityCollection[Relation]
+    def relations(self) -> EntityCollection[Relation]:
         """Indicates which terms have been pinned or reused directly under the set."""
         return self.properties.get(
             "relations",
@@ -60,8 +57,7 @@ class Set(Entity):
         )
 
     @property
-    def terms(self):
-        # type: () -> TermCollection
+    def terms(self) -> TermCollection:
         """All the terms under the set."""
         return self.properties.get(
             "terms",

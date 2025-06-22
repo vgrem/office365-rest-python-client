@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
+
+if TYPE_CHECKING:
+    from office365.onedrive.termstore.groups.group import Group
 
 
 class SetCollection(EntityCollection[Set]):
@@ -10,15 +17,14 @@ class SetCollection(EntityCollection[Set]):
         """
         :param office365.onedrive.termstore.groups.group.Group parent_group: The parent group that contains the set
         """
-        super(SetCollection, self).__init__(context, Set, resource_path)
+        super().__init__(context, Set, resource_path)
         self._parent_group = parent_group
 
-    def get_by_name(self, name):
-        # type: (str) -> Set
+    def get_by_name(self, name: str) -> Set:
         """Returns the TermSet specified by its name."""
         return self.single("displayName eq '{0}'".format(name))
 
-    def add(self, name, parent_group=None):
+    def add(self, name: str, parent_group: Group = None) -> Set:
         """Create a new set object.
 
         :param office365.onedrive.termstore.group.Group parent_group: The parent group that contains the set.

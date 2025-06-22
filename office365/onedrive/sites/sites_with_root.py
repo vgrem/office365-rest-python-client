@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.internal.paths.site import SitePath
@@ -14,14 +16,14 @@ class SitesWithRoot(EntityCollection[Site]):
     def __init__(self, context, resource_path=None):
         super(SitesWithRoot, self).__init__(context, Site, resource_path)
 
-    def get_all_sites(self):
+    def get_all_sites(self) -> SitesWithRoot:
         """List root sites across geographies in an organization."""
         return_type = SitesWithRoot(self.context)
         qry = FunctionQuery(self, "getAllSites", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_by_path(self, path):
+    def get_by_path(self, path: str) -> Site:
         """Address Site resource by server relative path
 
         :param str path: Server relative path
@@ -33,7 +35,7 @@ class SitesWithRoot(EntityCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_url(self, url):
+    def get_by_url(self, url: str) -> Site:
         """Address Site resource by absolute url
 
         :param str url: Site absolute url
@@ -43,7 +45,7 @@ class SitesWithRoot(EntityCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
-    def remove(self, sites):
+    def remove(self, sites: SitesWithRoot) -> SitesWithRoot:
         """
         :type sites: SitesWithRoot
         """
@@ -55,8 +57,7 @@ class SitesWithRoot(EntityCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
-    def search(self, query_text):
-        # type: (str) -> "SitesWithRoot"
+    def search(self, query_text: str) -> SitesWithRoot:
         """
         Search across a SharePoint tenant for sites that match keywords provided.
 
@@ -71,8 +72,7 @@ class SitesWithRoot(EntityCollection[Site]):
         return return_type
 
     @property
-    def root(self):
-        # type: () -> Site
+    def root(self) -> Site:
         return self.properties.get(
             "root", Site(self.context, RootPath(self.resource_path, self.resource_path))
         )
