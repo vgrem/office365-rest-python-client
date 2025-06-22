@@ -13,9 +13,11 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
+from office365.sharepoint.directory.user import User
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
@@ -37,7 +39,7 @@ class Folder(Entity):
         return self.name or self.entity_type_name
 
     def __repr__(self):
-        return self.serverRelativeUrl or self.unique_id or self.entity_type_name
+        return self.server_relative_url or self.unique_id or self.entity_type_name
 
     @staticmethod
     def from_url(abs_url):
@@ -63,6 +65,12 @@ class Folder(Entity):
         return MoveCopyUtil.download_folder(
             self, download_file, after_file_downloaded, recursive
         )
+
+    def get_user_effective_permissions(
+        self, user: str | User
+    ) -> ClientResult[BasePermissions]:
+        """Returns the user permissions for a folder"""
+        return self.list_item_all_fields.get_user_effective_permissions(user)
 
     def get_folders(self, recursive=False):
         """
@@ -119,7 +127,7 @@ class Folder(Entity):
 
         def _move_to(destination_folder: Folder) -> None:
             destination_url = "/".join(
-                [destination_folder.serverRelativeUrl, self.name]
+                [destination_folder.server_relative_url, self.name]
             )
             qry = ServiceOperationQuery(self, "MoveTo", {"newUrl": destination_url})
 
@@ -389,7 +397,7 @@ class Folder(Entity):
 
         def _copy_to(destination_folder: Folder) -> None:
             destination_url = "/".join(
-                [destination_folder.serverRelativeUrl, self.name]
+                [destination_folder.server_relative_url, self.name]
             )
             return_type.set_property("ServerRelativeUrl", destination_url)
             opts = MoveCopyOptions(
@@ -397,7 +405,7 @@ class Folder(Entity):
                 reset_author_and_created_on_copy=reset_author_and_created,
             )
             MoveCopyUtil.copy_folder(
-                self.context, self.serverRelativeUrl, destination_url, opts
+                self.context, self.server_relative_url, destination_url, opts
             )
 
         def _source_folder_resolved():
@@ -554,7 +562,7 @@ class Folder(Entity):
         return self.properties.get("TimeCreated", datetime.min)
 
     @property
-    def serverRelativeUrl(self) -> Optional[str]:
+    def server_relative_url(self) -> Optional[str]:
         """Gets the server-relative URL of the list folder."""
         return self.properties.get("ServerRelativeUrl", None)
 

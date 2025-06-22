@@ -23,7 +23,7 @@ class DocumentSet(Folder):
 
         def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
-            folder_url = parent_folder.serverRelativeUrl + "/" + name
+            folder_url = parent_folder.server_relative_url + "/" + name
             return_type.set_property("ServerRelativeUrl", folder_url)
 
             def _construct_request(request: RequestOptions) -> None:

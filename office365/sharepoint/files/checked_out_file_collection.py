@@ -9,7 +9,7 @@ class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
             context, CheckedOutFile, resource_path
         )
 
-    def get_by_path(self, decoded_url):
+    def get_by_path(self, decoded_url: str) -> CheckedOutFile:
         """
         Get a collection of checked-out files at the specified path.
 

@@ -13,4 +13,4 @@ file_from = ctx.web.get_file_by_server_relative_url(
 folder_to_url = "Shared Documents/archive"
 new_filename = "Financial 2023.xlsx"
 file_to = file_from.copyto(folder_to_url, True, new_filename).execute_query()
-print("File copied into '{0}'".format(file_to.serverRelativeUrl))
+print("File copied into '{0}'".format(file_to.server_relative_url))

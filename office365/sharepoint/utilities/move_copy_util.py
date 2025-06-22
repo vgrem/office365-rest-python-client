@@ -162,8 +162,8 @@ class MoveCopyUtil(Entity):
 
         def _get_relative_file_path(file: File) -> str:
             return os.path.join(
-                file.parent_folder.serverRelativeUrl.replace(
-                    remove_folder.serverRelativeUrl, ""
+                file.parent_folder.server_relative_url.replace(
+                    remove_folder.server_relative_url, ""
                 ),
                 file.name,
             )

@@ -23,7 +23,7 @@ folder_to_url = "Shared Documents/{0}".format(create_unique_name("out"))
 print("Moving folder...")
 opt = MoveCopyOptions()
 MoveCopyUtil.move_folder(
-    ctx, folder_from.serverRelativeUrl, folder_to_url, opt
+    ctx, folder_from.server_relative_url, folder_to_url, opt
 ).execute_query()
 print("Folder has been moved into '{0}'".format(folder_to_url))
 

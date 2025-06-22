@@ -19,7 +19,7 @@ def run_files_import(target_folder, files_amount=None):
         target_file = target_folder.files.upload(path, file_name).execute_query()
         print(
             "({0} of {1}) File '{2}' has been uploaded".format(
-                file_index, files_amount, target_file.serverRelativeUrl
+                file_index, files_amount, target_file.server_relative_url
             )
         )
 
@@ -34,7 +34,7 @@ def run_folders_import(
         folder_name = fake.date()
         target_folder = target_lib.root_folder.add(folder_name).execute_query()
         print(
-            f"({folder_index} of {folders_amount}) Folder '{target_folder.serverRelativeUrl}' has been created"
+            f"({folder_index} of {folders_amount}) Folder '{target_folder.server_relative_url}' has been created"
         )
 
         if include_files:

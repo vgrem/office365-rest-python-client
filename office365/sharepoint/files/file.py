@@ -67,7 +67,7 @@ class File(AbstractFile):
     or a file in a folder."""
 
     def __repr__(self):
-        return self.serverRelativeUrl or self.unique_id or self.entity_type_name
+        return self.server_relative_url or self.unique_id or self.entity_type_name
 
     def __str__(self):
         return self.name or self.entity_type_name
@@ -96,7 +96,7 @@ class File(AbstractFile):
             from office365.sharepoint.webs.web import Web
 
             Web.create_anonymous_link(
-                self.context, self.serverRelativeUrl, is_edit_link, return_type
+                self.context, self.server_relative_url, is_edit_link, return_type
             )
 
         self.ensure_property("ServerRelativeUrl", _file_loaded)
@@ -121,7 +121,7 @@ class File(AbstractFile):
 
             Web.create_anonymous_link_with_expiration(
                 self.context,
-                self.serverRelativeUrl,
+                self.server_relative_url,
                 is_edit_link,
                 expiration.isoformat(timespec="seconds"),
                 return_type,
@@ -303,7 +303,7 @@ class File(AbstractFile):
 
         def _copyto(destination_folder: Folder) -> None:
             file_path = "/".join(
-                [str(destination_folder.serverRelativeUrl), file_name or self.name]
+                [str(destination_folder.server_relative_url), file_name or self.name]
             )
             return_type.set_property("ServerRelativeUrl", file_path)
 
@@ -366,7 +366,7 @@ class File(AbstractFile):
         """
 
         def _moveto(destination_folder: Folder) -> None:
-            file_url = "/".join([str(destination_folder.serverRelativeUrl), self.name])
+            file_url = "/".join([str(destination_folder.server_relative_url), self.name])
 
             params = {"newurl": file_url, "flags": flag}
             qry = ServiceOperationQuery(self, "moveto", params)
@@ -875,7 +875,7 @@ class File(AbstractFile):
         )
 
     @property
-    def serverRelativeUrl(self) -> Optional[str]:
+    def server_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the file based on the URL for the server."""
         return self.properties.get("ServerRelativeUrl", None)
 

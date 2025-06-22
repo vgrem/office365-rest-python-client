@@ -30,7 +30,7 @@ class ListExporter(object):
         def _download_content(list_item: ListItem) -> None:
             def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 item_path = list_item.properties["FileRef"].replace(
-                    source_list.root_folder.serverRelativeUrl, ""
+                    source_list.root_folder.server_relative_url, ""
                 )
                 _append_file(item_path, result.value)
 

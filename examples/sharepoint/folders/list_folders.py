@@ -12,5 +12,5 @@ folders = (
 )
 for folder in folders:
     print(
-        "Url: {0}, Created: {1}".format(folder.serverRelativeUrl, folder.time_created)
+        "Url: {0}, Created: {1}".format(folder.server_relative_url, folder.time_created)
     )

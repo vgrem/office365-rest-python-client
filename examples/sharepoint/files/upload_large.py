@@ -8,13 +8,10 @@ from office365.sharepoint.client_context import ClientContext
 from tests import test_team_site_url, test_user_credentials
 
 
-def print_upload_progress(offset):
-    # type: (int) -> None
+def print_upload_progress(offset: int) -> None:
     file_size = os.path.getsize(local_path)
     print(
-        "Uploaded '{0}' bytes from '{1}'...[{2}%]".format(
-            offset, file_size, round(offset / file_size * 100, 2)
-        )
+        f"Uploaded '{offset}' bytes from '{file_size}'...[{round(offset / file_size * 100, 2)}%]"
     )
 
 
@@ -29,4 +26,4 @@ with open(local_path, "rb") as f:
         f, size_chunk, print_upload_progress
     ).execute_query()
 
-print("File {0} has been uploaded successfully".format(uploaded_file.serverRelativeUrl))
+print(f"File {uploaded_file.server_relative_url} has been uploaded successfully")

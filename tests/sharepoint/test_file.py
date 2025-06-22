@@ -49,7 +49,7 @@ class TestSharePointFile(SPTestCase):
             .get()
             .execute_query()
         )
-        self.assertIsNotNone(file.serverRelativeUrl)
+        self.assertIsNotNone(file.server_relative_url)
 
     def test5_create_file_anon_link(self):
         result = self.__class__.file.create_anonymous_link(False).execute_query()
@@ -99,12 +99,12 @@ class TestSharePointFile(SPTestCase):
 
     def test_15_copy_file(self):
         copied_file = self.__class__.file.copyto(self.folder_to, True).execute_query()
-        self.assertIsNotNone(copied_file.serverRelativeUrl)
+        self.assertIsNotNone(copied_file.server_relative_url)
 
     def test_16_move_file(self):
         file = self.__class__.file
         moved_file = file.moveto(self.folder_to, 1).get().execute_query()
-        self.assertIsNotNone(moved_file.serverRelativeUrl)
+        self.assertIsNotNone(moved_file.server_relative_url)
 
     def test_17_recycle_file(self):
         files_before = self.folder_to.files.get().execute_query()
@@ -115,11 +115,9 @@ class TestSharePointFile(SPTestCase):
         self.__class__.deleted_file_guid = result.value
 
     def test_18_restore_file(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(
-            self.__class__.deleted_file_guid
-        )
-        recycle_item.restore().execute_query()
-        self.assertIsNotNone(recycle_item.resource_path)
+        result = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_file_guid)
+        result.restore().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     # def test_18_create_template_file(self):
     #    file_url = "WikiPage.aspx"

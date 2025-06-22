@@ -19,12 +19,12 @@ for idx, item in enumerate(items):  # type: int, ListItem
     if item.file_system_object_type == FileSystemObjectType.Folder:
         print(
             "({0} of {1})  Folder: {2}".format(
-                idx, len(items), item.folder.serverRelativeUrl
+                idx, len(items), item.folder.server_relative_url
             )
         )
     else:
         print(
             "({0} of {1}) File: {2}".format(
-                idx, len(items), item.file.serverRelativeUrl
+                idx, len(items), item.file.server_relative_url
             )
         )

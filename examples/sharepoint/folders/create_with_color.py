@@ -13,4 +13,4 @@ root_folder = ctx.web.default_document_library().root_folder
 folder = root_folder.folders.add(
     "Report123", color_hex=FolderColors.DarkGreen
 ).execute_query()
-print("Folder : {0} has been created".format(folder.serverRelativeUrl))
+print("Folder : {0} has been created".format(folder.server_relative_url))

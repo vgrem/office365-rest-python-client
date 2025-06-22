@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import os
 import uuid
-from typing import IO, TYPE_CHECKING, Callable, Union, cast
+from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
@@ -30,7 +30,7 @@ class FileCollection(EntityCollection[File]):
         resource_path: ResourcePath = None,
         parent: Folder = None,
     ) -> None:
-        super(FileCollection, self).__init__(context, File, resource_path, parent)
+        super().__init__(context, File, resource_path, parent)
 
     def get_published_file(self, base_file_path: str) -> FileStatus:
         """ """
@@ -69,22 +69,27 @@ class FileCollection(EntityCollection[File]):
             content = file_object.read(chunk_size)
             h.update(content)
 
-            return_type.upload_with_checksum(
-                upload_id, h.hexdigest(), content
-            )  # .after_execute(_upload_session)
+            return_type.upload_with_checksum(upload_id, h.hexdigest(), content)
 
         return self.add(file_name, None, True).after_execute(_upload_session)
 
     def create_upload_session(
-        self, file, chunk_size, chunk_uploaded=None, file_name=None, **kwargs
-    ):
-        # type: (IO|str, int, Callable[[int, ...], None], str, ...) -> File
-        """Upload a file as multiple chunks
-        :param str or typing.IO file: path where file to upload resides or file handle
-        :param int chunk_size: upload chunk size (in bytes)
-        :param (long)->None or None chunk_uploaded: uploaded event
-        :param str file_name: custom file name
-        :param kwargs: arguments to pass to chunk_uploaded function
+        self,
+        file: IO | str,
+        chunk_size: int,
+        chunk_uploaded: Optional[Callable[[int, Any], None]] = None,
+        file_name: str = None,
+        **kwargs: Any,
+    ) -> File:
+        """
+        Creates an upload session with progress callback support.
+
+        Args:
+            file: File object or path to upload
+            chunk_size: Size of upload chunks in bytes
+            chunk_uploaded: Callback that accepts offset and optional additional args
+            file_name: Optional name for the uploaded file
+            **kwargs: Additional arguments passed to the upload implementation
         """
 
         auto_close = False
@@ -129,7 +134,7 @@ class FileCollection(EntityCollection[File]):
         else:
             return self.add(file_name, file.read(), True)
 
-    def add(self, url, content, overwrite=False):
+    def add(self, url: str, content: Optional[bytes | str] = None, overwrite=False):
         """
         Adds a file to the collection based on provided file creation information. A reference to the SP.File that
         was added is returned.

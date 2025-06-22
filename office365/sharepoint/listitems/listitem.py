@@ -79,7 +79,7 @@ class ListItem(SecurableObject):
         def _lock_record_item():
             SPPolicyStoreProxy.lock_record_item(
                 self.context,
-                list_folder.serverRelativeUrl,
+                list_folder.server_relative_url,
                 self.id,
                 return_type=return_type,
             )

@@ -10,7 +10,7 @@ from tests import test_team_site_url, test_user_credentials
 
 def print_file(f):
     # type: (File) -> None
-    print(f.serverRelativeUrl)
+    print(f.server_relative_url)
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)

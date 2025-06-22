@@ -21,7 +21,7 @@ folder_to = ctx.web.get_folder_by_server_relative_url("Shared Documents/Archive/
 folder = folder_from.copy_to(folder_to).execute_query()
 print(
     "Folder has been copied from '{0}' into '{1}'".format(
-        folder_from.serverRelativeUrl, folder.serverRelativeUrl
+        folder_from.server_relative_url, folder.server_relative_url
     )
 )
 

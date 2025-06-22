@@ -19,7 +19,7 @@ def enum_folder(parent_folder, action):
 
 def print_folder_stat(folder):
     # type: (Folder) -> None
-    print(folder.serverRelativeUrl)
+    print(folder.server_relative_url)
     print(folder.time_created)
 
 

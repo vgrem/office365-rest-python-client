@@ -12,7 +12,7 @@ from tests import test_client_credentials, test_team_site_url
 
 def print_progress(file):
     # type: (File) -> None
-    print("File {0} has been  downloaded".format(file.serverRelativeUrl))
+    print("File {0} has been  downloaded".format(file.server_relative_url))
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

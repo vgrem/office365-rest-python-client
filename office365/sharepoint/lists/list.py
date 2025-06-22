@@ -189,7 +189,7 @@ class List(SecurableObject):
         def _get_compliance_tag():
             SPPolicyStoreProxy.get_list_compliance_tag(
                 self.context,
-                list_folder.serverRelativeUrl,
+                list_folder.server_relative_url,
                 return_type=return_type,
             )
 
@@ -211,7 +211,7 @@ class List(SecurableObject):
 
             SPPolicyStoreProxy.set_list_compliance_tag(
                 self.context,
-                list_folder.serverRelativeUrl,
+                list_folder.server_relative_url,
                 compliance_tag_value,
                 block_delete,
                 block_edit,
@@ -233,7 +233,7 @@ class List(SecurableObject):
 
         def _loaded():
             MetadataNavigationSettings.get_configured_settings(
-                self.context, self.root_folder.serverRelativeUrl, return_type
+                self.context, self.root_folder.server_relative_url, return_type
             )
 
         self.root_folder.ensure_property("ServerRelativeUrl", _loaded)
@@ -254,7 +254,7 @@ class List(SecurableObject):
         self.ensure_property("Title", _loaded)
         return return_type
 
-    def get_sharing_settings(self):
+    def get_sharing_settings(self) -> ObjectSharingSettings:
         """Retrieves a sharing settings for a List"""
         return_type = ObjectSharingSettings(self.context)
 
@@ -262,7 +262,7 @@ class List(SecurableObject):
             from office365.sharepoint.webs.web import Web
 
             list_abs_path = SPResPath.create_absolute(
-                self.context.base_url, self.root_folder.serverRelativeUrl
+                self.context.base_url, self.root_folder.server_relative_url
             )
             Web.get_object_sharing_settings(
                 self.context, str(list_abs_path), return_type=return_type
@@ -280,7 +280,7 @@ class List(SecurableObject):
 
         def _list_loaded():
             list_abs_path = SPResPath.create_absolute(
-                self.context.base_url, self.root_folder.serverRelativeUrl
+                self.context.base_url, self.root_folder.server_relative_url
             )
             SiteScriptUtility.get_site_script_from_list(
                 self.context, str(list_abs_path), options, return_type=return_type
@@ -299,14 +299,14 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_all_rules(self):
+    def get_all_rules(self) -> ClientResult[ClientValueCollection[SPListRule]]:
         """Retrieves rules of a List"""
         return_type = ClientResult(self.context, ClientValueCollection(SPListRule))
         qry = ServiceOperationQuery(self, "GetAllRules", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_business_app_operation_status(self):
+    def get_business_app_operation_status(self) -> FlowSynchronizationResult:
         """ """
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(
@@ -317,7 +317,7 @@ class List(SecurableObject):
 
     def search_lookup_field_choices(
         self, target_field_name: str, begins_with_search_string: str, paging_info: str
-    ):
+    ) -> FlowSynchronizationResult:
         """
         :param str target_field_name:
         :param str begins_with_search_string:
@@ -357,7 +357,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_instances(self, retrieve_group_flows):
+    def sync_flow_instances(self, retrieve_group_flows: bool):
         """
         :param bool retrieve_group_flows:
         """
@@ -669,7 +669,7 @@ class List(SecurableObject):
 
             def _add_item():
                 creation_information.FolderUrl = (
-                    self.context.base_url + self.root_folder.serverRelativeUrl
+                    self.context.base_url + self.root_folder.server_relative_url
                 )
                 payload = {"parameters": creation_information}
                 next_qry = ServiceOperationQuery(
@@ -689,7 +689,7 @@ class List(SecurableObject):
         return_type = File(self.context)
 
         def _root_folder_loaded():
-            page_url = self.root_folder.serverRelativeUrl + "/" + page_name
+            page_url = self.root_folder.server_relative_url + "/" + page_name
             wiki_props = WikiPageCreationInformation(page_url, page_content)
             Utility.create_wiki_page_in_context_web(
                 self.context, wiki_props, return_type
@@ -767,7 +767,7 @@ class List(SecurableObject):
             [return_type.set_property(k, v, False) for k, v in item.properties.items()]
 
         def _get_item_by_url():
-            path = os.path.join(self.root_folder.serverRelativeUrl, url)
+            path = os.path.join(self.root_folder.server_relative_url, url)
             self.items.get_by_url(path).after_execute(_after_loaded, execute_first=True)
 
         self.ensure_property("RootFolder", _get_item_by_url)
@@ -883,7 +883,7 @@ class List(SecurableObject):
 
         def _reset_doc_id():
             doc_mng = DocumentId(self.context)
-            doc_mng.reset_doc_ids_in_library(self.root_folder.serverRelativeUrl)
+            doc_mng.reset_doc_ids_in_library(self.root_folder.server_relative_url)
 
         self.ensure_property("RootFolder", _reset_doc_id)
         return self

@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
@@ -10,18 +12,18 @@ class FileVersionCollection(EntityCollection[FileVersion]):
     def __init__(self, context, resource_path=None):
         super(FileVersionCollection, self).__init__(context, FileVersion, resource_path)
 
-    def get_by_id(self, version_id):
+    def get_by_id(self, version_id: str) -> FileVersion:
         """Gets the file version with the specified ID."""
         return FileVersion(
             self.context,
             ServiceOperationPath("getById", [version_id], self.resource_path),
         )
 
-    def get_by_label(self, label):
+    def get_by_label(self, label: str) -> FileVersion:
         """Gets the file version with the specified Label."""
         return self.single("VersionLabel eq '{0}'".format(label))
 
-    def delete_all(self):
+    def delete_all(self) -> Self:
         """Deletes all the file version objects in the collection."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)

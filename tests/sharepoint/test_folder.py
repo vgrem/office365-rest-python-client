@@ -55,7 +55,7 @@ class TestSharePointFolder(SPTestCase):
         result = self.__class__.input_folder.upload_file(
             "sample.txt", "Some content goes here..."
         ).execute_query()
-        self.assertIsNotNone(result.serverRelativeUrl)
+        self.assertIsNotNone(result.server_relative_url)
 
     def test9_list_files(self):
         folder = self.__class__.input_folder
@@ -83,7 +83,7 @@ class TestSharePointFolder(SPTestCase):
     def test_12_move_folder(self):
         folder = self.__class__.input_folder
         folder_to = folder.move_to(self.__class__.output_folder).execute_query()
-        self.assertIsNotNone(folder_to.serverRelativeUrl)
+        self.assertIsNotNone(folder_to.server_relative_url)
 
     def test_13_recycle_folder(self):
         result = self.__class__.input_folder.recycle().execute_query()

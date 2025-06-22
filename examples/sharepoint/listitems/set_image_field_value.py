@@ -18,7 +18,7 @@ def upload_image(web, file_path):
     file = lib.root_folder.upload_file(
         os.path.basename(file_path), file_content
     ).execute_query()
-    return file.serverRelativeUrl
+    return file.server_relative_url
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

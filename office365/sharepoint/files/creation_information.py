@@ -4,7 +4,7 @@ from office365.runtime.client_value import ClientValue
 class FileCreationInformation(ClientValue):
     """Represents properties that can be set when creating a file by using the FileCollection.Add method."""
 
-    def __init__(self, url=None, overwrite=False, content=None):
+    def __init__(self, url: str = None, overwrite: bool = False, content=None):
         """
         :param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative
             or absolute form. Its length MUST be equal to or greater than 1.
