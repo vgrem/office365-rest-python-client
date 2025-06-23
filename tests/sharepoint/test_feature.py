@@ -3,8 +3,17 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestFeature(SPTestCase):
-    target_feature = None  # type: Feature
+    result_feature: Feature = None
 
-    def test_1_get_site_features(self):
-        site_features = self.client.site.features.get().execute_query()
-        self.assertGreater(len(site_features), 0)
+    def test1_list_site_features(self):
+        result = self.client.site.features.get().execute_query()
+        self.assertGreater(len(result), 0)
+        self.__class__.result_feature = result[0]
+
+    def test2_get_site_feature(self):
+        result = self.result_feature.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+
+    def test3_list_web_features(self):
+        result = self.client.site.root_web.features.get().execute_query()
+        self.assertGreater(len(result), 0)

@@ -15,3 +15,7 @@ class Feature(Entity):
     def display_name(self) -> Optional[str]:
         """Gets the GUID that identifies this feature."""
         return self.properties.get("DisplayName", None)
+
+    @property
+    def property_ref_name(self) -> str:
+        return "DefinitionId"

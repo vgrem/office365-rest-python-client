@@ -21,7 +21,9 @@ class ObjectSharingInformation(Entity):
     """Provides information about the sharing state of a securable object."""
 
     @staticmethod
-    def can_current_user_share(context, doc_id):
+    def can_current_user_share(
+        context: ClientContext, doc_id: str
+    ) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -37,7 +39,9 @@ class ObjectSharingInformation(Entity):
         return return_type
 
     @staticmethod
-    def can_current_user_share_remote(context, doc_id):
+    def can_current_user_share_remote(
+        context: ClientContext, doc_id: str
+    ) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId, from a remote context.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -60,7 +64,7 @@ class ObjectSharingInformation(Entity):
 
     @staticmethod
     def get_web_sharing_information(
-        context,
+        context: ClientContext,
         exclude_current_user=None,
         exclude_site_admin=None,
         exclude_security_groups=None,

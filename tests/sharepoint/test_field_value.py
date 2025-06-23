@@ -18,9 +18,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestFieldValue(SPTestCase):
-    target_list = None  # type: List
-    target_item = None  # type: ListItem
-    target_field = None  # type: FieldMultiChoice
+    target_list: List = None
+    target_item: ListItem = None
+    target_field: FieldMultiChoice = None
 
     @classmethod
     def setUpClass(cls):
@@ -49,8 +49,8 @@ class TestFieldValue(SPTestCase):
         cls.target_list.delete_object().execute_query()
 
     def test1_get_web_available_fields(self):
-        web_fields = self.client.web.available_fields.get().execute_query()
-        self.assertIsNotNone(web_fields.resource_path)
+        result = self.client.web.available_fields.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test2_set_field_text_value(self):
         items = self.target_list.items
@@ -65,13 +65,13 @@ class TestFieldValue(SPTestCase):
         self.assertGreaterEqual(len(items), 1)
 
     def test3_create_multi_lookup_field(self):
-        lookup_field = self.target_list.fields.add_lookup_field(
+        result = self.target_list.fields.add_lookup_field(
             title=self.multi_lookup_field_name,
             lookup_list=self.target_list.id,
             lookup_field_name="Title",
             allow_multiple_values=True,
         ).execute_query()
-        self.assertEqual(lookup_field.type_as_string, "LookupMulti")
+        self.assertEqual(result.type_as_string, "LookupMulti")
 
     def test4_set_field_multi_lookup_value(self):
         item_to_update = self.__class__.target_list.get_item_by_id(
@@ -92,20 +92,18 @@ class TestFieldValue(SPTestCase):
 
     def test5_set_field_multi_user_value(self):
         current_user = self.client.web.current_user
-        multi_user_value = FieldMultiUserValue()
-        multi_user_value.add(FieldUserValue.from_user(current_user))
+        value = FieldMultiUserValue()
+        value.add(FieldUserValue.from_user(current_user))
         item_to_update = self.__class__.target_item
-        item_to_update.set_property(
-            "AssignedTo", multi_user_value
-        ).update().execute_query()
+        item_to_update.set_property("AssignedTo", value).update().execute_query()
 
     def test6_create_list_multi_choice_field(self):
         choices = ["Not Started", "In Progress", "Completed", "Deferred"]
-        created_field = self.target_list.fields.add_choice_field(
+        result = self.target_list.fields.add_choice_field(
             title=self.multi_choice_field_name, values=choices, multiple_values=True
         ).execute_query()
-        self.assertIsInstance(created_field, FieldMultiChoice)
-        self.__class__.target_field = created_field
+        self.assertIsInstance(result, FieldMultiChoice)
+        self.__class__.target_field = result
 
     def test7_set_field_multi_choice_value(self):
         item_to_update = self.__class__.target_item

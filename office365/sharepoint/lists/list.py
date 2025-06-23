@@ -882,15 +882,19 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def reset_doc_id(self):
-        """"""
+    def reset_doc_ids(self) -> Self:
+        """
+
+        Performs the same function as ResetDocIdByServerRelativePath (section 3.1.5.10.2.1.1), but for every
+        document in the specified document library.
+        """
         from office365.sharepoint.documentmanagement.document_id import DocumentId
 
-        def _reset_doc_id():
+        def _reset_doc_ids():
             doc_mng = DocumentId(self.context)
             doc_mng.reset_doc_ids_in_library(self.root_folder.server_relative_url)
 
-        self.ensure_property("RootFolder", _reset_doc_id)
+        self.ensure_property("RootFolder", _reset_doc_ids)
         return self
 
     def set_exempt_from_block_download_of_non_viewable_files(self, value: bool) -> Self:

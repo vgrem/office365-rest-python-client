@@ -134,10 +134,6 @@ class TestSharePointWeb(SPTestCase):
         ).execute_query()
         self.assertGreater(len(result.value), 0)
 
-    def test_17_get_available_web_templates(self):
-        templates = self.client.web.get_available_web_templates().execute_query()
-        self.assertGreater(len(templates), 0)
-
     def test_18_get_list_templates(self):
         templates = self.client.web.list_templates.get().execute_query()
         self.assertGreater(len(templates), 0)

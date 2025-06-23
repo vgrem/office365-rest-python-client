@@ -439,6 +439,14 @@ class ClientContext(ClientRuntimeContext):
         return ConsumerPermissions(self, ResourcePath("ConsumerPermissions"))
 
     @property
+    def document_id(self):
+        """Document IDs service"""
+
+        from office365.sharepoint.documentmanagement.document_id import DocumentId
+
+        return DocumentId(self)
+
+    @property
     def me(self):
         """Gets the user context for the present request"""
         return RequestUserContext(self, ResourcePath("Me"))

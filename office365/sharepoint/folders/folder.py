@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -20,6 +20,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
+from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -319,14 +320,14 @@ class Folder(Entity):
 
     def update_document_sharing_info(
         self,
-        user_role_assignments,
-        validate_existing_permissions=None,
-        additive_mode=None,
-        send_server_managed_notification=None,
-        custom_message=None,
-        include_anonymous_links_in_notification=None,
-        propagate_acl=None,
-    ):
+        user_role_assignments: List[UserRoleAssignment],
+        validate_existing_permissions: bool = None,
+        additive_mode: bool = None,
+        send_server_managed_notification: bool = None,
+        custom_message: str = None,
+        include_anonymous_links_in_notification: bool = None,
+        propagate_acl: bool = None,
+    ) -> ClientResult[ClientValueCollection[UserSharingResult]]:
         """
         This method allows a caller with the 'ManagePermission' permission to update sharing information about a
         document to enable document sharing with a set of users. It returns an array of
@@ -360,7 +361,7 @@ class Folder(Entity):
             self.context, ClientValueCollection(UserSharingResult)
         )
 
-        def _loaded():
+        def _update_document_sharing_info():
             resource_address = SPResPath.create_absolute(
                 self.context.base_url, str(self.server_relative_path)
             )
@@ -377,7 +378,7 @@ class Folder(Entity):
                 return_type,
             )
 
-        self.ensure_property("ServerRelativePath", _loaded)
+        self.ensure_property("ServerRelativePath", _update_document_sharing_info)
         return return_type
 
     def copy_to(

@@ -1,4 +1,6 @@
-from office365.runtime.paths.resource_path import ResourcePath
+from typing_extensions import Self
+
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -14,10 +16,10 @@ class DocumentId(Entity):
 
     def __init__(self, context):
         super(DocumentId, self).__init__(
-            context, ResourcePath("SP.DocumentManagement.DocumentId")
+            context, StaticPath("SP.DocumentManagement.DocumentId")
         )
 
-    def reset_docid_by_server_relative_path(self, decoded_url):
+    def reset_docid_by_server_relative_path(self, decoded_url: str) -> Self:
         """In case the document identifier assigned by the document id feature is not unique, MUST re-assign
         the identifier and URL to ensure they are globally unique in the farm.
 
@@ -31,7 +33,7 @@ class DocumentId(Entity):
         self.context.add_query(qry)
         return self
 
-    def reset_doc_ids_in_library(self, decoded_url, content_type_id=None):
+    def reset_doc_ids_in_library(self, decoded_url: str, content_type_id: str = None):
         """
         Performs the same function as ResetDocIdByServerRelativePath (section 3.1.5.10.2.1.1), but for every
         document in the specified document library.
@@ -48,7 +50,7 @@ class DocumentId(Entity):
         return self
 
     def set_doc_id_site_prefix(
-        self, prefix, schedule_assignment, overwrite_existing_ids
+        self, prefix: str, schedule_assignment: bool, overwrite_existing_ids: bool
     ):
         """
         Allows to set or change the prefix used for Document IDs

@@ -10,10 +10,12 @@ class SiteIconManager(Entity):
             resource_path = ResourcePath("SiteIconManager")
         super(SiteIconManager, self).__init__(context, resource_path)
 
-    def get_site_logo(self, site_url, target=None, _type=None, return_type=None):
+    def get_site_logo(
+        self, site_url: str, target=None, _type=None, return_type=None
+    ) -> ClientResult[bytes]:
         payload = {"siteUrl": site_url, "target": target, "type": _type}
         if return_type is None:
-            return_type = ClientResult(self.context)
+            return_type = ClientResult(self.context, bytes())
         qry = ServiceOperationQuery(
             self, "GetSiteLogo", None, payload, None, return_type
         )

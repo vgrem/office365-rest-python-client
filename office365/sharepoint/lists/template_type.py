@@ -1,8 +1,11 @@
-class ListTemplateType:
+from enum import Enum
+
+
+class ListTemplateType(Enum):
     """Specifies the type of a list template. A set of predefined values are specified in [MS-WSSTS] section 2.7."""
 
-    def __init__(self):
-        pass
+    def __int__(self):
+        return self.value
 
     InvalidType = -1
 

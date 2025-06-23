@@ -11,6 +11,7 @@ from office365.sharepoint.fields.creation_information import FieldCreationInform
 from office365.sharepoint.fields.date_time import FieldDateTime
 from office365.sharepoint.fields.field import Field, T
 from office365.sharepoint.fields.geolocation import FieldGeolocation
+from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
 from office365.sharepoint.fields.number import FieldNumber
 from office365.sharepoint.fields.text import FieldText
 from office365.sharepoint.fields.type import FieldType
@@ -193,6 +194,14 @@ class FieldCollection(EntityCollection[Field]):
         """
         return self.add_field(FieldCreationInformation(title, FieldType.Text))
 
+    def add_note(
+        self, title: str, description: Optional[str] = None
+    ) -> FieldMultiLineText:
+        """Creates a text field that can contain multiple lines"""
+        return self.add_field(
+            FieldCreationInformation(title, FieldType.Note, description)
+        )
+
     def add_dependent_lookup_field(
         self, display_name: str, primary_lookup_field_id: str, show_field: bool
     ) -> Field:
@@ -218,18 +227,20 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, field_create_information: FieldCreationInformation) -> T:
+    def add(self, parameters: FieldCreationInformation) -> T:
         """Adds a fields to the fields collection.
 
-        :type field_create_information: FieldCreationInformation
+        :type parameters: FieldCreationInformation
         """
-        return_type = Field.create_field(self.context, field_create_information)
+        return_type = Field.create_field(self.context, parameters)
         self.add_child(return_type)
         qry = CreateEntityQuery(self, return_type, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def add_field(self, parameters: FieldCreationInformation, return_type=None) -> T:
+    def add_field(
+        self, parameters: FieldCreationInformation, return_type: T = None
+    ) -> T:
         """Adds a fields to the fields collection.
 
         :type parameters: FieldCreationInformation

@@ -14,7 +14,7 @@ from office365.runtime.queries.function import FunctionQuery
 class ReportRoot(Entity):
     """Represents a container for Azure Active Directory (Azure AD) reporting resources."""
 
-    def device_configuration_device_activity(self):
+    def device_configuration_device_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration device activity report
         """
@@ -25,7 +25,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def device_configuration_user_activity(self):
+    def device_configuration_user_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration user activity report
         """
@@ -109,7 +109,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_email_app_usage_user_counts(self, period):
+    def get_email_app_usage_user_counts(self, period) -> ClientResult[bytes]:
         """
         Get the count of unique users that connected to Exchange Online using any email app.
 
@@ -122,7 +122,7 @@ class ReportRoot(Entity):
         return qry.return_type
 
     ###
-    def get_email_app_usage_user_detail(self, period):
+    def get_email_app_usage_user_detail(self, period: str) -> ClientResult[bytes]:
         """
         Get details about which activities users performed on the various email apps.
 
@@ -134,7 +134,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_mailbox_usage_storage(self, period):
+    def get_mailbox_usage_storage(self, period: str) -> ClientResult[bytes]:
         """
         Get the amount of storage used in your organization.
 
@@ -175,7 +175,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_office365_activations_user_counts(self):
+    def get_office365_activations_user_counts(self) -> ClientResult[Report]:
         """Get the count of Microsoft 365 activations on desktops and devices."""
         qry = create_report_query(self, "getOffice365ActivationsUserCounts")
         self.context.add_query(qry)
@@ -267,7 +267,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_mailbox_usage_quota_status_mailbox_counts(self, period):
+    def get_mailbox_usage_quota_status_mailbox_counts(self, period: str):
         """
 
         :param str period: Specifies the length of time over which the report is aggregated.
@@ -280,7 +280,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_activity_pages(self, period):
+    def get_sharepoint_activity_pages(self, period: str):
         """
         Get the number of unique pages visited by users.
 
@@ -365,8 +365,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_teams_user_activity_counts(self, period):
-        # type: (str) -> ClientResult[AnyStr]
+    def get_teams_user_activity_counts(self, period: str) -> ClientResult[AnyStr]:
         """
         Get the number of Microsoft Teams activities by activity type.
         The activities are performed by Microsoft Teams licensed users.

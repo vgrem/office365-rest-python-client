@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
@@ -15,16 +15,14 @@ class Subscription(Entity):
         return self
 
     @property
-    def application_id(self):
-        # type: () -> Optional[str]
+    def application_id(self) -> Optional[str]:
         """
         Identifier of the application used to create the subscription.
         """
         return self.properties.get("applicationId", None)
 
     @property
-    def change_type(self):
-        # type: () -> Optional[str]
+    def change_type(self) -> Optional[str]:
         """
         Required. Indicates the type of change in the subscribed resource that will raise a change notification.
         The supported values are: created, updated, deleted.
@@ -39,8 +37,7 @@ class Subscription(Entity):
         return self.properties.get("changeType", None)
 
     @property
-    def client_state(self):
-        # type: () -> Optional[str]
+    def client_state(self) -> Optional[str]:
         """
         Required. Specifies the value of the clientState property sent by the service in each change notification.
         The maximum length is 128 characters. The client can check that the change notification came from the service
@@ -50,8 +47,7 @@ class Subscription(Entity):
         return self.properties.get("clientState", None)
 
     @property
-    def creator_id(self):
-        # type: () -> Optional[str]
+    def creator_id(self) -> Optional[str]:
         """
         Optional. Identifier of the user or service principal that created the subscription. If the app used
         delegated permissions to create the subscription, this field contains the id of the signed-in user the app
@@ -61,8 +57,7 @@ class Subscription(Entity):
         return self.properties.get("creatorId", None)
 
     @property
-    def encryption_certificate(self):
-        # type: () -> Optional[str]
+    def encryption_certificate(self) -> Optional[str]:
         """
         Optional. A base64-encoded representation of a certificate with a public key used to encrypt resource data in
         change notifications. Optional but required when includeResourceData is true.
@@ -70,33 +65,29 @@ class Subscription(Entity):
         return self.properties.get("encryptionCertificate", None)
 
     @property
-    def encryption_certificate_id(self):
-        # type: () -> Optional[str]
+    def encryption_certificate_id(self) -> Optional[str]:
         """
         Optional. A custom app-provided identifier to help identify the certificate needed to decrypt resource data.
         """
         return self.properties.get("encryptionCertificateId", None)
 
     @property
-    def expiration_datetime(self):
-        # type: () -> Optional[datetime.datetime]
+    def expiration_datetime(self) -> Optional[datetime]:
         """
         Required. Specifies the date and time when the webhook subscription expires. The time is in UTC, and can be
         an amount of time from subscription creation that varies for the resource subscribed to
         """
-        return self.properties.get("expirationDateTime", datetime.datetime)
+        return self.properties.get("expirationDateTime", datetime.min)
 
     @property
-    def include_resource_data(self):
-        # type: () -> Optional[bool]
+    def include_resource_data(self) -> Optional[bool]:
         """
         Optional. When set to true, change notifications include resource data (such as content of a chat message).
         """
         return self.properties.get("includeResourceData", None)
 
     @property
-    def latest_supported_tls_version(self):
-        # type: () -> Optional[str]
+    def latest_supported_tls_version(self) -> Optional[str]:
         """
         Optional. Specifies the latest version of Transport Layer Security (TLS) that the notification endpoint,
         specified by notificationUrl, supports. The possible values are: v1_0, v1_1, v1_2, v1_3.
@@ -112,8 +103,7 @@ class Subscription(Entity):
         return self.properties.get("latestSupportedTlsVersion", None)
 
     @property
-    def lifecycle_notification_url(self):
-        # type: () -> Optional[str]
+    def lifecycle_notification_url(self) -> Optional[str]:
         """
         Required for Teams resources if the expirationDateTime value is more than 1 hour from now; optional otherwise.
         The URL of the endpoint that receives lifecycle notifications, including subscriptionRemoved,
@@ -123,8 +113,7 @@ class Subscription(Entity):
         return self.properties.get("lifecycleNotificationUrl", None)
 
     @property
-    def notification_url(self):
-        # type: () -> Optional[str]
+    def notification_url(self) -> Optional[str]:
         """
         Required. The URL of the endpoint that will receive the change notifications. This URL must make use of
         the HTTPS protocol. Any query string parameter included in the notificationUrl property will be included
@@ -133,8 +122,7 @@ class Subscription(Entity):
         return self.properties.get("notificationUrl", None)
 
     @property
-    def resource(self):
-        # type: () -> Optional[str]
+    def resource(self) -> Optional[str]:
         """
         Specifies the resource that will be monitored for changes.
         Do not include the base URL (https://graph.microsoft.com/v1.0/). See the possible resource path values for

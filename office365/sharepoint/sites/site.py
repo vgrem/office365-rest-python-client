@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from typing_extensions import Self
 
@@ -21,6 +21,7 @@ from office365.sharepoint.eventreceivers.definition_collection import (
 )
 from office365.sharepoint.features.collection import FeatureCollection
 from office365.sharepoint.lists.list import List
+from office365.sharepoint.lists.template_type import ListTemplateType
 from office365.sharepoint.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
 from office365.sharepoint.principal.users.user import User
@@ -38,6 +39,9 @@ from office365.sharepoint.sites.html_field_security_setting import (
 from office365.sharepoint.sites.upgrade_info import UpgradeInfo
 from office365.sharepoint.sites.usage_info import UsageInfo
 from office365.sharepoint.sites.version_policy_manager import SiteVersionPolicyManager
+from office365.sharepoint.tenant.administration.hubsites.creation_information import (
+    HubSiteCreationInformation,
+)
 from office365.sharepoint.tenant.administration.sites.administrators_info import (
     SiteAdministratorsInfo,
 )
@@ -244,16 +248,16 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_logo(self):
+    def get_site_logo(self) -> ClientResult[bytes]:
         """Downloads a site logo"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
 
-        def _site_loaded():
+        def _get_site_logo():
             self.context.site_icon_manager.get_site_logo(
                 self.url, return_type=return_type
             )
 
-        self.ensure_property("Url", _site_loaded)
+        self.ensure_property("Url", _get_site_logo)
         return return_type
 
     def get_site_logo_ex(self):
@@ -498,7 +502,7 @@ class Site(Entity):
         self.ensure_property("Url", _is_site_deletable)
         return return_type
 
-    def get_catalog(self, type_catalog):
+    def get_catalog(self, type_catalog: Union[ListTemplateType, int]) -> List:
         """
         Specifies the list template gallery, site template gallery, Web Part gallery, master page gallery,
         or other galleries from the site collection, including custom galleries that are defined by users.
@@ -507,10 +511,10 @@ class Site(Entity):
         """
         return List(
             self.context,
-            ServiceOperationPath("getCatalog", [type_catalog], self.resource_path),
+            ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path),
         )
 
-    def open_web(self, str_url):
+    def open_web(self, str_url: str) -> Web:
         """Returns the specified Web site from the site collection.
 
         :param str str_url: A string that contains either the server-relative or site-relative URL of the
@@ -536,7 +540,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def provision_temporary_azure_container(self):
+    def provision_temporary_azure_container(
+        self,
+    ) -> ClientResult[ProvisionedTemporaryAzureContainerInfo]:
         """"""
         return_type = ClientResult(
             self.context, ProvisionedTemporaryAzureContainerInfo()
@@ -547,7 +553,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def register_hub_site(self, create_info=None):
+    def register_hub_site(self, create_info: HubSiteCreationInformation = None):
         """Registers an existing site as a hub site.
 
         :type create_info: HubSiteCreationInformation

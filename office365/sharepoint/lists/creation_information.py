@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from office365.sharepoint.lists.template_type import ListTemplateType
 
 
 class ListCreationInformation(ClientValue):
@@ -6,15 +7,15 @@ class ListCreationInformation(ClientValue):
 
     def __init__(
         self,
-        title=None,
-        description=None,
-        base_template=None,
-        allow_content_types=False,
-        custom_schema_xml=None,
-        document_template_type=None,
-        quick_launch_option=None,
-        template_feature_id=None,
-        template_type=None,
+        title: str = None,
+        description: str = None,
+        base_template: ListTemplateType = None,
+        allow_content_types: bool = False,
+        custom_schema_xml: str = None,
+        document_template_type: int = None,
+        quick_launch_option: int = None,
+        template_feature_id: int = None,
+        template_type: int = None,
     ):
         """
         :param int or None base_template:

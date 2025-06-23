@@ -56,10 +56,10 @@ class TestSharePointFile(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test6_load_file_metadata(self):
-        list_item = (
+        result = (
             self.__class__.file.listItemAllFields.expand(["File"]).get().execute_query()
         )
-        self.assertIsInstance(list_item.file, File)
+        self.assertIsInstance(result.file, File)
 
     def test7_load_file_metadata_alt(self):
         list_item = self.__class__.file.listItemAllFields

@@ -33,26 +33,16 @@ class TestSite(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test5_get_site_catalog(self):
-        catalog = (
+        result = (
             self.client.site.get_catalog(ListTemplateType.AppDataCatalog)
             .get()
             .execute_query()
         )
-        self.assertIsNotNone(catalog.title)
+        self.assertIsNotNone(result.title)
 
     def test6_get_web_templates(self):
-        web_templates = self.client.site.get_web_templates().execute_query()
-        self.assertIsNotNone(web_templates)
-
-    def test7_get_web_template_by_name(self):
-        template_name = "GLOBAL#0"
-        web_template = (
-            self.client.site.get_web_templates()
-            .get_by_name(template_name)
-            .get()
-            .execute_query()
-        )
-        self.assertIsNotNone(web_template)
+        result = self.client.site.get_web_templates().execute_query()
+        self.assertIsNotNone(result)
 
     def test8_get_site_logo(self):
         result = self.client.site.get_site_logo().execute_query()

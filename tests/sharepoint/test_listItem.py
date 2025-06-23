@@ -1,29 +1,23 @@
-from random import randint
 from time import sleep
 
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.list import List
-from office365.sharepoint.lists.template_type import ListTemplateType
 from office365.sharepoint.types.wopi_action import SPWOPIAction
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointListItem(SPTestCase):
-    target_list = None  # type: List
-    target_item = None  # type: ListItem
-    deleted_item_guid = None  # type: str
+    target_list: List = None
+    target_item: ListItem = None
+    deleted_item_guid: str = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSharePointListItem, cls).setUpClass()
-        target_list_title = "Tasks" + str(randint(0, 10000))
-        cls.target_list = cls.ensure_list(
-            cls.client.web,
-            ListCreationInformation(target_list_title, None, ListTemplateType.Tasks),
-        )
+        list_title = create_unique_name("Tasks")
+        cls.target_list = cls.client.web.lists.add_tasks(list_title).execute_query()
         cls.default_title = create_unique_name("Task")
         cls.batch_items_count = 3
 
@@ -51,13 +45,13 @@ class TestSharePointListItem(SPTestCase):
         ).execute_query()
 
     def test3_create_folder_in_list(self):
-        new_folder = self.target_list.root_folder.add("Archive").execute_query()
-        self.assertIsNotNone(new_folder.server_relative_url)
+        result = self.target_list.root_folder.add("Archive").execute_query()
+        self.assertIsNotNone(result.server_relative_url)
 
     def test4_get_list_item(self):
         item_id = self.__class__.target_item.id
-        item = self.target_list.get_item_by_id(item_id).get().execute_query()
-        self.assertIsNotNone(item.id)
+        result = self.target_list.get_item_by_id(item_id).get().execute_query()
+        self.assertIsNotNone(result.id)
 
     def test5_get_list_item_via_caml(self):
         item_id = self.__class__.target_item.id
@@ -111,10 +105,8 @@ class TestSharePointListItem(SPTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test_13_enable_comments(self):
-        comments = self.__class__.target_item.set_comments_disabled(
-            False
-        ).execute_query()
-        self.assertIsNotNone(comments.resource_path)
+        result = self.__class__.target_item.set_comments_disabled(False).execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test_10_get_comments(self):
         comments = self.__class__.target_item.get_comments().execute_query()
@@ -161,22 +153,20 @@ class TestSharePointListItem(SPTestCase):
         # test case for when .load with set properties_to_retrieve
         # would ignore all other previously set query params (like top(2))
 
-        items = self.target_list.items.top(2)
+        items = self.target_list.items.top(self.batch_items_count)
         self.client.load(items, ["Id", "AttachmentFiles"])
         self.client.execute_query()
-        self.assertLessEqual(len(items), 2)
+        self.assertLessEqual(len(items), self.batch_items_count)
 
     def test_20_delete_multiple_items(self):
-        items = self.target_list.items.get().execute_query()  # get existing items
-        self.assertGreater(len(items), 0)
-        [item.delete_object() for item in items]
+        result = self.target_list.items.get().execute_query()
+        self.assertGreater(len(result), 0)
+        [item.delete_object() for item in result]
         self.client.execute_batch()
         items_after = self.target_list.items.get().execute_query()
         self.assertEqual(len(items_after), 0)
 
     def test_21_get_all_items(self):
-        users_list = self.client.web.lists.get_by_title("User Information List")
-        items = users_list.items.get_all(page_size=1000).execute_query()
-        items_count = len(items)
-        items = users_list.items.get_all(page_size=1000).execute_query()
-        self.assertEqual(len(items), items_count)
+        users_list = self.client.web.site_user_info_list.get().execute_query()
+        result = users_list.items.get_all(page_size=1000).execute_query()
+        self.assertLessEqual(len(result), users_list.item_count)

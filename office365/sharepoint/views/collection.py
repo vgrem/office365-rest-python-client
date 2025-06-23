@@ -25,15 +25,15 @@ class ViewCollection(EntityCollection):
     ) -> None:
         super(ViewCollection, self).__init__(context, View, resource_path, parent_list)
 
-    def add(self, view_creation_information: ViewCreationInformation) -> View:
+    def add(self, information: ViewCreationInformation) -> View:
         """
         Adds a new list view to the collection.
 
-        :type view_creation_information: office365.sharepoint.views.create_information.ViewCreationInformation
+        :type information: office365.sharepoint.views.create_information.ViewCreationInformation
         """
         return_type = View(self.context, None, self.parent_list)
         self.add_child(return_type)
-        payload = {"parameters": view_creation_information}
+        payload = {"parameters": information}
         qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

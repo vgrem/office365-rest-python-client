@@ -7,12 +7,12 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointDocumentSet(SPTestCase):
-    target_lib = None  # type: List
-    target_doc_set = None  # type: DocumentSet
+    target_lib: List = None
+    target_doc_set: DocumentSet = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestSharePointDocumentSet, cls).setUpClass()
+        super().setUpClass()
         cls.target_lib = cls.ensure_list(
             cls.client.web,
             ListCreationInformation(

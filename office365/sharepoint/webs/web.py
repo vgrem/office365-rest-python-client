@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -145,16 +145,6 @@ class Web(SecurableObject):
     def __str__(self):
         return self.title or self.entity_type_name
 
-    def add_list(self, title, template_type=ListTemplateType.GenericList) -> List:
-        """
-        Creates a new list and adds it to the web.
-
-        :param str title: Specifies the display name of the new list.
-        :param int template_type: Specifies the list server template of the new list.
-        """
-        info = ListCreationInformation(title, None, template_type)
-        return self.lists.add(info)
-
     def available_addins(self, server_relative_urls: list[str] = None):
         """
         :param list[str] server_relative_urls:
@@ -190,7 +180,7 @@ class Web(SecurableObject):
         self.ensure_properties(["AccessRequestListUrl"], _get_access_request_list)
         return return_type
 
-    def get_adaptive_card_extensions(self, include_errors=None, project=None):
+    def get_adaptive_card_extensions(self, include_errors: bool = None, project=None):
         payload = {
             "includeErrors": include_errors,
             "project": project,
@@ -204,7 +194,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_document_by_doc_id(self, doc_id):
+    def get_document_by_doc_id(self, doc_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
         qry = ClientQuery(self.context, return_type=return_type)
@@ -258,7 +248,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_list_data_as_stream(self, path, view_xml=None):
+    def get_list_data_as_stream(
+        self, path: str, view_xml: str = None
+    ) -> ClientResult[bytes]:
         """Returns list data from the specified list url and for the specified query parameters.
 
         :param str path: A string that contains the site-relative URL for a list, for example, /Lists/Announcements.
@@ -278,7 +270,7 @@ class Web(SecurableObject):
         self.ensure_property("Url", _get_list_data_as_stream)
         return return_type
 
-    def get_onedrive_list_data_as_stream(self, view_xml=None):
+    def get_onedrive_list_data_as_stream(self, view_xml: str = None):
         """Returns list data from the specified list url and for the specified query parameters.
 
         :param str view_xml:
@@ -438,7 +430,9 @@ class Web(SecurableObject):
         return context.web
 
     @staticmethod
-    def get_context_web_information(context):
+    def get_context_web_information(
+        context: ClientContext,
+    ) -> ClientResult[ContextWebInformation]:
         """
         Returns an object that specifies metadata about the site
 
@@ -1108,7 +1102,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def does_push_notification_subscriber_exist(self, device_app_instance_id):
+    def does_push_notification_subscriber_exist(self, device_app_instance_id: str):
         """
         Specifies whether the push notification subscriber exists for the current user
             with the given device  app instance identifier.
@@ -1123,7 +1117,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_folder_by_id(self, unique_id):
+    def get_folder_by_id(self, unique_id: str) -> Folder:
         """
         Returns the folder object with the specified GUID.
 
@@ -1134,7 +1128,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetFolderById", [unique_id], self.resource_path),
         )
 
-    def get_user_by_id(self, user_id):
+    def get_user_by_id(self, user_id: int) -> User:
         """Returns the user corresponding to the specified member identifier for the current site.
 
         :param int user_id: Specifies the member identifier.
@@ -1151,7 +1145,7 @@ class Web(SecurableObject):
             ServiceOperationPath("defaultDocumentLibrary", None, self.resource_path),
         )
 
-    def get_list(self, path):
+    def get_list(self, path: str) -> List:
         """Get list by path
 
         :param str path: A string that contains the site-relative URL for a list, for example, /Lists/Announcements.
@@ -1162,7 +1156,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getList", [str(safe_path)], self.resource_path),
         )
 
-    def get_changes(self, query=None):
+    def get_changes(self, query: ChangeQuery = None):
         """Returns the collection of all changes from the change log that have occurred within the scope of the web,
         based on the specified query.
 
@@ -1199,7 +1193,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def hub_site_data(self, force_refresh=False):
+    def hub_site_data(self, force_refresh: bool = False) -> ClientResult[str]:
         """Retrieves data describing a SharePoint hub site.
 
         :param bool force_refresh: Default value is false. When false, the data is returned from the server's cache.
@@ -1220,7 +1214,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def apply_web_template(self, web_template) -> Self:
+    def apply_web_template(self, web_template: str) -> Self:
         """
         Applies the specified site definition or site template to the website that has no template applied to it.
 
@@ -1255,7 +1249,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_guest_url_extended(
-        self, guest_url, ensure_access=None, password=None
+        self, guest_url: str, ensure_access=None, password=None
     ):
         """
         Returns the file object from the tokenized sharing link URL.
@@ -1804,14 +1798,14 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListItemUsingPath", params, self.resource_path),
         )
 
-    def get_catalog(self, type_catalog: int) -> List:
+    def get_catalog(self, type_catalog: Union[int, ListTemplateType]) -> List:
         """Gets the list template gallery, site template gallery, or Web Part gallery for the Web site.
 
         :param int type_catalog: The type of the gallery.
         """
         return List(
             self.context,
-            ServiceOperationPath("getCatalog", [type_catalog], self.resource_path),
+            ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path),
         )
 
     def page_context_info(

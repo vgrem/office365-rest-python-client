@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, AnyStr, Optional, Union, cast
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast
 from urllib.parse import quote, unquote
 
 import requests
+from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -654,7 +655,7 @@ class File(AbstractFile):
         return response
 
     @staticmethod
-    def open_binary(context, server_relative_url):
+    def open_binary(context: ClientContext, server_relative_url: str) -> Response:
         """
         Returns the file object located at the specified server-relative URL.
 
@@ -677,7 +678,9 @@ class File(AbstractFile):
         response = context.pending_request().execute_request_direct(request)
         return response
 
-    def download(self, file_object, after_downloaded=None):
+    def download(
+        self, file_object: IO, after_downloaded: Callable[[File], None] = None
+    ) -> Self:
         """
         Download a file content. Use this method to download a content of a small size
 

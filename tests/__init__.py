@@ -7,8 +7,7 @@ from office365.runtime.auth.user_credential import UserCredential
 from tests.config import SecEnvInterpolation, load_config
 
 
-def create_unique_name(prefix):
-    # type: (str) -> str
+def create_unique_name(prefix: str) -> str:
     return prefix + "".join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
     )

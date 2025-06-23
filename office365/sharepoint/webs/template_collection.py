@@ -1,6 +1,7 @@
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.webs.template import WebTemplate
+from office365.sharepoint.webs.templates.type import WebTemplateType
 
 
 class WebTemplateCollection(EntityCollection[WebTemplate]):
@@ -17,7 +18,12 @@ class WebTemplateCollection(EntityCollection[WebTemplate]):
         """
         return WebTemplate(
             self.context,
-            ServiceOperationPath(
-                "getByName", ["{name}".format(name=name)], self.resource_path
-            ),
+            ServiceOperationPath("getByName", [f"{name}"], self.resource_path),
+        )
+
+    def get_by_type(self, type_: WebTemplateType) -> WebTemplate:
+        """Returns the SP.WebTemplate (section 3.2.5.151) specified by its type."""
+        return WebTemplate(
+            self.context,
+            ServiceOperationPath("getByName", [f"{str(type_)}"], self.resource_path),
         )

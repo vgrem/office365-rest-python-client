@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.reports.report import Report
@@ -8,7 +10,12 @@ if TYPE_CHECKING:
     from office365.reports.root import ReportRoot
 
 
-def create_report_query(report_root, report_name, period=None, return_stream=False):
+def create_report_query(
+    report_root: ReportRoot,
+    report_name: str,
+    period: str = None,
+    return_stream: bool = False,
+):
     """
     Construct Report query
 
