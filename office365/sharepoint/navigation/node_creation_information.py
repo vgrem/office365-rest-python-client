@@ -4,11 +4,11 @@ from office365.runtime.client_value import ClientValue
 class NavigationNodeCreationInformation(ClientValue):
     def __init__(
         self,
-        title=None,
-        url=None,
-        is_external=False,
-        as_last_node=False,
-        previous_node=None,
+        title: str = None,
+        url: str = None,
+        is_external: bool = False,
+        as_last_node: bool = False,
+        previous_node: "NavigationNodeCreationInformation" = None,
     ):
         """
         Describes a new navigation node to be created.

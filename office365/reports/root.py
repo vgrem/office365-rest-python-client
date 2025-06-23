@@ -54,7 +54,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_email_activity_counts(self, period):
+    def get_email_activity_counts(self, period: str) -> ClientResult[str]:
         """
         Enables you to understand the trends of email activity (like how many were sent, read, and received)
         in your organization.
@@ -83,7 +83,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_email_activity_user_detail(self, period):
+    def get_email_activity_user_detail(self, period: str) -> ClientResult[bytes]:
         """
         Get details about email activity users have performed.
 
@@ -97,7 +97,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_email_app_usage_apps_user_counts(self, period):
+    def get_email_app_usage_apps_user_counts(self, period: str) -> ClientResult[Report]:
         """
         Get the count of unique users per email app.
 
@@ -146,7 +146,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_m365_app_user_counts(self, period=None):
+    def get_m365_app_user_counts(self, period: str = None) -> ClientResult[Report]:
         """
         Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel,
         PowerPoint, OneNote, and Teams) in your organization.

@@ -7,11 +7,11 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestNavigation(SPTestCase):
-    target_node = None  # type: NavigationNode
+    target_node: NavigationNode = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestNavigation, cls).setUpClass()
+        super().setUpClass()
         # result = cls.client.site.is_valid_home_site().execute_query()
         # if result.value is False:
         #    result = cls.client.site.set_as_home_site().execute_query()
@@ -26,13 +26,13 @@ class TestNavigation(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_3_get_web_navigation(self):
-        web_nav = (
+        result = (
             self.client.web.navigation.expand(["TopNavigationBar"])
             .get()
             .execute_query()
         )
-        self.assertIsNotNone(web_nav.resource_path)
-        self.assertIsInstance(web_nav.top_navigation_bar, NavigationNodeCollection)
+        self.assertIsNotNone(result.resource_path)
+        self.assertIsInstance(result.top_navigation_bar, NavigationNodeCollection)
 
     def test_4_create_navigation_node(self):
         node_create_info = NavigationNodeCreationInformation(
@@ -48,20 +48,20 @@ class TestNavigation(SPTestCase):
 
     def test_5_get_navigation_node_by_id(self):
         node_id = self.__class__.target_node.properties.get("Id")
-        existing_node = (
+        result = (
             self.client.web.navigation.quick_launch.get_by_id(node_id)
             .get()
             .execute_query()
         )
-        self.assertIsNotNone(existing_node.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test_6_get_navigation_node_by_index(self):
-        existing_node = (
+        result = (
             self.client.web.navigation.quick_launch.get_by_index(0)
             .get()
             .execute_query()
         )
-        self.assertIsNotNone(existing_node.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test_7_delete_navigation_node(self):
         node_to_del = self.__class__.target_node

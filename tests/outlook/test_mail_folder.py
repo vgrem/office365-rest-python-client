@@ -4,7 +4,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestGraphMail(GraphTestCase):
-    target_mail_folder = None  # type: MailFolder
+    target_mail_folder: MailFolder = None
 
     @requires_delegated_permission("Mail.ReadWrite")
     def test1_create_mail_folder(self):

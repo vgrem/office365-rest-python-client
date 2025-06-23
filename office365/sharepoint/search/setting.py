@@ -1,5 +1,5 @@
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.promoted_results_operations_result import (
@@ -14,7 +14,7 @@ class SearchSetting(Entity):
 
     def __init__(self, context):
         super(SearchSetting, self).__init__(
-            context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchSetting")
+            context, StaticPath("Microsoft.Office.Server.Search.REST.SearchSetting")
         )
 
     def get_query_configuration(

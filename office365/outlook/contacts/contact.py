@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -19,7 +21,7 @@ from office365.runtime.types.collections import StringCollection
 class Contact(OutlookItem):
     """User's contact."""
 
-    def permanent_delete(self):
+    def permanent_delete(self) -> Self:
         """Permanently delete a contact and place it in the purges folder in the dumpster in the user's mailbox.
         Email clients such as outlook or outlook on the web can't access permanently deleted items. Unless there's
         a hold set on the mailbox, the items are permanently deleted after a set period of time.
@@ -34,8 +36,7 @@ class Contact(OutlookItem):
         return self.properties.setdefault("businessPhones", StringCollection())
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """
         The contact's display name. You can specify the display name in a create or update operation.
         Note that later updates to other properties may cause an automatically generated value to overwrite the
@@ -45,28 +46,24 @@ class Contact(OutlookItem):
         return self.properties.get("displayName", None)
 
     @property
-    def manager(self):
-        # type: () -> Optional[str]
+    def manager(self) -> Optional[str]:
         """
         The name of the contact's manager.
         """
         return self.properties.get("manager", None)
 
     @manager.setter
-    def manager(self, value):
-        # type: (str) -> None
+    def manager(self, value: str) -> None:
         """Sets name of the contact's manager."""
         self.set_property("manager", value)
 
     @property
-    def mobile_phone(self):
-        # type: () -> Optional[str]
+    def mobile_phone(self) -> Optional[str]:
         """The contact's mobile phone number."""
         return self.properties.get("mobilePhone", None)
 
     @mobile_phone.setter
-    def mobile_phone(self, value):
-        # type: (str) -> None
+    def mobile_phone(self, value: str) -> None:
         """Sets contact's mobile phone number."""
         self.set_property("mobilePhone", value)
 
@@ -76,16 +73,14 @@ class Contact(OutlookItem):
         return self.properties.get("homeAddress", PhysicalAddress())
 
     @property
-    def email_addresses(self):
-        # type: () -> ClientValueCollection[EmailAddress]
+    def email_addresses(self) -> ClientValueCollection[EmailAddress]:
         """The contact's email addresses."""
         return self.properties.setdefault(
             "emailAddresses", ClientValueCollection(EmailAddress)
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the contact. Nullable."""
         return self.properties.get(
             "extensions",
@@ -95,7 +90,7 @@ class Contact(OutlookItem):
         )
 
     @property
-    def photo(self):
+    def photo(self) -> ProfilePhoto:
         """Optional contact picture. You can get or set a photo for a contact."""
         return self.properties.get(
             "photo",
@@ -103,8 +98,9 @@ class Contact(OutlookItem):
         )
 
     @property
-    def multi_value_extended_properties(self):
-        # type: () -> EntityCollection[MultiValueLegacyExtendedProperty]
+    def multi_value_extended_properties(
+        self,
+    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the Contact."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -116,8 +112,9 @@ class Contact(OutlookItem):
         )
 
     @property
-    def single_value_extended_properties(self):
-        # type: () -> EntityCollection[SingleValueLegacyExtendedProperty]
+    def single_value_extended_properties(
+        self,
+    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the Contact."""
         return self.properties.get(
             "singleValueExtendedProperties",

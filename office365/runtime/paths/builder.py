@@ -1,6 +1,6 @@
 import json
 import re
-from typing import TYPE_CHECKING, Union, Dict, List, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Union
 from urllib.parse import quote
 
 from office365.runtime.client_value import ClientValue
@@ -38,7 +38,7 @@ class ODataPathBuilder(object):
         Raises:
             TypeError: If the input string is empty or invalid
         """
-        segments = [n for n in re.split(r"[('')]|/", path_str) if n] # noqa
+        segments = [n for n in re.split(r"[('')]|/", path_str) if n]  # noqa
         if not segments:
             raise TypeError("Invalid path format")
         path = None

@@ -1,11 +1,7 @@
-from typing import TYPE_CHECKING
+import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-
-if TYPE_CHECKING:
-    import datetime  # noqa
-
-    from typing import Optional  # noqa
 
 
 class RecurrenceRange(ClientValue):
@@ -16,13 +12,12 @@ class RecurrenceRange(ClientValue):
 
     def __init__(
         self,
-        start_date=None,
-        end_date=None,
-        number_of_occurrences=None,
-        recurrence_timezone=None,
-        range_type=None,
-    ):
-        # type: (Optional[datetime.date], Optional[datetime.date], Optional[int], Optional[str], Optional[str]) -> None
+        start_date: Optional[datetime.date] = None,
+        end_date: Optional[datetime.date] = None,
+        number_of_occurrences: Optional[int] = None,
+        recurrence_timezone: Optional[str] = None,
+        range_type: Optional[str] = None,
+    ) -> None:
         """
         :param start_date: The date to start applying the recurrence pattern. The first occurrence of
             the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the

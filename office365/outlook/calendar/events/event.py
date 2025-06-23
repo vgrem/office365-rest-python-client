@@ -89,8 +89,7 @@ class Event(OutlookItem):
         return self
 
     @property
-    def allow_new_time_proposals(self):
-        # type: () -> Optional[bool]
+    def allow_new_time_proposals(self) -> Optional[bool]:
         """
         true if the meeting organizer allows invitees to propose a new time when responding; otherwise, false.
         Optional. Default is true.
@@ -98,14 +97,12 @@ class Event(OutlookItem):
         return self.properties.get("allowNewTimeProposals", None)
 
     @property
-    def has_attachments(self):
-        # type: () -> Optional[bool]
+    def has_attachments(self) -> Optional[bool]:
         """Set to true if the event has attachments."""
         return self.properties.get("hasAttachments", None)
 
     @property
-    def hide_attendees(self):
-        # type: () -> Optional[bool]
+    def hide_attendees(self) -> Optional[bool]:
         """
         When set to true, each attendee only sees themselves in the meeting request and meeting Tracking list.
         Default is false.
@@ -113,8 +110,7 @@ class Event(OutlookItem):
         return self.properties.get("hideAttendees", None)
 
     @property
-    def ical_uid(self):
-        # type: () -> Optional[str]
+    def ical_uid(self) -> Optional[str]:
         """
         A unique identifier for an event across calendars. This ID is different for each occurrence in a recurring
         series.
@@ -122,14 +118,12 @@ class Event(OutlookItem):
         return self.properties.get("iCalUId", None)
 
     @property
-    def importance(self):
-        # type: () -> Optional[str]
+    def importance(self) -> Optional[str]:
         """The importance of the event. The possible values are: low, normal, high."""
         return self.properties.get("importance", None)
 
     @property
-    def is_all_day(self):
-        # type: () -> Optional[bool]
+    def is_all_day(self) -> Optional[bool]:
         """
         Set to true if the event lasts all day. If true, regardless of whether it's a single-day or multi-day event,
         start and end time must be set to midnight and be in the same time zone.
@@ -137,16 +131,14 @@ class Event(OutlookItem):
         return self.properties.get("isAllDay", None)
 
     @property
-    def is_cancelled(self):
-        # type: () -> Optional[bool]
+    def is_cancelled(self) -> Optional[bool]:
         """
         Set to true if the event has been canceled.
         """
         return self.properties.get("isCancelled", None)
 
     @property
-    def is_draft(self):
-        # type: () -> Optional[bool]
+    def is_draft(self) -> Optional[bool]:
         """
         Set to true if the user has updated the meeting in Outlook but hasn't sent the updates to attendees.
         Set to false if all changes are sent, or if the event is an appointment without any attendees.
@@ -154,8 +146,7 @@ class Event(OutlookItem):
         return self.properties.get("isDraft", None)
 
     @property
-    def is_online_meeting(self):
-        # type: () -> Optional[bool]
+    def is_online_meeting(self) -> Optional[bool]:
         """
         True if this event has online meeting information
         (that is, onlineMeeting points to an onlineMeetingInfo resource), false otherwise.
@@ -166,8 +157,7 @@ class Event(OutlookItem):
         return self.properties.get("isOnlineMeeting", None)
 
     @property
-    def is_organizer(self):
-        # type: () -> Optional[bool]
+    def is_organizer(self) -> Optional[bool]:
         """
         Set to true if the calendar owner (specified by the owner property of the calendar) is the organizer of
         the event (specified by the organizer property of the event). It also applies if a delegate organized the
@@ -176,8 +166,7 @@ class Event(OutlookItem):
         return self.properties.get("isOrganizer", None)
 
     @property
-    def is_reminder_on(self):
-        # type: () -> Optional[bool]
+    def is_reminder_on(self) -> Optional[bool]:
         """
         Set to true if an alert is set to remind the user of the event.
         """
@@ -212,8 +201,9 @@ class Event(OutlookItem):
         self.set_property("end", DateTimeTimeZone.parse(value))
 
     @property
-    def single_value_extended_properties(self):
-        # type: () -> EntityCollection[SingleValueLegacyExtendedProperty]
+    def single_value_extended_properties(
+        self,
+    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the event."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -225,8 +215,9 @@ class Event(OutlookItem):
         )
 
     @property
-    def multi_value_extended_properties(self):
-        # type: () -> EntityCollection[MultiValueLegacyExtendedProperty]
+    def multi_value_extended_properties(
+        self,
+    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the event."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -248,44 +239,37 @@ class Event(OutlookItem):
         self.set_property("body", ItemBody(value, "HTML"))
 
     @property
-    def body_preview(self):
-        # type: () -> Optional[str]
+    def body_preview(self) -> Optional[str]:
         """The preview of the message associated with the event. It is in text format."""
         return self.properties.get("bodyPreview", None)
 
     @property
-    def reminder_minutes_before_start(self):
-        # type: () -> Optional[int]
+    def reminder_minutes_before_start(self) -> Optional[int]:
         """The number of minutes before the event start time that the reminder alert occurs."""
         return self.properties.get("reminderMinutesBeforeStart", None)
 
     @property
-    def response_requested(self):
-        # type: () -> Optional[bool]
+    def response_requested(self) -> Optional[bool]:
         """Default is true, which represents the organizer would like an invitee to send a response to the event."""
         return self.properties.get("responseRequested", None)
 
     @property
-    def response_status(self):
-        # type: () -> Optional[str]
+    def response_status(self) -> Optional[str]:
         """Indicates the type of response sent in response to an event message."""
         return self.properties.get("responseStatus", ResponseStatus())
 
     @property
-    def series_master_id(self):
-        # type: () -> Optional[str]
+    def series_master_id(self) -> Optional[str]:
         """The ID for the recurring series master item, if this event is part of a recurring series."""
         return self.properties.get("seriesMasterId", None)
 
     @property
-    def subject(self):
-        # type: () -> Optional[str]
+    def subject(self) -> Optional[str]:
         """The text of the event's subject line."""
         return self.properties.get("subject", None)
 
     @subject.setter
-    def subject(self, value):
-        # type: (str) -> None
+    def subject(self, value: str) -> None:
         """Sets The text of the event's subject line."""
         self.set_property("subject", value)
 
@@ -295,8 +279,7 @@ class Event(OutlookItem):
         return self.properties.get("location", Location())
 
     @property
-    def transaction_id(self):
-        # type: () -> Optional[str]
+    def transaction_id(self) -> Optional[str]:
         """
         A custom identifier specified by a client app for the server to avoid redundant POST operations in case of
         client retries to create the same event. This is useful when low network connectivity causes the client to
@@ -307,16 +290,14 @@ class Event(OutlookItem):
         return self.properties.get("transactionId", None)
 
     @property
-    def type(self):
-        # type: () -> Optional[str]
+    def type(self) -> Optional[str]:
         """
         The event type. Possible values are: singleInstance, occurrence, exception, seriesMaster
         """
         return self.properties.get("type", None)
 
     @property
-    def web_link(self):
-        # type: () -> Optional[str]
+    def web_link(self) -> Optional[str]:
         """
         The URL to open the event in Outlook on the web.
 
@@ -353,8 +334,7 @@ class Event(OutlookItem):
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the event. Nullable."""
         return self.properties.get(
             "extensions",

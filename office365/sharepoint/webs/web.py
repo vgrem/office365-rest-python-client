@@ -51,7 +51,6 @@ from office365.sharepoint.internal.paths.web import WebPath
 from office365.sharepoint.largeoperation.operation import SPLargeOperation
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.collection import ListCollection
-from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.document_library_information import (
     DocumentLibraryInformation,
 )

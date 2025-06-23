@@ -21,9 +21,9 @@ class TestSharePointWeb(SPTestCase):
         super(TestSharePointWeb, cls).setUpClass()
 
     def test1_get_current_user(self):
-        current_user = self.client.web.current_user.get().execute_query()
-        self.assertIsNotNone(current_user.login_name)
-        self.__class__.target_user = current_user
+        result = self.client.web.current_user.get().execute_query()
+        self.assertIsNotNone(result.login_name)
+        self.__class__.target_user = result
 
     def test2_get_web_from_page_url(self):
         page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
@@ -32,8 +32,8 @@ class TestSharePointWeb(SPTestCase):
 
     def test3_get_list_item_by_abs_url(self):
         page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
-        target_item = self.client.web.get_list_item(page_url).execute_query()
-        self.assertIsNotNone(target_item.resource_path)
+        result = self.client.web.get_list_item(page_url).execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test4_does_user_has_perms(self):
         perms = BasePermissions()

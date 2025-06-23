@@ -13,12 +13,11 @@ class MeetingTimeSuggestion(ClientValue):
 
     def __init__(
         self,
-        attendee_availability=None,
-        confidence=None,
-        locations=None,
-        meeting_timeslot=TimeSlot(),
-    ):
-        # type: (list[AttendeeAvailability], float, list[Location], TimeSlot) -> None
+        attendee_availability: list[AttendeeAvailability] = None,
+        confidence: float = None,
+        locations: list[Location] = None,
+        meeting_timeslot: TimeSlot = TimeSlot(),
+    ) -> None:
         """
         :param attendee_availability: An array that shows the availability status of each
             attendees for this meeting suggestion.

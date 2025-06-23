@@ -29,7 +29,6 @@ class MessageRule(Entity):
         return self.properties.get("exceptions", MessageRulePredicates())
 
     @property
-    def is_read_only(self):
-        # type: () -> Optional[bool]
+    def is_read_only(self) -> Optional[bool]:
         """Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API."""
         return self.properties.get("isReadOnly", None)

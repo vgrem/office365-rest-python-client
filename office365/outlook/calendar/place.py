@@ -9,8 +9,7 @@ class Place(Entity):
     This is the base type for richer location types such as room and roomList."""
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name associated with the place."""
         return self.properties.get("displayName", None)
 
@@ -20,7 +19,6 @@ class Place(Entity):
         return self.properties.get("address", PhysicalAddress())
 
     @property
-    def phone(self):
-        # type: () -> Optional[str]
+    def phone(self) -> Optional[str]:
         """The phone number of the place."""
         return self.properties.get("phone", None)

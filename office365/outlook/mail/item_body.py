@@ -14,13 +14,11 @@ class ItemBody(ClientValue):
         self.contentType = content_type
 
     @staticmethod
-    def text(content):
-        # type: (str) -> "ItemBody"
+    def text(content: str) -> "ItemBody":
         return ItemBody(content)
 
     @staticmethod
-    def html(content):
-        # type: (str) -> "ItemBody"
+    def html(content: str) -> "ItemBody":
         return ItemBody(content, "html")
 
     def __repr__(self):

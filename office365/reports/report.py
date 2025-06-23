@@ -2,7 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class Report(ClientValue):
-    def __init__(self, content: bytes=None):
+    def __init__(self, content: bytes = None):
         """
         Returns the content appropriate for the context
 
