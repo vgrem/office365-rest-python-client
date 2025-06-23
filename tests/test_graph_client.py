@@ -20,9 +20,9 @@ class TestGraphClient(GraphTestCase):
         self.assertIsNotNone(my_drive.web_url)
 
     def test2_build_resource_path(self):
-        drive = self.client.me.drive.root.get().execute_query()
+        result = self.client.me.drive.root.get().execute_query()
         self.assertEqual(
-            "/me/drive/items/{0}".format(drive.id), str(drive.resource_path)
+            "/me/drive/items/{0}".format(result.id), str(result.resource_path)
         )
 
     def test3_build_url_resource_path(self):

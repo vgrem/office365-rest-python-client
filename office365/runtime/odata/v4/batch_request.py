@@ -46,7 +46,7 @@ class ODataV4BatchRequest(ODataRequest):
         """
         for sub_qry, sub_resp in self._extract_response(response, query):
             sub_resp.raise_for_status()
-            super(ODataV4BatchRequest, self).process_response(sub_resp, sub_qry)
+            super().process_response(sub_resp, sub_qry)
 
     @staticmethod
     def _extract_response(
@@ -106,7 +106,7 @@ class ODataV4BatchRequest(ODataRequest):
         request_json = {
             "id": query_id,
             "url": request.url.replace(query.context.service_root_url, ""),
-            "method": request.method,
+            "method": request.method.value,
             "headers": request.headers,
         }
         if request.data:

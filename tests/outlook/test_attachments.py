@@ -6,7 +6,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestAttachments(GraphTestCase):
-    target_message = None  # type: Message
+    target_message: Message = None
 
     @classmethod
     def setUpClass(cls):

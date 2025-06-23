@@ -38,16 +38,16 @@ class TestRoles(SPTestCase):
     def test4_add_role_assignment(self):
         target_user = self.client.web.current_user
         result = self.client.web.add_role_assignment(
-            target_user, self.__class__.target_object
+            target_user, self.target_object
         ).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test5_remove_role_assignment(self):
         target_user = self.client.web.current_user
         result = self.client.web.remove_role_assignment(
-            target_user, self.__class__.target_object
+            target_user, self.target_object
         ).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test6_delete_role(self):
-        self.__class__.target_object.delete_object().execute_query()
+        self.target_object.delete_object().execute_query()
