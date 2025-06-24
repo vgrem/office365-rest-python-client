@@ -21,7 +21,7 @@ class CalendarPermission(Entity):
     """
 
     @property
-    def allowed_roles(self):
+    def allowed_roles(self) -> StringCollection:
         """
         List of allowed sharing or delegating permission levels for the calendar.
         Possible values are: none, freeBusyRead, limitedRead, read, write, delegateWithoutPrivateEventAccess,
@@ -30,7 +30,7 @@ class CalendarPermission(Entity):
         return self.properties.get("allowedRoles", StringCollection())
 
     @property
-    def email_address(self):
+    def email_address(self) -> EmailAddress:
         """
         Represents a sharee or delegate who has access to the calendar.
         For the "My Organization" sharee, the address property is null. Read-only.

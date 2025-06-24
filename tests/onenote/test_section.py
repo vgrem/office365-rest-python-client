@@ -3,16 +3,8 @@ from tests.graph_case import GraphTestCase
 
 
 class TestSection(GraphTestCase):
-    target_section = None  # type: OnenoteSection
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSection, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_section: OnenoteSection = None
 
     def test2_list_sections(self):
-        my_sections = self.client.me.onenote.sections.get().execute_query()
-        self.assertIsNotNone(my_sections.resource_path)
+        result = self.client.me.onenote.sections.get().execute_query()
+        self.assertIsNotNone(result.resource_path)

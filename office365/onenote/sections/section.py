@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity_collection import EntityCollection
@@ -41,21 +43,19 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         return return_type
 
     @property
-    def is_default(self):
-        # type: () -> Optional[bool]
+    def is_default(self) -> Optional[bool]:
         """Indicates whether this is the user's default section. Read-only."""
         return self.properties.get("isDefault", None)
 
     @property
-    def links(self):
+    def links(self) -> PageLinks:
         """Links for opening the section. The oneNoteClientURL link opens the section in the OneNote native client
         if it's installed. The oneNoteWebURL link opens the section in OneNote on the web.
         """
         return self.properties.get("links", PageLinks())
 
     @property
-    def pages(self):
-        # type: () -> EntityCollection[OnenotePage]
+    def pages(self) -> EntityCollection[OnenotePage]:
         """
         The collection of pages in the section. Read-only. Nullable.
         """

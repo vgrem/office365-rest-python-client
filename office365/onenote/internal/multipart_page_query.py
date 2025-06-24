@@ -30,8 +30,7 @@ class OneNotePageCreateQuery(ClientQuery):
             attachment_files = {}
         self._files = attachment_files
 
-    def _construct_multipart_request(self, request):
-        # type: (RequestOptions) -> None
+    def _construct_multipart_request(self, request: RequestOptions) -> None:
         request.method = HttpMethod.Post
         boundary = create_boundary("PageBoundary", True)
         request.set_header(

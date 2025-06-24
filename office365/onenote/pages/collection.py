@@ -11,8 +11,7 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
     def __init__(self, context, resource_path=None):
         super(OnenotePageCollection, self).__init__(context, OnenotePage, resource_path)
 
-    def add(self, presentation_file, attachment_files=None):
-        # type: (IO, dict) -> OnenotePage
+    def add(self, presentation_file: IO, attachment_files: dict = None) -> OnenotePage:
         """
         Create a new OneNote page.
         :param typing.IO presentation_file: Presentation file

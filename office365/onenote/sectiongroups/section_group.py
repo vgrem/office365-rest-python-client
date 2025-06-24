@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.entity_collection import EntityCollection
@@ -11,22 +13,19 @@ class SectionGroup(OnenoteEntityHierarchyModel):
     """A section group in a OneNote notebook. Section groups can contain sections and section groups."""
 
     @property
-    def section_groups_url(self):
-        # type: () -> Optional[str]
+    def section_groups_url(self) -> Optional[str]:
         """
         The URL for the sectionGroups navigation property, which returns all the section groups in the section group.
         """
         return self.properties.get("sectionGroupsUrl", None)
 
     @property
-    def sections_url(self):
-        # type: () -> Optional[str]
+    def sections_url(self) -> Optional[str]:
         """The URL for the sections navigation property, which returns all the sections in the section group."""
         return self.properties.get("sectionsUrl", None)
 
     @property
-    def parent_notebook(self):
-        # type: () -> Notebook
+    def parent_notebook(self) -> Notebook:
         """The notebook that contains the section group. Read-only."""
         return self.properties.get(
             "parentNotebook",
@@ -34,8 +33,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
         )
 
     @property
-    def sections(self):
-        # type: () -> EntityCollection[OnenoteSection]
+    def sections(self) -> EntityCollection[OnenoteSection]:
         """The sections in the section group. Read-only. Nullable."""
         return self.properties.get(
             "sections",
@@ -47,8 +45,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
         )
 
     @property
-    def section_groups(self):
-        # type: () -> EntityCollection[SectionGroup]
+    def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
             "sectionGroups",

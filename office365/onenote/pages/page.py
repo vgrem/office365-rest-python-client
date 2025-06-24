@@ -13,8 +13,7 @@ from office365.runtime.types.collections import StringCollection
 class OnenotePage(OnenoteEntitySchemaObjectModel):
     """A page in a OneNote notebook."""
 
-    def get_content(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_content(self) -> ClientResult[AnyStr]:
         """Download the page's HTML content."""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "content", None, return_type)
@@ -22,8 +21,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         return return_type
 
     @property
-    def content_url(self):
-        # type: () -> Optional[str]
+    def content_url(self) -> Optional[str]:
         """The URL for the page's HTML content. Read-only."""
         return self.properties.get("contentUrl", None)
 
@@ -36,8 +34,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         return self.properties.get("links", PageLinks())
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """The title of the page."""
         return self.properties.get("title", None)
 

@@ -3,15 +3,8 @@ from tests.graph_case import GraphTestCase
 
 
 class TestPage(GraphTestCase):
-    target_page = None  # type: OnenotePage
+    target_page: OnenotePage = None
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestPage, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     def test1_create_page(self):
         pass
