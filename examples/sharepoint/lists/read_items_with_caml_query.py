@@ -6,7 +6,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from tests import test_client_credentials, test_team_site_url
 
 
-def build_custom_query(page_size=100):
+def build_custom_query(page_size: int = 100):
     """ "
     :type page_size: int
     """

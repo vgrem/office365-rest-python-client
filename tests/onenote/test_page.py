@@ -5,7 +5,6 @@ from tests.graph_case import GraphTestCase
 class TestPage(GraphTestCase):
     target_page: OnenotePage = None
 
-
     def test1_create_page(self):
         pass
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import IO, AnyStr, Callable, Dict, Optional, Union
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union
 
 from typing_extensions import Self
 
@@ -47,6 +47,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.bloom_filter import ListBloomFilter
 from office365.sharepoint.lists.creatables_info import CreatablesInfo
 from office365.sharepoint.lists.data_source import ListDataSource
+from office365.sharepoint.lists.exporter import ExportListProgress
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
 from office365.sharepoint.lists.rule import SPListRule
 from office365.sharepoint.lists.version_policy_manager import VersionPolicyManager
@@ -68,6 +69,9 @@ from office365.sharepoint.views.collection import ViewCollection
 from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class List(SecurableObject):
     """
@@ -77,9 +81,6 @@ class List(SecurableObject):
     composed of one or more fields.
     """
 
-    def __init__(self, context, resource_path=None):
-        super(List, self).__init__(context, resource_path)
-
     def __repr__(self):
         return self.id or self.title or self.entity_type_name
 
@@ -87,7 +88,7 @@ class List(SecurableObject):
         self,
         local_file: IO,
         include_content: bool = False,
-        item_exported: Callable[[Union[ListItem, File, Folder]], None] = None,
+        item_exported: Callable[[ExportListProgress], None] = None,
     ) -> Self:
         """Exports SharePoint List"""
         from office365.sharepoint.lists.exporter import ListExporter
@@ -156,7 +157,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def get_async_action_config(self):
+    def get_async_action_config(self) -> ClientResult[Dict]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -357,7 +358,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_instances(self, retrieve_group_flows: bool):
+    def sync_flow_instances(
+        self, retrieve_group_flows: bool
+    ) -> FlowSynchronizationResult:
         """
         :param bool retrieve_group_flows:
         """
@@ -369,7 +372,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_templates(self, category):
+    def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """
         :param str category:
         """
@@ -381,7 +384,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def create_document_with_default_name(self, folder_path, extension):
+    def create_document_with_default_name(self, folder_path: str, extension: str):
         """
         Creates a empty document with default filename with the given extension at the path given by folderPath.
         Returns the name of the newly created document.
@@ -397,21 +400,21 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def recycle(self):
+    def recycle(self) -> ClientResult[str]:
         """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def start_recycle(self):
+    def start_recycle(self) -> ClientResult[str]:
         """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "StartRecycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def render_list_data(self, view_xml: str):
+    def render_list_data(self, view_xml: str) -> ClientResult[bytes]:
         """
         Returns the data for the specified query view. The result is implementation-specific, used for
         providing data to a user interface.
@@ -429,16 +432,16 @@ class List(SecurableObject):
 
     @staticmethod
     def get_list_data_as_stream(
-        context,
-        list_full_url,
-        parameters=None,
+        context: ClientContext,
+        list_full_url: str,
+        parameters: RenderListDataParameters = None,
         casc_del_warn_message=None,
-        custom_action=None,
-        drill_down=None,
-        field=None,
-        field_internal_name=None,
+        custom_action: str = None,
+        drill_down: str = None,
+        field: str = None,
+        field_internal_name: str = None,
         return_type=None,
-    ):
+    ) -> ClientResult[bytes]:
         """
         Returns list data from the specified list url and for the specified query parameters.
 
@@ -470,7 +473,11 @@ class List(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_onedrive_list_data_as_stream(context, parameters=None, return_type=None):
+    def get_onedrive_list_data_as_stream(
+        context: ClientContext,
+        parameters: RenderListDataParameters = None,
+        return_type=None,
+    ) -> ClientResult[bytes]:
         """
         Returns list data from the specified list url and for the specified query parameters.
 
@@ -531,7 +538,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_lookup_field_choices(self, target_field_name, paging_info=None):
+    def get_lookup_field_choices(
+        self, target_field_name: str, paging_info: str = None
+    ) -> ClientResult[str]:
         """
         Retrieves the possible choices or values for a lookup field in a SharePoint list
         :param str target_field_name:
@@ -560,7 +569,9 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def save_as_new_view(self, old_name, new_name, private_view, uri):
+    def save_as_new_view(
+        self, old_name: str, new_name: str, private_view: bool, uri: str
+    ) -> ClientResult[str]:
         """
         Overwrites a view if it already exists, creates a new view if it does not; and then extracts the
         implementation-specific filter and sort information from the URL and builds and updates the view's XML.
@@ -582,7 +593,7 @@ class List(SecurableObject):
             self, "SaveAsNewView", None, payload, None, return_type
         )
         self.context.add_query(qry)
-        return self
+        return return_type
 
     def save_as_template(
         self, file_name: str, name: str, description: str, save_data: bool

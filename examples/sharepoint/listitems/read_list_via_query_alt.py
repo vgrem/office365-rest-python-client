@@ -5,11 +5,11 @@ from office365.sharepoint.listitems.caml.query import CamlQuery
 from tests import test_client_credentials, test_team_site_url
 
 
-def print_progress(items_read):
+def print_progress(items_read: int):
     print("Items read: {0}".format(items_read))
 
 
-def create_paged_query(page_size):
+def create_paged_query(page_size: int):
     qry = CamlQuery()
     qry.ViewXml = f"""
     <View Scope='RecursiveAll'>

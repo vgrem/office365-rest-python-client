@@ -155,13 +155,6 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def certify_site(self):
-        """"""
-        return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(self, "CertifySite", None, None, None, return_type)
-        self.context.add_query(qry)
-        return return_type
-
     def delete_object(self):
         """Deletes a site"""
 
@@ -206,7 +199,7 @@ class Site(Entity):
 
         return ClientContext(url).site
 
-    def get_available_tags(self):
+    def get_available_tags(self) -> ClientResult[ClientValueCollection[ComplianceTag]]:
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
 
@@ -272,7 +265,7 @@ class Site(Entity):
         self.ensure_property("GroupId", _site_loaded)
         return return_type
 
-    def set_site_logo(self, relative_logo_url):
+    def set_site_logo(self, relative_logo_url: str) -> Self:
         """Uploads a site logo
 
         :param str relative_logo_url:
@@ -281,7 +274,7 @@ class Site(Entity):
         site_manager.set_site_logo(relative_logo_url=relative_logo_url)
         return self
 
-    def is_comm_site(self):
+    def is_comm_site(self) -> ClientResult[bool]:
         """Determines whether a site is communication site"""
         return_type: ClientResult[bool] = ClientResult(self.context)
 
@@ -360,7 +353,7 @@ class Site(Entity):
         self.ensure_property("Id", _site_loaded)
         return return_type
 
-    def get_web_path(self, site_id, web_id):
+    def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:
         """
         :param int site_id: The site identifier
         :param int web_id: The web identifier

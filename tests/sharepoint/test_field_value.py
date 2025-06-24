@@ -131,11 +131,11 @@ class TestFieldValue(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_11_create_list_url_field(self):
-        url_field = self.target_list.fields.add_url_field(
+        result = self.target_list.fields.add_url_field(
             self.url_field_name
         ).execute_query()
-        self.assertIsNotNone(url_field.resource_path)
-        self.assertEqual(url_field.type_as_string, "URL")
+        self.assertIsNotNone(result.resource_path)
+        self.assertEqual(result.type_as_string, "URL")
 
     def test_12_set_url_field_value(self):
         item_to_update = self.__class__.target_item

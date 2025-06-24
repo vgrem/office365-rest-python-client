@@ -3,8 +3,7 @@ from office365.sharepoint.listitems.collection import ListItemCollection
 from tests import test_client_credentials, test_team_site_url
 
 
-def print_progress(items):
-    # type: (ListItemCollection) -> None
+def print_progress(items: ListItemCollection) -> None:
     print("Items read: {0}".format(len(items)))
 
 

@@ -22,9 +22,6 @@ if TYPE_CHECKING:
 class Field(Entity):
     """A container for metadata within a SharePoint list and associated list items."""
 
-    def __init__(self, context, resource_path=None):
-        super(Field, self).__init__(context, resource_path)
-
     def __str__(self):
         return self.title or self.entity_type_name
 

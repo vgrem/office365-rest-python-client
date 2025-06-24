@@ -61,7 +61,9 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def get_available_tags_for_site(context, site_url, return_type=None):
+    def get_available_tags_for_site(
+        context: ClientContext, site_url: str, return_type=None
+    ):
         """
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str site_url:
@@ -95,7 +97,9 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def get_list_compliance_tag(context, list_url, return_type=None):
+    def get_list_compliance_tag(
+        context: ClientContext, list_url: str, return_type=None
+    ) -> ClientResult[ComplianceTag]:
         """ """
         if return_type is None:
             return_type = ClientResult(context, ComplianceTag())

@@ -12,7 +12,7 @@ class TestTeamSite(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestTeamSite, cls).setUpClass()
+        super().setUpClass()
         client = ClientContext(test_site_url).with_credentials(test_user_credentials)
         cls.client = client
 
@@ -29,9 +29,8 @@ class TestTeamSite(TestCase):
         self.__class__.target_site = site
 
     def test3_get_site_status(self):
-        site = self.__class__.target_site.get().select(["GroupId"]).execute_query()
         result = self.client.group_site_manager.get_status(
-            site.group_id
+            self.target_site
         ).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus == SiteStatus.Ready)

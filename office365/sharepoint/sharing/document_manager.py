@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -6,15 +10,19 @@ from office365.sharepoint.permissions.roles.definitions.definition import RoleDe
 from office365.sharepoint.portal.userprofiles.sharedwithme.view_item_removal_result import (
     SharedWithMeViewItemRemovalResult,
 )
+from office365.sharepoint.sharing.role_type import RoleType
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
+
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
 
 
 class DocumentSharingManager(Entity):
     """Specifies document sharing related methods."""
 
     @staticmethod
-    def get_role_definition(context, role):
+    def get_role_definition(context: ClientContext, role: RoleType):
         """This method returns a role definition in the current web that is associated with a given Role
         (section 3.2.5.188) value.
 
@@ -25,13 +33,21 @@ class DocumentSharingManager(Entity):
         context.web.role_definitions.add_child(return_type)
         binding_type = DocumentSharingManager(context)
         qry = ServiceOperationQuery(
-            binding_type, "GetRoleDefinition", [role], None, None, return_type, True
+            binding_type,
+            "GetRoleDefinition",
+            [role.value],
+            None,
+            None,
+            return_type,
+            True,
         )
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def remove_items_from_shared_with_me_view(context, item_urls):
+    def remove_items_from_shared_with_me_view(
+        context: ClientContext, item_urls: List[str]
+    ):
         """
         Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
             does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.

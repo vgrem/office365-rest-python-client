@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Union
+
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -9,10 +13,14 @@ from office365.sharepoint.portal.groups.creation_context import GroupCreationCon
 from office365.sharepoint.portal.groups.creation_information import (
     GroupCreationInformation,
 )
+from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.teams.recent_and_joined_response import (
     RecentAndJoinedTeamsResponse,
 )
+
+if TYPE_CHECKING:
+    from office365.sharepoint.sites.site import Site
 
 
 class GroupSiteManager(ClientObject):
@@ -58,7 +66,13 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def create_group_ex(self, display_name, alias, is_public, optional_params=None):
+    def create_group_ex(
+        self,
+        display_name: str,
+        alias: str,
+        is_public: bool,
+        optional_params: GroupCreationParams = None,
+    ):
         """
         Creates a modern site
 
@@ -77,7 +91,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def delete(self, site_url):
+    def delete(self, site_url: str):
         """
         Deletes a SharePoint Team site
 
@@ -106,18 +120,31 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_status(self, group_id: str) -> ClientResult[GroupSiteInfo]:
+    def get_status(self, group: Union[str, Site]) -> ClientResult[GroupSiteInfo]:
         """Get the status of a SharePoint site"""
+
         return_type = ClientResult(self.context, GroupSiteInfo())
-        qry = ServiceOperationQuery(
-            self, "GetSiteStatus", None, {"groupId": group_id}, None, return_type
-        )
 
-        def _construct_request(request: RequestOptions) -> None:
-            request.method = HttpMethod.Get
-            request.url += "?groupId='{0}'".format(group_id)
+        def _get_status(group_id: str):
+            qry = ServiceOperationQuery(
+                self, "GetSiteStatus", None, {"groupId": group_id}, None, return_type
+            )
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+            def _construct_request(request: RequestOptions) -> None:
+                request.method = HttpMethod.Get
+                request.url += "?groupId='{0}'".format(group_id)
+
+            self.context.add_query(qry).before_query_execute(_construct_request)
+
+        if isinstance(group, Site):
+
+            def _site_loaded():
+                _get_status(group.group_id)
+
+            group.ensure_property("GroupId", _site_loaded)
+        else:
+            _get_status(group)
+
         return return_type
 
     def get_current_user_joined_teams(

@@ -2,17 +2,17 @@ import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.files.file import File
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.exporter import ExportListProgress
 from tests import test_client_credentials, test_team_site_url
 
 
-def print_progress(item):
-    # type: (ListItem|File) -> None
-    if isinstance(item, ListItem):
+def print_progress(progress: ExportListProgress) -> None:
+    if isinstance(progress.current_item, ListItem):
         print("List Item has been exported...")
     else:
         print("File has been downloaded...")
+    print(f"Progress: {progress.processed_items}/{progress.total_items} items")
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

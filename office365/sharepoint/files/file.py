@@ -74,7 +74,7 @@ class File(AbstractFile):
         return self.name or self.entity_type_name
 
     @staticmethod
-    def from_url(abs_url):
+    def from_url(abs_url: str) -> File:
         """
         Retrieves a File from absolute url
         :type abs_url: str
@@ -131,7 +131,7 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativeUrl", _file_loaded)
         return return_type
 
-    def get_content(self) -> ClientResult[AnyStr]:
+    def get_content(self) -> ClientResult[bytes]:
         """Downloads a file content"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", return_type=return_type)
@@ -243,7 +243,9 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def get_image_preview_url(self, width, height, client_type=None):
+    def get_image_preview_url(
+        self, width: int, height: int, client_type: str = None
+    ) -> ClientResult[str]:
         """
         Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -260,14 +262,14 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def recycle(self):
+    def recycle(self) -> ClientResult[str]:
         """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def approve(self, comment):
+    def approve(self, comment: str) -> Self:
         """
         Approves the file submitted for content approval with the specified comment.
 
@@ -277,7 +279,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def deny(self, comment):
+    def deny(self, comment: str) -> Self:
         """Denies approval for a file that was submitted for content approval.
 
         :param str comment: A string containing the comment.
