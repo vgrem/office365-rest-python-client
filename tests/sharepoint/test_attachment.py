@@ -1,11 +1,9 @@
 import os.path
 from io import BytesIO
-from random import randint
 
 from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.lists.creation_information import ListCreationInformation
-from office365.sharepoint.lists.template_type import ListTemplateType
+from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -19,12 +17,9 @@ class TestListItemAttachment(SPTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestListItemAttachment, cls).setUpClass()
-        list_name = "Tasks" + str(randint(0, 10000))
-        target_list = cls.ensure_list(
-            cls.client.web,
-            ListCreationInformation(list_name, None, ListTemplateType.Tasks),
-        )
+        super().setUpClass()
+        list_name = create_unique_name("Tasks")
+        target_list = cls.client.web.lists.add_tasks(list_name).execute_query()
         item_properties = {"Title": "Approval Task"}
         cls.target_item = target_list.add_item(item_properties).execute_query()
 
@@ -35,9 +30,7 @@ class TestListItemAttachment(SPTestCase):
 
     def test1_upload_attachment(self):
         with open(self.attachment_path, "rb") as f:
-            result = self.__class__.target_item.attachment_files.upload(
-                f
-            ).execute_query()
+            result = self.target_item.attachment_files.upload(f).execute_query()
         self.assertIsNotNone(result.file_name)
         self.__class__.target_attachment = result
 

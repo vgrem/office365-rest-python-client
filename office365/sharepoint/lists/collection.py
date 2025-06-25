@@ -45,6 +45,7 @@ class ListCollection(EntityCollection[List]):
         return List(
             self.context,
             ServiceOperationPath("GetByTitle", [list_title], self.resource_path),
+            self,
         )
 
     def get_by_id(self, list_id: str) -> List:
@@ -58,7 +59,9 @@ class ListCollection(EntityCollection[List]):
             List: The requested list instance
         """
         return List(
-            self.context, ServiceOperationPath("GetById", [list_id], self.resource_path)
+            self.context,
+            ServiceOperationPath("GetById", [list_id], self.resource_path),
+            self,
         )
 
     def ensure_client_rendered_site_pages_library(self) -> List:

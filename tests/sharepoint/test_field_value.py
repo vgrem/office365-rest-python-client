@@ -10,9 +10,7 @@ from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.fields.url_value import FieldUrlValue
 from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.list import List
-from office365.sharepoint.lists.template_type import ListTemplateType
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
@@ -24,7 +22,7 @@ class TestFieldValue(SPTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestFieldValue, cls).setUpClass()
+        super().setUpClass()
         cls.multi_lookup_field_name = "PredecessorsAlt"
         cls.url_field_name = "DocumentationLink"
         cls.geo_field_name = "Place"
@@ -32,14 +30,8 @@ class TestFieldValue(SPTestCase):
         cls.multi_choice_field_name = "TaskStatuses"
         cls.user_field_name = "PrimaryApprover"
         cls.lookup_field_name = "RelatedDocuments"
-        cls.target_list = cls.ensure_list(
-            cls.client.web,
-            ListCreationInformation(
-                create_unique_name("Tasks N"),
-                None,
-                ListTemplateType.TasksWithTimelineAndHierarchy,
-            ),
-        )
+        list_title = create_unique_name("Tasks N")
+        cls.target_list = cls.client.web.lists.add_tasks(list_title).execute_query()
         cls.lookup_list = (
             cls.client.web.default_document_library().get().execute_query()
         )

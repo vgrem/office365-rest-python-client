@@ -58,5 +58,4 @@ class TestField(SPTestCase):
         self.assertEqual(updated_field.title, updated_field_name)
 
     def test_6_delete_site_field(self):
-        field = self.__class__.target_field
-        field.delete_object().execute_query()
+        self.target_field.delete_object().execute_query()

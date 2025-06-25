@@ -78,7 +78,7 @@ class Message(OutlookItem):
         self.get_content().after_execute(_save_content)
         return self
 
-    def get_content(self) -> ClientResult[AnyStr]:
+    def get_content(self) -> ClientResult[bytes]:
         """Get MIME content of a message"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
@@ -86,7 +86,7 @@ class Message(OutlookItem):
         return return_type
 
     def add_file_attachment(
-        self, name, content=None, content_type=None, base64_content=None
+        self, name: str, content=None, content_type=None, base64_content=None
     ):
         """
         Attach a file to message
@@ -229,7 +229,7 @@ class Message(OutlookItem):
             _move(destination)
         return self
 
-    def forward(self, to_recipients, comment="") -> Self:
+    def forward(self, to_recipients: List[str], comment: str = "") -> Self:
         """
         Forward a message. The message is saved in the Sent Items folder.
         :param list[str] to_recipients: The list of recipients.
@@ -277,7 +277,7 @@ class Message(OutlookItem):
         )
 
     @property
-    def body(self):
+    def body(self) -> ItemBody:
         """The body of the message. It can be in HTML or text format."""
         return self.properties.setdefault("body", ItemBody())
 
@@ -322,7 +322,7 @@ class Message(OutlookItem):
         return self.properties.get("flag", FollowupFlag())
 
     @property
-    def sent_from(self):
+    def sent_from(self) -> Recipient:
         """
         The owner of the mailbox from which the message is sent. In most cases, this value is the same as the sender
         property, except for sharing or delegation scenarios. The value must correspond to the actual mailbox used.
@@ -406,33 +406,33 @@ class Message(OutlookItem):
         self.set_property("subject", value)
 
     @property
+    @persist_property("toRecipients")
     def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the message."""
-        self._persist_changes("toRecipients")
         return self.properties.setdefault(
             "toRecipients", ClientValueCollection(Recipient)
         )
 
     @property
+    @persist_property("bccRecipients")
     def bcc_recipients(self) -> ClientValueCollection[Recipient]:
         """The BCC: recipients for the message."""
-        self._persist_changes("bccRecipients")
         return self.properties.setdefault(
             "bccRecipients", ClientValueCollection(Recipient)
         )
 
     @property
+    @persist_property("ccRecipients")
     def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The CC: recipients for the message."""
-        self._persist_changes("ccRecipients")
         return self.properties.setdefault(
             "ccRecipients", ClientValueCollection(Recipient)
         )
 
     @property
+    @persist_property("replyTo")
     def reply_to(self) -> ClientValueCollection[Recipient]:
         """The replyTo: recipients for the reply to the message."""
-        self._persist_changes("replyTo")
         return self.properties.setdefault("replyTo", ClientValueCollection(Recipient))
 
     @property

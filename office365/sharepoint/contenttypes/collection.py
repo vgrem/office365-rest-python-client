@@ -35,6 +35,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return ContentType(
             self.context,
             ServiceOperationPath("GetById", [content_type_id], self.resource_path),
+            self,
         )
 
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:

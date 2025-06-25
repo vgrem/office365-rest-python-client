@@ -59,6 +59,45 @@ class ClientObject:
         self._entity_type_name: Optional[str] = None
         self._resource_path = resource_path
 
+    def add_to_parent_collection(self) -> Self:
+        """
+        Adds this object to its parent collection.
+
+        Returns:
+            The current instance for method chaining
+
+        Raises:
+            ValueError: If no parent collection exists
+        """
+        if self._parent_collection is None:
+            raise ValueError(
+                "Cannot add to parent collection: no parent collection exists"
+            )
+
+        if self._resource_path is None:
+            self._resource_path = ResourcePath(
+                None, self._parent_collection.resource_path
+            )
+        self._parent_collection.add_child(self)
+        return self
+
+    def remove_from_parent_collection(self) -> Self:
+        """
+        Removes this object from its parent collection.
+
+        Returns:
+            The current instance for method chaining
+
+        Raises:
+            ValueError: If no parent collection exists
+        """
+        if self._parent_collection is None:
+            raise ValueError(
+                "Cannot remove from parent collection: no parent collection exists"
+            )
+        self._parent_collection.remove_child(self)
+        return self
+
     def clear_state(self) -> Self:
         """
         Resets the client object's state, clearing any pending changes.
@@ -184,7 +223,6 @@ class ClientObject:
         return self
 
     def select(self, names: List[str]) -> Self:
-        # type (list[str]) -> Self
         """
         Specifies which properties to include in the response.
 
@@ -195,32 +233,6 @@ class ClientObject:
             The current instance for method chaining
         """
         self.query_options.select = names
-        return self
-
-    def remove_from_parent_collection(self) -> Self:
-        """
-        Removes this object from its parent collection if it exists.
-
-        Returns:
-            The current instance for method chaining
-        """
-        if self._parent_collection is None:
-            return self
-        self._parent_collection.remove_child(self)
-        return self
-
-    def _persist_changes(self, name: str) -> Self:
-        """
-        Marks a property as needing to be persisted to the server.
-
-        Args:
-            name: The property name to mark for persistence
-
-        Returns:
-            The current instance for method chaining
-        """
-        if name not in self._properties_to_persist:
-            self._properties_to_persist.append(name)
         return self
 
     def get_property(self, name: str, default_value: PropertyT = None) -> PropertyT:

@@ -117,7 +117,11 @@ class FieldCollection(EntityCollection[Field]):
         )
 
     def add_lookup_field(
-        self, title, lookup_list, lookup_field_name, allow_multiple_values=False
+        self,
+        title: str,
+        lookup_list: Union[str, List],
+        lookup_field_name: str,
+        allow_multiple_values: bool = False,
     ):
         """
         Creates a Lookup field
@@ -166,7 +170,9 @@ class FieldCollection(EntityCollection[Field]):
             _add_lookup_field(lookup_list)
         return return_type
 
-    def add_choice_field(self, title, values, multiple_values=False):
+    def add_choice_field(
+        self, title: str, values: list[str], multiple_values: bool = False
+    ):
         """
         Creates a Choice field
 
@@ -312,7 +318,7 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_id(self, id_: str) -> T:
+    def get_by_id(self, id_: str) -> Field:
         """
         Gets the fields with the specified ID.
 
@@ -322,7 +328,7 @@ class FieldCollection(EntityCollection[Field]):
             self.context, ServiceOperationPath("getById", [id_], self.resource_path)
         )
 
-    def get_by_internal_name_or_title(self, value: str) -> T:
+    def get_by_internal_name_or_title(self, value: str) -> Field:
         """Returns the first field in the collection based on the internal name or the title specified
         by the parameter.
 
@@ -335,7 +341,7 @@ class FieldCollection(EntityCollection[Field]):
             ),
         )
 
-    def get_by_title(self, title: str) -> T:
+    def get_by_title(self, title: str) -> Field:
         """
         Returns the first fields object in the collection based on the title of the specified fields.
 
