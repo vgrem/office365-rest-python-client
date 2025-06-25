@@ -47,7 +47,7 @@ class DocumentSharingManager(Entity):
     @staticmethod
     def remove_items_from_shared_with_me_view(
         context: ClientContext, item_urls: List[str]
-    ):
+    ) -> ClientResult[ClientValueCollection[SharedWithMeViewItemRemovalResult]]:
         """
         Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
             does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.
@@ -76,11 +76,11 @@ class DocumentSharingManager(Entity):
 
     @staticmethod
     def update_document_sharing_info(
-        context,
-        resource_address,
-        user_role_assignments,
-        validate_existing_permissions=None,
-        additive_mode=None,
+        context: ClientContext,
+        resource_address: str,
+        user_role_assignments: List[UserRoleAssignment],
+        validate_existing_permissions: bool = None,
+        additive_mode: bool = None,
         send_server_managed_notification=None,
         custom_message=None,
         include_anonymous_links_in_notification=None,

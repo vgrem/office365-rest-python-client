@@ -12,20 +12,20 @@ class TestSharePointFolder(SPTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestSharePointFolder, cls).setUpClass()
+        super().setUpClass()
         cls.parent_folder = cls.client.web.default_document_library().root_folder
 
     def test1_create_folder(self):
-        folder = self.parent_folder.folders.add(
+        result = self.parent_folder.folders.add(
             create_unique_name("input")
         ).execute_query()
-        self.assertTrue(folder.exists)
-        self.__class__.input_folder = folder
+        self.assertTrue(result.exists)
+        self.__class__.input_folder = result
 
-    def test2_enum_folders(self):
-        folders = self.parent_folder.folders.get().execute_query()
-        self.assertGreater(len(folders), 1)
-        for child_folder in folders:
+    def test2_list_sub_folders(self):
+        result = self.parent_folder.folders.get().execute_query()
+        self.assertGreater(len(result), 1)
+        for child_folder in result:
             self.assertIsNotNone(child_folder.resource_path)
 
     def test4_get_folder_by_id(self):

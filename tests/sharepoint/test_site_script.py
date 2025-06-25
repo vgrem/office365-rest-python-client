@@ -4,7 +4,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSiteScript(SPTestCase):
-    site_script_meta = None  # type: SiteScriptMetadata
+    site_script_meta: SiteScriptMetadata = None
     site_script_count = None
 
     def test_1_create(self):
@@ -21,12 +21,12 @@ class TestSiteScript(SPTestCase):
         self.assertIsNotNone(result.value)
         self.__class__.site_script_meta = result.value
 
-    def test_2_list(self):
+    def test_2_list_site_scripts(self):
         result = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertIsNotNone(result.value)
         self.__class__.site_script_count = len(result.value)
 
-    def test_3_delete(self):
+    def test_3_delete_site_script(self):
         SiteScriptUtility.delete_site_script(
             self.client, self.site_script_meta.Id
         ).execute_query()

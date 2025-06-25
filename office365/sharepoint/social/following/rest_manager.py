@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -14,7 +16,7 @@ class SocialRestFollowingManager(Entity):
             resource_path = ResourcePath("SP.Social.SocialRestFollowingManager")
         super(SocialRestFollowingManager, self).__init__(context, resource_path)
 
-    def followers(self):
+    def followers(self) -> ClientResult[ClientValueCollection[SocialActor]]:
         """The Followers method retrieves the current user's list of followers. For details on the SocialActor type,
         see section 3.1.5.3."""
         return_type = ClientResult(self.context, ClientValueCollection(SocialActor))
@@ -23,7 +25,7 @@ class SocialRestFollowingManager(Entity):
         return return_type
 
     @property
-    def my(self):
+    def my(self) -> SocialRestFollowingManager:
         """The My method gets a SocialRestActor object that represents the current user. See section 3.1.5.35 for
         details on the SocialRestActor type."""
         return SocialRestFollowingManager(
