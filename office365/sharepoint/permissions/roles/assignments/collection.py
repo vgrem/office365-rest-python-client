@@ -47,7 +47,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         self.context.add_query(qry)
         return self
 
-    def remove_role_assignment(self, principal_id, role_def_id):
+    def remove_role_assignment(self, principal_id: int, role_def_id: int):
         """Removes the role assignment with the specified principal and role definition from the collection.
 
         :param int role_def_id: The ID of the role definition in the role assignment.
