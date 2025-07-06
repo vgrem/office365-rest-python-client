@@ -9,8 +9,7 @@ class UserRegistrationDetails(Entity):
     and passwordless authentication)."""
 
     @property
-    def is_admin(self):
-        # type: () -> Optional[bool]
+    def is_admin(self) -> Optional[bool]:
         """
         Indicates whether the user has an admin role in the tenant. This value can be used to check the authentication
         methods that privileged accounts are registered for and capable of.
@@ -18,8 +17,7 @@ class UserRegistrationDetails(Entity):
         return self.properties.get("isAdmin", None)
 
     @property
-    def is_mfa_registered(self):
-        # type: () -> Optional[bool]
+    def is_mfa_registered(self) -> Optional[bool]:
         """
         Indicates whether the user has registered a strong authentication method for multi-factor authentication.
         The method may not necessarily be allowed by the authentication methods policy.
@@ -27,8 +25,7 @@ class UserRegistrationDetails(Entity):
         return self.properties.get("isMfaRegistered", None)
 
     @property
-    def is_passwordless_capable(self):
-        # type: () -> Optional[bool]
+    def is_passwordless_capable(self) -> Optional[bool]:
         """
         Indicates whether the user has registered a passwordless strong authentication method (including FIDO2,
         Windows Hello for Business, and Microsoft Authenticator (Passwordless)) that is allowed by the authentication
@@ -37,8 +34,7 @@ class UserRegistrationDetails(Entity):
         return self.properties.get("isPasswordlessCapable", None)
 
     @property
-    def is_sspr_capable(self):
-        # type: () -> Optional[bool]
+    def is_sspr_capable(self) -> Optional[bool]:
         """
         Indicates whether the user has registered the required number of authentication methods for self-service
         password reset and the user is allowed to perform self-service password reset by policy.
@@ -46,8 +42,7 @@ class UserRegistrationDetails(Entity):
         return self.properties.get("isSsprCapable", None)
 
     @property
-    def is_sspr_enabled(self):
-        # type: () -> Optional[bool]
+    def is_sspr_enabled(self) -> Optional[bool]:
         """
         Indicates whether the user is allowed to perform self-service password reset by policy. The user may not
         necessarily have registered the required number of authentication methods for self-service password reset.
@@ -55,16 +50,14 @@ class UserRegistrationDetails(Entity):
         return self.properties.get("isSsprEnabled", None)
 
     @property
-    def user_display_name(self):
-        # type: () -> Optional[str]
+    def user_display_name(self) -> Optional[str]:
         """
         The user display name, such as Adele Vance. Supports $filter (eq, startsWith) and $orderby.
         """
         return self.properties.get("userDisplayName", None)
 
     @property
-    def user_preferred_method_for_secondary_authentication(self):
-        # type: () -> Optional[str]
+    def user_preferred_method_for_secondary_authentication(self) -> Optional[str]:
         """
         The method the user selected as the default second-factor for performing multifactor authentication.
         """
@@ -73,16 +66,14 @@ class UserRegistrationDetails(Entity):
         )
 
     @property
-    def user_principal_name(self):
-        # type: () -> Optional[str]
+    def user_principal_name(self) -> Optional[str]:
         """
         The user principal name, such as AdeleV@contoso.com. Supports $filter (eq, startsWith) and $orderby.
         """
         return self.properties.get("userPrincipalName", None)
 
     @property
-    def user_type(self):
-        # type: () -> Optional[str]
+    def user_type(self) -> Optional[str]:
         """
         Identifies whether the user is a member or guest in the tenant.
         The possible values are: member, guest, unknownFutureValue.

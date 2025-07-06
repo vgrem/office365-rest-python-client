@@ -14,7 +14,6 @@ class RiskyUserHistoryItem(RiskyUser):
         return self.properties.get("activity", RiskUserActivity())
 
     @property
-    def initiated_by(self):
-        # type: () -> Optional[str]
+    def initiated_by(self) -> Optional[str]:
         """The ID of actor that does the operation."""
         return self.properties.get("initiatedBy", None)

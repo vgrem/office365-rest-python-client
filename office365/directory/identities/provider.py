@@ -12,16 +12,14 @@ class IdentityProvider(Entity):
     """
 
     @property
-    def client_id(self):
-        # type: () -> Optional[str]
+    def client_id(self) -> Optional[str]:
         """
         The client ID for the application. This is the client ID obtained when registering the application
         with the identity provider."""
         return self.properties.get("clientId", None)
 
     @property
-    def client_secret(self):
-        # type: () -> Optional[str]
+    def client_secret(self) -> Optional[str]:
         """
         The client secret for the application. This is the client secret obtained when registering the application
         with the identity provider. This is write-only. A read operation will return ****

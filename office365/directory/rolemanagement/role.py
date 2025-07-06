@@ -16,14 +16,12 @@ class DirectoryRole(DirectoryObject):
         return "Name: {0}".format(self.display_name)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """The description for the directory role."""
         return self.properties.get("Description", None)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The display name for the directory role."""
         return self.properties.get("displayName", None)
 

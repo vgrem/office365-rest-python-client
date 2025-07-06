@@ -8,19 +8,16 @@ class SecureScoreControlProfile(Entity):
     for a tenant and can explicitly pull individual controls."""
 
     @property
-    def action_type(self):
-        # type: () -> Optional[str]
+    def action_type(self) -> Optional[str]:
         """Control action type (Config, Review, Behavior)."""
         return self.properties.get("actionType", None)
 
     @property
-    def action_url(self):
-        # type: () -> Optional[str]
+    def action_url(self) -> Optional[str]:
         """URL to where the control can be actioned."""
         return self.properties.get("actionUrl", None)
 
     @property
-    def azure_tenant_id(self):
-        # type: () -> Optional[str]
+    def azure_tenant_id(self) -> Optional[str]:
         """GUID string for tenant ID."""
         return self.properties.get("azureTenantId", None)

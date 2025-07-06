@@ -10,7 +10,6 @@ class AgreementAcceptance(Entity):
     """
 
     @property
-    def user_principal_name(self):
-        # type: () -> Optional[str]
+    def user_principal_name(self) -> Optional[str]:
         """UPN of the user when the acceptance was recorded."""
         return self.properties.get("userPrincipalName", None)

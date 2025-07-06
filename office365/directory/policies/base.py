@@ -7,7 +7,6 @@ class PolicyBase(DirectoryObject):
     """Represents an abstract base type for policy types to inherit from"""
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Display name for this policy"""
         return self.properties.get("displayName", None)

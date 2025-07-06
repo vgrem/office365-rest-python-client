@@ -9,14 +9,12 @@ class PasswordAuthenticationMethod(AuthenticationMethod):
     but action can be taken to reset a password."""
 
     @property
-    def created_datetime(self):
-        # type: () -> datetime
+    def created_datetime(self) -> datetime:
         """The date and time when this password was last updated. This property is currently not populated."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def password(self):
-        # type: () -> Optional[str]
+    def password(self) -> Optional[str]:
         """For security, the password is always returned as null from a LIST or GET operation."""
         return self.properties.get("password", None)
 

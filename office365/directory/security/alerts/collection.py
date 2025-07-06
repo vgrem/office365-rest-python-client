@@ -30,8 +30,7 @@ class AlertCollection(EntityCollection[Alert]):
         :param str vendor_information:
         """
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("Content-Type", "application/json")
 
         return (

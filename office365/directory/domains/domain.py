@@ -27,7 +27,7 @@ class Domain(Entity):
         return return_type
 
     @property
-    def supported_services(self):
+    def supported_services(self) -> StringCollection:
         """
         The capabilities assigned to the domain. Can include 0, 1 or more of following values:
         Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain,
@@ -37,7 +37,7 @@ class Domain(Entity):
         return self.properties.get("supportedServices", StringCollection())
 
     @property
-    def domain_name_references(self):
+    def domain_name_references(self) -> DirectoryObjectCollection:
         """
         The objects such as users and groups that reference the domain ID. Read-only, Nullable.
         Supports $expand and $filter by the OData type of objects returned.
@@ -52,7 +52,7 @@ class Domain(Entity):
         )
 
     @property
-    def service_configuration_records(self):
+    def service_configuration_records(self) -> EntityCollection[DomainDnsRecord]:
         """
         DNS records the customer adds to the DNS zone file of the domain before the domain can be used by
         Microsoft Online services. Read-only, Nullable. Supports $expand.
@@ -67,7 +67,7 @@ class Domain(Entity):
         )
 
     @property
-    def verification_dns_records(self):
+    def verification_dns_records(self) -> EntityCollection[DomainDnsRecord]:
         """
         DNS records that the customer adds to the DNS zone file of the domain before the customer can complete
         domain ownership verification with Azure AD. Read-only, Nullable. Supports $expand.

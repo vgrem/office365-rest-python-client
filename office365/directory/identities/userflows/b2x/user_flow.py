@@ -22,8 +22,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
     """
 
     @property
-    def identity_providers(self):
-        # type: () -> EntityCollection[IdentityProvider]
+    def identity_providers(self) -> EntityCollection[IdentityProvider]:
         """TThe identity providers included in the user flow."""
         return self.properties.get(
             "identityProviders",
@@ -35,8 +34,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
         )
 
     @property
-    def languages(self):
-        # type: () -> EntityCollection[UserFlowLanguageConfiguration]
+    def languages(self) -> EntityCollection[UserFlowLanguageConfiguration]:
         """The languages supported for customization within the user flow. Language customization is enabled by default
         in self-service sign-up user flow. You cannot create custom languages in self-service sign-up user flows.
         """
@@ -50,8 +48,9 @@ class B2XIdentityUserFlow(IdentityUserFlow):
         )
 
     @property
-    def user_attribute_assignments(self):
-        # type: () -> IdentityUserFlowAttributeAssignmentCollection
+    def user_attribute_assignments(
+        self,
+    ) -> IdentityUserFlowAttributeAssignmentCollection:
         """The user attribute assignments included in the user flow."""
         return self.properties.get(
             "userAttributeAssignments",
@@ -62,8 +61,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
         )
 
     @property
-    def user_flow_type(self):
-        # type: () -> Optional[str]
+    def user_flow_type(self) -> Optional[str]:
         """
         The type of user flow. For self-service sign-up user flows,
         the value can only be signUpOrSignIn and cannot be modified after creation.

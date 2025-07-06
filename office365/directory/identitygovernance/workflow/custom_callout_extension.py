@@ -10,7 +10,6 @@ class CustomCalloutExtension(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Display name for the customCalloutExtension object."""
         return self.properties.get("displayName", None)

@@ -13,13 +13,11 @@ class ProfilePhoto(Entity):
     """
 
     @property
-    def height(self):
-        # type: () -> Optional[int]
+    def height(self) -> Optional[int]:
         """The height of the photo."""
         return self.properties.get("height", None)
 
     @property
-    def width(self):
-        # type: () -> Optional[int]
+    def width(self) -> Optional[int]:
         """The width of the photo."""
         return self.properties.get("width", None)

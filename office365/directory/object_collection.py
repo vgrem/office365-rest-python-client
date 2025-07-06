@@ -1,3 +1,5 @@
+from typing import Union
+
 from typing_extensions import Self
 
 from office365.count_collection import CountCollection
@@ -32,8 +34,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, directory_object):
-        # type: (DirectoryObject) -> Self
+    def add(self, directory_object: DirectoryObject) -> Self:
         """Adds directory objects to the collection."""
 
         def _add():
@@ -64,8 +65,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
-    def remove(self, directory_object):
-        # type: (DirectoryObject|str) -> Self
+    def remove(self, directory_object: Union[DirectoryObject, str]) -> Self:
         """Removes directory object from the collection.
         :param str directory_object: Directory object or identifier
         """
@@ -73,8 +73,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         def _remove(id_):
             qry = ServiceOperationQuery(self, "{0}/$ref".format(id_))
 
-            def _construct_request(request):
-                # type: (RequestOptions) -> None
+            def _construct_request(request: RequestOptions) -> None:
                 request.method = HttpMethod.Delete
 
             self.context.add_query(qry).before_query_execute(_construct_request)

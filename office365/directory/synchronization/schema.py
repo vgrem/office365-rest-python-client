@@ -25,8 +25,7 @@ class SynchronizationSchema(Entity):
         return return_type
 
     @property
-    def directories(self):
-        # type: () -> EntityCollection[DirectoryDefinition]
+    def directories(self) -> EntityCollection[DirectoryDefinition]:
         """Contains the collection of directories and all of their objects."""
         return self.properties.get(
             "directories",

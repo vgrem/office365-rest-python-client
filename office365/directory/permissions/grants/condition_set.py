@@ -30,8 +30,7 @@ class PermissionGrantConditionSet(Entity):
         return self.properties.get("clientApplicationPublisherIds", StringCollection())
 
     @property
-    def client_applications_from_verified_publisher_only(self):
-        # type: () -> Optional[bool]
+    def client_applications_from_verified_publisher_only(self) -> Optional[bool]:
         """
         Set to true to only match on client applications with a verified publisher. Set to false to match on any client
         app, even if it does not have a verified publisher. Default is false.
@@ -51,8 +50,7 @@ class PermissionGrantConditionSet(Entity):
         return self.properties.get("permissions", StringCollection())
 
     @property
-    def resource_application(self):
-        # type: () -> Optional[str]
+    def resource_application(self) -> Optional[str]:
         """
         The appId of the resource application (e.g. the API) for which a permission is being granted, or any to match
         with any resource application or API. Default is any.

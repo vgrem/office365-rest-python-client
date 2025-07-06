@@ -100,8 +100,7 @@ class InformationProtection(Entity):
         return_type = MailAssessmentRequest(self.context)
         self.threat_assessment_requests.add_child(return_type)
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("Content-Type", "application/json")
 
         def _create_and_add_query():
@@ -120,8 +119,7 @@ class InformationProtection(Entity):
         return return_type
 
     @property
-    def threat_assessment_requests(self):
-        # type: () -> EntityCollection[ThreatAssessmentRequest]
+    def threat_assessment_requests(self) -> EntityCollection[ThreatAssessmentRequest]:
         """"""
         return self.properties.get(
             "threatAssessmentRequests",

@@ -20,8 +20,7 @@ class IdentityContainer(Entity):
     """
 
     @property
-    def api_connectors(self):
-        # type: () -> EntityCollection[IdentityApiConnector]
+    def api_connectors(self) -> EntityCollection[IdentityApiConnector]:
         """Represents entry point for API connectors."""
         return self.properties.get(
             "apiConnectors",
@@ -33,8 +32,9 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def authentication_event_listeners(self):
-        # type: () -> EntityCollection[AuthenticationEventListener]
+    def authentication_event_listeners(
+        self,
+    ) -> EntityCollection[AuthenticationEventListener]:
         """Get the collection of authenticationListener resources supported by the onSignupStart event."""
         return self.properties.get(
             "authenticationEventListeners",

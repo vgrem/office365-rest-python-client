@@ -11,13 +11,11 @@ class DirectoryRoleTemplate(DirectoryObject):
         return self.display_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The display name to set for the directory role"""
         return self.properties.get("displayName", None)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """The display name to set for the directory role"""
         return self.properties.get("description", None)

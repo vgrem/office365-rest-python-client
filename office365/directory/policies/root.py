@@ -53,8 +53,9 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def authentication_strength_policies(self):
-        # type: () -> EntityCollection[AuthenticationStrengthPolicy]
+    def authentication_strength_policies(
+        self,
+    ) -> EntityCollection[AuthenticationStrengthPolicy]:
         """
         The authentication method combinations that are to be used in scenarios defined by Azure AD Conditional Access.
         """
@@ -89,8 +90,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def app_management_policies(self):
-        # type: () -> EntityCollection[AppManagementPolicy]
+    def app_management_policies(self) -> EntityCollection[AppManagementPolicy]:
         """The policies that enforce app management restrictions for specific applications and service principals,
         overriding the defaultAppManagementPolicy."""
         return self.properties.get(
@@ -103,8 +103,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def conditional_access_policies(self):
-        # type: () -> EntityCollection[ConditionalAccessPolicy]
+    def conditional_access_policies(self) -> EntityCollection[ConditionalAccessPolicy]:
         """The custom rules that define an access scenario"""
         return self.properties.get(
             "conditionalAccessPolicies",
@@ -153,8 +152,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def feature_rollout_policies(self):
-        # type: () -> EntityCollection[FeatureRolloutPolicy]
+    def feature_rollout_policies(self) -> EntityCollection[FeatureRolloutPolicy]:
         """The feature rollout policy associated with a directory object."""
         return self.properties.get(
             "featureRolloutPolicies",
@@ -166,8 +164,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def permission_grant_policies(self):
-        # type: () -> EntityCollection[PermissionGrantPolicy]
+    def permission_grant_policies(self) -> EntityCollection[PermissionGrantPolicy]:
         """
         The policy that specifies the conditions under which consent can be granted.
         """
@@ -181,8 +178,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def role_management_policies(self):
-        # type: () -> EntityCollection[UnifiedRoleManagementPolicy]
+    def role_management_policies(self) -> EntityCollection[UnifiedRoleManagementPolicy]:
         """Specifies the various policies associated with scopes and roles."""
         return self.properties.get(
             "roleManagementPolicies",

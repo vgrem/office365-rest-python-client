@@ -17,20 +17,19 @@ class SignIn(Entity):
     """
 
     @property
-    def app_display_name(self):
-        # type: () -> Optional[str]
+    def app_display_name(self) -> Optional[str]:
         """App name displayed in the Azure Portal."""
         return self.properties.get("appDisplayName", None)
 
     @property
-    def app_id(self):
-        # type: () -> Optional[str]
+    def app_id(self) -> Optional[str]:
         """Unique GUID representing the app ID in the Azure Active Directory."""
         return self.properties.get("appId", None)
 
     @property
-    def applied_conditional_access_policies(self):
-        # type: () -> Optional[str]
+    def applied_conditional_access_policies(
+        self,
+    ) -> Optional[ClientValueCollection[AppliedConditionalAccessPolicy]]:
         """Provides a list of conditional access policies that the corresponding sign-in activity triggers."""
         return self.properties.get(
             "appliedConditionalAccessPolicies",
@@ -38,8 +37,7 @@ class SignIn(Entity):
         )
 
     @property
-    def client_app_used(self):
-        # type: () -> Optional[str]
+    def client_app_used(self) -> Optional[str]:
         """
         Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern
         clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients.
@@ -47,8 +45,7 @@ class SignIn(Entity):
         return self.properties.get("clientAppUsed", None)
 
     @property
-    def correlation_id(self):
-        # type: () -> Optional[str]
+    def correlation_id(self) -> Optional[str]:
         """
         The request ID sent from the client when the sign-in is initiated; used to troubleshoot sign-in activity.
         """
@@ -67,14 +64,12 @@ class SignIn(Entity):
         return self.properties.get("deviceDetail", DeviceDetail())
 
     @property
-    def ip_address(self):
-        # type: () -> Optional[str]
+    def ip_address(self) -> Optional[str]:
         """IP address of the client used to sign in."""
         return self.properties.get("ipAddress", None)
 
     @property
-    def is_interactive(self):
-        # type: () -> Optional[bool]
+    def is_interactive(self) -> Optional[bool]:
         """Indicates if a sign-in is interactive or not."""
         return self.properties.get("isInteractive", None)
 
@@ -87,45 +82,39 @@ class SignIn(Entity):
         return self.properties.get("status", SignInLocation())
 
     @property
-    def resource_display_name(self):
-        # type: () -> Optional[str]
+    def resource_display_name(self) -> Optional[str]:
         """Name of the resource the user signed into."""
         return self.properties.get("resourceDisplayName", None)
 
     @property
-    def resource_id(self):
-        # type: () -> Optional[str]
+    def resource_id(self) -> Optional[str]:
         """
         ID of the resource that the user signed into."""
         return self.properties.get("resourceId", None)
 
     @property
-    def risk_detail(self):
-        # type: () -> Optional[str]
+    def risk_detail(self) -> Optional[str]:
         """
         Provides the 'reason' behind a specific state of a risky user, sign-in or a risk event.
         """
         return self.properties.get("riskDetail", None)
 
     @property
-    def user_id(self):
-        # type: () -> Optional[str]
+    def user_id(self) -> Optional[str]:
         """
         ID of the user that initiated the sign-in. Supports $filter (eq operator only).
         """
         return self.properties.get("userId", None)
 
     @property
-    def user_principal_name(self):
-        # type: () -> Optional[str]
+    def user_principal_name(self) -> Optional[str]:
         """
         User principal name of the user that initiated the sign-in. Supports $filter (eq and startsWith operators only).
         """
         return self.properties.get("userPrincipalName", None)
 
     @property
-    def status(self):
-        # type: () -> Optional[SignInStatus]
+    def status(self) -> Optional[SignInStatus]:
         """
         Sign-in status. Includes the error code and description of the error (in case of a sign-in failure).
         Supports $filter (eq operator only) on errorCode property.

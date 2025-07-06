@@ -18,8 +18,7 @@ class FeatureRolloutPolicy(Entity):
     """
 
     @property
-    def applies_to(self):
-        # type: () -> DirectoryObjectCollection
+    def applies_to(self) -> DirectoryObjectCollection:
         """
         Specifies a list of directoryObject resources that feature is enabled for.
         """

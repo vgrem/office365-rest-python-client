@@ -16,20 +16,17 @@ class ProvisioningObjectSummary(Entity):
         return self.properties.get("activityDateTime", datetime.min)
 
     @property
-    def change_id(self):
-        # type: () -> Optional[str]
+    def change_id(self) -> Optional[str]:
         """Unique ID of this change in this cycle. Supports $filter (eq, contains)."""
         return self.properties.get("changeId", None)
 
     @property
-    def cycle_id(self):
-        # type: () -> Optional[str]
+    def cycle_id(self) -> Optional[str]:
         """Unique ID per job iteration. Supports $filter (eq, contains)."""
         return self.properties.get("cycleId", None)
 
     @property
-    def duration_in_milliseconds(self):
-        # type: () -> Optional[int]
+    def duration_in_milliseconds(self) -> Optional[int]:
         """Indicates how long this provisioning action took to finish. Measured in milliseconds."""
         return self.properties.get("durationInMilliseconds", None)
 

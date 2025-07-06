@@ -28,14 +28,12 @@ class Invitation(Entity):
     """
 
     @property
-    def invited_user_display_name(self):
-        # type: () -> Optional[str]
+    def invited_user_display_name(self) -> Optional[str]:
         """The display name of the user being invited."""
         return self.properties.get("invitedUserDisplayName", None)
 
     @property
-    def invited_user_email_address(self):
-        # type: () -> Optional[str]
+    def invited_user_email_address(self) -> Optional[str]:
         """The email address of the user being invited."""
         return self.properties.get("invitedUserEmailAddress", None)
 

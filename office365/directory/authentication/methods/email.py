@@ -10,7 +10,6 @@ class EmailAuthenticationMethod(AuthenticationMethod):
     """
 
     @property
-    def email_address(self):
-        # type: () -> Optional[str]
+    def email_address(self) -> Optional[str]:
         """The email address registered to this user."""
         return self.properties.get("emailAddress", None)

@@ -5,12 +5,12 @@ from tests.graph_case import GraphTestCase
 
 
 class TestExtensions(GraphTestCase):
-    target_app = None  # type: Application
-    target_extension = None  # type: ExtensionProperty
+    target_app: Application = None
+    target_extension: ExtensionProperty = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestExtensions, cls).setUpClass()
+        super().setUpClass()
         app_name = create_unique_name("App")
         cls.target_app = cls.client.applications.add(app_name).execute_query()
 
@@ -26,10 +26,10 @@ class TestExtensions(GraphTestCase):
         self.__class__.target_extension = new_extension
 
     def test2_list_extensions(self):
-        extensions = self.client.directory_objects.get_available_extension_properties(
+        result = self.client.directory_objects.get_available_extension_properties(
             False
         ).execute_query()
-        self.assertIsNotNone(extensions.resource_path)
+        self.assertIsNotNone(result.resource_path)
 
     def test3_delete_extension(self):
-        self.__class__.target_extension.delete_object().execute_query()
+        self.target_extension.delete_object().execute_query()

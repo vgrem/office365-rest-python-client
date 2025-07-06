@@ -40,16 +40,14 @@ class Security(Entity):
         return return_type
 
     @property
-    def alerts(self):
-        # type: () -> AlertCollection
+    def alerts(self) -> AlertCollection:
         return self.properties.get(
             "alerts",
             AlertCollection(self.context, ResourcePath("alerts", self.resource_path)),
         )
 
     @property
-    def alerts_v2(self):
-        # type: () -> EntityCollection[Alert]
+    def alerts_v2(self) -> EntityCollection[Alert]:
         """A collection of alerts in Microsoft 365 Defender."""
         return self.properties.get(
             "alerts_v2",
@@ -76,8 +74,7 @@ class Security(Entity):
         )
 
     @property
-    def incidents(self):
-        # type: () -> EntityCollection[Incident]
+    def incidents(self) -> EntityCollection[Incident]:
         """A collection of correlated alert instances and associated metadata that reflects the story of
         an attack in a tenant"""
         return self.properties.get(
@@ -88,8 +85,7 @@ class Security(Entity):
         )
 
     @property
-    def labels(self):
-        # type: () -> LabelsRoot
+    def labels(self) -> LabelsRoot:
         """"""
         return self.properties.get(
             "labels",
@@ -97,8 +93,7 @@ class Security(Entity):
         )
 
     @property
-    def subject_rights_requests(self):
-        # type: () -> EntityCollection[SubjectRightsRequest]
+    def subject_rights_requests(self) -> EntityCollection[SubjectRightsRequest]:
         """Get a list of the subjectRightsRequest objects and their properties."""
         return self.properties.get(
             "subjectRightsRequests",
@@ -152,6 +147,5 @@ class Security(Entity):
         return super(Security, self).get_property(name, default_value)
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "microsoft.graph.security.alert"

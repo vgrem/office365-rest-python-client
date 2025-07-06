@@ -8,8 +8,7 @@ class SingleValueLegacyExtendedProperty(Entity):
     """An extended property that contains a single value."""
 
     @property
-    def value(self):
-        # type: () -> Optional[str]
+    def value(self) -> Optional[str]:
         """A property value."""
         return self.properties.get("value", None)
 

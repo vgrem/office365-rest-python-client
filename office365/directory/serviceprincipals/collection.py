@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.count_collection import CountCollection
 from office365.directory.applications.application import Application
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
@@ -12,21 +14,20 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
             context, ServicePrincipal, resource_path
         )
 
-    def add(self, app_id):
+    def add(self, app_id: str) -> ServicePrincipal:
         """
         Create a new servicePrincipal object.
         :param str app_id: The unique identifier for the associated application
         """
         return super(ServicePrincipalCollection, self).add(appId=app_id)
 
-    def get_by_app_id(self, app_id):
+    def get_by_app_id(self, app_id) -> ServicePrincipal:
         """Retrieves the service principal using appId.
         :param str app_id: appId is referred to as Application (Client) ID, respectively, in the Azure portal
         """
         return ServicePrincipal(self.context, AppIdPath(app_id, self.resource_path))
 
-    def get_by_app(self, app):
-        # type: (str|Application) -> ServicePrincipal
+    def get_by_app(self, app: str | Application) -> ServicePrincipal:
         if isinstance(app, Application):
             return_type = ServicePrincipal(self.context, parent_collection=self)
 
@@ -38,7 +39,6 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
         else:
             return self.get_by_app_id(app)
 
-    def get_by_name(self, name):
-        # type: (str) -> ServicePrincipal
+    def get_by_name(self, name: str) -> ServicePrincipal:
         """Retrieves the service principal using displayName."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")

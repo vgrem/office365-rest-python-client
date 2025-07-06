@@ -16,8 +16,7 @@ class AttackSimulationRoot(Entity):
     can learn from."""
 
     @property
-    def landing_pages(self):
-        # type: () -> EntityCollection[LandingPage]
+    def landing_pages(self) -> EntityCollection[LandingPage]:
         """Represents an attack simulation training landing page."""
         return self.properties.get(
             "landingPages",
@@ -29,8 +28,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[AttackSimulationOperation]
+    def operations(self) -> EntityCollection[AttackSimulationOperation]:
         """Represents an attack simulation training operation."""
         return self.properties.get(
             "operations",
@@ -42,8 +40,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def simulations(self):
-        # type: () -> EntityCollection[Simulation]
+    def simulations(self) -> EntityCollection[Simulation]:
         """Represents an attack simulation training campaign in a tenant."""
         return self.properties.get(
             "simulations",
@@ -55,8 +52,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def simulation_automations(self):
-        # type: () -> EntityCollection[SimulationAutomation]
+    def simulation_automations(self) -> EntityCollection[SimulationAutomation]:
         """Represents simulation automation created to run on a tenant."""
         return self.properties.get(
             "simulationAutomations",

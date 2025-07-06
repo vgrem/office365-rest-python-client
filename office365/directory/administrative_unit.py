@@ -18,8 +18,7 @@ class AdministrativeUnit(DirectoryObject):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Display name for the administrative unit"""
         return self.properties.get("displayName", None)
 
@@ -45,8 +44,7 @@ class AdministrativeUnit(DirectoryObject):
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for this administrative unit."""
         return self.properties.get(
             "extensions",

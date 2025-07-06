@@ -28,7 +28,6 @@ class RiskyUser(Entity):
         )
 
     @property
-    def user_principal_name(self):
-        # type: () -> Optional[str]
+    def user_principal_name(self) -> Optional[str]:
         """Risky user principal name."""
         return self.properties.get("userPrincipalName", None)

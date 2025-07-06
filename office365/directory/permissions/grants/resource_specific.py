@@ -10,31 +10,26 @@ class ResourceSpecificPermissionGrant(DirectoryObject):
     """
 
     @property
-    def client_id(self):
-        # type: () -> Optional[str]
+    def client_id(self) -> Optional[str]:
         """ID of the Azure AD app that has been granted access."""
         return self.properties.get("clientId", None)
 
     @property
-    def client_app_id(self):
-        # type: () -> Optional[str]
+    def client_app_id(self) -> Optional[str]:
         """ID of the service principal of the Azure AD app that has been granted access."""
         return self.properties.get("clientAppId", None)
 
     @property
-    def permission(self):
-        # type: () -> Optional[str]
+    def permission(self) -> Optional[str]:
         """The name of the resource-specific permission."""
         return self.properties.get("permission", None)
 
     @property
-    def permission_type(self):
-        # type: () -> Optional[str]
+    def permission_type(self) -> Optional[str]:
         """The type of permission. Possible values are: Application, Delegated. Read-only."""
         return self.properties.get("permissionType", None)
 
     @property
-    def resource_app_id(self):
-        # type: () -> Optional[str]
+    def resource_app_id(self) -> Optional[str]:
         """ID of the Azure AD app that is hosting the resource. Read-only."""
         return self.properties.get("resourceAppId", None)

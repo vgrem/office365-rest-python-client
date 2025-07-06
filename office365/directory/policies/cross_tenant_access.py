@@ -16,8 +16,7 @@ class CrossTenantAccessPolicy(PolicyBase):
         """
         return self.properties.get("allowedCloudEndpoints", StringCollection())
 
-    def templates(self):
-        # type: () -> PolicyTemplate
+    def templates(self) -> PolicyTemplate:
         """Represents the base policy in the directory for multitenant organization settings."""
         return self.properties.get(
             "templates",
