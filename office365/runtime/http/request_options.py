@@ -20,6 +20,7 @@ class RequestOptions(object):
         self.verify = True
         self.stream = False
         self.proxies = None
+        self.timeout = None
 
     @property
     def is_file(self):
