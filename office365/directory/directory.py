@@ -80,10 +80,13 @@ class Directory(Entity):
     def deleted_items(self, entity_type=None):
         """Recently deleted items. Read-only. Nullable."""
         if entity_type:
-            return DirectoryObjectCollection(
-                self.context,
-                ResourcePath(
-                    entity_type, ResourcePath("deletedItems", self.resource_path)
+            return self.properties.setdefault(
+                "deletedItems",
+                DirectoryObjectCollection(
+                    self.context,
+                    ResourcePath(
+                        entity_type, ResourcePath("deletedItems", self.resource_path)
+                    ),
                 ),
             )
         else:

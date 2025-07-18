@@ -24,6 +24,7 @@ from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -113,8 +114,14 @@ class Application(DirectoryObject):
 
         """
         super().delete_object()
+        deleted_item = DirectoryObject(
+            self.context,
+            EntityPath(
+                self.id, self.context.directory.deleted_applications.resource_path
+            ),
+        )
+        self.context.directory.deleted_applications.add_child(deleted_item)
         if permanent_delete:
-            deleted_item = self.context.directory.deleted_applications[self.id]
             deleted_item.delete_object()
         return self
 
@@ -215,7 +222,7 @@ class Application(DirectoryObject):
         return self.properties.get("api", ApiApplication())
 
     @property
-    def certification(self):
+    def certification(self) -> Certification:
         """Specifies the certification status of the application."""
         return self.properties.get("certification", Certification())
 

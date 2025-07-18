@@ -103,13 +103,14 @@ class GraphClient(ClientRuntimeContext):
             environment: Azure environment (default: AzureEnvironment.Global)
         """
 
-        super(GraphClient, self).__init__()
+        super().__init__()
         self._pending_request = None
         self._token_callback = token_callback
         self._tenant = tenant
         self._token_cache = token_cache
         self._environment = environment
         self._scopes = scopes
+        self._directory: Optional[Directory] = None
 
     def with_certificate(
         self, client_id: str, thumbprint: str, private_key: str
@@ -318,7 +319,9 @@ class GraphClient(ClientRuntimeContext):
     @property
     def directory(self) -> Directory:
         """Represents a deleted item in the directory"""
-        return Directory(self, ResourcePath("directory"))
+        if self._directory is None:
+            self._directory = Directory(self, ResourcePath("directory"))
+        return self._directory
 
     @property
     def directory_roles(self) -> DeltaCollection[DirectoryRole]:
