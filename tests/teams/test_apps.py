@@ -20,6 +20,6 @@ class TestTeamApps(GraphTestCase):
     def tearDownClass(cls):
         cls.target_team.delete_object().execute_query_retry()
 
-    def test1_get_team_apps(self):
-        apps = self.__class__.target_team.installed_apps.get().execute_query()
-        self.assertIsNotNone(apps.resource_path)
+    def test1_list_team_apps(self):
+        result = self.__class__.target_team.installed_apps.get().execute_query()
+        self.assertIsNotNone(result.resource_path)

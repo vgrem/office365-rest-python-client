@@ -15,14 +15,14 @@ class TeamCollection(EntityCollection[Team]):
     """Team's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(TeamCollection, self).__init__(context, Team, resource_path)
+        super().__init__(context, Team, resource_path)
 
-    def get_all(self, page_size=None, page_loaded=None):
-        # type: (int, Callable[[Self], None]) -> Self
+    def get_all(
+        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
+    ) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
-        def _init_teams(groups):
-            # type: (Self) -> None
+        def _init_teams(groups: Self) -> None:
             for grp in groups:
                 if "Team" in grp.properties["resourceProvisioningOptions"]:
                     team = Team(self.context, ResourcePath(grp.id, self.resource_path))
@@ -44,8 +44,7 @@ class TeamCollection(EntityCollection[Team]):
         return_type = Team(self.context)
         self.add_child(return_type)
 
-        def _process_response(resp):
-            # type: (requests.Response) -> None
+        def _process_response(resp: requests.Response) -> None:
             content_loc = resp.headers.get("Content-Location", None)
             team_path = ODataPathBuilder.parse_url(content_loc)
             return_type.set_property("id", team_path.segment, False)

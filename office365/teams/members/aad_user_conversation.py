@@ -8,8 +8,7 @@ class AadUserConversationMember(ConversationMember):
     """Represents an Azure Active Directory user in a team, a channel, or a chat."""
 
     @property
-    def user_id(self):
-        # type: () -> Optional[str]
+    def user_id(self) -> Optional[str]:
         """The guid of the user."""
         return self.properties.get("userId", None)
 

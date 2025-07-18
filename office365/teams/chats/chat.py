@@ -18,64 +18,55 @@ class Chat(Entity):
     """A chat is a collection of chatMessages between one or more participants. Participants can be users or apps."""
 
     @property
-    def chat_type(self):
-        # type: () -> Optional[str]
+    def chat_type(self) -> Optional[str]:
         """Specifies the type of chat. Possible values are: group, oneOnOne, meeting, unknownFutureValue."""
         return self.properties.get("chatType", None)
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Date and time at which the chat was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def is_hidden_for_all_members(self):
-        # type: () -> Optional[bool]
+    def is_hidden_for_all_members(self) -> Optional[bool]:
         """Indicates whether the chat is hidden for all its members."""
         return self.properties.get("isHiddenForAllMembers", None)
 
     @property
-    def last_updated_datetime(self):
-        # type: () -> Optional[datetime]
+    def last_updated_datetime(self) -> Optional[datetime]:
         """Date and time at which the chat was renamed or the list of members was last changed."""
         return self.properties.get("lastUpdatedDateTime", datetime.min)
 
     @property
-    def online_meeting_info(self):
-        # type: () -> TeamworkOnlineMeetingInfo
+    def online_meeting_info(self) -> TeamworkOnlineMeetingInfo:
         """Represents details about an online meeting. If the chat isn't associated with an online meeting,
         the property is empty. Read-only."""
         return self.properties.get("onlineMeetingInfo", TeamworkOnlineMeetingInfo())
 
     @property
-    def tenant_id(self):
-        # type: () -> Optional[str]
+    def tenant_id(self) -> Optional[str]:
         """The identifier of the tenant in which the chat was created. Read-only."""
         return self.properties.get("tenantId", None)
 
     @property
-    def topic(self):
-        # type: () -> Optional[str]
+    def topic(self) -> Optional[str]:
         """(Optional) Subject or topic for the chat. Only available for group chats."""
         return self.properties.get("topic", None)
 
     @property
-    def viewpoint(self):
-        # type: () -> ChatViewpoint
+    def viewpoint(self) -> ChatViewpoint:
         """Represents caller-specific information about the chat, such as the last message read date and time.
         This property is populated only when the request is made in a delegated context.
         """
         return self.properties.get("viewpoint", ChatViewpoint())
 
     @property
-    def web_url(self):
-        # type: () -> Optional[str]
+    def web_url(self) -> Optional[str]:
         """The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed."""
         return self.properties.get("webUrl", None)
 
     @property
-    def installed_apps(self):
-        # type: () -> EntityCollection[TeamsAppInstallation]
+    def installed_apps(self) -> EntityCollection[TeamsAppInstallation]:
         """A collection of all the apps in the chat. Nullable."""
         return self.properties.get(
             "installedApps",
@@ -87,7 +78,7 @@ class Chat(Entity):
         )
 
     @property
-    def last_message_preview(self):
+    def last_message_preview(self) -> ChatMessageInfo:
         """Preview of the last message sent in the chat. Null if no messages have been sent in the chat."""
         return self.properties.get(
             "lastMessagePreview",
@@ -97,8 +88,7 @@ class Chat(Entity):
         )
 
     @property
-    def members(self):
-        # type: () -> ConversationMemberCollection
+    def members(self) -> ConversationMemberCollection:
         """A collection of membership records associated with the chat."""
         return self.properties.setdefault(
             "members",
@@ -108,8 +98,7 @@ class Chat(Entity):
         )
 
     @property
-    def messages(self):
-        # type: () -> EntityCollection[ChatMessage]
+    def messages(self) -> EntityCollection[ChatMessage]:
         """A collection of all the messages in the chat. Nullable."""
         return self.properties.get(
             "messages",
@@ -119,8 +108,7 @@ class Chat(Entity):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[TeamsAsyncOperation]
+    def operations(self) -> EntityCollection[TeamsAsyncOperation]:
         """
         A collection of all the Teams async operations that ran or are running on the chat. Nullable.
         """
@@ -134,8 +122,7 @@ class Chat(Entity):
         )
 
     @property
-    def tabs(self):
-        # type: () -> EntityCollection[TeamsTab]
+    def tabs(self) -> EntityCollection[TeamsTab]:
         """A collection of all the tabs in the chat."""
         return self.properties.get(
             "tabs",

@@ -13,20 +13,17 @@ class TeamsApp(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The title of the TeamsApp."""
         return self.properties.get("displayName", None)
 
     @property
-    def distribution_method(self):
-        # type: () -> Optional[str]
+    def distribution_method(self) -> Optional[str]:
         """The title of the TeamsApp."""
         return self.properties.get("distributionMethod", None)
 
     @property
-    def app_definitions(self):
-        # type: () -> EntityCollection[TeamsAppDefinition]
+    def app_definitions(self) -> EntityCollection[TeamsAppDefinition]:
         """The details for each version of the app."""
         return self.properties.get(
             "appDefinitions",

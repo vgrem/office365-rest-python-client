@@ -26,7 +26,7 @@ class Team(Entity):
     logical isolation of discussion, within a team."""
 
     def __str__(self):
-        return self.display_name
+        return self.display_name or self.entity_type_name
 
     def execute_query_and_wait(self):
         """
@@ -44,68 +44,63 @@ class Team(Entity):
     def delete_object(self):
         """Deletes a team"""
 
-        def _team_loaded():
+        def _delete_object():
             group = self.context.groups[self.id]
             group.delete_object(False)
 
-        self.ensure_property("id", _team_loaded)
+        self.ensure_property("id", _delete_object)
         return self
 
     @property
-    def fun_settings(self):
+    def fun_settings(self) -> TeamFunSettings:
         """Settings to configure use of Giphy, memes, and stickers in the team."""
         return self.properties.get("funSettings", TeamFunSettings())
 
     @property
-    def member_settings(self):
+    def member_settings(self) -> TeamMemberSettings:
         """Settings to configure whether members can perform certain actions, for example,
         create channels and add bots, in the team."""
         return self.properties.get("memberSettings", TeamMemberSettings())
 
     @property
-    def guest_settings(self):
+    def guest_settings(self) -> TeamGuestSettings:
         """Settings to configure whether guests can create, update, or delete channels in the team."""
         return self.properties.get("guestSettings", TeamGuestSettings())
 
     @property
-    def messaging_settings(self):
+    def messaging_settings(self) -> TeamMessagingSettings:
         """Settings to configure messaging and mentions in the team."""
         return self.properties.get("guestSettings", TeamMessagingSettings())
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name of the team."""
         return self.properties.get("displayName", None)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """An optional description for the team."""
         return self.properties.get("description", None)
 
     @property
-    def classification(self):
-        # type: () -> Optional[str]
+    def classification(self) -> Optional[str]:
         """An optional label. Typically describes the data or business sensitivity of the team.
         Must match one of a pre-configured set in the tenant's directory.
         """
         return self.properties.get("classification", None)
 
     @property
-    def is_archived(self):
-        # type: () -> Optional[bool]
+    def is_archived(self) -> Optional[bool]:
         """Whether this team is in read-only mode."""
         return self.properties.get("isArchived", None)
 
     @property
-    def visibility(self):
+    def visibility(self) -> Optional[str]:
         """The visibility of the group and team. Defaults to Public."""
         return self.properties.get("visibility", None)
 
     @property
-    def web_url(self):
-        # type: () -> Optional[str]
+    def web_url(self) -> Optional[str]:
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when
         you right-click a team in the Microsoft Teams client and select Get link to team. This URL should be treated
         as an opaque blob, and not parsed."""
@@ -117,8 +112,7 @@ class Team(Entity):
         return self.properties.get("createdDateTime", None)
 
     @property
-    def all_channels(self):
-        # type: () -> ChannelCollection
+    def all_channels(self) -> ChannelCollection:
         """
         List of channels either hosted in or shared with the team (incoming channels).
         """
@@ -130,8 +124,7 @@ class Team(Entity):
         )
 
     @property
-    def incoming_channels(self):
-        # type: () -> ChannelCollection
+    def incoming_channels(self) -> ChannelCollection:
         """List of channels shared with the team."""
         return self.properties.get(
             "incomingChannels",
@@ -141,8 +134,7 @@ class Team(Entity):
         )
 
     @property
-    def channels(self):
-        # type: () -> ChannelCollection
+    def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""
         return self.properties.get(
             "channels",
@@ -161,8 +153,7 @@ class Team(Entity):
         )
 
     @property
-    def primary_channel(self):
-        # type: () -> Channel
+    def primary_channel(self) -> Channel:
         """The general channel for the team."""
         return self.properties.get(
             "primaryChannel",
@@ -178,8 +169,7 @@ class Team(Entity):
         )
 
     @property
-    def installed_apps(self):
-        # type: () -> EntityCollection[TeamsAppInstallation]
+    def installed_apps(self) -> EntityCollection[TeamsAppInstallation]:
         """The apps installed in this team."""
         return self.properties.get(
             "installedApps",
@@ -191,8 +181,7 @@ class Team(Entity):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[TeamsAsyncOperation]
+    def operations(self) -> EntityCollection[TeamsAsyncOperation]:
         """The async operations that ran or are running on this team."""
         return self.properties.setdefault(
             "operations",
@@ -204,8 +193,7 @@ class Team(Entity):
         )
 
     @property
-    def permission_grants(self):
-        # type: () -> EntityCollection[ResourceSpecificPermissionGrant]
+    def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """
         List all resource-specific permission grants
         """
@@ -224,8 +212,7 @@ class Team(Entity):
         return self.properties.get("summary", TeamSummary())
 
     @property
-    def tenant_id(self):
-        # type: () -> Optional[str]
+    def tenant_id(self) -> Optional[str]:
         """The ID of the Azure Active Directory tenant."""
         return self.properties.get("tenantId", None)
 

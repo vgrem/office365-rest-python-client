@@ -8,8 +8,7 @@ class AppCatalogs(Entity):
     """A container for apps from the Microsoft Teams app catalog"""
 
     @property
-    def teams_apps(self):
-        # type: () -> EntityCollection[TeamsApp]
+    def teams_apps(self) -> EntityCollection[TeamsApp]:
         """List apps from the Microsoft Teams app catalog."""
         return self.properties.get(
             "teamsApps",

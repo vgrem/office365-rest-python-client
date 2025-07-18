@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.entity import Entity
@@ -16,14 +18,14 @@ class ChatMessage(Entity):
     """
 
     @property
-    def attachments(self):
+    def attachments(self) -> ClientValueCollection[ChatMessageAttachment]:
         """The collection of replies."""
         return self.properties.get(
             "attachments", ClientValueCollection(ChatMessageAttachment)
         )
 
     @property
-    def body(self):
+    def body(self) -> ItemBody:
         """
         Plaintext/HTML representation of the content of the chat message. Representation is specified by the
         contentType inside the body. The content is always in HTML if the chat message contains a chatMessageMention.
@@ -31,14 +33,14 @@ class ChatMessage(Entity):
         return self.properties.get("body", ItemBody())
 
     @property
-    def channel_identity(self):
+    def channel_identity(self) -> ChannelIdentity:
         """
         If the message was sent in a channel, represents identity of the channel.
         """
         return self.properties.get("channelIdentity", ChannelIdentity())
 
     @property
-    def replies(self):
+    def replies(self) -> EntityCollection[ChatMessage]:
         """
         The collection of replies.
         """
@@ -50,16 +52,14 @@ class ChatMessage(Entity):
         )
 
     @property
-    def subject(self):
-        # type: () -> Optional[str]
+    def subject(self) -> Optional[str]:
         """
         The subject of the chat message, in plaintext.
         """
         return self.properties.get("subject", None)
 
     @property
-    def summary(self):
-        # type: () -> Optional[str]
+    def summary(self) -> Optional[str]:
         """
         Summary text of the chat message that could be used for push notifications and summary views or
         fall back views. Only applies to channel chat messages, not chat messages in a chat.
@@ -67,16 +67,14 @@ class ChatMessage(Entity):
         return self.properties.get("summary", None)
 
     @property
-    def web_url(self):
-        # type: () -> Optional[str]
+    def web_url(self) -> Optional[str]:
         """
         Link to the message in Microsoft Teams.
         """
         return self.properties.get("webUrl", None)
 
     @property
-    def importance(self):
-        # type: () -> Optional[str]
+    def importance(self) -> Optional[str]:
         """
         The importance of the chat message. The possible values are: normal, high, urgent.
         """

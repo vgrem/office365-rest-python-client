@@ -8,20 +8,16 @@ from tests.graph_case import GraphTestCase
 class TestGraphTeam(GraphTestCase):
     """Tests for teams"""
 
-    target_team = None  # type: Team
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestGraphTeam, cls).setUpClass()
+    target_team: Team = None
 
     @requires_delegated_permission(
         "Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"
     )
     def test1_create_team(self):
         team_name = "Group_" + uuid.uuid4().hex
-        team = self.client.teams.create(team_name).execute_query()
-        self.assertIsNotNone(team.id)
-        self.__class__.target_team = team
+        result = self.client.teams.create(team_name).execute_query()
+        self.assertIsNotNone(result.id)
+        self.__class__.target_team = result
 
     @requires_delegated_permission(
         "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All"

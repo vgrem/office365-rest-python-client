@@ -12,8 +12,7 @@ class UserTeamwork(Entity):
     """A container for the range of Microsoft Teams functionalities that are available per user in the tenant."""
 
     @property
-    def locale(self):
-        # type: () -> Optional[str]
+    def locale(self) -> Optional[str]:
         """Represents the location that a user selected in Microsoft Teams and doesn't follow the Office's locale
         setting. A user's locale is represented by their preferred language and country or region.
         For example, en-us. The language component follows two-letter codes as defined in ISO 639-1,
@@ -22,8 +21,7 @@ class UserTeamwork(Entity):
         return self.properties.get("locale", None)
 
     @property
-    def region(self):
-        # type: () -> Optional[str]
+    def region(self) -> Optional[str]:
         """Represents the region of the organization or the user. For users with multigeo licenses, the property
         contains the user's region (if available). For users without multigeo licenses, the property contains
         the organization's region.
@@ -37,8 +35,7 @@ class UserTeamwork(Entity):
         return self.properties.get("region", None)
 
     @property
-    def associated_teams(self):
-        # type: () -> EntityCollection[AssociatedTeamInfo]
+    def associated_teams(self) -> EntityCollection[AssociatedTeamInfo]:
         """
         The apps installed in the personal scope of this user.
         """
@@ -52,8 +49,7 @@ class UserTeamwork(Entity):
         )
 
     @property
-    def installed_apps(self):
-        # type: () -> EntityCollection[UserScopeTeamsAppInstallation]
+    def installed_apps(self) -> EntityCollection[UserScopeTeamsAppInstallation]:
         """
         The apps installed in the personal scope of this user.
         """

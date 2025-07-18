@@ -12,13 +12,13 @@ from tests.graph_case import GraphTestCase
 class TestGraphChannel(GraphTestCase):
     """Tests for channels"""
 
-    target_team = None  # type: Team
-    target_channel = None  # type: Channel
-    target_message = None  # type: ChatMessage
+    target_team: Team = None
+    target_channel: Channel = None
+    target_message: ChatMessage = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestGraphChannel, cls).setUpClass()
+        super().setUpClass()
         team_name = "Team_" + uuid.uuid4().hex
         team = cls.client.teams.create(team_name).execute_query()
         cls.target_team = team

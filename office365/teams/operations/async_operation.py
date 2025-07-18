@@ -37,8 +37,7 @@ class TeamsAsyncOperation(Entity):
             fails to execute
         """
 
-        def _poll_for_status(polling_number):
-            # type: (int) -> None
+        def _poll_for_status(polling_number: int) -> None:
             if polling_number > max_polling_count:
                 if callable(failure_callback):
                     failure_callback(self)
@@ -59,21 +58,18 @@ class TeamsAsyncOperation(Entity):
         return self
 
     @property
-    def target_resource_id(self):
-        # type: () -> Optional[str]
+    def target_resource_id(self) -> Optional[str]:
         """The ID of the object that's created or modified as result of this async operation, typically a team."""
         return self.properties.get("targetResourceId", None)
 
     @property
-    def target_resource_location(self):
-        # type: () -> Optional[str]
+    def target_resource_location(self) -> Optional[str]:
         """The location of the object that's created or modified as result of this async operation.
         This URL should be treated as an opaque value and not parsed into its component paths.
         """
         return self.properties.get("targetResourceLocation", None)
 
     @property
-    def status(self):
-        # type: () -> Optional[str]
+    def status(self) -> Optional[str]:
         """Operation status."""
         return self.properties.get("status", None)

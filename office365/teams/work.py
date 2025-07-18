@@ -10,20 +10,18 @@ class Teamwork(Entity):
     """A container for the range of Microsoft Teams functionalities that are available for the organization."""
 
     @property
-    def is_teams_enabled(self):
-        # type: () -> Optional[bool]
+    def is_teams_enabled(self) -> Optional[bool]:
         """Indicates whether Microsoft Teams is enabled for the organization."""
         return self.properties.get("isTeamsEnabled", None)
 
     @property
-    def region(self):
-        # type: () -> Optional[str]
+    def region(self) -> Optional[str]:
         """Represents the region of the organization or the tenant.
         The region value can be any region supported by the Teams payload"""
         return self.properties.get("region", None)
 
     @property
-    def deleted_teams(self):
+    def deleted_teams(self) -> EntityCollection[DeletedTeam]:
         """The tags associated with the team."""
         return self.properties.get(
             "deletedTeams",

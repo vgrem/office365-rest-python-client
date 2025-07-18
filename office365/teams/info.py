@@ -11,8 +11,7 @@ class TeamInfo(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name of the team."""
         return self.properties.get("displayName", None)
 

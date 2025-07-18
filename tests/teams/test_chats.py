@@ -5,7 +5,7 @@ from tests.graph_case import GraphTestCase
 class TestTeamChats(GraphTestCase):
     """Tests for team Chats"""
 
-    target_chat = None  # type: Chat
+    target_chat: Chat = None
 
     # def test1_create(self):
     #    new_chat = self.client.chats.add("oneOnOne").execute_query()
@@ -13,9 +13,9 @@ class TestTeamChats(GraphTestCase):
     #    self.__class__.target_chat = new_chat
 
     def test2_list_user_chats(self):
-        chats = self.client.me.chats.get().top(1).execute_query()
-        self.assertIsNotNone(chats.resource_path)
-        self.assertGreaterEqual(len(chats), 0)
+        result = self.client.me.chats.get().top(1).execute_query()
+        self.assertIsNotNone(result.resource_path)
+        self.assertGreaterEqual(len(result), 0)
 
     # def test3_delete(self):
     #    chat = self.__class__.target_chat

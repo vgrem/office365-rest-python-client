@@ -13,8 +13,7 @@ class DeletedTeam(Entity):
     """
 
     @property
-    def channels(self):
-        # type: () -> ChannelCollection
+    def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""
         return self.properties.get(
             "channels",
