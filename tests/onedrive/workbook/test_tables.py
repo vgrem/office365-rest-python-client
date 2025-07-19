@@ -1,6 +1,5 @@
 import os
 
-from examples.sharepoint.lists.assessment.broken_tax_field_value import fields
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.onedrive.workbooks.tables.table import WorkbookTable

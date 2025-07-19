@@ -985,12 +985,12 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def clear_file_version_policy(self):
+    def clear_file_version_policy(self) -> Self:
         self.set_property("FileVersionPolicyXml", "")
         self.update()
         return self
 
-    def update_site_activity_data(self):
+    def update_site_activity_data(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "UpdateSiteActivityData")
         self.context.add_query(qry)
@@ -1047,7 +1047,7 @@ class Tenant(Entity):
         return self.properties.get("AIBuilderEnabled", None)
 
     @property
-    def ai_builder_site_info_list(self):
+    def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """"""
         return self.properties.get(
             "AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker)
@@ -1158,7 +1158,7 @@ class Tenant(Entity):
         return self.properties.get("RootSiteUrl", None)
 
     @property
-    def sites(self):
+    def sites(self) -> SitePropertiesCollection:
         """Gets a collection of sites."""
         return self.properties.get(
             "sites",

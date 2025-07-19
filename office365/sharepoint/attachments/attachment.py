@@ -51,7 +51,7 @@ class Attachment(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def recycle_object(self):
+    def recycle_object(self) -> Self:
         """Move this attachment to site recycle bin."""
         qry = ServiceOperationQuery(self, "RecycleObject")
         self.context.add_query(qry)
