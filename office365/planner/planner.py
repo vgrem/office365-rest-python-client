@@ -13,8 +13,7 @@ class Planner(Entity):
     """
 
     @property
-    def buckets(self):
-        # type: () -> EntityCollection[PlannerBucket]
+    def buckets(self) -> EntityCollection[PlannerBucket]:
         """Returns the plannerBuckets assigned to the user."""
         return self.properties.get(
             "buckets",
@@ -24,8 +23,7 @@ class Planner(Entity):
         )
 
     @property
-    def tasks(self):
-        # type: () -> PlannerTaskCollection
+    def tasks(self) -> PlannerTaskCollection:
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "tasks",
@@ -35,8 +33,7 @@ class Planner(Entity):
         )
 
     @property
-    def plans(self):
-        # type: () -> PlannerPlanCollection
+    def plans(self) -> PlannerPlanCollection:
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "plans",

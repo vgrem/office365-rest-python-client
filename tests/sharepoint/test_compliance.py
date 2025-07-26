@@ -5,15 +5,13 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 class TestCompliance(SPTestCase):
 
-    target_list = None  # type: List
-    list_item = None  # type: ListItem
+    target_list: List = None
+    list_item: ListItem = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestCompliance, cls).setUpClass()
+        super().setUpClass()
         cls.target_list = cls.client.web.lists.get_by_title("Docs")
-        # items = lib.items.filter("FSObjType eq 0").get().top(1).execute_query()
-        # cls.list_item = items[0]
 
     def test1_get_site_available_tags(self):
         result = self.client.site.get_available_tags().execute_query()

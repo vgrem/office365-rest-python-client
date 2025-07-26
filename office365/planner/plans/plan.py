@@ -25,8 +25,7 @@ class PlannerPlan(Entity):
         return self.id or self.entity_type_name
 
     def delete_object(self):
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("If-Match", self.properties.get("__etag"))
 
         return (
@@ -39,8 +38,7 @@ class PlannerPlan(Entity):
         return self.properties.get("container", PlannerPlanContainer())
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Required. Title of the plan."""
         return self.properties.get("title", None)
 
@@ -50,8 +48,7 @@ class PlannerPlan(Entity):
         return self.properties.get("createdBy", IdentitySet())
 
     @property
-    def buckets(self):
-        # type: () -> EntityCollection[PlannerBucket]
+    def buckets(self) -> EntityCollection[PlannerBucket]:
         """Collection of buckets in the plan."""
         return self.properties.get(
             "buckets",
@@ -71,8 +68,7 @@ class PlannerPlan(Entity):
         )
 
     @property
-    def tasks(self):
-        # type: () -> EntityCollection[PlannerTask]
+    def tasks(self) -> EntityCollection[PlannerTask]:
         """Collection of tasks in the plan."""
         return self.properties.get(
             "tasks",

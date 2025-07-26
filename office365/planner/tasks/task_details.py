@@ -12,22 +12,19 @@ class PlannerTaskDetails(Entity):
     """
 
     @property
-    def checklist(self):
-        # type: () -> PlannerChecklistItems
+    def checklist(self) -> PlannerChecklistItems:
         """
         The collection of checklist items on the task.
         """
         return self.properties.get("checklist", PlannerChecklistItems())
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """Description of the task."""
         return self.properties.get("description", None)
 
     @property
-    def preview_type(self):
-        # type: () -> Optional[str]
+    def preview_type(self) -> Optional[str]:
         """This sets the type of preview that shows up on the task.
         The possible values are: automatic, noPreview, checklist, description, reference.
         When set to automatic the displayed preview is chosen by the app viewing the task.
@@ -35,8 +32,7 @@ class PlannerTaskDetails(Entity):
         return self.properties.get("previewType", None)
 
     @property
-    def references(self):
-        # type: () -> PlannerExternalReferences
+    def references(self) -> PlannerExternalReferences:
         """
         The collection of references on the task.
         """

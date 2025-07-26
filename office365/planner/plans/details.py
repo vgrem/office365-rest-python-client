@@ -10,8 +10,7 @@ class PlannerPlanDetails(Entity):
     """
 
     @property
-    def category_descriptions(self):
-        # type: () -> PlannerCategoryDescriptions
+    def category_descriptions(self) -> PlannerCategoryDescriptions:
         """
         An object that specifies the descriptions of the 25 categories that can be associated with tasks in the plan.
         """
@@ -20,8 +19,7 @@ class PlannerPlanDetails(Entity):
         )
 
     @property
-    def shared_with(self):
-        # type: () -> PlannerUserIds
+    def shared_with(self) -> PlannerUserIds:
         """
         Set of user IDs that this plan is shared with. If you're using Microsoft 365 groups, use the Groups
         API to manage group membership to share the group's plan. You can also add existing members of the group to

@@ -1,4 +1,7 @@
+from typing import Union
+
 from office365.entity_collection import EntityCollection
+from office365.planner.buckets.bucket import PlannerBucket
 from office365.planner.plans.plan import PlannerPlan
 from office365.planner.tasks.task import PlannerTask
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -6,9 +9,14 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 
 class PlannerTaskCollection(EntityCollection[PlannerTask]):
     def __init__(self, context, resource_path=None):
-        super(PlannerTaskCollection, self).__init__(context, PlannerTask, resource_path)
+        super().__init__(context, PlannerTask, resource_path)
 
-    def add(self, title, plan, bucket=None):
+    def add(
+        self,
+        title: str,
+        plan: Union[str, PlannerPlan],
+        bucket: Union[str, PlannerBucket] = None,
+    ) -> PlannerTask:
         """
         Create a new plannerTask.
 
@@ -19,8 +27,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         return_type = PlannerTask(self.context)
         self.add_child(return_type)
 
-        def _add(plan_id):
-            # type: (str) -> None
+        def _add(plan_id: str) -> None:
             payload = {"title": title, "planId": plan_id, "bucketId": bucket}
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)

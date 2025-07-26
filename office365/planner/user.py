@@ -21,8 +21,7 @@ class PlannerUser(Entity):
         )
 
     @property
-    def tasks(self):
-        # type: () -> EntityCollection[PlannerTask]
+    def tasks(self) -> EntityCollection[PlannerTask]:
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "tasks",

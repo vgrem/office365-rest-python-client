@@ -41,7 +41,7 @@ class SitePageCollection(EntityCollection[SitePage]):
         """Get a sitePage by title."""
         return self.single("title eq '{0}'".format(title))
 
-    def add(self, title: str, page_layout: str="article"):
+    def add(self, title: str, page_layout: str = "article"):
         """
         Create a new sitePage in the site pages list in a site.
 

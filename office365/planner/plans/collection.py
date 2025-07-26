@@ -1,3 +1,5 @@
+from typing import Union
+
 from office365.directory.groups.group import Group
 from office365.entity_collection import EntityCollection
 from office365.planner.plans.plan import PlannerPlan
@@ -6,10 +8,9 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 
 class PlannerPlanCollection(EntityCollection[PlannerPlan]):
     def __init__(self, context, resource_path=None):
-        super(PlannerPlanCollection, self).__init__(context, PlannerPlan, resource_path)
+        super().__init__(context, PlannerPlan, resource_path)
 
-    def add(self, title, container):
-        # type: (str, str|Group) -> PlannerPlan
+    def add(self, title: str, container: Union[str, Group]) -> PlannerPlan:
         """Creates a new plannerPlan.
         :param str title: Plan title
         :param str or Group container: Identifies the container of the plan.
@@ -17,14 +18,11 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
         return_type = PlannerPlan(self.context)
         self.add_child(return_type)
 
-        def _add(owner_id):
-            # type: (str) -> None
+        def _add(owner_id: str) -> None:
             payload = {
                 "title": title,
                 "container": {
-                    "url": "https://graph.microsoft.com/v1.0/groups/{0}".format(
-                        owner_id
-                    )
+                    "url": f"https://graph.microsoft.com/v1.0/groups/{owner_id}"
                 },
             }
             qry = CreateEntityQuery(self, payload, return_type)

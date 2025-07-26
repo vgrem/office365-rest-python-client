@@ -10,7 +10,7 @@ class PlannerBucket(Entity):
     """
 
     @property
-    def tasks(self):
+    def tasks(self) -> EntityCollection[PlannerTask]:
         """Read-only. Nullable. Collection of tasks in the bucket."""
         return self.properties.get(
             "tasks",
