@@ -11,14 +11,12 @@ class BaseSitePage(BaseItem):
         return self.name or self.entity_type_name
 
     @property
-    def publishing_state(self):
-        # type: () -> Optional[str]
+    def publishing_state(self) -> PublicationFacet:
         """The publishing status and the MM.mm version of the page."""
         return self.properties.get("publishingState", PublicationFacet())
 
     @property
-    def page_layout(self):
-        # type: () -> Optional[str]
+    def page_layout(self) -> Optional[str]:
         """
         The name of the page layout of the page.
         The possible values are: microsoftReserved, article, home, unknownFutureValue.
@@ -26,8 +24,7 @@ class BaseSitePage(BaseItem):
         return self.properties.get("pageLayout", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """Title of the sitePage."""
         return self.properties.get("title", None)
 

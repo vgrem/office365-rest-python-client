@@ -10,14 +10,12 @@ class FileStorageContainer(Entity):
     """
 
     @property
-    def created_datetime(self):
-        # type: () -> Optional[datetime]
+    def created_datetime(self) -> Optional[datetime]:
         """Date and time of the fileStorageContainer creation. Read-only."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "graph.fileStorageContainer"
 
     def get_property(self, name, default_value=None):

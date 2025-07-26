@@ -35,8 +35,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         self.context.add_query(qry)
         return return_type
 
-    def item_at(self, index):
-        # type: (int) -> WorkbookTableRow
+    def item_at(self, index: int) -> WorkbookTableRow:
         """Gets a row based on its position in the collection.
         :param int index: Index value of the object to be retrieved. Zero-indexed.
         """

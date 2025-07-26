@@ -47,8 +47,7 @@ class ListItemCollection(EntityCollection[ListItem]):
         payload = {"fields": kwargs}
         return super(ListItemCollection, self).add(**payload)
 
-    def honor_nonindexed(self, value):
-        # type: (bool) -> "ListItemCollection"
+    def honor_nonindexed(self, value: bool) -> "ListItemCollection":
         """Configure whether to allow queries on non-indexed properties.
 
         Args:

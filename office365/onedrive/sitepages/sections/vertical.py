@@ -8,8 +8,7 @@ class VerticalSection(Entity):
     """Represents the vertical section in a given SharePoint page."""
 
     @property
-    def web_parts(self):
-        # type: () -> EntityCollection[WebPart]
+    def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this section."""
         return self.properties.get(
             "webParts",

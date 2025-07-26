@@ -9,8 +9,7 @@ class CanvasLayout(Entity):
     """Represents the layout of the content in a given SharePoint page."""
 
     @property
-    def horizontal_sections(self):
-        # type: () -> EntityCollection[HorizontalSection]
+    def horizontal_sections(self) -> EntityCollection[HorizontalSection]:
         """Collection of horizontal sections on the SharePoint page.."""
         return self.properties.get(
             "horizontalSections",
@@ -22,8 +21,7 @@ class CanvasLayout(Entity):
         )
 
     @property
-    def vertical_section(self):
-        # type: () -> VerticalSection
+    def vertical_section(self) -> VerticalSection:
         """Vertical section on the SharePoint page."""
         return self.properties.get(
             "verticalSection",

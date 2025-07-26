@@ -22,13 +22,13 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Workbook(Entity):
     """The top-level object that contains related workbook objects such as worksheets, tables, and ranges."""
 
-    def session_info_resource(self):
+    def session_info_resource(self) -> ClientResult[WorkbookSessionInfo]:
         return_type = ClientResult(self.context, WorkbookSessionInfo())
         qry = FunctionQuery(self, "sessionInfoResource", None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_session(self, persist_changes=None):
+    def create_session(self, persist_changes: bool = None):
         """
         Create a new workbook session.
 
@@ -51,29 +51,25 @@ class Workbook(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def refresh_session(self, session_id):
-        # type: (str) -> Self
+    def refresh_session(self, session_id: str) -> Self:
         """Use this API to refresh an existing workbook session.
         :param str session_id: Identifier of the workbook session
         """
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("workbook-session-id", session_id)
 
         qry = ServiceOperationQuery(self, "refreshSession")
         self.context.add_query(qry).before_query_execute(_construct_request)
         return self
 
-    def close_session(self, session_id):
-        # type: (str) -> Self
+    def close_session(self, session_id: str) -> Self:
         """Use this API to close an existing workbook session.
         :param str session_id: Identifier of the workbook session
         """
         qry = ServiceOperationQuery(self, "closeSession")
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("workbook-session-id", session_id)
 
         self.context.add_query(qry).before_query_execute(_construct_request)
@@ -90,8 +86,7 @@ class Workbook(Entity):
         )
 
     @property
-    def comments(self):
-        # type: () -> EntityCollection[WorkbookComment]
+    def comments(self) -> EntityCollection[WorkbookComment]:
         """"""
         return self.properties.get(
             "comments",
@@ -113,8 +108,7 @@ class Workbook(Entity):
         )
 
     @property
-    def tables(self):
-        # type: () -> WorkbookTableCollection
+    def tables(self) -> WorkbookTableCollection:
         """Represents a collection of tables associated with the workbook. Read-only."""
         return self.properties.get(
             "tables",
@@ -124,8 +118,7 @@ class Workbook(Entity):
         )
 
     @property
-    def names(self):
-        # type: () -> WorkbookNamedItemCollection
+    def names(self) -> WorkbookNamedItemCollection:
         """Represents a collection of workbook scoped named items (named ranges and constants). Read-only."""
         return self.properties.get(
             "names",
@@ -136,8 +129,7 @@ class Workbook(Entity):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[WorkbookOperation]
+    def operations(self) -> EntityCollection[WorkbookOperation]:
         """The status of workbook operations. Getting an operation collection is not supported, but you can get the
         status of a long-running operation if the Location header is returned in the response
         """
@@ -151,8 +143,7 @@ class Workbook(Entity):
         )
 
     @property
-    def worksheets(self):
-        # type: () -> WorkbookWorksheetCollection
+    def worksheets(self) -> WorkbookWorksheetCollection:
         """Represents a collection of worksheets associated with the workbook. Read-only."""
         return self.properties.get(
             "worksheets",

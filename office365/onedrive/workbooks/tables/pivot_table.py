@@ -24,8 +24,7 @@ class WorkbookPivotTable(Entity):
         return self
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Name of the PivotTable."""
         return self.properties.get("Name", None)
 

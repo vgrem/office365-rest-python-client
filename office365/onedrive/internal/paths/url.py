@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from typing_extensions import Self
@@ -12,8 +14,9 @@ if TYPE_CHECKING:
 class UrlPath(EntityPath):
     """Resource path for OneDrive entity path-based addressing"""
 
-    def __init__(self, url, parent, collection=None):
-        # type: (str, ResourcePath, ResourcePath) -> None
+    def __init__(
+        self, url: str, parent: ResourcePath, collection: ResourcePath = None
+    ) -> None:
         """
         :param str url: File or Folder server relative url
         :type parent: office365.runtime.paths.resource_path.ResourcePath
@@ -28,8 +31,7 @@ class UrlPath(EntityPath):
             collection = parent.collection
         super(UrlPath, self).__init__(url, parent, collection)
 
-    def patch(self, key):
-        # type: (str) -> Self
+    def patch(self, key: str) -> Self:
         return super(UrlPath, self).patch(key)
 
     @property

@@ -8,8 +8,7 @@ class HorizontalSectionColumn(Entity):
     """Represents a vertical column in a given horizontal section."""
 
     @property
-    def web_parts(self):
-        # type: () -> EntityCollection[WebPart]
+    def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this section."""
         return self.properties.get(
             "webParts",

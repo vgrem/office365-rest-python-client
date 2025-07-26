@@ -72,19 +72,19 @@ class TestFolder(GraphTestCase):
         )
 
     def test4_get_folder_permissions(self):
-        result = self.__class__.target_folder.permissions.get().execute_query()
+        result = self.target_folder.permissions.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated_permission(
         "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"
     )
     def test5_update_folder(self):
-        folder = self.__class__.target_folder
+        folder = self.target_folder
         folder.update().execute_query()
 
     def test6_get_analytics(self):
-        result = self.__class__.target_folder.analytics.get().execute_query()
+        result = self.target_folder.analytics.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test7_delete_folder(self):
-        self.__class__.target_folder.delete_object().execute_query()
+        self.target_folder.delete_object().execute_query()

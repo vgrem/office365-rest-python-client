@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.entity_collection import EntityCollection
@@ -14,29 +16,32 @@ if TYPE_CHECKING:
 class SitePageCollection(EntityCollection[SitePage]):
     """Sites container"""
 
-    def __init__(self, context, resource_path=None, parent_list=None):
-        # type: (GraphClient, ResourcePath, List) -> None
+    def __init__(
+        self,
+        context: GraphClient,
+        resource_path: ResourcePath = None,
+        parent_list: List = None,
+    ) -> None:
         super(SitePageCollection, self).__init__(
             context, SitePage, resource_path, parent_list
         )
 
     def get(self):
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             # request.url += "/microsoft.graph.sitePage"
             pass
 
         return super(SitePageCollection, self).get().before_execute(_construct_request)
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> SitePage:
         """Get a sitePage by name."""
         return self.single("name eq '{0}'".format(name))
 
-    def get_by_title(self, title):
+    def get_by_title(self, title: str) -> SitePage:
         """Get a sitePage by title."""
         return self.single("title eq '{0}'".format(title))
 
-    def add(self, title, page_layout="article"):
+    def add(self, title: str, page_layout: str="article"):
         """
         Create a new sitePage in the site pages list in a site.
 
@@ -44,8 +49,7 @@ class SitePageCollection(EntityCollection[SitePage]):
         :param str page_layout:
         """
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("Content-Type", "application/json")
 
         return (

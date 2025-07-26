@@ -1,6 +1,9 @@
-from typing import Optional
+from typing import Optional, cast
+
+from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
+from office365.onedrive.lists.list import List
 from office365.onedrive.sitepages.base import BaseSitePage
 from office365.onedrive.sitepages.canvas_layout import CanvasLayout
 from office365.onedrive.sitepages.title_area import TitleArea
@@ -44,15 +47,14 @@ class SitePage(BaseSitePage):
         self.context.add_query(qry)
         return return_type
 
-    def checkin(self, message):
+    def checkin(self, message: str) -> Self:
         """
         Check in the latest version of a sitePage resource, which makes the version of the page available to all users.
         If the page is checked out, check in the page and publish it. If the page is checked out to the caller
         of this API, the page is automatically checked in and then published."""
 
         def _page_loaded():
-            pages_list = self.parent_collection.parent
-            list_item = pages_list.items.get_by_name(self.name)
+            list_item = self._pages_list.items.get_by_name(self.name)
             list_item.drive_item.checkin(message)
 
         self.ensure_property("name", _page_loaded)
@@ -72,38 +74,36 @@ class SitePage(BaseSitePage):
         return self
 
     @property
-    def promotion_kind(self):
-        # type: () -> Optional[str]
+    def _pages_list(self) -> List:
+        return cast(List, self.parent_collection.parent)
+
+    @property
+    def promotion_kind(self) -> Optional[str]:
         """Indicates the promotion kind of the sitePage."""
         return self.properties.get("promotionKind", None)
 
     @property
-    def show_comments(self):
-        # type: () -> Optional[bool]
+    def show_comments(self) -> Optional[bool]:
         """Determines whether or not to show comments at the bottom of the page."""
         return self.properties.get("showComments", None)
 
     @property
-    def show_recommended_pages(self):
-        # type: () -> Optional[bool]
+    def show_recommended_pages(self) -> Optional[bool]:
         """Determines whether or not to show recommended pages at the bottom of the page."""
         return self.properties.get("showRecommendedPages", None)
 
     @property
-    def thumbnail_web_url(self):
-        # type: () -> Optional[str]
+    def thumbnail_web_url(self) -> Optional[str]:
         """Indicates the promotion kind of the sitePage."""
         return self.properties.get("thumbnailWebUrl", None)
 
     @property
-    def title_area(self):
-        # type: () -> Optional[str]
+    def title_area(self) -> TitleArea:
         """Title area on the SharePoint page."""
         return self.properties.get("titleArea", TitleArea())
 
     @property
-    def canvas_layout(self):
-        # type: () -> CanvasLayout
+    def canvas_layout(self) -> CanvasLayout:
         """The default termStore under this site."""
         return self.properties.get(
             "canvasLayout",
@@ -113,8 +113,7 @@ class SitePage(BaseSitePage):
         )
 
     @property
-    def web_parts(self):
-        # type: () -> EntityCollection[WebPart]
+    def web_parts(self) -> EntityCollection[WebPart]:
         """Collection of webparts on the SharePoint page."""
         return self.properties.get(
             "webParts",

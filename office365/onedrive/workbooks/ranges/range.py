@@ -82,8 +82,7 @@ class WorkbookRange(Entity):
         return return_type
 
     @property
-    def address(self):
-        # type: () -> Optional[str]
+    def address(self) -> Optional[str]:
         """
         Represents the range reference in A1-style. Address value will contain the Sheet reference
         (e.g. Sheet1!A1:B4)
@@ -91,38 +90,32 @@ class WorkbookRange(Entity):
         return self.properties.get("address", None)
 
     @property
-    def address_local(self):
-        # type: () -> Optional[str]
+    def address_local(self) -> Optional[str]:
         """Represents range reference for the specified range in the language of the user."""
         return self.properties.get("addressLocal", None)
 
     @property
-    def cell_count(self):
-        # type: () -> Optional[int]
+    def cell_count(self) -> Optional[int]:
         """Number of cells in the range. Read-only."""
         return self.properties.get("cellCount", None)
 
     @property
-    def column_count(self):
-        # type: () -> Optional[int]
+    def column_count(self) -> Optional[int]:
         """Represents the total number of columns in the range. Read-only."""
         return self.properties.get("columnCount", None)
 
     @property
-    def column_hidden(self):
-        # type: () -> Optional[bool]
+    def column_hidden(self) -> Optional[bool]:
         """Represents if all columns of the current range are hidden."""
         return self.properties.get("columnHidden", None)
 
     @property
-    def column_index(self):
-        # type: () -> Optional[int]
+    def column_index(self) -> Optional[int]:
         """Represents the column number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("columnIndex", None)
 
     @property
-    def row_index(self):
-        # type: () -> Optional[int]
+    def row_index(self) -> Optional[int]:
         """Returns the row number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("rowIndex", None)
 
@@ -145,15 +138,13 @@ class WorkbookRange(Entity):
         )
 
     @property
-    def values(self):
-        # type: () -> List
+    def values(self) -> List:
         """Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contains an error returns the error string."""
         return self.properties.get("values", None)
 
     @property
-    def value_types(self):
-        # type: () -> List
+    def value_types(self) -> List:
         """Represents the type of data of each cell. The possible values are:
         Unknown, Empty, String, Integer, Double, Boolean, Error."""
         return self.properties.get("valueTypes", None)

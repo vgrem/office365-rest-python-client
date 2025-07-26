@@ -366,7 +366,7 @@ class DriveItem(BaseItem):
     def download_folder(
         self,
         download_file: IO,
-        after_file_downloaded: Callable[["DriveItem"], None] = None,
+        after_file_downloaded: Callable[[DriveItem], None] = None,
         recursive: bool = True,
     ) -> DriveItem:
         """
@@ -375,7 +375,7 @@ class DriveItem(BaseItem):
         import zipfile
 
         def _after_file_downloaded(
-            drive_item: "DriveItem", base_path: str, result: ClientResult[AnyStr]
+            drive_item: DriveItem, base_path: str, result: ClientResult[AnyStr]
         ) -> None:
             with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                 zip_path = (
@@ -674,7 +674,7 @@ class DriveItem(BaseItem):
 
     def restore(
         self, parent_reference: Optional[ItemReference] = None, name: str = None
-    ) -> "DriveItem":
+    ) -> DriveItem:
         """
         Restore a driveItem that has been deleted and is currently in the recycle bin.
         NOTE: This functionality is currently only available for OneDrive Personal.

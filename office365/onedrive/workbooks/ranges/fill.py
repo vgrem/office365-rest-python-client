@@ -8,8 +8,7 @@ class WorkbookRangeFill(Entity):
     for example "FFA500", or be a named HTML color, for example "orange"."""
 
     @property
-    def color(self):
-        # type: () -> Optional[str]
+    def color(self) -> Optional[str]:
         """Gets or sets the width of all columns within the range. If the column widths aren't uniform,
         null will be returned."""
         return self.properties.get("color", None)

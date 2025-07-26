@@ -22,20 +22,17 @@ class WorkbookNamedItem(Entity):
         return return_type
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The name of the object."""
         return self.properties.get("name", None)
 
     @property
-    def comment(self):
-        # type: () -> Optional[str]
+    def comment(self) -> Optional[str]:
         """Represents the comment associated with this name."""
         return self.properties.get("comment", None)
 
     @property
-    def scope(self):
-        # type: () -> Optional[str]
+    def scope(self) -> Optional[str]:
         """Indicates whether the name is scoped to the workbook or to a specific worksheet."""
         return self.properties.get("scope", None)
 
@@ -53,6 +50,5 @@ class WorkbookNamedItem(Entity):
         )
 
     @property
-    def property_ref_name(self):
-        # type: () -> str
+    def property_ref_name(self) -> str:
         return "name"
