@@ -12,7 +12,7 @@ class TestContentType(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestContentType, cls).setUpClass()
+        super().setUpClass()
         cls.client = GraphClient(tenant=test_tenant).with_username_and_password(
             test_client_id, test_username, test_password
         )
@@ -46,13 +46,17 @@ class TestContentType(TestCase):
         result = self.__class__.target_ct.is_published().execute_query()
         self.assertTrue(result.value)
 
+    def test5_list_site_content_types(self):
+        result = self.client.sites.root.content_types.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+
     @requires_delegated_permission("Sites.FullControl.All")
-    def test5_unpublish(self):
+    def test6_unpublish(self):
         result = self.__class__.target_ct.unpublish().is_published().execute_query()
         self.assertFalse(result.value)
 
     @requires_delegated_permission("Sites.Manage.All", "Sites.FullControl.All")
-    def test6_delete_site_content_type(self):
+    def test7_delete_site_content_type(self):
         ct_to_del = self.__class__.target_ct
         ct_to_del.delete_object().execute_query()
 
@@ -62,8 +66,8 @@ class TestContentType(TestCase):
         "Sites.Manage.All",
         "Sites.ReadWrite.All",
     )
-    def test7_get_applicable_content_types_for_list(self):
+    def test8_get_applicable_content_types_for_list(self):
         site = self.client.sites.root
-        doc_lib = site.lists["Documents"].get().execute_query()
-        cts = site.get_applicable_content_types_for_list(doc_lib.id).execute_query()
+        doc_lib = site.lists["Documents"]
+        cts = site.get_applicable_content_types_for_list(doc_lib).execute_query()
         self.assertIsNotNone(cts.resource_path)

@@ -15,9 +15,7 @@ class DocumentId(Entity):
     """
 
     def __init__(self, context):
-        super(DocumentId, self).__init__(
-            context, StaticPath("SP.DocumentManagement.DocumentId")
-        )
+        super().__init__(context, StaticPath("SP.DocumentManagement.DocumentId"))
 
     def reset_docid_by_server_relative_path(self, decoded_url: str) -> Self:
         """In case the document identifier assigned by the document id feature is not unique, MUST re-assign

@@ -127,7 +127,7 @@ class Field(Entity):
         qry = ServiceOperationQuery(self, "setShowInEditForm", [flag])
         self.context.add_query(qry)
 
-    def set_show_in_new_form(self, flag):
+    def set_show_in_new_form(self, flag: bool) -> Self:
         """Sets the value of the ShowInNewForm property for this fields.
 
         :param bool flag: A Boolean value that indicates whether this field is shown in the new form.
@@ -168,7 +168,7 @@ class Field(Entity):
         return self.properties.get("SchemaXml", None)
 
     @schema_xml.setter
-    def schema_xml(self, val):
+    def schema_xml(self, val: str):
         """Sets a value that specifies the XML schema that defines the field."""
         self.set_property("SchemaXml", val)
 
@@ -183,7 +183,7 @@ class Field(Entity):
         return self.properties.get("Title", None)
 
     @title.setter
-    def title(self, val):
+    def title(self, val: str):
         """
         Sets a value that specifies the display name of the field.
         """

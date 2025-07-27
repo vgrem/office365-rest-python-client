@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from typing_extensions import Self
 
@@ -14,6 +14,7 @@ from office365.onedrive.contenttypes.collection import ContentTypeCollection
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.listitems.list_item import ListItem
 from office365.onedrive.lists.collection import ListCollection
+from office365.onedrive.lists.list import List
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.sharepoint_ids import SharePointIds
@@ -55,21 +56,32 @@ class Site(BaseItem):
         return return_type
 
     def get_applicable_content_types_for_list(
-        self, list_id: str
+        self, list_or_id: Union[List, str]
     ) -> ContentTypeCollection:
         """
         Get site contentTypes that can be added to a list.
 
-        :param str list_id: GUID of the list for which the applicable content types need to be fetched.
+        :param str|List list_or_id: GUID of the list for which the applicable content types need to be fetched.
         """
         return_type = ContentTypeCollection(
             self.context, self.content_types.resource_path
         )
-        params = {"listId": list_id}
-        qry = FunctionQuery(
-            self, "getApplicableContentTypesForList", params, return_type
-        )
-        self.context.add_query(qry)
+
+        def _get_applicable_content_types_for_list(list_id: str) -> None:
+            params = {"listId": list_id}
+            qry = FunctionQuery(
+                self, "getApplicableContentTypesForList", params, return_type
+            )
+            self.context.add_query(qry)
+
+        if isinstance(list_or_id, List):
+            list_or_id.ensure_property(
+                "id",
+                lambda: _get_applicable_content_types_for_list(list_or_id.id),
+            )
+        else:
+            _get_applicable_content_types_for_list(list_or_id)
+
         return return_type
 
     def get_activities_by_interval(

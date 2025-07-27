@@ -11,7 +11,7 @@ from tests import (
     test_username,
 )
 
-file_abs_url = "{0}/Shared Documents/Financial Sample.csv".format(test_team_site_url)
+file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.csv"
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(
     test_client_id, test_username, test_password

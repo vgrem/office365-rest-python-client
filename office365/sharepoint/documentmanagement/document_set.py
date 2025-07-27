@@ -1,13 +1,26 @@
+from __future__ import annotations
+
+from typing import Union
+
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
 
 
 class DocumentSet(Folder):
+    """Represents a set of documents."""
+
     @staticmethod
-    def create(context, parent_folder, name, ct_id="0x0120D520"):
+    def create(
+        context: ClientContext,
+        parent_folder: Folder,
+        name: str,
+        ct_id: Union[ContentTypeId, str] = "0x0120D520",
+    ) -> DocumentSet:
         """
         Creates a DocumentSet (section 3.1.5.3) object on the server.
 
@@ -20,6 +33,7 @@ class DocumentSet(Folder):
         """
 
         return_type = DocumentSet(context)
+        parent_folder.folders.add_child(return_type)
 
         def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
@@ -28,10 +42,8 @@ class DocumentSet(Folder):
 
             def _construct_request(request: RequestOptions) -> None:
                 list_name = target_list.title.replace(" ", "")
-                request.url = r"{0}/_vti_bin/listdata.svc/{1}".format(
-                    context.base_url, list_name
-                )
-                request.set_header("Slug", "{0}|{1}".format(folder_url, ct_id))
+                request.url = rf"{context.base_url}/_vti_bin/listdata.svc/{list_name}"
+                request.set_header("Slug", f"{folder_url}|{ct_id}")
                 request.method = HttpMethod.Post
 
             context.add_query(qry).before_query_execute(_construct_request)
@@ -48,7 +60,7 @@ class DocumentSet(Folder):
         return return_type
 
     @staticmethod
-    def get_document_set(context, folder):
+    def get_document_set(context: ClientContext, folder: Folder) -> DocumentSet:
         """Retrieves the document set object from a specified folder object.
 
         :type context: office365.sharepoint.client_context.ClientContext

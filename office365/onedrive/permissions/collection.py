@@ -21,7 +21,7 @@ class PermissionCollection(EntityCollection[Permission]):
     """Permission's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(PermissionCollection, self).__init__(context, Permission, resource_path)
+        super().__init__(context, Permission, resource_path)
 
     def add(
         self,
@@ -80,9 +80,9 @@ class PermissionCollection(EntityCollection[Permission]):
     def delete_all(self) -> Self:
         """Remove all access to resource"""
 
-        def _after_loaded(return_type: PermissionCollection) -> None:
+        def _delete(return_type: PermissionCollection) -> None:
             for permission in return_type:
                 permission.delete_object()
 
-        self.get().after_execute(_after_loaded)
+        self.get_all().after_execute(_delete)
         return self

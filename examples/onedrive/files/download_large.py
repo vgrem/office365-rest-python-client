@@ -31,8 +31,4 @@ with tempfile.TemporaryDirectory() as local_path:
         file_item.download_session(
             local_file, print_progress, chunk_size=1024 * 512
         ).execute_query()
-    print(
-        "File '{0}' has been downloaded into {1}".format(
-            file_item.name, local_file.name
-        )
-    )
+    print(f"File '{file_item.name}' has been downloaded into {local_file.name}")

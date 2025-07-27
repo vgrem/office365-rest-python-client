@@ -21,7 +21,7 @@ class ListTemplate(Entity):
     def __repr__(self):
         return self.internal_name or self.entity_type_name
 
-    def get_global_schema_xml(self):
+    def get_global_schema_xml(self) -> ClientResult[bytes]:
         """Retrieves the global schema.xml file."""
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(

@@ -7,11 +7,11 @@ from tests.graph_case import GraphTestCase
 class TestSite(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    test_site = None  # type: Site
+    test_site: Site = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestSite, cls).setUpClass()
+        super().setUpClass()
         cls.test_site = cls.client.sites.root
         cls.followed_sites_count = None
         assert cls.test_site.resource_path is not None
@@ -53,9 +53,9 @@ class TestSite(GraphTestCase):
 
     @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test6_list_followed_sites(self):
-        sites = self.client.me.followed_sites.get().execute_query()
-        self.followed_sites_count = len(sites)
-        self.assertGreaterEqual(len(sites), 1, "No followed sites were returned")
+        result = self.client.me.followed_sites.get().execute_query()
+        self.followed_sites_count = len(result)
+        self.assertGreaterEqual(len(result), 1, "No followed sites were returned")
 
     @requires_delegated_permission("Sites.ReadWrite.All")
     def test7_unfollow(self):
@@ -68,8 +68,8 @@ class TestSite(GraphTestCase):
         "Sites.ReadWrite.All",
     )
     def test9_get_operations(self):
-        ops = self.test_site.operations.get().execute_query()
-        self.assertIsNotNone(ops.resource_path)
+        result = self.test_site.operations.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test_10_get_analytics(self):
         result = self.test_site.analytics.last_seven_days.get().execute_query()

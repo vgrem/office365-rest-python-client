@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
+
+from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
@@ -21,7 +23,10 @@ class ContentType(BaseItem):
     """The contentType resource represents a content type in SharePoint. Content types allow you to define a set of
     columns that must be present on every listItem in a list."""
 
-    def is_published(self):
+    def __repr__(self):
+        return self.name or self.entity_type_name
+
+    def is_published(self) -> ClientResult[bool]:
         """Check the publishing status of a contentType in a content type hub site."""
         return_type = ClientResult(self.context, bool())
         qry = FunctionQuery(self, "isPublished", None, return_type)
@@ -29,8 +34,8 @@ class ContentType(BaseItem):
         return return_type
 
     def associate_with_hub_sites(
-        self, hub_site_urls, propagate_to_existing_lists=False
-    ):
+        self, hub_site_urls: List[str], propagate_to_existing_lists: bool = False
+    ) -> Self:
         """
         Associate a published content type present in a content type hub with a list of hub sites.
         Note: This feature is limited to tenants that have a SharePoint Syntex license.
@@ -48,7 +53,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return self
 
-    def publish(self):
+    def publish(self) -> Self:
         """
         Publishes a contentType present in the content type hub site.
         """
@@ -56,7 +61,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return self
 
-    def unpublish(self):
+    def unpublish(self) -> Self:
         """Unpublish a contentType from a content type hub site."""
         qry = ServiceOperationQuery(self, "unpublish")
         self.context.add_query(qry)

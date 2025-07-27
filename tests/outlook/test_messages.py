@@ -9,7 +9,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookMessages(GraphTestCase):
-    target_message = None  # type: Message
+    target_message: Message = None
 
     @requires_delegated_permission("Mail.ReadWrite")
     def test2_create_draft_message(self):

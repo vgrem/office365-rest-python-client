@@ -189,7 +189,7 @@ class Site(Entity):
         return self
 
     @staticmethod
-    def from_url(url):
+    def from_url(url: str):
         """
         Initiates and returns a site instance
 
@@ -220,7 +220,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_migration_status(self):
+    def get_migration_status(self) -> EntityCollection[SPMigrationJobStatus]:
         """"""
         return_type = EntityCollection(self.context, SPMigrationJobStatus)
         qry = ServiceOperationQuery(

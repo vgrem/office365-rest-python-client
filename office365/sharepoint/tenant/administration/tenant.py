@@ -1,5 +1,5 @@
 import time
-from typing import AnyStr, Optional
+from typing import AnyStr, List, Optional
 
 from typing_extensions import Self
 
@@ -181,7 +181,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def delete_policy_definition(self, item_id):
+    def delete_policy_definition(self, item_id: int) -> Self:
         """
         Deletes a policy definition from a Microsoft 365 tenant.
         Policy definitions may refer to specific settings related to compliance, security,
@@ -235,11 +235,11 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_collaboration_insights_overview(self):
+    def get_collaboration_insights_overview(
+        self,
+    ) -> ClientResult[CollaborationInsightsOverview]:
         """"""
-        return_type = ClientResult[CollaborationInsightsData](
-            self.context, CollaborationInsightsOverview()
-        )
+        return_type = ClientResult(self.context, CollaborationInsightsOverview())
 
         qry = ServiceOperationQuery(
             self, "GetCollaborationInsightsOverview", None, None, None, return_type
@@ -260,7 +260,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_content_security_policy(self):
+    def get_content_security_policy(self) -> SPOContentSecurityPolicyConfiguration:
         """"""
         return_type = SPOContentSecurityPolicyConfiguration(self.context)
         qry = ServiceOperationQuery(
@@ -658,7 +658,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def set_site_secondary_administrators(self, site_id, emails=None, names=None):
+    def set_site_secondary_administrators(
+        self, site_id: str, emails: List[str] = None, names: List[str] = None
+    ):
         """
         Sets site collection administrators
 
@@ -696,7 +698,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def create_policy_definition(self):
+    def create_policy_definition(self) -> ClientResult[TenantAdminPolicyDefinition]:
         """ """
         return_type = ClientResult(self.context, TenantAdminPolicyDefinition())
         payload = {"policyInputParameters": CreatePolicyRequest()}
