@@ -6,6 +6,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.administration.archiving.file_size_metric import (
     ArchiveFileSizeMetric,
@@ -102,12 +103,12 @@ class Tenant(Entity):
     """Represents a SharePoint tenant."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.Tenant"
+        super().__init__(
+            context,
+            StaticPath("Microsoft.Online.SharePoint.TenantAdministration.Tenant"),
         )
-        super(Tenant, self).__init__(context, static_path)
 
-    def accept_syntex_repository_terms_of_service(self):
+    def accept_syntex_repository_terms_of_service(self) -> Self:
         """
         Used to accept the Microsoft Syntex repository terms of service for your organization.
         This acceptance is often necessary for enabling features related to document processing or repositories
@@ -606,7 +607,9 @@ class Tenant(Entity):
 
         self.get_sites_by_state(states).after_execute(_after, execute_first=True)
 
-    def get_site_health_status(self, source_url):
+    def get_site_health_status(
+        self, source_url: str
+    ) -> ClientResult[PortalHealthStatus]:
         """
         Checks the sitehealth of a specific SharePoint site or site collection in their tenant
         :type source_url: str
@@ -619,7 +622,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return result
 
-    def get_site_administrators(self, site_id, return_type=None):
+    def get_site_administrators(self, site_id: str, return_type=None):
         """
         Gets site collection administrators
 
@@ -660,7 +663,7 @@ class Tenant(Entity):
 
     def set_site_secondary_administrators(
         self, site_id: str, emails: List[str] = None, names: List[str] = None
-    ):
+    ) -> Self:
         """
         Sets site collection administrators
 
@@ -727,7 +730,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_site_sync(self, url, owner, title=None):
+    def create_site_sync(self, url: str, owner: str, title: str = None):
         """Creates a site collection
 
         :param str title: Sets the new site’s title.
@@ -744,7 +747,7 @@ class Tenant(Entity):
         self.create_site(url, owner, title).after_execute(_ensure_status)
         return return_type
 
-    def remove_site(self, site_url):
+    def remove_site(self, site_url: str) -> SpoOperation:
         """Deletes the site with the specified URL
 
         :param str site_url: A string representing the URL of the site.
@@ -755,7 +758,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def remove_deleted_site(self, site_url):
+    def remove_deleted_site(self, site_url: str) -> SpoOperation:
         """Permanently removes the specified deleted site from the recycle bin.
 
         :param str site_url: A string representing the URL of the site.
@@ -767,7 +770,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return result
 
-    def reorder_home_sites(self, home_sites_site_ids):
+    def reorder_home_sites(
+        self, home_sites_site_ids: List[str]
+    ) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
         """
         Reorders Home Sites within a SharePoint Online tenant
         :param list[str] home_sites_site_ids:
@@ -782,7 +787,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def restore_deleted_site(self, site_url):
+    def restore_deleted_site(self, site_url: str):
         """Restores deleted site with the specified URL
         :param str site_url: A string representing the URL of the site.
         """
@@ -793,7 +798,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def restore_deleted_site_by_id(self, site_id):
+    def restore_deleted_site_by_id(self, site_id: str):
         """Restores deleted site with the specified URL
         :param str site_id: A string representing the site identifier.
         """
@@ -804,7 +809,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_version_policy_for_library(self, site_url, list_params=None):
+    def get_file_version_policy_for_library(self, site_url: str, list_params=None):
         """ """
         return_type = ClientResult(self.context, SPOFileVersionPolicySettings())
         payload = {"siteUrl": site_url, "listParams": list_params}
@@ -894,7 +899,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_billing_policy_id_for_app(self, application_id):
+    def get_billing_policy_id_for_app(self, application_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
         payload = {"applicationId": application_id}
@@ -1155,6 +1160,11 @@ class Tenant(Entity):
         return self.properties.get("NotifyOwnersWhenItemsReshared", None)
 
     @property
+    def one_drive_default_link_to_existing_access(self) -> Optional[str]:
+        """ """
+        return self.properties.get("OneDriveDefaultLinkToExistingAccess", None)
+
+    @property
     def root_site_url(self) -> Optional[str]:
         """The tenant's root site url"""
         return self.properties.get("RootSiteUrl", None)
@@ -1182,6 +1192,7 @@ class Tenant(Entity):
             ),
         )
 
+    @property
     def syntex_power_apps_environments_context(
         self,
     ) -> SyntexPowerAppsEnvironmentsContext:
@@ -1190,6 +1201,7 @@ class Tenant(Entity):
             "SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext()
         )
 
+    @property
     def taxonomy_tagging_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("TaxonomyTaggingEnabled", None)

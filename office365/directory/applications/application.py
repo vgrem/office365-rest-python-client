@@ -114,15 +114,15 @@ class Application(DirectoryObject):
 
         """
         super().delete_object()
-        deleted_item = DirectoryObject(
+        deleted_app = DirectoryObject(
             self.context,
             EntityPath(
                 self.id, self.context.directory.deleted_applications.resource_path
             ),
         )
-        self.context.directory.deleted_applications.add_child(deleted_item)
+        self.context.directory.deleted_applications.add_child(deleted_app)
         if permanent_delete:
-            deleted_item.delete_object()
+            deleted_app.delete_object()
         return self
 
     def set_verified_publisher(self, verified_publisher_id: str) -> Self:

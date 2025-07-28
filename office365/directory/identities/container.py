@@ -46,7 +46,7 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def conditional_access(self):
+    def conditional_access(self) -> ConditionalAccessRoot:
         """The entry point for the Conditional Access (CA) object model."""
         return self.properties.get(
             "conditionalAccess",
@@ -56,7 +56,7 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def identity_providers(self):
+    def identity_providers(self) -> IdentityProviderBaseCollection:
         """Represents entry point for identity provider base."""
         return self.properties.get(
             "identityProviders",
@@ -66,7 +66,7 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def b2x_user_flows(self):
+    def b2x_user_flows(self) -> EntityCollection[B2XIdentityUserFlow]:
         """Represents entry point for B2X/self-service sign-up identity userflows."""
         return self.properties.get(
             "b2xUserFlows",
@@ -78,7 +78,7 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def user_flow_attributes(self):
+    def user_flow_attributes(self) -> EntityCollection[IdentityUserFlowAttribute]:
         """Represents entry point for identity userflow attributes."""
         return self.properties.get(
             "userFlowAttributes",

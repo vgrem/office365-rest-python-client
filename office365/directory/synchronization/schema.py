@@ -17,7 +17,7 @@ class SynchronizationSchema(Entity):
     The following sections describe the high-level components of the synchronization schema.
     """
 
-    def functions(self):
+    def functions(self) -> EntityCollection[AttributeMappingFunctionSchema]:
         """List all the functions currently supported in the attributeMappingSource."""
         return_type = EntityCollection(self.context, AttributeMappingFunctionSchema)
         qry = FunctionQuery(self, "functions", None, return_type)

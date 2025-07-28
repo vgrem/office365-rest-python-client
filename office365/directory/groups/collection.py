@@ -8,7 +8,7 @@ class GroupCollection(CountCollection[Group]):
     """Group's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(GroupCollection, self).__init__(context, Group, resource_path)
+        super().__init__(context, Group, resource_path)
 
     def add(self, group_properties: GroupProfile) -> Group:
         """
@@ -25,7 +25,9 @@ class GroupCollection(CountCollection[Group]):
         self.context.add_query(qry)
         return return_type
 
-    def create_m365(self, name, description=None, owner=None) -> Group:
+    def create_m365(
+        self, name: str, description: str = None, owner: str = None
+    ) -> Group:
         """
         Creates a Microsoft 365 group.
         If the owners have not been specified, the calling user is automatically added as the owner of the group.
@@ -63,4 +65,4 @@ class GroupCollection(CountCollection[Group]):
 
     def get_by_name(self, name: str) -> Group:
         """Retrieves group by displayName"""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")

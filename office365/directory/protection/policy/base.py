@@ -11,7 +11,7 @@ class ProtectionPolicyBase(Entity):
     """
 
     @property
-    def created_by(self):
+    def created_by(self) -> IdentitySet:
         """Identity of the user, device, or application which created the item."""
         return self.properties.get("createdBy", IdentitySet())
 

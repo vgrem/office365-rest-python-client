@@ -28,6 +28,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.teams.team import Team
@@ -39,7 +40,7 @@ class Group(DirectoryObject):
     def __repr__(self):
         return self.display_name or self.id or self.entity_type_name
 
-    def renew(self):
+    def renew(self) -> Self:
         """
         Renews a group's expiration. When a group is renewed, the group expiration is extended by the number
         of days defined in the policy.
@@ -117,9 +118,13 @@ class Group(DirectoryObject):
 
         """
         super(Group, self).delete_object()
+        deleted_group = DirectoryObject(
+            self.context,
+            EntityPath(self.id, self.context.directory.deleted_groups.resource_path),
+        )
+        self.context.directory.deleted_groups.add_child(deleted_group)
         if permanent_delete:
-            deleted_item = self.context.directory.deleted_groups[self.id]
-            deleted_item.delete_object()
+            deleted_group.delete_object()
         return self
 
     @property

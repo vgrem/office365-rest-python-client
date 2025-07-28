@@ -1,8 +1,10 @@
 from functools import lru_cache, wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, List, TypeVar, cast
 from unittest import TestCase
 
 from office365.directory.applications.roles.collection import AppRoleCollection
+from office365.directory.rolemanagement.role import DirectoryRole
+from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
 from office365.runtime.types.collections import StringCollection
 from tests import test_client_id
@@ -76,5 +78,52 @@ def requires_delegated_permission(*scopes):
             return test_method(self, *args, **kwargs)
 
         return wrapper  # type: ignore[return-value]
+
+    return decorator
+
+
+@lru_cache(maxsize=1)
+def _get_cached_directory_roles(client: GraphClient) -> EntityCollection[DirectoryRole]:
+    """Get and cache application permissions for a client"""
+    result = client.me.get_directory_roles().execute_query()
+    return result
+
+
+def requires_directory_role(*required_roles: str) -> Callable[[T], T]:
+    """
+    Decorator that checks if the user has at least one of the required directory roles.
+
+    Args:
+        *required_roles: One or more role names that are required to execute the function
+
+    Returns:
+        The decorated function if authorization succeeds, raises PermissionError otherwise
+    """
+
+    def decorator(func: T) -> T:
+        @wraps(func)
+        def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            client = getattr(self, "client", None)
+            if not client:
+                self.skipTest("No client available for directory roles check")
+
+            # Get the user's current roles
+            result = _get_cached_directory_roles(client)
+            user_roles: List[str] = [role.display_name for role in result]
+
+            # Check if user has at least one of the required roles
+            has_required_role = any(role in user_roles for role in required_roles)
+
+            if not has_required_role:
+                required_roles_str = ", ".join(required_roles)
+                user_roles_str = ", ".join(user_roles) if user_roles else "None"
+                raise PermissionError(
+                    f"Access denied. Requires one of these roles: {required_roles_str}. "
+                    f"User has roles: {user_roles_str}"
+                )
+
+            return func(self, *args, **kwargs)
+
+        return cast(T, wrapper)
 
     return decorator

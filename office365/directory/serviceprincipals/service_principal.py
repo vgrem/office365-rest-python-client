@@ -125,12 +125,12 @@ class ServicePrincipal(DirectoryObject):
         ) -> None:
 
             if principal_id is None:
-                query_text = "clientId eq '{0}'  and consentType eq '{1}'".format(
-                    client_id, consent_type
+                query_text = (
+                    f"clientId eq '{client_id}'  and consentType eq '{consent_type}'"
                 )
             else:
-                query_text = "principalId eq '{0}' and clientId eq '{1}'".format(
-                    principal_id, client_id
+                query_text = (
+                    f"principalId eq '{principal_id}' and clientId eq '{client_id}'"
                 )
 
             def _loaded(col):
@@ -256,6 +256,7 @@ class ServicePrincipal(DirectoryObject):
     def get_application_permissions(
         self, app: Application | str
     ) -> ClientResult[AppRoleCollection]:
+        """ """
         return_type = ClientResult(self.context, AppRoleCollection())
 
         def _get_application_permissions(app_id: str) -> None:
@@ -269,11 +270,11 @@ class ServicePrincipal(DirectoryObject):
                     return_type.value.add(app_role)
 
         def _resolve_app():
-
-            def _after(service_principal):
-                _get_application_permissions(service_principal.id)
-
-            self.context.service_principals.get_by_app(app).get().after_execute(_after)
+            self.context.service_principals.get_by_app(app).get().after_execute(
+                lambda service_principal: _get_application_permissions(
+                    service_principal.id
+                )
+            )
 
         self.ensure_properties(["id", "appRoles", "appRoleAssignedTo"], _resolve_app)
         return return_type
@@ -287,7 +288,7 @@ class ServicePrincipal(DirectoryObject):
         :param AppRole or str app_role: AppRole object or name
         """
 
-        def _grant(principal_id: str, app_role_id: str) -> None:
+        def _grant_application_permissions(principal_id: str, app_role_id: str) -> None:
             self.app_role_assigned_to.add(
                 principalId=principal_id, resourceId=self.id, appRoleId=app_role_id
             )
@@ -295,9 +296,11 @@ class ServicePrincipal(DirectoryObject):
         def _ensure_resource():
             def _after(return_type):
                 if isinstance(app_role, AppRole):
-                    _grant(return_type.id, app_role.id)
+                    _grant_application_permissions(return_type.id, app_role.id)
                 else:
-                    _grant(return_type.id, self.app_roles[app_role].id)
+                    _grant_application_permissions(
+                        return_type.id, self.app_roles[app_role].id
+                    )
 
             self.context.service_principals.get_by_app(app).get().after_execute(_after)
 
@@ -335,7 +338,7 @@ class ServicePrincipal(DirectoryObject):
         )
         return self
 
-    def remove_password(self, key_id):
+    def remove_password(self, key_id: str):
         """
         Remove a password from a servicePrincipal object.
         :param str key_id: The unique identifier for the password.
@@ -384,7 +387,7 @@ class ServicePrincipal(DirectoryObject):
         return self.properties.get("appRoleAssignmentRequired", None)
 
     @property
-    def app_role_assigned_to(self):
+    def app_role_assigned_to(self) -> AppRoleAssignmentCollection:
         """
         App role assignments for this app or service, granted to users, groups, and other service principals.
         Supports $expand."""
@@ -396,7 +399,7 @@ class ServicePrincipal(DirectoryObject):
         )
 
     @property
-    def app_role_assignments(self):
+    def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
         return self.properties.get(
             "appRoleAssignments",
@@ -535,7 +538,7 @@ class ServicePrincipal(DirectoryObject):
         )
 
     @property
-    def synchronization(self):
+    def synchronization(self) -> Synchronization:
         """
         Represents the capability for Azure Active Directory (Azure AD) identity synchronization through
         the Microsoft Graph API.

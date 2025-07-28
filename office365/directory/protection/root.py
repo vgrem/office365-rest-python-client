@@ -9,7 +9,7 @@ class IdentityProtectionRoot(Entity):
     """Container for the navigation properties for Microsoft Graph identity protection resources."""
 
     @property
-    def risk_detections(self):
+    def risk_detections(self) -> EntityCollection[RiskDetection]:
         """Risk detection in Azure AD Identity Protection and the associated information about the detection."""
         return self.properties.get(
             "riskDetections",
@@ -21,7 +21,7 @@ class IdentityProtectionRoot(Entity):
         )
 
     @property
-    def risky_users(self):
+    def risky_users(self) -> RiskyUserCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
         return self.properties.get(
             "riskyUsers",

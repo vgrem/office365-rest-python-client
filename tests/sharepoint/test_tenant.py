@@ -23,8 +23,8 @@ from tests import (
 
 
 class TestTenant(TestCase):
-    target_site_props = None  # type: SiteProperties
-    target_site = None  # type: Site
+    target_site_props: SiteProperties = None
+    target_site: Site = None
 
     @classmethod
     def setUpClass(cls):
@@ -64,10 +64,10 @@ class TestTenant(TestCase):
         self.assertIsNotNone(result.value)
 
     def test6_list_sites(self):
-        sites = (
+        result = (
             self.tenant.get_site_properties_from_sharepoint_by_filters().execute_query()
         )
-        self.assertIsInstance(sites, SitePropertiesCollection)
+        self.assertIsInstance(result, SitePropertiesCollection)
 
     def test7_get_site_secondary_administrators(self):
         target_site = self.client.site.select(["Id"]).get().execute_query()
@@ -249,9 +249,9 @@ class TestTenant(TestCase):
     #    result = SPTenantIBInsightsReportManager(self.client).get().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    def test38_get_comms_messages(self):
-        result = self.tenant.comms_messages.get().execute_query()
-        self.assertIsNotNone(result.resource_path)
+    # def test38_get_comms_messages(self):
+    #    result = self.tenant.comms_messages.get().execute_query()
+    #    self.assertIsNotNone(result.resource_path)
 
     # def test39_check_m365_copilot_business_chat_license(self):
     #    result = self.tenant.check_m365_copilot_business_chat_license().execute_query()

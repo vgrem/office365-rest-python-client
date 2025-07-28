@@ -12,9 +12,9 @@ from tests.graph_case import GraphTestCase
 class TestFile(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_drive = None  # type: Drive
-    target_file = None  # type: DriveItem
-    target_folder = None  # type: DriveItem
+    target_drive: Drive = None
+    target_file: DriveItem = None
+    target_folder: DriveItem = None
 
     @classmethod
     def setUpClass(cls):
