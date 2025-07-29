@@ -19,6 +19,7 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
@@ -458,7 +459,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def checkin(self, comment: str, checkin_type: int) -> Self:
+    def checkin(self, comment: str, checkin_type: CheckinType) -> Self:
         """
         Checks the file in to a document library based on the check-in type.
 
@@ -468,7 +469,7 @@ class File(AbstractFile):
             https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
         :param int checkin_type: Specifies the type of check-in.
         """
-        params = {"comment": comment, "checkInType": checkin_type}
+        params = {"comment": comment, "checkInType": checkin_type.value}
         qry = ServiceOperationQuery(self, "checkin", params)
         self.context.add_query(qry)
         return self
@@ -480,7 +481,7 @@ class File(AbstractFile):
         return self
 
     def get_limited_webpart_manager(
-        self, scope=PersonalizationScope.User
+        self, scope: PersonalizationScope = PersonalizationScope.User
     ) -> LimitedWebPartManager:
         """Specifies the control set used to access, modify, or add Web Parts associated with this Web Part Page and
         view.
@@ -491,7 +492,7 @@ class File(AbstractFile):
         return LimitedWebPartManager(
             self.context,
             ServiceOperationPath(
-                "GetLimitedWebPartManager", [scope], self.resource_path
+                "GetLimitedWebPartManager", [scope.value], self.resource_path
             ),
         )
 

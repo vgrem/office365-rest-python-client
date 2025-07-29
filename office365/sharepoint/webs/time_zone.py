@@ -32,7 +32,7 @@ class TimeZone(Entity):
         return self
 
     @property
-    def id(self):
+    def id(self) -> Optional[int]:
         """Gets the identifier of the time zone."""
         return self.properties.get("Id", None)
 

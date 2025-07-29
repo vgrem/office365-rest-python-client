@@ -57,7 +57,7 @@ class View(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def set_view_xml(self, view_xml) -> Self:
+    def set_view_xml(self, view_xml: str) -> Self:
         """
         Sets the view schema.
         :param str view_xml: The view XML to set.
@@ -95,7 +95,7 @@ class View(Entity):
         return self.properties.get("ColumnWidth", None)
 
     @property
-    def parent_list(self):
+    def parent_list(self) -> List | None:
         """Returns parent List"""
         return self._parent_list
 

@@ -7,7 +7,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WebPart(Entity):
     """Represents a specific web part instance on a SharePoint page."""
 
-    def get_position_of_web_part(self):
+    def get_position_of_web_part(self) -> ClientResult[WebPartPosition]:
         """Returns the position of the specified web part in the page."""
         return_type = ClientResult(self.context, WebPartPosition())
         qry = ServiceOperationQuery(

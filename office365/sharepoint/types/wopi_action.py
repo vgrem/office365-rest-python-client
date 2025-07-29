@@ -1,6 +1,7 @@
-class SPWOPIAction:
-    def __init__(self):
-        pass
+from enum import Enum
+
+
+class SPWOPIAction(Enum):
 
     view = 0
     default = 3

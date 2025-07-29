@@ -27,7 +27,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def delete_by_ids(self, ids):
+    def delete_by_ids(self, ids: List[str]) -> Self:
         """
         Permanently deletes Recycle Bin items by their identifiers
 

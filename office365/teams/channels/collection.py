@@ -24,7 +24,7 @@ class ChannelCollection(EntityCollection[Channel]):
             **kwargs
         )
 
-    def get_all_messages(self):
+    def get_all_messages(self) -> EntityCollection[ChatMessage]:
         """
         Retrieve messages across all channels in a team, including text, audio, and video conversations.
         """

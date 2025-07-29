@@ -1378,7 +1378,7 @@ class Web(SecurableObject):
         self,
         value: str,
         display_format: DateTimeFieldFormatType = DateTimeFieldFormatType.DateTime,
-        calendar_type: int = CalendarType.None_,
+        calendar_type: CalendarType = CalendarType.None_,
     ) -> ClientResult[str]:
         """
         Returns parsed DateTime value.
@@ -1393,7 +1393,7 @@ class Web(SecurableObject):
         payload = {
             "value": value,
             "displayFormat": display_format.value,
-            "calendarType": calendar_type,
+            "calendarType": calendar_type.value,
         }
         qry = ServiceOperationQuery(
             self, "ParseDateTime", None, payload, None, return_type

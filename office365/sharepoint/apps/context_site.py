@@ -15,10 +15,10 @@ class AppContextSite(Entity):
             "SP.AppContextSite",
             {"siteUrl": site_url},
         )
-        super(AppContextSite, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
-    def site(self):
+    def site(self) -> Site:
         """"""
         return self.properties.get(
             "Site",
@@ -29,7 +29,7 @@ class AppContextSite(Entity):
         )
 
     @property
-    def web(self):
+    def web(self) -> Web:
         """"""
         return self.properties.get(
             "Web",

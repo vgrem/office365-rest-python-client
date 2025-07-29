@@ -4,12 +4,12 @@ from office365.runtime.client_value import ClientValue
 class RecycleBinQueryInformation(ClientValue):
     def __init__(
         self,
-        is_ascending,
-        item_state,
-        order_by,
-        paging_info,
-        row_limit,
-        show_only_my_items,
+        is_ascending: bool = None,
+        item_state: int = None,
+        order_by: int = None,
+        paging_info: str = None,
+        row_limit: int = None,
+        show_only_my_items: bool = None,
     ):
         """
         Represents information for the recycle bin query.

@@ -1,4 +1,7 @@
-class PersonalizationScope:
+from enum import Enum
+
+
+class PersonalizationScope(Enum):
     """Specifies the personalization scope for the LimitedWebPartManager object"""
 
     User = 0

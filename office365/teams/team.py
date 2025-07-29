@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Any, Dict, Optional
+
+from typing_extensions import Self
 
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
@@ -17,6 +19,10 @@ from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.operations.async_operation import TeamsAsyncOperation
 from office365.teams.schedule.schedule import Schedule
 from office365.teams.summary import TeamSummary
+from office365.teams.teamwork.activity_topic import TeamworkActivityTopic
+from office365.teams.teamwork.notification_recipient import (
+    TeamworkNotificationRecipient,
+)
 from office365.teams.teamwork.tags.tag import TeamworkTag
 from office365.teams.template import TeamsTemplate
 
@@ -161,7 +167,7 @@ class Team(Entity):
         )
 
     @property
-    def schedule(self):
+    def schedule(self) -> Schedule:
         """The schedule of shifts for this team."""
         return self.properties.get(
             "schedule",
@@ -207,7 +213,7 @@ class Team(Entity):
         )
 
     @property
-    def summary(self):
+    def summary(self) -> TeamSummary:
         """Contains summary information about the team, including number of owners, members, and guests."""
         return self.properties.get("summary", TeamSummary())
 
@@ -217,7 +223,7 @@ class Team(Entity):
         return self.properties.get("tenantId", None)
 
     @property
-    def tags(self):
+    def tags(self) -> EntityCollection[TeamworkTag]:
         """The tags associated with the team."""
         return self.properties.get(
             "tags",
@@ -227,14 +233,14 @@ class Team(Entity):
         )
 
     @property
-    def template(self):
+    def template(self) -> TeamsTemplate:
         """The template this team was created from"""
         return self.properties.get(
             "template",
             TeamsTemplate(self.context, ResourcePath("template", self.resource_path)),
         )
 
-    def archive(self):
+    def archive(self) -> Self:
         """Archive the specified team. When a team is archived, users can no longer send or like messages on any
         channel in the team, edit the team's name, description, or other settings, or in general make most changes to
         the team. Membership changes to the team continue to be allowed."""
@@ -242,14 +248,14 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
-    def unarchive(self):
+    def unarchive(self) -> Self:
         """Restore an archived team. This restores users' ability to send messages and edit the team, abiding by
         tenant and team settings."""
         qry = ServiceOperationQuery(self, "unarchive")
         self.context.add_query(qry)
         return self
 
-    def clone(self):
+    def clone(self) -> Self:
         """Create a copy of a team. This operation also creates a copy of the corresponding group."""
         qry = ServiceOperationQuery(self, "clone")
         self.context.add_query(qry)
@@ -257,12 +263,12 @@ class Team(Entity):
 
     def send_activity_notification(
         self,
-        topic,
-        activity_type,
-        chain_id,
-        preview_text,
-        template_parameters,
-        recipient,
+        topic: TeamworkActivityTopic,
+        activity_type: str,
+        chain_id: str,
+        preview_text: str,
+        template_parameters: Dict[str, Any],
+        recipient: TeamworkNotificationRecipient,
     ):
         """
         Send an activity feed notification in the scope of a team.

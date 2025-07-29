@@ -194,6 +194,7 @@ class FileCollection(EntityCollection[File]):
 
     @property
     def parent(self) -> Folder:
+        """ """
         from office365.sharepoint.folders.folder import Folder
 
         return cast(Folder, self._parent)

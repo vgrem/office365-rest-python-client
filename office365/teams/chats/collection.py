@@ -6,7 +6,7 @@ class ChatCollection(EntityCollection[Chat]):
     """Team's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(ChatCollection, self).__init__(context, Chat, resource_path)
+        super().__init__(context, Chat, resource_path)
 
     def add(self, chat_type):
         """

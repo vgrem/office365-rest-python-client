@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 
 class Folder(Entity):
-    """Represents a folder in a SharePoint Web site."""
+    """Represents a folder in a SharePoint Website."""
 
     def __str__(self):
         return self.name or self.entity_type_name
@@ -43,7 +43,7 @@ class Folder(Entity):
         return self.server_relative_url or self.unique_id or self.entity_type_name
 
     @staticmethod
-    def from_url(abs_url):
+    def from_url(abs_url: str):
         """
         Addresses a Folder by absolute url
         :type abs_url: str

@@ -39,6 +39,7 @@ from office365.sharepoint.sharing.object_sharing_information import (
 )
 from office365.sharepoint.sharing.result import SharingResult
 from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValueCollection
+from office365.sharepoint.types.wopi_action import SPWOPIAction
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,
 )
@@ -186,7 +187,7 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
         return return_value
 
-    def get_wopi_frame_url(self, action):
+    def get_wopi_frame_url(self, action: SPWOPIAction):
         """
         Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
             application associated with the list item.
@@ -195,7 +196,7 @@ class ListItem(SecurableObject):
         """
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(
-            self, "GetWOPIFrameUrl", [action], None, None, result
+            self, "GetWOPIFrameUrl", [action.value], None, None, result
         )
         self.context.add_query(qry)
         return result
