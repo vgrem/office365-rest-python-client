@@ -98,7 +98,9 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def get_list_compliance_tag(
-        context: ClientContext, list_url: str, return_type=None
+        context: ClientContext,
+        list_url: str,
+        return_type: ClientResult[ComplianceTag] = None,
     ) -> ClientResult[ComplianceTag]:
         """ """
         if return_type is None:
@@ -117,7 +119,9 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def register_site_hold_event_receiver(context, site_url=None, site_id=None):
+    def register_site_hold_event_receiver(
+        context: ClientContext, site_url: str = None, site_id: str = None
+    ):
         """ """
         payload = {"siteUrl": site_url, "siteId": site_id}
         binding_type = SPPolicyStoreProxy(context)
@@ -135,12 +139,12 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def set_list_compliance_tag(
-        context,
-        list_url,
-        compliance_tag_value,
-        block_delete=None,
-        block_edit=None,
-        sync_to_items=None,
+        context: ClientContext,
+        list_url: str,
+        compliance_tag_value: str,
+        block_delete: bool = None,
+        block_edit: bool = None,
+        sync_to_items: bool = None,
     ):
         """Apply a retention label ("compliance tag") to a list or document library."""
         payload = {

@@ -26,16 +26,16 @@ class SitePageMetadata(Entity):
         return self.properties.get("AbsoluteUrl", None)
 
     @property
-    def author_byline(self):
+    def author_byline(self) -> StringCollection:
         return self.properties.get("AuthorByline", StringCollection())
 
     @property
-    def created_by(self):
+    def created_by(self) -> UserInfo:
         """Specifies the user who created the page."""
         return self.properties.get("CreatedBy", UserInfo())
 
     @property
-    def last_modified_by(self):
+    def last_modified_by(self) -> UserInfo:
         """Gets the user who last modified the current Site Page."""
         return self.properties.get("LastModifiedBy", UserInfo())
 

@@ -1,6 +1,6 @@
 import logging
 
-from office365.migration.assessment.scanners.list import ListScanner
+import office365.migration.assessment.scanners.list
 from office365.migration.assessment.scanners.site import SiteScanner
 from office365.sharepoint.client_context import ClientContext
 from tests import test_team_site_url, test_user_credentials

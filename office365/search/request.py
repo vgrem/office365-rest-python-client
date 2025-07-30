@@ -68,6 +68,6 @@ class SearchRequest(ClientValue):
         self.sharePointOneDriveOptions = sharepoint_onedrive_options
 
     def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict:
-        json_value = super(SearchRequest, self).to_json(json_format)
+        json_value = super().to_json(json_format)
         json_value["from"] = json_value.pop("page_from", None)
         return json_value

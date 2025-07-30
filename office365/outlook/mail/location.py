@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.runtime.client_value import ClientValue
@@ -16,14 +18,14 @@ class Location(ClientValue):
 
     def __init__(
         self,
-        address=PhysicalAddress(),
-        coordinates=None,
-        display_name=None,
-        location_email_address=None,
-        location_type=None,
-        location_uri=None,
-        unique_id=None,
-        unique_id_type=None,
+        address: PhysicalAddress = PhysicalAddress(),
+        coordinates: List[OutlookGeoCoordinates] = None,
+        display_name: str = None,
+        location_email_address: str = None,
+        location_type: str = None,
+        location_uri: str = None,
+        unique_id: str = None,
+        unique_id_type: str = None,
     ):
         """
         :param PhysicalAddress address: The street address of the location.

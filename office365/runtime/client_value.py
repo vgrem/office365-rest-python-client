@@ -18,19 +18,16 @@ class ClientValue:
     def set_property(
         self, k: Union[str, int], v: Any, persist_changes: bool = True
     ) -> Self:
-        prop_type = getattr(self, k, None)
-        if isinstance(prop_type, ClientValue) and v is not None:
+        prop_val = getattr(self, k, None)
+        if isinstance(prop_val, ClientValue) and v is not None:
             if isinstance(v, list):
                 [
-                    prop_type.set_property(i, p_v, persist_changes)
+                    prop_val.set_property(i, p_v, persist_changes)
                     for i, p_v in enumerate(v)
                 ]
             else:
-                [
-                    prop_type.set_property(k, p_v, persist_changes)
-                    for k, p_v in v.items()
-                ]
-            setattr(self, k, prop_type)
+                [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
+            setattr(self, k, prop_val)
         else:
             setattr(self, k, v)
         return self
@@ -79,18 +76,22 @@ class ClientValue:
             elif isinstance(v, Enum):
                 json[n] = v.value
         if (
-            isinstance(json_format, JsonLightFormat)
+            json_format is not None
             and json_format.include_control_information
             and self.entity_type_name is not None
         ):
-            json[json_format.metadata_type] = {"type": self.entity_type_name}
+            if isinstance(json_format, JsonLightFormat):
+                json[json_format.metadata_type] = {"type": self.entity_type_name}
+            elif isinstance(json_format, ODataJsonFormat):
+                json[json_format.metadata_type] = "#" + self.entity_type_name
         return json
 
     @property
-    def entity_type_name(self) -> str:
+    def entity_type_name(self) -> Optional[str]:
         """The server-side type name for client value.
 
         Returns:
             Defaults to the class name
         """
-        return type(self).__name__
+        # return type(self).__name__
+        return None

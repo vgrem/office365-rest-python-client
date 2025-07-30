@@ -18302,6 +18302,11 @@ within the time frame of their original request."/>
             <Member Name="completedWithErrors" Value="3"/>
             <Member Name="unknownFutureValue" Value="4"/>
          </EnumType>
+         <EnumType Name="restoreJobType">
+            <Member Name="standard" Value="0"/>
+            <Member Name="bulk" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
+         </EnumType>
          <EnumType Name="restorePointPreference">
             <Member Name="latest" Value="0"/>
             <Member Name="oldest" Value="1"/>
@@ -23912,8 +23917,8 @@ within the time frame of their original request."/>
          <EntityType Name="userSettings" BaseType="graph.entity">
             <Property Name="contributionToContentDiscoveryAsOrganizationDisabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="contributionToContentDiscoveryDisabled" Type="Edm.Boolean" Nullable="false"/>
-            <NavigationProperty Name="itemInsights" Type="graph.userInsightsSettings" ContainsTarget="true"/>
             <NavigationProperty Name="windows" Type="Collection(graph.windowsSetting)" ContainsTarget="true"/>
+            <NavigationProperty Name="itemInsights" Type="graph.userInsightsSettings" ContainsTarget="true"/>
             <NavigationProperty Name="shiftPreferences" Type="graph.shiftPreferences" ContainsTarget="true"/>
             <NavigationProperty Name="storage" Type="graph.userStorage" ContainsTarget="true"/>
          </EntityType>
@@ -28082,6 +28087,12 @@ within the time frame of their original request."/>
             <Property Name="tags" Type="graph.restorePointTags"/>
             <NavigationProperty Name="protectionUnit" Type="graph.protectionUnitBase"/>
          </EntityType>
+         <ComplexType Name="restoreSessionArtifactCount">
+            <Property Name="completed" Type="Edm.Int32"/>
+            <Property Name="failed" Type="Edm.Int32"/>
+            <Property Name="inProgress" Type="Edm.Int32"/>
+            <Property Name="total" Type="Edm.Int32"/>
+         </ComplexType>
          <ComplexType Name="retentionSetting">
             <Property Name="interval" Type="Edm.String"/>
             <Property Name="period" Type="Edm.Duration"/>
@@ -28159,6 +28170,8 @@ within the time frame of their original request."/>
             <Property Name="error" Type="graph.publicError"/>
             <Property Name="lastModifiedBy" Type="graph.identitySet"/>
             <Property Name="lastModifiedDateTime" Type="Edm.DateTimeOffset"/>
+            <Property Name="restoreJobType" Type="graph.restoreJobType"/>
+            <Property Name="restoreSessionArtifactCount" Type="graph.restoreSessionArtifactCount"/>
             <Property Name="status" Type="graph.restoreSessionStatus"/>
          </EntityType>
          <EntityType Name="exchangeRestoreSession" BaseType="graph.restoreSessionBase">
@@ -28250,6 +28263,7 @@ within the time frame of their original request."/>
          <EntityType Name="mailboxRestoreArtifact" BaseType="graph.restoreArtifactBase">
             <Property Name="restoredFolderId" Type="Edm.String"/>
             <Property Name="restoredFolderName" Type="Edm.String"/>
+            <Property Name="restoredItemCount" Type="Edm.Int32"/>
          </EntityType>
          <EntityType Name="granularMailboxRestoreArtifact" BaseType="graph.mailboxRestoreArtifact">
             <Property Name="artifactCount" Type="Edm.Int32"/>
@@ -33645,14 +33659,14 @@ within the time frame of their original request."/>
             <Property Name="resourceVisualization" Type="graph.resourceVisualization"/>
             <NavigationProperty Name="resource" Type="graph.entity"/>
          </EntityType>
-         <EntityType Name="userInsightsSettings" BaseType="graph.entity">
-            <Property Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
-         </EntityType>
          <EntityType Name="windowsSetting" BaseType="graph.entity">
             <Property Name="payloadType" Type="Edm.String"/>
             <Property Name="settingType" Type="graph.windowsSettingType" Nullable="false"/>
             <Property Name="windowsDeviceId" Type="Edm.String"/>
             <NavigationProperty Name="instances" Type="Collection(graph.windowsSettingInstance)" ContainsTarget="true"/>
+         </EntityType>
+         <EntityType Name="userInsightsSettings" BaseType="graph.entity">
+            <Property Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
          </EntityType>
          <EntityType Name="changeTrackedEntity" BaseType="graph.entity" Abstract="true">
             <Property Name="createdBy" Type="graph.identitySet"/>

@@ -86,7 +86,7 @@ class SitePageService(Entity):
 
         return self.create_page(title).after_execute(_page_created)
 
-    def can_create_page(self):
+    def can_create_page(self) -> ClientResult[bool]:
         """
         Checks if the current user has permission to create a site page on the site pages document library.
         MUST return true if the user has permission to create a site page, otherwise MUST return false.
@@ -98,7 +98,7 @@ class SitePageService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def can_create_promoted_page(self):
+    def can_create_promoted_page(self) -> ClientResult[bool]:
         """
         Checks if the current user has permission to create a site page on the site pages document library.
         MUST return true if the user has permission to create a site page, otherwise MUST return false.

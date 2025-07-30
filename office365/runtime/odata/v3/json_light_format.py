@@ -6,7 +6,7 @@ class JsonLightFormat(ODataJsonFormat):
     """JSON Light format for SharePoint Online/One Drive for Business"""
 
     def __init__(self, metadata_level=ODataV3MetadataLevel.Verbose):
-        super(JsonLightFormat, self).__init__(metadata_level)
+        super().__init__(metadata_level)
         self.function = None
 
     @property

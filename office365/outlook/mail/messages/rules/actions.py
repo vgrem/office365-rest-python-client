@@ -1,3 +1,4 @@
+from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -15,11 +16,11 @@ class MessageRuleActions(ClientValue):
         forward_as_attachment_to=None,
         forward_to=None,
         mark_as_read=None,
-        mark_importance=None,
+        mark_importance: Importance = None,
         move_to_folder=None,
         permanent_delete=None,
         redirect_to=None,
-        stop_processing_rules=None,
+        stop_processing_rules: bool = None,
     ):
         """
         :param list[str] assign_categories: A list of categories to be assigned to a message.

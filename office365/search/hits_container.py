@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.search.aggregation import SearchAggregation
@@ -6,7 +8,11 @@ from office365.search.hit import SearchHit
 
 class SearchHitsContainer(ClientValue):
     def __init__(
-        self, hits=None, more_results_available=None, total=None, aggregations=None
+        self,
+        hits: List[SearchHit] = None,
+        more_results_available: bool = None,
+        total: int = None,
+        aggregations: List[SearchAggregation] = None,
     ):
         """
         Represent the list of search results.

@@ -31,7 +31,7 @@ class Contact(OutlookItem):
         return self
 
     @property
-    def business_phones(self):
+    def business_phones(self) -> StringCollection:
         """The contact's business phone numbers."""
         return self.properties.setdefault("businessPhones", StringCollection())
 
@@ -68,7 +68,7 @@ class Contact(OutlookItem):
         self.set_property("mobilePhone", value)
 
     @property
-    def home_address(self):
+    def home_address(self) -> PhysicalAddress:
         """The contact's home address."""
         return self.properties.get("homeAddress", PhysicalAddress())
 

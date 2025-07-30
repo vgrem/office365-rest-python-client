@@ -1,12 +1,23 @@
+from typing import Any
+
 from office365.entity_collection import EntityCollection
+from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
 
 
 class MessageRuleCollection(EntityCollection[MessageRule]):
-    def __init__(self, context, resource_path=None):
-        super(MessageRuleCollection, self).__init__(context, MessageRule, resource_path)
+    """ """
 
-    def add(self, display_name, sequence, actions, **kwargs):
+    def __init__(self, context, resource_path=None):
+        super().__init__(context, MessageRule, resource_path)
+
+    def add(
+        self,
+        display_name: str,
+        sequence: int,
+        actions: MessageRuleActions,
+        **kwargs: Any
+    ) -> MessageRule:
         """
         Create a messageRule object by specifying a set of conditions and actions.
         Outlook carries out those actions if an incoming message in the user's Inbox meets the specified conditions.
@@ -23,4 +34,4 @@ class MessageRuleCollection(EntityCollection[MessageRule]):
             "actions": actions.to_json(),
             **kwargs,
         }
-        return super(MessageRuleCollection, self).add(**props)
+        return super().add(**props)

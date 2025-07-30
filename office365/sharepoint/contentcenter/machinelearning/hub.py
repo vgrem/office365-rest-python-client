@@ -23,7 +23,7 @@ from office365.sharepoint.entity import Entity
 class SPMachineLearningHub(Entity):
     """ """
 
-    def get_by_content_type_id(self, content_type_id):
+    def get_by_content_type_id(self, content_type_id: str) -> SyntexModelsLandingInfo:
         """
         :param str content_type_id:
         """
@@ -87,7 +87,7 @@ class SPMachineLearningHub(Entity):
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
     @property
-    def machine_learning_enabled(self):
+    def machine_learning_enabled(self) -> SPMachineLearningEnabled:
         """ """
         return self.properties.get(
             "MachineLearningEnabled",
@@ -97,7 +97,7 @@ class SPMachineLearningHub(Entity):
         )
 
     @property
-    def models(self):
+    def models(self) -> SPMachineLearningModelCollection:
         """ """
         return self.properties.get(
             "Models",
@@ -107,7 +107,7 @@ class SPMachineLearningHub(Entity):
         )
 
     @property
-    def samples(self):
+    def samples(self) -> SPMachineLearningSampleCollection:
         """ """
         return self.properties.get(
             "Samples",

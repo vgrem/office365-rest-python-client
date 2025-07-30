@@ -12,7 +12,7 @@ class ListTemplateCollection(EntityCollection[ListTemplate]):
             context, ListTemplate, resource_path
         )
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> ListTemplate:
         """Returns the list template with the specified name.
         :param str name: The specified name.
         """

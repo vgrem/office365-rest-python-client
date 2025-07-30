@@ -3,13 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookReports(GraphTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestOutlookReports, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     @requires_delegated_permission("Reports.Read.All")
     def test1_get_email_activity_counts(self):

@@ -1,8 +1,8 @@
-class Importance:
-    """The importance of the message"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class Importance(Enum):
+    """The importance of the message"""
 
     low = "low"
 

@@ -12,8 +12,8 @@ from tests.graph_case import GraphTestCase
 class TestFolder(GraphTestCase):
     """OneDrive test case for a Folder"""
 
-    target_drive = None  # type: Drive
-    target_folder = None  # type: DriveItem
+    target_drive: Drive = None
+    target_folder: DriveItem = None
     target_folder_name = "Archive_" + uuid.uuid4().hex
 
     @classmethod

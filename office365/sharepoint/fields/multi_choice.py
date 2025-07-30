@@ -21,6 +21,6 @@ class FieldMultiChoice(Field):
         return self.properties.get("Mappings", None)
 
     @property
-    def choices(self):
+    def choices(self) -> StringCollection:
         """Specifies values that are available for selection in the field"""
         return self.properties.get("Choices", StringCollection())

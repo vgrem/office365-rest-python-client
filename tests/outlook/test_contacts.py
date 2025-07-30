@@ -4,7 +4,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookContacts(GraphTestCase):
-    target_contact = None  # type: Contact
+    target_contact: Contact = None
 
     @requires_delegated_permission("Contacts.ReadWrite")
     def test1_create_contact(self):

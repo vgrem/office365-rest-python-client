@@ -78,7 +78,7 @@ class ObjectSharingSettings(Entity):
         return self.properties.get("Roles", None)
 
     @property
-    def object_sharing_information(self):
+    def object_sharing_information(self) -> ObjectSharingInformation:
         """
         Contains information about the sharing state of a shareable object.
         """
@@ -91,7 +91,7 @@ class ObjectSharingSettings(Entity):
         )
 
     @property
-    def sharepoint_settings(self):
+    def sharepoint_settings(self) -> SharePointSharingSettings:
         """An object that contains the SharePoint UI specific sharing settings."""
         return self.properties.get(
             "SharePointSettings",
@@ -101,7 +101,7 @@ class ObjectSharingSettings(Entity):
         )
 
     @property
-    def sharing_permissions(self):
+    def sharing_permissions(self) -> SharingPermissionInformation:
         """A list of SharingPermissionInformation objects that can be used to share."""
         return self.properties.get(
             "SharingPermissions",

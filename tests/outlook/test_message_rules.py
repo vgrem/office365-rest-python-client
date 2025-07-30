@@ -1,3 +1,4 @@
+from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
 from office365.outlook.mail.recipient import Recipient
@@ -6,14 +7,14 @@ from tests.graph_case import GraphTestCase
 
 
 class TestMessageRules(GraphTestCase):
-    target_message_rule = None  # type: MessageRule
+    target_message_rule: MessageRule = None
 
     @requires_delegated_permission("MailboxSettings.ReadWrite")
     def test1_create_rule(self):
         actions = MessageRuleActions(
             forward_to=[Recipient.from_email("AlexW@contoso.com")],
             stop_processing_rules=True,
-            mark_importance="normal",
+            mark_importance=Importance.normal,
         )
         result = (
             self.client.me.mail_folders["inbox"]
@@ -33,7 +34,7 @@ class TestMessageRules(GraphTestCase):
     @requires_delegated_permission("MailboxSettings.ReadWrite")
     def test3_update_rule(self):
         rule = self.__class__.target_message_rule
-        rule.actions.markImportance = "high"
+        rule.actions.markImportance = Importance.high
         rule.update().execute_query()
 
     @requires_delegated_permission("MailboxSettings.Read", "MailboxSettings.ReadWrite")

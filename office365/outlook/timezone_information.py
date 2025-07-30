@@ -6,7 +6,7 @@ class TimeZoneInformation(ClientValue):
     time zone (also known as Olson time zone) format as well when the current known problem is fixed.
     """
 
-    def __init__(self, alias=None, display_name=None):
+    def __init__(self, alias: str = None, display_name: str = None):
         """
         :param str alias: An identifier for the time zone.
         :param str display_name: A display string that represents the time zone.

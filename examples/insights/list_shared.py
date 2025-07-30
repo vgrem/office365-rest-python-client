@@ -15,4 +15,4 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
 )
 result = client.me.insights.shared.get().execute_query()
 for item in result:
-    print("Resource url: {0}".format(item.resource_reference))
+    print(f"Resource url: {item.resource_reference}")

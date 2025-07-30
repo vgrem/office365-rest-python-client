@@ -8,7 +8,7 @@ class Folder(ClientValue):
     DriveItems with a non-null folder facet are containers for other DriveItems.
     """
 
-    def __init__(self, child_count=None, view=FolderView()):
+    def __init__(self, child_count: int = None, view=FolderView()):
         """
         :param int child_count: Number of children contained immediately within this container.
         :param FolderView view: A collection of properties defining the recommended view for the folder.

@@ -12,4 +12,4 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
 )
 result = client.me.insights.used.get().execute_query()
 for item in result:
-    print("Resource: {0}".format(item.resource_reference))
+    print(f"Resource: {item.resource_reference}")

@@ -13,7 +13,7 @@ class ClientRequestException(RequestException):
 
     def _get_error_info(self) -> Dict[str, Any]:
         """Extract and parse error info from response."""
-        if not getattr(self, "response", None):
+        if getattr(self, "response", None) is None:
             return {}
 
         content_type = (

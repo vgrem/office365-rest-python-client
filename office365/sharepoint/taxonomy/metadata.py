@@ -16,8 +16,8 @@ class TaxonomyMetadata(ClientValue):
         is_span_term_sets: bool = None,
         is_span_term_stores: bool = None,
         lcid: int = None,
-        ssp_list:str = None,
-        term_set_list:str = None,
+        ssp_list: str = None,
+        term_set_list: str = None,
     ):
         """
         :param str anchor_id:

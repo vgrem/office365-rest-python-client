@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value import ClientValue
@@ -20,7 +20,7 @@ from office365.sharepoint.translation.status_collection import (
 class SharePagePreviewByEmailFieldsData(ClientValue):
     """This class contains the information used by SharePagePreviewByEmail method"""
 
-    def __init__(self, message=None, recipient_emails=None):
+    def __init__(self, message: str = None, recipient_emails: List[str] = None):
         """
         :param str message:
         :param list[str] recipient_emails:

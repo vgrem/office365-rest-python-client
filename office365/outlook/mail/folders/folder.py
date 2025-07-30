@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -21,7 +23,7 @@ class MailFolder(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
-    def copy(self, destination_id: str) -> "MailFolder":
+    def copy(self, destination_id: str) -> MailFolder:
         """
         Copy a mailfolder and its contents to another mailfolder.
         :param str destination_id: The folder ID, or a well-known folder name. For a list of supported well-known folder
@@ -46,7 +48,7 @@ class MailFolder(Entity):
         self.messages.get_all(page_loaded=_empty)
         return self
 
-    def mark_all_items_as_read(self):
+    def mark_all_items_as_read(self) -> Self:
         """Marks all items in folder as read."""
 
         def _mark_all_items_as_read(col: MessageCollection) -> None:
@@ -55,7 +57,7 @@ class MailFolder(Entity):
         self.messages.get_all(1, page_loaded=_mark_all_items_as_read)
         return self
 
-    def mark_all_items_as_unread(self):
+    def mark_all_items_as_unread(self) -> Self:
         """Marks all items in folder as unread."""
 
         def _mark_all_items_as_unread(col: MessageCollection) -> None:
@@ -64,7 +66,7 @@ class MailFolder(Entity):
         self.messages.get_all(page_loaded=_mark_all_items_as_unread)
         return self
 
-    def permanent_delete(self):
+    def permanent_delete(self) -> Self:
         """Permanently delete a mail folder and remove its items from the user's mailbox."""
         qry = ServiceOperationQuery(self, "permanentDelete")
         self.context.add_query(qry)

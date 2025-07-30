@@ -18,7 +18,7 @@ class DateTimeTimeZone(ClientValue):
         self.timeZone = timezone
 
     def __repr__(self):
-        return "{0}, {1}".format(self.dateTime, self.timeZone)
+        return f"{self.dateTime}, {self.timeZone}"
 
     @staticmethod
     def parse(dt):

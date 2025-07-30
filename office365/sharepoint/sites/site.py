@@ -485,7 +485,7 @@ class Site(Entity):
         context.add_query(qry)
         return return_type
 
-    def is_deletable(self):
+    def is_deletable(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
 

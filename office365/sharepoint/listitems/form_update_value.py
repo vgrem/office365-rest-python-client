@@ -37,7 +37,7 @@ class ListItemFormUpdateValue(ClientValue):
             return "{0} update succeeded".format(self.FieldName)
 
     def to_json(self, json_format=None):
-        json = super(ListItemFormUpdateValue, self).to_json(json_format)
+        json = super().to_json(json_format)
         if isinstance(self.FieldValue, FieldLookupValue):
             json["FieldValue"] = (
                 "[{" + "'Key':'{0}'".format(self.FieldValue.LookupValue) + "}]"

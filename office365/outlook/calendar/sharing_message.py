@@ -8,7 +8,7 @@ class CalendarSharingMessage(Message):
     """"""
 
     @property
-    def sharing_message_action(self):
+    def sharing_message_action(self) -> CalendarSharingMessageAction:
         """"""
         return self.properties.setdefault(
             "sharingMessageAction", CalendarSharingMessageAction()
@@ -21,4 +21,4 @@ class CalendarSharingMessage(Message):
             }
             default_value = property_type_mapping.get(name, None)
 
-        return super(CalendarSharingMessage, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

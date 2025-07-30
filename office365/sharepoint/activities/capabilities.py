@@ -3,6 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class ActivityCapabilities(ClientValue):
     """ """
+
     def __init__(
         self,
         client_activities_enabled: bool = None,

@@ -9,13 +9,13 @@ class MailboxSettings(ClientValue):
 
     def __init__(
         self,
-        time_format=None,
-        time_zone=None,
-        automatic_replies_setting=AutomaticRepliesSetting(),
-        archive_folder=None,
-        date_format=None,
-        language=LocaleInfo(),
-        working_hours=WorkingHours(),
+        time_format: str = None,
+        time_zone: str = None,
+        automatic_replies_setting: AutomaticRepliesSetting = AutomaticRepliesSetting(),
+        archive_folder: str = None,
+        date_format: str = None,
+        language: LocaleInfo = LocaleInfo(),
+        working_hours: WorkingHours = WorkingHours(),
     ):
         """
         :param str time_format: The time format for the user's mailbox.

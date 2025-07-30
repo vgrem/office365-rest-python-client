@@ -181,7 +181,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_activity_file_counts(self, period):
+    def get_onedrive_activity_file_counts(self, period: str):
         """
         Get the number of unique, licensed users that performed file interactions against any OneDrive account.
 
@@ -193,7 +193,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_activity_user_counts(self, period):
+    def get_onedrive_activity_user_counts(self, period: str):
         """
         Get the trend in the number of active OneDrive users.
 
@@ -205,7 +205,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_activity_user_detail(self, period):
+    def get_onedrive_activity_user_detail(self, period: str):
         """
         Get details about OneDrive activity by user.
 
