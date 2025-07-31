@@ -17,8 +17,8 @@ class ListItemVersion(Entity):
     """Represents a version of a list item."""
 
     def __repr__(self):
-        return "Label: {0}, Url: {1}".format(
-            self.version_label, self.properties.get("FileRef", None)
+        return (
+            f"Label: {self.version_label}, Url: {self.properties.get('FileRef', None)}"
         )
 
     @property

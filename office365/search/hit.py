@@ -1,9 +1,14 @@
+from office365.entity import Entity
 from office365.runtime.client_value import ClientValue
 
 
 class SearchHit(ClientValue):
     def __init__(
-        self, content_source=None, summary=None, resource=None, result_template_id=None
+        self,
+        content_source: str = None,
+        summary: str = None,
+        resource: Entity = None,
+        result_template_id: str = None,
     ):
         """
         Represents a single result within the list of search results.

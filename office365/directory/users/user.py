@@ -66,6 +66,7 @@ from office365.outlook.mail.tips.tips import MailTips
 from office365.outlook.person import Person
 from office365.outlook.user import OutlookUser
 from office365.planner.user import PlannerUser
+from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
@@ -543,19 +544,19 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_managed_app_policies(self):
+    def get_managed_app_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets app restrictions for a given user."""
         return_type = EntityCollection(self.context, ManagedAppPolicy)
         qry = FunctionQuery(self, "getManagedAppPolicies", None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def delete_object(self, permanent_delete=False):
+    def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the user from directory
         :type permanent_delete: bool
         """
-        super(User, self).delete_object()
+        super().delete_object()
         if permanent_delete:
             deleted_user = self.context.directory.deleted_users[self.id]
             deleted_user.delete_object()
@@ -577,7 +578,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return result
 
-    def reprocess_license_assignment(self):
+    def reprocess_license_assignment(self) -> User:
         """
         Reprocess all group-based license assignments for the user. To learn more about group-based licensing,
         see What is group-based licensing in Azure Active Directory. Also see Identify and resolve license assignment
@@ -590,7 +591,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def remove_all_devices_from_management(self):
+    def remove_all_devices_from_management(self) -> Self:
         """
         Retire all devices from management for this user
         """
@@ -598,7 +599,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def wipe_managed_app_registrations_by_device_tag(self, device_tag):
+    def wipe_managed_app_registrations_by_device_tag(self, device_tag: str) -> Self:
         """
         Issues a wipe operation on an app registration with specified device tag.
         :param str device_tag: device tag
@@ -737,7 +738,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def business_phones(self):
+    def business_phones(self) -> StringCollection:
         """String collection	The telephone numbers for the user. NOTE: Although this is a string collection,
         only one number can be set for this property. Read-only for users synced from on-premises directory.
         """
@@ -752,7 +753,9 @@ class User(DirectoryObject):
         return self.properties.get("creationType", None)
 
     @property
-    def license_assignment_states(self):
+    def license_assignment_states(
+        self,
+    ) -> ClientValueCollection[LicenseAssignmentState]:
         """
         State of license assignments for this user. Also indicates licenses that are directly-assigned and those
         that the user has inherited through group memberships.
@@ -769,19 +772,19 @@ class User(DirectoryObject):
         return self.properties.get("mail", None)
 
     @property
-    def other_mails(self):
+    def other_mails(self) -> StringCollection:
         """A list of additional email addresses for the user;
         for example: ["bob@contoso.com", "Robert@fabrikam.com"]. Supports $filter.
         """
         return self.properties.get("otherMails", StringCollection())
 
     @property
-    def interests(self):
+    def interests(self) -> StringCollection:
         """A list for the user to describe their interests."""
         return self.properties.get("interests", StringCollection())
 
     @property
-    def identities(self):
+    def identities(self) -> ClientValueCollection[ObjectIdentity]:
         """Represents the identities that can be used to sign in to this user account.
         An identity can be provided by Microsoft (also known as a local account), by organizations,
         or by social identity providers such as Facebook, Google, and Microsoft, and tied to a user account.
@@ -808,7 +811,7 @@ class User(DirectoryObject):
         )
 
     @property
-    def followed_sites(self):
+    def followed_sites(self) -> EntityCollection[Site]:
         """ """
         return self.properties.get(
             "followedSites",

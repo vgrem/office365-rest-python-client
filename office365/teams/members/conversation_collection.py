@@ -1,14 +1,25 @@
+from __future__ import annotations
+
+from datetime import datetime
+from typing import TYPE_CHECKING, List, Union
+
 from office365.entity_collection import EntityCollection
 from office365.teams.members.conversation import ConversationMember
+
+if TYPE_CHECKING:
+    from office365.directory.users.user import User
 
 
 class ConversationMemberCollection(EntityCollection[ConversationMember]):
     def __init__(self, context, resource_path=None):
-        super(ConversationMemberCollection, self).__init__(
-            context, ConversationMember, resource_path
-        )
+        super().__init__(context, ConversationMember, resource_path)
 
-    def add(self, user, roles, visible_history_start_datetime=None):
+    def add(
+        self,
+        user: Union[str, User],
+        roles: List[str],
+        visible_history_start_datetime: datetime = None,
+    ):
         """
         Add a conversationMember.
 
@@ -19,15 +30,13 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         :param list[str] roles: The roles for that user.
         :param datetime.datetime visible_history_start_datetime:
         """
-        return_type = super(ConversationMemberCollection, self).add(roles=roles)
-        from office365.directory.users.user import User
+        return_type = super().add(roles=roles)
 
         if isinstance(user, User):
 
-            def _user_loaded():
-                return_type.set_property("userId", user.id)
-
-            user.ensure_property("id", _user_loaded)
+            user.ensure_property(
+                "id", lambda: return_type.set_property("userId", user.id)
+            )
         else:
             return_type.set_property("userId", user)
         return return_type

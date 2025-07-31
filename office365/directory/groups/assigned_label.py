@@ -9,3 +9,7 @@ class AssignedLabel(ClientValue):
     Compliance Center as part of Microsoft Purview Information Protection capabilities. For more information about
     sensitivity labels, see Sensitivity labels overview.
     """
+
+    def __init__(self, display_name: str = None, label_id: str = None):
+        self.displayName = display_name
+        self.labelId = label_id

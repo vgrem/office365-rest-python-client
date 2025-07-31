@@ -4,10 +4,10 @@ from office365.runtime.client_value import ClientValue
 class ListItemComplianceInfo(ClientValue):
     def __init__(
         self,
-        compliance_tag=None,
-        tag_policy_event_based=None,
-        tag_policy_hold=None,
-        tag_policy_record=None,
+        compliance_tag: str = None,
+        tag_policy_event_based: bool = None,
+        tag_policy_hold: bool = None,
+        tag_policy_record: bool = None,
     ):
         """
         :param str compliance_tag:

@@ -39,7 +39,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             parent: Parent object that owns this collection
         """
         super(ClientObjectCollection, self).__init__(context, resource_path)
-        self._data = []  # type: list[T]
+        self._data: list[T] = []
         self._item_type = item_type
         self._page_loaded = EventHandler(False)
         self._paged_mode = False
@@ -307,8 +307,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         # type: () -> Self
         """Submit a request to retrieve next collection of items"""
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.url = self._next_request_url
 
         return self.get().before_execute(_construct_request)
@@ -394,7 +393,5 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Get the OData type name for this collection."""
         if self._entity_type_name is None:
             client_object = self.create_typed_object()
-            self._entity_type_name = "Collection({0})".format(
-                client_object.entity_type_name
-            )
+            self._entity_type_name = f"Collection({client_object.entity_type_name})"
         return self._entity_type_name

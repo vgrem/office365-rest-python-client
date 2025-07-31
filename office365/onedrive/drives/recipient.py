@@ -7,7 +7,7 @@ class DriveRecipient(ClientValue):
     share with using the invite action.
     """
 
-    def __init__(self, alias=None, email=None, object_id=None):
+    def __init__(self, alias: str = None, email: str = None, object_id: str = None):
         """
         :param str alias: The alias of the domain object, for cases where an email address is unavailable
             (e.g. security groups).
@@ -20,7 +20,7 @@ class DriveRecipient(ClientValue):
         self.objectId = object_id
 
     @staticmethod
-    def from_email(value):
+    def from_email(value: str):
         """
         Creates Drive recipient from email address
         :type value: str

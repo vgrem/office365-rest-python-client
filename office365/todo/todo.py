@@ -7,8 +7,7 @@ class Todo(Entity):
     """Represents the To Do services available to a user."""
 
     @property
-    def lists(self):
-        # type: () -> TodoTaskListCollection
+    def lists(self) -> TodoTaskListCollection:
         """The task lists in the users mailbox."""
         return self.properties.get(
             "lists",

@@ -75,11 +75,6 @@ class GroupSiteManager(ClientObject):
     ):
         """
         Creates a modern site
-
-        :param str display_name:
-        :param str alias:
-        :param bool is_public:
-        :param office365.sharepoint.portal.group_creation_params.GroupCreationParams or None optional_params:
         """
         payload = GroupCreationInformation(
             display_name, alias, is_public, optional_params
@@ -206,7 +201,9 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels_with_site_url(self, site_url):
+    def get_team_channels_with_site_url(
+        self, site_url: str
+    ) -> ClientResult[ChannelInfoCollection]:
         """
         Returns a list of team channels associated with a Microsoft 365 Group.
         :param str site_url:
@@ -221,7 +218,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def notebook(self, group_id):
+    def notebook(self, group_id: str) -> ClientResult[str]:
         """
         :param str group_id:
         """

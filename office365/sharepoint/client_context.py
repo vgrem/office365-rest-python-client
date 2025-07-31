@@ -23,6 +23,7 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.utilities import get_absolute_url, urlparse
+from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
 from office365.sharepoint.portal.sites.status import SiteStatus
@@ -316,7 +317,9 @@ class ClientContext(ClientRuntimeContext):
         )
         return return_type
 
-    def create_team_site(self, alias: str, title: str, is_public: bool = True) -> Site:
+    def create_team_site(
+        self, alias: str, title: str, is_public: bool = True, owners: List[str] = None
+    ) -> Site:
         """Creates a modern SharePoint Team site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
@@ -331,9 +334,10 @@ class ClientContext(ClientRuntimeContext):
             elif result.value.SiteStatus == SiteStatus.Ready:
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
-        self.group_site_manager.create_group_ex(title, alias, is_public).after_execute(
-            _after_site_created
-        )
+        opt_params = GroupCreationParams(owners=owners)
+        self.group_site_manager.create_group_ex(
+            title, alias, is_public, opt_params
+        ).after_execute(_after_site_created)
         return return_type
 
     def create_communication_site(self, alias: str, title: str) -> Site:

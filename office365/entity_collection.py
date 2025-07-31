@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Optional, Type, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union, cast
 
 from typing_extensions import Self
 
@@ -16,11 +18,14 @@ if TYPE_CHECKING:
 class EntityCollection(ClientObjectCollection[T]):
     """A collection container which represents a named collections of entities"""
 
-    def __init__(self, context, item_type, resource_path=None, parent=None):
-        # type: (GraphClient, Type[T], Optional[ResourcePath], Optional[Entity]) -> None
-        super(EntityCollection, self).__init__(
-            context, item_type, resource_path, parent
-        )
+    def __init__(
+        self,
+        context: GraphClient,
+        item_type: Type[T],
+        resource_path: Optional[ResourcePath] = None,
+        parent: Optional[Entity] = None,
+    ) -> None:
+        super().__init__(context, item_type, resource_path, parent)
         self._delta_request_url = None
 
     def token(self, value: str) -> Self:
@@ -49,8 +54,7 @@ class EntityCollection(ClientObjectCollection[T]):
                 "Invalid key: expected either an entity index [int] or identifier [str]"
             )
 
-    def add(self, **kwargs):
-        # type: (Any) -> T
+    def add(self, **kwargs: Any) -> T:
         """Creates an entity and prepares the query"""
         return_type = self.create_typed_object(
             kwargs, EntityPath(None, self.resource_path)
@@ -60,23 +64,26 @@ class EntityCollection(ClientObjectCollection[T]):
         self.context.add_query(qry)
         return return_type
 
-    def create_typed_object(self, initial_properties=None, resource_path=None):
-        # type: (Optional[dict], Optional[ResourcePath]) -> T
+    def create_typed_object(
+        self,
+        initial_properties: Optional[Dict] = None,
+        resource_path: Optional[ResourcePath] = None,
+    ) -> T:
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super().create_typed_object(initial_properties, resource_path)
 
-    def set_property(self, key, value, persist_changes=False):
-        # type: (str | int, dict, bool) -> Self
+    def set_property(self, key: str, value: Any, persist_changes: bool = False) -> Self:
         if key == self.context.pending_request().json_format.collection_delta:
             self._delta_request_url = value
         else:
-            super(EntityCollection, self).set_property(key, value, persist_changes)
+            super().set_property(key, value, persist_changes)
         return self
 
     @property
-    def context(self):
-        # type: () -> GraphClient
-        return self._context
+    def context(self) -> GraphClient:
+        from office365.graph_client import GraphClient
+
+        if self._context is None:
+            raise ValueError("Graph client is not initialized")
+        return cast(GraphClient, self._context)

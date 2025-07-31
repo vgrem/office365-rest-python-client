@@ -19,7 +19,7 @@ class Directory(Entity):
     permanently deleted."""
 
     @property
-    def device_local_credentials(self):
+    def device_local_credentials(self) -> EntityCollection[DeviceLocalCredentialInfo]:
         """Conceptual container for user and group directory objects."""
         return self.properties.get(
             "deviceLocalCredentials",
@@ -66,7 +66,7 @@ class Directory(Entity):
         )
 
     @property
-    def subscriptions(self):
+    def subscriptions(self) -> EntityCollection[CompanySubscription]:
         """List of commercial subscriptions that an organization acquired."""
         return self.properties.get(
             "subscriptions",

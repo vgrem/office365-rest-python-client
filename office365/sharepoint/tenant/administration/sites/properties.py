@@ -17,6 +17,9 @@ from office365.sharepoint.internal.paths.static_operation import StaticOperation
 from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_status import (
     DenyAddAndCustomizePagesStatus,
 )
+from office365.sharepoint.tenant.administration.sharing_capabilities import (
+    SharingCapabilities,
+)
 from office365.sharepoint.tenant.administration.spo_operation import SpoOperation
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
@@ -192,7 +195,7 @@ class SiteProperties(Entity):
         return self.properties.get("LockState", None)
 
     @property
-    def sharing_capability(self) -> Optional[int]:
+    def sharing_capability(self) -> Optional[SharingCapabilities]:
         """
         Determines what level of sharing is available for the site.
 
@@ -204,10 +207,10 @@ class SiteProperties(Entity):
                  is disabled.
             - ExistingExternalUserSharingOnly - Only guests already in your organization's directory.
         """
-        return self.properties.get("SharingCapability", None)
+        return self.properties.get("SharingCapability", SharingCapabilities.None_)
 
     @sharing_capability.setter
-    def sharing_capability(self, value: int) -> None:
+    def sharing_capability(self, value: SharingCapabilities) -> None:
         """Sets the level of sharing for the site."""
         self.set_property("SharingCapability", value)
 
@@ -227,6 +230,7 @@ class SiteProperties(Entity):
                 "CreatedTime": self.created_time,
                 "DenyAddAndCustomizePages": self.deny_add_and_customize_pages,
                 "LastContentModifiedDate": self.last_content_modified_date,
+                "SharingCapability": self.sharing_capability,
             }
             default_value = property_mapping.get(name, None)
         return super(SiteProperties, self).get_property(name, default_value)

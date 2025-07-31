@@ -15,4 +15,4 @@ result = (
     client.reports.authentication_methods.user_registration_details.get().execute_query()
 )
 for details in result:
-    print("{0}: {1}".format(details.user_principal_name, details.is_mfa_registered))
+    print(f"{details.user_principal_name}: {details.is_mfa_registered}")

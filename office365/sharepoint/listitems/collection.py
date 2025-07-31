@@ -9,7 +9,7 @@ class ListItemCollection(EntityCollection[ListItem]):
     def __init__(self, context, resource_path=None):
         super(ListItemCollection, self).__init__(context, ListItem, resource_path)
 
-    def get_by_id(self, item_id):
+    def get_by_id(self, item_id: int) -> ListItem:
         """
         Returns the list item with the specified list item identifier.
 
@@ -19,7 +19,7 @@ class ListItemCollection(EntityCollection[ListItem]):
             self.context, ServiceOperationPath("GetById", [item_id], self.resource_path)
         )
 
-    def get_by_string_id(self, s_id):
+    def get_by_string_id(self, s_id: str) -> ListItem:
         """
         Returns the list item with either the specified list item identifier or the specified identifier
         for an instance of an external content type.
@@ -32,6 +32,6 @@ class ListItemCollection(EntityCollection[ListItem]):
             ServiceOperationPath("GetByStringId", {"sId": s_id}, self.resource_path),
         )
 
-    def get_by_url(self, url):
+    def get_by_url(self, url: str) -> ListItem:
         """Returns the list item with the specified site or server relative url."""
-        return self.single("FileRef eq '{0}'".format(url))
+        return self.single(f"FileRef eq '{url}'")

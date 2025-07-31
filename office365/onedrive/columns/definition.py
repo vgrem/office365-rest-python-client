@@ -81,7 +81,7 @@ class ColumnDefinition(BaseItem):
         return self.properties.get("calculated", CalculatedColumn())
 
     @property
-    def choice(self):
+    def choice(self) -> ChoiceColumn:
         """This column stores data from a list of choices."""
         return self.properties.get("choice", ChoiceColumn())
 

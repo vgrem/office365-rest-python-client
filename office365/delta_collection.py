@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import TYPE_CHECKING, Optional, Type
 
 from typing_extensions import Self
@@ -14,6 +15,14 @@ if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
+class ChangeType(Enum):
+    """"""
+
+    created = "0"
+    updated = "1"
+    deleted = "2"
+
+
 class DeltaCollection(EntityCollection[T]):
     """
     A specialized collection that tracks changes (deltas) to entities over time.
@@ -26,7 +35,7 @@ class DeltaCollection(EntityCollection[T]):
     Typical usage:
         >>> client = GraphClient()
         >>> inbox = client.me.mail_folders["Inbox"]
-        >>> changes = inbox.messages.delta.change_type("created").get().execute_query()
+        >>> changes = inbox.messages.delta.change_type(ChangeType.created).get().execute_query()
     """
 
     def __init__(
@@ -38,7 +47,7 @@ class DeltaCollection(EntityCollection[T]):
     ):
         super(DeltaCollection, self).__init__(context, item_type, resource_path, parent)
 
-    def change_type(self, type_name: str) -> Self:
+    def change_type(self, type_name: ChangeType) -> Self:
         """
         Filter the delta response to only include changes of the specified type.
 
@@ -53,7 +62,7 @@ class DeltaCollection(EntityCollection[T]):
         Returns:
             self: Supports method chaining
         """
-        self.query_options.custom["changeType"] = type_name
+        self.query_options.custom["changeType"] = type_name.name
         return self
 
     @property

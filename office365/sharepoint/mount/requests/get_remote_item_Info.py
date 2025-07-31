@@ -3,8 +3,8 @@ from office365.runtime.types.collections import StringCollection
 
 
 class GetRemoteItemInfoRequest(ClientValue):
-    def __init__(self, RemoteItemUniqueIds=None):
-        self.RemoteItemUniqueIds = StringCollection(RemoteItemUniqueIds)
+    def __init__(self, remote_item_unique_ids=None):
+        self.RemoteItemUniqueIds = StringCollection(remote_item_unique_ids)
 
     @property
     def entity_type_name(self):

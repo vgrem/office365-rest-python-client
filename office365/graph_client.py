@@ -78,6 +78,7 @@ from office365.teams.chats.collection import ChatCollection
 from office365.teams.collection import TeamCollection
 from office365.teams.template import TeamsTemplate
 from office365.teams.viva.employee_experience import EmployeeExperience
+from office365.teams.work import Teamwork
 
 
 class GraphClient(ClientRuntimeContext):
@@ -558,6 +559,11 @@ class GraphClient(ClientRuntimeContext):
     def schema_extensions(self) -> EntityCollection[SchemaExtension]:
         """Get a list of schemaExtension objects in your tenant"""
         return EntityCollection(self, SchemaExtension, ResourcePath("schemaExtensions"))
+
+    @property
+    def teamwork(self) -> Teamwork:
+        """A container for the range of Microsoft Teams functionalities that are available for the organization."""
+        return Teamwork(self, ResourcePath("teamwork"))
 
     @property
     def tenant_name(self) -> str:

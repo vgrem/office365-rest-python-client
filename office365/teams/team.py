@@ -47,12 +47,13 @@ class Team(Entity):
         self.context.execute_query()
         return self
 
-    def delete_object(self):
+    def delete_object(self, permanent_delete=False):
         """Deletes a team"""
 
         def _delete_object():
             group = self.context.groups[self.id]
-            group.delete_object(False)
+            self.context.groups.add_child(group)
+            group.delete_object(permanent_delete)
 
         self.ensure_property("id", _delete_object)
         return self

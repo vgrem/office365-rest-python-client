@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.count_collection import CountCollection
 from office365.directory.groups.group import Group
 from office365.directory.groups.profile import GroupProfile
@@ -26,19 +28,26 @@ class GroupCollection(CountCollection[Group]):
         return return_type
 
     def create_m365(
-        self, name: str, description: str = None, owner: str = None
+        self,
+        name: str,
+        description: str = None,
+        owners: List[str] = None,
+        members: List[str] = None,
     ) -> Group:
         """
         Creates a Microsoft 365 group.
         If the owners have not been specified, the calling user is automatically added as the owner of the group.
         :param str name: The display name for the group
         :param str description: An optional description for the group
-        :param str owner: The group owner
+        :param list[str] owners: The group owners
+        :param list[str] members: The group members
         """
-        params = GroupProfile(name, description, True, False, ["Unified"])
+        params = GroupProfile(
+            name, description, True, False, ["Unified"], owners, members
+        )
         return self.add(params)
 
-    def create_security(self, name, description=None) -> Group:
+    def create_security(self, name: str, description: str = None) -> Group:
         """
         Creates a Security group
         :param str name: The display name for the group

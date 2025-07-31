@@ -14,14 +14,12 @@ class TodoTaskList(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name of the task list."""
         return self.properties.get("displayName", None)
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the task list."""
         return self.properties.get(
             "extensions",
@@ -31,8 +29,7 @@ class TodoTaskList(Entity):
         )
 
     @property
-    def tasks(self):
-        # type: () -> EntityCollection[TodoTask]
+    def tasks(self) -> EntityCollection[TodoTask]:
         """The tasks in this task list."""
         return self.properties.get(
             "tasks",

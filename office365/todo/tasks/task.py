@@ -22,14 +22,12 @@ class TodoTask(Entity):
         return self.properties.get("body", ItemBody())
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """A brief description of the task."""
         return self.properties.get("title", None)
 
     @property
-    def attachments(self):
-        # type: () -> EntityCollection[AttachmentBase]
+    def attachments(self) -> EntityCollection[AttachmentBase]:
         """A collection of file attachments for the task."""
         return self.properties.get(
             "attachments",
@@ -41,8 +39,7 @@ class TodoTask(Entity):
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the task."""
         return self.properties.get(
             "extensions",
@@ -52,8 +49,7 @@ class TodoTask(Entity):
         )
 
     @property
-    def checklist_items(self):
-        # type: () -> EntityCollection[ChecklistItem]
+    def checklist_items(self) -> EntityCollection[ChecklistItem]:
         """A collection of checklistItems linked to a task."""
         return self.properties.get(
             "checklistItems",
@@ -65,8 +61,7 @@ class TodoTask(Entity):
         )
 
     @property
-    def linked_resources(self):
-        # type: () -> EntityCollection[LinkedResource]
+    def linked_resources(self) -> EntityCollection[LinkedResource]:
         """A collection of resources linked to the task."""
         return self.properties.get(
             "linkedResources",

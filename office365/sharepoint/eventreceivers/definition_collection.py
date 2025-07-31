@@ -17,7 +17,7 @@ class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition
             context, EventReceiverDefinition, resource_path, parent
         )
 
-    def get_by_id(self, event_receiver_id):
+    def get_by_id(self, event_receiver_id: str):
         """Returns the event receiver with the specified identifier.
 
         :param str event_receiver_id:  The identifier of the event receiver.

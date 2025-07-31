@@ -6,7 +6,7 @@ from tests.graph_case import GraphTestCase
 
 class TestSynchronization(GraphTestCase):
 
-    target_sp = None  # type: ServicePrincipal
+    target_sp: ServicePrincipal = None
 
     # "salesforce"
 

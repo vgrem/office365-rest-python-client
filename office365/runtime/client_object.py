@@ -31,7 +31,9 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[bool, int, float, str, bytes, Dict[str, Any], List[Any], ClientValue]
+PropertyT = Union[
+    bool, int, float, str, bytes, Enum, Dict[str, Any], List[Any], ClientValue
+]
 
 
 class ClientObject:
@@ -455,6 +457,8 @@ class ClientObject:
         for k, v in json.items():
             if isinstance(v, (ClientObject, ClientValue)):
                 json[k] = v.to_json(json_format)
+            elif isinstance(v, Enum):
+                json[k] = v.value  # type: ignore[assignment]
 
         if json and include_control_info:
             if isinstance(json_format, JsonLightFormat):

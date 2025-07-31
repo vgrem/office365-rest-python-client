@@ -15,7 +15,9 @@ from office365.runtime.queries.function import FunctionQuery
 class AuthenticationMethodsRoot(Entity):
     """Container for navigation properties for Azure AD authentication methods resources."""
 
-    def users_registered_by_feature(self):
+    def users_registered_by_feature(
+        self,
+    ) -> ClientResult[UserRegistrationFeatureSummary]:
         """Get the number of users capable of multi-factor authentication, self-service password reset,
         and passwordless authentication."""
         return_type = ClientResult(self.context, UserRegistrationFeatureSummary())
@@ -23,7 +25,7 @@ class AuthenticationMethodsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def users_registered_by_method(self):
+    def users_registered_by_method(self) -> ClientResult[UserRegistrationMethodSummary]:
         """Get the number of users registered for each authentication method."""
         return_type = ClientResult(self.context, UserRegistrationMethodSummary())
         qry = FunctionQuery(self, "usersRegisteredByMethod", None, return_type)
@@ -31,7 +33,7 @@ class AuthenticationMethodsRoot(Entity):
         return return_type
 
     @property
-    def user_registration_details(self):
+    def user_registration_details(self) -> EntityCollection[UserRegistrationDetails]:
         """Represents the state of a user's authentication methods, including which methods are registered and which
         features the user is registered and capable of (such as multi-factor authentication, self-service password
         reset, and passwordless authentication)."""

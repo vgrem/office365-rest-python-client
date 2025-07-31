@@ -6,6 +6,8 @@ from office365.onenote.entity_schema_object_model import OnenoteEntitySchemaObje
 
 
 class OnenoteEntityHierarchyModel(OnenoteEntitySchemaObjectModel):
+    """ """
+
     @property
     def display_name(self) -> Optional[str]:
         """The name of the section."""

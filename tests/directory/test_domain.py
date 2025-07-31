@@ -8,7 +8,7 @@ from tests import test_client_id, test_client_secret, test_tenant
 class TestDomain(TestCase):
     """Tests for Azure Active Directory (Azure AD) domains"""
 
-    target_domain = None  # type: Domain
+    target_domain: Domain = None
 
     @classmethod
     def setUpClass(cls):

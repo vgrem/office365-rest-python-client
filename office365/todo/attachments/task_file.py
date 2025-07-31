@@ -11,7 +11,6 @@ class TaskFileAttachment(AttachmentBase):
     """
 
     @property
-    def content_bytes(self):
-        # type: () -> Optional[AnyStr]
+    def content_bytes(self) -> Optional[bytes]:
         """The base64-encoded contents of the file."""
         return self.properties.get("contentBytes", None)

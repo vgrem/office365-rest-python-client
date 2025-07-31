@@ -1,5 +1,3 @@
-from typing import AnyStr
-
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.entity import Entity
 from office365.partners.partners import Partners
@@ -34,7 +32,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def managed_device_enrollment_failure_details(self):
+    def managed_device_enrollment_failure_details(self) -> ClientResult[Report]:
         """ """
         return_type = ClientResult(self.context, Report())
         qry = FunctionQuery(
@@ -43,7 +41,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def managed_device_enrollment_top_failures(self, period=None):
+    def managed_device_enrollment_top_failures(self, period: str = None):
         """
         Note: The Microsoft Graph API for Intune requires an active Intune license for the tenant.
         """
@@ -54,7 +52,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_email_activity_counts(self, period: str) -> ClientResult[str]:
+    def get_email_activity_counts(self, period: str) -> ClientResult[bytes]:
         """
         Enables you to understand the trends of email activity (like how many were sent, read, and received)
         in your organization.
@@ -63,7 +61,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(
             self, "getEmailActivityCounts", {"period": period}, return_type
         )
@@ -146,7 +144,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_m365_app_user_counts(self, period: str = None) -> ClientResult[Report]:
+    def get_m365_app_user_counts(self, period: str = None) -> ClientResult[bytes]:
         """
         Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel,
         PowerPoint, OneNote, and Teams) in your organization.
@@ -292,7 +290,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_teams_user_activity_user_counts(self, period):
+    def get_teams_user_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """Get the number of Microsoft Teams users by activity type. The activity types are number
         of teams chat messages, private chat messages, calls, or meetings.
 
@@ -339,7 +337,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_site_usage_site_counts(self, period):
+    def get_sharepoint_site_usage_site_counts(self, period: str):
         """
         Get the trend of total and active site count during the reporting period.
 
@@ -351,7 +349,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_teams_team_counts(self, period):
+    def get_teams_team_counts(self, period: str) -> ClientResult[bytes]:
         """
         Get the number of teams of a particular type in an instance of Microsoft Teams.
 
@@ -365,7 +363,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_teams_user_activity_counts(self, period: str) -> ClientResult[AnyStr]:
+    def get_teams_user_activity_counts(self, period: str) -> ClientResult[bytes]:
         """
         Get the number of Microsoft Teams activities by activity type.
         The activities are performed by Microsoft Teams licensed users.
@@ -377,7 +375,7 @@ class ReportRoot(Entity):
         return qry.return_type
 
     @property
-    def authentication_methods(self):
+    def authentication_methods(self) -> AuthenticationMethodsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""
         return self.properties.get(
             "authenticationMethods",
@@ -387,7 +385,7 @@ class ReportRoot(Entity):
         )
 
     @property
-    def partners(self):
+    def partners(self) -> Partners:
         """Represents billing details for a Microsoft direct partner."""
         return self.properties.get(
             "partners",
@@ -395,7 +393,7 @@ class ReportRoot(Entity):
         )
 
     @property
-    def security(self):
+    def security(self) -> SecurityReportsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""
         return self.properties.get(
             "security",

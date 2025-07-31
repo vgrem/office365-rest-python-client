@@ -10,13 +10,11 @@ class LinkedResource(Entity):
     """
 
     @property
-    def application_name(self):
-        # type: () -> Optional[str]
+    def application_name(self) -> Optional[str]:
         """Field indicating the app name of the source that is sending the linkedResource."""
         return self.properties.get("applicationName", None)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The title of the linkedResource."""
         return self.properties.get("displayName", None)

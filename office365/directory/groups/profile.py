@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,11 +7,13 @@ from office365.runtime.types.collections import StringCollection
 class GroupProfile(ClientValue):
     def __init__(
         self,
-        name,
-        description=None,
-        mail_enabled=False,
-        security_enabled=True,
-        group_types=None,
+        name: str,
+        description: str = None,
+        mail_enabled: bool = False,
+        security_enabled: bool = True,
+        group_types: List[str] = None,
+        owners: List[str] = None,
+        members: List[str] = None,
     ):
         """
         :param str name: The display name for the group
@@ -24,6 +28,6 @@ class GroupProfile(ClientValue):
         self.description = description
         self.mailEnabled = mail_enabled
         self.securityEnabled = security_enabled
-        self.owners = None
-        self.members = None
+        self.owners = owners
+        self.members = members
         self.groupTypes = StringCollection(group_types)
