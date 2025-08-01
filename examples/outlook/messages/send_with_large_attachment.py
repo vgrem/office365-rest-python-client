@@ -14,9 +14,8 @@ from tests import (
 )
 
 
-def print_progress(range_pos):
-    # type: (int) -> None
-    print("{0} bytes uploaded".format(range_pos))
+def print_progress(range_pos: int) -> None:
+    print(f"{range_pos} bytes uploaded")
 
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(

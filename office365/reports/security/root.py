@@ -29,7 +29,9 @@ class SecurityReportsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_attack_simulation_simulation_user_coverage(self):
+    def get_attack_simulation_simulation_user_coverage(
+        self,
+    ) -> ClientResult[ClientValueCollection[AttackSimulationSimulationUserCoverage]]:
         """
         List training coverage for each tenant user in attack simulation and training campaigns.
         """

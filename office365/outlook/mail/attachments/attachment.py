@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import IO, AnyStr, Optional
 
 from typing_extensions import Self
@@ -23,7 +23,7 @@ class Attachment(Entity):
         self.get_content().after_execute(_save_content)
         return self
 
-    def get_content(self) -> ClientResult[AnyStr]:
+    def get_content(self) -> ClientResult[bytes]:
         """Gets the raw contents of a file or item attachment"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
@@ -53,9 +53,9 @@ class Attachment(Entity):
         return self.properties.get("size", None)
 
     @property
-    def last_modified_datetime(self) -> Optional[datetime.datetime]:
+    def last_modified_datetime(self) -> Optional[datetime]:
         """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
-        return self.properties.get("lastModifiedDateTime", datetime.datetime.min)
+        return self.properties.get("lastModifiedDateTime", datetime.min)
 
     def get_property(self, name, default_value=None):
         if default_value is None:

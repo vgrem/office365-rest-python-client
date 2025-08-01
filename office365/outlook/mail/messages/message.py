@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import uuid
 from datetime import datetime
-from typing import IO, Any, AnyStr, List, Optional, Tuple, Union
+from typing import IO, Any, AnyStr, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
@@ -102,7 +102,9 @@ class Message(OutlookItem):
         self.attachments.add_file(name, content, content_type, base64_content)
         return self
 
-    def upload_attachment(self, file_path, chunk_uploaded=None):
+    def upload_attachment(
+        self, file_path: str, chunk_uploaded: Optional[Callable[[int], None]] = None
+    ):
         """
         This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
         if a file that's smaller than 3 MB, then add_file_attachment method is utilized
@@ -128,7 +130,7 @@ class Message(OutlookItem):
             )
         return self
 
-    def send(self):
+    def send(self) -> Self:
         """
         Send a message in the draft folder. The draft message can be a new message draft, reply draft, reply-all draft,
         or a forward draft. The message is then saved in the Sent Items folder.
@@ -137,7 +139,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def reply(self, comment=None):
+    def reply(self, comment: str = None) -> Message:
         """Reply to the sender of a message by specifying a comment and using the Reply method. The message is then
         saved in the Sent Items folder.
 
@@ -155,7 +157,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def create_reply(self, comment=None) -> Self:
+    def create_reply(self, comment=None) -> Message:
         """
         Create a draft to reply to the sender of a message in either JSON or MIME format.
 

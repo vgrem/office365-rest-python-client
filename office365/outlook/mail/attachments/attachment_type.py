@@ -1,6 +1,7 @@
-class AttachmentType:
-    def __init__(self):
-        pass
+from enum import Enum
+
+
+class AttachmentType(Enum):
 
     file = "file"
 

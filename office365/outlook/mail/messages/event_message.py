@@ -19,6 +19,6 @@ class EventMessage(Message):
         )
 
     @property
-    def patterned_recurrence(self):
+    def patterned_recurrence(self) -> PatternedRecurrence:
         """"""
         return self.properties.get("patternedRecurrence", PatternedRecurrence())

@@ -14,17 +14,17 @@ class MessageRule(Entity):
 
     @property
     @persist_property()
-    def actions(self):
+    def actions(self) -> MessageRuleActions:
         """Actions to be taken on a message when the corresponding conditions are fulfilled."""
         return self.properties.get("actions", MessageRuleActions())
 
     @property
-    def conditions(self):
+    def conditions(self) -> MessageRulePredicates:
         """Conditions that when fulfilled, will trigger the corresponding actions for that rule."""
         return self.properties.get("conditions", MessageRulePredicates())
 
     @property
-    def exceptions(self):
+    def exceptions(self) -> MessageRulePredicates:
         """Exception conditions for the rule."""
         return self.properties.get("exceptions", MessageRulePredicates())
 
