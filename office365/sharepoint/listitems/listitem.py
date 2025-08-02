@@ -22,6 +22,7 @@ from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.string_values import FieldStringValues
 from office365.sharepoint.fields.url_value import FieldUrlValue
+from office365.sharepoint.files.system_object_type import FileSystemObjectType
 from office365.sharepoint.likes.liked_by_information import LikedByInformation
 from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
@@ -558,9 +559,9 @@ class ListItem(SecurableObject):
         return self.properties.get("CommentsDisabled", None)
 
     @property
-    def file_system_object_type(self) -> Optional[str]:
+    def file_system_object_type(self) -> Optional[FileSystemObjectType]:
         """Gets a value that specifies whether the list item is a file or a list folder"""
-        return self.properties.get("FileSystemObjectType", None)
+        return self.properties.get("FileSystemObjectType", FileSystemObjectType.Invalid)
 
     @property
     def icon_overlay(self) -> Optional[str]:
@@ -593,7 +594,7 @@ class ListItem(SecurableObject):
         return self.properties.get("Client_Title", None)
 
     @property
-    def compliance_info(self):
+    def compliance_info(self) -> ListItemComplianceInfo:
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
     @property
@@ -602,7 +603,7 @@ class ListItem(SecurableObject):
         return self.properties.get("CommentsDisabledScope", None)
 
     @property
-    def get_dlp_policy_tip(self):
+    def get_dlp_policy_tip(self) -> DlpPolicyTip:
         """Gets the Data Loss Protection policy tip notification for this item."""
         return self.properties.get(
             "GetDlpPolicyTip",
@@ -612,7 +613,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def field_values_as_html(self):
+    def field_values_as_html(self) -> FieldStringValues:
         """Specifies the values for the list item as Hypertext Markup Language (HTML)."""
         return self.properties.get(
             "FieldValuesAsHtml",
@@ -662,6 +663,7 @@ class ListItem(SecurableObject):
                 "EffectiveBasePermissionsForUI": self.effective_base_permissions_for_ui,
                 "GetDlpPolicyTip": self.get_dlp_policy_tip,
                 "FieldValuesAsHtml": self.field_values_as_html,
+                "FileSystemObjectType": self.file_system_object_type,
                 "LikedByInformation": self.liked_by_information,
                 "ParentList": self.parent_list,
             }

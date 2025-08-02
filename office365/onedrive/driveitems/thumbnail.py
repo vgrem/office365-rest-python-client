@@ -8,7 +8,12 @@ class Thumbnail(ClientValue):
     """
 
     def __init__(
-        self, content=None, height=None, source_item_id=None, url=None, width=None
+        self,
+        content: str = None,
+        height: int = None,
+        source_item_id: str = None,
+        url: str = None,
+        width: int = None,
     ):
         """
         :param str content: The content stream for the thumbnail.

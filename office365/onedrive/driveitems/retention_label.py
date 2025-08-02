@@ -38,6 +38,11 @@ class ItemRetentionLabel(Entity):
         """The retention label on the document. Read-write."""
         return self.properties.get("name", None)
 
+    @name.setter
+    def name(self, value: str):
+        """Sets the retention label on the document"""
+        self.set_property("name", value)
+
     @property
     def retention_settings(self) -> RetentionLabelSettings:
         """The retention settings enforced on the item. Read-write."""

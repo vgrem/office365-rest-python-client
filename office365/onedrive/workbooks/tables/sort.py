@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.entity import Entity
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,7 +9,12 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WorkbookTableSort(Entity):
     """Manages sorting operations on Table objects."""
 
-    def apply(self, fields, match_case=None, method=None):
+    def apply(
+        self,
+        fields: List[WorkbookSortField],
+        match_case: bool = None,
+        method: str = None,
+    ):
         """Perform a sort operation.
 
         :param list[WorkbookSortField] fields: The list of conditions to sort on.

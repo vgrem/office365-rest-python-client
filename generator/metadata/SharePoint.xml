@@ -2611,6 +2611,7 @@
             <Property Name="SchemaXml" Type="Edm.String"/>
             <Property Name="ServerTemplateCanCreateFolders" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ShowHiddenFieldsInModernForm" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ShowOneTabOnly" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="TemplateFeatureId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="TemplateTypeId" Type="Edm.String"/>
             <Property Name="Title" Type="Edm.String"/>
@@ -11448,6 +11449,16 @@
                <Parameter Name="isPublic" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="optionalParams" Type="Microsoft.SharePoint.Portal.GroupCreationParams"/>
             </FunctionImport>
+            <FunctionImport Name="CreateTeamsForGroup" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Portal.GroupSiteManager"/>
+               <Parameter Name="groupId" Type="Edm.String"/>
+               <Parameter Name="teamTemplate" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateTeamsNavLink" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Portal.GroupSiteManager"/>
+               <Parameter Name="teamsLinkUrl" Type="Edm.String"/>
+               <Parameter Name="siteUrl" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="Delete" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Portal.GroupSiteManager"/>
                <Parameter Name="siteUrl" Type="Edm.String"/>
@@ -16062,7 +16073,6 @@
             <FunctionImport Name="AddSubFolder" IsBindable="true">
                <Parameter Name="this" Type="SP.Folder"/>
                <Parameter Name="leafName" Type="Edm.String"/>
-               <Parameter Name="updateParams" Type="SP.ListItemUpdateParameters"/>
             </FunctionImport>
             <FunctionImport Name="AddSubFolderUsingPath" IsBindable="true">
                <Parameter Name="this" Type="SP.Folder"/>
@@ -18184,6 +18194,9 @@
             <FunctionImport Name="GetAllDeletedPersonalSitesPropertiesAllVersions" ReturnType="Collection(Microsoft.Online.SharePoint.TenantAdministration.DeletedSiteProperties)" IsBindable="true" EntitySet="DeletedSitePropertiess">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="startIndex" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetArchivableContainerTypes" ReturnType="Collection(Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeStatus)" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
             </FunctionImport>
             <FunctionImport Name="GetBillingPolicyIdForApp" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -29167,6 +29180,12 @@
          <Annotations Target="SP.ApiData/CreateGroupForSite(Microsoft.SharePoint.Portal.GroupSiteManager, Edm.String, Edm.String, Edm.Boolean, Microsoft.SharePoint.Portal.GroupCreationParams)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/CreateTeamsForGroup(Microsoft.SharePoint.Portal.GroupSiteManager, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/CreateTeamsNavLink(Microsoft.SharePoint.Portal.GroupSiteManager, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/Delete(Microsoft.SharePoint.Portal.GroupSiteManager, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -39747,6 +39766,7 @@
          </ComplexType>
          <ComplexType Name="ReportDetails" BaseType="Microsoft.SharePoint.Administration.TenantAdmin.Copilot.BaseRawDataSources">
             <Property Name="Headers" Type="Collection(Edm.String)"/>
+            <Property Name="ReportDownloadUrl" Type="Edm.String"/>
             <Property Name="ReportRows" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.Copilot.ReportRow)"/>
          </ComplexType>
          <ComplexType Name="ReportRow">
@@ -41356,6 +41376,10 @@
             <Property Name="ResourceGroup" Type="Edm.String"/>
             <Property Name="SPContainerTypeBillingClassification" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="SPContainerTypeStatus">
+            <Property Name="ContainerTypeId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="IsArchivable" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="SPDataGovernanceInsightExportedReport">
             <Property Name="CreatedDateTime" Type="Edm.String"/>
             <Property Name="LabelName" Type="Edm.String"/>
@@ -41987,6 +42011,7 @@
             <Property Name="AllowEditing" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowEveryoneExceptExternalUsersClaimInPrivateSite" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowGuestUserShareToUsersNotInSiteCollection" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="AllowLegacyBrowserAuthProtocolsEnabledSetting" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowLimitedAccessOnUnmanagedDevices" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowOverrideForBlockUserInfoVisibility" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowSelectSecurityGroupsInSPSitesList" Type="Collection(Edm.String)"/>
@@ -44224,6 +44249,7 @@
             <Property Name="AllowEditing" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowEveryoneExceptExternalUsersClaimInPrivateSite" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowGuestUserShareToUsersNotInSiteCollection" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="AllowLegacyBrowserAuthProtocolsEnabledSetting" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowLimitedAccessOnUnmanagedDevices" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowOverrideForBlockUserInfoVisibility" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowSelectSecurityGroupsInSPSitesList" Type="Collection(Edm.String)"/>

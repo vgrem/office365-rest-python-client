@@ -127,7 +127,11 @@ class TestFile(GraphTestCase):
         result = self.__class__.target_file.extract_sensitivity_labels().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test_18_delete_file(self):
+    #def test_18_set_retention_label(self):
+    #    result = self.target_file.set_retention_label("Retention label for Contracts").execute_query()
+    #    self.assertIsNotNone(result.resource_path)
+
+    def test_19_delete_file(self):
         items = self.target_drive.root.children.top(2).get().execute_query()
         for item in items:
             item.delete_object().execute_query()

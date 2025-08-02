@@ -1,8 +1,8 @@
-class FileSystemObjectType:
-    """Specifies the file system object type."""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class FileSystemObjectType(Enum):
+    """Specifies the file system object type."""
 
     Invalid = -1
     """Enumeration whose values specify whether the object is invalid. The value = -1."""

@@ -39,6 +39,9 @@ from office365.onedrive.listitems.list_item import ListItem
 from office365.onedrive.operations.pending import PendingOperations
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.permissions.permission import Permission
+from office365.onedrive.sensitivitylabels.assignment_method import (
+    SensitivityLabelAssignmentMethod,
+)
 from office365.onedrive.sensitivitylabels.extract_result import (
     ExtractSensitivityLabelsResult,
 )
@@ -62,6 +65,41 @@ from office365.subscriptions.collection import SubscriptionCollection
 class DriveItem(BaseItem):
     """The driveItem resource represents a file, folder, or other item stored in a drive. All file system objects in
     OneDrive and SharePoint are returned as driveItem resources"""
+
+    def assign_sensitivity_label(
+        self,
+        sensitivity_label_id: str,
+        assignment_method: SensitivityLabelAssignmentMethod = None,
+        justification_text: str = None,
+    ):
+        """Asynchronously assign a sensitivity label to a driveItem.
+
+
+        :param justification_text: Justification text for audit purposes, and is required when downgrading/removing
+        a label.
+        :param sensitivity_label_id: Required. ID of the sensitivity label to be assigned, or empty string to remove
+        the sensitivity label.
+        :param assignment_method:  The assignment method of the label on the document. Indicates whether
+        the assignment of the label was done automatically, standard, or as a privileged operation
+        (the equivalent of an administrator operation).
+
+        """
+        payload = {
+            "sensitivityLabelId": sensitivity_label_id,
+            "assignmentMethod": assignment_method,
+            "justificationText": justification_text,
+        }
+        qry = ServiceOperationQuery(self, "assignSensitivityLabel", None, payload, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_retention_label(self, name: str):
+        """Apply (set) a retention label on a driveItem (files and folders). Retention labels
+        don't need to be published in a retention label policy to be applied using this method.
+        """
+        self.retention_label.name = name
+        self.retention_label.update()
+        return self
 
     def get_files(
         self, recursive: bool = False, page_size: Optional[int] = None
@@ -821,7 +859,7 @@ class DriveItem(BaseItem):
     @property
     def retention_label(self) -> ItemRetentionLabel:
         """Information about retention label and settings enforced on the driveItem."""
-        return self.properties.get(
+        return self.properties.setdefault(
             "retentionLabel",
             ItemRetentionLabel(
                 self.context, ResourcePath("retentionLabel", self.resource_path)
