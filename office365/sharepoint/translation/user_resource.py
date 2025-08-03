@@ -8,7 +8,7 @@ from office365.sharepoint.translation.resource_entry import SPResourceEntry
 class UserResource(Entity):
     """An object representing user-defined localizable resources."""
 
-    def get_value_for_ui_culture(self, culture_name):
+    def get_value_for_ui_culture(self, culture_name: str) -> ClientResult[str]:
         """
         Returns the value of the resource for the requested culture. This falls back to the value specified for
         the web's UI culture.
@@ -32,7 +32,9 @@ class UserResource(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def set_value_for_ui_culture(self, culture_name, value):
+    def set_value_for_ui_culture(
+        self, culture_name: str, value: str
+    ) -> ClientResult[str]:
         """
         Sets the value of the resource for the requested culture. This method throws an exception if the culture
         is not enabled for the web.

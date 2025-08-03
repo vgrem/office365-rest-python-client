@@ -34,7 +34,7 @@ class DlpPolicyTip(Entity):
         return self.properties.get("MatchedConditionDescriptions", StringCollection())
 
     @property
-    def override_options(self):
+    def override_options(self) -> Optional[int]:
         """The allowable options that someone can take to override policy matches."""
         return self.properties.get("OverrideOptions", None)
 

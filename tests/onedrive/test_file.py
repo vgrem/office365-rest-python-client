@@ -127,7 +127,7 @@ class TestFile(GraphTestCase):
         result = self.__class__.target_file.extract_sensitivity_labels().execute_query()
         self.assertIsNotNone(result.value)
 
-    #def test_18_set_retention_label(self):
+    # def test_18_set_retention_label(self):
     #    result = self.target_file.set_retention_label("Retention label for Contracts").execute_query()
     #    self.assertIsNotNone(result.resource_path)
 

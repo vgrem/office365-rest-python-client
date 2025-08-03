@@ -8,7 +8,7 @@ class ChatMessageInfo(Entity):
     """Represents a preview of a chatMessage resource. This object can only be fetched as part of a list of chats."""
 
     @property
-    def body(self):
+    def body(self) -> ItemBody:
         """
         Body of the chatMessage. This will still contain markers for @mentions and attachments even though the
         object does not return @mentions and attachments.
@@ -16,6 +16,6 @@ class ChatMessageInfo(Entity):
         return self.properties.get("body", ItemBody())
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Date time object representing the time at which message was created."""
         return self.properties.get("createdDateTime", datetime.min)

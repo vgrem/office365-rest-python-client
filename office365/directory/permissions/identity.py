@@ -5,7 +5,7 @@ class Identity(ClientValue):
     """The Identity resource represents an identity of an actor. For example, an actor can be a user, device,
     or application."""
 
-    def __init__(self, display_name=None, _id=None):
+    def __init__(self, display_name: str = None, _id: str = None):
         """
         :param str display_name: The display name of the identity. Note that this might not always be available or up
             to date. For example, if a user changes their display name, the API might show the new value in a future

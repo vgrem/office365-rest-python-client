@@ -42,14 +42,14 @@ class Group(Principal):
         """
         return_type = ClientResult(self.context, ClientValueCollection(PrincipalInfo))
 
-        def _group_loaded():
+        def _expand_to_principals():
             from office365.sharepoint.utilities.utility import Utility
 
             Utility.expand_groups_to_principals(
                 self.context, [self.login_name], max_count, return_type
             )
 
-        self.ensure_property("LoginName", _group_loaded)
+        self.ensure_property("LoginName", _expand_to_principals)
         return return_type
 
     def set_user_as_owner(self, user: Union[int, Principal]) -> Self:
@@ -126,7 +126,7 @@ class Group(Principal):
         return self.properties.get("RequestToJoinLeaveEmailSetting", None)
 
     @property
-    def owner(self):
+    def owner(self) -> Principal:
         """Specifies the owner of the group."""
         return self.properties.get(
             "Owner", Principal(self.context, ResourcePath("Owner", self.resource_path))

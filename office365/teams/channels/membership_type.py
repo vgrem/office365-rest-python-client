@@ -1,5 +1,10 @@
-class ChannelMembershipType:
+from enum import Enum
+
+
+class ChannelMembershipType(Enum):
     """The type of channel membership."""
+
+    invalid = "invalid"
 
     standard = "standard"
     """Channel inherits the list of members of the parent team."""

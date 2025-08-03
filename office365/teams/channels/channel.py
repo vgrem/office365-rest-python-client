@@ -9,6 +9,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
 from office365.teams.chats.messages.message import ChatMessage
@@ -116,14 +117,14 @@ class Channel(Entity):
         return self.properties.get("tenantId", None)
 
     @property
-    def membership_type(self) -> Optional[str]:
+    def membership_type(self) -> Optional[ChannelMembershipType]:
         """
         The type of the channel. Can be set during creation and can't be changed.
         The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
         Note that you must use the Prefer: include-unknown-enum-members request header to get the following value
         in this evolvable enum: shared.
         """
-        return self.properties.get("membershipType", None)
+        return self.properties.get("membershipType", ChannelMembershipType.invalid)
 
     @property
     def web_url(self) -> Optional[str]:

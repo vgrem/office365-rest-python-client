@@ -46,7 +46,28 @@ class InformationRightsManagementFileSettings(Entity):
     @property
     def allow_write_copy(self) -> Optional[bool]:
         """
-        Getsa value indicating whether or not the user can write on a copy of the downloaded document.
+        Gets value indicating whether or not the user can write on a copy of the downloaded document.
         True if write on a copy is allowed; otherwise, it is false. The default value is false.
         """
         return self.properties.get("AllowWriteCopy", None)
+
+    @property
+    def disable_document_browser_view(self) -> Optional[bool]:
+        """
+        Specifies whether to block the Office Add-in from showing this document. The default value is false.
+        """
+        return self.properties.get("DisableDocumentBrowserView", None)
+
+    @property
+    def document_access_expire_days(self) -> Optional[int]:
+        """
+        Specifies the number of days after which the downloaded document will expire.
+        """
+        return self.properties.get("DocumentAccessExpireDays", None)
+
+    @property
+    def enable_document_access_expire(self) -> Optional[bool]:
+        """
+        Specifies whether the downloaded document will expire.
+        """
+        return self.properties.get("EnableDocumentAccessExpire", None)

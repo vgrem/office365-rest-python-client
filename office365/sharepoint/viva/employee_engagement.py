@@ -10,12 +10,16 @@ from office365.sharepoint.viva.home import VivaHome
 
 
 class EmployeeEngagement(Entity):
+    """ """
+
     def __init__(self, context):
         super(EmployeeEngagement, self).__init__(
             context, ResourcePath("SP.EmployeeEngagement")
         )
 
-    def dashboard_content(self, override_language_code=None):
+    def dashboard_content(
+        self, override_language_code: str = None
+    ) -> ClientResult[str]:
         """
         :param str override_language_code:
         """
@@ -28,8 +32,8 @@ class EmployeeEngagement(Entity):
         return return_type
 
     def full_dashboard_content(
-        self, canvas_as_json=None, include_personalization_data=None
-    ):
+        self, canvas_as_json: bool = None, include_personalization_data: bool = None
+    ) -> ClientResult[DashboardConfiguration]:
         """
         :param bool canvas_as_json:
         :param bool include_personalization_data:
@@ -51,14 +55,14 @@ class EmployeeEngagement(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def viva_home(self):
+    def viva_home(self) -> VivaHome:
         return_type = VivaHome(self.context)
         qry = ServiceOperationQuery(self, "VivaHome", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def app_configuration(self):
+    def app_configuration(self) -> AppConfiguration:
         return self.properties.get(
             "AppConfiguration",
             AppConfiguration(
@@ -67,7 +71,7 @@ class EmployeeEngagement(Entity):
         )
 
     @property
-    def viva_connections_page(self):
+    def viva_connections_page(self) -> VivaConnectionsPage:
         return self.properties.get(
             "VivaConnectionsPage",
             VivaConnectionsPage(

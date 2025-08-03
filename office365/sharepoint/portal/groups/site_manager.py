@@ -158,7 +158,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return result
 
-    def get_current_user_shared_channel_member_groups(self):
+    def get_current_user_shared_channel_member_groups(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -172,7 +172,9 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels(self, team_id, use_staging_endpoint=False):
+    def get_team_channels(
+        self, team_id: str, use_staging_endpoint: bool = False
+    ) -> ClientResult[bytes]:
         """
         Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
 
@@ -187,7 +189,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels_direct(self, team_id):
+    def get_team_channels_direct(self, team_id: str) -> ClientResult[str]:
         """
         :param str team_id:
         """
@@ -234,7 +236,7 @@ class GroupSiteManager(ClientObject):
         include_teams=None,
         include_pinned=None,
         existing_joined_teams_data=None,
-    ):
+    ) -> ClientResult[RecentAndJoinedTeamsResponse]:
         """
         Retrieves a list of teams that a user has recently accessed or joined
 

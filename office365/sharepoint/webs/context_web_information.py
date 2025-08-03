@@ -7,7 +7,9 @@ from office365.runtime.client_value import ClientValue
 class ContextWebInformation(ClientValue):
     """Specifies metadata about a site."""
 
-    def __init__(self, form_digest_value=None, form_digest_timeout_secs=None):
+    def __init__(
+        self, form_digest_value: str = None, form_digest_timeout_secs: int = None
+    ):
         """
         :param str form_digest_value: An object that is inserted into a page and is used by a protocol server
              to validate client requests. The validation is specific to a user, site, and time period.

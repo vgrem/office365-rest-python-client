@@ -7,7 +7,7 @@ class InvitationCollection(EntityCollection[Invitation]):
     """Invitation's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(InvitationCollection, self).__init__(context, Invitation, resource_path)
+        super().__init__(context, Invitation, resource_path)
 
     def create(self, invited_user_email_address: str, invite_redirect_url: str = None):
         """

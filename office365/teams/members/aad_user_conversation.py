@@ -23,7 +23,5 @@ class AadUserConversationMember(ConversationMember):
     def to_json(self, json_format=None):
         return {
             "roles": self.roles,
-            "user@odata.bind": "https://graph.microsoft.com/v1.0/users/{0}".format(
-                self.user_id
-            ),
+            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{self.user_id}",
         }

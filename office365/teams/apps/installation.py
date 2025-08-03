@@ -11,7 +11,7 @@ class TeamsAppInstallation(Entity):
     """
 
     @property
-    def teams_app(self):
+    def teams_app(self) -> TeamsApp:
         """The app that is installed."""
         return self.properties.get(
             "teamsApp",
@@ -19,7 +19,7 @@ class TeamsAppInstallation(Entity):
         )
 
     @property
-    def teams_app_definition(self):
+    def teams_app_definition(self) -> TeamsAppDefinition:
         """The details of this version of the app."""
         return self.properties.get(
             "teamsAppDefinition",
@@ -35,4 +35,4 @@ class TeamsAppInstallation(Entity):
                 "teamsAppDefinition": self.teams_app_definition,
             }
             default_value = property_mapping.get(name, None)
-        return super(TeamsAppInstallation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

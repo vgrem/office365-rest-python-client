@@ -7,4 +7,4 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 f = ctx.site.features.add(
     KnownFeaturesList.DocId, False, FeatureDefinitionScope.Farm
 ).execute_query()
-print("Feature {0} has been activated.", f.display_name)
+print(f"Feature {f.display_name} has been activated.")

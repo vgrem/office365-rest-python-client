@@ -10,7 +10,7 @@ class UserScopeTeamsAppInstallation(TeamsAppInstallation):
     """
 
     @property
-    def chat(self):
+    def chat(self) -> Chat:
         """
         The chat between the user and Teams app.
         """

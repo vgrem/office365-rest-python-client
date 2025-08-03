@@ -17,11 +17,8 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.utilities import deprecated, get_absolute_url
 
 
-def _get_authorization_header(token):
-    # type: (Any) -> str
-    return "{token_type} {access_token}".format(
-        token_type=token.tokenType, access_token=token.accessToken
-    )
+def _get_authorization_header(token: Any) -> str:
+    return f"{token.tokenType} {token.accessToken}"
 
 
 class AuthenticationContext:
@@ -88,9 +85,7 @@ class AuthenticationContext:
                 private_key = f.read()
 
         def _acquire_token():
-            authority_url = "{0}/{1}".format(
-                get_login_authority(self._environment), tenant
-            )
+            authority_url = f"{get_login_authority(self._environment)}/{tenant}"
             credentials = {
                 "thumbprint": thumbprint,
                 "private_key": private_key,

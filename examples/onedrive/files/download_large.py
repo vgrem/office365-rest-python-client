@@ -13,9 +13,8 @@ from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
 
-def print_progress(offset):
-    # type: (int) -> None
-    print("Downloaded '{0}' bytes...".format(offset))
+def print_progress(offset: int) -> None:
+    print(f"Downloaded '{offset}' bytes...")
 
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(

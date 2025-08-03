@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -8,7 +10,7 @@ class AssignedLicense(ClientValue):
     of assignedLicense.
     """
 
-    def __init__(self, sku_id=None, disabled_plans=None):
+    def __init__(self, sku_id: str = None, disabled_plans: List[str] = None):
         """
         :param str sku_id: The unique identifier for the SKU.
         :param list[str] disabled_plans: A collection of the unique identifiers for plans that have been disabled.

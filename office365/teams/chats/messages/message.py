@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
@@ -8,6 +9,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.teams.channels.iIdentity import ChannelIdentity
+from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
 
 
@@ -38,6 +40,30 @@ class ChatMessage(Entity):
         If the message was sent in a channel, represents identity of the channel.
         """
         return self.properties.get("channelIdentity", ChannelIdentity())
+
+    @property
+    def chat_id(self) -> Optional[str]:
+        """
+        If the message was sent in a chat, represents the identity of the chat.
+        """
+        return self.properties.get("chatId", None)
+
+    @property
+    def created_datetime(self) -> datetime:
+        """Timestamp of when the chat message was created."""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def deleted_datetime(self) -> datetime:
+        """Read only. Timestamp at which the chat message was deleted, or null if not deleted."""
+        return self.properties.get("deletedDateTime", datetime.min)
+
+    @property
+    def event_detail(self) -> EventMessageDetail:
+        """If present, represents details of an event that happened in a chat, a channel, or a team,
+        for example, adding new members. For event messages, the messageType property will be set to systemEventMessage.
+        """
+        return self.properties.get("eventDetail", EventMessageDetail())
 
     @property
     def replies(self) -> EntityCollection[ChatMessage]:

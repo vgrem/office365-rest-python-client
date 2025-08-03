@@ -1,7 +1,10 @@
+from typing import Union
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.feature import Feature
+from office365.sharepoint.features.known_list import KnownFeaturesList
 
 
 class FeatureCollection(EntityCollection[Feature]):
@@ -12,7 +15,7 @@ class FeatureCollection(EntityCollection[Feature]):
 
     def add(
         self,
-        feature_id: str,
+        feature_id: Union[KnownFeaturesList, str],
         force: bool,
         featdef_scope: int,
         verify_if_activated: bool = False,
@@ -30,7 +33,11 @@ class FeatureCollection(EntityCollection[Feature]):
 
         def _create_query():
             payload = {
-                "featureId": feature_id,
+                "featureId": (
+                    feature_id.value
+                    if isinstance(feature_id, KnownFeaturesList)
+                    else feature_id
+                ),
                 "force": force,
                 "featdefScope": featdef_scope,
             }

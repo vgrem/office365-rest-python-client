@@ -17,9 +17,9 @@ from tests import (
     test_tenant,
 )
 
-#admin_client = ClientContext(test_admin_site_url).with_client_certificate(
+# admin_client = ClientContext(test_admin_site_url).with_client_certificate(
 #    test_tenant, test_client_id, test_cert_thumbprint, "../../selfsignkey.pem"
-#)
+# )
 
 admin_client = ClientContext(test_admin_site_url).with_credentials(
     test_admin_credentials

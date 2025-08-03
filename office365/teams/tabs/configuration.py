@@ -8,7 +8,11 @@ class TeamsTabConfiguration(ClientValue):
     """
 
     def __init__(
-        self, content_url=None, entity_id=None, remove_url=None, website_url=None
+        self,
+        content_url: str = None,
+        entity_id: str = None,
+        remove_url: str = None,
+        website_url: str = None,
     ):
         """
         :param str content_url: Url used for rendering tab contents in Teams.

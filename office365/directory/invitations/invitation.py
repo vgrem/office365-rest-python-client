@@ -38,7 +38,7 @@ class Invitation(Entity):
         return self.properties.get("invitedUserEmailAddress", None)
 
     @property
-    def invited_user_message_info(self):
+    def invited_user_message_info(self) -> InvitedUserMessageInfo:
         """"""
         return self.properties.get("invitedUserMessageInfo", InvitedUserMessageInfo())
 

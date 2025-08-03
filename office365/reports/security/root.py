@@ -16,7 +16,9 @@ class SecurityReportsRoot(Entity):
     provides the ability to launch a realistic simulated phishing attack that organizations can learn from.
     """
 
-    def get_attack_simulation_repeat_offenders(self):
+    def get_attack_simulation_repeat_offenders(
+        self,
+    ) -> ClientResult[ClientValueCollection[AttackSimulationRepeatOffender]]:
         """
         List the tenant users who have yielded to attacks more than once in attack simulation and training campaigns.
         """

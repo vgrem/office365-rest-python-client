@@ -3,6 +3,7 @@ Get a set of messages that have been added in a specified folder.
 
 The example is adapted from https://learn.microsoft.com/en-us/graph/api/message-delta?view=graph-rest-1.0
 """
+
 from office365.delta_collection import ChangeType
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username

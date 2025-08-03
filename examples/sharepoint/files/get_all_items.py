@@ -17,10 +17,6 @@ items = (
 )
 for idx, item in enumerate(items):  # type: int, ListItem
     if item.file_system_object_type == FileSystemObjectType.Folder:
-        print(
-            f"({idx} of {len(items)})  Folder: {item.folder.server_relative_url}"
-        )
+        print(f"({idx} of {len(items)})  Folder: {item.folder.server_relative_url}")
     else:
-        print(
-            f"({idx} of {len(items)}) File: {item.file.server_relative_url}"
-        )
+        print(f"({idx} of {len(items)}) File: {item.file.server_relative_url}")
