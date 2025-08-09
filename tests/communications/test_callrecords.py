@@ -7,7 +7,7 @@ class TestCallRecord(GraphTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestCallRecord, cls).setUpClass()
+        super().setUpClass()
         cls.app_client = GraphClient(tenant=test_tenant).with_client_secret(
             test_client_id, test_client_secret
         )

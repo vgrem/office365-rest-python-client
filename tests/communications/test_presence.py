@@ -5,14 +5,6 @@ from tests.graph_case import GraphTestCase
 class TestPresence(GraphTestCase):
     target_presence: Presence = None
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestPresence, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def test1_get_my_presence(self):
         result = self.client.me.presence.get().execute_query()
         self.assertIsNotNone(result.resource_path)

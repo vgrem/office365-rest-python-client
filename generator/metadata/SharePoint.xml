@@ -371,6 +371,48 @@
          <ComplexType Name="SiteTemplate">
             <Property Name="Name" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="AgreementsSolutionFileContext">
+            <Property Name="CategoryId" Type="Edm.String"/>
+            <Property Name="CategoryTermSetId" Type="Edm.String"/>
+            <Property Name="CheckOutType" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="CurrentVersion" Type="Edm.String"/>
+            <Property Name="DoesUserHaveEditPermissionOnParent" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="EffectiveBasePermissions" Type="SP.EffectiveBasePermissions"/>
+            <Property Name="FieldLibrary" Type="SP.LibraryDetails"/>
+            <Property Name="FileProperties" Type="Collection(SP.KeyValue)"/>
+            <Property Name="FileRelativePath" Type="Edm.String"/>
+            <Property Name="FolderPathFullUrl" Type="Edm.String"/>
+            <Property Name="IsAgreementsSolutionFile" Type="Edm.Boolean"/>
+            <Property Name="LastPublishedVersion" Type="Edm.String"/>
+            <Property Name="ListId" Type="Edm.String"/>
+            <Property Name="ListItemId" Type="Edm.String"/>
+            <Property Name="ListItemProperties" Type="Collection(SP.KeyValue)"/>
+            <Property Name="ListItemUniqueId" Type="Edm.String"/>
+            <Property Name="ModernTemplateLibrary" Type="SP.LibraryDetails"/>
+            <Property Name="ParentLibrary" Type="SP.LibraryDetails"/>
+            <Property Name="SiteId" Type="Edm.String"/>
+            <Property Name="SnippetLibrary" Type="SP.LibraryDetails"/>
+            <Property Name="TargetLibrary" Type="SP.DestinationLibraryInfo"/>
+            <Property Name="WebId" Type="Edm.String"/>
+            <Property Name="WebServerRelativeUrl" Type="Edm.String"/>
+            <Property Name="WebUrl" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="EffectiveBasePermissions">
+            <Property Name="High" Type="Edm.String"/>
+            <Property Name="Low" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="LibraryDetails">
+            <Property Name="BaseTemplateType" Type="Edm.Int32"/>
+            <Property Name="IsApprovalsEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ListId" Type="Edm.String"/>
+            <Property Name="ListItemEntityTypeFullName" Type="Edm.String"/>
+            <Property Name="ListName" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="DestinationLibraryInfo">
+            <Property Name="LibraryId" Type="Edm.String"/>
+            <Property Name="SiteId" Type="Edm.String"/>
+            <Property Name="WebId" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="AgreementSummaryData" BaseType="SP.AgreementReportBaseData">
             <Property Name="ByCategory" Type="Collection(SP.AgreementDataPair)"/>
             <Property Name="ByExpirationYear" Type="Collection(SP.AgreementDataPair)"/>
@@ -4898,6 +4940,7 @@
             <End Type="SP.AppPrincipalIdentityProvider" Role="ExternalPartner" Multiplicity="0..1"/>
          </Association>
          <EntityContainer Name="ApiData">
+            <EntitySet Name="AddNoLiveBlobsInOdcServiceStateApis" EntityType="Microsoft.SharePoint.Convergence.AddNoLiveBlobsInOdcServiceStateApi"/>
             <EntitySet Name="Announcements" EntityType="SP.Publishing.AnnouncementsController"/>
             <EntitySet Name="Apps" EntityType="Microsoft.AppServices.AppCollection"/>
             <EntitySet Name="BrandCenters" EntityType="SP.BrandCenter"/>
@@ -5568,6 +5611,7 @@
             <EntitySet Name="UserSettingsManagers" EntityType="SP.WorkManagement.OM.UserSettingsManager"/>
             <EntitySet Name="ViewSelectionInfos" EntityType="SP.WorkManagement.OM.ViewSelectionInfo"/>
             <EntitySet Name="SPOIdentityHelpers" EntityType="SPO.Identity.SPOIdentityHelper"/>
+            <FunctionImport Name="AddNoLiveBlobsInOdcServiceStateApi" ReturnType="Microsoft.SharePoint.Convergence.AddNoLiveBlobsInOdcServiceStateApi" IsComposable="true" EntitySet="AddNoLiveBlobsInOdcServiceStateApis"/>
             <FunctionImport Name="Announcements" ReturnType="SP.Publishing.AnnouncementsController" IsComposable="true" EntitySet="Announcements"/>
             <FunctionImport Name="Apps" ReturnType="Microsoft.AppServices.AppCollection" IsComposable="true" EntitySet="Apps"/>
             <FunctionImport Name="BrandCenter" ReturnType="SP.BrandCenter" IsComposable="true" EntitySet="BrandCenters"/>
@@ -9205,6 +9249,10 @@
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
                <Parameter Name="transpileContent" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
                <Parameter Name="audienceId" Type="Edm.String"/>
@@ -9511,6 +9559,10 @@
                <Parameter Name="subject" Type="Edm.String"/>
                <Parameter Name="sensitivityLabelId" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.FeedVideoPage"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.FeedVideoPage"/>
                <Parameter Name="audienceId" Type="Edm.String"/>
@@ -9786,6 +9838,10 @@
                <Parameter Name="subject" Type="Edm.String"/>
                <Parameter Name="sensitivityLabelId" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.RepostPage"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.RepostPage"/>
                <Parameter Name="audienceId" Type="Edm.String"/>
@@ -10038,6 +10094,10 @@
                <Parameter Name="subject" Type="Edm.String"/>
                <Parameter Name="sensitivityLabelId" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.SitePage3D"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.SitePage3D"/>
                <Parameter Name="audienceId" Type="Edm.String"/>
@@ -10267,6 +10327,10 @@
                <Parameter Name="transpileContent" Type="Edm.String"/>
                <Parameter Name="subject" Type="Edm.String"/>
                <Parameter Name="sensitivityLabelId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.SitePage"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
             </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.SitePage"/>
@@ -10544,6 +10608,10 @@
                <Parameter Name="subject" Type="Edm.String"/>
                <Parameter Name="sensitivityLabelId" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SendTestEmailStream" ReturnType="SP.Publishing.SendTestEmailResponse" IsBindable="true">
+               <Parameter Name="this" Type="SP.Publishing.TopicSitePage"/>
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="SendTestTeamsMessage" ReturnType="SP.Publishing.SendTestTeamsMessageResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.TopicSitePage"/>
                <Parameter Name="audienceId" Type="Edm.String"/>
@@ -10707,6 +10775,10 @@
             <FunctionImport Name="GetAssociationsByCampaignId" ReturnType="Collection(Microsoft.SharePoint.Publishing.Campaigns.Models.CampaignAssociation)" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign)"/>
                <Parameter Name="campaignId" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetByAssociatedPublicationId" ReturnType="Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign)" IsComposable="true" IsBindable="true" EntitySet="Campaigns">
+               <Parameter Name="this" Type="Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign)"/>
+               <Parameter Name="publicationId" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="GetById" ReturnType="Microsoft.SharePoint.Publishing.Campaigns.Campaign" IsComposable="true" IsBindable="true" EntitySet="Campaigns">
                <Parameter Name="this" Type="Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign)"/>
@@ -11318,6 +11390,9 @@
                <Parameter Name="sqlCommandText" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="GetServiceInfo" ReturnType="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveServiceInfo" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+            </FunctionImport>
+            <FunctionImport Name="GetSiteMoveState" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
             <FunctionImport Name="GetSiteProperties" ReturnType="Edm.String" IsBindable="true">
@@ -12804,6 +12879,10 @@
                <Parameter Name="orderBy" Type="Edm.String"/>
                <Parameter Name="skipToken" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="Microsoft_SharePoint_Convergence_AddNoLiveBlobsInOdcServiceStateApi" ReturnType="Microsoft.SharePoint.Convergence.AddNoLiveBlobsInOdcServiceStateApi" IsComposable="true" EntitySet="AddNoLiveBlobsInOdcServiceStateApis"/>
+            <FunctionImport Name="AddState" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Convergence.AddNoLiveBlobsInOdcServiceStateApi"/>
+            </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_Convergence_ConsumerPermissions" ReturnType="Microsoft.SharePoint.Convergence.ConsumerPermissions" IsComposable="true" EntitySet="ConsumerPermissions"/>
             <FunctionImport Name="GrantConsumerSitePermissions" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Convergence.ConsumerPermissions"/>
@@ -13853,6 +13932,10 @@
             <FunctionImport Name="SetListCustomOrderFlag" IsBindable="true">
                <Parameter Name="this" Type="SP.List"/>
                <Parameter Name="value" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SetQuickstepOrdering" IsBindable="true">
+               <Parameter Name="this" Type="SP.List"/>
+               <Parameter Name="quickstepIds" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="StartDeleteFileVersions" IsBindable="true">
                <Parameter Name="this" Type="SP.List"/>
@@ -16073,6 +16156,7 @@
             <FunctionImport Name="AddSubFolder" IsBindable="true">
                <Parameter Name="this" Type="SP.Folder"/>
                <Parameter Name="leafName" Type="Edm.String"/>
+               <Parameter Name="updateParams" Type="SP.ListItemUpdateParameters"/>
             </FunctionImport>
             <FunctionImport Name="AddSubFolderUsingPath" IsBindable="true">
                <Parameter Name="this" Type="SP.Folder"/>
@@ -28151,6 +28235,9 @@
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.CampaignPublication, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.CampaignPublication, Edm.Stream)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.CampaignPublication, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -28397,6 +28484,9 @@
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.FeedVideoPage, Edm.String, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.FeedVideoPage, Edm.Stream)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.FeedVideoPage, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -28556,6 +28646,9 @@
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.RepostPage, Edm.String, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.RepostPage, Edm.Stream)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.RepostPage, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -28695,6 +28788,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.SitePage3D, Edm.String, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.SitePage3D, Edm.Stream)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.SitePage3D, Edm.String, Edm.String)">
@@ -28872,6 +28968,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.SitePage, Edm.String, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.SitePage, Edm.Stream)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.SitePage, Edm.String, Edm.String)">
@@ -29072,6 +29171,9 @@
          <Annotations Target="SP.ApiData/SendTestEmail(SP.Publishing.TopicSitePage, Edm.String, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SendTestEmailStream(SP.Publishing.TopicSitePage, Edm.Stream)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SendTestTeamsMessage(SP.Publishing.TopicSitePage, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29121,6 +29223,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/GetAssociationsByCampaignId(Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign), Edm.Int32)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetByAssociatedPublicationId(Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign), Edm.Int32)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/GetById(Collection(Microsoft.SharePoint.Publishing.Campaigns.Campaign), Edm.Int32)">
@@ -30057,6 +30162,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetListCustomOrderFlag(SP.List, Edm.Boolean)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SetQuickstepOrdering(SP.List, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/StartDeleteFileVersions(SP.List, Edm.Int32)">
@@ -35533,7 +35641,10 @@
             <Property Name="WebId" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="SharePointPublishingStatus">
+            <Property Name="DestinationPageId" Type="Edm.String"/>
+            <Property Name="DestinationPageUniqueId" Type="Edm.String"/>
             <Property Name="DestinationPageURL" Type="Edm.String"/>
+            <Property Name="DestinationPageVersion" Type="Edm.String"/>
             <Property Name="ErrorCode" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Status" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
@@ -36752,6 +36863,7 @@
             <Property Name="NewPageId" Type="Edm.Int32" Nullable="false"/>
             <Property Name="NewPageUniqueId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="NewPageUrl" Type="Edm.String"/>
+            <Property Name="NewPageVersion" Type="Edm.String"/>
             <Property Name="TotalAssetsToCopy" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Warnings" Type="Collection(Microsoft.SharePoint.Publishing.PageCopyWithAssets.PageDeepCopyWarning)"/>
             <Property Name="WorkItemId" Type="Edm.Guid" Nullable="false"/>
@@ -36824,9 +36936,9 @@
          <ComplexType Name="PublicationMetadata">
             <Property Name="AmplifiedChannels" Type="SP.Publishing.AmplifiedChannels"/>
             <Property Name="BannerImageUrl" Type="Edm.String"/>
-            <Property Name="CreationDate" Type="Edm.String"/>
+            <Property Name="CreationDate" Type="Edm.DateTime"/>
             <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
-            <Property Name="ModifiedDate" Type="Edm.String"/>
+            <Property Name="ModifiedDate" Type="Edm.DateTime"/>
             <Property Name="Status" Type="Edm.String"/>
             <Property Name="Title" Type="Edm.String"/>
             <Property Name="Url" Type="Edm.String"/>
@@ -43640,6 +43752,7 @@
             </Key>
             <Property Name="uniqueId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="color" Type="Edm.String" Nullable="false"/>
+            <Property Name="creationDate" Type="Edm.DateTime"/>
             <Property Name="description" Type="Edm.String"/>
             <Property Name="id" Type="Edm.Int32" Nullable="false"/>
             <Property Name="logo" Type="Edm.String"/>
@@ -44174,6 +44287,12 @@
          </EntityType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Convergence">
+         <EntityType Name="AddNoLiveBlobsInOdcServiceStateApi">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
          <EntityType Name="ConsumerPermissions">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>

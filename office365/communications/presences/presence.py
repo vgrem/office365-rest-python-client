@@ -1,4 +1,7 @@
+from datetime import datetime
 from typing import Optional
+
+from typing_extensions import Self
 
 from office365.communications.presences.status_message import PresenceStatusMessage
 from office365.entity import Entity
@@ -10,7 +13,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
-    def clear_presence(self, session_id: str = None):
+    def clear_presence(self, session_id: str = None) -> Self:
         """
         Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
@@ -22,7 +25,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def clear_user_preferred_presence(self):
+    def clear_user_preferred_presence(self) -> Self:
         """
         Clear the preferred availability and activity status for a user.
         """
@@ -31,7 +34,11 @@ class Presence(Entity):
         return self
 
     def set_presence(
-        self, session_id, availability=None, activity=None, expiration_duration=None
+        self,
+        session_id: str,
+        availability: str = None,
+        activity: str = None,
+        expiration_duration: str = None,
     ):
         """
         Set the state of a user's presence session as an application.
@@ -53,11 +60,11 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_status_message(self, message, expiry=None):
+    def set_status_message(self, message: str, expiry: datetime = None):
         """
         Set a presence status message for a user. An optional expiration date and time can be supplied.
         :param str or ItemBody message: Status message item.
-        :param datetime.datetime expiry: Time in which the status message expires. If not provided, the status message
+        :param datetime expiry: Time in which the status message expires. If not provided, the status message
             doesn't expire.
         """
         if not isinstance(message, ItemBody):

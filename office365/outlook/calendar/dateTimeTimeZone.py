@@ -6,7 +6,7 @@ from office365.runtime.client_value import ClientValue
 class DateTimeTimeZone(ClientValue):
     """Describes the date, time, and time zone of a point in time."""
 
-    def __init__(self, datetime=None, timezone=None):
+    def __init__(self, datetime: str = None, timezone: str = None):
         """
 
         :param str timezone: Represents a time zone, for example, "Pacific Standard Time".

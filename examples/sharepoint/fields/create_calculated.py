@@ -10,5 +10,5 @@ field_name = create_unique_name("CalcColumn")
 formula = '=CONCATENATE(Author,":",Created)'
 field = client.web.fields.add_calculated(field_name, formula).execute_query()
 
-print("Field  {0} has been created".format(field.internal_name))
+print(f"Field  {field.internal_name} has been created")
 field.delete_object().execute_query()  # clean up

@@ -2,6 +2,9 @@ from typing import Any, Optional
 
 from typing_extensions import Self
 
+from office365.communications.onlinemeetings.provider_type import (
+    OnlineMeetingProviderType,
+)
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -121,12 +124,14 @@ class Calendar(Entity):
         return self.properties.get("color", None)
 
     @property
-    def default_online_meeting_provider(self) -> Optional[str]:
+    def default_online_meeting_provider(self) -> Optional[OnlineMeetingProviderType]:
         """
         The default online meeting provider for meetings sent from this calendar.
         Possible values are: unknown, skypeForBusiness, skypeForConsumer, teamsForBusiness.
         """
-        return self.properties.get("defaultOnlineMeetingProvider", None)
+        return self.properties.get(
+            "defaultOnlineMeetingProvider", OnlineMeetingProviderType.unknown
+        )
 
     @property
     def name(self) -> Optional[str]:

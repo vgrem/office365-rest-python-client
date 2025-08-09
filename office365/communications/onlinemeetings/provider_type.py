@@ -1,8 +1,8 @@
-class OnlineMeetingProviderType:
-    """Specifies the type of a principal."""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class OnlineMeetingProviderType(Enum):
+    """Specifies the type of a principal."""
 
     unknown = 0
     """"""

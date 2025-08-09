@@ -1,4 +1,5 @@
 from office365.communications.calls.call import Call
+from office365.communications.types import TeleconferenceDeviceQuality
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
@@ -7,7 +8,7 @@ class CallCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
         super(CallCollection, self).__init__(context, Call, resource_path)
 
-    def create(self, callback_uri):
+    def create(self, callback_uri: str) -> Call:
         """
         Create call enables your bot to create a new outgoing peer-to-peer or group call, or join an existing meeting
 
@@ -15,7 +16,9 @@ class CallCollection(EntityCollection):
         """
         return super(CallCollection, self).add(callbackUri=callback_uri)
 
-    def log_teleconference_device_quality(self, quality=None):
+    def log_teleconference_device_quality(
+        self, quality: TeleconferenceDeviceQuality = None
+    ):
         """
         Log video teleconferencing device quality data.
         The Cloud Video Interop (CVI) bot represents video teleconferencing (VTC) devices and acts as a back-to-back

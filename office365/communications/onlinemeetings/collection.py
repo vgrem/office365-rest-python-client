@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
 from office365.communications.onlinemeetings.recordings.call import CallRecording
 from office365.entity_collection import EntityCollection
@@ -6,17 +8,22 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
-    def __init__(self, context, resource_path=None):
-        super(OnlineMeetingCollection, self).__init__(
-            context, OnlineMeeting, resource_path
-        )
+    """ """
 
-    def create(self, subject, start_datetime=None, end_datetime=None):
+    def __init__(self, context, resource_path=None):
+        super().__init__(context, OnlineMeeting, resource_path)
+
+    def create(
+        self,
+        subject: str,
+        start_datetime: datetime = None,
+        end_datetime: datetime = None,
+    ):
         """
         Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
 
-        :param datetime.datetime start_datetime: The meeting start time in UTC.
-        :param datetime.datetime end_datetime: The meeting end time in UTC.
+        :param datetime start_datetime: The meeting start time in UTC.
+        :param datetime end_datetime: The meeting end time in UTC.
         :param str subject: The subject of the online meeting.
         """
         return_type = OnlineMeeting(self.context)

@@ -128,8 +128,8 @@ class ClientObject:
 
     def execute_query_retry(
         self,
-        max_retry=5,
-        timeout_secs=5,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
         success_callback=None,
         failure_callback=None,
         exceptions=(ClientRequestException,),

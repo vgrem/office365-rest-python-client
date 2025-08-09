@@ -7,15 +7,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOnlineMeetings(GraphTestCase):
-    target_meeting = None  # type: OnlineMeeting
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestOnlineMeetings, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_meeting: OnlineMeeting = None
 
     def test1_create_meeting(self):
         result = self.client.me.online_meetings.create(

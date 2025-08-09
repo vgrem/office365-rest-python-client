@@ -1,7 +1,10 @@
 from datetime import datetime
-from typing import AnyStr, Optional
+from typing import Optional
 
 from office365.communications.onlinemeetings.base import OnlineMeetingBase
+from office365.communications.onlinemeetings.broadcast_settings import (
+    BroadcastMeetingSettings,
+)
 from office365.communications.onlinemeetings.participants import MeetingParticipants
 from office365.communications.onlinemeetings.recordings.call import CallRecording
 from office365.entity_collection import EntityCollection
@@ -55,9 +58,14 @@ class OnlineMeeting(OnlineMeetingBase):
         return self.properties.get("allowParticipantsToChangeName", None)
 
     @property
-    def attendee_report(self) -> Optional[AnyStr]:
+    def attendee_report(self) -> Optional[bytes]:
         """The content stream of the attendee report of a Microsoft Teams live event."""
         return self.properties.get("attendeeReport", None)
+
+    @property
+    def broadcast_settings(self) -> BroadcastMeetingSettings:
+        """Settings related to a live event."""
+        return self.properties.get("broadcastSettings", BroadcastMeetingSettings())
 
     @property
     def participants(self) -> MeetingParticipants:
@@ -96,7 +104,7 @@ class OnlineMeeting(OnlineMeetingBase):
         self.set_property("endDateTime", value.isoformat())
 
     @property
-    def join_information(self):
+    def join_information(self) -> ItemBody:
         """The join URL of the online meeting. Read-only."""
         return self.properties.get("joinInformation", ItemBody())
 
@@ -125,6 +133,7 @@ class OnlineMeeting(OnlineMeetingBase):
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
+                "broadcastSettings": self.broadcast_settings,
                 "endDateTime": self.end_datetime,
                 "joinInformation": self.join_information,
                 "startDateTime": self.start_datetime,

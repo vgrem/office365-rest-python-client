@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.communications.callrecords.collection import CallRecordCollection
 from office365.communications.calls.collection import CallCollection
 from office365.communications.onlinemeetings.collection import OnlineMeetingCollection
@@ -9,7 +11,9 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class CloudCommunications(Entity):
-    def get_presences_by_user_id(self, ids):
+    """ """
+
+    def get_presences_by_user_id(self, ids: List[str]) -> EntityCollection[Presence]:
         """
         Get the presence information for multiple users.
 
