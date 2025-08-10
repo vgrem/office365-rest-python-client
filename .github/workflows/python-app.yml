@@ -61,9 +61,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-      - name: Test with pytest
+      - name: Test with pytest (skip entirely if secrets missing)
         env:
           office365_python_sdk_securevars: ${{ secrets.OFFICE365_PYTHON_SDK_SECUREVARS }}
         run: |
-          echo "${{env.office365_python_sdk_securevars}}"
-          pytest
+          if [ -z "${{env.office365_python_sdk_securevars}}" ]; then \
+            echo "No secrets available; skipping pytest"; \
+            exit 0; \
+          else \
+            pytest; \
+          fi
