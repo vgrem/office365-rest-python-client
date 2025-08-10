@@ -185,6 +185,17 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(credentials)
         return self
 
+    def with_cookies(self, cookie_source, ttl_seconds=None):
+        # type: (object, object) -> Self
+        """
+        Initializes authentication using browser-session cookies.
+
+        :param object cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+        :param object ttl_seconds: Optional max age for cached cookies before reloading from source.
+        """
+        self.authentication_context.with_cookies(cookie_source, ttl_seconds)
+        return self
+
     def execute_batch(self, items_per_batch=100, success_callback=None):
         # type: (int, Callable[[List[ClientObject|ClientResult]], None]) -> Self
         """
