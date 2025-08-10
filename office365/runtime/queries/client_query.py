@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, AnyStr, Dict, Generic, Optional, TypeVar, Union
 
+from office365.runtime.client_result import ClientResult
+
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
     from office365.runtime.client_runtime_context import ClientRuntimeContext
