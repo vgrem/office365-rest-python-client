@@ -15,7 +15,7 @@ So one has to configure his/her office/sharepoint credentials.
 To do so, create a file ```.env``` like this (replace the bracketed values by your values):
 
 ```
-export office365_python_sdk_securevars='{username};{password};{client_id};{client_password}'
+export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
 ```
 
 This file is in .gitignore, so it will never be committed.
