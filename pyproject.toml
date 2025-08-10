@@ -4,7 +4,7 @@ line-length = 121
 lint.select = ["F", "E", "W", "I001"]
 
 [tool.pylint]
-max-line-length = 120
+max-line-length = 121
 disable = [
     "C0103",
     "C0111",
