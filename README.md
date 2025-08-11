@@ -115,6 +115,29 @@ me = ctx.web.current_user.get().execute_query()
 print(me.login_name)
 ```
 
+#### 5. Browser session cookies (SharePoint Online)
+
+Authenticate using cookies from a real browser session (e.g., Playwright). No Azure AD app registration required.
+
+Usage:
+```python
+from office365.sharepoint.client_context import ClientContext
+
+def cookie_source():
+    # Return a dict with FedAuth/rtFa/SPOIDCRL values or an AuthCookies instance
+    return {"FedAuth": "...", "rtFa": "...", "SPOIDCRL": "..."}
+
+ctx = ClientContext("https://contoso.sharepoint.com/sites/demo").with_cookies(cookie_source, ttl_seconds=None)
+web = ctx.web.get().execute_query()
+print(web.title)
+```
+
+Example: [auth_cookies.py](examples/sharepoint/auth_cookies.py)
+
+Notes:
+- `ttl_seconds` is optional. Use it to periodically refresh cookies from your source if it’s cheap (e.g., file read).
+- Cookies are secrets. Do not log them; secure any storage (e.g., Playwright `storage_state.json`).
+
 ### Examples
  
 There are **two approaches** available to perform API queries:
@@ -158,6 +181,7 @@ json = json.loads(response.content)
 web_title = json['d']['Title']
 print("Web title: {0}".format(web_title))
 ```
+   Tip: You can also authenticate `SharePointRequest` with cookies using `with_cookies(cookie_source, ttl_seconds=None)`.
   
 For SharePoint-specific examples, see:  
 📌 **[SharePoint examples guide](examples/sharepoint/README.md)**  

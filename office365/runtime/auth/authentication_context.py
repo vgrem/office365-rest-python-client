@@ -8,6 +8,7 @@ from typing_extensions import Required, Self, TypedDict
 from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
+from office365.runtime.auth.providers.cookie_provider import CookieAuthProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
@@ -180,7 +181,6 @@ class AuthenticationContext(object):
         """
 
         def _authenticate(request):
-
             request_time = datetime.now(timezone.utc)
 
             if self._cached_token is None or request_time > self._token_expires:
@@ -192,6 +192,23 @@ class AuthenticationContext(object):
             request.set_header(
                 "Authorization", _get_authorization_header(self._cached_token)
             )
+
+        self._authenticate = _authenticate
+        return self
+
+    def with_cookies(self, cookie_source, ttl_seconds=None):
+        # type: (Any, Any) -> "AuthenticationContext"
+        """
+        Initializes authentication using browser-session cookies.
+
+        :param Any cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+        :param Any ttl_seconds: Optional max age for cached cookies before reloading from source.
+        """
+        provider = CookieAuthProvider(cookie_source, ttl_seconds)
+
+        def _authenticate(request):
+            # type: (RequestOptions) -> None
+            provider.authenticate_request(request)
 
         self._authenticate = _authenticate
         return self

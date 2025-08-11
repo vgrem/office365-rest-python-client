@@ -24,5 +24,13 @@ This directory contains examples for SharePoint REST API v1
    
 ###   Working with site  
 
+###  Authentication using browser session cookies
+- **Authenticate with cookies**: [`../auth_cookies.py`](../auth_cookies.py)
+  - Demonstrates loading `FedAuth`, `rtFa`, `SPOIDCRL` from Playwright `storage_state.json` and using `ClientContext.with_cookies(...)`.
+  - Optional `ttl_seconds` parameter can periodically refresh cookies from the source.
+- **Capture cookies with Playwright (optional)**: [`./auth/capture_cookies_with_playwright.py`](./auth/capture_cookies_with_playwright.py)
+  - Not a library dependency. Requires `pip install playwright` and `playwright install chromium`.
+  - Launches a browser to log in, then saves `storage_state.json` which can be consumed by the cookie auth example.
+
 ---
 
