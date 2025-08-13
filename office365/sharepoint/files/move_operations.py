@@ -1,4 +1,7 @@
-class MoveOperations:
+from enum import Enum
+
+
+class MoveOperations(Enum):
     """Specifies criteria for how to move files."""
 
     none = 0

@@ -10,7 +10,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
     """Represents a collection of FileVersion."""
 
     def __init__(self, context, resource_path=None):
-        super(FileVersionCollection, self).__init__(context, FileVersion, resource_path)
+        super().__init__(context, FileVersion, resource_path)
 
     def get_by_id(self, version_id: str) -> FileVersion:
         """Gets the file version with the specified ID."""
@@ -29,7 +29,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
-    def delete_by_id(self, vid):
+    def delete_by_id(self, vid: int) -> Self:
         """Removes the file version object with the specified integer ID from the collection.
         :param int vid: The file version to remove.
         """
@@ -37,7 +37,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
-    def delete_by_label(self, label):
+    def delete_by_label(self, label: str) -> Self:
         """
         Deletes the file version object with the specified version label.
         :param str label: The file version to remove.
@@ -46,7 +46,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
-    def recycle_by_id(self, vid):
+    def recycle_by_id(self, vid: int) -> Self:
         """
         Recycles a file version objects in the collection by version identifier.
 
@@ -56,7 +56,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
-    def recycle_by_label(self, label):
+    def recycle_by_label(self, label: str) -> Self:
         """
         Recycles the file version object with the specified version label.
 
@@ -66,7 +66,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
-    def restore_by_label(self, label):
+    def restore_by_label(self, label: str) -> Self:
         """
         Restores the file version object that has the specified version label.
 

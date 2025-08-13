@@ -15,7 +15,7 @@ class FolderCollection(EntityCollection[Folder]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Folder, resource_path, parent)
 
-    def add_using_path(self, decoded_url: str, overwrite: bool):
+    def add_using_path(self, decoded_url: str, overwrite: bool) -> Folder:
         """
         Adds the folder located at the specified path to the collection.
         :param str decoded_url: Specifies the path for the folder.

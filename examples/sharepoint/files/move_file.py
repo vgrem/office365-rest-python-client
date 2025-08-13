@@ -19,4 +19,4 @@ folder_to = "Shared Documents/Archive"
 file_to = file_from.move_to_using_path(
     folder_to, MoveOperations.overwrite
 ).execute_query()
-print("'{0}' moved into '{1}'".format(file_from, file_to.server_relative_path))
+print(f"'{file_from}' moved into '{file_to.server_relative_path}'")

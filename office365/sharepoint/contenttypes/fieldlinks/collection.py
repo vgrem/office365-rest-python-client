@@ -42,7 +42,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
             _add(field)
         return return_type
 
-    def get_by_id(self, _id):
+    def get_by_id(self, _id: str) -> FieldLink:
         """
         Gets the field link with the given id from this collection.<20> If the id is not found in the collection,
         returns null.

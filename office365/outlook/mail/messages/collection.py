@@ -19,7 +19,7 @@ class MessageCollection(DeltaCollection["Message"]):
     def __init__(self, context: GraphClient, resource_path: ResourcePath = None):
         from office365.outlook.mail.messages.message import Message
 
-        super(MessageCollection, self).__init__(context, Message, resource_path)
+        super().__init__(context, Message, resource_path)
 
     def add(
         self,

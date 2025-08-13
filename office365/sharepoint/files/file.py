@@ -20,6 +20,7 @@ from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.checkin_type import CheckinType
+from office365.sharepoint.files.move_operations import MoveOperations
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
@@ -394,7 +395,9 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
         return self
 
-    def move_to_using_path(self, destination: Union[str, Folder], flag: int) -> Self:
+    def move_to_using_path(
+        self, destination: Union[str, Folder], flag: MoveOperations
+    ) -> Self:
         """
         Moves the file to the specified destination path.
 
@@ -407,7 +410,7 @@ class File(AbstractFile):
             file_path = "/".join(
                 [str(destination_folder.server_relative_path), self.name]
             )
-            params = {"DecodedUrl": file_path, "moveOperations": flag}
+            params = {"DecodedUrl": file_path, "moveOperations": flag.value}
             qry = ServiceOperationQuery(self, "MoveToUsingPath", params)
 
             def _update_file(return_type: File) -> None:
