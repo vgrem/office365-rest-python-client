@@ -106,4 +106,4 @@ class DirectoryAudit(Entity):
                 "targetResources": self.target_resources,
             }
             default_value = property_mapping.get(name, None)
-        return super(DirectoryAudit, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -1135,6 +1135,11 @@ class Tenant(Entity):
         return self.properties.get("NoAccessRedirectUrl", None)
 
     @property
+    def legacy_auth_protocols_enabled(self) -> Optional[bool]:
+        """Gets legacy authentication protocols on the tenant"""
+        return self.properties.get("LegacyAuthProtocolsEnabled", None)
+
+    @property
     def notifications_in_share_point_enabled(self) -> Optional[bool]:
         """Enables or disables notifications in SharePoint."""
         return self.properties.get("NotificationsInSharePointEnabled", None)

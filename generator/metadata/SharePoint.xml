@@ -110,6 +110,15 @@
          <ComplexType Name="ResourcePath">
             <Property Name="DecodedUrl" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="VivaHomeTitleRegion">
+            <Property Name="ImageUrl" Type="Edm.String"/>
+            <Property Name="ListId" Type="Edm.Guid"/>
+            <Property Name="SiteId" Type="Edm.Guid"/>
+            <Property Name="TranslateX" Type="Edm.Double"/>
+            <Property Name="TranslateY" Type="Edm.Double"/>
+            <Property Name="UniqueId" Type="Edm.Guid"/>
+            <Property Name="WebId" Type="Edm.Guid"/>
+         </ComplexType>
          <ComplexType Name="DashboardItemInfo">
             <Property Name="ItemId" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ListId" Type="Edm.Guid" Nullable="false"/>
@@ -122,15 +131,6 @@
          <ComplexType Name="PivotItem">
             <Property Name="Audiences" Type="Collection(Edm.String)"/>
             <Property Name="Name" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="VivaHomeTitleRegion">
-            <Property Name="ImageUrl" Type="Edm.String"/>
-            <Property Name="ListId" Type="Edm.Guid"/>
-            <Property Name="SiteId" Type="Edm.Guid"/>
-            <Property Name="TranslateX" Type="Edm.Double"/>
-            <Property Name="TranslateY" Type="Edm.Double"/>
-            <Property Name="UniqueId" Type="Edm.Guid"/>
-            <Property Name="WebId" Type="Edm.Guid"/>
          </ComplexType>
          <ComplexType Name="VivaConnectionsUrlConfiguration">
             <Property Name="ContentUrl" Type="Edm.String"/>
@@ -175,6 +175,7 @@
             <Property Name="ItemUniqueId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="SecondsInDB" Type="Edm.Int32" Nullable="false"/>
             <Property Name="SemanticSearchServiceEndPointJson" Type="Edm.String"/>
+            <Property Name="SourceAction" Type="Edm.Int32"/>
             <Property Name="WorkItemId" Type="Edm.Guid" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="ContentTypeId">
@@ -725,6 +726,7 @@
             <Property Name="IsEditLink" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsEphemeral" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsFormsLink" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="IsMainLink" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsManageListLink" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsReviewLink" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsUnhealthy" Type="Edm.Boolean" Nullable="false"/>
@@ -3181,6 +3183,12 @@
             </Key>
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
+         <EntityType Name="DynamicContentUpdateService">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
          <EntityType Name="CopilotFileCollection" Abstract="true">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
@@ -3240,6 +3248,12 @@
             <Property Name="VersionString" Type="Edm.String"/>
          </EntityType>
          <EntityType Name="SemanticSearchEnqueueProxy" Abstract="true">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+         <EntityType Name="SemanticSearchCrawlerUtility" Abstract="true">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
             </Key>
@@ -4946,6 +4960,7 @@
             <EntitySet Name="BrandCenters" EntityType="SP.BrandCenter"/>
             <EntitySet Name="ComponentContextInfos" EntityType="Microsoft.SharePoint.Internal.ClientSideComponent.ComponentContextInfo"/>
             <EntitySet Name="ConsumerPermissions" EntityType="Microsoft.SharePoint.Convergence.ConsumerPermissions"/>
+            <EntitySet Name="DynamicContentUpdates" EntityType="SP.DynamicContentUpdateService"/>
             <EntitySet Name="EEs" EntityType="SP.EmployeeEngagement"/>
             <EntitySet Name="EmployeeExperiences" EntityType="SP.EmployeeExperienceController"/>
             <EntitySet Name="Files" EntityType="MS.FileServices.FileSystemItem"/>
@@ -5472,6 +5487,7 @@
             <EntitySet Name="ScriptSafeDomains" EntityType="SP.ScriptSafeDomain"/>
             <EntitySet Name="SearchResultItemCollections" EntityType="SP.SearchResultItemCollection"/>
             <EntitySet Name="SecurableObjects" EntityType="SP.SecurableObject"/>
+            <EntitySet Name="SemanticSearchCrawlerUtilitys" EntityType="SP.SemanticSearchCrawlerUtility"/>
             <EntitySet Name="SemanticSearchEnqueueProxys" EntityType="SP.SemanticSearchEnqueueProxy"/>
             <EntitySet Name="SemanticSearchItemCollections" EntityType="SP.SemanticSearchItemCollection"/>
             <EntitySet Name="SensitivityLabelCollections" EntityType="SP.SensitivityLabelCollection"/>
@@ -5618,6 +5634,7 @@
             <FunctionImport Name="ComponentContextInfo" ReturnType="Microsoft.SharePoint.Internal.ClientSideComponent.ComponentContextInfo" IsComposable="true" EntitySet="ComponentContextInfos"/>
             <FunctionImport Name="ConsumerPermissions" ReturnType="Microsoft.SharePoint.Convergence.ConsumerPermissions" IsComposable="true" EntitySet="ConsumerPermissions"/>
             <FunctionImport Name="contextinfo" ReturnType="SP.ContextWebInformation" IsComposable="true"/>
+            <FunctionImport Name="DynamicContentUpdate" ReturnType="SP.DynamicContentUpdateService" IsComposable="true" EntitySet="DynamicContentUpdates"/>
             <FunctionImport Name="EE" ReturnType="SP.EmployeeEngagement" IsComposable="true" EntitySet="EEs"/>
             <FunctionImport Name="EmployeeExperience" ReturnType="SP.EmployeeExperienceController" IsComposable="true" EntitySet="EmployeeExperiences"/>
             <FunctionImport Name="files" ReturnType="Collection(MS.FileServices.FileSystemItem)" IsComposable="true" EntitySet="Files"/>
@@ -12243,6 +12260,13 @@
             <FunctionImport Name="RetiredPagesView" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
             </FunctionImport>
+            <FunctionImport Name="SetSiteManagerSignals" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
+               <Parameter Name="signals" Type="Microsoft.SharePoint.SiteManager.SiteManagerSignals"/>
+            </FunctionImport>
+            <FunctionImport Name="SiteManagerSignals" ReturnType="Microsoft.SharePoint.SiteManager.SiteManagerSignals" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
+            </FunctionImport>
             <FunctionImport Name="TopFiles" ReturnType="Microsoft.SharePoint.SiteManager.TopSiteFilesResult" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
                <Parameter Name="maxCount" Type="Edm.Int32" Nullable="false"/>
@@ -12874,6 +12898,10 @@
                <Parameter Name="announcementStates" Type="Collection(Microsoft.SharePoint.EmployeeEngagement.Experience.AnnouncementState)"/>
                <Parameter Name="mySiteUrl" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="SP_DynamicContentUpdateService" ReturnType="SP.DynamicContentUpdateService" IsComposable="true" EntitySet="DynamicContentUpdates"/>
+            <FunctionImport Name="EnsureDynamicContentUpdateListFeature" IsBindable="true">
+               <Parameter Name="this" Type="SP.DynamicContentUpdateService"/>
+            </FunctionImport>
             <FunctionImport Name="SP_CopilotFileCollection_GetWorkingSetFiles" ReturnType="Microsoft.SharePoint.Copilot.CopilotFileCollectionQueryResult" IsSideEffecting="false">
                <Parameter Name="top" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="orderBy" Type="Edm.String"/>
@@ -13145,6 +13173,7 @@
             <FunctionImport Name="SP_SemanticSearchEnqueueProxy_EnqueueItems" ReturnType="Collection(SP.SemanticSearchCrawlerEnqueueItem)">
                <Parameter Name="items" Type="Collection(SP.SemanticSearchCrawlerEnqueueItem)"/>
             </FunctionImport>
+            <FunctionImport Name="SP_SemanticSearchEnqueueProxy_SemanticSearchProperties" ReturnType="Edm.Stream" IsSideEffecting="false"/>
             <FunctionImport Name="Microsoft_SharePoint_Administration_Claims_SPVivaLearningManager" ReturnType="Microsoft.SharePoint.Administration.Claims.SPVivaLearningManager" IsComposable="true" EntitySet="SPVivaLearningManagers"/>
             <FunctionImport Name="RegisterListEventReceiver" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.Claims.SPVivaLearningManager"/>
@@ -23278,6 +23307,15 @@
          <Annotations Target="Microsoft.SharePoint.SiteManager.RetirablePagesQueryResult/Files">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SiteManager.SiteManagerSignals">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SiteManager.SMARetirePageSignal">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SiteManager.SMARetirePageMinimumAgeFeedbackSignal">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.SharePoint.SiteManager.SuggestionItem">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -23632,6 +23670,9 @@
          <Annotations Target="Microsoft.SharePoint.EmployeeEngagement.ItemReference">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.VivaHomeTitleRegion">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.SharePoint.EmployeeEngagement.DashboardConfiguration">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -23651,9 +23692,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.EmployeeEngagement.VivaResourceLink">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.VivaHomeTitleRegion">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.VivaConnectionsUrlConfiguration">
@@ -23804,6 +23842,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/SemanticSearchServiceEndPointJson">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/SourceAction">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/WorkItemId">
@@ -23966,6 +24007,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.SharingLinkInfo/IsFormsLink">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SharingLinkInfo/IsMainLink">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.SharingLinkInfo/IsManageListLink">
@@ -27065,6 +27109,9 @@
          <Annotations Target="Microsoft.SharePoint.EmployeeEngagement.VivaResourceGetEndpoint">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.DynamicContentUpdateService">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.CopilotFileCollection">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -30054,6 +30101,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_SemanticSearchEnqueueProxy_EnqueueItems(Collection(SP.SemanticSearchCrawlerEnqueueItem))">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_SemanticSearchEnqueueProxy_SemanticSearchProperties()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_AddToOneDrive_MountService_GetRemoteItemInfo(Microsoft.SharePoint.AddToOneDrive.GetRemoteItemInfoRequest)">
@@ -35809,6 +35859,7 @@
             <Property Name="DestinationWebUrl" Type="Edm.String"/>
             <Property Name="ScenarioID" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ScenarioPayload" Type="Edm.String"/>
+            <Property Name="ShouldAddFallbackLinkForVideoForAmplify" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SitePageFlags" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="ProfileDateTime">
@@ -38124,6 +38175,18 @@
          <ComplexType Name="RetirablePagesQueryResult">
             <Property Name="Files" Type="Collection(Microsoft.SharePoint.SiteManager.RetirablePageMetadata)"/>
          </ComplexType>
+         <ComplexType Name="SiteManagerSignals">
+            <Property Name="RetirePageSignals" Type="Microsoft.SharePoint.SiteManager.SMARetirePageSignal"/>
+         </ComplexType>
+         <ComplexType Name="SMARetirePageSignal">
+            <Property Name="MinimumAge" Type="Microsoft.SharePoint.SiteManager.SMARetirePageMinimumAgeFeedbackSignal"/>
+         </ComplexType>
+         <ComplexType Name="SMARetirePageMinimumAgeFeedbackSignal">
+            <Property Name="DefaultAge" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="FromDismissAction" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="FromEmptyState" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="PreferredAge" Type="Edm.Int32" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="SuggestionItem">
             <Property Name="DismissedDate" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="Identifier" Type="Edm.String"/>
@@ -38938,6 +39001,7 @@
             <Property Name="IsConfigured" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SpotlightConfiguration" Type="Microsoft.SharePoint.EmployeeEngagement.SpotlightConfiguration"/>
             <Property Name="SpotlightNews" Type="Collection(Microsoft.SharePoint.EmployeeEngagement.SpotlightNews)"/>
+            <Property Name="TitleRegion" Type="SP.VivaHomeTitleRegion"/>
          </ComplexType>
          <ComplexType Name="SpotlightConfiguration">
             <Property Name="IsHidden" Type="Edm.Boolean" Nullable="false"/>
@@ -40145,6 +40209,7 @@
             <Property Name="driveId" Type="Edm.String"/>
             <Property Name="driveType" Type="Edm.String"/>
             <Property Name="id" Type="Edm.String"/>
+            <Property Name="itemType" Type="Edm.String"/>
             <Property Name="name" Type="Edm.String"/>
             <Property Name="path" Type="Edm.String"/>
             <Property Name="shareId" Type="Edm.String"/>
@@ -41943,6 +42008,7 @@
             <Property Name="DisableAppViews" Type="Edm.Int32" Nullable="false"/>
             <Property Name="DisableCompanyWideSharingLinks" Type="Edm.Int32" Nullable="false"/>
             <Property Name="DisableFlows" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="DisableSiteBranding" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="EnableAutoExpirationVersionTrim" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ExcludeBlockDownloadPolicySiteOwners" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ExcludeBlockDownloadSharePointGroups" Type="Collection(Edm.String)"/>
@@ -42402,12 +42468,14 @@
             <Property Name="ReduceTempTokenLifetimeValue" Type="Edm.Int32" Nullable="false"/>
             <Property Name="RequireAcceptingAccountMatchInvitedAccount" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="RequireAnonymousLinksExpireInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="RequireOrganizationLinksExpireInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ResourceQuota" Type="Edm.Double" Nullable="false"/>
             <Property Name="ResourceQuotaAllocated" Type="Edm.Double" Nullable="false"/>
             <Property Name="RestrictedAccessControlForOneDriveErrorHelpLink" Type="Edm.String"/>
             <Property Name="RestrictedAccessControlforSitesErrorHelpLink" Type="Edm.String"/>
             <Property Name="RestrictedOneDriveLicense" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="RestrictedSharePointLicense" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="RestrictResourceAccountAccess" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="RootSiteUrl" Type="Edm.String"/>
             <Property Name="SearchResolveExactEmailOrUPN" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SelfServiceSiteCreationDisabled" Type="Edm.Boolean" Nullable="false"/>
@@ -44550,6 +44618,7 @@
             <Property Name="ReduceTempTokenLifetimeEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ReduceTempTokenLifetimeValue" Type="Edm.Int32" Nullable="false"/>
             <Property Name="RequireAnonymousLinksExpireInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="RequireOrganizationLinksExpireInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="RestrictedAccessControlForOneDriveErrorHelpLink" Type="Edm.String"/>
             <Property Name="RestrictedAccessControlforSitesErrorHelpLink" Type="Edm.String"/>
             <Property Name="SearchResolveExactEmailOrUPN" Type="Edm.Boolean" Nullable="false"/>

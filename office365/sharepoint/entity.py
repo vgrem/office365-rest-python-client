@@ -66,6 +66,34 @@ class Entity(ClientObject):
         self.context.with_credentials(credentials)
         return self
 
+    def with_client_certificate(
+        self,
+        tenant: str,
+        client_id: str,
+        thumbprint: str,
+        cert_path: Optional[str] = None,
+        private_key: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        passphrase: Optional[str] = None,
+    ) -> Self:
+        """
+        Creates authenticated SharePoint context via certificate credentials
+
+        :param str tenant: Tenant name
+        :param str or None cert_path: Path to A PEM encoded certificate private key.
+        :param str or None private_key: A PEM encoded certificate private key.
+        :param str thumbprint: Hex encoded thumbprint of the certificate.
+        :param str client_id: The OAuth client id of the calling application.
+        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        :param str passphrase: Passphrase if the private_key is encrypted
+        """
+        self.context.with_client_certificate(
+            tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase
+        )
+        return self
+
+
+
     def delete_object(self) -> Self:
         """
         Delete the SharePoint entity

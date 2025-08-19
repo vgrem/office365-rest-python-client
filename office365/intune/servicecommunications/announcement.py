@@ -10,7 +10,7 @@ class ServiceAnnouncement(Entity):
     """A top-level container for service communications resources."""
 
     @property
-    def health_overviews(self):
+    def health_overviews(self) -> EntityCollection[ServiceHealth]:
         """Get the serviceHealth resources from the healthOverviews navigation property."""
         return self.properties.get(
             "healthOverviews",
@@ -22,7 +22,7 @@ class ServiceAnnouncement(Entity):
         )
 
     @property
-    def issues(self):
+    def issues(self) -> EntityCollection[ServiceHealthIssue]:
         """Get the serviceHealthIssue resources from the issues navigation property."""
         return self.properties.get(
             "issues",
@@ -34,7 +34,7 @@ class ServiceAnnouncement(Entity):
         )
 
     @property
-    def messages(self):
+    def messages(self) -> EntityCollection[ServiceUpdateMessage]:
         """Get the serviceUpdateMessage resources from the messages navigation property."""
         return self.properties.get(
             "messages",

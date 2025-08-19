@@ -7,11 +7,11 @@ class SharingLink(ClientValue):
 
     def __init__(
         self,
-        _type=None,
-        scope=None,
-        web_html=None,
-        web_url=None,
-        prevents_download=None,
+        _type: str = None,
+        scope: str = None,
+        web_html: str = None,
+        web_url: str = None,
+        prevents_download: bool = None,
         application=Identity(),
     ):
         """

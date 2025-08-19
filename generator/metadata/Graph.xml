@@ -24022,6 +24022,7 @@ within the time frame of their original request."/>
             <Property Name="allowAttendeeToEnableCamera" Type="Edm.Boolean"/>
             <Property Name="allowAttendeeToEnableMic" Type="Edm.Boolean"/>
             <Property Name="allowBreakoutRooms" Type="Edm.Boolean"/>
+            <Property Name="allowCopyingAndSharingMeetingContent" Type="Edm.Boolean"/>
             <Property Name="allowedLobbyAdmitters" Type="graph.allowedLobbyAdmitterRoles"/>
             <Property Name="allowedPresenters" Type="graph.onlineMeetingPresenters"/>
             <Property Name="allowLiveShare" Type="graph.meetingLiveShareOptions"/>
@@ -43586,6 +43587,7 @@ within the time frame of their original request."/>
          </ComplexType>
          <ComplexType Name="userAccount">
             <Property Name="accountName" Type="Edm.String"/>
+            <Property Name="activeDirectoryObjectGuid" Type="Edm.Guid"/>
             <Property Name="azureAdUserId" Type="Edm.String"/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="domainName" Type="Edm.String"/>
@@ -43645,7 +43647,7 @@ within the time frame of their original request."/>
             <Property Name="registryValueType" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="resourceAccessEvent">
-            <Property Name="accessDateTime" Type="Edm.DateTimeOffset" Nullable="false"/>
+            <Property Name="accessDateTime" Type="Edm.DateTimeOffset"/>
             <Property Name="accountId" Type="Edm.String"/>
             <Property Name="ipAddress" Type="Edm.String"/>
             <Property Name="resourceIdentifier" Type="Edm.String"/>
@@ -43663,8 +43665,12 @@ within the time frame of their original request."/>
             <Property Name="storageResource" Type="microsoft.graph.security.azureResourceEvidence"/>
          </ComplexType>
          <ComplexType Name="securityGroupEvidence" BaseType="microsoft.graph.security.alertEvidence">
+            <Property Name="activeDirectoryObjectGuid" Type="Edm.Guid"/>
             <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="distinguishedName" Type="Edm.String"/>
+            <Property Name="friendlyName" Type="Edm.String"/>
             <Property Name="securityGroupId" Type="Edm.String"/>
+            <Property Name="sid" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="servicePrincipalEvidence" BaseType="microsoft.graph.security.alertEvidence">
             <Property Name="appId" Type="Edm.String"/>

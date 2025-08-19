@@ -1,5 +1,10 @@
+from typing import Optional
+
 from office365.intune.servicecommunications.announcement_base import (
     ServiceAnnouncementBase,
+)
+from office365.intune.servicecommunications.health.types import (
+    ServiceHealthClassificationType,
 )
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
@@ -15,7 +20,29 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
        - Service advisory: "Users may experience delays in emails reception".
     """
 
-    def incident_report(self):
+    @property
+    def classification(self) -> ServiceHealthClassificationType:
+        """The type of service health issue"""
+        return self.properties.get(
+            "classification", ServiceHealthClassificationType.none
+        )
+
+    @property
+    def feature(self) -> Optional[str]:
+        """The feature name of the service issue."""
+        return self.properties.get("feature", None)
+
+    @property
+    def feature_group(self) -> Optional[str]:
+        """The feature group name of the service issue."""
+        return self.properties.get("featureGroup", None)
+
+    @property
+    def impact_description(self) -> Optional[str]:
+        """The description of the service issue impact."""
+        return self.properties.get("impactDescription", None)
+
+    def incident_report(self) -> ClientResult[bytes]:
         """
         Provide the Post-Incident Review (PIR) document of a specified service issue for tenant.
 

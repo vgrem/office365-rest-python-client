@@ -60,7 +60,7 @@ class ClientRequest(ABC):
                     auth=request.auth,
                     verify=request.verify,
                     proxies=request.proxies,
-                    timeout=request.timeout
+                    timeout=request.timeout,
                 )
             else:
                 response = requests.post(
@@ -70,7 +70,7 @@ class ClientRequest(ABC):
                     auth=request.auth,
                     verify=request.verify,
                     proxies=request.proxies,
-                    timeout=request.timeout
+                    timeout=request.timeout,
                 )
         elif request.method == HttpMethod.Patch:
             response = requests.patch(
@@ -80,7 +80,7 @@ class ClientRequest(ABC):
                 auth=request.auth,
                 verify=request.verify,
                 proxies=request.proxies,
-                timeout=request.timeout
+                timeout=request.timeout,
             )
         elif request.method == HttpMethod.Delete:
             response = requests.delete(
@@ -89,7 +89,7 @@ class ClientRequest(ABC):
                 auth=request.auth,
                 verify=request.verify,
                 proxies=request.proxies,
-                timeout=request.timeout
+                timeout=request.timeout,
             )
         elif request.method == HttpMethod.Put:
             response = requests.put(
@@ -99,7 +99,7 @@ class ClientRequest(ABC):
                 auth=request.auth,
                 verify=request.verify,
                 proxies=request.proxies,
-                timeout=request.timeout
+                timeout=request.timeout,
             )
         else:
             response = requests.get(
@@ -109,7 +109,7 @@ class ClientRequest(ABC):
                 verify=request.verify,
                 stream=request.stream,
                 proxies=request.proxies,
-                timeout=request.timeout
+                timeout=request.timeout,
             )
         response.raise_for_status()
         return response

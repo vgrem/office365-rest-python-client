@@ -27,6 +27,7 @@ class RequestOptions:
     verify: bool = True
     stream: bool = False
     proxies: Optional[Dict[str, str]] = None
+    timeout: bool = None
 
     def __str__(self) -> str:
         return f"{self.method} {self.url}"
