@@ -29,10 +29,7 @@ class ODataReader(object):
         with open(self._metadata_path, "w", encoding="utf8") as out_file:
             out_file.write(formatted_metadata_content)
 
-    def process_schema_node(self, model):
-        """
-        :type model: ODataModel
-        """
+    def process_schema_node(self, model: ODataModel) -> None:
         root = ET.parse(self._metadata_path).getroot()
         schema_node = root.find("edmx:DataServices/xmlns:Schema", self._xml_namespaces)
         for type_node in schema_node.findall("xmlns:ComplexType", self._xml_namespaces):
@@ -46,7 +43,7 @@ class ODataReader(object):
         """
         type_schema = ODataType()
         type_schema.namespace = schema_node.attrib["Namespace"]
-        type_schema.name = type_node.get("Name")
+        type_schema.className = type_node.get("Name")
         type_schema.baseType = "ComplexType"
 
         for prop_node in type_node.findall("xmlns:Property", self._xml_namespaces):

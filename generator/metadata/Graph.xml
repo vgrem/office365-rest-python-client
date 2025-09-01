@@ -3300,19 +3300,19 @@
             <Annotation Term="Org.OData.Core.V1.Description" String="App data associated with this policy is encrypted when the device is locked"/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataStorageLocation">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Storage locations where managed apps can potentially store their data"/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="The storage locations where managed apps can potentially store their data."/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataStorageLocation/oneDriveForBusiness">
-            <Annotation Term="Org.OData.Core.V1.Description" String="OneDrive for business"/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates allowed storage location for the managed app to save files is 'OneDrive for Business'."/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataStorageLocation/sharePoint">
-            <Annotation Term="Org.OData.Core.V1.Description" String="SharePoint"/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates allowed storage location for the managed app to save files is 'Sharepoint'."/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataStorageLocation/box">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Box"/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates that the allowed storage location for a managed app to save files is to 'Box'. Box is a non-Microsoft solution that enables cloud-based file storage capabilities."/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataStorageLocation/localStorage">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Local storage on the device"/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates allowed storage location for the managed app to save files is local storage on the device."/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppDataTransferLevel">
             <Annotation Term="Org.OData.Core.V1.Description" String="Data can be transferred from/to these classes of apps"/>
@@ -9192,6 +9192,9 @@
          </Annotations>
          <Annotations Target="microsoft.graph.win32LobApp">
             <Annotation Term="Org.OData.Core.V1.Description" String="Contains properties and inherited properties for Win32 apps."/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.win32LobApp/allowedArchitectures">
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the Windows architecture(s) this app should be installed on. The app will be treated as not applicable for devices with architectures not matching the selected value. When a non-null value is provided for the `allowedArchitectures` property, the value of the `applicableArchitectures` property is set to `none`. Possible values are: `null`, `x86`, `x64`, `arm64`."/>
          </Annotations>
          <Annotations Target="microsoft.graph.win32LobApp/applicableArchitectures">
             <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the Windows architecture(s) this app should be installed on. The app will be treated as not applicable for devices with architectures not matching the selected value. When a non-null value is provided for the `allowedArchitectures` property, the value of the `applicableArchitectures` property is set to `none`. Default value is `none`. Possible values are: `none`, `x86`, `x64`."/>
@@ -15525,7 +15528,7 @@
             <Annotation Term="Org.OData.Core.V1.Description" String="Indicates whether internet links should be opened in the managed browser app, or any custom browser specified by CustomBrowserProtocol (for iOS) or CustomBrowserPackageId/CustomBrowserDisplayName (for Android)"/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppProtection/maximumPinRetries">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Maximum number of incorrect pin retry attempts before the managed app is either blocked or wiped."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Maximum number of incorrect pin retry attempts before the managed app is either blocked or wiped. Valid values 1 to 65535"/>
          </Annotations>
          <Annotations Target="microsoft.graph.managedAppProtection/minimumPinLength">
             <Annotation Term="Org.OData.Core.V1.Description" String="Minimum pin length required for an app-level pin if PinRequired is set to True"/>
@@ -15753,28 +15756,28 @@
             <Annotation Term="Org.OData.Core.V1.Description" String="Version of the entity."/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/daysWithoutContactBeforeUnenroll">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Offline interval before app data is wiped (days) "/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Offline interval before app data is wiped (days) . Valid values 0 to 999"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/mdmEnrollmentUrl">
             <Annotation Term="Org.OData.Core.V1.Description" String="Enrollment url for the MDM"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/minutesOfInactivityBeforeDeviceLock">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Specifies the maximum amount of time (in minutes) allowed after the device is idle that will cause the device to become PIN or password locked.   Range is an integer X where 0 &lt;= X &lt;= 999."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Specifies the maximum amount of time (in minutes) allowed after the device is idle that will cause the device to become PIN or password locked.   Range is an integer X where 0 &lt;= X &lt;= 999. Valid values 0 to 999"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/numberOfPastPinsRemembered">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that specifies the number of past PINs that can be associated to a user account that can't be reused. The largest number you can configure for this policy setting is 50. The lowest number you can configure for this policy setting is 0. If this policy is set to 0, then storage of previous PINs is not required. This node was added in Windows 10, version 1511. Default is 0."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that specifies the number of past PINs that can be associated to a user account that can't be reused. The largest number you can configure for this policy setting is 50. The lowest number you can configure for this policy setting is 0. If this policy is set to 0, then storage of previous PINs is not required. This node was added in Windows 10, version 1511. Default is 0. Valid values 0 to 50"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/passwordMaximumAttemptCount">
-            <Annotation Term="Org.OData.Core.V1.Description" String="The number of authentication failures allowed before the device will be wiped. A value of 0 disables device wipe functionality. Range is an integer X where 4 &lt;= X &lt;= 16 for desktop and 0 &lt;= X &lt;= 999 for mobile devices."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="The number of authentication failures allowed before the device will be wiped. A value of 0 disables device wipe functionality. Range is an integer X where 4 &lt;= X &lt;= 16 for desktop and 0 &lt;= X &lt;= 999 for mobile devices. Valid values 0 to 999"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/pinExpirationDays">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value specifies the period of time (in days) that a PIN can be used before the system requires the user to change it. The largest number you can configure for this policy setting is 730. The lowest number you can configure for this policy setting is 0. If this policy is set to 0, then the user's PIN will never expire. This node was added in Windows 10, version 1511. Default is 0."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value specifies the period of time (in days) that a PIN can be used before the system requires the user to change it. The largest number you can configure for this policy setting is 730. The lowest number you can configure for this policy setting is 0. If this policy is set to 0, then the user's PIN will never expire. This node was added in Windows 10, version 1511. Default is 0. Valid values 0 to 730"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/pinLowercaseLetters">
             <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that configures the use of lowercase letters in the Windows Hello for Business PIN. Default is NotAllow."/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/pinMinimumLength">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that sets the minimum number of characters required for the PIN. Default value is 4. The lowest number you can configure for this policy setting is 4. The largest number you can configure must be less than the number configured in the Maximum PIN length policy setting or the number 127, whichever is the lowest."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that sets the minimum number of characters required for the PIN. Default value is 4. The lowest number you can configure for this policy setting is 4. The largest number you can configure must be less than the number configured in the Maximum PIN length policy setting or the number 127, whichever is the lowest. Valid values 0 to 127"/>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsInformationProtectionPolicy/pinSpecialCharacters">
             <Annotation Term="Org.OData.Core.V1.Description" String="Integer value that configures the use of special characters in the Windows Hello for Business PIN. Valid special characters for Windows Hello for Business PIN gestures include: ! &quot; # $ % &amp; ' ( ) * + , - . / : ; &lt; = &gt; ? @ [ \ ] ^ _ ` { | } ~. Default is NotAllow."/>
@@ -15840,7 +15843,7 @@
             <Annotation Term="Org.OData.Core.V1.Description" String="Resource Actions each containing a set of allowed and not allowed permissions."/>
          </Annotations>
          <Annotations Target="microsoft.graph.deviceAndAppManagementRoleAssignment/members">
-            <Annotation Term="Org.OData.Core.V1.Description" String="The list of ids of role member security groups. These are IDs from Azure Active Directory."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the list of role member security group Entra IDs. For example: {dec942f4-6777-4998-96b4-522e383b08e2}."/>
          </Annotations>
          <Annotations Target="microsoft.graph.deviceAndAppManagementRoleDefinition">
             <Annotation Term="Org.OData.Core.V1.Description" String="The Role Definition resource. The role definition is the foundation of role based access in Intune. The role combines an Intune resource such as a Mobile App and associated role permissions such as Create or Read for the resource. There are two types of roles, built-in and custom. Built-in roles cannot be modified. Both built-in roles and custom roles must have assignments to be enforced. Create custom roles if you want to define a role that allows any of the available resources and role permissions to be combined into a single role."/>
@@ -15855,16 +15858,16 @@
             <Annotation Term="Org.OData.Core.V1.Description" String="Name of the Resource this operation is performed on."/>
          </Annotations>
          <Annotations Target="microsoft.graph.roleAssignment/description">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Description of the Role Assignment."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the description of the role assignment. For example: 'All administrators, employees and scope tags associated with the Houston office.' Max length is 1024 characters."/>
          </Annotations>
          <Annotations Target="microsoft.graph.roleAssignment/displayName">
-            <Annotation Term="Org.OData.Core.V1.Description" String="The display or friendly name of the role Assignment."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the display name of the role assignment. For example: 'Houston administrators and users'. Max length is 128 characters."/>
          </Annotations>
          <Annotations Target="microsoft.graph.roleAssignment/resourceScopes">
-            <Annotation Term="Org.OData.Core.V1.Description" String="List of ids of role scope member security groups.  These are IDs from Azure Active Directory."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the list of resource scope security group Entra IDs. For example: {dec942f4-6777-4998-96b4-522e383b08e2}."/>
          </Annotations>
          <Annotations Target="microsoft.graph.roleAssignment/roleDefinition">
-            <Annotation Term="Org.OData.Core.V1.Description" String="Role definition this assignment is part of."/>
+            <Annotation Term="Org.OData.Core.V1.Description" String="Indicates the role definition for this role assignment."/>
          </Annotations>
          <Annotations Target="microsoft.graph.roleDefinition/description">
             <Annotation Term="Org.OData.Core.V1.Description" String="Description of the Role definition."/>
@@ -31655,6 +31658,7 @@ within the time frame of their original request."/>
             <Property Name="useManagedBrowser" Type="Edm.Boolean" Nullable="false"/>
          </EntityType>
          <EntityType Name="win32LobApp" BaseType="graph.mobileLobApp">
+            <Property Name="allowedArchitectures" Type="graph.windowsArchitecture"/>
             <Property Name="applicableArchitectures" Type="graph.windowsArchitecture" Nullable="false"/>
             <Property Name="installCommandLine" Type="Edm.String"/>
             <Property Name="installExperience" Type="graph.win32LobAppInstallExperience"/>
@@ -34864,6 +34868,7 @@ within the time frame of their original request."/>
             <Property Name="hideBotAfterEscalation" Type="Edm.Boolean"/>
             <Property Name="isContentSharingNotificationEnabled" Type="Edm.Boolean"/>
             <Property Name="isDeltaRosterEnabled" Type="Edm.Boolean"/>
+            <Property Name="isInteractiveRosterEnabled" Type="Edm.Boolean"/>
          </ComplexType>
          <ComplexType Name="callRoute">
             <Property Name="final" Type="graph.identitySet" Nullable="false"/>
@@ -40907,6 +40912,10 @@ within the time frame of their original request."/>
          <Action Name="renewUpload" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.mobileAppContentFile"/>
          </Action>
+         <Action Name="enableApplicableArchitectures" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.win32LobApp"/>
+            <Parameter Name="applicableArchitectures" Type="graph.windowsArchitecture" Nullable="false"/>
+         </Action>
          <Action Name="retrieveDeviceAppInstallationStatusReport" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.deviceManagementReports"/>
             <Parameter Name="name" Type="Edm.String" Unicode="false"/>
@@ -42400,6 +42409,11 @@ within the time frame of their original request."/>
             <Member Name="closedWithError" Value="5"/>
             <Member Name="unknownFutureValue" Value="6"/>
          </EnumType>
+         <EnumType Name="caseType">
+            <Member Name="standard" Value="1"/>
+            <Member Name="premium" Value="2"/>
+            <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
          <EnumType Name="childSelectability">
             <Member Name="One" Value="0"/>
             <Member Name="Many" Value="1"/>
@@ -42488,6 +42502,11 @@ within the time frame of their original request."/>
             <Member Name="recoverable" Value="0"/>
             <Member Name="unknownFutureValue" Value="1"/>
             <Member Name="permanentlyDelete" Value="2"/>
+         </EnumType>
+         <EnumType Name="reviewSetSettings" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="disableGrouping" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
          <EnumType Name="sourceType" IsFlags="true">
             <Member Name="mailbox" Value="1"/>
@@ -43136,8 +43155,10 @@ within the time frame of their original request."/>
             <NavigationProperty Name="lastIndexOperation" Type="microsoft.graph.security.ediscoveryIndexOperation"/>
          </EntityType>
          <EntityType Name="ediscoveryCaseSettings" BaseType="graph.entity">
+            <Property Name="caseType" Type="microsoft.graph.security.caseType" Nullable="false"/>
             <Property Name="ocr" Type="microsoft.graph.security.ocrSettings"/>
             <Property Name="redundancyDetection" Type="microsoft.graph.security.redundancyDetectionSettings"/>
+            <Property Name="reviewSetSettings" Type="microsoft.graph.security.reviewSetSettings"/>
             <Property Name="topicModeling" Type="microsoft.graph.security.topicModelingSettings"/>
          </EntityType>
          <EntityType Name="tag" BaseType="graph.entity" Abstract="true">

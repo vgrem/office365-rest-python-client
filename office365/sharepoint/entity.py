@@ -92,8 +92,6 @@ class Entity(ClientObject):
         )
         return self
 
-
-
     def delete_object(self) -> Self:
         """
         Delete the SharePoint entity

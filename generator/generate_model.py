@@ -8,7 +8,11 @@ from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
 
 
 def generate_files(model: ODataModel, options: dict) -> None:
+    ignored_types = [t.strip() for t in options['ignoredtypes'].split(',')]
+
     for name in model.types:
+        if name in ignored_types:
+            continue
         type_schema = model.types[name]
         builder = TypeBuilder(type_schema, options)
         builder.build()
@@ -18,7 +22,7 @@ def generate_files(model: ODataModel, options: dict) -> None:
 
 def generate_sharepoint_model(settings: ConfigParser) -> None:
     reader = ODataV3Reader(settings.get("sharepoint", "metadataPath"))
-    reader.format_file()
+    #reader.format_file()
     model = reader.generate_model()
     generate_files(model, dict(settings.items("sharepoint")))
 

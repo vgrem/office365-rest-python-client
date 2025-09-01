@@ -4,6 +4,8 @@ import datetime
 import uuid
 from typing import Optional, Type, TypeVar
 
+from typing_extensions import Self
+
 from office365.runtime.odata.property import ODataProperty
 
 T = TypeVar("T", bound=Type)
@@ -22,11 +24,15 @@ class ODataType:
     """Primitive OData data type mapping"""
 
     def __init__(self):
-        self.name = None
+        self.className = None
         self.namespace = None
         self.baseType = None
         self.properties = {}
         self.methods = {}
+
+    @property
+    def name(self):
+        return f"{self.namespace}.{self.className}"
 
     @classmethod
     def register_type(cls, python_type: T, odata_type: str) -> None:
@@ -73,7 +79,7 @@ class ODataType:
         """Checks if a type is a known OData primitive type."""
         return client_type in cls.primitive_types
 
-    def add_property(self, prop_schema: ODataProperty):
-        alias = prop_schema.name
-        self.properties[alias] = prop_schema
+    def add_property(self, prop_schema: ODataProperty) -> Self:
+        name = prop_schema.name
+        self.properties[name] = prop_schema
         return self

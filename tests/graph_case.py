@@ -12,7 +12,7 @@ from tests import (
 class GraphTestCase(TestCase):
     """Microsoft Graph specific test case base class"""
 
-    client = None  # type: GraphClient
+    client: GraphClient = None
 
     @classmethod
     def setUpClass(cls):
