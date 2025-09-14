@@ -61,6 +61,7 @@ class ODataReader(object):
         """
         prop_schema = ODataProperty()
         prop_schema.name = node.get("Name")
+        prop_schema.type_name = node.get("Type")
         return prop_schema
 
     def generate_model(self):

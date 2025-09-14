@@ -10,6 +10,7 @@ from typing import Dict
 import astunparse
 from typing_extensions import Self
 
+from generator.builders.property_builder import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from office365.runtime.odata.type import ODataType
 
@@ -18,6 +19,7 @@ class TypeBuilder(ast.NodeTransformer):
     """Type builder"""
 
     def __init__(self, type_schema: ODataType, options: Dict[str, str] = None):
+        self._template = None
         self._schema = type_schema
         self._options = options
         self._type_info = None
@@ -33,6 +35,10 @@ class TypeBuilder(ast.NodeTransformer):
                 prop_schema.status = "detached"
 
         self.generic_visit(node)
+
+        self._build_properties(node)
+
+        self._post_build(node)
 
         return node
 
@@ -52,16 +58,33 @@ class TypeBuilder(ast.NodeTransformer):
         return self.generic_visit(node)
 
     def build(self) -> Self:
+        self._template = TemplateContext(self._options.get("templatepath"))
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
                 self._source_tree = ast.parse(f.read())
             self._status = "updated"
         else:
-            template_ctx = TemplateContext(self._options.get("templatepath"))
-            self._source_tree = template_ctx.build(self._schema)
+            self._source_tree = self._template.load(self._schema)
             self._status = "created"
         self.visit(self._source_tree)
         return self
+
+    def _build_properties(self, class_node: ast.ClassDef):
+        """Build missing properties"""
+        for prop_name, prop_schema in self._schema.properties.items():
+            if prop_schema.status == "detached":
+
+                builder = PropertyBuilder(prop_schema)
+                property_methods = builder.build(self._template)
+
+                for method in property_methods:
+                    class_node.body.append(method)
+
+    def _post_build(self, class_node: ast.ClassDef):
+        """Remove pass statements if there are other statements in the class body"""
+        class_node.body = [
+            stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)
+        ]
 
     def save(self):
         code = astunparse.unparse(self._source_tree)
@@ -91,23 +114,25 @@ class TypeBuilder(ast.NodeTransformer):
                 continue
         return None
 
-    def _resolve_type(self, type_name: str) -> Dict[str, str]:
+    def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = self._find_model_class(type_name)
+        cls = self._find_model_class(self._schema.name)
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)
         else:
             type_info["state"] = "detached"
             type_info["file"] = abspath(
-                os.path.join(self._options["outputpath"], type_name + ".py")
+                os.path.join(
+                    self._options["outputpath"], self._schema.className + ".py"
+                )
             )
         return type_info
 
     def _ensure_type_info(self):
         if self._type_info is None:
-            self._type_info = self._resolve_type(self._schema.name)
+            self._type_info = self._resolve_type()
         return self._type_info
 
     @property

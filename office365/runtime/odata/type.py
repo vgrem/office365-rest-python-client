@@ -20,6 +20,7 @@ class ODataType:
         str: "Edm.String",
         datetime.datetime: "Edm.DateTimeOffset",
         uuid.UUID: "Edm.Guid",
+        dict: "Collection(SP.KeyValue)"
     }
     """Primitive OData data type mapping"""
 
