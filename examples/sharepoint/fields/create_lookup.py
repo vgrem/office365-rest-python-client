@@ -15,5 +15,5 @@ field = client.web.fields.add_lookup_field(
     lookup_field_name="Title",
     allow_multiple_values=True,
 ).execute_query()
-print("Field  {0} has been created", field_name)
+print(f"Field  {field_name} has been created")
 field.delete_object().execute_query()  # clean up

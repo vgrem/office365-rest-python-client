@@ -80,6 +80,6 @@ class ODataType:
         return client_type in cls.primitive_types
 
     def add_property(self, prop_schema: ODataProperty) -> Self:
-        name = prop_schema.name
+        name = prop_schema.normalized_name
         self.properties[name] = prop_schema
         return self
