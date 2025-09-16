@@ -15,9 +15,9 @@ class BrandCenter(Entity):
     """
 
     def __init__(self, context):
-        super(BrandCenter, self).__init__(context, ResourcePath("SP.BrandCenter"))
+        super().__init__(context, ResourcePath("SP.BrandCenter"))
 
-    def configuration(self):
+    def configuration(self) -> ClientResult[BrandCenterConfiguration]:
         """ """
         return_type = ClientResult(self.context, BrandCenterConfiguration())
         qry = ServiceOperationQuery(
@@ -26,7 +26,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def add_site_theme(self, theme_data):
+    def add_site_theme(self, theme_data) -> ClientResult[ThemeData]:
         """ """
         return_type = ClientResult(self.context, ThemeData())
         payload = {"themeData": theme_data}
@@ -36,7 +36,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_themes(self):
+    def get_site_themes(self) -> ClientResult[SiteThemes]:
         """ """
         return_type = ClientResult(self.context, SiteThemes())
         qry = ServiceOperationQuery(

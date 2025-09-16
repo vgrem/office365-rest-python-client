@@ -7,6 +7,7 @@ from typing import Optional, Type, TypeVar
 from typing_extensions import Self
 
 from office365.runtime.odata.property import ODataProperty
+from office365.runtime.types.collections import GuidCollection
 
 T = TypeVar("T", bound=Type)
 
@@ -20,7 +21,8 @@ class ODataType:
         str: "Edm.String",
         datetime.datetime: "Edm.DateTimeOffset",
         uuid.UUID: "Edm.Guid",
-        dict: "Collection(SP.KeyValue)"
+        dict: "Collection(SP.KeyValue)",
+        GuidCollection: "Collection(Edm.Guid)",
     }
     """Primitive OData data type mapping"""
 
@@ -80,7 +82,6 @@ class ODataType:
         """Checks if a type is a known OData primitive type."""
         return client_type in cls.primitive_types
 
-    def add_property(self, prop_schema: ODataProperty) -> Self:
-        name = prop_schema.normalized_name
-        self.properties[name] = prop_schema
+    def add_property(self, schema: ODataProperty) -> Self:
+        self.properties[schema.name] = schema
         return self

@@ -25,24 +25,34 @@ class TypeBuilder(ast.NodeTransformer):
         self._type_info = None
         self._source_tree = None
         self._status = None
+        self._properties = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
-            node.name = self._schema.className.title()
+            node.name = self._schema.className
 
         if self._schema and self._schema.properties:
             for prop_name, prop_schema in self._schema.properties.items():
-                prop_schema.status = "detached"
+                builder = PropertyBuilder(prop_schema)
+                builder.status = "detached"
+                self._properties.append(builder)
 
         self.generic_visit(node)
 
-        self._build_properties(node)
+        if self._schema.baseType == "ComplexType":
+            self._build_properties(node)
+        else:
+            self._build_nav_properties(node)
 
-        self._post_build(node)
+        self._build_post(node)
 
         return node
 
     def visit_FunctionDef(self, node):
+
+        if node.name == "__init__":
+            return node
+
         is_property = False
         for decorator in node.decorator_list:
             if (isinstance(decorator, ast.Name) and decorator.id == "property") or (
@@ -52,8 +62,11 @@ class TypeBuilder(ast.NodeTransformer):
                 break
 
         if is_property:
-            if node.name in self._schema.properties:
-                self._schema.properties[node.name].status = "attached"
+            matching_prop = next(
+                (prop for prop in self._properties if prop.name == node.name), None
+            )
+            if matching_prop:
+                matching_prop.status = "attached"
 
         return self.generic_visit(node)
 
@@ -70,17 +83,72 @@ class TypeBuilder(ast.NodeTransformer):
         return self
 
     def _build_properties(self, class_node: ast.ClassDef):
-        """Build missing properties"""
-        for prop_name, prop_schema in self._schema.properties.items():
-            if prop_schema.status == "detached":
+        if not self._properties:
+            return
 
-                builder = PropertyBuilder(prop_schema)
-                property_methods = builder.build(self._template)
+        init_method = self._build_init_method()
+
+        class_node.body.insert(0, init_method)
+
+    def  _build_init_method(self) -> ast.FunctionDef:
+        args = [ast.arg(arg="self", annotation=None)]
+        defaults = []
+
+        for prop in self._properties:
+            param = ast.arg(
+                arg=prop.name,
+                annotation=(
+                    ast.Name(id=prop.type_name, ctx=ast.Load())
+                    if prop.type_name
+                    else None
+                ),
+            )
+            args.append(param)
+            defaults.append(ast.Constant(value=None))
+
+        function_args = ast.arguments(
+            posonlyargs=[],
+            args=args,
+            vararg=None,
+            kwonlyargs=[],
+            kw_defaults=[],
+            kwarg=None,
+            defaults=defaults,
+        )
+
+        body = []
+        for prop in self._properties:
+            assign = ast.Assign(
+                targets=[
+                    ast.Attribute(
+                        value=ast.Name(id="self", ctx=ast.Load()),
+                        attr=prop.name,
+                        ctx=ast.Store(),
+                    )
+                ],
+                value=ast.Name(id=prop.name, ctx=ast.Load()),
+            )
+            body.append(assign)
+
+        init_method = ast.FunctionDef(
+            name="__init__",
+            args=function_args,
+            body=body,
+            decorator_list=[],
+            returns=None,
+        )
+        return init_method
+
+    def _build_nav_properties(self, class_node: ast.ClassDef):
+        """Build missing properties"""
+        for prop in self._properties:
+            if prop.status == "detached":
+                property_methods = prop.build(self._template)
 
                 for method in property_methods:
                     class_node.body.append(method)
 
-    def _post_build(self, class_node: ast.ClassDef):
+    def _build_post(self, class_node: ast.ClassDef):
         """Remove pass statements if there are other statements in the class body"""
         class_node.body = [
             stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)
@@ -125,7 +193,7 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["state"] = "detached"
             type_info["file"] = abspath(
                 os.path.join(
-                    self._options["outputpath"], self._schema.className + ".py"
+                    self._options["outputpath"], self._schema.className.lower() + ".py"
                 )
             )
         return type_info
