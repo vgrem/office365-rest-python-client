@@ -18269,6 +18269,12 @@ within the time frame of their original request."/>
             <Member Name="published" Value="1"/>
             <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
+         <EnumType Name="educationSpeechType">
+            <Member Name="informative" Value="0"/>
+            <Member Name="personal" Value="1"/>
+            <Member Name="persuasive" Value="2"/>
+            <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
          <EnumType Name="educationSubmissionStatus">
             <Member Name="working" Value="0"/>
             <Member Name="submitted" Value="1"/>
@@ -23207,6 +23213,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="memberOf" Type="Collection(graph.directoryObject)"/>
             <NavigationProperty Name="members" Type="Collection(graph.directoryObject)"/>
             <NavigationProperty Name="membersWithLicenseErrors" Type="Collection(graph.directoryObject)"/>
+            <NavigationProperty Name="onPremisesSyncBehavior" Type="graph.onPremisesSyncBehavior" ContainsTarget="true"/>
             <NavigationProperty Name="owners" Type="Collection(graph.directoryObject)"/>
             <NavigationProperty Name="permissionGrants" Type="Collection(graph.resourceSpecificPermissionGrant)" ContainsTarget="true"/>
             <NavigationProperty Name="settings" Type="Collection(graph.groupSetting)" ContainsTarget="true"/>
@@ -23274,6 +23281,9 @@ within the time frame of their original request."/>
             <Property Name="principalType" Type="Edm.String"/>
             <Property Name="resourceDisplayName" Type="Edm.String"/>
             <Property Name="resourceId" Type="Edm.Guid"/>
+         </EntityType>
+         <EntityType Name="onPremisesSyncBehavior" BaseType="graph.entity">
+            <Property Name="isCloudManaged" Type="Edm.Boolean" Nullable="false"/>
          </EntityType>
          <EntityType Name="resourceSpecificPermissionGrant" BaseType="graph.directoryObject">
             <Property Name="clientAppId" Type="Edm.String"/>
@@ -27483,6 +27493,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="directReports" Type="Collection(graph.directoryObject)"/>
             <NavigationProperty Name="manager" Type="graph.directoryObject"/>
             <NavigationProperty Name="memberOf" Type="Collection(graph.directoryObject)"/>
+            <NavigationProperty Name="onPremisesSyncBehavior" Type="graph.onPremisesSyncBehavior" ContainsTarget="true"/>
             <NavigationProperty Name="transitiveMemberOf" Type="Collection(graph.directoryObject)"/>
          </EntityType>
          <EntityType Name="permissionGrantConditionSet" BaseType="graph.entity">
@@ -27906,6 +27917,30 @@ within the time frame of their original request."/>
             <Property Name="responseFeedback" Type="graph.responseFeedbackType" Nullable="false"/>
             <Property Name="submitDateTime" Type="Edm.DateTimeOffset" Nullable="false"/>
          </EntityType>
+         <ComplexType Name="educationAiFeedbackAudienceEngagementSettings">
+            <Property Name="areEngagementStrategiesEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isCallToActionEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isEmotionalAndIntellectualAppealEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationAiFeedbackContentSettings">
+            <Property Name="isMessageClarityEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isQualityOfInformationEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isSpeechOrganizationEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationAiFeedbackCriteria">
+            <Property Name="aiFeedbackSettings" Type="graph.educationAiFeedbackSettings" Nullable="false"/>
+            <Property Name="speechType" Type="graph.educationSpeechType" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationAiFeedbackSettings">
+            <Property Name="audienceEngagementSettings" Type="graph.educationAiFeedbackAudienceEngagementSettings"/>
+            <Property Name="contentSettings" Type="graph.educationAiFeedbackContentSettings"/>
+            <Property Name="deliverySettings" Type="graph.educationAiFeedbackDeliverySettings"/>
+         </ComplexType>
+         <ComplexType Name="educationAiFeedbackDeliverySettings">
+            <Property Name="areRhetoricalTechniquesEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isLanguageUseEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isStyleEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="educationAssignmentRecipient" Abstract="true"/>
          <ComplexType Name="educationAssignmentClassRecipient" BaseType="graph.educationAssignmentRecipient"/>
          <ComplexType Name="educationAssignmentGrade" Abstract="true">
@@ -27962,6 +27997,35 @@ within the time frame of their original request."/>
          </ComplexType>
          <ComplexType Name="educationPowerPointResource" BaseType="graph.educationResource">
             <Property Name="fileUrl" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="educationSpeakerCoachAudienceEngagementSettings">
+            <Property Name="isBodyLanguageEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationSpeakerCoachContentSettings">
+            <Property Name="isInclusivenessEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isRepetitiveLanguageEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationSpeakerCoachDeliverySettings">
+            <Property Name="areFillerWordsEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isPaceEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isPitchEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isPronunciationEnabled" Type="Edm.Boolean" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="educationSpeakerCoachSettings">
+            <Property Name="audienceEngagementSettings" Type="graph.educationSpeakerCoachAudienceEngagementSettings"/>
+            <Property Name="contentSettings" Type="graph.educationSpeakerCoachContentSettings"/>
+            <Property Name="deliverySettings" Type="graph.educationSpeakerCoachDeliverySettings"/>
+         </ComplexType>
+         <ComplexType Name="educationSpeakerProgressResource" BaseType="graph.educationResource">
+            <Property Name="aiFeedbackCriteria" Type="graph.educationAiFeedbackCriteria"/>
+            <Property Name="isAiFeedbackEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isVideoRequired" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="maxRecordingAttempts" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="presentationTitle" Type="Edm.String" Nullable="false"/>
+            <Property Name="recordingTimeLimitInMinutes" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="showRehearsalReportToStudentBeforeMediaUpload" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="speakerCoachSettings" Type="graph.educationSpeakerCoachSettings"/>
+            <Property Name="spokenLanguageLocale" Type="Edm.String" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="educationSubmissionRecipient" Abstract="true"/>
          <ComplexType Name="educationSubmissionIndividualRecipient" BaseType="graph.educationSubmissionRecipient">
@@ -42671,6 +42735,8 @@ within the time frame of their original request."/>
             <Member Name="builtInMl" Value="1073741847"/>
             <Member Name="microsoftInsiderRiskManagement" Value="1073741848"/>
             <Member Name="microsoftThreatIntelligence" Value="1073741849"/>
+            <Member Name="microsoftDefenderForAIServices" Value="1073741850"/>
+            <Member Name="securityCopilot" Value="1073741851"/>
             <Member Name="microsoftSentinel" Value="268435456"/>
          </EnumType>
          <EnumType Name="detectionStatus">

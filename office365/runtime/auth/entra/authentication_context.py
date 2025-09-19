@@ -16,7 +16,7 @@ class AuthenticationContext(object):
         tenant=None,
         scopes=None,
         token_cache=None,
-        environment=AzureEnvironment.Global,
+        environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """
         :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
@@ -161,5 +161,5 @@ class AuthenticationContext(object):
         return self.with_access_token(_acquire_token)
 
     @property
-    def authority_url(self):
-        return "{0}/{1}".format(get_login_authority(self._environment), self._tenant)
+    def authority_url(self) -> str:
+        return f"{get_login_authority(self._environment)}/{self._tenant}"

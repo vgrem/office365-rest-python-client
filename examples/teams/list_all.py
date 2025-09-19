@@ -14,4 +14,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
 # teams = client.teams.get().paged().select(["displayName"]).execute_query()   # paged load
 teams = client.teams.get().top(10).select(["displayName"]).execute_query()
 for team in teams:
-    print("Name: {0}".format(team))
+    print(f"Name: {team}")

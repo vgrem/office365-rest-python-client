@@ -7,13 +7,14 @@ from typing import Optional, Type, TypeVar
 from typing_extensions import Self
 
 from office365.runtime.odata.property import ODataProperty
-from office365.runtime.types.collections import GuidCollection
 
 T = TypeVar("T", bound=Type)
 
 
 class ODataType:
     """OData type system utilities with enhanced type resolution."""
+
+    # from office365.runtime.types.collections import GuidCollection
 
     primitive_types = {
         bool: "Edm.Boolean",
@@ -22,7 +23,7 @@ class ODataType:
         datetime.datetime: "Edm.DateTimeOffset",
         uuid.UUID: "Edm.Guid",
         dict: "Collection(SP.KeyValue)",
-        GuidCollection: "Collection(Edm.Guid)",
+        # GuidCollection: "Collection(Edm.Guid)",
     }
     """Primitive OData data type mapping"""
 
