@@ -40,11 +40,11 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """
         super(ClientObjectCollection, self).__init__(context, resource_path)
         self._data: list[T] = []
-        self._item_type = item_type
+        self._item_type: Type[T] = item_type
         self._page_loaded = EventHandler(False)
-        self._paged_mode = False
-        self._current_pos = None
-        self._next_request_url = None
+        self._paged_mode: bool = False
+        self._current_pos: Optional[int] = None
+        self._next_request_url: Optional[str] = None
         self._parent = parent
 
     def clear_state(self) -> Self:
@@ -172,8 +172,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Developer-friendly string representation of the collection."""
         return f"entity_type_name={self.entity_type_name}(count={len(self)})"
 
-    def __getitem__(self, index):
-        # type: (int) -> T
+    def __getitem__(self, index: int) -> T:
         """Get an item by its index position."""
         return self._data[index]
 
@@ -274,8 +273,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self: Supports fluent method chaining
         """
 
-        def _loaded(col):
-            # type: (Self) -> None
+        def _loaded(col: Self) -> None:
             self._page_loaded(self)
 
         self.context.load(self).after_query_execute(_loaded)
@@ -295,16 +293,14 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self: Supports fluent method chaining
         """
 
-        def _page_loaded(col):
-            # type: (Self) -> None
+        def _page_loaded(col: Self) -> None:
             if self.has_next:
                 self._get_next().after_execute(_page_loaded)
 
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
 
-    def _get_next(self):
-        # type: () -> Self
+    def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
 
         def _construct_request(request: RequestOptions) -> None:
@@ -328,8 +324,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         return_type = self.create_typed_object()
         self.add_child(return_type)
 
-        def _after_loaded(col):
-            # type: (ClientObjectCollection) -> None
+        def _after_loaded(col: ClientObjectCollection) -> None:
             if len(col) < 1:
                 message = "Not found for filter: {0}".format(self.query_options.filter)
                 raise ValueError(message)
@@ -358,8 +353,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         return_type = self.create_typed_object()
         self.add_child(return_type)
 
-        def _after_loaded(col):
-            # type: (ClientObjectCollection) -> None
+        def _after_loaded(col: ClientObjectCollection) -> None:
             if len(col) == 0:
                 raise NotFoundException(return_type, expression)
             elif len(col) > 1:

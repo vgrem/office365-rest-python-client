@@ -9,6 +9,9 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.files.file import File
+from office365.sharepoint.pages.wiki_page_creation_information import (
+    WikiPageCreationInformation,
+)
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.email_properties import EmailProperties
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
@@ -24,7 +27,7 @@ class Utility(Entity):
     """
 
     def __init__(self, context):
-        super(Utility, self).__init__(context, StaticPath("SP.Utilities.Utility"))
+        super().__init__(context, StaticPath("SP.Utilities.Utility"))
 
     @staticmethod
     def create_email_body_for_invitation(
@@ -75,7 +78,6 @@ class Utility(Entity):
     ) -> ClientResult[StringCollection]:
         """
         Retrieves a collection of permission levels of the current user on the web.
-        :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, StringCollection())
         utility = Utility(context)
@@ -123,12 +125,13 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
-    def create_wiki_page_in_context_web(context, parameters, return_type=None):
+    def create_wiki_page_in_context_web(
+        context: ClientContext,
+        parameters: WikiPageCreationInformation,
+        return_type: File = None,
+    ):
         """
         Creates a wiki page.
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type parameters: office365.sharepoint.pages.wiki_page_creation_information.WikiPageCreationInformation
-        :type return_type: File
         """
         if return_type is None:
             return_type = File(context)

@@ -15,12 +15,12 @@ class UserCustomAction(Entity):
         return super(UserCustomAction, self).get_property(name, default_value)
 
     @property
-    def rights(self):
+    def rights(self) -> BasePermissions:
         """Specifies the permissions needed for the custom action."""
         return self.properties.get("Rights", BasePermissions())
 
     @property
-    def description_resource(self):
+    def description_resource(self) -> UserResource:
         """Gets the SP.UserResource object that corresponds to the Description for this object."""
         return self.properties.get(
             "DescriptionResource",
@@ -30,7 +30,7 @@ class UserCustomAction(Entity):
         )
 
     @property
-    def title_resource(self):
+    def title_resource(self) -> UserResource:
         """Returns the UserResource object that corresponds to the Title for this object."""
         return self.properties.get(
             "TitleResource",

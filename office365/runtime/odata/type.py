@@ -21,6 +21,7 @@ _PRIMITIVE_TYPES = {
     datetime.datetime: "Edm.DateTimeOffset",
     uuid.UUID: "Edm.Guid",
     dict: "Collection(SP.KeyValue)",
+    float: "Edm.Single",
     # GuidCollection: "Collection(Edm.Guid)",
 }
 

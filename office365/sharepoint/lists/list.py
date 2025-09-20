@@ -702,6 +702,7 @@ class List(SecurableObject):
         :param str page_content:
         """
         return_type = File(self.context)
+        self.root_folder.files.add_child(return_type)
 
         def _root_folder_loaded():
             page_url = self.root_folder.server_relative_url + "/" + page_name

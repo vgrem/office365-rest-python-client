@@ -1,15 +1,12 @@
 from office365.sharepoint.files.file import File
 from office365.sharepoint.lists.list import List
+from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestPages(SPTestCase):
-    pages_list = None  # type: List
-    target_file = None  # type: File
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestPages, cls).setUpClass()
+    pages_list: List = None
+    target_file: File = None
 
     def test1_ensure_site_pages_library(self):
         pages_list = self.client.web.lists.ensure_site_pages_library().execute_query()
@@ -17,7 +14,7 @@ class TestPages(SPTestCase):
         self.__class__.pages_list = pages_list
 
     def test2_create_wiki_page(self):
-        page_name = "WelcomeWikiPage123.aspx"
+        page_name = create_unique_name("WikiPage") + ".aspx"
         file = self.__class__.pages_list.create_wiki_page(
             page_name, "Wiki content"
         ).execute_query()
