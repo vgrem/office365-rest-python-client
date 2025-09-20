@@ -12,4 +12,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
 )
 drives = client.drives.get().top(100).execute_query()
 for drive in drives:
-    print("Drive url: {0}".format(drive.web_url))
+    print(f"Drive url: {drive.web_url}")

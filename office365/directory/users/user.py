@@ -644,6 +644,13 @@ class User(DirectoryObject):
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
+    def last_password_change_datetime(self) -> Optional[datetime]:
+        """
+        The time when this Azure AD user last changed their password.
+        """
+        return self.properties.get("lastPasswordChangeDateTime", datetime.min)
+
+    @property
     def created_objects(self) -> DirectoryObjectCollection:
         """Directory objects created by this user."""
         return self.properties.get(
@@ -690,6 +697,11 @@ class User(DirectoryObject):
             "chats",
             ChatCollection(self.context, ResourcePath("chats", self.resource_path)),
         )
+
+    @property
+    def display_name(self) -> Optional[str]:
+        """The DisplayName property specifies the users's display name."""
+        return self.properties.get("displayName", None)
 
     @property
     def given_name(self) -> Optional[str]:
@@ -1270,6 +1282,7 @@ class User(DirectoryObject):
                 "createdObjects": self.created_objects,
                 "employeeExperience": self.employee_experience,
                 "followedSites": self.followed_sites,
+                "lastPasswordChangeDateTime": self.last_password_change_datetime,
                 "licenseDetails": self.license_details,
                 "managedDevices": self.managed_devices,
                 "memberOf": self.member_of,
