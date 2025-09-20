@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Any, List, Optional
+
+from typing_extensions import Self
 
 from office365.azure_env import (
     AzureEnvironment,
@@ -8,14 +10,14 @@ from office365.azure_env import (
 from office365.runtime.auth.token_response import TokenResponse
 
 
-class AuthenticationContext(object):
+class AuthenticationContext:
     """Provides authentication context for Microsoft Graph client"""
 
     def __init__(
         self,
-        tenant=None,
-        scopes=None,
-        token_cache=None,
+        tenant: str = None,
+        scopes: List[str] = None,
+        token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """
@@ -26,14 +28,13 @@ class AuthenticationContext(object):
         """
         self._tenant = tenant
         if scopes is None:
-            scopes = ["{0}/.default".format(get_graph_authority(environment))]
+            scopes = [f"{get_graph_authority(environment)}/.default"]
         self._scopes = scopes
         self._token_cache = token_cache
         self._token_callback = None
         self._environment = environment
 
-    def acquire_token(self):
-        # type: () -> TokenResponse
+    def acquire_token(self) -> TokenResponse:
         """Acquire access token"""
         if not self._token_callback:
             raise ValueError("Token callback is not set.")
@@ -41,12 +42,12 @@ class AuthenticationContext(object):
         token = TokenResponse.from_json(token_resp)
         return token
 
-    def with_access_token(self, token_callback):
+    def with_access_token(self, token_callback) -> Self:
         """"""
         self._token_callback = token_callback
         return self
 
-    def with_certificate(self, client_id, thumbprint, private_key):
+    def with_certificate(self, client_id: str, thumbprint: str, private_key: str):
         """
         Initializes the confidential client with client certificate
 
@@ -73,8 +74,7 @@ class AuthenticationContext(object):
 
         return self.with_access_token(_acquire_token)
 
-    def with_client_secret(self, client_id, client_secret):
-        # type: (str, str) -> "AuthenticationContext"
+    def with_client_secret(self, client_id: str, client_secret: str) -> Self:
         """
         Initializes the confidential client with client secret
 
@@ -95,8 +95,9 @@ class AuthenticationContext(object):
 
         return self.with_access_token(_acquire_token)
 
-    def with_token_interactive(self, client_id, username=None):
-        # type: (str, Optional[str]) -> "AuthenticationContext"
+    def with_token_interactive(
+        self, client_id: str, username: Optional[str] = None
+    ) -> Self:
         """
         Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
@@ -128,8 +129,9 @@ class AuthenticationContext(object):
 
         return self.with_access_token(_acquire_token)
 
-    def with_username_and_password(self, client_id, username, password):
-        # type: (str, str, str) -> "AuthenticationContext"
+    def with_username_and_password(
+        self, client_id: str, username: str, password: str
+    ) -> Self:
         """
         Initializes the client via user credentials
 
