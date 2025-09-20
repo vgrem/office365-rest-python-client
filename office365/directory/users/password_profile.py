@@ -7,9 +7,9 @@ class PasswordProfile(ClientValue):
 
     def __init__(
         self,
-        password=None,
-        force_change_password_next_sign_in=None,
-        force_change_password_next_sign_in_with_mfa=None,
+        password: str = None,
+        force_change_password_next_sign_in: bool = None,
+        force_change_password_next_sign_in_with_mfa: bool = None,
     ):
         """
         :param str password: The password for the user. This property is required when a user is created.

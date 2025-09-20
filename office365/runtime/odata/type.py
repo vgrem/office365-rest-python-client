@@ -11,21 +11,22 @@ from office365.runtime.odata.property import ODataProperty
 T = TypeVar("T", bound=Type)
 
 
+# from office365.runtime.types.collections import GuidCollection
+
+"""Primitive OData data type mapping"""
+_PRIMITIVE_TYPES = {
+    bool: "Edm.Boolean",
+    int: "Edm.Int32",
+    str: "Edm.String",
+    datetime.datetime: "Edm.DateTimeOffset",
+    uuid.UUID: "Edm.Guid",
+    dict: "Collection(SP.KeyValue)",
+    # GuidCollection: "Collection(Edm.Guid)",
+}
+
+
 class ODataType:
     """OData type system utilities with enhanced type resolution."""
-
-    # from office365.runtime.types.collections import GuidCollection
-
-    primitive_types = {
-        bool: "Edm.Boolean",
-        int: "Edm.Int32",
-        str: "Edm.String",
-        datetime.datetime: "Edm.DateTimeOffset",
-        uuid.UUID: "Edm.Guid",
-        dict: "Collection(SP.KeyValue)",
-        # GuidCollection: "Collection(Edm.Guid)",
-    }
-    """Primitive OData data type mapping"""
 
     def __init__(self):
         self.className = None
@@ -50,7 +51,7 @@ class ODataType:
             >>> import decimal
             >>> ODataType.register_type(decimal.Decimal, "Edm.Decimal")
         """
-        cls.primitive_types[python_type] = odata_type
+        _PRIMITIVE_TYPES[python_type] = odata_type
 
     @classmethod
     def resolve_type(cls, client_type: T) -> Optional[str]:
@@ -76,12 +77,20 @@ class ODataType:
         except TypeError:
             pass
 
-        return cls.primitive_types.get(client_type, None)
+        return _PRIMITIVE_TYPES.get(client_type, None)
 
     @classmethod
     def is_primitive_type(cls, client_type: T) -> bool:
         """Checks if a type is a known OData primitive type."""
-        return client_type in cls.primitive_types
+        return client_type in _PRIMITIVE_TYPES
+
+    @classmethod
+    def get_model_type(cls, type_name: str) -> Optional[Type]:
+        """Returns the Model type for a given OData type name."""
+        for model_type, odata_name in _PRIMITIVE_TYPES.items():
+            if odata_name == type_name:
+                return model_type
+        return None
 
     def add_property(self, schema: ODataProperty) -> Self:
         self.properties[schema.name] = schema

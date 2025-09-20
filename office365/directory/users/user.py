@@ -66,7 +66,7 @@ from office365.outlook.mail.tips.tips import MailTips
 from office365.outlook.person import Person
 from office365.outlook.user import OutlookUser
 from office365.planner.user import PlannerUser
-from office365.runtime.client_object import ClientObject
+from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
@@ -220,7 +220,7 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_query_execute(_construct_request)
         return self
 
-    def change_password(self, current_password, new_password):
+    def change_password(self, current_password: str, new_password: str) -> Self:
         """
         Enable the user to update their password. Any user can update their password without belonging
         to any administrator role.
@@ -517,7 +517,9 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
 
-    def get_reminder_view(self, start_dt, end_dt):
+    def get_reminder_view(
+        self, start_dt: datetime, end_dt: datetime
+    ) -> ClientResult[ClientValueCollection[Reminder]]:
         """Get the occurrences, exceptions, and single instances of events in a calendar view defined by a time range,
                    from the user's default calendar, or from some other calendar of the user's.
 
@@ -535,7 +537,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_managed_app_diagnostic_statuses(self):
+    def get_managed_app_diagnostic_statuses(
+        self,
+    ) -> ClientResult[ClientValueCollection[ManagedAppDiagnosticStatus]]:
         """Gets diagnostics validation status for a given user."""
         return_type = ClientResult(
             self.context, ClientValueCollection(ManagedAppDiagnosticStatus)
@@ -612,7 +616,10 @@ class User(DirectoryObject):
         return self
 
     def translate_exchange_ids(
-        self, input_ids, source_id_type=None, target_id_type=None
+        self,
+        input_ids: List[str],
+        source_id_type: str = None,
+        target_id_type: str = None,
     ):
         """
         Translate identifiers of Outlook-related resources between formats.
@@ -1193,13 +1200,14 @@ class User(DirectoryObject):
         return self.properties.get("passwordPolicies", None)
 
     @property
+    @persist_property("passwordProfile")
     def password_profile(self) -> PasswordProfile:
         """
         Specifies the password profile for the user. The profile contains the user's password.
         This property is required when a user is created. The password in the profile must satisfy minimum
         requirements as specified by the passwordPolicies property. By default, a strong password is required.
         """
-        return self.properties.get("passwordProfile", PasswordProfile())
+        return self.properties.setdefault("passwordProfile", PasswordProfile())
 
     @property
     def presence(self) -> Presence:

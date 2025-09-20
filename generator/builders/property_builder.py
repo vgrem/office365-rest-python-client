@@ -5,8 +5,8 @@ import re
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-   from generator.builders.template_context import TemplateContext
-   from office365.runtime.odata.property import ODataProperty
+    from generator.builders.template_context import TemplateContext
+    from office365.runtime.odata.property import ODataProperty
 
 
 class PropertyBuilder:
@@ -33,15 +33,8 @@ class PropertyBuilder:
     def type_name(self) -> str:
         from office365.runtime.odata.type import ODataType
 
-        if self.schema.type_name in ODataType.primitive_types.values():
-            python_type = next(
-                (
-                    key
-                    for key, value in ODataType.primitive_types.items()
-                    if value == self.schema.type_name
-                ),
-                None,
-            )
-            if python_type:
-                return python_type.__name__
+        model_type = ODataType.get_model_type(self.schema.type_name)
+        if model_type:
+            return model_type.__name__
+
         return self.schema.type_name

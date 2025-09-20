@@ -13,3 +13,4 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
 result = client.me.license_details.get().execute_query()
 for details in result:
     print(details)
+

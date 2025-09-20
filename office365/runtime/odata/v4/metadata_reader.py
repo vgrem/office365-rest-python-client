@@ -1,3 +1,5 @@
+from typing import Dict
+
 from office365.runtime.odata.reader import ODataReader
 
 
@@ -6,11 +8,9 @@ class ODataV4Reader(ODataReader):
 
     _options = None
 
-    def __init__(self, metadata_path: str) -> None:
-        super(ODataV4Reader, self).__init__(
-            metadata_path,
-            {
-                "xmlns": "http://docs.oasis-open.org/odata/ns/edm",
-                "edmx": "http://docs.oasis-open.org/odata/ns/edmx",
-            },
-        )
+    @property
+    def xml_namespaces(self) -> Dict[str, str]:
+        return {
+            "xmlns": "http://docs.oasis-open.org/odata/ns/edm",
+            "edmx": "http://docs.oasis-open.org/odata/ns/edmx",
+        }
