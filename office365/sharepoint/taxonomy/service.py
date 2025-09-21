@@ -1,31 +1,35 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.taxonomy.stores.store import TermStore
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class TaxonomyService(ClientRuntimeContext):
     """Wraps all of the associated TermStore objects for an Site object."""
 
-    def __init__(self, context):
-        """
-        :type  context: office365.sharepoint.client_context.ClientContext
-        """
-        super(TaxonomyService, self).__init__()
+    def __init__(self, context: ClientContext):
+        super().__init__()
         self._pending_request = ODataRequest(V4JsonFormat())
         self._pending_request.beforeExecute += (
             context.authentication_context.authenticate_request
         )
-        self._service_root_url = "{0}/v2.1".format(context.service_root_url)
+        self._service_root_url = f"{context.service_root_url}/v2.1"
 
     def pending_request(self):
         return self._pending_request
 
     @property
-    def service_root_url(self):
+    def service_root_url(self) -> str:
         return self._service_root_url
 
     @property
-    def term_store(self):
+    def term_store(self) -> TermStore:
         return TermStore(self, ResourcePath("termStore", None))

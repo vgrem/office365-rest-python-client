@@ -2,7 +2,7 @@ from typing import List
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.audience import Audience
+from office365.sharepoint.sharing.audience import Audience
 
 
 class TargetedSiteDetails(ClientValue):

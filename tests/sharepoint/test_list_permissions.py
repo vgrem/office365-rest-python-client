@@ -48,6 +48,7 @@ class TestSPListPermissions(SPTestCase):
         result = self.target_list.remove_role_assignment(
             target_user, target_role_def
         ).execute_query()
+
         self.assertEqual(len(result.parent_collection), 0)
 
     def test9_reset_role_inheritance(self):

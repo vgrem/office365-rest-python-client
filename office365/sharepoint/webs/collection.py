@@ -24,7 +24,7 @@ class WebCollection(EntityCollection["Web"]):
     ):
         from office365.sharepoint.webs.web import Web
 
-        super(WebCollection, self).__init__(context, Web, resource_path, parent_web)
+        super().__init__(context, Web, resource_path, parent_web)
 
     def add(self, web_creation_information: WebCreationInformation) -> Web:
         """

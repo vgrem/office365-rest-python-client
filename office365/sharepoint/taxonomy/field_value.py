@@ -3,7 +3,9 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class TaxonomyFieldValue(ClientValue):
-    def __init__(self, label=None, term_guid=None, wss_id=-1):
+    """Represents a single value held in a TaxonomyField (section 3.1.5.27) object."""
+
+    def __init__(self, label: str = None, term_guid: str = None, wss_id: int = -1):
         """
         Represents a single value held in a TaxonomyField (section 3.1.5.27) object.
 

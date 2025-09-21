@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -160,7 +160,9 @@ class Utility(Entity):
         return utility
 
     @staticmethod
-    def unmark_discussion_as_featured(context, list_id: str, topic_ids: str):
+    def unmark_discussion_as_featured(
+        context: ClientContext, list_id: str, topic_ids: str
+    ):
         """
         This method is a static method.
         :type context: office365.sharepoint.client_context.ClientContext
@@ -176,7 +178,12 @@ class Utility(Entity):
         return utility
 
     @staticmethod
-    def expand_groups_to_principals(context, inputs, max_count=None, return_type=None):
+    def expand_groups_to_principals(
+        context: ClientContext,
+        inputs: List[str],
+        max_count: int = None,
+        return_type: ClientResult[ClientValueCollection[PrincipalInfo]] = None,
+    ):
         """
         Expands groups to a collection of principals.
         :type context: office365.sharepoint.client_context.ClientContext

@@ -15,7 +15,7 @@ class ContextWebInformation(ClientValue):
              to validate client requests. The validation is specific to a user, site, and time period.
         :param int form_digest_timeout_secs: Specifies the amount of time in seconds before security validation expires.
         """
-        super(ContextWebInformation, self).__init__()
+        super().__init__()
         self.FormDigestValue = form_digest_value
         self.FormDigestTimeoutSeconds = form_digest_timeout_secs
         self.LibraryVersion = None

@@ -10,7 +10,7 @@ from office365.sharepoint.entity import Entity
 class UserProfilePropertiesForUser(Entity):
     """The UserProfilePropertiesForUser class represents a set of user profile properties for a user."""
 
-    def get_property_names(self):
+    def get_property_names(self) -> ClientResult[StringCollection]:
         """
         The GetPropertyNames method gets an array of strings that specify the user profile property names.
         """
