@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
@@ -9,7 +11,7 @@ class MenuNode(ClientValue):
 
     def __init__(
         self,
-        audience_ids=None,
+        audience_ids: List[str] = None,
         current_lcid=None,
         title=None,
         is_deleted=None,
@@ -18,7 +20,7 @@ class MenuNode(ClientValue):
         nodes=None,
         node_type=None,
         open_in_new_window=None,
-        simple_url=None,
+        simple_url: str = None,
         translations=None,
     ):
         """

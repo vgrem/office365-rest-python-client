@@ -1,6 +1,7 @@
-class NavigationProviderType:
-    def __init__(self):
-        pass
+from enum import Enum
+
+
+class NavigationProviderType(Enum):
 
     SPNavigationProvider = "SPNavigationProvider"
 

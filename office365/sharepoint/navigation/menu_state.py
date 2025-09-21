@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import GuidCollection
@@ -9,11 +11,11 @@ class MenuState(ClientValue):
 
     def __init__(
         self,
-        audience_ids=None,
-        friendly_url_prefix=None,
-        nodes=None,
-        simple_url=None,
-        site_prefix=None,
+        audience_ids: GuidCollection = None,
+        friendly_url_prefix: str = None,
+        nodes: List[MenuNode] = None,
+        simple_url: str = None,
+        site_prefix: str = None,
     ):
         """
         :param list[uuid] audience_ids:

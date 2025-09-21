@@ -11,6 +11,8 @@ from office365.sharepoint.navigation.node_creation_information import (
 
 
 class NavigationNodeCollection(EntityCollection[NavigationNode]):
+    """Represents a collection of NavigationNode resources."""
+
     def __init__(self, context, resource_path=None):
         super(NavigationNodeCollection, self).__init__(
             context, NavigationNode, resource_path

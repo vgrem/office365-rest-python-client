@@ -79,7 +79,6 @@ class SecurableObject(Entity):
 
         def _remove_role_assignment():
             self.role_assignments.remove_role_assignment(principal.id, role_def.id)
-            self.remove_from_parent_collection()
 
         def _ensure_role_def():
             role_def.ensure_property("Id", _remove_role_assignment)

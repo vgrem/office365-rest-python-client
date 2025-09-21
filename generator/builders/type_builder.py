@@ -90,7 +90,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         class_node.body.insert(0, init_method)
 
-    def  _build_init_method(self) -> ast.FunctionDef:
+    def _build_init_method(self) -> ast.FunctionDef:
         args = [ast.arg(arg="self", annotation=None)]
         defaults = []
 

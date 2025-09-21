@@ -9,20 +9,18 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
     """Represents a collection of RoleAssignment resources."""
 
     def __init__(self, context, resource_path=None):
-        super(RoleAssignmentCollection, self).__init__(
-            context, RoleAssignment, resource_path
-        )
+        super().__init__(context, RoleAssignment, resource_path)
 
     def __getitem__(self, key):
         """
         :param int or str key: key is used to address a RoleAssignment resource by either an index
         in collection or by resource id"""
         if isinstance(key, int):
-            return super(RoleAssignmentCollection, self).__getitem__(key)
+            return super().__getitem__(key)
         else:
             return self._item_type(self.context, ResourcePath(key, self.resource_path))
 
-    def get_by_principal_id(self, principal_id):
+    def get_by_principal_id(self, principal_id: int) -> RoleAssignment:
         """Retrieves the role assignment object (1) based on the specified user or group.
 
         :param int principal_id: Specifies the user or group of the role assignment.
@@ -34,7 +32,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
             ),
         )
 
-    def add_role_assignment(self, principal_id, role_def_id):
+    def add_role_assignment(self, principal_id: int, role_def_id: int):
         """Adds a role assignment to the role assignment collection.
 
         :param int principal_id: Specifies the user or group of the role assignment.

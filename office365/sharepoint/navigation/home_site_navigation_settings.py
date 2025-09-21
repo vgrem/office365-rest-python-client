@@ -1,17 +1,21 @@
-from office365.runtime.paths.resource_path import ResourcePath
+from typing_extensions import Self
+
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
 class HomeSiteNavigationSettings(Entity):
+    """Represents the home site navigation settings."""
+
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
+            resource_path = StaticPath(
                 "Microsoft.SharePoint.Navigation.REST.HomeSiteNavigationSettings"
             )
-        super(HomeSiteNavigationSettings, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def enable_global_navigation(self, is_enabled):
+    def enable_global_navigation(self, is_enabled: bool) -> Self:
         """
         :param bool is_enabled:
         """

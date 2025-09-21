@@ -17,7 +17,7 @@ class RoleAssignment(Entity):
         return self.properties.get("PrincipalId", None)
 
     @property
-    def member(self):
+    def member(self) -> Principal:
         """Specifies the user or group corresponding to the role assignment."""
         return self.properties.get(
             "Member",
@@ -25,7 +25,7 @@ class RoleAssignment(Entity):
         )
 
     @property
-    def role_definition_bindings(self):
+    def role_definition_bindings(self) -> RoleDefinitionCollection:
         """Specifies a collection of role definitions for this role assignment."""
         return self.properties.get(
             "RoleDefinitionBindings",
@@ -44,4 +44,4 @@ class RoleAssignment(Entity):
                 "RoleDefinitionBindings": self.role_definition_bindings,
             }
             default_value = property_mapping.get(name, None)
-        return super(RoleAssignment, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
