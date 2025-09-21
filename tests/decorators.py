@@ -13,8 +13,7 @@ T = TypeVar("T", bound=Callable[..., Any])
 
 
 @lru_cache(maxsize=1)
-def _get_cached_permissions(client, client_id):
-    # type: (GraphClient, str) -> AppRoleCollection
+def _get_cached_permissions(client: GraphClient, client_id: str) -> AppRoleCollection:
     """Get and cache application permissions for a client"""
     resource = client.service_principals.get_by_name("Microsoft Graph")
     result = resource.get_application_permissions(client_id).execute_query()

@@ -7,7 +7,7 @@ class Album(ClientValue):
     Bundles of this type will have the album property set on the bundle resource.
     """
 
-    def __init__(self, cover_image_item_id=None):
+    def __init__(self, cover_image_item_id: str = None):
         """
         :param str cover_image_item_id: Unique identifier of the driveItem that is the cover of the album.
         """

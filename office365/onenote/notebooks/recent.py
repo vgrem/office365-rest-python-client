@@ -7,7 +7,7 @@ class RecentNotebook(ClientValue):
 
     def __init__(
         self,
-        display_name=None,
+        display_name: str = None,
         last_accessed_time=None,
         links=RecentNotebookLinks(),
         source_service=None,

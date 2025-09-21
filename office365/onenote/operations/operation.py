@@ -7,8 +7,8 @@ class Operation(Entity):
     """The status of a long-running operation."""
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """
         The start time of the operation.
         """
-        return self.properties("createdDateTime", datetime.min)
+        return self.properties.get("createdDateTime", datetime.min)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.groups.group import Group
 from office365.planner.plans.plan import PlannerPlan
 from tests import create_unique_name
@@ -5,8 +7,8 @@ from tests.graph_case import GraphTestCase
 
 
 class TestPlanner(GraphTestCase):
-    target_group = None  # type: Group
-    target_plan = None  # type: PlannerPlan
+    target_group: Optional[Group] = None
+    target_plan: Optional[PlannerPlan] = None
 
     @classmethod
     def setUpClass(cls):

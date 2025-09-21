@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from functools import partial
 from os.path import isfile, join
-from typing import IO, AnyStr, Callable, Optional
+from typing import IO, AnyStr, Callable, Optional, Union
 
 import requests
 from typing_extensions import Self
@@ -453,7 +453,7 @@ class DriveItem(BaseItem):
     def download_session(
         self,
         file_object: IO,
-        chunk_downloaded: Callable[[int], None] or None = None,
+        chunk_downloaded: Callable[[int], None] = None,
         chunk_size: Optional[int] = 1024 * 1024,
     ) -> Self:
         """
@@ -730,7 +730,7 @@ class DriveItem(BaseItem):
         return return_type
 
     def preview(
-        self, page: str or int, zoom: int or None = None
+        self, page: Union[str, int], zoom: Optional[int] = None
     ) -> ClientResult[ItemPreviewInfo]:
         """
         This action allows you to obtain a short-lived embeddable URL for an item in order
@@ -810,7 +810,7 @@ class DriveItem(BaseItem):
         return self.properties.get("shared", Shared())
 
     @property
-    def web_dav_url(self) -> str or None:
+    def web_dav_url(self) -> Optional[str]:
         """WebDAV compatible URL for the item."""
         return self.properties.get("webDavUrl", None)
 
@@ -935,10 +935,6 @@ class DriveItem(BaseItem):
             ),
         )
 
-    def set_property(self, name, value, persist_changes=True):
-        super(DriveItem, self).set_property(name, value, persist_changes)
-        return self
-
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
@@ -947,4 +943,4 @@ class DriveItem(BaseItem):
                 "specialFolder": self.special_folder,
             }
             default_value = property_mapping.get(name, None)
-        return super(DriveItem, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

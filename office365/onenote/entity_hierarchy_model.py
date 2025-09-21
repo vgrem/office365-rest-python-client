@@ -35,6 +35,4 @@ class OnenoteEntityHierarchyModel(OnenoteEntitySchemaObjectModel):
                 "lastModifiedBy": self.last_modified_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(OnenoteEntityHierarchyModel, self).get_property(
-            name, default_value
-        )
+        return super().get_property(name, default_value)

@@ -8,17 +8,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPTaxonomy(SPTestCase):
-    target_field = None  # type: Field
-    target_term_group = None  # type: TermGroup
-    target_term_set = None  # type: TermSet
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSPTaxonomy, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_field: Field = None
+    target_term_group: TermGroup = None
+    target_term_set: TermSet = None
 
     def test1_get_term_store(self):
         term_store = self.client.taxonomy.term_store.get().execute_query()

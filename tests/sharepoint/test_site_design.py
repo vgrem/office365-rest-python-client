@@ -7,7 +7,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSiteDesign(SPTestCase):
-    site_design_metadata = None  # type: SiteDesignMetadata
+    site_design_metadata: SiteDesignMetadata = None
     site_design_count = None
 
     def test_1_create(self):

@@ -38,6 +38,11 @@ class SharepointSettings(Entity):
         return self.properties.get("isCommentingOnSitePagesEnabled", None)
 
     @property
+    def is_legacy_auth_protocols_enabled(self) -> Optional[bool]:
+        """Indicates whether legacy authentication protocols are enabled for the tenant."""
+        return self.properties.get("isLegacyAuthProtocolsEnabled", None)
+
+    @property
     def sharing_allowed_domain_list(self) -> StringCollection:
         """
         Collection of email domains that are allowed for sharing outside the organization.

@@ -14,9 +14,6 @@ if TYPE_CHECKING:
 class ViewFieldCollection(Entity):
     """Represents a collection of Field resources."""
 
-    def __init__(self, context, resource_path=None):
-        super(ViewFieldCollection, self).__init__(context, resource_path)
-
     def __len__(self):
         return len(self.items)
 

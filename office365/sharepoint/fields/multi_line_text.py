@@ -4,9 +4,7 @@ from office365.sharepoint.fields.field import Field
 
 
 class FieldMultiLineText(Field):
-    def __init__(self, context):
-        """Represents a text field that can contain multiple lines."""
-        super(FieldMultiLineText, self).__init__(context)
+    """Represents a text field that can contain multiple lines."""
 
     @property
     def allow_hyperlink(self) -> Optional[bool]:

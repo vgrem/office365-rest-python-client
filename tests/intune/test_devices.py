@@ -4,7 +4,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestDevices(GraphTestCase):
-    device = None  # type: Device
+    device: Device = None
 
     @requires_delegated_permission(
         "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All"

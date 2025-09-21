@@ -11,14 +11,6 @@ class TestSPList(SPTestCase):
     target_list: List = None
     target_list_title = create_unique_name("Tasks")
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestSPList, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def test_10_create_list(self):
         list_properties = ListCreationInformation()
         list_properties.AllowContentTypes = True

@@ -25,6 +25,7 @@ from office365.teams.teamwork.notification_recipient import (
 )
 from office365.teams.teamwork.tags.tag import TeamworkTag
 from office365.teams.template import TeamsTemplate
+from office365.teams.visibility_type import TeamVisibilityType
 
 
 class Team(Entity):
@@ -102,9 +103,9 @@ class Team(Entity):
         return self.properties.get("isArchived", None)
 
     @property
-    def visibility(self) -> Optional[str]:
+    def visibility(self) -> Optional[TeamVisibilityType]:
         """The visibility of the group and team. Defaults to Public."""
-        return self.properties.get("visibility", None)
+        return self.properties.get("visibility", TeamVisibilityType.none_)
 
     @property
     def web_url(self) -> Optional[str]:

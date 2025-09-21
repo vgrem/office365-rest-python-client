@@ -10,7 +10,7 @@ class TeamsTab(Entity):
     """
 
     @property
-    def teams_app(self):
+    def teams_app(self) -> TeamsApp:
         """The application that is linked to the tab. This cannot be changed after tab creation."""
         return self.properties.get(
             "teamsApp",
@@ -18,7 +18,7 @@ class TeamsTab(Entity):
         )
 
     @property
-    def configuration(self):
+    def configuration(self) -> TeamsTabConfiguration:
         """
         Container for custom settings applied to a tab. The tab is considered configured only once this property is set.
         """

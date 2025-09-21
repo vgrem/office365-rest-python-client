@@ -17,6 +17,8 @@ def _message_to_payload(message: Message) -> bytes:
 
 
 class OneNotePageCreateQuery(ClientQuery):
+    """Create OneNote page query"""
+
     def __init__(self, pages, presentation_file, attachment_files=None):
         """
         :type pages: office365.onenote.pages.collection.OnenotePageCollection

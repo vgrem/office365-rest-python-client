@@ -1,8 +1,9 @@
-class TeamVisibilityType:
+from enum import Enum
+
+
+class TeamVisibilityType(Enum):
     """Describes the visibility of a team."""
 
-    def __init__(self):
-        pass
-
+    none_ = -1
     private = 0
     public = 1

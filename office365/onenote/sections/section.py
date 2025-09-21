@@ -17,13 +17,18 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
     """A section in a OneNote notebook. Sections can contain pages."""
 
     def copy_to_section_group(
-        self, group_id, _id, rename_as=None, site_collection_id=None, site_id=None
+        self,
+        group_id: str,
+        id_: str,
+        rename_as: str = None,
+        site_collection_id: str = None,
+        site_id: str = None,
     ):
         """For Copy operations, you follow an asynchronous calling pattern: First call the Copy action,
         and then poll the operation endpoint for the result.
 
         :param str group_id: The id of the group to copy to. Use only when copying to a Microsoft 365 group.
-        :param str _id: Required. The id of the destination section group.
+        :param str id_: Required. The id of the destination section group.
         :param str rename_as: The name of the copy. Defaults to the name of the existing item.
         :param str site_collection_id:
         :param str site_id:
@@ -31,7 +36,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         return_type = OnenoteOperation(self.context)
         payload = {
             "groupId": group_id,
-            "id": _id,
+            "id": id_,
             "renameAs": rename_as,
             "siteCollectionId": site_collection_id,
             "siteId": site_id,

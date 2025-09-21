@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.onedrive.driveitems.image import Image
 from office365.onedrive.files.file import File
@@ -17,16 +19,16 @@ class RemoteItem(ClientValue):
 
     def __init__(
         self,
-        _id=None,
+        id_: str = None,
         created_by=IdentitySet(),
-        created_datetime=None,
+        created_datetime=datetime.min,
         file=File(),
         file_system_info=FileSystemInfo(),
         folder=Folder(),
         image=Image(),
     ):
         """
-        :param str _id: Unique identifier for the remote item in its drive. Read-only.
+        :param str id_: Unique identifier for the remote item in its drive. Read-only.
         :param IdentitySet created_by: Identity of the user, device, and application which created the item. Read-only.
         :param datetime.datetime created_datetime: Date and time of item creation. Read-only.
         :param File file: Indicates that the remote item is a file. Read-only.
@@ -34,7 +36,7 @@ class RemoteItem(ClientValue):
         :param Folder folder: Indicates that the remote item is a folder. Read-only.
         :param Image image: Image metadata, if the item is an image. Read-only.
         """
-        self.id = _id
+        self.id = id_
         self.createdBy = created_by
         self.createdDateTime = created_datetime
         self.file = file
