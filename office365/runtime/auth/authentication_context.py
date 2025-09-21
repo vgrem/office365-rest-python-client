@@ -206,6 +206,49 @@ class AuthenticationContext:
         self._authenticate = _authenticate
         return self
 
+    def with_username_and_password(
+        self,
+        tenant: str,
+        client_id: str,
+        username: str,
+        password: str,
+        scopes: List[str] = None,
+    ) -> Self:
+        """
+        Initializes Username and password authentication flow
+
+        :param scopes:
+        :param str tenant:
+        :param str client_id: The OAuth client id of the calling application.
+        :param str username: Typically a UPN in the form of an email address.
+        :param str password: The password.
+        """
+        import msal
+
+        authority_url = f"{get_login_authority(self._environment)}/{tenant}"
+
+        app = msal.PublicClientApplication(
+            authority=authority_url,
+            client_id=client_id,
+        )
+
+        def _acquire_token():
+            result = None
+            accounts = app.get_accounts(username=username)
+            if accounts:
+                result = app.acquire_token_silent(scopes, account=accounts[0])
+
+            if not result:
+                token_json = app.acquire_token_by_username_password(
+                    username=username,
+                    password=password,
+                    scopes=scopes,
+                )
+                result = TokenResponse.from_json(token_json)
+            return result
+
+        return self.with_access_token(_acquire_token)
+
     def with_credentials(
         self, credentials: Union[UserCredential, ClientCredential]
     ) -> AuthenticationContext:
@@ -230,6 +273,16 @@ class AuthenticationContext:
 
                 provider = NtlmProvider(credentials)
             else:
+
+                import warnings
+
+                warnings.warn(
+                    "Use with_username_and_password instead. Microsoft 365 solutions we will be "
+                    "retiring the use of Azure ACS (Access Control Services) for SharePoint Online auth.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
                 provider = SamlTokenProvider(
                     self.url,
                     credentials,

@@ -2,16 +2,25 @@ from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.directory.session import DirectorySession
-from tests import test_site_url, test_user_credentials
+from tests import (
+    test_client_id,
+    test_password,
+    test_site_url,
+    test_tenant,
+    test_user_credentials,
+    test_username,
+)
 
 
 class TestDirectorySession(TestCase):
-    client = None  # type: ClientContext
+    client: ClientContext = None
 
     @classmethod
     def setUpClass(cls):
         super(TestDirectorySession, cls).setUpClass()
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         cls.client = client
 
     def test_1_init_session(self):

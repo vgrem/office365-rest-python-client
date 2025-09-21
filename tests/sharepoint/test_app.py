@@ -9,10 +9,10 @@ from tests import test_admin_credentials, test_admin_site_url, test_team_site_ur
 
 
 class TestApp(TestCase):
-    tenant_app_catalog = None  # type:  TenantCorporateCatalogAccessor
-    admin_client = None  # type:  ClientContext
-    app = None  # type:  CorporateCatalogAppMetadata
-    site_col_app_catalog = None  # type:  TenantCorporateCatalogAccessor
+    tenant_app_catalog: TenantCorporateCatalogAccessor = None
+    admin_client: ClientContext = None
+    app: CorporateCatalogAppMetadata = None
+    site_col_app_catalog: TenantCorporateCatalogAccessor = None
 
     @classmethod
     def setUpClass(cls):

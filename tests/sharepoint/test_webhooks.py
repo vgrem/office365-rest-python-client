@@ -6,8 +6,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPWebHooks(SPTestCase):
-    target_list = None  # type: List
-    target_subscription = None  # type: Subscription
+    target_list: List = None
+    target_subscription: Subscription = None
     push_service_url = "https://westeurope0.pushnp.svc.ms/notifications?token=526a9d28-d4ec-45b7-81b9-4e1599524784"
 
     @classmethod

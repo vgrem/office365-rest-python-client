@@ -22,7 +22,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.types.event_handler import EventHandler
-from office365.runtime.utilities import get_absolute_url, urlparse
+from office365.runtime.utilities import deprecated, get_absolute_url, urlparse
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
@@ -159,6 +159,11 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_access_token(token_func)
         return self
 
+    @deprecated(
+        version="3.0.0",
+        reason="Use with_username_and_password instead. Microsoft 365 solutions we will be "
+        "retiring the use of Azure ACS (Access Control Services) for SharePoint Online auth.",
+    )
     def with_user_credentials(self, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via user credentials.
@@ -166,6 +171,22 @@ class ClientContext(ClientRuntimeContext):
         :param str password: The password
         """
         self.authentication_context.with_credentials(UserCredential(username, password))
+        return self
+
+    def with_username_and_password(
+        self, tenant: str, client_id: str, username: str, password: str
+    ) -> Self:
+        """
+        Initializes a client to acquire a token via Username and password authentication flow.
+        :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
+        :param str client_id: The OAuth client id of the calling application.
+        :param str username: Typically, a UPN in the form of an email address
+        :param str password: The password
+        """
+        scopes = [f"{self.base_url}/.default"]
+        self.authentication_context.with_username_and_password(
+            tenant, client_id, username, password, scopes
+        )
         return self
 
     def with_client_credentials(self, client_id: str, client_secret: str) -> Self:
@@ -188,7 +209,6 @@ class ClientContext(ClientRuntimeContext):
     ) -> Self:
         """
         Initializes a client to acquire a token via user or client credentials
-        :type credentials: UserCredential or ClientCredential
         """
         self.authentication_context.with_credentials(credentials)
         return self
