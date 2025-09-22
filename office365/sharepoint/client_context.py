@@ -183,7 +183,8 @@ class ClientContext(ClientRuntimeContext):
         :param str username: Typically, a UPN in the form of an email address
         :param str password: The password
         """
-        scopes = [f"{self.base_url}/.default"]
+        resource = get_absolute_url(self.base_url)
+        scopes = [f"{resource}/.default"]
         self.authentication_context.with_username_and_password(
             tenant, client_id, username, password, scopes
         )

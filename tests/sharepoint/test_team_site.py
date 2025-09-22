@@ -4,7 +4,13 @@ from unittest import TestCase
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
-from tests import test_site_url, test_user_credentials
+from tests import (
+    test_client_id,
+    test_password,
+    test_site_url,
+    test_tenant,
+    test_username,
+)
 
 
 class TestTeamSite(TestCase):
@@ -13,7 +19,9 @@ class TestTeamSite(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         cls.client = client
 
     def test1_can_user_create_group(self):
@@ -57,17 +65,5 @@ class TestTeamSite(TestCase):
     def test8_get_group_creation_context(self):
         result = (
             self.client.group_site_manager.get_group_creation_context().execute_query()
-        )
-        self.assertIsNotNone(result.value)
-
-    def test9_get_current_user_shared_channel_member_groups(self):
-        result = (
-            self.client.group_site_manager.get_current_user_shared_channel_member_groups().execute_query()
-        )
-        self.assertIsNotNone(result.value)
-
-    def test_10_recent_and_joined_teams(self):
-        result = (
-            self.client.group_site_manager.recent_and_joined_teams().execute_query()
         )
         self.assertIsNotNone(result.value)

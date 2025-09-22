@@ -6,7 +6,6 @@ from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.odata.json_format import ODataJsonFormat
-from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.utilities import parse_enum
 
@@ -184,6 +183,8 @@ class ClientValueCollection(ClientValue, Generic[T]):
 
     @property
     def entity_type_name(self) -> str:
+        from office365.runtime.odata.type import ODataType
+
         """Gets the OData type name for this collection.
 
         Returns:

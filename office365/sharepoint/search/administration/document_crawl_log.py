@@ -20,7 +20,7 @@ class DocumentCrawlLog(Entity):
         static_path = StaticPath(
             "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
         )
-        super(DocumentCrawlLog, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @staticmethod
     def create(context: ClientContext) -> DocumentCrawlLog:

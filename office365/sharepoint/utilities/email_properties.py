@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.collections import StringCollection
 
 
 class EmailProperties(ClientValue):
@@ -30,9 +30,9 @@ class EmailProperties(ClientValue):
         self.Body = body
         self.Subject = subject
         self.From = from_address
-        self.To = ClientValueCollection(str, to)
-        self.CC = ClientValueCollection(str, cc)
-        self.BCC = ClientValueCollection(str, bcc)
+        self.To = StringCollection(to)
+        self.CC = StringCollection(cc)
+        self.BCC = StringCollection(bcc)
         self.AdditionalHeaders = additional_headers
 
     @property

@@ -16,10 +16,6 @@ class TestSharePointWeb(SPTestCase):
     target_web: Web = None
     target_user: User = None
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestSharePointWeb, cls).setUpClass()
-
     def test1_get_current_user(self):
         result = self.client.web.current_user.get().execute_query()
         self.assertIsNotNone(result.login_name)

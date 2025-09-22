@@ -1,5 +1,9 @@
+from typing import Union
+
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
@@ -31,9 +35,7 @@ class PeopleManager(Entity):
     """Provides methods for operations related to people."""
 
     def __init__(self, context):
-        super(PeopleManager, self).__init__(
-            context, ResourcePath("SP.UserProfiles.PeopleManager")
-        )
+        super().__init__(context, StaticPath("SP.UserProfiles.PeopleManager"))
 
     @staticmethod
     def get_trending_tags(context):
@@ -50,7 +52,7 @@ class PeopleManager(Entity):
         context.add_query(qry)
         return return_type
 
-    def get_user_onedrive_quota_max(self, account_name):
+    def get_user_onedrive_quota_max(self, account_name: str):
         """
         :param str account_name: Account name of the specified user.
         """
@@ -76,7 +78,7 @@ class PeopleManager(Entity):
         return result
 
     def get_followers_for(
-        self, account: str | User
+        self, account: Union[str, User]
     ) -> EntityCollection[PersonProperties]:
         """
         Gets the people who are following the specified user.
@@ -102,7 +104,7 @@ class PeopleManager(Entity):
             _get_followers_for(account)
         return return_type
 
-    def get_user_information(self, account_name, site_id):
+    def get_user_information(self, account_name: str, site_id: str):
         """
         :param str account_name: Account name of the specified user.
         :param str site_id: Site Identifier.
@@ -115,7 +117,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def follow(self, account_name):
+    def follow(self, account_name: str) -> Self:
         """
         Add the specified user to the current user's list of followed users.
 
@@ -126,7 +128,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def stop_following(self, account_name):
+    def stop_following(self, account_name: str) -> Self:
         """
         Remove the specified user from the current user's list of followed users.
 
@@ -149,7 +151,7 @@ class PeopleManager(Entity):
         return self
 
     def get_user_profile_properties(
-        self, user_or_name: str | User
+        self, user_or_name: Union[str, User]
     ) -> ClientResult[dict]:
         """
         Gets the specified user profile properties for the specified user.
@@ -187,7 +189,7 @@ class PeopleManager(Entity):
 
     def get_default_document_library(
         self,
-        user_or_name,
+        user_or_name: Union[str, User],
         create_site_if_not_exists=False,
         site_creation_priority=PersonalSiteCreationPriority.Low,
     ):
@@ -216,7 +218,9 @@ class PeopleManager(Entity):
         _ensure_user(user_or_name, _get_default_document_library)
         return return_type
 
-    def get_people_followed_by(self, account_name):
+    def get_people_followed_by(
+        self, account_name: str
+    ) -> EntityCollection[PersonProperties]:
         """
         The GetPeopleFollowedBy method returns a  list of PersonProperties objects for people who the specified user
         is following. This method can result in exceptions for conditions such as null arguments or if the specified
@@ -232,7 +236,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_my_followers(self):
+    def get_my_followers(self) -> EntityCollection[PersonProperties]:
         """
         This method returns a list of PersonProperties objects for the people who are following the current user.
         """
@@ -253,7 +257,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def hide_suggestion(self, account_name):
+    def hide_suggestion(self, account_name: str) -> Self:
         """The HideSuggestion method adds the specified user to list of rejected suggestions.
 
         :param str account_name: Specifies the user by account name.
@@ -263,7 +267,9 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def reset_user_onedrive_quota_to_default(self, account_name):
+    def reset_user_onedrive_quota_to_default(
+        self, account_name: str
+    ) -> ClientResult[str]:
         """
         :param str account_name: Specifies the user by account name.
         """

@@ -3,7 +3,13 @@ from office365.sharepoint.social.following.rest_manager import (
     SocialRestFollowingManager,
 )
 from office365.sharepoint.social.switch import SPSocialSwitch
-from tests import test_team_site_url, test_user_credentials
+from tests import (
+    test_client_id,
+    test_password,
+    test_team_site_url,
+    test_tenant,
+    test_username,
+)
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -11,8 +17,8 @@ class TestSocial(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSocial, cls).setUpClass()
-        cls.my_client = ClientContext(test_team_site_url).with_credentials(
-            test_user_credentials
+        cls.my_client = ClientContext(test_team_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
         )
 
     def test1_is_following_feature_enabled(self):

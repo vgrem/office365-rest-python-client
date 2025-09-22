@@ -26,7 +26,7 @@ class TestSPLibrary(SPTestCase):
     #    lib.reset_doc_id().execute_query()
     #    #self.assertIsNotNone(default_lib.id)
 
-    def test5_create_document(self):
+    def test5_create_word_document(self):
         lib = self.client.web.default_document_library()
         result = lib.create_document_and_get_edit_link().execute_query()
         self.assertIsNotNone(result.value)

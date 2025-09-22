@@ -5,9 +5,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestUtility(SPTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestUtility, cls).setUpClass()
 
     def test1_get_current_user_email_addresses(self):
         result = Utility.get_current_user_email_addresses(self.client).execute_query()

@@ -1,17 +1,28 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.sitedesigns.creation_info import SiteDesignCreationInfo
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 from office365.sharepoint.sitedesigns.principal import SiteDesignPrincipal
 from office365.sharepoint.sitedesigns.task import SiteDesignTask
 from office365.sharepoint.sitescripts.action_result import SiteScriptActionResult
 from office365.sharepoint.sitescripts.metadata import SiteScriptMetadata
+from office365.sharepoint.sitescripts.serialization_info import (
+    SiteScriptSerializationInfo,
+)
 from office365.sharepoint.sitescripts.serialization_result import (
     SiteScriptSerializationResult,
 )
+
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
 
 
 class SiteScriptUtility(Entity):
@@ -20,18 +31,15 @@ class SiteScriptUtility(Entity):
     """
 
     def __init__(self, context):
-        path = ResourcePath(
+        path = StaticPath(
             "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptUtility"
         )
-        super(SiteScriptUtility, self).__init__(context, path)
+        super().__init__(context, path)
 
     @staticmethod
-    def create_list_design(context, info):
+    def create_list_design(context: ClientContext, info: SiteDesignCreationInfo):
         """
         Creates a new list design available to users when they create a new list from the SharePoint start page.
-
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param office365.sharepoint.sitedesigns.creation_info.SiteDesignCreationInfo info:
         """
         return_type = ClientResult(context, SiteDesignMetadata())
         utility = SiteScriptUtility(context)
@@ -43,12 +51,11 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_list_designs(context, store=None):
+    def get_list_designs(
+        context: ClientContext, store: str = None
+    ) -> ClientResult[SiteDesignMetadata]:
         """
         Gets a list designs.
-
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str store:
         """
         return_type = ClientResult(context, SiteDesignMetadata())
         utility = SiteScriptUtility(context)
@@ -60,7 +67,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def add_site_design_task(context, web_url, site_design_id):
+    def add_site_design_task(context: ClientContext, web_url: str, site_design_id: str):
         """
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str web_url:
@@ -76,7 +83,12 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_site_script_from_list(context, list_url, options=None, return_type=None):
+    def get_site_script_from_list(
+        context: ClientContext,
+        list_url: str,
+        options: Dict = None,
+        return_type: ClientResult[str] = None,
+    ):
         """
         Creates site script syntax from an existing SharePoint list.
 
@@ -96,7 +108,12 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_site_script_from_web(context, web_url, info=None, return_type=None):
+    def get_site_script_from_web(
+        context: ClientContext,
+        web_url: str,
+        info: SiteScriptSerializationInfo = None,
+        return_type: ClientResult[SiteScriptSerializationResult] = None,
+    ):
         """
         Creates site script syntax from an existing SharePoint site.
 
@@ -139,17 +156,17 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def delete_site_script(context, _id):
+    def delete_site_script(context: ClientContext, id_: str):
         """
         Deletes a site script.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str _id:
+        :param str id_:
 
         """
         utility = SiteScriptUtility(context)
         payload = {
-            "id": _id,
+            "id": id_,
         }
         qry = ServiceOperationQuery(
             utility, "DeleteSiteScript", None, payload, None, None
@@ -177,7 +194,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def execute_site_script_action(context, action_definition):
+    def execute_site_script_action(context: ClientContext, action_definition: str):
         """
         Gets a list of information on all existing site scripts.
 

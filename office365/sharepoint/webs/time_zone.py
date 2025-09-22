@@ -51,4 +51,4 @@ class TimeZoneCollection(EntityCollection[TimeZone]):
     """TimeZone collection"""
 
     def __init__(self, context, resource_path=None):
-        super(TimeZoneCollection, self).__init__(context, TimeZone, resource_path)
+        super().__init__(context, TimeZone, resource_path)

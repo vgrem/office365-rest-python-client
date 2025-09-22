@@ -7,9 +7,7 @@ class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
     """ """
 
     def __init__(self, context, resource_path=None):
-        super(CheckedOutFileCollection, self).__init__(
-            context, CheckedOutFile, resource_path
-        )
+        super().__init__(context, CheckedOutFile, resource_path)
 
     def get_by_path(self, decoded_url: str) -> CheckedOutFile:
         """

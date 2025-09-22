@@ -2,16 +2,17 @@ from __future__ import annotations
 
 import datetime
 import uuid
-from typing import Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Optional, Type, TypeVar
 
 from typing_extensions import Self
 
 from office365.runtime.odata.property import ODataProperty
 
+# if TYPE_CHECKING:
+from office365.runtime.types.collections import GuidCollection, StringCollection
+
 T = TypeVar("T", bound=Type)
 
-
-# from office365.runtime.types.collections import GuidCollection
 
 """Primitive OData data type mapping"""
 _PRIMITIVE_TYPES = {
@@ -23,7 +24,8 @@ _PRIMITIVE_TYPES = {
     dict: "Collection(SP.KeyValue)",
     float: "Edm.Single",
     bytes: "Edm.Binary",
-    # GuidCollection: "Collection(Edm.Guid)",
+    GuidCollection: "Collection(Edm.Guid)",
+    StringCollection: "Collection(Edm.String)",
 }
 
 

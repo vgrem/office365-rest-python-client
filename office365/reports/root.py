@@ -1,3 +1,6 @@
+from datetime import date
+from typing import Union
+
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.entity import Entity
 from office365.partners.partners import Partners
@@ -41,7 +44,9 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def managed_device_enrollment_top_failures(self, period: str = None):
+    def managed_device_enrollment_top_failures(
+        self, period: str = None
+    ) -> ClientResult[Report]:
         """
         Note: The Microsoft Graph API for Intune requires an active Intune license for the tenant.
         """
@@ -156,7 +161,9 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_m365_app_user_detail(self, period_or_date=None):
+    def get_m365_app_user_detail(
+        self, period_or_date: Union[date, str] = None
+    ) -> ClientResult[bytes]:
         """
         Get a report that provides the details about which apps and platforms users have used.
         """
@@ -337,7 +344,9 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_site_usage_site_counts(self, period: str):
+    def get_sharepoint_site_usage_site_counts(
+        self, period: str
+    ) -> ClientResult[Report]:
         """
         Get the trend of total and active site count during the reporting period.
 

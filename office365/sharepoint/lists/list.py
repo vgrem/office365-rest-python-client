@@ -47,6 +47,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.bloom_filter import ListBloomFilter
 from office365.sharepoint.lists.creatables_info import CreatablesInfo
 from office365.sharepoint.lists.data_source import ListDataSource
+from office365.sharepoint.lists.document_template_type import DocumentTemplateType
 from office365.sharepoint.lists.exporter import ExportListProgress
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
 from office365.sharepoint.lists.rule import SPListRule
@@ -121,10 +122,10 @@ class List(SecurableObject):
 
     def create_document_and_get_edit_link(
         self,
-        file_name=None,
-        folder_path=None,
-        document_template_type=1,
-        template_url=None,
+        file_name: str = None,
+        folder_path: str = None,
+        document_template_type: DocumentTemplateType = DocumentTemplateType.Word,
+        template_url: str = None,
     ):
         """
         Creates a document at the path and of the type specified within the current list.
@@ -139,7 +140,7 @@ class List(SecurableObject):
         payload = {
             "fileName": file_name,
             "folderPath": folder_path,
-            "documentTemplateType": document_template_type,
+            "documentTemplateType": document_template_type.value,
             "templateUrl": template_url,
         }
         qry = ServiceOperationQuery(

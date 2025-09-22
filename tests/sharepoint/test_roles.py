@@ -44,7 +44,11 @@ class TestRoles(SPTestCase):
 
     def test5_find_role_assignments(self):
         target_user = self.client.web.current_user.get().execute_query()
-        result = self.client.web.role_assignments.filter(f"PrincipalId eq {target_user.id}").get().execute_query()
+        result = (
+            self.client.web.role_assignments.filter(f"PrincipalId eq {target_user.id}")
+            .get()
+            .execute_query()
+        )
         self.assertIsNotNone(result.resource_path)
 
     def test6_get_role_assignment(self):

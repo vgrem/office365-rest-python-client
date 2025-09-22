@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional, cast
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.listitems.versions.change import SPListItemVersionChange
 
 if TYPE_CHECKING:
     from office365.sharepoint.fields.collection import FieldCollection
@@ -35,6 +37,12 @@ class ListItemVersion(Entity):
     def is_current_version(self) -> Optional[bool]:
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
+
+    @property
+    def changes(self) -> ClientValueCollection[SPListItemVersionChange]:
+        return self.properties.get(
+            "Changes", ClientValueCollection(SPListItemVersionChange)
+        )
 
     @property
     def created(self) -> datetime:
