@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Type, TypeVar, Union
+from typing import Optional, Type, TypeVar, Union
 
 from typing_extensions import Self
 
@@ -9,14 +9,10 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.utilities import parse_enum
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.fields.creation_information import FieldCreationInformation
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.translation.user_resource import UserResource
 
 T = TypeVar("T", bound="Field")
-
-if TYPE_CHECKING:
-    from office365.sharepoint.client_context import ClientContext
 
 
 class Field(Entity):
@@ -73,23 +69,6 @@ class Field(Entity):
                 return FieldThumbnail
             else:
                 return Field
-
-    @staticmethod
-    def create_field(
-        context: ClientContext, field_parameters: FieldCreationInformation
-    ) -> T:
-        """
-        Creates a field based on its type
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type field_parameters: FieldCreationInformation
-        """
-        field_type_kind = field_parameters.FieldTypeKind.value
-        field_type = Field.resolve_field_type(field_type_kind)
-        field = field_type(context)
-        for n, v in field_parameters.to_json().items():
-            field.set_property(n, v)
-        return field
 
     def enable_index(self) -> ClientResult[bool]:
         """

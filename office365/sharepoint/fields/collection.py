@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -33,7 +33,7 @@ class FieldCollection(EntityCollection[Field]):
     """Represents a collection of Field resource."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(FieldCollection, self).__init__(context, Field, resource_path, parent)
+        super().__init__(context, Field, resource_path, parent)
 
     def add_calculated(
         self, title: str, formula: str, description: str = None
@@ -44,7 +44,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str formula: Specifies the formula for the field
         :param str or None description: Specifies the description of the field
         """
-        return_type = self.add(
+        return_type = self.add_field(
             FieldCreationInformation(
                 title=title,
                 formula=formula,
@@ -62,7 +62,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field
         :param str or None description: Specifies the description of the field
         """
-        return_type = self.add(
+        return_type = self.add_field(
             FieldCreationInformation(
                 title=title,
                 description=description,
@@ -80,7 +80,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field
         :param str or None description: Specifies the description of the field
         """
-        return_type = self.add(
+        return_type = self.add_field(
             FieldCreationInformation(
                 title=title,
                 description=description,
@@ -95,7 +95,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field
         :param str or None description: Specifies the description of the field
         """
-        return_type = self.add(
+        return_type = self.add_field(
             FieldCreationInformation(
                 title=title,
                 description=description,
@@ -110,7 +110,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field
         :param str or None description:
         """
-        return self.add(
+        return self.add_field(
             FieldCreationInformation(
                 title=title, description=description, field_type_kind=FieldType.URL
             )
@@ -185,13 +185,28 @@ class FieldCollection(EntityCollection[Field]):
         [create_field_info.Choices.add(choice) for choice in values]
         return self.add_field(create_field_info)
 
-    def add_user_field(self, title: str) -> FieldUser:
+    def add_user_field(
+        self,
+        title: str,
+        description: Optional[str] = None,
+        selection_mode=None,
+        allow_multiple_values: bool = False,
+    ) -> FieldUser:
         """
         Creates a User field
 
         :param str title: Specifies the display name of the field
+        :param str or None description:
+        :param int or None selection_mode:
+        :param bool allow_multiple_values:
         """
-        return self.add_field(FieldCreationInformation(title, FieldType.User))
+        return self.add(
+            FieldType.User,
+            Title=title,
+            Description=description,
+            SelectionMode=selection_mode,
+            AllowMultipleValues=allow_multiple_values,
+        )
 
     def add_text_field(self, title: str) -> FieldText:
         """
@@ -233,12 +248,12 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, parameters: FieldCreationInformation) -> T:
-        """Adds a fields to the fields collection.
-
-        :type parameters: FieldCreationInformation
-        """
-        return_type = Field.create_field(self.context, parameters)
+    def add(self, field_type_kind: FieldType, **parameters: Any) -> T:
+        """Adds a fields to the fields collection."""
+        field_type = Field.resolve_field_type(field_type_kind.value)
+        return_type = field_type(self.context)
+        return_type.set_property("FieldTypeKind", field_type_kind.value)
+        [return_type.set_property(k, v) for k, v in parameters.items() if v is not None]
         self.add_child(return_type)
         qry = CreateEntityQuery(self, return_type, return_type)
         self.context.add_query(qry)

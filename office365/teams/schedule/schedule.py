@@ -74,4 +74,4 @@ class Schedule(Entity):
                 "timeOffReasons": self.time_off_reasons,
             }
             default_value = property_mapping.get(name, None)
-        return super(Schedule, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

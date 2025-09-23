@@ -13,6 +13,6 @@ class SchedulingGroup(ChangeTrackedEntity):
         return self.properties.get("isActive", None)
 
     @property
-    def user_ids(self):
+    def user_ids(self) -> StringCollection:
         """The list of user IDs that are a member of the schedulingGroup."""
         return self.properties.get("userIds", StringCollection())

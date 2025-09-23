@@ -6,13 +6,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestPublishing(SPTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestPublishing, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     def test1_init_site_page_service(self):
         svc = self.client.site_pages.get().execute_query()

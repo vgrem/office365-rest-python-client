@@ -6,7 +6,11 @@ from office365.teams.schedule.shifts.activity import ShiftActivity
 class ShiftItem(ScheduleEntity):
     """Represents a version of a shift."""
 
-    def __init__(self, display_name=None, activities=None):
+    def __init__(
+        self,
+        display_name: str = None,
+        activities: ClientValueCollection[ShiftActivity] = None,
+    ):
         """
         :param str display_name: The shift label of the shiftItem.
         :param list[ShiftActivity] activities: An incremental part of a shift which can cover details of when and
