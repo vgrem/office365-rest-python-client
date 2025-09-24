@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -11,6 +15,9 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.entity_information_re
 from office365.sharepoint.ui.applicationpages.peoplepicker.query_parameters import (
     ClientPeoplePickerQueryParameters,
 )
+
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
 
 
 class ClientPeoplePickerWebServiceInterface(Entity):
@@ -49,7 +56,9 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return return_type
 
     @staticmethod
-    def client_people_picker_resolve_user(context, query_string):
+    def client_people_picker_resolve_user(
+        context: ClientContext, query_string: str
+    ) -> ClientResult[str]:
         """
         Resolves the principals to a string of JSON representing users in people picker format.
 
@@ -76,7 +85,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
     @staticmethod
     def client_people_picker_search_user(
-        context, query_string, maximum_entity_suggestions=100
+        context: ClientContext, query_string: str, maximum_entity_suggestions: int = 100
     ):
         """
         Returns for a string of JSON representing users in people picker format of the specified principals.

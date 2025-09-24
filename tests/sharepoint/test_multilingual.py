@@ -5,7 +5,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestMultilingual(SPTestCase):
     """"""
 
-    site_page = None  # type: SitePage
+    site_page: SitePage = None
 
     def test1_is_web_multilingual(self):
         web = (

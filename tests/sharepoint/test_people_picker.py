@@ -3,9 +3,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPPeoplePicker(SPTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestSPPeoplePicker, cls).setUpClass()
 
     def test1_client_people_picker_resolve_user(self):
         result = (

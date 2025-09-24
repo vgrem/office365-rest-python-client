@@ -7,8 +7,11 @@ from office365.sharepoint.search.query.suggestion_results import QuerySuggestion
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
 from tests import (
+    test_client_id,
+    test_password,
     test_site_url,
-    test_user_credentials,
+    test_tenant,
+    test_username,
 )
 
 
@@ -16,8 +19,8 @@ class TestSearch(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSearch, cls).setUpClass()
-        cls.client = ClientContext(test_site_url).with_credentials(
-            test_user_credentials
+        cls.client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
         )
 
     def test0_get_search_service(self):

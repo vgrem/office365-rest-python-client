@@ -7,9 +7,7 @@ class RelatedFieldCollection(EntityCollection[RelatedField]):
     """Represents a collection of RelatedField resources."""
 
     def __init__(self, context, resource_path=None):
-        super(RelatedFieldCollection, self).__init__(
-            context, RelatedField, resource_path
-        )
+        super().__init__(context, RelatedField, resource_path)
 
     def get_by_field_id(self, id_: str) -> RelatedField:
         """Gets the RelatedField with the specified ID."""

@@ -222,7 +222,7 @@ class ContentType(Entity):
         return self.properties.get("SchemaXml", None)
 
     @property
-    def fields(self):
+    def fields(self) -> FieldCollection:
         """Gets a value that specifies the collection of fields for the content type."""
         return self.properties.get(
             "Fields",
@@ -230,7 +230,7 @@ class ContentType(Entity):
         )
 
     @property
-    def parent(self):
+    def parent(self) -> "ContentType":
         """Gets the parent content type of the content type."""
         return self.properties.get(
             "Parent",
@@ -238,7 +238,7 @@ class ContentType(Entity):
         )
 
     @property
-    def field_links(self):
+    def field_links(self) -> FieldLinkCollection:
         """Specifies the collection of field links for the content type."""
         return self.properties.get(
             "FieldLinks",

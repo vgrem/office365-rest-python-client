@@ -64,7 +64,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def am_i_following(self, account_name):
+    def am_i_following(self, account_name: str) -> ClientResult[bool]:
         """
         Checks whether the current user is following the specified user.
 
@@ -104,7 +104,9 @@ class PeopleManager(Entity):
             _get_followers_for(account)
         return return_type
 
-    def get_user_information(self, account_name: str, site_id: str):
+    def get_user_information(
+        self, account_name: str, site_id: str
+    ) -> ClientResult[dict]:
         """
         :param str account_name: Account name of the specified user.
         :param str site_id: Site Identifier.
@@ -139,7 +141,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def stop_following_tag(self, value):
+    def stop_following_tag(self, value: str) -> Self:
         """
         The StopFollowingTag method sets the current user to no longer be following the specified tag.
 
@@ -170,7 +172,7 @@ class PeopleManager(Entity):
         _ensure_user(user_or_name, _user_resolved)
         return return_type
 
-    def get_properties_for(self, account):
+    def get_properties_for(self, account: Union[str, User]) -> PersonProperties:
         """
         Gets user properties for the specified user.
         :param str or User account: Specifies the User object or its login name.
@@ -192,7 +194,7 @@ class PeopleManager(Entity):
         user_or_name: Union[str, User],
         create_site_if_not_exists=False,
         site_creation_priority=PersonalSiteCreationPriority.Low,
-    ):
+    ) -> ClientResult[str]:
         """
         Gets the OneDrive Document library path for a given user.
 
@@ -247,7 +249,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def follow_tag(self, value):
+    def follow_tag(self, value: str) -> Self:
         """
         The FollowTag method sets the current user to be following the specified tag.
         :param str value: Specifies the tag by its GUID.
@@ -281,7 +283,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def set_my_profile_picture(self, picture):
+    def set_my_profile_picture(self, picture: bytes) -> Self:
         """
         The SetMyProfilePicture method uploads and sets the user profile picture. Pictures in bmp, jpg and png formats
         and up to 5,000,000 bytes are supported. A user can upload a picture only to the user's own profile.

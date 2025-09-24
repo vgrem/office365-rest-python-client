@@ -1,4 +1,7 @@
-class UrlFieldFormatType:
+from enum import Enum
+
+
+class UrlFieldFormatType(Enum):
     """Specifies the display format used for URL fields."""
 
     Hyperlink = 0

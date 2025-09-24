@@ -17,7 +17,7 @@ class PickerEntityInformation(ClientObject):
         return self.properties.get("TotalMemberCount", None)
 
     @property
-    def entity(self):
+    def entity(self) -> PickerEntityInformationRequest:
         """The principal for which information is being requested."""
         return self.properties.get("Entity", PickerEntityInformationRequest())
 

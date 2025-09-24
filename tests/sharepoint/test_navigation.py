@@ -9,18 +9,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestNavigation(SPTestCase):
     target_node: NavigationNode = None
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        # result = cls.client.site.is_valid_home_site().execute_query()
-        # if result.value is False:
-        #    result = cls.client.site.set_as_home_site().execute_query()
-        #    cls.assertTrue(result.value)
-
-    # def test1_get_global_nav(self):
-    #    result = self.client.navigation_service.global_nav().execute_query()
-    #    self.assertIsNotNone(result.value)
-
     def test_2_is_global_nav_enabled(self):
         result = self.client.navigation_service.global_nav_enabled().execute_query()
         self.assertIsNotNone(result.value)

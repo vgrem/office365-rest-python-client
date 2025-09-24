@@ -4,16 +4,26 @@ from unittest import TestCase
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_root_site_url, test_user_credentials
+from tests import (
+    test_admin_site_url,
+    test_client_id,
+    test_password,
+    test_root_site_url,
+    test_tenant,
+    test_user_credentials,
+    test_username,
+)
 
 
 class TestCommunicationSite(TestCase):
-    target_site = None  # type: Site
+    target_site: Site = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestCommunicationSite, cls).setUpClass()
-        ctx = ClientContext(test_root_site_url).with_credentials(test_user_credentials)
+        super().setUpClass()
+        ctx = ClientContext(test_root_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         cls.client = ctx
 
     def test1_create_site(self):

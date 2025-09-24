@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -55,20 +57,20 @@ class User(Principal):
         self.ensure_property("UserPrincipalName", _user_loaded)
         return return_type
 
-    def expire(self):
+    def expire(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "Expire")
         self.context.add_query(qry)
         return self
 
     @property
-    def aad_object_id(self):
+    def aad_object_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
         user's name identifier."""
         return self.properties.get("AadObjectId", UserIdInfo())
 
     @property
-    def alerts(self):
+    def alerts(self) -> AlertCollection:
         """Gets site alerts for this user."""
         return self.properties.get(
             "Alerts",
@@ -91,7 +93,7 @@ class User(Principal):
         return self.properties.get("IsSiteAdmin", None)
 
     @property
-    def user_id(self):
+    def user_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
         user's name identifier."""
         return self.properties.get("UserId", UserIdInfo())
@@ -140,4 +142,4 @@ class User(Principal):
                 "UserId": self.user_id,
             }
             default_value = property_mapping.get(name, None)
-        return super(User, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -16,7 +16,13 @@ from office365.sharepoint.sharing.site_sharing_report_helper import (
     SiteSharingReportHelper,
 )
 from office365.sharepoint.webs.web import Web
-from tests import test_site_url, test_user_credentials
+from tests import (
+    test_client_id,
+    test_password,
+    test_site_url,
+    test_tenant,
+    test_username,
+)
 
 
 class TestSharePointSharing(TestCase):
@@ -25,7 +31,9 @@ class TestSharePointSharing(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         client.web.lists.ensure_site_pages_library().execute_query()
         current_user = client.web.current_user.get().execute_query()
         cls.target_user = current_user

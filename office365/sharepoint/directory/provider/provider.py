@@ -1,5 +1,5 @@
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.directory.provider.object_data import DirectoryObjectData
 from office365.sharepoint.entity import Entity
@@ -8,10 +8,10 @@ from office365.sharepoint.entity import Entity
 class SharePointDirectoryProvider(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
+            resource_path = StaticPath(
                 "SP.Directory.Provider.SharePointDirectoryProvider"
             )
-        super(SharePointDirectoryProvider, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def check_site_availability(self, site_url):
         """"""

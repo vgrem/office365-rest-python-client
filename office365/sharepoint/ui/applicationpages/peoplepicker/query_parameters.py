@@ -14,11 +14,11 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         enabled_claim_providers=None,
         force_claims=False,
         maximum_entity_suggestions=1,
-        principal_source=PrincipalSource.All,
-        principal_type=PrincipalType.All,
-        url_zone=0,
-        url_zone_specified=False,
-        sharepoint_group_id=0,
+        principal_source: PrincipalSource = PrincipalSource.All,
+        principal_type: PrincipalType = PrincipalType.All,
+        url_zone: int = 0,
+        url_zone_specified: bool = False,
+        sharepoint_group_id: int = 0,
     ):
         """
         Specifies the properties of a principal query

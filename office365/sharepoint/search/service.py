@@ -27,7 +27,7 @@ class SearchService(Entity):
     """SearchService exposes OData Service Operations."""
 
     def __init__(self, context: ClientContext):
-        super(SearchService, self).__init__(
+        super().__init__(
             context, StaticPath("Microsoft.Office.Server.Search.REST.SearchService")
         )
 
@@ -67,7 +67,9 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def export_popular_tenant_queries(self, count):
+    def export_popular_tenant_queries(
+        self, count: int
+    ) -> ClientResult[ClientValueCollection[PopularTenantQuery]]:
         """
         This method is used to get a list of popular search queries executed on the tenant.
 
