@@ -5,7 +5,7 @@ from office365.sharepoint.entity import Entity
 
 
 class SPAppLicenseManager(Entity):
-    def check_license(self, product_id):
+    def check_license(self, product_id: str) -> ClientResult[AppLicenseCollection]:
         """
         :param str product_id:
         """

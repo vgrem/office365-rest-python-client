@@ -16,7 +16,7 @@ def generate_files(model: ODataModel, options: dict) -> None:
         type_schema = model.types[name]
         builder = TypeBuilder(type_schema, options)
         builder.build()
-        if builder.status == "created":
+        if builder.status == "created" or builder.status == "updated":
             builder.save()
 
 

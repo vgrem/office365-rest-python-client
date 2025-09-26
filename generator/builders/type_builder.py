@@ -7,7 +7,6 @@ from functools import lru_cache
 from os.path import abspath
 from typing import Dict
 
-import astunparse
 from typing_extensions import Self
 
 from generator.builders.property_builder import PropertyBuilder
@@ -26,6 +25,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._source_tree = None
         self._status = None
         self._properties = []
+        self._changes = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
@@ -51,7 +51,7 @@ class TypeBuilder(ast.NodeTransformer):
     def visit_FunctionDef(self, node):
 
         if node.name == "__init__":
-            return node
+            return self.generic_visit(node)
 
         is_property = False
         for decorator in node.decorator_list:
@@ -70,6 +70,22 @@ class TypeBuilder(ast.NodeTransformer):
 
         return self.generic_visit(node)
 
+    def visit_Attribute(self, node: ast.Attribute):
+        if (isinstance(node.ctx, ast.Store) and
+            isinstance(node.value, ast.Name) and
+            node.value.id == "self" and
+            isinstance(node.attr, str)):
+
+            prop_name = node.attr
+            matching_prop = next(
+                (prop for prop in self._properties if prop.name == prop_name), None
+            )
+            if matching_prop:
+                matching_prop.status = "attached"
+
+        return node
+
+
     def build(self) -> Self:
         self._template = TemplateContext(self._options.get("templatepath"))
         if self.state == "attached":
@@ -80,15 +96,27 @@ class TypeBuilder(ast.NodeTransformer):
             self._source_tree = self._template.load(self._schema)
             self._status = "created"
         self.visit(self._source_tree)
+
+        if self._status == "updated" and len(self._changes) == 0:
+            self._status = None
         return self
 
     def _build_properties(self, class_node: ast.ClassDef):
         if not self._properties:
             return
 
-        init_method = self._build_init_method()
+        init_method = None
 
-        class_node.body.insert(0, init_method)
+        for i, node in enumerate(class_node.body):
+            if isinstance(node, ast.FunctionDef) and node.name == "__init__":
+                init_method = node
+                break
+
+        if init_method is None:
+            init_method = self._build_init_method()
+            class_node.body.insert(0, init_method)
+        else:
+            self._update_init_method(init_method)
 
     def _build_init_method(self) -> ast.FunctionDef:
         args = [ast.arg(arg="self", annotation=None)]
@@ -129,15 +157,46 @@ class TypeBuilder(ast.NodeTransformer):
                 value=ast.Name(id=prop.name, ctx=ast.Load()),
             )
             body.append(assign)
+            self._changes.append(f"__init__ param: {prop.name}")
 
         init_method = ast.FunctionDef(
             name="__init__",
             args=function_args,
             body=body,
             decorator_list=[],
-            returns=None,
+            returns=None
         )
         return init_method
+
+    def _update_init_method(self, init_method: ast.FunctionDef):
+
+        existing_params = {arg.arg for arg in init_method.args.args if arg.arg != 'self'}
+
+        for prop in self._properties:
+            if prop.name not in existing_params and prop.status == "detached":
+                param = ast.arg(
+                    arg=prop.name,
+                    annotation=(
+                        ast.Name(id=prop.type_name, ctx=ast.Load())
+                        if prop.type_name
+                        else None
+                    ),
+                )
+                init_method.args.args.append(param)
+                init_method.args.defaults.append(ast.Constant(value=None))
+
+                assign = ast.Assign(
+                    targets=[
+                        ast.Attribute(
+                            value=ast.Name(id="self", ctx=ast.Load()),
+                            attr=prop.schema.name,
+                            ctx=ast.Store(),
+                        )
+                    ],
+                    value=ast.Name(id=prop.name, ctx=ast.Load()),
+                )
+                init_method.body.append(assign)
+                self._changes.append(f"__init__ param: {prop.name}")
 
     def _build_nav_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
@@ -155,7 +214,9 @@ class TypeBuilder(ast.NodeTransformer):
         ]
 
     def save(self):
-        code = astunparse.unparse(self._source_tree)
+        ast.fix_missing_locations(self._source_tree)
+        code = ast.unparse(self._source_tree)
+
         with open(self.file, "w", encoding="utf-8") as f:
             f.write(code)
 

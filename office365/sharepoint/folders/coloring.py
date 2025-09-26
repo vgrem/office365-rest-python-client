@@ -13,9 +13,7 @@ class FolderColoring(Entity):
     def create_folder(
         self,
         decoded_url: str,
-        coloring_information: FolderColoringInformation = FolderColoringInformation(
-            color_hex="1"
-        ),
+        coloring_information: FolderColoringInformation = FolderColoringInformation(),
         return_type: Folder = None,
     ):
         """

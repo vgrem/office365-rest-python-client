@@ -4,7 +4,10 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.folders.coloring_information import FolderColoringInformation
+from office365.sharepoint.folders.coloring_information import (
+    FolderColoringInformation,
+    FolderColors,
+)
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -45,7 +48,7 @@ class FolderCollection(EntityCollection[Folder]):
             folder = folder.add(name)
         return folder
 
-    def add(self, name: str, color_hex: str = None) -> Folder:
+    def add(self, name: str, color_hex: FolderColors = None) -> Folder:
         """Adds the folder that is located at the specified URL to the collection.
         :param str name: Specifies the Name or Path of the folder.
         :param str color_hex: Specifies the color of the folder.

@@ -1,7 +1,9 @@
+from enum import Enum
+
 from office365.runtime.client_value import ClientValue
 
 
-class FolderColors(object):
+class FolderColors(Enum):
     Yellow = "#FFCE3C"
 
     Grey = "#B0B7BA"
@@ -38,9 +40,11 @@ class FolderColors(object):
 class FolderColoringInformation(ClientValue):
     """"""
 
-    def __init__(self, color_hex=None, color_tag=None, emoji=None):
+    def __init__(
+        self, color_hex: FolderColors = None, color_tag: str = None, emoji: str = None
+    ):
         """
-        :param str color_hex:
+        :param FolderColors color_hex:
         :param str color_tag:
         :param str emoji:
         """
