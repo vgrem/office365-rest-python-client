@@ -71,10 +71,12 @@ class TypeBuilder(ast.NodeTransformer):
         return self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute):
-        if (isinstance(node.ctx, ast.Store) and
-            isinstance(node.value, ast.Name) and
-            node.value.id == "self" and
-            isinstance(node.attr, str)):
+        if (
+            isinstance(node.ctx, ast.Store)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "self"
+            and isinstance(node.attr, str)
+        ):
 
             prop_name = node.attr
             matching_prop = next(
@@ -84,7 +86,6 @@ class TypeBuilder(ast.NodeTransformer):
                 matching_prop.status = "attached"
 
         return node
-
 
     def build(self) -> Self:
         self._template = TemplateContext(self._options.get("templatepath"))
@@ -150,7 +151,7 @@ class TypeBuilder(ast.NodeTransformer):
                 targets=[
                     ast.Attribute(
                         value=ast.Name(id="self", ctx=ast.Load()),
-                        attr=prop.name,
+                        attr=prop.schema.name,
                         ctx=ast.Store(),
                     )
                 ],
@@ -164,13 +165,15 @@ class TypeBuilder(ast.NodeTransformer):
             args=function_args,
             body=body,
             decorator_list=[],
-            returns=None
+            returns=None,
         )
         return init_method
 
     def _update_init_method(self, init_method: ast.FunctionDef):
 
-        existing_params = {arg.arg for arg in init_method.args.args if arg.arg != 'self'}
+        existing_params = {
+            arg.arg for arg in init_method.args.args if arg.arg != "self"
+        }
 
         for prop in self._properties:
             if prop.name not in existing_params and prop.status == "detached":
