@@ -5,7 +5,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestTaskList(GraphTestCase):
-    task_list = None  # type: TodoTaskList
+    task_list: TodoTaskList = None
 
     @requires_delegated_permission("Tasks.ReadWrite")
     def test1_create_task_list(self):

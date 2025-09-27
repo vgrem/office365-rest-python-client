@@ -9,8 +9,10 @@ class AgreementLocation(ClientValue):
         library_id: str = None,
         site_id: str = None,
         web_id: str = None,
+        folder_id: int = None,
     ):
-        self.category_label = category_label
-        self.library_id = library_id
-        self.site_id = site_id
-        self.web_id = web_id
+        self.CategoryLabel = category_label
+        self.LibraryId = library_id
+        self.SiteId = site_id
+        self.WebId = web_id
+        self.FolderId = folder_id

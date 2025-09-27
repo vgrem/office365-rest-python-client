@@ -1,9 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-
-
-class PlaceholderV2(ClientValue):
-    pass
+from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class ContentAssemblyModernTemplateColumnsMappingInfo(ClientValue):

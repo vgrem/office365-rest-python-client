@@ -11,6 +11,9 @@ class SemanticSearchCrawlerEnqueueItem(ClientValue):
         semantic_search_service_end_point_json: str = None,
         source_action: int = None,
         work_item_id: str = None,
+        item_id: int = None,
+        item_url: str = None,
+        list_id: str = None,
     ):
         self.associate_site_id = associate_site_id
         self.item_unique_id = item_unique_id
@@ -20,3 +23,6 @@ class SemanticSearchCrawlerEnqueueItem(ClientValue):
         )
         self.source_action = source_action
         self.work_item_id = work_item_id
+        self.ItemId = item_id
+        self.ItemUrl = item_url
+        self.ListId = list_id

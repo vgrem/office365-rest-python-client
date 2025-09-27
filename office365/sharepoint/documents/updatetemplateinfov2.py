@@ -1,9 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.sharepoint.documents.contentassemblymoderntemplatecolumnsmappinginfo import (
-    PlaceholderV2,
-)
+from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class UpdateTemplateInfoV2(ClientValue):

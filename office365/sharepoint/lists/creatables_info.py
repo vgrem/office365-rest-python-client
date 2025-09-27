@@ -1,7 +1,9 @@
 from typing import Optional
 
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.lists.creatable_item_info import CreatableItemInfoCollection
+from office365.sharepoint.lists.creatable_item_info_col import (
+    CreatableItemInfoCollection,
+)
 
 
 class CreatablesInfo(Entity):

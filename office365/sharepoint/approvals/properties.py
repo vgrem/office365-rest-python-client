@@ -12,11 +12,13 @@ class ApprovalsProperties(ClientValue):
         approver_source_value: str = None,
         provisioning_error: str = None,
         provisioning_status: int = None,
+        notifications_enabled: bool = None,
     ):
-        self.approvers_await_all = approvers_await_all
-        self.approvers_await_all_fixed = approvers_await_all_fixed
-        self.approvers_fixed = approvers_fixed
-        self.approver_source_type = approver_source_type
-        self.approver_source_value = approver_source_value
-        self.provisioning_error = provisioning_error
-        self.provisioning_status = provisioning_status
+        self.ApproversAwaitAll = approvers_await_all
+        self.ApproversAwaitAllFixed = approvers_await_all_fixed
+        self.ApproversFixed = approvers_fixed
+        self.ApproverSourceType = approver_source_type
+        self.ApproverSourceValue = approver_source_value
+        self.ProvisioningError = provisioning_error
+        self.ProvisioningStatus = provisioning_status
+        self.NotificationsEnabled = notifications_enabled

@@ -1,16 +1,11 @@
 from office365.runtime.client_value import ClientValue
-
-
-class EffectiveBasePermissions(ClientValue):
-    pass
-
-
-class LibraryDetails(ClientValue):
-    pass
-
-
-class DestinationLibraryInfo(ClientValue):
-    pass
+from office365.sharepoint.actionablemessages.destinationlibraryinfo import (
+    DestinationLibraryInfo,
+)
+from office365.sharepoint.actionablemessages.effectivebasepermissions import (
+    EffectiveBasePermissions,
+)
+from office365.sharepoint.actionablemessages.librarydetails import LibraryDetails
 
 
 class AgreementsSolutionFileContext(ClientValue):
