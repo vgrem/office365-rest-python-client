@@ -1,8 +1,7 @@
 from office365.runtime.client_value import ClientValue
-
-
-class VersionPolicySelectionParameters(ClientValue):
-    pass
+from office365.sharepoint.files.versions.policyselectionparameters import (
+    VersionPolicySelectionParameters,
+)
 
 
 class FileVersionBatchDeleteParameters(ClientValue):
@@ -11,7 +10,7 @@ class FileVersionBatchDeleteParameters(ClientValue):
         self,
         batch_delete_mode: int = None,
         delete_older_than_days: int = None,
-        file_type_selections: VersionPolicySelectionParameters = None,
+        file_type_selections: VersionPolicySelectionParameters = VersionPolicySelectionParameters(),
         major_version_limit: int = None,
         major_with_minor_versions_limit: int = None,
         sync_list_policy: bool = None,

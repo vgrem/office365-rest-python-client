@@ -16,6 +16,8 @@ class ListCreationInformation(ClientValue):
         quick_launch_option: int = None,
         template_feature_id: int = None,
         template_type: int = None,
+        data_source_properties: dict = None,
+        url: str = None,
     ):
         """
         :param int or None base_template:
@@ -41,6 +43,8 @@ class ListCreationInformation(ClientValue):
         self.QuickLaunchOption = quick_launch_option
         self.TemplateFeatureId = template_feature_id
         self.TemplateType = template_type
+        self.DataSourceProperties = data_source_properties
+        self.Url = url
 
     @property
     def entity_type_name(self):

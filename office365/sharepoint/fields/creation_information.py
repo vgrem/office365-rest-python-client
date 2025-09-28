@@ -6,6 +6,7 @@ from office365.sharepoint.fields.type import FieldType
 
 
 class FieldCreationInformation(ClientValue):
+
     def __init__(
         self,
         title: str,
@@ -17,6 +18,7 @@ class FieldCreationInformation(ClientValue):
         required: bool = False,
         formula: str = None,
         choices: List[str] = None,
+        is_compact_name: bool = None,
     ):
         """
         Represents metadata about fields creation.
@@ -48,6 +50,7 @@ class FieldCreationInformation(ClientValue):
         self.LookupWebId = lookup_web_id
         self.Required = required
         self.Formula = formula
+        self.IsCompactName = is_compact_name
 
     @property
     def entity_type_name(self):

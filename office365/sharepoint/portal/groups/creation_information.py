@@ -3,7 +3,16 @@ from office365.sharepoint.portal.groups.creation_params import GroupCreationPara
 
 
 class GroupCreationInformation(ClientValue):
-    def __init__(self, display_name, alias, is_public, optional_params=None):
+
+    def __init__(
+        self,
+        display_name,
+        alias,
+        is_public,
+        optional_params=None,
+        description: str = None,
+        title: str = None,
+    ):
         super(GroupCreationInformation, self).__init__()
         if optional_params is None:
             optional_params = GroupCreationParams()
@@ -11,6 +20,8 @@ class GroupCreationInformation(ClientValue):
         self.alias = alias
         self.isPublic = is_public
         self.optionalParams = optional_params
+        self.Description = description
+        self.Title = title
 
     @property
     def entity_type_name(self):

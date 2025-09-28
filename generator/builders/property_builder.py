@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import ast
+import builtins
+import keyword
 import re
 from typing import TYPE_CHECKING, List
 
@@ -27,7 +29,11 @@ class PropertyBuilder:
     def name(self) -> str:
         """Convert CamelCase to snake_case"""
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", self.schema.name)
-        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+        snake_case = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+        if keyword.iskeyword(snake_case) or hasattr(builtins, snake_case):
+            return snake_case + "_"
+        return snake_case
 
     @property
     def type_name(self) -> str:

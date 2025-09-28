@@ -1,9 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-
-
-class CustomizedFormsPage(ClientValue):
-    pass
+from office365.sharepoint.documents.customizedformspage import CustomizedFormsPage
 
 
 class CustomizedFormsPageCollection(ClientValue):

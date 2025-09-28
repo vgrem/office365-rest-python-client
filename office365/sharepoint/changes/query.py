@@ -6,8 +6,8 @@ class ChangeQuery(ClientValue):
 
     def __init__(
         self,
-        alert=False,
-        site=False,
+        alert: bool = False,
+        site: bool = False,
         web=False,
         list_=False,
         item=False,
@@ -27,6 +27,22 @@ class ChangeQuery(ClientValue):
         change_token_start=None,
         change_token_end=None,
         fetch_limit=None,
+        app_consent_principal: bool = None,
+        field: bool = None,
+        group_membership_add: bool = None,
+        group_membership_delete: bool = None,
+        ignore_start_token_not_found_error: bool = None,
+        latest_first: bool = None,
+        move: bool = None,
+        navigation: bool = None,
+        recursive_all: bool = None,
+        rename: bool = None,
+        require_security_trim: bool = None,
+        restore: bool = None,
+        role_definition_add: bool = None,
+        role_definition_delete: bool = None,
+        role_definition_update: bool = None,
+        security_policy: bool = None,
     ):
         """
         :param int fetch_limit:
@@ -76,6 +92,22 @@ class ChangeQuery(ClientValue):
         self.RoleAssignmentAdd = role_assignment_add
         self.RoleAssignmentDelete = role_assignment_delete
         self.FetchLimit = str(fetch_limit) if fetch_limit else None
+        self.AppConsentPrincipal = app_consent_principal
+        self.Field = field
+        self.GroupMembershipAdd = group_membership_add
+        self.GroupMembershipDelete = group_membership_delete
+        self.IgnoreStartTokenNotFoundError = ignore_start_token_not_found_error
+        self.LatestFirst = latest_first
+        self.Move = move
+        self.Navigation = navigation
+        self.RecursiveAll = recursive_all
+        self.Rename = rename
+        self.RequireSecurityTrim = require_security_trim
+        self.Restore = restore
+        self.RoleDefinitionAdd = role_definition_add
+        self.RoleDefinitionDelete = role_definition_delete
+        self.RoleDefinitionUpdate = role_definition_update
+        self.SecurityPolicy = security_policy
 
     @property
     def entity_type_name(self):

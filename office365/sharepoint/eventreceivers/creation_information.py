@@ -5,7 +5,14 @@ class EventReceiverDefinitionCreationInformation(ClientValue):
     """Represents the properties that can be set when creating a client-side event receiver definition."""
 
     def __init__(
-        self, receiver_assembly=None, receiver_class=None, sequence_number=None
+        self,
+        receiver_assembly=None,
+        receiver_class=None,
+        sequence_number=None,
+        receiver_name: str = None,
+        synchronization: int = None,
+        event_type: int = None,
+        receiver_url: str = None,
     ):
         """
         :param str receiver_assembly: Specifies the strong name of the assembly that is used for receiving events.
@@ -15,3 +22,7 @@ class EventReceiverDefinitionCreationInformation(ClientValue):
         self.ReceiverAssembly = receiver_assembly
         self.ReceiverClass = receiver_class
         self.SequenceNumber = sequence_number
+        self.ReceiverName = receiver_name
+        self.Synchronization = synchronization
+        self.EventType = event_type
+        self.ReceiverUrl = receiver_url

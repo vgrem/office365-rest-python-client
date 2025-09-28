@@ -24,7 +24,6 @@ class PlaceholderV2(ClientValue):
         self.DataType = data_type
         self.FieldLibraryMappedId = field_library_mapped_id
         self.FieldLibraryMappedVersion = field_library_mapped_version
-        self.Id = id_
         self.IsColumnMappingActive = is_column_mapping_active
         self.IsMandatory = is_mandatory
         self.Name = name

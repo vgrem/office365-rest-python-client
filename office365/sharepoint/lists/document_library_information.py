@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -12,6 +14,9 @@ class DocumentLibraryInformation(ClientValue):
         drive_id=None,
         from_cross_farm=None,
         is_default_document_library=None,
+        id_: str = None,
+        modified: datetime = datetime.min,
+        modified_friendly_display: str = None,
     ):
         """
         :param str title:Identifies the title of the document library
@@ -27,3 +32,6 @@ class DocumentLibraryInformation(ClientValue):
         self.DriveId = drive_id
         self.FromCrossFarm = from_cross_farm
         self.IsDefaultDocumentLibrary = is_default_document_library
+        self.Id = id_
+        self.Modified = modified
+        self.ModifiedFriendlyDisplay = modified_friendly_display

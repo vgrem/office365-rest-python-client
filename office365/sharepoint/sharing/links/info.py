@@ -5,6 +5,7 @@ from office365.sharepoint.sharing.principal import Principal
 
 
 class SharingLinkInfo(ClientValue):
+
     def __init__(
         self,
         allows_anonymous_access=None,
@@ -19,6 +20,34 @@ class SharingLinkInfo(ClientValue):
         track_link_users=None,
         share_token_string=None,
         url=None,
+        blocks_download: bool = None,
+        description: str = None,
+        embeddable: bool = None,
+        expiration: str = None,
+        has_external_guest_invitees: bool = None,
+        is_active: bool = None,
+        is_address_bar_link: bool = None,
+        is_create_only_link: bool = None,
+        is_default: bool = None,
+        is_edit_link: bool = None,
+        is_ephemeral: bool = None,
+        is_forms_link: bool = None,
+        is_main_link: bool = None,
+        is_manage_list_link: bool = None,
+        is_review_link: bool = None,
+        is_unhealthy: bool = None,
+        last_modified: str = None,
+        limit_use_to_application: bool = None,
+        link_kind: int = None,
+        meeting_id: str = None,
+        must_always_use_link: bool = None,
+        password_last_modified: str = None,
+        requires_password: bool = None,
+        restricted_share_membership: bool = None,
+        restrict_to_existing_relationships: bool = None,
+        scope: int = None,
+        share_id: str = None,
+        sharing_link_status: int = None,
     ):
         """
         Specifies the information about the tokenized sharing link.
@@ -52,6 +81,34 @@ class SharingLinkInfo(ClientValue):
         self.TrackLinkUsers = track_link_users
         self.ShareTokenString = share_token_string
         self.Url = url
+        self.BlocksDownload = blocks_download
+        self.Description = description
+        self.Embeddable = embeddable
+        self.Expiration = expiration
+        self.HasExternalGuestInvitees = has_external_guest_invitees
+        self.IsActive = is_active
+        self.IsAddressBarLink = is_address_bar_link
+        self.IsCreateOnlyLink = is_create_only_link
+        self.IsDefault = is_default
+        self.IsEditLink = is_edit_link
+        self.IsEphemeral = is_ephemeral
+        self.IsFormsLink = is_forms_link
+        self.IsMainLink = is_main_link
+        self.IsManageListLink = is_manage_list_link
+        self.IsReviewLink = is_review_link
+        self.IsUnhealthy = is_unhealthy
+        self.LastModified = last_modified
+        self.LimitUseToApplication = limit_use_to_application
+        self.LinkKind = link_kind
+        self.MeetingId = meeting_id
+        self.MustAlwaysUseLink = must_always_use_link
+        self.PasswordLastModified = password_last_modified
+        self.RequiresPassword = requires_password
+        self.RestrictedShareMembership = restricted_share_membership
+        self.RestrictToExistingRelationships = restrict_to_existing_relationships
+        self.Scope = scope
+        self.ShareId = share_id
+        self.SharingLinkStatus = sharing_link_status
 
     def __str__(self):
         return self.Url or ""

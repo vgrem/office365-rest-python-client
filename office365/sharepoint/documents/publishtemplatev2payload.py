@@ -1,7 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
-from office365.sharepoint.documents.publishmoderntemplatepayload import Snippet
+from office365.sharepoint.documents.snippet import Snippet
 
 
 class PublishTemplateV2Payload(ClientValue):

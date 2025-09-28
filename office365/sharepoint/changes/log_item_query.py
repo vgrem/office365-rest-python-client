@@ -2,6 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class ChangeLogItemQuery(ClientValue):
+
     def __init__(
         self,
         change_token: str = None,
@@ -9,6 +10,8 @@ class ChangeLogItemQuery(ClientValue):
         query_options: str = None,
         contains: str = None,
         row_limit: int = None,
+        view_fields: str = None,
+        view_name: str = None,
     ):
         """
         Specifies an object that is used as the input parameter of
@@ -29,6 +32,8 @@ class ChangeLogItemQuery(ClientValue):
         self.ChangeToken = change_token
         self.Contains = contains
         self.RowLimit = str(row_limit) if row_limit else None
+        self.ViewFields = view_fields
+        self.ViewName = view_name
 
     @property
     def entity_type_name(self):

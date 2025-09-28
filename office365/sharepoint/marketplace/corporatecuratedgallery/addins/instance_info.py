@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -5,11 +7,11 @@ class SPAddinInstanceInfo(ClientValue):
 
     def __init__(
         self,
-        app_identifier=None,
-        app_instance_id=None,
-        tenant_app_data=None,
-        tenant_app_data_update_time=None,
-        title=None,
+        app_identifier: str = None,
+        app_instance_id: str = None,
+        tenant_app_data: str = None,
+        tenant_app_data_update_time: datetime = None,
+        title: str = None,
     ):
         """
         :param str app_identifier:

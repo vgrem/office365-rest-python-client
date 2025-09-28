@@ -1,18 +1,15 @@
 from office365.runtime.client_value import ClientValue
-
-
-class CustomerKeyVaultInfo(ClientValue):
-    pass
+from office365.sharepoint.onboarding.customerkeyvaultinfo import CustomerKeyVaultInfo
 
 
 class CustomerKeyInfo(ClientValue):
 
     def __init__(
         self,
-        availability_key_vault: CustomerKeyVaultInfo = None,
-        primary_key_vault: CustomerKeyVaultInfo = None,
-        secondary_key_vault: CustomerKeyVaultInfo = None,
+        availability_key_vault: CustomerKeyVaultInfo = CustomerKeyVaultInfo(),
+        primary_key_vault: CustomerKeyVaultInfo = CustomerKeyVaultInfo(),
+        secondary_key_vault: CustomerKeyVaultInfo = CustomerKeyVaultInfo(),
     ):
-        self.availability_key_vault = availability_key_vault
-        self.primary_key_vault = primary_key_vault
-        self.secondary_key_vault = secondary_key_vault
+        self.AvailabilityKeyVault = availability_key_vault
+        self.PrimaryKeyVault = primary_key_vault
+        self.SecondaryKeyVault = secondary_key_vault

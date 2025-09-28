@@ -4,6 +4,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.documents.contentassemblyformanswer import (
     ContentAssemblyFormAnswer,
 )
+from office365.sharepoint.documents.location import DocumentLocation
 
 
 class DocumentGenerationInfo(ClientValue):
@@ -21,6 +22,7 @@ class DocumentGenerationInfo(ClientValue):
         is_temp_file: bool = None,
         temp_file_url: str = None,
         update_folder_permissions: bool = None,
+        document_location: DocumentLocation = DocumentLocation(),
     ):
         self.conditional_fields_to_be_deleted = conditional_fields_to_be_deleted
         self.content_assembly_form_answers = content_assembly_form_answers
@@ -31,3 +33,4 @@ class DocumentGenerationInfo(ClientValue):
         self.is_temp_file = is_temp_file
         self.temp_file_url = temp_file_url
         self.update_folder_permissions = update_folder_permissions
+        self.DocumentLocation = document_location

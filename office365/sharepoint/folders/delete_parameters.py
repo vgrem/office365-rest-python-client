@@ -2,7 +2,15 @@ from office365.runtime.client_value import ClientValue
 
 
 class FolderDeleteParameters(ClientValue):
-    def __init__(self, bypass_shared_lock=None, delete_if_empty=None, etag_match=None):
+
+    def __init__(
+        self,
+        bypass_shared_lock=None,
+        delete_if_empty=None,
+        etag_match=None,
+        bypass_checked_out: bool = None,
+        e_tag_match: str = None,
+    ):
         """
         :param bool bypass_shared_lock:
         :param bool delete_if_empty:
@@ -11,3 +19,5 @@ class FolderDeleteParameters(ClientValue):
         self.BypassSharedLock = bypass_shared_lock
         self.DeleteIfEmpty = delete_if_empty
         self.ETagMatch = etag_match
+        self.BypassCheckedOut = bypass_checked_out
+        self.ETagMatch = e_tag_match

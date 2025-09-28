@@ -2,13 +2,21 @@ import math
 import time
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import StringCollection
 
 
 class ContextWebInformation(ClientValue):
     """Specifies metadata about a site."""
 
     def __init__(
-        self, form_digest_value: str = None, form_digest_timeout_secs: int = None
+        self,
+        form_digest_value: str = None,
+        form_digest_timeout_secs: int = None,
+        form_digest_timeout_seconds: int = None,
+        library_version: str = None,
+        site_full_url: str = None,
+        supported_schema_versions: StringCollection = StringCollection(),
+        web_full_url: str = None,
     ):
         """
         :param str form_digest_value: An object that is inserted into a page and is used by a protocol server
@@ -23,6 +31,11 @@ class ContextWebInformation(ClientValue):
         self.SupportedSchemaVersions = None
         self.WebFullUrl = None
         self._valid_from = time.time()
+        self.FormDigestTimeoutSeconds = form_digest_timeout_seconds
+        self.LibraryVersion = library_version
+        self.SiteFullUrl = site_full_url
+        self.SupportedSchemaVersions = supported_schema_versions
+        self.WebFullUrl = web_full_url
 
     @property
     def is_valid(self):
@@ -31,6 +44,5 @@ class ContextWebInformation(ClientValue):
         """
         if self.FormDigestTimeoutSeconds is None:
             return False
-
         expires_in_sec = math.ceil(time.time() - self._valid_from)
         return expires_in_sec < self.FormDigestTimeoutSeconds

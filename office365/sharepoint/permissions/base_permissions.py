@@ -7,10 +7,10 @@ from office365.sharepoint.permissions.kind import PermissionKind
 class BasePermissions(ClientValue):
     """Specifies a set of built-in permissions."""
 
-    def __init__(self):
+    def __init__(self, high: int = 0, low: int = 0):
         super().__init__()
-        self.Low: int = 0
-        self.High: int = 0
+        self.High = high
+        self.Low = low
 
     def __repr__(self):
         perms = self.permission_levels
@@ -32,7 +32,6 @@ class BasePermissions(ClientValue):
         """Sets a permission with support for both enum and raw integer values."""
         if isinstance(perm, int):
             perm = PermissionKind(perm)
-
         if perm == PermissionKind.FullMask:
             self.Low = self.High = 0xFFFF
         elif perm == PermissionKind.EmptyMask:
@@ -40,7 +39,6 @@ class BasePermissions(ClientValue):
         else:
             bit_pos = perm.value - 1
             mask = 1 << (bit_pos % 32)
-
             if bit_pos < 32:
                 self.High |= mask
             elif 32 <= bit_pos < 64:
@@ -50,16 +48,13 @@ class BasePermissions(ClientValue):
         """Checks if permission is set with support for both enum and integer values."""
         if isinstance(perm, int):
             perm = PermissionKind(perm)
-
         if perm == PermissionKind.EmptyMask:
             return True
         if perm == PermissionKind.FullMask:
             return self.Low == 0xFFFF and self.High == 0xFFFF
-
         bit_pos = perm.value - 1
         if not 0 <= bit_pos < 64:
             return False
-
         mask = 1 << (bit_pos % 32)
         return bool(self.High & mask) if bit_pos < 32 else bool(self.Low & mask)
 

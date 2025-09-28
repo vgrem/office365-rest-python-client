@@ -1,25 +1,28 @@
+from datetime import datetime
+
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.sharepoint.types.resource_path import ResourcePath
 from office365.subscriptions.subscription import Subscription
 
 
 class SubscriptionCollection(EntityCollection[Subscription]):
+    """ """
+
     def __init__(self, context, resource_path=None):
-        super(SubscriptionCollection, self).__init__(
-            context, Subscription, resource_path
-        )
+        super().__init__(context, Subscription, resource_path)
 
     def add(
         self,
-        change_type,
-        notification_url,
-        resource_path,
-        expiration,
-        client_state=None,
-        latest_supported_tls_version=None,
-        include_resource_data=None,
-        encryption_certificate=None,
-        encryption_certificate_id=None,
+        change_type: str,
+        notification_url: str,
+        resource_path: ResourcePath,
+        expiration: datetime,
+        client_state: str = None,
+        latest_supported_tls_version: str = None,
+        include_resource_data: bool = None,
+        encryption_certificate: str = None,
+        encryption_certificate_id: str = None,
     ):
         """
         Subscribes a listener application to receive change notifications when the requested type of changes occur

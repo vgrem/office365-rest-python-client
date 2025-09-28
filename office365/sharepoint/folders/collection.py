@@ -6,8 +6,8 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.folders.coloring_information import (
     FolderColoringInformation,
-    FolderColors,
 )
+from office365.sharepoint.folders.colors import FolderColors
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
