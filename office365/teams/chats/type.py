@@ -1,4 +1,7 @@
-class ChatType:
+from enum import Enum
+
+
+class ChatType(Enum):
 
     oneOnOne = "oneOnOne"
     """Indicates that the chat is a 1:1 chat. The roster size is fixed for this type of chat; members can't be

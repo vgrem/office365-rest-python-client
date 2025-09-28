@@ -3,6 +3,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_object_meta import persist_property
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.chats.messages.info import ChatMessageInfo
@@ -88,6 +89,7 @@ class Chat(Entity):
         )
 
     @property
+    @persist_property()
     def members(self) -> ConversationMemberCollection:
         """A collection of membership records associated with the chat."""
         return self.properties.setdefault(

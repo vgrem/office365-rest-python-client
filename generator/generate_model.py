@@ -1,6 +1,6 @@
 from configparser import ConfigParser
+from pathlib import Path
 
-from generator import load_settings
 from generator.builders.type_builder import TypeBuilder
 from office365.runtime.odata.model import ODataModel
 from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
@@ -20,20 +20,21 @@ def generate_files(model: ODataModel, options: dict) -> None:
             builder.save()
 
 
-def generate_sharepoint_model(settings: ConfigParser) -> None:
-    reader = ODataV3Reader(settings.get("sharepoint", "metadataPath"))
+def generate_sharepoint_model(cp: ConfigParser) -> None:
+    reader = ODataV3Reader(cp.get("sharepoint", "metadataPath"))
     # reader.format_file()
     model = reader.generate_model()
-    generate_files(model, dict(settings.items("sharepoint")))
+    generate_files(model, dict(cp.items("sharepoint")))
 
 
-def generate_graph_model(settings: ConfigParser) -> None:
-    reader = ODataV4Reader(settings.get("microsoftgraph", "metadataPath"))
+def generate_graph_model(cp: ConfigParser) -> None:
+    reader = ODataV4Reader(cp.get("microsoftgraph", "metadataPath"))
     model = reader.generate_model()
-    generate_files(model, dict(settings.items("microsoftgraph")))
+    generate_files(model, dict(cp.items("microsoftgraph")))
 
 
 if __name__ == "__main__":
-    generator_settings = load_settings()
-    # generate_graph_model(settings)
-    generate_sharepoint_model(generator_settings)
+    settings = ConfigParser()
+    settings.read(Path(__file__).parent / "settings.cfg")
+    #generate_graph_model(settings)
+    generate_sharepoint_model(settings)

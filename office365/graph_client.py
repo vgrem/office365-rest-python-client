@@ -301,7 +301,7 @@ class GraphClient(ClientRuntimeContext):
         return TeamCollection(self, ResourcePath("teams"))
 
     @property
-    def chats(self):
+    def chats(self) -> ChatCollection:
         """Chats container"""
         return ChatCollection(self, ResourcePath("chats"))
 

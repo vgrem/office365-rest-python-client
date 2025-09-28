@@ -15,4 +15,4 @@ class ConversationMember(Entity):
     @property
     def roles(self) -> StringCollection:
         """The roles for that user."""
-        return self.properties.get("roles", StringCollection())
+        return self.properties.setdefault("roles", StringCollection())

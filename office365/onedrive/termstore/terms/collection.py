@@ -10,10 +10,10 @@ class TermCollection(EntityCollection[Term]):
         """
         :param office365.onedrive.termstore.sets.set.Set parent_set: The parent set that contains the term
         """
-        super(TermCollection, self).__init__(context, Term, resource_path)
+        super().__init__(context, Term, resource_path)
         self._parent_set = parent_set
 
-    def add(self, label):
+    def add(self, label: str) -> Term:
         """Create a new term object.
 
         :param str label: The name of the label.

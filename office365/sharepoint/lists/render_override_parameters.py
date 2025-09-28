@@ -3,6 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class RenderListDataOverrideParameters(ClientValue):
 
+    # pylint: disable=too-many-statements
     def __init__(
         self,
         casc_del_warn_message: str = None,

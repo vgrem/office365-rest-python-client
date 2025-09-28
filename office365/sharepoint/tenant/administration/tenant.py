@@ -319,7 +319,7 @@ class Tenant(Entity):
         """Retrieves the Home Site that has been designated for your Microsoft 365 tenant."""
         return_type = ClientResult(
             self.context,
-            ClientValueCollection(HomeSitesDetails),  # pylint: disable=E1120
+            ClientValueCollection(HomeSitesDetails),
         )
         qry = ServiceOperationQuery(self, "GetHomeSites", None, None, None, return_type)
         self.context.add_query(qry)
@@ -336,7 +336,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def remove_home_site(self, home_site_url):
+    def remove_home_site(self, home_site_url: str) -> Self:
         """
         Remove home site
 
@@ -383,7 +383,11 @@ class Tenant(Entity):
         return return_type
 
     def export_to_csv(
-        self, view_xml=None, time_zone_id=None, columns_info=None, list_name=None
+        self,
+        view_xml: str = None,
+        time_zone_id: int = None,
+        columns_info=None,
+        list_name: str = None,
     ):
         """
         Exports tenant-level data to a CSV file.

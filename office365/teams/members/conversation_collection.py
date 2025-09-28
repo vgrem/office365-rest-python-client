@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 
 class ConversationMemberCollection(EntityCollection[ConversationMember]):
+    """ """
+
     def __init__(self, context, resource_path=None):
         super().__init__(context, ConversationMember, resource_path)
 

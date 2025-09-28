@@ -541,6 +541,12 @@
          <ComplexType Name="CreateReviewRequestDTO">
             <Property Name="DocumentUri" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="CreateTemplateResponse">
+            <Property Name="ServerRelativeUrl" Type="Edm.String"/>
+            <Property Name="Title" Type="Edm.String"/>
+            <Property Name="UniqueID" Type="Edm.String"/>
+            <Property Name="Url" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="CurrencyInformationCollection">
             <Property Name="Items" Type="Collection(SP.CurrencyInformation)"/>
          </ComplexType>
@@ -681,6 +687,11 @@
          <ComplexType Name="RequestedTranslation">
             <Property Name="LanguageCode" Type="Edm.String"/>
             <Property Name="WebRelativePath" Type="SP.ResourcePath"/>
+         </ComplexType>
+         <ComplexType Name="RestrictAccessControlUpdate">
+            <Property Name="EnableRestrictedAccessPolicy" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="Justification" Type="Edm.String"/>
+            <Property Name="RestrictedAccessControlGroups" Type="Collection(Edm.String)"/>
          </ComplexType>
          <ComplexType Name="RestrictContentOrgWidePolicyUpdate">
             <Property Name="IsPolicyEnabled" Type="Edm.Boolean" Nullable="false"/>
@@ -1987,6 +1998,7 @@
             <Property Name="RelatedGroupId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="RequiredDesignerVersion" Type="Edm.String"/>
             <Property Name="RestrictContentOrgWideSearchUpdate" Type="SP.RestrictContentOrgWidePolicyUpdate"/>
+            <Property Name="RestrictedAccessControlGroupsDelegatedOnSite" Type="SP.RestrictAccessControlUpdate"/>
             <Property Name="RestrictedAccessControlGroupsEnforcedOnSite" Type="Collection(Edm.String)"/>
             <Property Name="SandboxedCodeActivationCapability" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ScheduledDateForRemoval" Type="Edm.String"/>
@@ -11455,7 +11467,7 @@
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="sqlCommandText" Type="Edm.String"/>
             </FunctionImport>
-            <FunctionImport Name="GetServiceInfo" ReturnType="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveServiceInfo" IsBindable="true">
+            <FunctionImport Name="GetServiceVersion" ReturnType="Edm.Int32" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
             <FunctionImport Name="GetSiteMoveState" ReturnType="Edm.String" IsBindable="true">
@@ -18141,6 +18153,34 @@
                <Parameter Name="groupId" Type="Edm.Guid" Nullable="false"/>
                <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
                <Parameter Name="displayName" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="Microsoft_Online_SharePoint_TenantAdministration_SPOM365AgentInsightsRestApiClient" ReturnType="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient" IsComposable="true" EntitySet="SPDataGovernanceRestApiClientBases">
+               <Parameter Name="authorizationHeader" Type="Edm.String"/>
+               <Parameter Name="url" Type="Edm.String"/>
+               <Parameter Name="userAgent" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateM365AgentInsightsReport" ReturnType="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsReportMetadata" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"/>
+               <Parameter Name="reportPeriod" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetAllM365AgentInsightsReportsMetadata" ReturnType="Collection(Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsReportMetadata)" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"/>
+            </FunctionImport>
+            <FunctionImport Name="GetM365AgentInsightsFullReportContent" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"/>
+               <Parameter Name="reportId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="reportSubType" Type="Edm.String"/>
+               <Parameter Name="isFullDetails" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetM365AgentsOnSitesTopDetails" ReturnType="Collection(Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsM365AgentsOnSitesDetails)" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"/>
+               <Parameter Name="reportId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="isFullDetails" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetSiteDistributionsTopDetails" ReturnType="Collection(Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsSiteDistributionDetails)" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"/>
+               <Parameter Name="reportId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="isFullDetails" Type="Edm.Boolean" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="GetMalwareFileStream" ReturnType="Edm.Stream" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.SPOMalwareFile"/>
@@ -25225,6 +25265,15 @@
          <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOListParameters">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsM365AgentsOnSitesDetails">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsReportMetadata">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsSiteDistributionDetails">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPORestrictedContentDiscoverabilitySiteDetails">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -26729,6 +26778,9 @@
          <Annotations Target="SP.Site/RelatedGroupId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.Site/RestrictedAccessControlGroupsDelegatedOnSite">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.Site/RestrictedAccessControlGroupsEnforcedOnSite">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -27843,6 +27895,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOGroup">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.SPOPortalLaunchValidator">
@@ -37735,17 +37790,6 @@
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
       </Schema>
-      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Administration.SiteMove.Service">
-         <ComplexType Name="SiteMoveServiceInfo">
-            <Property Name="ServiceCapabilities" Type="Collection(Edm.Int32)" Nullable="false"/>
-         </ComplexType>
-         <EntityType Name="SiteMoveService">
-            <Key>
-               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
-            </Key>
-            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
-         </EntityType>
-      </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Yammer">
          <ComplexType Name="WacToken">
             <Property Name="AccessToken" Type="Edm.String"/>
@@ -39871,6 +39915,11 @@
             <Property Name="url" Type="Edm.String"/>
             <Property Name="version" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="TemplateCreationParameters">
+            <Property Name="SourceFileUniqueId" Type="Edm.String"/>
+            <Property Name="SourceLibraryId" Type="Edm.String"/>
+            <Property Name="TemplateName" Type="Edm.String"/>
+         </ComplexType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Administration.TenantAdmin">
          <ComplexType Name="PolicyResourceStorage">
@@ -40570,6 +40619,7 @@
             <Property Name="accessors" Type="Collection(SP.Sharing.Principal)"/>
             <Property Name="audience" Type="Edm.Int32" Nullable="false"/>
             <Property Name="role" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="shareId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="url" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="MainLinkAbilities">
@@ -41917,6 +41967,7 @@
          </ComplexType>
          <ComplexType Name="SPContainerTypeStatus">
             <Property Name="ContainerTypeId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="IsActiveBillingProfile" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsArchivable" Type="Edm.Boolean" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SPDataGovernanceInsightExportedReport">
@@ -42124,6 +42175,36 @@
             <Property Name="Id" Type="Edm.Guid" Nullable="false"/>
             <Property Name="Title" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="SPOM365AgentInsightsM365AgentsOnSitesDetails">
+            <Property Name="AgentID" Type="Edm.String"/>
+            <Property Name="AgentName" Type="Edm.String"/>
+            <Property Name="AgentType" Type="Edm.String"/>
+            <Property Name="AgentVersion" Type="Edm.String"/>
+            <Property Name="ExternalSharing" Type="Edm.String"/>
+            <Property Name="RequestVolume" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="RestrictSiteAccessEnabled" Type="Edm.String"/>
+            <Property Name="RestrictSiteDiscoveryEnabled" Type="Edm.String"/>
+            <Property Name="Sensitivity" Type="Edm.String"/>
+            <Property Name="SiteID" Type="Edm.String"/>
+            <Property Name="SiteName" Type="Edm.String"/>
+            <Property Name="SiteOwner" Type="Edm.String"/>
+            <Property Name="SiteType" Type="Edm.String"/>
+            <Property Name="SiteURL" Type="Edm.String"/>
+            <Property Name="TotalAgents" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="TotalRequestVolume" Type="Edm.Int64" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="SPOM365AgentInsightsReportMetadata">
+            <Property Name="CreatedDateTimeInUtc" Type="Edm.String"/>
+            <Property Name="Id" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="ReportPeriodInDays" Type="Edm.Int32"/>
+            <Property Name="Status" Type="Edm.Int32" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="SPOM365AgentInsightsSiteDistributionDetails">
+            <Property Name="Agents" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="RequestVolume" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="Sites" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="Template" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="SPORestrictedContentDiscoverabilitySiteDetails">
             <Property Name="LastModified" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="SiteOwnerEmail" Type="Edm.String"/>
@@ -42324,6 +42405,7 @@
             <Property Name="ApplyToExistingDocumentLibraries" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ApplyToNewDocumentLibraries" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ArchivedBy" Type="Edm.String"/>
+            <Property Name="ArchivedFileDiskUsed" Type="Edm.Int64" Nullable="false"/>
             <Property Name="ArchivedTime" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="ArchiveStatus" Type="Edm.String"/>
             <Property Name="AuthContextStrength" Type="Edm.String"/>
@@ -42467,6 +42549,7 @@
             </Key>
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
+         <EntityType Name="SPOM365AgentInsightsRestApiClient" BaseType="Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceRestApiClientBase"/>
          <EntityType Name="SPOMalwareFile">
             <Key>
                <PropertyRef Name="MalwareInfo"/>
@@ -42578,6 +42661,7 @@
             <Property Name="AllowEditing" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowEveryoneExceptExternalUsersClaimInPrivateSite" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowGuestUserShareToUsersNotInSiteCollection" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="AllowLegacyAuthProtocolsEnabledSetting" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowLegacyBrowserAuthProtocolsEnabledSetting" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowLimitedAccessOnUnmanagedDevices" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowOverrideForBlockUserInfoVisibility" Type="Edm.Boolean" Nullable="false"/>
@@ -42618,6 +42702,7 @@
             <Property Name="BlockUserInfoVisibilityInSharePoint" Type="Edm.Int32" Nullable="false"/>
             <Property Name="BonusStorageQuotaMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="BusinessConnectivityServiceDisabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ClassicPagesRestrictMode" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CommentsOnFilesDisabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CommentsOnListItemsDisabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CommentsOnSitePagesDisabled" Type="Edm.Boolean" Nullable="false"/>
@@ -44313,6 +44398,14 @@
             <Property Name="SSOApplicationId" Type="Edm.String"/>
             <Property Name="SSOProviderImplId" Type="Edm.String"/>
             <Property Name="Target" Type="Edm.String"/>
+         </EntityType>
+      </Schema>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Administration.SiteMove.Service">
+         <EntityType Name="SiteMoveService">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="SP.OAuth">

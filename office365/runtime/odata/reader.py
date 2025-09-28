@@ -35,10 +35,15 @@ class ODataReader(ABC):
 
     def process_schema_node(self, model: ODataModel) -> None:
         root = ET.parse(self._metadata_path).getroot()
-        schema_node = root.find("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
-        for type_node in schema_node.findall("xmlns:ComplexType", self.xml_namespaces):
-            type_schema = self.process_type_node(type_node, schema_node)
-            model.add_type(type_schema)
+        schema_nodes = root.findall(
+            "edmx:DataServices/xmlns:Schema", self.xml_namespaces
+        )
+        for schema_node in schema_nodes:
+            for type_node in schema_node.findall(
+                "xmlns:ComplexType", self.xml_namespaces
+            ):
+                type_schema = self.process_type_node(type_node, schema_node)
+                model.add_type(type_schema)
 
     def process_type_node(self, type_node: Element, schema_node: Element) -> ODataType:
         type_schema = ODataType()
