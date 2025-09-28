@@ -8,9 +8,7 @@ class ListTemplateCollection(EntityCollection[ListTemplate]):
 
     def __init__(self, context, resource_path=None):
         """Specifies a collection of list templates"""
-        super(ListTemplateCollection, self).__init__(
-            context, ListTemplate, resource_path
-        )
+        super().__init__(context, ListTemplate, resource_path)
 
     def get_by_name(self, name: str) -> ListTemplate:
         """Returns the list template with the specified name.

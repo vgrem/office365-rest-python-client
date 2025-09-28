@@ -17,6 +17,13 @@ class ViewCreationInformation(ClientValue):
         query: str = None,
         personal_view: bool = None,
         paged: bool = None,
+        associated_content_type_id: str = None,
+        base_view_id: int = None,
+        calendar_view_styles: str = None,
+        column_width: str = None,
+        custom_formatter: str = None,
+        set_as_default_view: bool = None,
+        view_type2: str = None,
     ):
         """
         :param str title: Specifies the display name of the new list view. Its length MUST be equal to or less than 255.
@@ -40,6 +47,13 @@ class ViewCreationInformation(ClientValue):
         self.Query = query
         self.PersonalView = personal_view
         self.Paged = paged
+        self.AssociatedContentTypeId = associated_content_type_id
+        self.baseViewId = base_view_id
+        self.CalendarViewStyles = calendar_view_styles
+        self.ColumnWidth = column_width
+        self.CustomFormatter = custom_formatter
+        self.SetAsDefaultView = set_as_default_view
+        self.ViewType2 = view_type2
 
     @property
     def entity_type_name(self):

@@ -24,7 +24,7 @@ class NavigationNodeCreationInformation(ClientValue):
 
 
         """
-        super(NavigationNodeCreationInformation, self).__init__()
+        super().__init__()
         self.Title = title
         self.Url = url
         self.IsExternal = is_external

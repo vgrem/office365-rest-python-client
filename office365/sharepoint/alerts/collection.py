@@ -12,7 +12,7 @@ class AlertCollection(EntityCollection[Alert]):
     """Content Type resource collection"""
 
     def __init__(self, context, resource_path=None):
-        super(AlertCollection, self).__init__(context, Alert, resource_path)
+        super().__init__(context, Alert, resource_path)
 
     def add(self, parameters: AlertCreationInformation) -> Alert:
         """

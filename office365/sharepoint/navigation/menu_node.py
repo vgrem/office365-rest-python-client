@@ -12,16 +12,19 @@ class MenuNode(ClientValue):
     def __init__(
         self,
         audience_ids: List[str] = None,
-        current_lcid=None,
-        title=None,
-        is_deleted=None,
-        is_hidden=None,
+        current_lcid: int = None,
+        title: str = None,
+        is_deleted: bool = None,
+        is_hidden: bool = None,
         key=None,
         nodes=None,
         node_type=None,
         open_in_new_window=None,
         simple_url: str = None,
         translations=None,
+        custom_properties: dict = None,
+        friendly_url_segment: str = None,
+        is_title_for_existing_language: bool = None,
     ):
         """
         :param list[str] audience_ids:
@@ -57,3 +60,6 @@ class MenuNode(ClientValue):
         self.SimpleUrl = simple_url
         self.Title = title
         self.Translations = ClientValueCollection(SPResourceEntry, translations)
+        self.CustomProperties = custom_properties
+        self.FriendlyUrlSegment = friendly_url_segment
+        self.IsTitleForExistingLanguage = is_title_for_existing_language

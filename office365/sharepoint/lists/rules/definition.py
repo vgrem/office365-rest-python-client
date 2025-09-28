@@ -1,13 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-
-
-class ReviewerInfo(ClientValue):
-    pass
-
-
-class RulesProperties(ClientValue):
-    pass
+from office365.sharepoint.lists.rules.properties import RulesProperties
+from office365.sharepoint.lists.rules.reviewinfo import ReviewerInfo
 
 
 class RulesDefinition(ClientValue):

@@ -1,5 +1,8 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.authpolicy.events.event import SPAuthEvent
+from office365.sharepoint.authpolicy.events.role_assignment_resource_payload import (
+    RoleAssignmentResourcePayload,
+)
 from office365.sharepoint.entity_collection import EntityCollection
 
 
@@ -7,12 +10,16 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
     """Represents a collection of Field resource."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(SPAuthEventCollection, self).__init__(
-            context, SPAuthEvent, resource_path, parent
-        )
+        super().__init__(context, SPAuthEvent, resource_path, parent)
 
     def role_assignment_ms_graph_notify(
-        self, tenant, action, type_, resource_payload, id_, container_id
+        self,
+        tenant: str,
+        action: str,
+        type_: str,
+        resource_payload: RoleAssignmentResourcePayload,
+        id_: str,
+        container_id: str,
     ):
         """
         :param str tenant:

@@ -15,11 +15,9 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
     """SiteProperties resource collection"""
 
     def __init__(self, context, resource_path=None):
-        super(SitePropertiesCollection, self).__init__(
-            context, SiteProperties, resource_path
-        )
+        super().__init__(context, SiteProperties, resource_path)
 
-    def get_by_id(self, site_id):
+    def get_by_id(self, site_id: str) -> SiteProperties:
         """
         :param str site_id: Site identifier
         """
@@ -28,7 +26,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
-    def get_lock_state_by_id(self, site_id):
+    def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
         """
         :param str site_id: Site identifier
         """
@@ -39,7 +37,9 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_state_properties(self, site_id):
+    def get_site_state_properties(
+        self, site_id: str
+    ) -> ClientResult[SiteStateProperties]:
         """
         Gets site state properties.
 
@@ -52,7 +52,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_user_groups(self, site_id):
+    def get_site_user_groups(self, site_id: str) -> ClientResult[SiteUserGroupInfo]:
         """
         Gets site user groups.
 
@@ -67,7 +67,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
-    def check_site_is_archived_by_id(self, site_id):
+    def check_site_is_archived_by_id(self, site_id: str) -> ClientResult[bool]:
         """
         :param str site_id: Site identifier
         """

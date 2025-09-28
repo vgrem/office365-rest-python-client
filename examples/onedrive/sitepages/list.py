@@ -11,6 +11,6 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
     test_client_id, test_client_secret
 )
 site = client.sites.get_by_url(test_team_site_url)
-pages = site.pages.get().execute_query()
+pages = site.pages.top(10).get().execute_query()
 for page in pages:
-    print("Page url: {0}".format(page))
+    print(f"Page url: {page}")

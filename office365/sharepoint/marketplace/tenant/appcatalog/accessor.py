@@ -1,5 +1,7 @@
 import os
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -33,7 +35,7 @@ from office365.sharepoint.marketplace.sitecollection.appcatalog.allowed_items im
 class TenantCorporateCatalogAccessor(Entity):
     """Accessor for the tenant corporate catalog."""
 
-    def add(self, content, overwrite, url=None):
+    def add(self, content: bytes, overwrite: bool, url: str = None) -> File:
         """
         Adds a file to the corporate catalog.
 
@@ -57,7 +59,7 @@ class TenantCorporateCatalogAccessor(Entity):
         url = os.path.basename(path)
         return self.add(content=content, overwrite=overwrite, url=url)
 
-    def app_requests(self):
+    def app_requests(self) -> ClientResult[SPStoreAppResponseInformation]:
         """"""
         return_type = ClientResult(self.context, SPStoreAppResponseInformation())
         payload = {"AppRequestInfo": SPStoreAppRequestInformation()}
@@ -67,20 +69,20 @@ class TenantCorporateCatalogAccessor(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def download_teams_solution(self, _id):
+    def download_teams_solution(self, id_: int) -> TeamsPackageDownload:
         """
         Downloads a Microsoft Teams solution package associated with an app from the SharePoint App Catalog
-        :param int _id:
+        :param int id_:
         """
         return_type = TeamsPackageDownload(self.context)
-        payload = {"id": _id}
+        payload = {"id": id_}
         qry = ServiceOperationQuery(
             self, "DownloadTeamsSolution", None, payload, None, return_type
         )
         self.context.add_query(qry)
         return return_type
 
-    def get_app_by_id(self, item_unique_id):
+    def get_app_by_id(self, item_unique_id: str) -> CorporateCatalogAppMetadata:
         """
         :param str item_unique_id:
         """
@@ -89,13 +91,15 @@ class TenantCorporateCatalogAccessor(Entity):
             self.context, ServiceOperationPath("GetAppById", params, self.resource_path)
         )
 
-    def is_app_upgrade_available(self, _id):
+    def is_app_upgrade_available(
+        self, id_: int
+    ) -> ClientResult[AppUpgradeAvailability]:
         """
         Determines if an upgrade is available for an app in the SharePoint app catalog
-        :param int _id:
+        :param int id_:
         """
         return_type = ClientResult(self.context, AppUpgradeAvailability())
-        payload = {"id": _id}
+        payload = {"id": id_}
         qry = ServiceOperationQuery(
             self, "IsAppUpgradeAvailable", None, payload, None, return_type
         )
@@ -114,7 +118,7 @@ class TenantCorporateCatalogAccessor(Entity):
         self.context.add_query(qry)
         return self
 
-    def send_app_request_status_notification_email(self, request_guid):
+    def send_app_request_status_notification_email(self, request_guid: str) -> Self:
         """
         Sends email notifications about the status of an app request in the corporate app catalog
         :param str request_guid:
@@ -126,7 +130,7 @@ class TenantCorporateCatalogAccessor(Entity):
         return self
 
     @property
-    def available_apps(self):
+    def available_apps(self) -> CorporateCatalogAppMetadataCollection:
         """Returns the apps available in this corporate catalog."""
         return self.properties.get(
             "AvailableApps",
@@ -136,7 +140,7 @@ class TenantCorporateCatalogAccessor(Entity):
         )
 
     @property
-    def card_designs(self):
+    def card_designs(self) -> CardDesigns:
         """Returns the card designs available in this corporate catalog."""
         return self.properties.get(
             "CardDesigns",
@@ -144,7 +148,9 @@ class TenantCorporateCatalogAccessor(Entity):
         )
 
     @property
-    def site_collection_app_catalogs_sites(self):
+    def site_collection_app_catalogs_sites(
+        self,
+    ) -> SiteCollectionAppCatalogAllowedItems:
         """Returns an accessor to the allow list of site collections allowed to have site collection corporate
         catalogs."""
         return self.properties.get(
@@ -167,6 +173,4 @@ class TenantCorporateCatalogAccessor(Entity):
                 "SiteCollectionAppCatalogsSites": self.site_collection_app_catalogs_sites,
             }
             default_value = property_mapping.get(name, None)
-        return super(TenantCorporateCatalogAccessor, self).get_property(
-            name, default_value
-        )
+        return super().get_property(name, default_value)

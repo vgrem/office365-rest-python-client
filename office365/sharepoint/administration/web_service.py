@@ -20,7 +20,7 @@ class SPWebService(Entity):
         return return_type
 
     @property
-    def web_applications(self):
+    def web_applications(self) -> EntityCollection[WebApplication]:
         return self.properties.get(
             "WebApplications",
             EntityCollection(

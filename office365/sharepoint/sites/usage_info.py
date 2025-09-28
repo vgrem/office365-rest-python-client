@@ -6,7 +6,15 @@ class UsageInfo(ClientValue):
     Provides fields used to access information regarding site collection usage.
     """
 
-    def __init__(self, bandwidth=None, discussion_storage=None, visits=None):
+    def __init__(
+        self,
+        bandwidth=None,
+        discussion_storage=None,
+        visits=None,
+        hits: int = None,
+        storage: int = None,
+        storage_percentage_used: float = None,
+    ):
         """
         :param long bandwidth: Contains the cumulative bandwidth used by the site collection on the previous day or
             on the last day that log files were processed, which is tracked by usage analysis code.
@@ -15,7 +23,10 @@ class UsageInfo(ClientValue):
         :param long visits: Contains the cumulative number of visits to the site collection,
             which is tracked by the usage analysis code.
         """
-        super(UsageInfo, self).__init__()
+        super().__init__()
         self.Bandwidth = bandwidth
         self.DiscussionStorage = discussion_storage
         self.Visits = visits
+        self.Hits = hits
+        self.Storage = storage
+        self.StoragePercentageUsed = storage_percentage_used

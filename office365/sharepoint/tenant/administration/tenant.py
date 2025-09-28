@@ -248,9 +248,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def render_recent_admin_actions(self):
+    def render_recent_admin_actions(self) -> ClientResult[bytes]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         payload = {
             "parameters": RenderListDataParameters(),
             "overrideParameters": RenderListDataOverrideParameters(),
@@ -347,7 +347,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def has_valid_education_license(self):
+    def has_valid_education_license(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(
@@ -356,7 +356,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def is_request_content_management_assessment_eligible(self):
+    def is_request_content_management_assessment_eligible(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(
             self,
@@ -369,7 +369,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def is_syntex_repository_terms_of_service_accepted(self):
+    def is_syntex_repository_terms_of_service_accepted(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(
             self,
@@ -405,7 +405,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def render_policy_report(self):
+    def render_policy_report(self) -> ClientResult[bytes]:
         """"""
         return_type = ClientResult(self.context, bytes())
         payload = {
@@ -419,7 +419,7 @@ class Tenant(Entity):
         return return_type
 
     @staticmethod
-    def from_url(admin_site_url):
+    def from_url(admin_site_url: str):
         """
         :type admin_site_url: str
         """
@@ -428,7 +428,7 @@ class Tenant(Entity):
         admin_client = ClientContext(admin_site_url)
         return Tenant(admin_client)
 
-    def get_lock_state_by_id(self, site_id):
+    def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
         """
         :param str site_id: The GUID to uniquely identify a SharePoint site
         """
@@ -449,7 +449,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_ransomware_activities(self) -> ClientResult[AnyStr]:
+    def get_ransomware_activities(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context)
         payload = {"parameters": RenderListDataParameters()}
@@ -468,7 +468,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_root_site_url(self):
+    def get_root_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(
@@ -482,7 +482,9 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_authorization_code_for_migration(self, endpoint_url):
+    def get_site_authorization_code_for_migration(
+        self, endpoint_url: str
+    ) -> ClientResult[str]:
         return_type = ClientResult(self.context, str())
         payload = {"endpointUrl": endpoint_url}
         qry = ServiceOperationQuery(
@@ -553,7 +555,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def check_tenant_licenses(self, licenses):
+    def check_tenant_licenses(self, licenses: List[str]) -> ClientResult[bool]:
         """
         Checks whether a tenant has the specified licenses.
 
@@ -572,7 +574,7 @@ class Tenant(Entity):
             "SiteUrl eq '{0}'".format(site_url.rstrip("/"))
         ).get()
 
-    def get_sites_by_state(self, states=None):
+    def get_sites_by_state(self, states: List[int] = None):
         """
         :param list[int] states:
         """
@@ -622,7 +624,11 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return result
 
-    def get_site_administrators(self, site_id: str, return_type=None):
+    def get_site_administrators(
+        self,
+        site_id: str,
+        return_type: ClientResult[ClientValueCollection[SiteAdministratorsInfo]] = None,
+    ):
         """
         Gets site collection administrators
 
@@ -711,7 +717,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_site(self, url, owner, title=None):
+    def create_site(self, url: str, owner: str, title: str = None) -> SpoOperation:
         """Queues a site collection for creation with the specified properties.
 
         :param str title: Sets the new site’s title.
@@ -730,7 +736,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_site_sync(self, url: str, owner: str, title: str = None):
+    def create_site_sync(self, url: str, owner: str, title: str = None) -> Site:
         """Creates a site collection
 
         :param str title: Sets the new site’s title.

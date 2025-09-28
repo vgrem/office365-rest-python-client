@@ -50,7 +50,7 @@ from office365.sharepoint.lists.data_source import ListDataSource
 from office365.sharepoint.lists.document_template_type import DocumentTemplateType
 from office365.sharepoint.lists.exporter import ExportListProgress
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
-from office365.sharepoint.lists.rule import SPListRule
+from office365.sharepoint.lists.rules.rule import SPListRule
 from office365.sharepoint.lists.version_policy_manager import VersionPolicyManager
 from office365.sharepoint.navigation.configured_metadata_items import (
     ConfiguredMetadataNavigationItemCollection,

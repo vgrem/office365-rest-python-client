@@ -3,21 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.administration.sitemove.systemsitelockexpres import (
+    SystemSiteLockExpirationResult,
+)
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
-
-
-class SystemSiteLockExpirationResult(ClientValue):
-    """"""
-
-    def __init__(self, error=None, expiration=None):
-        self.Error = error
-        self.Expiration = expiration
 
 
 class SiteMoveService(Entity):

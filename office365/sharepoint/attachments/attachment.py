@@ -16,7 +16,7 @@ class Attachment(Entity):
     def __repr__(self):
         return self.server_relative_url or self.entity_type_name
 
-    def download(self, file_object, use_path=True):
+    def download(self, file_object: IO, use_path: bool = True) -> Self:
         """Download attachment file
 
         :type file_object: typing.IO
@@ -44,7 +44,7 @@ class Attachment(Entity):
             self.ensure_property("ServerRelativeUrl", _download_file_by_url)
         return self
 
-    def get_content(self) -> ClientResult[AnyStr]:
+    def get_content(self) -> ClientResult[bytes]:
         """Gets the raw contents of attachment"""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
