@@ -31,7 +31,7 @@ class User(Entity):
         self.ensure_property("principalName", _user_loaded)
         return return_type
 
-    def get_my_groups(self):
+    def get_my_groups(self) -> MyGroupsResult:
         """
         Retrieves information about groups that a user belongs to.
         """

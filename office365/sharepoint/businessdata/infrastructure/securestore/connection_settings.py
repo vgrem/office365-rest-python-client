@@ -1,6 +1,6 @@
 from typing import Optional
 
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.sharepoint.entity import Entity
 
 
@@ -9,10 +9,10 @@ class ConnectionSettings(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
+            resource_path = StaticPath(
                 "Microsoft.BusinessData.Infrastructure.SecureStore.ConnectionSettings"
             )
-        super(ConnectionSettings, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     @property
     def authentication_mode(self) -> Optional[str]:

@@ -14,9 +14,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
     """Represents a collection of NavigationNode resources."""
 
     def __init__(self, context, resource_path=None):
-        super(NavigationNodeCollection, self).__init__(
-            context, NavigationNode, resource_path
-        )
+        super().__init__(context, NavigationNode, resource_path)
 
     def add(
         self, create_node_info: NavigationNodeCreationInformation

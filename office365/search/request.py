@@ -5,6 +5,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.types.collections import StringCollection
 from office365.search.aggregation_option import AggregationOption
+from office365.search.query import SearchQuery
 from office365.search.sharepoint_onedrive_options import SharePointOneDriveOptions
 from office365.search.sort_property import SortProperty
 
@@ -14,7 +15,7 @@ class SearchRequest(ClientValue):
 
     def __init__(
         self,
-        query,
+        query: SearchQuery,
         aggregation_filters=None,
         aggregations=None,
         enable_top_results=None,
@@ -53,7 +54,7 @@ class SearchRequest(ClientValue):
             sort results. There can be at most 5 sort properties in the collection.
         :param list[str] content_sources: Contains the connection to be targeted.
         """
-        super(SearchRequest, self).__init__()
+        super().__init__()
         self.query = query
         self.aggregationFilters = StringCollection(aggregation_filters)
         self.aggregations = ClientValueCollection(AggregationOption, aggregations)

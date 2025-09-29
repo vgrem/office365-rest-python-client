@@ -6,4 +6,4 @@ class MePath(EntityPath):
     """SignedIn user resource path"""
 
     def __init__(self):
-        super(MePath, self).__init__("me", None, ResourcePath("users"))
+        super().__init__("me", None, ResourcePath("users"))

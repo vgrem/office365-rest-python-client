@@ -19,7 +19,7 @@ class CertificateBasedAuthConfiguration(Entity):
     """
 
     @property
-    def certificate_authorities(self):
+    def certificate_authorities(self) -> ClientValueCollection[CertificateAuthority]:
         """Collection of certificate authorities which creates a trusted certificate chain."""
         return self.properties.get(
             "certificateAuthorities", ClientValueCollection(CertificateAuthority)

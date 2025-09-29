@@ -45,7 +45,7 @@ class DeltaCollection(EntityCollection[T]):
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[Entity] = None,
     ):
-        super(DeltaCollection, self).__init__(context, item_type, resource_path, parent)
+        super().__init__(context, item_type, resource_path, parent)
 
     def change_type(self, type_name: ChangeType) -> Self:
         """

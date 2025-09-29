@@ -1,5 +1,8 @@
+from typing import List
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.mount.requests.get_remote_item_Info import (
     GetRemoteItemInfoRequest,
@@ -9,7 +12,9 @@ from office365.sharepoint.mount.requests.get_remote_item_Info import (
 class MountService(Entity):
 
     @staticmethod
-    def get_remote_item_info(context, remote_item_unique_ids):
+    def get_remote_item_info(
+        context: ClientContext, remote_item_unique_ids: List[str]
+    ) -> ClientResult[str]:
         """
         :param office365.sharepoint.client_context.ClientContext context: client context
         :param list[str] remote_item_unique_ids:

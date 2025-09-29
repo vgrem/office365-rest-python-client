@@ -224,8 +224,7 @@ class TypeBuilder(ast.NodeTransformer):
             f.write(code)
 
     @lru_cache(maxsize=512)
-    def _find_model_class(self, name: str):
-        class_name = name.split(".")[-1]
+    def _find_model_class(self, class_name: str):
         modules = [t.strip() for t in self._options["modules"].split(",")]
 
         for root_name in modules:
@@ -249,7 +248,7 @@ class TypeBuilder(ast.NodeTransformer):
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = self._find_model_class(self._schema.name)
+        cls = self._find_model_class(self._schema.className)
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)

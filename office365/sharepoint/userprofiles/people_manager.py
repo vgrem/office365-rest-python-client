@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 from typing_extensions import Self
 
@@ -9,7 +9,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.principal.users.user import User
-from office365.sharepoint.userprofiles.hash_tag import HashTagCollection
+from office365.sharepoint.userprofiles.hash_tag_col import HashTagCollection
 from office365.sharepoint.userprofiles.person_properties import PersonProperties
 from office365.sharepoint.userprofiles.personal_site_creation_priority import (
     PersonalSiteCreationPriority,
@@ -296,7 +296,9 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_user_onedrive_quota(self, account_name, new_quota, new_quota_warning):
+    def set_user_onedrive_quota(
+        self, account_name: str, new_quota: int, new_quota_warning: int
+    ) -> ClientResult[str]:
         """
         :param str account_name:
         :param long new_quota:
@@ -315,8 +317,8 @@ class PeopleManager(Entity):
         return return_type
 
     def set_multi_valued_profile_property(
-        self, account_name, property_name, property_values
-    ):
+        self, account_name: str, property_name: str, property_values: List[str]
+    ) -> Self:
         """
         Sets the value of a multivalued user profile property.
         :param str account_name: Specifies the user by account name.
@@ -335,8 +337,8 @@ class PeopleManager(Entity):
         return self
 
     def set_single_value_profile_property(
-        self, account_name, property_name, property_value
-    ):
+        self, account_name: str, property_name: str, property_value: str
+    ) -> Self:
         """
         Sets the value of a user profile property.
 

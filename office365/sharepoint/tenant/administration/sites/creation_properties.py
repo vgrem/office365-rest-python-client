@@ -2,6 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteCreationProperties(ClientValue):
+
     def __init__(
         self,
         title=None,
@@ -10,6 +11,9 @@ class SiteCreationProperties(ClientValue):
         owner_name=None,
         template=None,
         site_uni_name=None,
+        compatibility_level: int = None,
+        lcid: str = None,
+        time_zone_id: int = None,
     ):
         """Sets the initial properties for a new site when it is created.
 
@@ -18,13 +22,16 @@ class SiteCreationProperties(ClientValue):
         :param str template: Gets or sets the web template name of the new site.
         :param str site_uni_name:
         """
-        super(SiteCreationProperties, self).__init__()
+        super().__init__()
         self.Url = url
         self.Owner = owner
         self.OwnerName = owner_name
         self.Title = title
         self.Template = template
         self.SiteUniName = site_uni_name
+        self.CompatibilityLevel = compatibility_level
+        self.Lcid = lcid
+        self.TimeZoneId = time_zone_id
 
     @property
     def entity_type_name(self):

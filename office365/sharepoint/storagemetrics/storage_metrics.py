@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from office365.sharepoint.entity import Entity
@@ -13,11 +13,11 @@ class StorageMetrics(Entity):
         return self.properties.get("AdditionalFileStreamSize", None)
 
     @property
-    def last_modified(self) -> Optional[datetime.datetime]:
+    def last_modified(self) -> Optional[datetime]:
         """
         Last modified date for all the items under the corresponding folder.
         """
-        return self.properties.get("LastModified", datetime.datetime.min)
+        return self.properties.get("LastModified", datetime.min)
 
     @property
     def total_file_count(self) -> Optional[int]:

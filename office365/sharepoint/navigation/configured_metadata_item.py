@@ -1,5 +1,4 @@
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class ConfiguredMetadataNavigationItem(ClientValue):
@@ -7,12 +6,14 @@ class ConfiguredMetadataNavigationItem(ClientValue):
 
     def __init__(
         self,
-        field_display_name=None,
-        field_title=None,
-        field_type_as_string=None,
-        is_content_type_field=None,
-        is_folder_hierarchy=None,
-        is_hierarchy=None,
+        field_display_name: str = None,
+        field_title: str = None,
+        field_type_as_string: str = None,
+        is_content_type_field: bool = None,
+        is_folder_hierarchy: bool = None,
+        is_hierarchy: bool = None,
+        is_multi_value_lookup: bool = None,
+        is_taxonomy_field: bool = None,
     ):
         """
         :param str field_display_name: The display name of the field that this item refers to.
@@ -28,10 +29,5 @@ class ConfiguredMetadataNavigationItem(ClientValue):
         self.IsContentTypeField = is_content_type_field
         self.IsFolderHierarchy = is_folder_hierarchy
         self.IsHierarchy = is_hierarchy
-
-
-class ConfiguredMetadataNavigationItemCollection(ClientValue):
-    """A collection of configured metadata navigation items."""
-
-    def __init__(self, items=None):
-        self.Items = ClientValueCollection(ConfiguredMetadataNavigationItem, items)
+        self.IsMultiValueLookup = is_multi_value_lookup
+        self.IsTaxonomyField = is_taxonomy_field

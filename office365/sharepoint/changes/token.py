@@ -18,7 +18,7 @@ class ChangeToken(ClientValue):
               - The time of the change token in ticks.
               - The change number.
         """
-        super(ChangeToken, self).__init__()
+        super().__init__()
         self.StringValue = string_value
 
     def __repr__(self):

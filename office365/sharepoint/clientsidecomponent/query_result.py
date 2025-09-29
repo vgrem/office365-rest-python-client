@@ -5,7 +5,12 @@ class SPClientSideComponentQueryResult(ClientValue):
     """This object contains information about the requested component and the status of the query that was used to
     retrieve the component."""
 
-    def __init__(self, component_type=None, manifest=None, manifest_type=None):
+    def __init__(
+        self,
+        component_type: str = None,
+        manifest: str = None,
+        manifest_type: str = None,
+    ):
         """
         :param str component_type: Specifies the type of component.
         :param str manifest:

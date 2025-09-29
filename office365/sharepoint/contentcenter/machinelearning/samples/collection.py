@@ -7,9 +7,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 
 class SPMachineLearningSampleCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
-        super(SPMachineLearningSampleCollection, self).__init__(
-            context, SPMachineLearningSample, resource_path
-        )
+        super().__init__(context, SPMachineLearningSample, resource_path)
 
     def get_by_title(self, title):
         """

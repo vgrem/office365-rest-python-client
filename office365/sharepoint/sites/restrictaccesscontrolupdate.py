@@ -1,0 +1,15 @@
+from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import StringCollection
+
+
+class RestrictAccessControlUpdate(ClientValue):
+
+    def __init__(
+        self,
+        enable_restricted_access_policy: bool = None,
+        justification: str = None,
+        restricted_access_control_groups: StringCollection = StringCollection(),
+    ):
+        self.EnableRestrictedAccessPolicy = enable_restricted_access_policy
+        self.Justification = justification
+        self.RestrictedAccessControlGroups = restricted_access_control_groups

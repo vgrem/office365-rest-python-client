@@ -52,7 +52,7 @@ from office365.sharepoint.lists.exporter import ExportListProgress
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
 from office365.sharepoint.lists.rules.rule import SPListRule
 from office365.sharepoint.lists.version_policy_manager import VersionPolicyManager
-from office365.sharepoint.navigation.configured_metadata_items import (
+from office365.sharepoint.navigation.configured_metadata_item_col import (
     ConfiguredMetadataNavigationItemCollection,
 )
 from office365.sharepoint.pages.wiki_page_creation_information import (

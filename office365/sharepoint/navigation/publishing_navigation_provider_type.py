@@ -1,6 +1,7 @@
-class PublishingNavigationProviderType:
-    def __init__(self):
-        pass
+from enum import Enum
+
+
+class PublishingNavigationProviderType(Enum):
 
     InvalidSiteMapProvider = 0
     PortalSiteMapProvider = 1

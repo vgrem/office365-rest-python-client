@@ -8,8 +8,8 @@ class MountPoint(Entity):
 
     @staticmethod
     def get_mounted_folder_info(
-        context, target_site_id, target_web_id, target_unique_id
-    ):
+        context, target_site_id: str, target_web_id: str, target_unique_id: str
+    ) -> MountedFolderInfo:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         :param str target_site_id:

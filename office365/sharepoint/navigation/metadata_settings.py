@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.navigation.configured_metadata_items import (
+from office365.sharepoint.navigation.configured_metadata_item_col import (
     ConfiguredMetadataNavigationItemCollection,
 )
 

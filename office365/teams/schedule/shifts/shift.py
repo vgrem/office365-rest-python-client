@@ -8,14 +8,14 @@ class Shift(ChangeTrackedEntity):
     """
 
     @property
-    def draft_shift(self):
+    def draft_shift(self) -> ShiftItem:
         """
         The draft version of this shift that is viewable by managers.
         """
         return self.properties.get("draftShift", ShiftItem())
 
     @property
-    def shared_shift(self):
+    def shared_shift(self) -> ShiftItem:
         """
         The shared version of this shift that is viewable by both employees and managers.
         """

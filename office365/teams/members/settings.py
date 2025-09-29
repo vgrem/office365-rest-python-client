@@ -9,10 +9,13 @@ class TeamMemberSettings(ClientValue):
         self,
         allow_create_update_channels: bool = None,
         allow_delete_channels: bool = True,
+        allow_add_remove_apps: bool = True,
+        allow_create_update_remove_tabs: bool = True,
+        allow_create_update_remove_connectors: bool = True,
     ):
-        super(TeamMemberSettings, self).__init__()
+        super().__init__()
         self.allowCreateUpdateChannels = allow_create_update_channels
         self.allowDeleteChannels = allow_delete_channels
-        self.allowAddRemoveApps = True
-        self.allowCreateUpdateRemoveTabs = True
-        self.allowCreateUpdateRemoveConnectors = True
+        self.allowAddRemoveApps = allow_add_remove_apps
+        self.allowCreateUpdateRemoveTabs = allow_create_update_remove_tabs
+        self.allowCreateUpdateRemoveConnectors = allow_create_update_remove_connectors

@@ -104,7 +104,9 @@ class SearchEntity(Entity):
         """
         return self.query(query_string, entity_types=[EntityType.event])
 
-    def query_drive_items(self, query_string, page_from=None, size=None):
+    def query_drive_items(
+        self, query_string: str, page_from: int = None, size: int = None
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches OneDrive items. Alias to query method
         :param str query_string: Contains the query terms.
         :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.

@@ -8,7 +8,7 @@ class MySiteLinks(Entity):
     """The MySiteLinks object provides links for a user’s personal site."""
 
     @staticmethod
-    def get_my_site_links(context):
+    def get_my_site_links(context) -> "MySiteLinks":
         """
         Return Type: Microsoft.SharePoint.Portal.UserProfiles.MySiteLinks
         The GetMySiteLinks function retrieves a MySiteLinks (section 3.1.5.22) object for the current user.

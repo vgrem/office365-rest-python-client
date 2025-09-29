@@ -8,6 +8,10 @@ from office365.runtime.odata.property import ODataProperty
 from office365.runtime.odata.type import ODataType
 
 
+def _get_class_name(name):
+    return name[0].upper() + name[1:]
+
+
 class ODataReader(ABC):
     """OData reader"""
 
@@ -48,7 +52,7 @@ class ODataReader(ABC):
     def process_type_node(self, type_node: Element, schema_node: Element) -> ODataType:
         type_schema = ODataType()
         type_schema.namespace = schema_node.attrib["Namespace"]
-        type_schema.className = type_node.get("Name")
+        type_schema.className = _get_class_name(type_node.get("Name"))
         type_schema.baseType = "ComplexType"
 
         for prop_node in type_node.findall("xmlns:Property", self.xml_namespaces):
