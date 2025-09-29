@@ -1,4 +1,10 @@
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.collections import StringCollection
+from office365.sharepoint.social.attachment import SocialAttachment
+from office365.sharepoint.social.dataitem import SocialDataItem
+from office365.sharepoint.social.link import SocialLink
+from office365.sharepoint.social.posts.definition_data import SocialPostDefinitionData
 
 
 class SocialPostCreationData(ClientValue):
@@ -8,7 +14,18 @@ class SocialPostCreationData(ClientValue):
     mentions of users, and links.
     """
 
-    def __init__(self, content_text=None):
+    def __init__(
+        self,
+        content_text=None,
+        attachment: SocialAttachment = SocialAttachment(),
+        content_items: ClientValueCollection[SocialDataItem] = ClientValueCollection(
+            SocialDataItem
+        ),
+        definition_data: SocialPostDefinitionData = SocialPostDefinitionData(),
+        security_uris: StringCollection = StringCollection(),
+        source: SocialLink = SocialLink(),
+        update_status_text: bool = None,
+    ):
         """
         :param str content_text: The ContentText string contains the text body of the post. It can optionally contain
             one or more substitution references to elements in the zero-based SocialDataItems array. A substitution
@@ -23,6 +40,12 @@ class SocialPostCreationData(ClientValue):
             helpful if the post is displayed to a user by a client.
         """
         self.ContentText = content_text
+        self.Attachment = attachment
+        self.ContentItems = content_items
+        self.DefinitionData = definition_data
+        self.SecurityUris = security_uris
+        self.Source = source
+        self.UpdateStatusText = update_status_text
 
     @property
     def entity_type_name(self):

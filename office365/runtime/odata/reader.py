@@ -3,6 +3,7 @@ from typing import Dict
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import Element
 
+from office365.runtime.odata.member import ODataMember
 from office365.runtime.odata.model import ODataModel
 from office365.runtime.odata.property import ODataProperty
 from office365.runtime.odata.type import ODataType
@@ -42,22 +43,32 @@ class ODataReader(ABC):
         schema_nodes = root.findall(
             "edmx:DataServices/xmlns:Schema", self.xml_namespaces
         )
+
+        base_type = "ComplexType"
+
         for schema_node in schema_nodes:
             for type_node in schema_node.findall(
-                "xmlns:ComplexType", self.xml_namespaces
+                f"xmlns:{base_type}", self.xml_namespaces
             ):
-                type_schema = self.process_type_node(type_node, schema_node)
+                type_schema = self.process_type_node(type_node, schema_node, base_type)
                 model.add_type(type_schema)
 
-    def process_type_node(self, type_node: Element, schema_node: Element) -> ODataType:
+    def process_type_node(
+        self, type_node: Element, schema_node: Element, base_type: str
+    ) -> ODataType:
         type_schema = ODataType()
         type_schema.namespace = schema_node.attrib["Namespace"]
         type_schema.className = _get_class_name(type_node.get("Name"))
-        type_schema.baseType = "ComplexType"
+        type_schema.baseType = base_type
 
-        for prop_node in type_node.findall("xmlns:Property", self.xml_namespaces):
-            prop_schema = self.process_property_node(prop_node)
-            type_schema.add_property(prop_schema)
+        if base_type == "EnumType":
+            for member_node in type_node.findall("xmlns:Member", self.xml_namespaces):
+                schema = self.process_member_node(member_node)
+                type_schema.add_member(schema)
+        else:
+            for prop_node in type_node.findall("xmlns:Property", self.xml_namespaces):
+                schema = self.process_property_node(prop_node)
+                type_schema.add_property(schema)
 
         return type_schema
 
@@ -65,10 +76,16 @@ class ODataReader(ABC):
         pass
 
     def process_property_node(self, node: Element) -> ODataProperty:
-        prop_schema = ODataProperty()
-        prop_schema.name = node.get("Name")
-        prop_schema.type_name = node.get("Type")
-        return prop_schema
+        schema = ODataProperty()
+        schema.name = node.get("Name")
+        schema.type_name = node.get("Type")
+        return schema
+
+    def process_member_node(self, node: Element) -> ODataMember:
+        schema = ODataMember()
+        schema.name = node.get("Name")
+        schema.value = node.get("Value")
+        return schema
 
     def generate_model(self):
         model = ODataModel()

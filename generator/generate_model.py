@@ -9,10 +9,23 @@ from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
 
 def generate_files(model: ODataModel, options: dict) -> None:
     ignored_types = [t.strip() for t in options["ignoredtypes"].split(",")]
+    exact_ignored = []
+    prefix_ignored = []
+
+    for ignored_type in ignored_types:
+        if ignored_type.endswith('.*'):
+            prefix_ignored.append(ignored_type[:-2])
+        else:
+            exact_ignored.append(ignored_type)
 
     for name in model.types:
-        if name in ignored_types:
+        if name in exact_ignored:
             continue
+
+        if any(name.startswith(prefix) for prefix in prefix_ignored):
+            continue
+
+
         type_schema = model.types[name]
         builder = TypeBuilder(type_schema, options)
         builder.build()
@@ -36,5 +49,5 @@ def generate_graph_model(cp: ConfigParser) -> None:
 if __name__ == "__main__":
     settings = ConfigParser()
     settings.read(Path(__file__).parent / "settings.cfg")
-    generate_graph_model(settings)
-    # generate_sharepoint_model(settings)
+    # generate_graph_model(settings)
+    generate_sharepoint_model(settings)

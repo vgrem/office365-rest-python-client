@@ -1,9 +1,7 @@
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.sharepoint.entity import Entity
 
 
 class MicrofeedManager(Entity):
     def __init__(self, context):
-        super(MicrofeedManager, self).__init__(
-            context, ResourcePath("SP.Microfeed.MicrofeedManager")
-        )
+        super().__init__(context, StaticPath("SP.Microfeed.MicrofeedManager"))

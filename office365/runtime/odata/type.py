@@ -2,41 +2,44 @@ from __future__ import annotations
 
 import datetime
 import uuid
-from typing import TYPE_CHECKING, Optional, Type, TypeVar
+from typing import Optional, Type, TypeVar
 
 from typing_extensions import Self
 
+from office365.runtime.odata.member import ODataMember
 from office365.runtime.odata.property import ODataProperty
-
-# if TYPE_CHECKING:
 from office365.runtime.types.collections import GuidCollection, StringCollection
 
 T = TypeVar("T", bound=Type)
 
 
-"""Primitive OData data type mapping"""
 _PRIMITIVE_TYPES = {
-    bool: "Edm.Boolean",
-    int: "Edm.Int32",
-    str: "Edm.String",
-    datetime.datetime: "Edm.DateTimeOffset",
-    uuid.UUID: "Edm.Guid",
-    dict: "Collection(SP.KeyValue)",
-    float: "Edm.Single",
-    bytes: "Edm.Binary",
-    GuidCollection: "Collection(Edm.Guid)",
-    StringCollection: "Collection(Edm.String)",
+    "Edm.Boolean": bool,
+    "Edm.Int32": int,
+    "Edm.Int64": int,
+    "Edm.String": str,
+    "Edm.DateTimeOffset": datetime.datetime,
+    "Edm.Guid": uuid.UUID,
+    "Collection(SP.KeyValue)": dict,
+    "Edm.Single": float,
+    "Edm.Binary": bytes,
+    "Collection(Edm.Guid)": GuidCollection,
+    "Collection(Edm.String)": StringCollection,
+    "Edm.DateTime": datetime.datetime,
 }
 
 
 class ODataType:
     """OData type system utilities with enhanced type resolution."""
 
-    def __init__(self):
-        self.className = None
-        self.namespace = None
-        self.baseType = None
+    def __init__(
+        self, class_name: str = None, namespace: str = None, base_type: str = None
+    ):
+        self.className = class_name
+        self.namespace = namespace
+        self.baseType = base_type
         self.properties = {}
+        self.members = {}
         self.methods = {}
 
     @property
@@ -44,18 +47,18 @@ class ODataType:
         return f"{self.namespace}.{self.className}"
 
     @classmethod
-    def register_type(cls, python_type: T, odata_type: str) -> None:
+    def register_type(cls, py_type: T, odata_type: str) -> None:
         """Registers a custom type mapping.
 
         Args:
-            python_type: The Python type to register
+            py_type: The Python type to register
             odata_type: The corresponding OData type name
 
         Example:
             >>> import decimal
             >>> ODataType.register_type(decimal.Decimal, "Edm.Decimal")
         """
-        _PRIMITIVE_TYPES[python_type] = odata_type
+        _PRIMITIVE_TYPES[odata_type] = py_type
 
     @classmethod
     def resolve_type(cls, client_type: T) -> Optional[str]:
@@ -81,21 +84,25 @@ class ODataType:
         except TypeError:
             pass
 
-        return _PRIMITIVE_TYPES.get(client_type, None)
+        for odata_type, py_type in _PRIMITIVE_TYPES.items():
+            if py_type == client_type:
+                return odata_type
+        return None
 
     @classmethod
     def is_primitive_type(cls, client_type: T) -> bool:
         """Checks if a type is a known OData primitive type."""
-        return client_type in _PRIMITIVE_TYPES
+        return any(py_type == client_type for py_type in _PRIMITIVE_TYPES.values())
 
     @classmethod
     def get_model_type(cls, type_name: str) -> Optional[Type]:
         """Returns the Model type for a given OData type name."""
-        for model_type, odata_name in _PRIMITIVE_TYPES.items():
-            if odata_name == type_name:
-                return model_type
-        return None
+        return _PRIMITIVE_TYPES.get(type_name, None)
 
     def add_property(self, schema: ODataProperty) -> Self:
         self.properties[schema.name] = schema
+        return self
+
+    def add_member(self, schema: ODataMember) -> Self:
+        self.members[schema.name] = schema
         return self

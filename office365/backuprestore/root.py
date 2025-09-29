@@ -12,7 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class BackupRestoreRoot(Entity):
     """Represents the Microsoft 365 Backup Storage service in a tenant."""
 
-    def enable(self, app_owner_tenant_id):
+    def enable(self, app_owner_tenant_id: str) -> ClientResult[ServiceStatus]:
         """Enable the Microsoft 365 Backup Storage service for a tenant."""
         return_type = ClientResult(self.context, ServiceStatus())
         payload = {"appOwnerTenantId": app_owner_tenant_id}
@@ -21,12 +21,14 @@ class BackupRestoreRoot(Entity):
         return return_type
 
     @property
-    def service_status(self):
+    def service_status(self) -> ServiceStatus:
         """Represents the tenant-level status of the Backup Storage service."""
         return self.properties.get("serviceStatus", ServiceStatus())
 
     @property
-    def one_drive_for_business_protection_policies(self):
+    def one_drive_for_business_protection_policies(
+        self,
+    ) -> EntityCollection[OneDriveForBusinessProtectionPolicy]:
         """The list of OneDrive for Business restore sessions available in the tenant."""
         return self.properties.get(
             "oneDriveForBusinessProtectionPolicies",

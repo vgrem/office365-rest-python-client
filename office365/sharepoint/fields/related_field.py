@@ -41,14 +41,6 @@ class RelatedField(Entity):
     def property_ref_name(self) -> str:
         return "FieldId"
 
-    def set_property(self, name, value, persist_changes=True):
-        super(RelatedField, self).set_property(name, value, persist_changes)
-        if name == self.property_ref_name and self._resource_path is None:
-            self._resource_path = self.parent_collection.get_by_field_id(
-                value
-            ).resource_path
-        return self
-
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {"LookupList": self.lookup_list}

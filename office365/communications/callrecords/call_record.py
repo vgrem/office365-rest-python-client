@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.communications.callrecords.session import Session
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -10,7 +12,7 @@ class CallRecord(Entity):
     sometimes referred to as an online meeting."""
 
     @property
-    def join_web_url(self):
+    def join_web_url(self) -> Optional[str]:
         """Meeting URL associated to the call. May not be available for a peerToPeer call record type."""
         return self.properties.get("joinWebUrl", None)
 

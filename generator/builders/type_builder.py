@@ -212,6 +212,9 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _build_post(self, class_node: ast.ClassDef):
         """Remove pass statements if there are other statements in the class body"""
+        if len(self._properties) == 0:
+            return
+
         class_node.body = [
             stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)
         ]

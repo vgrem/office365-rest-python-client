@@ -10,7 +10,7 @@ class AppBdcCatalog(Entity):
     types provisioned by the application.
     """
 
-    def get_permissible_connections(self):
+    def get_permissible_connections(self) -> ClientResult[StringCollection]:
         """
         Gets the list of external connections that the application has permissions to use.
         """

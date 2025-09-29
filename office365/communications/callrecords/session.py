@@ -8,7 +8,7 @@ class Session(Entity):
     """Represents a user-user communication or a user-meeting communication in the case of a conference call."""
 
     @property
-    def segments(self):
+    def segments(self) -> EntityCollection[Segment]:
         """
         The list of segments involved in the session.
         """

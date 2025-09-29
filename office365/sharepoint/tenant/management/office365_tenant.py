@@ -5,7 +5,7 @@ from typing_extensions import Self
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
@@ -28,10 +28,10 @@ class Office365Tenant(Entity):
     """Represents a SharePoint Online tenant."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
+        static_path = StaticPath(
             "Microsoft.Online.SharePoint.TenantManagement.Office365Tenant"
         )
-        super(Office365Tenant, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
     def addressbar_link_permission(self) -> Optional[int]:
@@ -46,12 +46,12 @@ class Office365Tenant(Entity):
         return self.properties.get("AllowEditing", None)
 
     @property
-    def ai_builder_site_info_list(self):
+    def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         return self.properties.get(
             "AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker)
         )
 
-    def add_tenant_cdn_origin(self, cdn_type, origin_url):
+    def add_tenant_cdn_origin(self, cdn_type: int, origin_url: str):
         """
         Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
         Effectively, a tenant admin points out to a document library, or a folder in the document library
@@ -72,7 +72,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def disable_sharing_for_non_owners_of_site(self, site_url):
+    def disable_sharing_for_non_owners_of_site(self, site_url: str) -> Self:
         """
         Disables Sharing For Non Owners
         :param str site_url:
@@ -84,7 +84,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_tenant_cdn_enabled(self, cdn_type):
+    def get_tenant_cdn_enabled(self, cdn_type: int):
         """
         Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
 
@@ -121,7 +121,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_tenant_cdn_enabled(self, cdn_type, is_enabled):
+    def set_tenant_cdn_enabled(self, cdn_type: int, is_enabled: bool) -> Self:
         """
         Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
 
@@ -277,7 +277,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def add_tenant_theme(self, name, theme_json):
+    def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """
         Adds a new theme to a tenant.
 
@@ -295,7 +295,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def delete_tenant_theme(self, name):
+    def delete_tenant_theme(self, name: str) -> Self:
         """
         Removes a theme from tenant
         :type name: str

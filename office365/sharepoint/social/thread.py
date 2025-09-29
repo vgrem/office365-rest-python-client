@@ -11,11 +11,17 @@ class SocialThread(ClientValue):
 
     def __init__(
         self,
-        thread_id=None,
         actors=None,
         replies=None,
         root_post=SocialPost(),
         post_reference=SocialPostReference(),
+        attributes: int = None,
+        id_: str = None,
+        owner_index: int = None,
+        permalink: str = None,
+        status: int = None,
+        thread_type: int = None,
+        total_reply_count: int = None,
     ):
         """
         :param str thread_id: The Id property specifies the unique identification of the thread.
@@ -27,11 +33,17 @@ class SocialThread(ClientValue):
         :param SocialPost root_post: The RootPost property returns the root post.
         :param SocialPostReference post_reference:
         """
-        self.Id = thread_id
         self.Actors = ClientValueCollection(SocialActor, actors)
         self.RootPost = root_post
         self.Replies = ClientValueCollection(SocialPost, replies)
         self.PostReference = post_reference
+        self.Attributes = attributes
+        self.Id = id_
+        self.OwnerIndex = owner_index
+        self.Permalink = permalink
+        self.Status = status
+        self.ThreadType = thread_type
+        self.TotalReplyCount = total_reply_count
 
     @property
     def entity_type_name(self):

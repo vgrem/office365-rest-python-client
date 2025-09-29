@@ -4,7 +4,9 @@ from office365.sharepoint.entity import Entity
 
 
 class HostedAppsManager(Entity):
-    def get_by_id(self, id_):
+    """Hosted Apps Manager"""
+
+    def get_by_id(self, id_: str) -> HostedApp:
         """
         Gets an hosted app based on the Id.
 
