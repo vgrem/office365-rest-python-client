@@ -22,6 +22,7 @@ _PRIMITIVE_TYPES = {
     "Edm.Guid": uuid.UUID,
     "Collection(SP.KeyValue)": dict,
     "Edm.Single": float,
+    "Edm.Double": float,
     "Edm.Binary": bytes,
     "Collection(Edm.Guid)": GuidCollection,
     "Collection(Edm.String)": StringCollection,

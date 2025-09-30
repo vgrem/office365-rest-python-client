@@ -1,4 +1,8 @@
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.publishing.authoringschemafeatureversion import (
+    AuthoringSchemaFeatureVersion,
+)
 
 
 class SitePageCoAuthState(ClientValue):
@@ -13,6 +17,9 @@ class SitePageCoAuthState(ClientValue):
         lock_duration=None,
         overwrite_existing_version=None,
         shared_lock_id=None,
+        authoring_schema_feature_versions: ClientValueCollection[
+            AuthoringSchemaFeatureVersion
+        ] = ClientValueCollection(AuthoringSchemaFeatureVersion),
     ):
         self.Action = action
         self.HasReachedMinorVersionsLimit = has_reached_minor_versions_limit
@@ -22,6 +29,7 @@ class SitePageCoAuthState(ClientValue):
         self.LockDuration = lock_duration
         self.OverwriteExistingVersion = overwrite_existing_version
         self.SharedLockId = shared_lock_id
+        self.AuthoringSchemaFeatureVersions = authoring_schema_feature_versions
 
     @property
     def entity_type_name(self):

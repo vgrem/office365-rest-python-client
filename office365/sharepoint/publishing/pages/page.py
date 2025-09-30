@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -36,7 +38,7 @@ class SharePagePreviewByEmailFieldsData(ClientValue):
 class SitePage(SitePageMetadata):
     """Represents a Site Page."""
 
-    def checkout_page(self):
+    def checkout_page(self) -> Self:
         """Checks out the current Site Page if it is available to be checked out."""
         qry = ServiceOperationQuery(self, "CheckoutPage", None, None, None, self)
         self.context.add_query(qry)
@@ -54,13 +56,15 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def ensure_title_resource(self):
+    def ensure_title_resource(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "EnsureTitleResource")
         self.context.add_query(qry)
         return self
 
-    def get_dependency_metadata(self):
+    def get_dependency_metadata(
+        self,
+    ) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """ """
         return_type = ClientResult(
             self.context, ClientValueCollection(SitePageDependencyMetadata)
@@ -71,13 +75,14 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
-    def get_version(self, version_id):
+    def get_version(self, version_id: str) -> "SitePage":
         """ """
         return_type = SitePage(self.context, self.resource_path)
         qry = ServiceOperationQuery(
             self, "GetVersion", [version_id], None, None, return_type
         )
         self.context.add_query(qry)
+        return return_type
 
     def save_page(
         self, title, canvas_content=None, banner_image_url=None, topic_header=None

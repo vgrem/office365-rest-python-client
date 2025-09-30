@@ -30,7 +30,7 @@ class SitePageService(Entity):
         """Represents a set of APIs to use for managing site pages."""
         if resource_path is None:
             resource_path = ResourcePath("SP.Publishing.SitePageService")
-        super(SitePageService, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     @property
     def pages(self) -> SitePageCollection:
