@@ -25,11 +25,11 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
     @staticmethod
     def get_search_results_by_hierarchy(
-        context,
-        provider_id=None,
-        hierarchy_node_id=None,
-        entity_types=None,
-        context_url=None,
+        context: ClientContext,
+        provider_id: str = None,
+        hierarchy_node_id: str = None,
+        entity_types: str = None,
+        context_url: str = None,
     ):
         """
         Specifies a JSON formatted CSOM String of principals found in the search grouped by hierarchy.

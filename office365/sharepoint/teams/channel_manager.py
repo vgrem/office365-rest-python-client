@@ -34,7 +34,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
-    def get_team_site_data(context, ignore_validation=True):
+    def get_team_site_data(context, ignore_validation: bool = True):
         """
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param bool ignore_validation:
@@ -57,8 +57,8 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def save_conversations(
-        context, list_url, list_item_id, updated_conversations_object
-    ):
+        context, list_url: str, list_item_id: int, updated_conversations_object: str
+    ) -> "TeamChannelManager":
         """
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str list_url:

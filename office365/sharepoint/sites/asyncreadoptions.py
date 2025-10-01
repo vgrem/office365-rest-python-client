@@ -12,9 +12,9 @@ class AsyncReadOptions(ClientValue):
         include_versions: bool = None,
         start_change_token: str = None,
     ):
-        self.include_direct_descendants_only = include_direct_descendants_only
-        self.include_extended_metadata = include_extended_metadata
-        self.include_permission = include_permission
-        self.include_security = include_security
-        self.include_versions = include_versions
-        self.start_change_token = start_change_token
+        self.IncludeDirectDescendantsOnly = include_direct_descendants_only
+        self.IncludeExtendedMetadata = include_extended_metadata
+        self.IncludePermission = include_permission
+        self.IncludeSecurity = include_security
+        self.IncludeVersions = include_versions
+        self.StartChangeToken = start_change_token

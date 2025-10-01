@@ -10,5 +10,3 @@ class SiteThemes(ClientValue):
         theme_data: ClientValueCollection[ThemeData] = ClientValueCollection(ThemeData),
     ):
         self.themeData = theme_data
-
-    " "

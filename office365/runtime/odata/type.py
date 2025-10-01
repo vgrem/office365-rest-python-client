@@ -6,6 +6,7 @@ from typing import Optional, Type, TypeVar
 
 from typing_extensions import Self
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.member import ODataMember
 from office365.runtime.odata.property import ODataProperty
 from office365.runtime.types.collections import GuidCollection, StringCollection
@@ -26,6 +27,7 @@ _PRIMITIVE_TYPES = {
     "Edm.Binary": bytes,
     "Collection(Edm.Guid)": GuidCollection,
     "Collection(Edm.String)": StringCollection,
+    "Collection(Edm.Int32)": ClientValueCollection[int],
     "Edm.DateTime": datetime.datetime,
 }
 
@@ -48,18 +50,18 @@ class ODataType:
         return f"{self.namespace}.{self.className}"
 
     @classmethod
-    def register_type(cls, py_type: T, odata_type: str) -> None:
+    def register_type(cls, client_type: T, odata_type: str) -> None:
         """Registers a custom type mapping.
 
         Args:
-            py_type: The Python type to register
+            client_type: The Python type to register
             odata_type: The corresponding OData type name
 
         Example:
             >>> import decimal
             >>> ODataType.register_type(decimal.Decimal, "Edm.Decimal")
         """
-        _PRIMITIVE_TYPES[odata_type] = py_type
+        _PRIMITIVE_TYPES[odata_type] = client_type
 
     @classmethod
     def resolve_type(cls, client_type: T) -> Optional[str]:

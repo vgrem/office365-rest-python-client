@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
@@ -14,7 +16,9 @@ from office365.sharepoint.publishing.sites.communication.creation_response impor
 class CommunicationSite(Entity):
     """Represents a Communication Site."""
 
-    def create(self, title, site_url, description=None):
+    def create(
+        self, title: str, site_url: str, description: str = None
+    ) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Initiates creation of a Communication Site.
 
@@ -40,7 +44,9 @@ class CommunicationSite(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_status(self, site_url):
+    def get_status(
+        self, site_url: str
+    ) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Retrieves the status of creation of a Communication site.
 
@@ -70,7 +76,7 @@ class CommunicationSite(Entity):
         self.context.add_query(qry).before_query_execute(_construct_request)
         return response
 
-    def enable(self, design_package_id):
+    def enable(self, design_package_id) -> Self:
         qry = ServiceOperationQuery(
             self, "Enable", None, {"designPackageId": design_package_id}
         )

@@ -17,7 +17,7 @@ class StringCollection(ClientValueCollection[str]):
             >>> coll = StringCollection(["a", "b"])
             >>> coll.add("c")
         """
-        super(StringCollection, self).__init__(str, initial_values)
+        super().__init__(str, initial_values)
 
 
 class GuidCollection(ClientValueCollection):
@@ -37,4 +37,4 @@ class GuidCollection(ClientValueCollection):
         Note:
             String values will be automatically converted to UUID objects
         """
-        super(GuidCollection, self).__init__(uuid.UUID, initial_values)
+        super().__init__(uuid.UUID, initial_values)

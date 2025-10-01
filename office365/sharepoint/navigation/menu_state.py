@@ -11,7 +11,7 @@ class MenuState(ClientValue):
 
     def __init__(
         self,
-        audience_ids: GuidCollection = None,
+        audience_ids: GuidCollection = GuidCollection(),
         friendly_url_prefix: str = None,
         nodes: List[MenuNode] = None,
         simple_url: str = None,
@@ -36,7 +36,7 @@ class MenuState(ClientValue):
         :param str site_prefix: Defines the text that SHOULD be substituted for "~sitecollection/" in relative links
             (such as "~sitecollection/Pages/MyPage.aspx ").
         """
-        self.AudienceIds = GuidCollection(audience_ids)
+        self.AudienceIds = audience_ids
         self.FriendlyUrlPrefix = friendly_url_prefix
         self.Nodes = ClientValueCollection(MenuNode, nodes)
         self.SimpleUrl = simple_url
