@@ -127,13 +127,20 @@ class TypeBuilder(ast.NodeTransformer):
             param = ast.arg(
                 arg=prop.name,
                 annotation=(
-                    ast.Name(id=prop.type_name, ctx=ast.Load())
+                    ast.Name(id=prop.local_name, ctx=ast.Load())
                     if prop.type_name
                     else None
                 ),
             )
             args.append(param)
-            defaults.append(ast.Constant(value=None))
+            if ODataType.is_primitive_type(prop.schema.type_name):
+                defaults.append(ast.Constant(value=None))
+            else:
+                defaults.append(ast.Call(
+                    func=ast.Name(id=prop.local_name, ctx=ast.Load()),
+                    args=[],
+                    keywords=[]
+                ))
 
         function_args = ast.arguments(
             posonlyargs=[],
@@ -228,23 +235,18 @@ class TypeBuilder(ast.NodeTransformer):
 
     @lru_cache(maxsize=512)
     def _find_model_class(self, class_name: str):
-        modules = [t.strip() for t in self._options["modules"].split(",")]
-
-        for root_name in modules:
+        for module_name in self._options["modules"].split(","):
             try:
-                base_pkg = importlib.import_module(root_name)
-                for mod_info in pkgutil.walk_packages(
-                    base_pkg.__path__, base_pkg.__name__ + "."
+                module = importlib.import_module(module_name.strip())
+                for _, name, is_pkg in pkgutil.walk_packages(
+                    module.__path__, module.__name__ + "."
                 ):
-                    try:
-                        module = importlib.import_module(mod_info.name)
-                        if hasattr(module, class_name):
-                            cls = getattr(module, class_name)
-                            if inspect.isclass(cls):
-                                return cls
-                    except ImportError:
-                        continue
-            except ImportError:
+                    submodule = importlib.import_module(name)
+                    if hasattr(submodule, class_name):
+                        cls = getattr(submodule, class_name)
+                        if inspect.isclass(cls):
+                            return cls
+            except (ImportError, AttributeError):
                 continue
         return None
 

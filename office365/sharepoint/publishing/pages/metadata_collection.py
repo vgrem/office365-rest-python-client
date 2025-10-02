@@ -10,7 +10,7 @@ T = TypeVar("T")
 class SitePageMetadataCollection(EntityCollection[T]):
     """Specifies a collection of site pages."""
 
-    def get_by_id(self, site_page_id):
+    def get_by_id(self, site_page_id: int) -> SitePageMetadata:
         """Gets the site page with the specified ID.
         :param int site_page_id: Specifies the identifier of the site page.
         """

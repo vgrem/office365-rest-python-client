@@ -9,7 +9,7 @@ from office365.runtime.odata.property import ODataProperty
 from office365.runtime.odata.type import ODataType
 
 
-def _get_class_name(name):
+def _normalize_class_name(name: str) -> str:
     return name[0].upper() + name[1:]
 
 
@@ -58,7 +58,7 @@ class ODataReader(ABC):
     ) -> ODataType:
         type_schema = ODataType()
         type_schema.namespace = schema_node.attrib["Namespace"]
-        type_schema.className = _get_class_name(type_node.get("Name"))
+        type_schema.className = _normalize_class_name(type_node.get("Name"))
         type_schema.baseType = base_type
 
         if base_type == "EnumType":

@@ -44,3 +44,7 @@ class PropertyBuilder:
             return model_type.__name__
 
         return self.schema.type_name
+
+    @property
+    def local_name(self) -> str:
+        return self.type_name.rsplit('.', 1)[-1]

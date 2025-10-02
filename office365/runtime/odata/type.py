@@ -93,9 +93,9 @@ class ODataType:
         return None
 
     @classmethod
-    def is_primitive_type(cls, client_type: T) -> bool:
+    def is_primitive_type(cls, type_name: str) -> bool:
         """Checks if a type is a known OData primitive type."""
-        return any(py_type == client_type for py_type in _PRIMITIVE_TYPES.values())
+        return any(odata_type == type_name for odata_type in _PRIMITIVE_TYPES.keys())
 
     @classmethod
     def get_model_type(cls, type_name: str) -> Optional[Type]:
