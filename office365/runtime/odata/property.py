@@ -3,14 +3,14 @@ from typing import Optional
 
 
 @dataclass
-class ODataProperty:
+class PropertyInformation:
     """Represents a property in an OData entity model.
 
     Attributes:
-        name: The name of the property
+        Name: The name of the property
         ReadOnly: Whether the property is read-only
     """
 
-    name: Optional[str] = None
-    type_name: Optional[str] = None
+    Name: Optional[str] = None
+    TypeName: Optional[str] = None
     ReadOnly: Optional[bool] = None

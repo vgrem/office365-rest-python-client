@@ -3,7 +3,7 @@ from typing import List, Optional
 
 
 @dataclass
-class ODataMethod:
+class MethodInformation:
     """Represents an executable OData operation (function/action).
 
     Attributes:

@@ -6,14 +6,16 @@ import keyword
 import re
 from typing import TYPE_CHECKING, List
 
+from office365.runtime.odata.type import ODataType
+
 if TYPE_CHECKING:
     from generator.builders.template_context import TemplateContext
-    from office365.runtime.odata.property import ODataProperty
+    from office365.runtime.odata.property import PropertyInformation
 
 
 class PropertyBuilder:
 
-    def __init__(self, prop_schema: ODataProperty):
+    def __init__(self, prop_schema: PropertyInformation):
         self.schema = prop_schema
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
@@ -28,7 +30,7 @@ class PropertyBuilder:
     @property
     def name(self) -> str:
         """Convert CamelCase to snake_case"""
-        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", self.schema.name)
+        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", self.schema.Name)
         snake_case = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
         if keyword.iskeyword(snake_case) or hasattr(builtins, snake_case):
@@ -39,12 +41,12 @@ class PropertyBuilder:
     def type_name(self) -> str:
         from office365.runtime.odata.type import ODataType
 
-        model_type = ODataType.get_model_type(self.schema.type_name)
+        model_type = ODataType.get_client_type(self.schema.TypeName)
         if model_type:
             return model_type.__name__
 
-        return self.schema.type_name
+        return self.schema.TypeName
 
     @property
-    def local_name(self) -> str:
-        return self.type_name.rsplit('.', 1)[-1]
+    def client_type(self) -> str:
+        return ODataType.resolve_client_type(self.type_name)

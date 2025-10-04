@@ -3,10 +3,10 @@ from typing import Dict
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import Element
 
-from office365.runtime.odata.member import ODataMember
+from office365.runtime.odata.member import MemberInformation
 from office365.runtime.odata.model import ODataModel
-from office365.runtime.odata.property import ODataProperty
-from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.property import PropertyInformation
+from office365.runtime.odata.type_information import TypeInformation
 
 
 def _normalize_class_name(name: str) -> str:
@@ -55,11 +55,10 @@ class ODataReader(ABC):
 
     def process_type_node(
         self, type_node: Element, schema_node: Element, base_type: str
-    ) -> ODataType:
-        type_schema = ODataType()
-        type_schema.namespace = schema_node.attrib["Namespace"]
-        type_schema.className = _normalize_class_name(type_node.get("Name"))
-        type_schema.baseType = base_type
+    ) -> TypeInformation:
+        type_schema = TypeInformation()
+        type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_node.get('Name'))}"
+        type_schema.BaseTypeFullName = base_type
 
         if base_type == "EnumType":
             for member_node in type_node.findall("xmlns:Member", self.xml_namespaces):
@@ -75,16 +74,16 @@ class ODataReader(ABC):
     def process_method_node(self):
         pass
 
-    def process_property_node(self, node: Element) -> ODataProperty:
-        schema = ODataProperty()
-        schema.name = node.get("Name")
-        schema.type_name = node.get("Type")
+    def process_property_node(self, node: Element) -> PropertyInformation:
+        schema = PropertyInformation()
+        schema.Name = node.get("Name")
+        schema.TypeName = node.get("Type")
         return schema
 
-    def process_member_node(self, node: Element) -> ODataMember:
-        schema = ODataMember()
-        schema.name = node.get("Name")
-        schema.value = node.get("Value")
+    def process_member_node(self, node: Element) -> MemberInformation:
+        schema = MemberInformation()
+        schema.Name = node.get("Name")
+        schema.Value = node.get("Value")
         return schema
 
     def generate_model(self):

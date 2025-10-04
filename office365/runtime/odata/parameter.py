@@ -3,7 +3,7 @@ from typing import Optional
 
 
 @dataclass
-class ODataParameter:
+class ParameterInformation:
     """Represents a parameter in an OData operation (function/action).
 
     Attributes:

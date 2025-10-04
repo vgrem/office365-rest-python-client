@@ -13,7 +13,7 @@ def generate_files(model: ODataModel, options: dict) -> None:
     prefix_ignored = []
 
     for ignored_type in ignored_types:
-        if ignored_type.endswith('.*'):
+        if ignored_type.endswith(".*"):
             prefix_ignored.append(ignored_type[:-2])
         else:
             exact_ignored.append(ignored_type)
@@ -24,7 +24,6 @@ def generate_files(model: ODataModel, options: dict) -> None:
 
         if any(name.startswith(prefix) for prefix in prefix_ignored):
             continue
-
 
         type_schema = model.types[name]
         builder = TypeBuilder(type_schema, options)

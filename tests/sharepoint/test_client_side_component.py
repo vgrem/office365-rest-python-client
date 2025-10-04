@@ -4,11 +4,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestClientSideComponent(SPTestCase):
-    target_web = None  # type: Web
+    target_web: Web = None
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestClientSideComponent, cls).setUpClass()
 
     def test1_get_all_client_side_components(self):
         result = self.client.web.get_all_client_side_components().execute_query()

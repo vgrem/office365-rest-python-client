@@ -11,11 +11,9 @@ class SocialFollowingManager(Entity):
     Actors can be users, documents, sites, and tags."""
 
     def __init__(self, context):
-        super(SocialFollowingManager, self).__init__(
-            context, ResourcePath("SP.Social.SocialFollowingManager")
-        )
+        super().__init__(context, ResourcePath("SP.Social.SocialFollowingManager"))
 
-    def get_followers(self):
+    def get_followers(self) -> ClientResult[ClientValueCollection[SocialActor]]:
         """
         The GetFollowers method returns the users who are followers of the current user.
         """
@@ -24,7 +22,7 @@ class SocialFollowingManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_suggestions(self):
+    def get_suggestions(self) -> ClientResult[ClientValueCollection[SocialActor]]:
         """
         The GetSuggestions method returns a list of actors that are suggestions for the current user to follow.
         """

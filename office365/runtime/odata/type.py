@@ -4,11 +4,7 @@ import datetime
 import uuid
 from typing import Optional, Type, TypeVar
 
-from typing_extensions import Self
-
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.member import ODataMember
-from office365.runtime.odata.property import ODataProperty
 from office365.runtime.types.collections import GuidCollection, StringCollection
 
 T = TypeVar("T", bound=Type)
@@ -36,18 +32,34 @@ class ODataType:
     """OData type system utilities with enhanced type resolution."""
 
     def __init__(
-        self, class_name: str = None, namespace: str = None, base_type: str = None
+        self,
+        class_name: str = None,
+        namespace: str = None,
+        base_type_name: str = "ClientValue",
+        is_collection=False,
     ):
         self.className = class_name
         self.namespace = namespace
-        self.baseType = base_type
-        self.properties = {}
-        self.members = {}
-        self.methods = {}
+        self.baseType = base_type_name
+        self.is_collection = is_collection
 
-    @property
-    def name(self):
-        return f"{self.namespace}.{self.className}"
+    @classmethod
+    def resolve_client_type(cls, type_name: str) -> str:
+        """Parse OData type and return ClientValue format string"""
+
+        is_collection = False
+
+        if type_name.startswith("Collection(") and type_name.endswith(")"):
+            is_collection = True
+            type_name = type_name[len("Collection(") : -1]
+
+        parts = type_name.split(".")
+        class_name = parts[-1]
+
+        if is_collection:
+            return f"ClientValueCollection[{class_name}]"
+        else:
+            return class_name
 
     @classmethod
     def register_type(cls, client_type: T, odata_type: str) -> None:
@@ -98,14 +110,6 @@ class ODataType:
         return any(odata_type == type_name for odata_type in _PRIMITIVE_TYPES.keys())
 
     @classmethod
-    def get_model_type(cls, type_name: str) -> Optional[Type]:
+    def get_client_type(cls, type_name: str) -> Optional[Type]:
         """Returns the Model type for a given OData type name."""
         return _PRIMITIVE_TYPES.get(type_name, None)
-
-    def add_property(self, schema: ODataProperty) -> Self:
-        self.properties[schema.name] = schema
-        return self
-
-    def add_member(self, schema: ODataMember) -> Self:
-        self.members[schema.name] = schema
-        return self

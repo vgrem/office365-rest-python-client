@@ -3,12 +3,12 @@ from typing import Optional
 
 
 @dataclass
-class ODataMember:
+class MemberInformation:
     """Represents a member in an OData entity model.
 
     Attributes:
-        name: The name of the member
+        Name: The name of the member
     """
 
-    name: Optional[str] = None
-    value: Optional[str] = None
+    Name: Optional[str] = None
+    Value: Optional[str] = None

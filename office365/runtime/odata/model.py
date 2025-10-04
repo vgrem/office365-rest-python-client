@@ -2,7 +2,7 @@ from typing import Dict
 
 from typing_extensions import Self
 
-from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.type_information import TypeInformation
 
 
 class ODataModel:
@@ -12,10 +12,10 @@ class ODataModel:
     """
 
     def __init__(self):
-        self._types: Dict[str, ODataType] = {}
+        self._types: Dict[str, TypeInformation] = {}
 
     @property
-    def types(self) -> Dict[str, ODataType]:
+    def types(self) -> Dict[str, TypeInformation]:
         """Gets the type mapping dictionary.
 
         Returns:
@@ -23,7 +23,7 @@ class ODataModel:
         """
         return self._types
 
-    def add_type(self, type_schema: ODataType) -> Self:
+    def add_type(self, type_schema: TypeInformation) -> Self:
         """Registers a type schema in the model.
 
         Args:
@@ -34,12 +34,12 @@ class ODataModel:
 
         Example:
             >>> model = ODataModel()
-            >>> model.add_type(ODataType("User"))
+            >>> model.add_type(TypeInformation("SP.User"))
         """
-        self._types[type_schema.name] = type_schema
+        self._types[type_schema.FullName] = type_schema
         return self
 
-    def get_type(self, type_name: str) -> ODataType:
+    def get_type(self, type_name: str) -> TypeInformation:
         """Retrieves a type schema by name.
 
         Args:

@@ -18,9 +18,13 @@ from tests import (
     create_unique_name,
     settings,
     test_client_credentials,
+    test_client_id,
+    test_password,
     test_site_url,
     test_team_site_url,
+    test_tenant,
     test_user_credentials,
+    test_username,
 )
 
 
@@ -46,8 +50,10 @@ class TestSharePointClient(TestCase):
         self.assertIsNotNone(result.value.WebFullUrl)
 
     def test5_init_from_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_team_site_url)
-        ctx = ClientContext.from_url(page_url).with_credentials(test_user_credentials)
+        page_url = f"{test_team_site_url}/SitePages/Home.aspx"
+        ctx = ClientContext.from_url(page_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         web = ctx.web.get().execute_query()
         self.assertIsNotNone(web.url)
 

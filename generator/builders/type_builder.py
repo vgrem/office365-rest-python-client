@@ -12,12 +12,13 @@ from typing_extensions import Self
 from generator.builders.property_builder import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.type_information import TypeInformation
 
 
 class TypeBuilder(ast.NodeTransformer):
     """Type builder"""
 
-    def __init__(self, type_schema: ODataType, options: Dict[str, str] = None):
+    def __init__(self, type_schema: TypeInformation, options: Dict[str, str] = None):
         self._template = None
         self._schema = type_schema
         self._options = options
@@ -29,17 +30,17 @@ class TypeBuilder(ast.NodeTransformer):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
-            node.name = self._schema.className
+            node.name = self.client_type_name
 
-        if self._schema and self._schema.properties:
-            for prop_name, prop_schema in self._schema.properties.items():
+        if self._schema and self._schema.Properties:
+            for prop_name, prop_schema in self._schema.Properties.items():
                 builder = PropertyBuilder(prop_schema)
                 builder.status = "detached"
                 self._properties.append(builder)
 
         self.generic_visit(node)
 
-        if self._schema.baseType == "ComplexType":
+        if self._schema.BaseTypeFullName == "ComplexType":
             self._build_properties(node)
         else:
             self._build_nav_properties(node)
@@ -127,20 +128,22 @@ class TypeBuilder(ast.NodeTransformer):
             param = ast.arg(
                 arg=prop.name,
                 annotation=(
-                    ast.Name(id=prop.local_name, ctx=ast.Load())
+                    ast.Name(id=prop.client_type, ctx=ast.Load())
                     if prop.type_name
                     else None
                 ),
             )
             args.append(param)
-            if ODataType.is_primitive_type(prop.schema.type_name):
+            if ODataType.is_primitive_type(prop.schema.TypeName):
                 defaults.append(ast.Constant(value=None))
             else:
-                defaults.append(ast.Call(
-                    func=ast.Name(id=prop.local_name, ctx=ast.Load()),
-                    args=[],
-                    keywords=[]
-                ))
+                defaults.append(
+                    ast.Call(
+                        func=ast.Name(id=prop.client_type, ctx=ast.Load()),
+                        args=[],
+                        keywords=[],
+                    )
+                )
 
         function_args = ast.arguments(
             posonlyargs=[],
@@ -158,7 +161,7 @@ class TypeBuilder(ast.NodeTransformer):
                 targets=[
                     ast.Attribute(
                         value=ast.Name(id="self", ctx=ast.Load()),
-                        attr=prop.schema.name,
+                        attr=prop.schema.Name,
                         ctx=ast.Store(),
                     )
                 ],
@@ -199,14 +202,14 @@ class TypeBuilder(ast.NodeTransformer):
                     targets=[
                         ast.Attribute(
                             value=ast.Name(id="self", ctx=ast.Load()),
-                            attr=prop.schema.name,
+                            attr=prop.schema.Name,
                             ctx=ast.Store(),
                         )
                     ],
-                    value=ast.Name(id=prop.name, ctx=ast.Load()),
+                    value=ast.Name(id=prop.Name, ctx=ast.Load()),
                 )
                 init_method.body.append(assign)
-                self._changes.append(f"__init__ param: {prop.name}")
+                self._changes.append(f"__init__ param: {prop.Name}")
 
     def _build_nav_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
@@ -253,7 +256,7 @@ class TypeBuilder(ast.NodeTransformer):
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = self._find_model_class(self._schema.className)
+        cls = self._find_model_class(self.client_type_name)
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)
@@ -261,7 +264,7 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["state"] = "detached"
             type_info["file"] = abspath(
                 os.path.join(
-                    self._options["outputpath"], self._schema.className.lower() + ".py"
+                    self._options["outputpath"], self.client_type_name.lower() + ".py"
                 )
             )
         return type_info
@@ -284,3 +287,7 @@ class TypeBuilder(ast.NodeTransformer):
     @property
     def status(self):
         return self._status
+
+    @property
+    def client_type_name(self):
+        return ODataType.resolve_client_type(self._schema.FullName)

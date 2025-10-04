@@ -1,38 +1,23 @@
-from typing import List, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.dependency_metadata import (
     SitePageDependencyMetadata,
 )
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 from office365.sharepoint.publishing.pages.metadata import SitePageMetadata
+from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import (
+    SharePagePreviewByEmailFieldsData,
+)
 from office365.sharepoint.translation.status_collection import (
     TranslationStatusCollection,
 )
-
-
-class SharePagePreviewByEmailFieldsData(ClientValue):
-    """This class contains the information used by SharePagePreviewByEmail method"""
-
-    def __init__(self, message: str = None, recipient_emails: List[str] = None):
-        """
-        :param str message:
-        :param list[str] recipient_emails:
-        """
-        self.message = message
-        self.recipientEmails = StringCollection(recipient_emails)
-
-    @property
-    def entity_type_name(self):
-        return "SP.Publishing.SharePagePreviewByEmailFieldsData"
 
 
 class SitePage(SitePageMetadata):
@@ -85,7 +70,11 @@ class SitePage(SitePageMetadata):
         return return_type
 
     def save_page(
-        self, title, canvas_content=None, banner_image_url=None, topic_header=None
+        self,
+        title: str,
+        canvas_content: str = None,
+        banner_image_url: str = None,
+        topic_header: str = None,
     ):
         """
         Updates the current Site Page with the provided pageStream content.
@@ -155,7 +144,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
-    def save_page_as_template(self):
+    def save_page_as_template(self) -> "SitePage":
         """ """
         return_type = SitePage(self.context)
         qry = ServiceOperationQuery(

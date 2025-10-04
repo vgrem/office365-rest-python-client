@@ -4,23 +4,23 @@ from os.path import abspath
 from typing import cast
 
 from generator.builders.property_builder import PropertyBuilder
-from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.type_information import TypeInformation
 
 
 class TemplateContext:
     def __init__(self, template_path: str) -> None:
         self._template_path = template_path
 
-    def load(self, schema: ODataType):
-        template_file = self._resolve_template_file(schema.baseType)
+    def load(self, schema: TypeInformation) -> ast.Module:
+        template_file = self._resolve_template_file(schema.BaseTypeFullName)
         with open(template_file, encoding="utf-8") as f:
             return ast.parse(f.read())
 
     def build_getter(self, builder: PropertyBuilder) -> ast.FunctionDef:
         """Build the getter property method"""
-        docstring = f"Gets the {builder.schema.name} property"
+        docstring = f"Gets the {builder.schema.Name} property"
         method_name = builder.name
-        prop_name = builder.schema.name
+        prop_name = builder.schema.Name
         prop_type_name = builder.type_name
         type_annotation = f"Optional[{prop_type_name}]"
 

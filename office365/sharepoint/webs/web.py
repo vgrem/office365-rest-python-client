@@ -118,6 +118,7 @@ from office365.sharepoint.webs.information_collection import WebInformationColle
 from office365.sharepoint.webs.modernize_homepage_result import ModernizeHomepageResult
 from office365.sharepoint.webs.multilingual_settings import MultilingualSettings
 from office365.sharepoint.webs.regional_settings import RegionalSettings
+from office365.sharepoint.webs.subweb_query import SubwebQuery
 from office365.sharepoint.webs.template_collection import WebTemplateCollection
 from office365.sharepoint.webs.theme_info import ThemeInfo
 
@@ -269,7 +270,9 @@ class Web(SecurableObject):
         self.ensure_property("Url", _get_list_data_as_stream)
         return return_type
 
-    def get_onedrive_list_data_as_stream(self, view_xml: str = None):
+    def get_onedrive_list_data_as_stream(
+        self, view_xml: str = None
+    ) -> ClientResult[bytes]:
         """Returns list data from the specified list url and for the specified query parameters.
 
         :param str view_xml:
@@ -293,7 +296,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_push_notification_subscriber(self, device_app_instance_id):
+    def get_push_notification_subscriber(self, device_app_instance_id: str):
         """
         Specifies the push notification subscriber over the site for the specified device app instance identifier.
 
@@ -355,10 +358,8 @@ class Web(SecurableObject):
         """
         return_type = PushNotificationSubscriberCollection(self.context)
 
-        def _create_and_add_query(login_name):
-            """
-            :type login_name: str
-            """
+        def _create_and_add_query(login_name: str):
+
             qry = ServiceOperationQuery(
                 self,
                 "GetPushNotificationSubscribersByUser",
@@ -380,7 +381,9 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def create_organization_sharing_link(context, url, is_edit_link=False):
+    def create_organization_sharing_link(
+        context: ClientContext, url: str, is_edit_link: bool = False
+    ) -> ClientResult[str]:
         """Creates and returns an organization-internal link that can be used to access a document and gain permissions
            to it.
 
@@ -405,7 +408,10 @@ class Web(SecurableObject):
 
     @staticmethod
     def destroy_organization_sharing_link(
-        context, url, is_edit_link, remove_associated_sharing_link_group
+        context: ClientContext,
+        url: str,
+        is_edit_link: bool,
+        remove_associated_sharing_link_group: bool,
     ):
         """Removes an existing organization link for an object.
 
@@ -601,7 +607,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_supported_ui_language(self, lcid) -> Self:
+    def add_supported_ui_language(self, lcid: int) -> Self:
         """
         Adds a supported UI language by its language identifier.
         :param int lcid: Specifies the language identifier to be added.
@@ -620,7 +626,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_sub_webs_filtered_for_current_user(self, query):
+    def get_sub_webs_filtered_for_current_user(self, query: SubwebQuery):
         """Returns a collection of objects that contain metadata about subsites of the current site (2) in which the
         current user is a member.
 
@@ -820,7 +826,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
-    def create_site_page(self, page_metadata):
+    def create_site_page(self, page_metadata: str) -> ClientResult[str]:
         """Create a site page
 
         :param str page_metadata:
@@ -834,7 +840,12 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def create_anonymous_link(context, url, is_edit_link, return_type=None):
+    def create_anonymous_link(
+        context: ClientContext,
+        url: str,
+        is_edit_link: bool,
+        return_type: ClientResult[str] = None,
+    ):
         """Create an anonymous link which can be used to access a document without needing to authenticate.
 
         :param bool is_edit_link: If true, the link will allow the guest user edit privileges on the item.
@@ -857,7 +868,11 @@ class Web(SecurableObject):
 
     @staticmethod
     def create_anonymous_link_with_expiration(
-        context, url, is_edit_link, expiration_string, return_type=None
+        context: ClientContext,
+        url: str,
+        is_edit_link: bool,
+        expiration_string: str,
+        return_type=None,
     ):
         """
         Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
@@ -893,7 +908,11 @@ class Web(SecurableObject):
 
     @staticmethod
     def get_object_sharing_settings(
-        context, object_url, group_id=None, use_simplified_roles=None, return_type=None
+        context: ClientContext,
+        object_url: str,
+        group_id: str = None,
+        use_simplified_roles: bool = None,
+        return_type=None,
     ):
         """Given a path to an object in SharePoint, this will generate a sharing settings object which contains
         necessary information for rendering sharing information
@@ -926,7 +945,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
-    def get_client_side_components_by_id(self, component_ids=None):
+    def get_client_side_components_by_id(self, component_ids: list[str] = None):
         """
         Returns the client side components for the requested component identifiers.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
