@@ -15,8 +15,9 @@ if TYPE_CHECKING:
 
 class PropertyBuilder:
 
-    def __init__(self, prop_schema: PropertyInformation):
-        self.schema = prop_schema
+    def __init__(self, schema: PropertyInformation, status="detached"):
+        self.schema = schema
+        self.status = status
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
         methods = [template.build_getter(self)]

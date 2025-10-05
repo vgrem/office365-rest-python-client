@@ -45,7 +45,7 @@ class AppConsentRequest(Entity):
         )
 
     @property
-    def user_consent_requests(self):
+    def user_consent_requests(self) -> UserConsentRequestCollection:
         """A list of pending user consent requests."""
         return self.properties.get(
             "userConsentRequests",
@@ -61,4 +61,4 @@ class AppConsentRequest(Entity):
                 "userConsentRequests": self.user_consent_requests,
             }
             default_value = property_mapping.get(name, None)
-        return super(AppConsentRequest, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -6,7 +6,16 @@ from office365.sharepoint.search.query.auto_completion_match import (
 
 
 class QueryAutoCompletion(ClientValue):
-    def __init__(self, query=None, score=None, source=None):
+
+    def __init__(
+        self,
+        query=None,
+        score=None,
+        source=None,
+        matches: ClientValueCollection[
+            QueryAutoCompletionMatch
+        ] = ClientValueCollection(QueryAutoCompletionMatch),
+    ):
         """
         The QueryAutoCompletion complex type represents the matches for the Query in one Source.
 
@@ -15,10 +24,11 @@ class QueryAutoCompletion(ClientValue):
              Source.
         :param str source: This element represents the Source used when retrieving the matched results.
         """
-        self.Matches = ClientValueCollection(QueryAutoCompletionMatch)
+        self.Matches = matches
         self.Query = query
         self.Score = score
         self.Source = source
+        self.Matches = matches
 
     @property
     def entity_type_name(self):

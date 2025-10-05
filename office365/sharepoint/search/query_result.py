@@ -20,8 +20,8 @@ class QueryResult(ClientValue):
         custom_results: List[CustomResult] = None,
         refinement_results=RefinementResults(),
         relevant_results=RelevantResults(),
-        query_rule_id=None,
-        special_term_results=SpecialTermResults(),
+        query_rule_id: str = None,
+        special_term_results: SpecialTermResults = SpecialTermResults(),
     ):
         """
         :param str query_id: Specifies the identifier for the search query

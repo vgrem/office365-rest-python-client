@@ -38,6 +38,7 @@ def {method_name}(self) -> {type_annotation}:
         file_mapping = {
             "ComplexType": "complex_type.py",
             "EntityType": "entity_type.py",
+            "EnumType": "enum_type.py",
         }
         path = abspath(os.path.join(self._template_path, file_mapping[type_name]))
         return path

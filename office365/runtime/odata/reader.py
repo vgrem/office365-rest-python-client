@@ -44,14 +44,17 @@ class ODataReader(ABC):
             "edmx:DataServices/xmlns:Schema", self.xml_namespaces
         )
 
-        base_type = "ComplexType"
+        base_types = ["EnumType", "ComplexType"]
 
-        for schema_node in schema_nodes:
-            for type_node in schema_node.findall(
-                f"xmlns:{base_type}", self.xml_namespaces
-            ):
-                type_schema = self.process_type_node(type_node, schema_node, base_type)
-                model.add_type(type_schema)
+        for base_type in base_types:
+            for schema_node in schema_nodes:
+                for type_node in schema_node.findall(
+                    f"xmlns:{base_type}", self.xml_namespaces
+                ):
+                    type_schema = self.process_type_node(
+                        type_node, schema_node, base_type
+                    )
+                    model.add_type(type_schema)
 
     def process_type_node(
         self, type_node: Element, schema_node: Element, base_type: str

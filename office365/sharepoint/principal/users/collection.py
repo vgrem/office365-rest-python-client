@@ -41,7 +41,7 @@ class UserCollection(EntityCollection[User]):
         """Returns the user with the specified principal name."""
         return self.single("UserPrincipalName eq '{0}'".format(value))
 
-    def get_by_email(self, email):
+    def get_by_email(self, email: str) -> User:
         """
         Returns the user with the specified e-mail address.
         :param str email: A string that contains the e-mail address of the user.

@@ -9,17 +9,15 @@ class PushNotificationSubscriberCollection(
     """Specifies the collection of push notification subscribers for the site"""
 
     def __init__(self, context, resource_path=None):
-        super(PushNotificationSubscriberCollection, self).__init__(
-            context, PushNotificationSubscriber, resource_path
-        )
+        super().__init__(context, PushNotificationSubscriber, resource_path)
 
-    def get_by_store_id(self, _id):
+    def get_by_store_id(self, id_: str) -> PushNotificationSubscriber:
         """
         Returns the push notification subscriber from the specified store identifier.
 
-        :param str _id: Store identifier for the notification subscriber.
+        :param str id_: Store identifier for the notification subscriber.
         """
         return PushNotificationSubscriber(
             self.context,
-            ServiceOperationPath("GetByStoreId", [_id], self.resource_path),
+            ServiceOperationPath("GetByStoreId", [id_], self.resource_path),
         )

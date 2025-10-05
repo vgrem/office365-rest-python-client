@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from typing_extensions import Self
 
@@ -10,11 +10,14 @@ from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.users.id_info import UserIdInfo
 from office365.sharepoint.userprofiles.person_properties import PersonProperties
 
+if TYPE_CHECKING:
+    from office365.sharepoint.sites.site import Site
+
 
 class User(Principal):
     """Represents a user in Microsoft SharePoint Foundation. A user is a type of SP.Principal."""
 
-    def get_personal_site(self):
+    def get_personal_site(self) -> "Site":
         """Get personal site for a user"""
         from office365.sharepoint.sites.site import Site
 

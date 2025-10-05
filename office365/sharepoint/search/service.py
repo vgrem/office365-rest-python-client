@@ -177,7 +177,7 @@ class SearchService(Entity):
         """
         return_type = ClientResult(self.context, SearchResult())
         request = SearchRequest(
-            query_text=query_text,
+            querytext=query_text,
             select_properties=select_properties,
             trim_duplicates=trim_duplicates,
             row_limit=row_limit,

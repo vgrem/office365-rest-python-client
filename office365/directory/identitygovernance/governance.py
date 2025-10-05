@@ -27,7 +27,7 @@ class IdentityGovernance(Entity):
     """
 
     @property
-    def app_consent(self):
+    def app_consent(self) -> AppConsentApprovalRoute:
         """
         Container for base resources that expose the app consent request API and features.
         Currently, exposes only the appConsentRequests resource.
@@ -40,7 +40,7 @@ class IdentityGovernance(Entity):
         )
 
     @property
-    def access_reviews(self):
+    def access_reviews(self) -> AccessReviewSet:
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "accessReviews",
@@ -50,7 +50,7 @@ class IdentityGovernance(Entity):
         )
 
     @property
-    def privileged_access(self):
+    def privileged_access(self) -> PrivilegedAccessRoot:
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "privilegedAccess",
@@ -60,7 +60,7 @@ class IdentityGovernance(Entity):
         )
 
     @property
-    def terms_of_use(self):
+    def terms_of_use(self) -> TermsOfUseContainer:
         """
         Container for the resources that expose the terms of use API and its features, including agreements
         and agreementAcceptances.
@@ -73,7 +73,7 @@ class IdentityGovernance(Entity):
         )
 
     @property
-    def entitlement_management(self):
+    def entitlement_management(self) -> EntitlementManagement:
         """
         Container for entitlement management resources, including accessPackageCatalog, connectedOrganization,
         and entitlementManagementSettings.

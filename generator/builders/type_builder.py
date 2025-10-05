@@ -9,6 +9,7 @@ from typing import Dict
 
 from typing_extensions import Self
 
+from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from office365.runtime.odata.type import ODataType
@@ -26,24 +27,31 @@ class TypeBuilder(ast.NodeTransformer):
         self._source_tree = None
         self._status = None
         self._properties = []
+        self._members = []
         self._changes = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
             node.name = self.client_type_name
 
-        if self._schema and self._schema.Properties:
-            for prop_name, prop_schema in self._schema.Properties.items():
-                builder = PropertyBuilder(prop_schema)
-                builder.status = "detached"
-                self._properties.append(builder)
+        [
+            self._properties.append(PropertyBuilder(prop_schema))
+            for _, prop_schema in self._schema.Properties.items()
+        ]
+
+        [
+            self._members.append(MemberBuilder(member_schema))
+            for _, member_schema in self._schema.Members.items()
+        ]
 
         self.generic_visit(node)
 
         if self._schema.BaseTypeFullName == "ComplexType":
             self._build_properties(node)
+        elif self._schema.BaseTypeFullName == "EnumType":
+            self._build_members(node)
         else:
-            self._build_nav_properties(node)
+            self._build_navigation_properties(node)
 
         self._build_post(node)
 
@@ -102,6 +110,34 @@ class TypeBuilder(ast.NodeTransformer):
         if self._status == "updated" and len(self._changes) == 0:
             self._status = None
         return self
+
+    def _build_members(self, class_node: ast.ClassDef):
+        if not self._members:
+            return
+
+        existing_members = self._get_existing_members(class_node)
+
+        # Add missing members
+        for member_builder in self._members:
+            if member_builder.name not in existing_members:
+                member_nodes = member_builder.build(self._template)
+                class_node.body.extend(member_nodes)
+                self._changes.append(f"member: {member_builder.name}")
+                existing_members.add(member_builder.name)
+
+    def _get_existing_members(self, class_node: ast.ClassDef) -> set:
+        """Get set of existing member names in the class"""
+        existing_members = set()
+
+        for node in class_node.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        existing_members.add(target.id)
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                existing_members.add(node.target.id)
+
+        return existing_members
 
     def _build_properties(self, class_node: ast.ClassDef):
         if not self._properties:
@@ -211,7 +247,7 @@ class TypeBuilder(ast.NodeTransformer):
                 init_method.body.append(assign)
                 self._changes.append(f"__init__ param: {prop.name}")
 
-    def _build_nav_properties(self, class_node: ast.ClassDef):
+    def _build_navigation_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
         for prop in self._properties:
             if prop.status == "detached":
