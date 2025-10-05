@@ -61,7 +61,9 @@ class DocumentCrawlLog(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_unsuccesful_crawled_urls(self, display_url=None):
+    def get_unsuccesful_crawled_urls(
+        self, display_url: str = None
+    ) -> ClientResult[SimpleDataTable]:
         """
         Retrieves information about the contents that failed crawling.
 

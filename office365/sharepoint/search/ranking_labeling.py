@@ -1,7 +1,7 @@
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -10,10 +10,10 @@ class RankingLabeling(Entity):
     """Provides methods for getting and adding relevance judgments"""
 
     def __init__(self, context):
-        static_path = ResourcePath(
+        static_path = StaticPath(
             "Microsoft.SharePoint.Client.Search.Query.RankingLabeling"
         )
-        super(RankingLabeling, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def add_judgment(self, user_query: str, url: str, label_id: str) -> Self:
         """

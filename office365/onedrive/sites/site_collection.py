@@ -1,3 +1,4 @@
+from office365.onedrive.root import Root
 from office365.onedrive.sites.archival_details import SiteArchivalDetails
 from office365.runtime.client_value import ClientValue
 
@@ -7,9 +8,9 @@ class SiteCollection(ClientValue):
 
     def __init__(
         self,
-        root=None,
-        hostname=None,
-        data_location_code=None,
+        root: Root = None,
+        hostname: str = None,
+        data_location_code: str = None,
         archival_details=SiteArchivalDetails(),
     ):
         """

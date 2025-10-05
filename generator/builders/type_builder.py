@@ -206,10 +206,10 @@ class TypeBuilder(ast.NodeTransformer):
                             ctx=ast.Store(),
                         )
                     ],
-                    value=ast.Name(id=prop.Name, ctx=ast.Load()),
+                    value=ast.Name(id=prop.name, ctx=ast.Load()),
                 )
                 init_method.body.append(assign)
-                self._changes.append(f"__init__ param: {prop.Name}")
+                self._changes.append(f"__init__ param: {prop.name}")
 
     def _build_nav_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""

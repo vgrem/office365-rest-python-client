@@ -14,7 +14,7 @@ class SitesWithRoot(EntityCollection[Site]):
     """Sites container"""
 
     def __init__(self, context, resource_path=None):
-        super(SitesWithRoot, self).__init__(context, Site, resource_path)
+        super().__init__(context, Site, resource_path)
 
     def get_all_sites(self) -> SitesWithRoot:
         """List root sites across geographies in an organization."""

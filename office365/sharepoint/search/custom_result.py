@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 
 class CustomResult(ClientValue):
@@ -12,6 +13,9 @@ class CustomResult(ClientValue):
         item_template_id=None,
         result_title=None,
         properties=None,
+        result_title_url: str = None,
+        table: SimpleDataTable = SimpleDataTable(),
+        table_type: str = None,
     ):
         """
         :param str group_template_id: Specifies the identifier of the layout template that specifies how the results
@@ -26,6 +30,9 @@ class CustomResult(ClientValue):
         self.ItemTemplateId = item_template_id
         self.Properties = properties
         self.ResultTitle = result_title
+        self.ResultTitleUrl = result_title_url
+        self.Table = table
+        self.TableType = table_type
 
     @property
     def entity_type_name(self):

@@ -15,7 +15,7 @@ class AssignedLicense(ClientValue):
         :param str sku_id: The unique identifier for the SKU.
         :param list[str] disabled_plans: A collection of the unique identifiers for plans that have been disabled.
         """
-        super(AssignedLicense, self).__init__()
+        super().__init__()
         self.skuId = sku_id
         self.disabledPlans = StringCollection(disabled_plans)
 

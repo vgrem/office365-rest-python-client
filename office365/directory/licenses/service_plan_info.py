@@ -22,7 +22,7 @@ class ServicePlanInfo(ClientValue):
         :param str name: The name of the service plan.
         :param str _id: The unique identifier of the service plan.
         """
-        super(ServicePlanInfo, self).__init__()
+        super().__init__()
         self.servicePlanId = _id
         self.servicePlanName = name
         self.provisioningStatus = provisioning_status

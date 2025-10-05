@@ -11,7 +11,7 @@ class SignInStatus(ClientValue):
         :param str failure_reason: Provides the error message or the reason for failure for
             the corresponding sign-in activity.
         """
-        super(SignInStatus, self).__init__()
+        super().__init__()
         self.additionalDetails = additional_details
         self.errorCode = error_code
         self.failureReason = failure_reason

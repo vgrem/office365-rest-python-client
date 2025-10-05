@@ -9,7 +9,7 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
     """A collection of pages in a OneNote notebook"""
 
     def __init__(self, context, resource_path=None):
-        super(OnenotePageCollection, self).__init__(context, OnenotePage, resource_path)
+        super().__init__(context, OnenotePage, resource_path)
 
     def add(self, presentation_file: IO, attachment_files: dict = None) -> OnenotePage:
         """

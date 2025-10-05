@@ -89,8 +89,8 @@ class SearchService(Entity):
 
     def query(
         self,
-        query_text,
-        source_id=None,
+        query_text: str,
+        source_id: str = None,
         ranking_model_id=None,
         start_row=None,
         row_limit=None,

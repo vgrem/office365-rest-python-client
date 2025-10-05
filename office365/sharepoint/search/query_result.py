@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.custom_result import CustomResult
@@ -14,8 +16,8 @@ class QueryResult(ClientValue):
 
     def __init__(
         self,
-        query_id=None,
-        custom_results=None,
+        query_id: str = None,
+        custom_results: List[CustomResult] = None,
         refinement_results=RefinementResults(),
         relevant_results=RelevantResults(),
         query_rule_id=None,
