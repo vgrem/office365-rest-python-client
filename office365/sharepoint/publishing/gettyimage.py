@@ -16,3 +16,7 @@ class GettyImage(ClientValue):
         self.InsertionISOTimestamp = insertion_iso_timestamp
         self.PrimaryId = primary_id
         self.SecondaryId = secondary_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.GettyImage"

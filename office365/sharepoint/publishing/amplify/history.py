@@ -14,3 +14,7 @@ class AmplifyPublishingHistory(ClientValue):
         ] = ClientValueCollection(AmplifyPublishingHistoryResult),
     ):
         self.results = results
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AmplifyPublishingHistory"

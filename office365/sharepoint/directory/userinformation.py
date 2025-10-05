@@ -7,3 +7,7 @@ class UserInformation(ClientValue):
         self.Id = id_
         self.Name = name
         self.Puid = puid
+
+    @property
+    def entity_type_name(self):
+        return "MS.FileServices.UserInformation"

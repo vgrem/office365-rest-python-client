@@ -18,3 +18,7 @@ class SitePageBoostProperties(ClientValue):
         self.BoostUntilExpiryDate = boost_until_expiry_date
         self.BoostUntilSeen = boost_until_seen
         self.BoostUntilUsersViewedCount = boost_until_users_viewed_count
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SitePageBoostProperties"

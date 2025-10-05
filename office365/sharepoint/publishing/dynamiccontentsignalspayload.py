@@ -23,3 +23,7 @@ class DynamicContentSignalsPayload(ClientValue):
         self.AggregatedData = aggregated_data
         self.FaqSignals = faq_signals
         self.Id = id_
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.DynamicContentSignalsPayload"

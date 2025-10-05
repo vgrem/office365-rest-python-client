@@ -64,3 +64,7 @@ class MicrofeedPostDefinition(ClientValue):
         self.ResourceFileName = resource_file_name
         self.SecurityTrimContentUrl = security_trim_content_url
         self.SmallImageSizePreferred = small_image_size_preferred
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedPostDefinition"

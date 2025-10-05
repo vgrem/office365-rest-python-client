@@ -53,3 +53,7 @@ class MicrofeedThread(ClientValue):
         self.RootPost = root_post
         self.SmallImageSizePreferred = small_image_size_preferred
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedThread"

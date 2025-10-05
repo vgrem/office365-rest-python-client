@@ -13,3 +13,7 @@ class PrePublishValidationsErrorCodesForTeams(ClientValue):
         self.AudienceId = audience_id
         self.ErrorCodes = error_codes
         self.NumberOfImagesInPayload = number_of_images_in_payload
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrePublishValidationsErrorCodesForTeams"

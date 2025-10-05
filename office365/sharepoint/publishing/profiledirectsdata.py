@@ -12,3 +12,7 @@ class ProfileDirectsData(ClientValue):
         ] = ClientValueCollection(ProfileCoreProperties),
     ):
         self.DirectReports = direct_reports
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ProfileDirectsData"

@@ -19,3 +19,7 @@ class GroupNameValidationResult(ClientValue):
         self.ErrorCode = error_code
         self.ErrorMessage = error_message
         self.IsValidName = is_valid_name
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.GroupNameValidationResult"

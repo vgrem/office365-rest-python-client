@@ -12,3 +12,7 @@ class StateData(ClientValue):
         self.AdapterName = adapter_name
         self.Value = value
         self.ValueJsonString = value_json_string
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.StateData"

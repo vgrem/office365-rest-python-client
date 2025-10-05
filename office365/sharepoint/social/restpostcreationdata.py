@@ -11,3 +11,7 @@ class SocialRestPostCreationData(ClientValue):
     ):
         self.ID = id_
         self.creationData = creation_data
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialRestPostCreationData"

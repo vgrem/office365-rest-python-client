@@ -16,3 +16,7 @@ class EmailPublishingStatus(ClientValue):
         self.ErrorCode = error_code
         self.Errors = errors
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.EmailPublishingStatus"

@@ -27,3 +27,7 @@ class ChannelAnnouncement(ClientValue):
         self.Message = message
         self.PublishStartDate = publish_start_date
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ChannelAnnouncement"

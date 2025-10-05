@@ -5,10 +5,12 @@ from office365.sharepoint.entity import Entity
 
 
 class SiteIconManager(Entity):
+    """Provides methods to manage site icons."""
+
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("SiteIconManager")
-        super(SiteIconManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def get_site_logo(
         self, site_url: str, target=None, _type=None, return_type=None

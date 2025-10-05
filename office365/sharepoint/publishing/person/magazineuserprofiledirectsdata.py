@@ -14,3 +14,7 @@ class PersonMagazineUserProfileDirectsData(ClientValue):
         ] = ClientValueCollection(PersonMagazineUserProfile),
     ):
         self.DirectReports = direct_reports
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PersonMagazineUserProfileDirectsData"

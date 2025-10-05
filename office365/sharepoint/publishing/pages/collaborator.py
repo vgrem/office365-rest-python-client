@@ -9,3 +9,7 @@ class SitePageCollaborator(ClientValue):
         self.DisplayName = display_name
         self.LoginName = login_name
         self.UserId = user_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SitePageCollaborator"

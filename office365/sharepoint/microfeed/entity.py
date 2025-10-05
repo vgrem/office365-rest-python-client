@@ -40,3 +40,7 @@ class MicroBlogEntity(ClientValue):
         self.PictureURI = picture_uri
         self.Status = status
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicroBlogEntity"

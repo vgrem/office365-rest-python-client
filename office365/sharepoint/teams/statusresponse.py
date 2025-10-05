@@ -11,3 +11,7 @@ class TeamsPublishingStatusResponse(ClientValue):
     ):
         self.AudienceId = audience_id
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.TeamsPublishingStatusResponse"

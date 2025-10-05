@@ -27,3 +27,7 @@ class SharePageByEmailData(ClientValue):
         self.ScenarioTag = scenario_tag
         self.Subject = subject
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SharePageByEmailData"

@@ -16,3 +16,7 @@ class FaqSignalData(ClientValue):
         self.SignalType = signal_type
         self.Submits = submits
         self.Value = value
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.FaqSignalData"

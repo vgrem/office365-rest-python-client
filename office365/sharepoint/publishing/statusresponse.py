@@ -39,3 +39,7 @@ class PublishingStatusResponse(ClientValue):
         self.VivaEngagePublishingStatus = viva_engage_publishing_status
         self.VivaEngageV2PublishingStatus = viva_engage_v2_publishing_status
         self.YammerPublishingStatus = yammer_publishing_status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PublishingStatusResponse"

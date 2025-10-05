@@ -31,3 +31,7 @@ class ConfiguredMetadataNavigationItem(ClientValue):
         self.IsHierarchy = is_hierarchy
         self.IsMultiValueLookup = is_multi_value_lookup
         self.IsTaxonomyField = is_taxonomy_field
+
+    @property
+    def entity_type_name(self):
+        return "SP.MetadataNavigation.ConfiguredMetadataNavigationItem"

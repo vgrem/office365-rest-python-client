@@ -10,7 +10,6 @@ class BookingService(Entity):
     """
 
     @property
-    def additional_information(self):
-        # type: () -> Optional[str]
+    def additional_information(self) -> Optional[str]:
         """Additional information that is sent to the customer when an appointment is confirmed."""
         return self.properties.get("additionalInformation", None)

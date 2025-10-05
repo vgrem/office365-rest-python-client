@@ -33,3 +33,7 @@ class MicrofeedLink(ClientValue):
         self.PreviewWidth = preview_width
         self.Status = status
         self.Width = width
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedLink"

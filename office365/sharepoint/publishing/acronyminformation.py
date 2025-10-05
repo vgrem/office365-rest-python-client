@@ -10,3 +10,7 @@ class AcronymInformation(ClientValue):
         self.Color = color
         self.Lcid = lcid
         self.Text = text
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AcronymInformation"

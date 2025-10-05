@@ -14,3 +14,7 @@ class PortalHealthStatusDetails(ClientValue):
         self.HelpLink = help_link
         self.PortalHealthErrorCode = portal_health_error_code
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PortalHealthStatusDetails"

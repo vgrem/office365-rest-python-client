@@ -16,3 +16,7 @@ class SchemaData(ClientValue):
         self.IsInitialized = is_initialized
         self.Name = name
         self.Privacy = privacy
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.SchemaData"

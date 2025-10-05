@@ -56,3 +56,7 @@ class ProfileFullProperties(ClientValue):
         self.Skills = skills
         self.SpsDepartment = sps_department
         self.SpsJobTitle = sps_job_title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ProfileFullProperties"

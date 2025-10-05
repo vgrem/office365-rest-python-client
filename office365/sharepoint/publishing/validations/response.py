@@ -51,3 +51,7 @@ class PrePublishValidationsResponse(ClientValue):
         self.PrePublishValidationsErrorCodesForVivaEngageV2 = (
             pre_publish_validations_error_codes_for_viva_engage_v2
         )
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrePublishValidationsResponse"

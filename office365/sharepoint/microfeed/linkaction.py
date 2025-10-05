@@ -14,3 +14,7 @@ class MicrofeedLinkAction(ClientValue):
         self.Height = height
         self.Kind = kind
         self.Width = width
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedLinkAction"

@@ -17,3 +17,7 @@ class SocialPostActorInfo(ClientValue):
         self.IncludesCurrentUser = includes_current_user
         self.Indexes = indexes
         self.TotalCount = total_count
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialPostActorInfo"

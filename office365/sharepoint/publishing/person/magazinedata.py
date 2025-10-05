@@ -30,3 +30,7 @@ class PersonMagazineData(ClientValue):
         self.Phone = phone
         self.PictureUrl = picture_url
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PersonMagazineData"

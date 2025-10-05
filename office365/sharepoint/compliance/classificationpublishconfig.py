@@ -28,3 +28,7 @@ class SPClassificationPublishConfig(ClientValue):
         self.ModelId = model_id
         self.RetentionLabel = retention_label
         self.SensitivityLabel = sensitivity_label
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPClassificationPublishConfig"

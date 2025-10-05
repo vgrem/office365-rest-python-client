@@ -15,3 +15,9 @@ class SPMachineLearningPublicationResult(ClientValue):
         self.ErrorMessage = error_message
         self.Publication = publication
         self.StatusCode = status_code
+
+    @property
+    def entity_type_name(self):
+        return (
+            "Microsoft.Office.Server.ContentCenter.SPMachineLearningPublicationResult"
+        )

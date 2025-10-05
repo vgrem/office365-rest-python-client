@@ -15,3 +15,7 @@ class SharePointPublishingStatusResponse(ClientValue):
         self.SiteId = site_id
         self.Status = status
         self.WebId = web_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SharePointPublishingStatusResponse"

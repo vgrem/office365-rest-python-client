@@ -48,3 +48,7 @@ class SocialPost(ClientValue):
         self.PostType = post_type
         self.PreferredImageUri = preferred_image_uri
         self.Text = text
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialPost"

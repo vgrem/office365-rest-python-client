@@ -6,3 +6,7 @@ class MicrofeedPostDefinitionNameCollection(ClientValue):
 
     def __init__(self, items: StringCollection = StringCollection()):
         self.Items = items
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedPostDefinitionNameCollection"

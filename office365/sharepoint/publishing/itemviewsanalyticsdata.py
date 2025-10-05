@@ -16,3 +16,7 @@ class ItemViewsAnalyticsData(ClientValue):
     ):
         self.Days = days
         self.Months = months
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ItemViewsAnalyticsData"

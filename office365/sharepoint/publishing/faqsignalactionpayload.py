@@ -9,3 +9,7 @@ class FaqSignalActionPayload(ClientValue):
         self.ActionType = action_type
         self.QuestionId = question_id
         self.SignalType = signal_type
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.FaqSignalActionPayload"

@@ -22,3 +22,7 @@ class MicrofeedDataLink(ClientValue):
         self.StringValue = string_value
         self.UniqueId = unique_id
         self.UriValue = uri_value
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedDataLink"

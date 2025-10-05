@@ -9,3 +9,7 @@ class CallToAction(ClientValue):
         self.IsTranspileReady = is_transpile_ready
         self.Text = text
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.CallToAction"

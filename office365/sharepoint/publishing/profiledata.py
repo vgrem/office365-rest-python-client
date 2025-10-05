@@ -17,3 +17,7 @@ class ProfileData(ClientValue):
     ):
         self.ManagerChain = manager_chain
         self.Primary = primary
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ProfileData"

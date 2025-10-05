@@ -44,3 +44,7 @@ class SocialActor(ClientValue):
         self.TagGuid = tag_guid
         self.Title = title
         self.Uri = uri
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialActor"

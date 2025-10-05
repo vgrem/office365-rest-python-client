@@ -12,3 +12,7 @@ class LinkTarget(ClientValue):
         self.ObjectId = object_id
         self.ObjectSubType = object_sub_type
         self.ObjectType = object_type
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.LinkTarget"

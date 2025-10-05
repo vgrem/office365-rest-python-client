@@ -57,3 +57,7 @@ class ProfileViewEditPolicies(ClientValue):
         self.SpsJobTitle = sps_job_title
         self.WorkEmail = work_email
         self.WorkPhone = work_phone
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ProfileViewEditPolicies"

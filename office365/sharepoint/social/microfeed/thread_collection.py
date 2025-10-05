@@ -20,3 +20,7 @@ class MicrofeedThreadCollection(ClientValue):
         self.NewestProcessed = newest_processed
         self.OldestProcessed = oldest_processed
         self.Items = items
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedThreadCollection"

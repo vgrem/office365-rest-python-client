@@ -7,3 +7,7 @@ class AnnouncementAuthor(ClientValue):
         self.Email = email
         self.ID = id_
         self.Name = name
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AnnouncementAuthor"

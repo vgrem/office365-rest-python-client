@@ -23,3 +23,7 @@ class DirectoryObjectChanges(ClientValue):
         self.Id = id_
         self.LinkChanges = link_changes
         self.PropertyChanges = property_changes
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.DirectoryObjectChanges"

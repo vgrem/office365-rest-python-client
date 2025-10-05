@@ -14,3 +14,7 @@ class SPExtractorPublishConfig(ClientValue):
         self.ColumnName = column_name
         self.ColumnType = column_type
         self.ExtractorId = extractor_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPExtractorPublishConfig"

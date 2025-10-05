@@ -11,3 +11,7 @@ class PrePublishValidationsErrorCodesForEmail(ClientValue):
     ):
         self.EmailAddress = email_address
         self.ErrorCodes = error_codes
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrePublishValidationsErrorCodesForEmail"

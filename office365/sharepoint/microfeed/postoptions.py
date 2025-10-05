@@ -37,3 +37,7 @@ class MicrofeedPostOptions(ClientValue):
         self.RefThread_RefRoot = ref_thread__ref_root
         self.TargetActor = target_actor
         self.UpdateStatusText = update_status_text
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedPostOptions"

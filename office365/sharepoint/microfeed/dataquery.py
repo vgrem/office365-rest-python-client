@@ -15,3 +15,7 @@ class MicrofeedDataQuery(ClientValue):
         self.Query = query
         self.ViewFields = view_fields
         self.ViewFieldsOnly = view_fields_only
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedDataQuery"

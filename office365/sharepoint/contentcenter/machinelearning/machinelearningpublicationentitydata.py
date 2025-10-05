@@ -20,3 +20,7 @@ class SPMachineLearningPublicationEntityData(ClientValue):
         self.TargetTableListServerRelativeUrl = target_table_list_server_relative_url
         self.TargetWebServerRelativeUrl = target_web_server_relative_url
         self.ViewOption = view_option
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPMachineLearningPublicationEntityData"

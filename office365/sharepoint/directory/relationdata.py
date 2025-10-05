@@ -18,3 +18,7 @@ class RelationData(ClientValue):
         self.TargetObjectType = target_object_type
         self.Value = value
         self.ValueJsonString = value_json_string
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.RelationData"

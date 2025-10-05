@@ -21,3 +21,7 @@ class SocialDataOverlay(ClientValue):
         self.Length = length
         self.LinkUri = link_uri
         self.OverlayType = overlay_type
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialDataOverlay"

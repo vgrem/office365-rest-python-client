@@ -14,3 +14,7 @@ class DynamicFaqSingalsData(ClientValue):
         self.Id = id_
         self.SubmittedAt = submitted_at
         self.SubmittedQuestion = submitted_question
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.DynamicFaqSingalsData"

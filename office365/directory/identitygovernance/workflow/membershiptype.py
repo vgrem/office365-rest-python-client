@@ -2,4 +2,6 @@ from enum import Enum
 
 
 class MembershipChangeType(Enum):
-    pass
+    add = "1"
+    remove = "2"
+    unknownFutureValue = "3"

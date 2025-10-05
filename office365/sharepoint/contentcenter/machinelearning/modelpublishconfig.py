@@ -21,3 +21,7 @@ class SPModelPublishConfig(ClientValue):
     ):
         self.ClassificationPublishConfigs = classification_publish_configs
         self.ExtractorPublishConfigs = extractor_publish_configs
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPModelPublishConfig"

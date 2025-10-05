@@ -6,3 +6,7 @@ class AuthoringSchemaFeatureVersion(ClientValue):
     def __init__(self, name: str = None, version: str = None):
         self.Name = name
         self.Version = version
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AuthoringSchemaFeatureVersion"

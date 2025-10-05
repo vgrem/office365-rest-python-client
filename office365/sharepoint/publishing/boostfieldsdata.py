@@ -24,3 +24,7 @@ class BoostFieldsData(ClientValue):
         self.NextItemVersion = next_item_version
         self.PreviousItemId = previous_item_id
         self.PreviousItemVersion = previous_item_version
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.BoostFieldsData"

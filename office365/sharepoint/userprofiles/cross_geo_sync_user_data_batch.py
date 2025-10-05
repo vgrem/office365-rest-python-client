@@ -20,3 +20,7 @@ class CrossGeoSyncUserDataBatch(ClientValue):
         self.Properties = properties
 
     ""
+
+    @property
+    def entity_type_name(self):
+        return "SP.UserProfiles.CrossGeoSyncUserDataBatch"

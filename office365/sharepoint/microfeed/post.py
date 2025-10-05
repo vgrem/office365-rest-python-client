@@ -64,3 +64,7 @@ class MicrofeedPost(ClientValue):
         self.ReplyCount = reply_count
         self.SmallImageSizePreferred = small_image_size_preferred
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedPost"

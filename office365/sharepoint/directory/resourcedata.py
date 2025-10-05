@@ -18,3 +18,7 @@ class ResourceData(ClientValue):
         self.State = state
         self.Value = value
         self.ValueJsonString = value_json_string
+
+    @property
+    def entity_type_name(self):
+        return "SP.Directory.Provider.ResourceData"

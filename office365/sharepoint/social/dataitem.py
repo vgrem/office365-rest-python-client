@@ -16,3 +16,7 @@ class SocialDataItem(ClientValue):
         self.TagGuid = tag_guid
         self.Text = text
         self.Uri = uri
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialDataItem"

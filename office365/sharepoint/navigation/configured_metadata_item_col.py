@@ -10,3 +10,7 @@ class ConfiguredMetadataNavigationItemCollection(ClientValue):
 
     def __init__(self, items=ClientValueCollection(ConfiguredMetadataNavigationItem)):
         self.Items = items
+
+    @property
+    def entity_type_name(self):
+        return "SP.MetadataNavigation.ConfiguredMetadataNavigationItemCollection"

@@ -14,3 +14,7 @@ class SPDependentModel(ClientValue):
         self.LastRefereshedTimeUtc = last_refereshed_time_utc
         self.ModelId = model_id
         self.ModelType = model_type
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPDependentModel"

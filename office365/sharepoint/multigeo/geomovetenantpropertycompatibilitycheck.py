@@ -10,3 +10,7 @@ class GeoMoveTenantPropertyCompatibilityCheck(ClientValue):
     ):
         self.GeoMoveTenantPropertyCheckResult = geo_move_tenant_property_check_result
         self.PropertyName = property_name
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Online.SharePoint.MultiGeo.Service.GeoMoveTenantPropertyCompatibilityCheck"

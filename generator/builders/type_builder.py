@@ -29,6 +29,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._properties = []
         self._members = []
         self._changes = []
+        self._entity_type_name_exists = False
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
@@ -71,6 +72,10 @@ class TypeBuilder(ast.NodeTransformer):
                 break
 
         if is_property:
+            # Track entity_type_name property
+            if node.name == "entity_type_name":
+                self._entity_type_name_exists = True
+
             matching_prop = next(
                 (prop for prop in self._properties if prop.name == node.name), None
             )
@@ -97,13 +102,15 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def build(self) -> Self:
-        self._template = TemplateContext(self._options.get("templatepath"))
+        self._template = TemplateContext(
+            self._options.get("templatepath"), self._schema
+        )
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
                 self._source_tree = ast.parse(f.read())
             self._status = "updated"
         else:
-            self._source_tree = self._template.load(self._schema)
+            self._source_tree = self._template.load()
             self._status = "created"
         self.visit(self._source_tree)
 
@@ -265,6 +272,8 @@ class TypeBuilder(ast.NodeTransformer):
             stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)
         ]
 
+        self._ensure_entity_type_name(class_node)
+
     def save(self):
         ast.fix_missing_locations(self._source_tree)
         code = ast.unparse(self._source_tree)
@@ -288,6 +297,21 @@ class TypeBuilder(ast.NodeTransformer):
             except (ImportError, AttributeError):
                 continue
         return None
+
+    def _ensure_entity_type_name(self, class_node: ast.ClassDef):
+        """Ensure the class has an entity_type_name property that returns the correct type name"""
+
+        if self._schema.BaseTypeFullName not in ["ComplexType", "EntityType"]:
+            return
+
+        parts = self._schema.FullName.split(".")
+        if len(parts) <= 2:
+            return
+
+        if not self._entity_type_name_exists:
+            entity_type_name_method = self._template.build_entity_type_name()
+            class_node.body.append(entity_type_name_method)
+            self._changes.append("entity_type_name property")
 
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}

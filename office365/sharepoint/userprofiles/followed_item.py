@@ -51,3 +51,7 @@ class FollowedItem(ClientValue):
         self.UniqueId = unique_id
         self.Url = url
         self.WebId = web_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.UserProfiles.FollowedItem"

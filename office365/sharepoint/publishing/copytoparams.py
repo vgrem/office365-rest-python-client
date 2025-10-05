@@ -45,3 +45,7 @@ class CopyToParams(ClientValue):
             should_add_fallback_link_for_video_for_amplify
         )
         self.SitePageFlags = site_page_flags
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.CopyToParams"

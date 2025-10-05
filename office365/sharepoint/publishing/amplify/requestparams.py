@@ -16,3 +16,7 @@ class AmplifyRequestParams(ClientValue):
     ):
         self.Endpoints = endpoints
         self.UseNewPublishingStack = use_new_publishing_stack
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AmplifyRequestParams"

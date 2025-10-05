@@ -9,3 +9,7 @@ class PersonCore(ClientValue):
         self.AadObjectId = aad_object_id
         self.DisplayName = display_name
         self.UserName = user_name
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PersonCore"

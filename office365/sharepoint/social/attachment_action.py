@@ -15,3 +15,7 @@ class SocialAttachmentAction(ClientValue):
         self.ActionUri = action_uri
         self.Height = height
         self.Width = width
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialAttachmentAction"

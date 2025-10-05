@@ -18,3 +18,7 @@ class CrossGeoSyncUserProperty(ClientValue):
         self.PropertyId = property_id
         self.PropertyVal = property_val
         self.SecondaryVal = secondary_val
+
+    @property
+    def entity_type_name(self):
+        return "SP.UserProfiles.CrossGeoSyncUserProperty"

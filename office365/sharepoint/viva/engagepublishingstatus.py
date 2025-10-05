@@ -20,3 +20,7 @@ class VivaEngagePublishingStatus(ClientValue):
         self.ErrorMessage = error_message
         self.Errors = errors
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.VivaEngagePublishingStatus"

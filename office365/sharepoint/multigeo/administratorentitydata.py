@@ -14,3 +14,7 @@ class GeoAdministratorEntityData(ClientValue):
         self.LoginName = login_name
         self.MemberType = member_type
         self.ObjectId = object_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Online.SharePoint.MultiGeo.Service.GeoAdministratorEntityData"

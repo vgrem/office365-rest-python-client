@@ -20,3 +20,7 @@ class SitePageAuthoringMetadata(ClientValue):
         self.RestoreTo = restore_to
         self.SequenceId = sequence_id
         self.SessionId = session_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SitePageAuthoringMetadata"

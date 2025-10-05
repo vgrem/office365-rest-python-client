@@ -16,3 +16,7 @@ class SocialFeedOptions(ClientValue):
         self.NewerThan = newer_than
         self.OlderThan = older_than
         self.SortOrder = sort_order
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialFeedOptions"

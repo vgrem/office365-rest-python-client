@@ -18,3 +18,7 @@ class PrePublishValidationsErrorCodesForVivaEngage(ClientValue):
         self.ErrorCodes = error_codes
         self.NumberOfImageAttachments = number_of_image_attachments
         self.VivaEngageDestinationV2 = viva_engage_destination_v2
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrePublishValidationsErrorCodesForVivaEngage"

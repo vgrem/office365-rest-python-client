@@ -9,3 +9,7 @@ class PublishPublicationResponse(ClientValue):
         self.ErrorCode = error_code
         self.Message = message
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PublishPublicationResponse"

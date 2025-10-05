@@ -11,3 +11,7 @@ class PrePublishValidationsErrorCodesForSharePointSite(ClientValue):
     ):
         self.ErrorCodes = error_codes
         self.SiteId = site_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrePublishValidationsErrorCodesForSharePointSite"

@@ -12,3 +12,7 @@ class RuleErrorDetails(ClientValue):
     ):
         self.errorHeaders = error_headers
         self.errors = errors
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.RuleErrorDetails"

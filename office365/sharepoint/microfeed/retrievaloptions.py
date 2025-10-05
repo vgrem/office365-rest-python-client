@@ -29,3 +29,7 @@ class MicrofeedRetrievalOptions(ClientValue):
         self.PostDefinitionFilter = post_definition_filter
         self.ResultSortOrder = result_sort_order
         self.ThreadCount = thread_count
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicrofeedRetrievalOptions"

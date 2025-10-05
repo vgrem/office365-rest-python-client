@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -7,7 +9,7 @@ from office365.sharepoint.entity import Entity
 class InformationRightsManagementFileSettings(Entity):
     """Represents the Information Rights Management (IRM) settings of a file."""
 
-    def reset(self):
+    def reset(self) -> Self:
         """Resets all properties to the default value."""
         qry = ServiceOperationQuery(self, "Reset")
         self.context.add_query(qry)

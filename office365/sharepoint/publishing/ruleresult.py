@@ -23,3 +23,7 @@ class RuleResult(ClientValue):
         self.RuleType = rule_type
         self.Status = status
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.RuleResult"

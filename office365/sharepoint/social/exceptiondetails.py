@@ -16,3 +16,7 @@ class SocialExceptionDetails(ClientValue):
         self.InternalStackTrace = internal_stack_trace
         self.InternalTypeName = internal_type_name
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialExceptionDetails"

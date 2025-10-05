@@ -14,3 +14,7 @@ class ColumnDef(ClientValue):
         self.Id = id_
         self.Name = name
         self.Type = type_
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.ColumnDef"

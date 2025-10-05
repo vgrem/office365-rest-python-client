@@ -11,3 +11,7 @@ class SPModelDependencies(ClientValue):
         self, dependent_models: ClientValueCollection[SPDependentModel] = None
     ):
         self.DependentModels = dependent_models
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPModelDependencies"

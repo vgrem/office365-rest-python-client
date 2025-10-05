@@ -83,3 +83,7 @@ class PersonMagazineUserProfile(ClientValue):
         self.StringCustomProperties = string_custom_properties
         self.Title = title
         self.UserName = user_name
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PersonMagazineUserProfile"

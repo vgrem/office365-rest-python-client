@@ -22,3 +22,7 @@ class TeamsPublishingStatus(ClientValue):
         self.Errors = errors
         self.HttpStatusCode = http_status_code
         self.Status = status
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.TeamsPublishingStatus"

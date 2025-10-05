@@ -12,3 +12,7 @@ class MicroBlogEntityCollection(ClientValue):
         ),
     ):
         self.Items = items
+
+    @property
+    def entity_type_name(self):
+        return "SP.Microfeed.MicroBlogEntityCollection"

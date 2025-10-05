@@ -19,3 +19,7 @@ class AmplifyPublishingHistoryResult(ClientValue):
         self.PublicationMetadata = publication_metadata
         self.publishingStatusResponse = publishing_status_response
         self.TimestampUTC = timestamp_utc
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AmplifyPublishingHistoryResult"

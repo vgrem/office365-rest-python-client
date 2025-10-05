@@ -1,4 +1,4 @@
-from office365.directory.identitygovernance.workflow.lifecycleworkflowcategory import (
+from office365.directory.identitygovernance.lifecycleworkflows.category import (
     LifecycleWorkflowCategory,
 )
 from office365.runtime.client_value import ClientValue

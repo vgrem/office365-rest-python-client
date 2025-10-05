@@ -20,3 +20,7 @@ class ProfilePropertyViewEditPolicy(ClientValue):
         self.IsVisibleOnEditor = is_visible_on_editor
         self.Privacy = privacy
         self.UserOverridePrivacy = user_override_privacy
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ProfilePropertyViewEditPolicy"

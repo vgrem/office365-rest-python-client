@@ -14,3 +14,7 @@ class AmplifiedChannels(ClientValue):
         self.WasAmplifiedToSharePoint = was_amplified_to_share_point
         self.WasAmplifiedToTeams = was_amplified_to_teams
         self.WasAmplifiedToVivaEngage = was_amplified_to_viva_engage
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.AmplifiedChannels"
