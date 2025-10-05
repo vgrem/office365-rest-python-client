@@ -22,3 +22,7 @@ class GroupSiteInfo(ClientValue):
         self.DocumentsUrl = documents_url
         self.ErrorMessage = error_message
         self.GroupId = group_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.GroupSiteInfo"

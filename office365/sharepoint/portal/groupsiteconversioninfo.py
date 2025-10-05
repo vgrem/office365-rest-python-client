@@ -21,3 +21,7 @@ class GroupSiteConversionInfo(ClientValue):
         self.SuggestedMembers = suggested_members
         self.SuggestedOwners = suggested_owners
         self.UnsuggestablePrincipals = unsuggestable_principals
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.GroupSiteConversionInfo"

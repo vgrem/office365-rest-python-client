@@ -3,6 +3,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SiteScriptSerializationInfo(ClientValue):
+
     def __init__(
         self,
         include_branding=None,
@@ -11,6 +12,7 @@ class SiteScriptSerializationInfo(ClientValue):
         include_regional_settings=None,
         include_site_external_sharing_capability=None,
         include_theme=None,
+        included_pages: StringCollection = None,
     ):
         """
         :param bool include_branding:
@@ -26,6 +28,7 @@ class SiteScriptSerializationInfo(ClientValue):
             include_site_external_sharing_capability
         )
         self.IncludeTheme = include_theme
+        self.IncludedPages = included_pages
 
     @property
     def entity_type_name(self):

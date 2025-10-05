@@ -14,3 +14,7 @@ class SiteSharingEmailContext(ClientValue):
         self.CustomTitle = custom_title
         self.Message = message
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SiteSharingEmailContext"

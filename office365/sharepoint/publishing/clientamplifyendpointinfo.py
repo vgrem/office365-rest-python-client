@@ -24,3 +24,9 @@ class ClientAmplifyEndpointInfo(ClientValue):
         self.href = href
         self.id = id_
         self.name = name
+
+    @property
+    def entity_type_name(self):
+        return (
+            "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyEndpointInfo"
+        )

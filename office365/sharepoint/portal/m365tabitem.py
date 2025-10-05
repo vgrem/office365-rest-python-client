@@ -14,3 +14,7 @@ class M365TabItem(ClientValue):
         self.isDefault = is_default
         self.itemType = item_type
         self.url = url
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.M365TabItem"

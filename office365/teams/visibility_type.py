@@ -7,3 +7,5 @@ class TeamVisibilityType(Enum):
     none_ = -1
     private = 0
     public = 1
+    hiddenMembership = "2"
+    unknownFutureValue = "3"

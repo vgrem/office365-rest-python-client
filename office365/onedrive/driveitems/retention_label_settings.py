@@ -1,4 +1,4 @@
-from office365.directory.security.labels.retention.types import (
+from office365.directory.security.labels.retention.behaviorduringretentionperiod import (
     BehaviorDuringRetentionPeriod,
 )
 from office365.runtime.client_value import ClientValue

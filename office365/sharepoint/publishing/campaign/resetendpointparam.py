@@ -15,3 +15,7 @@ class CampaignPublicationResetEndpointParam(ClientValue):
         self.EngageTranspileContent = engage_transpile_content
         self.ResetEndpoint = reset_endpoint
         self.TeamsTranspileContent = teams_transpile_content
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.CampaignPublicationResetEndpointParam"

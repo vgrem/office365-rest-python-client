@@ -34,3 +34,7 @@ class PageDetails(ClientValue):
         self.Url = url
         self.Version = version
         self.WebId = web_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Diagnostics.PageDetails"

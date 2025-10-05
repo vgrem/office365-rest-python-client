@@ -5,3 +5,7 @@ class CampaignPublicationLoadMailDraftParam(ClientValue):
 
     def __init__(self, is_preview: bool = None):
         self.IsPreview = is_preview
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.CampaignPublicationLoadMailDraftParam"

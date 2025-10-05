@@ -11,3 +11,7 @@ class SharePointHomeDataCache(ClientValue):
     ):
         self.Key = key
         self.Value = value
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.Home.SharePointHomeDataCache"

@@ -12,3 +12,7 @@ class PinToTeamParams(ClientValue):
     ):
         self.tabs = tabs
         self.teamsId = teams_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.PinToTeamParams"

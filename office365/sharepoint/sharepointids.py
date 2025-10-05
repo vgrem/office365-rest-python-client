@@ -18,3 +18,7 @@ class SharePointIds(ClientValue):
         self.web_id = web_id
         self.listId = list_id
         self.uniqueId = unique_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Campaigns.Models.SharePointIds"

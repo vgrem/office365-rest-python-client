@@ -15,3 +15,7 @@ class SitePagStreamData(ClientValue):
     ):
         self.CoAuthState = co_auth_state
         self.StreamContents = stream_contents
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SitePagStreamData"

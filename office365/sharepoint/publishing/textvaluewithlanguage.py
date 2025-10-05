@@ -7,3 +7,7 @@ class TextValueWithLanguage(ClientValue):
         self.ColorSeed = color_seed
         self.Lcid = lcid
         self.Text = text
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.TextValueWithLanguage"

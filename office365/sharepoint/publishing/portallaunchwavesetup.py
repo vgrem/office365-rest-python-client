@@ -42,3 +42,7 @@ class PortalLaunchWaveSetup(ClientValue):
         self.Status = status
         self.WaveOverrideUsers = wave_override_users
         self.Waves = waves
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PortalLaunch.PortalLaunchWaveSetup"

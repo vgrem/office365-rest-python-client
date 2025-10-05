@@ -9,3 +9,7 @@ class ClientAmplifyAnywhereResults(ClientValue):
         publishing_status_response: PublishingStatusResponse = PublishingStatusResponse(),
     ):
         self.publishingStatusResponse = publishing_status_response
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults"

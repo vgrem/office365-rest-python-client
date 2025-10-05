@@ -19,3 +19,7 @@ class MyRecsQueryInfo(ClientValue):
         self.InterestTags = interest_tags
         self.QueryInfoExists = query_info_exists
         self.SuggestedTags = suggested_tags
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.Project.MyRecsQueryInfo"

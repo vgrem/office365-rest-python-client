@@ -12,3 +12,7 @@ class ReportNoResultQueries(ClientValue):
         ),
     ):
         self.Reports = reports
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.ReportNoResultQueries"

@@ -43,3 +43,7 @@ class ClientAmplifyResult(ClientValue):
         self.timestampUTC = timestamp_utc
         self.upstreamErrorCode = upstream_error_code
         self.upstreamHttpStatusCode = upstream_http_status_code
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResult"

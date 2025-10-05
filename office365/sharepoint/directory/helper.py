@@ -16,7 +16,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 
 class SPHelper(Entity):
     def __init__(self, context):
-        super(SPHelper, self).__init__(context, StaticPath("SP.Directory.SPHelper"))
+        super().__init__(context, StaticPath("SP.Directory.SPHelper"))
 
     @staticmethod
     def is_member_of(

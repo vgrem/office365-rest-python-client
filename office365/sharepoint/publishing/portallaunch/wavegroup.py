@@ -9,3 +9,7 @@ class PortalLaunchWaveGroup(ClientValue):
         self.Id = id_
         self.SiteUrl = site_url
         self.UserGroupName = user_group_name
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PortalLaunch.PortalLaunchWaveGroup"

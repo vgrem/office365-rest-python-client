@@ -48,5 +48,5 @@ def generate_graph_model(cp: ConfigParser) -> None:
 if __name__ == "__main__":
     settings = ConfigParser()
     settings.read(Path(__file__).parent / "settings.cfg")
-    # generate_graph_model(settings)
-    generate_sharepoint_model(settings)
+    generate_graph_model(settings)
+    # generate_sharepoint_model(settings)

@@ -1,11 +1,11 @@
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.directory.security.labels.retention.duration import RetentionDuration
-from office365.directory.security.labels.retention.trigger import RetentionTrigger
-from office365.directory.security.labels.retention.types import (
+from office365.directory.security.labels.retention.behaviorduringretentionperiod import (
     BehaviorDuringRetentionPeriod,
 )
+from office365.directory.security.labels.retention.duration import RetentionDuration
+from office365.directory.security.labels.retention.trigger import RetentionTrigger
 from office365.entity import Entity
 
 

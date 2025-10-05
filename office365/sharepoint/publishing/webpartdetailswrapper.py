@@ -9,3 +9,7 @@ class WebPartDetailsWrapper(ClientValue):
         self.InstanceId = instance_id
         self.IsInternal = is_internal
         self.ManifestId = manifest_id
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.WebPartDetailsWrapper"

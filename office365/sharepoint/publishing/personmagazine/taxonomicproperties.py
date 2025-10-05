@@ -28,3 +28,7 @@ class TaxonomicProperties(ClientValue):
         self.Responsibilities = responsibilities
         self.Schools = schools
         self.Skills = skills
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.TaxonomicProperties"

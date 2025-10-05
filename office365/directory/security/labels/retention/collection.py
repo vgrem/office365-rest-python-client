@@ -1,11 +1,15 @@
+from office365.directory.security.labels.retention.actionafterretentionperiod import (
+    ActionAfterRetentionPeriod,
+)
+from office365.directory.security.labels.retention.behaviorduringretentionperiod import (
+    BehaviorDuringRetentionPeriod,
+)
+from office365.directory.security.labels.retention.defaultrecordbehavior import (
+    DefaultRecordBehavior,
+)
 from office365.directory.security.labels.retention.duration import RetentionDuration
 from office365.directory.security.labels.retention.label import RetentionLabel
 from office365.directory.security.labels.retention.trigger import RetentionTrigger
-from office365.directory.security.labels.retention.types import (
-    ActionAfterRetentionPeriod,
-    BehaviorDuringRetentionPeriod,
-    DefaultRecordBehavior,
-)
 from office365.entity_collection import EntityCollection
 from office365.runtime.http.request_options import RequestOptions
 

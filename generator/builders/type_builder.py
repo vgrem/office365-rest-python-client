@@ -265,7 +265,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _build_post(self, class_node: ast.ClassDef):
         """Remove pass statements if there are other statements in the class body"""
-        if len(self._properties) == 0:
+        if len(self._properties) or len(self._members) == 0:
             return
 
         class_node.body = [
@@ -301,7 +301,11 @@ class TypeBuilder(ast.NodeTransformer):
     def _ensure_entity_type_name(self, class_node: ast.ClassDef):
         """Ensure the class has an entity_type_name property that returns the correct type name"""
 
-        if self._schema.BaseTypeFullName not in ["ComplexType", "EntityType"]:
+        if self._schema.BaseTypeFullName not in [
+            "ComplexType",
+            "EntityType",
+            "EnumType",
+        ]:
             return
 
         parts = self._schema.FullName.split(".")

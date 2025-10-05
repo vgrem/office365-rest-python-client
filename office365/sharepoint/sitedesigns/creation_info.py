@@ -3,9 +3,12 @@ import uuid
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.sharepoint.sitedesigns.image import SiteDesignImage
+from office365.sharepoint.webs.teamappinfo import TeamAppInfo
 
 
 class SiteDesignCreationInfo(ClientValue):
+
     def __init__(
         self,
         _id=None,
@@ -29,6 +32,21 @@ class SiteDesignCreationInfo(ClientValue):
         requires_teams_connected=None,
         requires_yammer_connected=None,
         supported_web_templates=None,
+        expanded_preview_images: ClientValueCollection[
+            SiteDesignImage
+        ] = ClientValueCollection(SiteDesignImage),
+        supported_web_template_subtypes: StringCollection = None,
+        target_platforms: StringCollection = None,
+        team_channels: StringCollection = None,
+        team_image_alt_text: str = None,
+        team_image_url: str = None,
+        team_installed_apps: ClientValueCollection[TeamAppInfo] = ClientValueCollection(
+            TeamAppInfo
+        ),
+        team_template: str = None,
+        template_assets: StringCollection = None,
+        template_features: StringCollection = None,
+        thumbnail_url: str = None,
     ):
         """
         :param str or None _id: The ID of the site design to apply.
@@ -61,6 +79,17 @@ class SiteDesignCreationInfo(ClientValue):
         self.RequiresTeamsConnected = requires_teams_connected
         self.RequiresYammerConnected = requires_yammer_connected
         self.SupportedWebTemplates = StringCollection(supported_web_templates)
+        self.ExpandedPreviewImages = expanded_preview_images
+        self.SupportedWebTemplateSubtypes = supported_web_template_subtypes
+        self.TargetPlatforms = target_platforms
+        self.TeamChannels = team_channels
+        self.TeamImageAltText = team_image_alt_text
+        self.TeamImageUrl = team_image_url
+        self.TeamInstalledApps = team_installed_apps
+        self.TeamTemplate = team_template
+        self.TemplateAssets = template_assets
+        self.TemplateFeatures = template_features
+        self.ThumbnailUrl = thumbnail_url
 
     @property
     def entity_type_name(self):

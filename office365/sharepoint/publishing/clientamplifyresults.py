@@ -20,3 +20,7 @@ class ClientAmplifyResults(ClientValue):
         self.errors = errors
         self.messages = messages
         self.warnings = warnings
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults"

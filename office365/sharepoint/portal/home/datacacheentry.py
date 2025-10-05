@@ -13,3 +13,7 @@ class SharePointHomeDataCacheEntry(ClientValue):
     ):
         self.CacheContext = cache_context
         self.CacheValue = cache_value
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.Home.SharePointHomeDataCacheEntry"

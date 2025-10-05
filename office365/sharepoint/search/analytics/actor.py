@@ -7,3 +7,7 @@ class AnalyticsActor(ClientValue):
         self.Id = id_
         self.Properties = properties
         self.TenantId = tenant_id
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Client.Search.Analytics.AnalyticsActor"

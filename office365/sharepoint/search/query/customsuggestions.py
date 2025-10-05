@@ -9,3 +9,7 @@ class CustomQuerySuggestions(ClientValue):
     ):
         self.LCID = lcid
         self.Queries = queries
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Client.Search.Query.CustomQuerySuggestions"

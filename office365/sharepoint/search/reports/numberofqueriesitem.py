@@ -16,3 +16,7 @@ class ReportNumberOfQueriesItem(ClientValue):
     ):
         self.Date = date
         self.Report = report
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.ReportNumberOfQueriesItem"

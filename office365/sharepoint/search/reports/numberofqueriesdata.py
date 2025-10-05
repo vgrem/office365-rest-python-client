@@ -9,3 +9,7 @@ class ReportNumberOfQueriesData(ClientValue):
         self.Hits = hits
         self.ResultSource = result_source
         self.TotalQueries = total_queries
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.ReportNumberOfQueriesData"

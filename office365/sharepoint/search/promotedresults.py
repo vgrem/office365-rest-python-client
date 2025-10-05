@@ -18,3 +18,7 @@ class PromotedResults(ClientValue):
         self.LastModifiedTime = last_modified_time
         self.Title = title
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.PromotedResults"

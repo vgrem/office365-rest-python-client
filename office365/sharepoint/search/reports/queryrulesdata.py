@@ -28,3 +28,7 @@ class ReportQueryRulesData(ClientValue):
         self.QueryRuleId = query_rule_id
         self.ResultSource = result_source
         self.TimesFired = times_fired
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.ReportQueryRulesData"

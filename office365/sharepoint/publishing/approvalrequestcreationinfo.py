@@ -23,3 +23,7 @@ class ApprovalRequestCreationInfo(ClientValue):
         self.Message = message
         self.PublishOption = publish_option
         self.SchedulePublishDate = schedule_publish_date
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.ApprovalRequestCreationInfo"

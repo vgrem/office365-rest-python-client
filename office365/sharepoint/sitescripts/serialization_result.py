@@ -3,6 +3,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SiteScriptSerializationResult(ClientValue):
+
     def __init__(self, json=None, warnings=None):
         """
         :param str json:
@@ -10,3 +11,7 @@ class SiteScriptSerializationResult(ClientValue):
         """
         self.JSON = json
         self.Warnings = StringCollection(warnings)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptSerializationResult"

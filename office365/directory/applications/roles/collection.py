@@ -6,7 +6,7 @@ class AppRoleCollection(ClientValueCollection[AppRole]):
     """"""
 
     def __init__(self, initial_values=None):
-        super(AppRoleCollection, self).__init__(AppRole, initial_values)
+        super().__init__(AppRole, initial_values)
 
     def __getitem__(self, key: str) -> AppRole:
         return self.get_by_value(key)

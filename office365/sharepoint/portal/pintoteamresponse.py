@@ -16,3 +16,7 @@ class PinToTeamResponse(ClientValue):
     ):
         self.FailedPinning = failed_pinning
         self.SuccessfulPinning = successful_pinning
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.PinToTeamResponse"

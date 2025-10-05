@@ -30,3 +30,7 @@ class PublicationMetadata(ClientValue):
         self.Status = status
         self.Title = title
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Campaigns.Models.PublicationMetadata"

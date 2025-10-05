@@ -16,3 +16,7 @@ class CollaborationMailboxResponse(ClientValue):
         self.ErrorCode = error_code
         self.Status = status
         self.Url = url
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.CollaborationMailboxResponse"

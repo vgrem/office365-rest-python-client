@@ -9,7 +9,7 @@ class Parameter(ClientValue):
         self,
         name: str = None,
         values: StringCollection = StringCollection(),
-        value_type: ValueType = ValueType(),
+        value_type: ValueType = None,
     ):
         self.name = name
         self.values = values

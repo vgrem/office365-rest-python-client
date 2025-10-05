@@ -14,3 +14,7 @@ class CampaignMetadata(ClientValue):
         self.Description = description
         self.Logo = logo
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Publishing.Campaigns.Models.CampaignMetadata"

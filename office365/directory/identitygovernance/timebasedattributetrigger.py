@@ -1,7 +1,9 @@
+from enum import Enum
+
 from office365.runtime.client_value import ClientValue
 
 
-class WorkflowTriggerTimeBasedAttribute(ClientValue):
+class WorkflowTriggerTimeBasedAttribute(Enum):
     pass
 
 
@@ -10,7 +12,7 @@ class TimeBasedAttributeTrigger(ClientValue):
     def __init__(
         self,
         offset_in_days: int = None,
-        time_based_attribute: WorkflowTriggerTimeBasedAttribute = WorkflowTriggerTimeBasedAttribute(),
+        time_based_attribute: WorkflowTriggerTimeBasedAttribute = None,
     ):
         self.offsetInDays = offset_in_days
         self.timeBasedAttribute = time_based_attribute

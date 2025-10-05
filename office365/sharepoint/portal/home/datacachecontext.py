@@ -18,3 +18,7 @@ class SharePointHomeDataCacheContext(ClientValue):
         self.MySiteUrl = my_site_url
         self.Time = time
         self.Version = version
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.Home.SharePointHomeDataCacheContext"

@@ -22,3 +22,7 @@ class StartCoAuthMetaData(ClientValue):
         self.IsUserConsentProvidedForModerationStatus = (
             is_user_consent_provided_for_moderation_status
         )
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.StartCoAuthMetaData"

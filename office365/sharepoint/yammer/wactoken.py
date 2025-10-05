@@ -18,3 +18,7 @@ class WacToken(ClientValue):
         self.ErrorMessageToDisplay = error_message_to_display
         self.FavIconTarget = fav_icon_target
         self.RedirectUrl = redirect_url
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Yammer.WacToken"

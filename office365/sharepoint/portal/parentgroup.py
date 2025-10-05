@@ -9,3 +9,7 @@ class ParentGroup(ClientValue):
         self.DisplayName = display_name
         self.GroupSiteUrl = group_site_url
         self.ID = id_
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Portal.ParentGroup"

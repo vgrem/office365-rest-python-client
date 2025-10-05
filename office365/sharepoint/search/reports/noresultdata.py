@@ -14,3 +14,7 @@ class ReportNoResultData(ClientValue):
         self.QueryText = query_text
         self.ResultSource = result_source
         self.Total = total
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.Search.REST.ReportNoResultData"

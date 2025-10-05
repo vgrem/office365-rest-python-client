@@ -8,3 +8,7 @@ class SitePageVersionInfoCollection(ClientValue):
     def __init__(self, created: datetime = None, created_by: str = None):
         self.Created = created
         self.CreatedBy = created_by
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.SitePageVersionInfoCollection"

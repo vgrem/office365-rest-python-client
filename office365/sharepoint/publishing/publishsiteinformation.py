@@ -7,3 +7,7 @@ class PublishSiteInformation(ClientValue):
         self.SiteType = site_type
         self.SiteUrl = site_url
         self.Title = title
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PublishSiteInformation"
