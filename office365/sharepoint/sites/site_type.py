@@ -1,6 +1,7 @@
-class SiteType:
-    def __init__(self):
-        pass
+from enum import Enum
+
+
+class SiteType(Enum):
 
     Communication = "CommunicationSite"
 

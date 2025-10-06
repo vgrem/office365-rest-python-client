@@ -2,7 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.sites.manager.types import TopSiteFilesResult
+from office365.sharepoint.sites.manager.topsitefilesresult import TopSiteFilesResult
 
 
 class SiteManagerService(Entity):

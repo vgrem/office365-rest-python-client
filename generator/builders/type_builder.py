@@ -168,25 +168,8 @@ class TypeBuilder(ast.NodeTransformer):
         defaults = []
 
         for prop in self._properties:
-            param = ast.arg(
-                arg=prop.name,
-                annotation=(
-                    ast.Name(id=prop.client_type, ctx=ast.Load())
-                    if prop.type_name
-                    else None
-                ),
-            )
-            args.append(param)
-            if ODataType.is_primitive_type(prop.schema.TypeName):
-                defaults.append(ast.Constant(value=None))
-            else:
-                defaults.append(
-                    ast.Call(
-                        func=ast.Name(id=prop.client_type, ctx=ast.Load()),
-                        args=[],
-                        keywords=[],
-                    )
-                )
+            args.append(prop.build_param())
+            defaults.append(prop.build_default())
 
         function_args = ast.arguments(
             posonlyargs=[],
@@ -200,17 +183,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         body = []
         for prop in self._properties:
-            assign = ast.Assign(
-                targets=[
-                    ast.Attribute(
-                        value=ast.Name(id="self", ctx=ast.Load()),
-                        attr=prop.schema.Name,
-                        ctx=ast.Store(),
-                    )
-                ],
-                value=ast.Name(id=prop.name, ctx=ast.Load()),
-            )
-            body.append(assign)
+            body.append(prop.build_assign())
             self._changes.append(f"__init__ param: {prop.name}")
 
         init_method = ast.FunctionDef(
@@ -230,28 +203,9 @@ class TypeBuilder(ast.NodeTransformer):
 
         for prop in self._properties:
             if prop.name not in existing_params and prop.status == "detached":
-                param = ast.arg(
-                    arg=prop.name,
-                    annotation=(
-                        ast.Name(id=prop.type_name, ctx=ast.Load())
-                        if prop.type_name
-                        else None
-                    ),
-                )
-                init_method.args.args.append(param)
-                init_method.args.defaults.append(ast.Constant(value=None))
-
-                assign = ast.Assign(
-                    targets=[
-                        ast.Attribute(
-                            value=ast.Name(id="self", ctx=ast.Load()),
-                            attr=prop.schema.Name,
-                            ctx=ast.Store(),
-                        )
-                    ],
-                    value=ast.Name(id=prop.name, ctx=ast.Load()),
-                )
-                init_method.body.append(assign)
+                init_method.args.args.append(prop.build_param())
+                init_method.args.defaults.append(prop.build_default())
+                init_method.body.append(prop.build_assign())
                 self._changes.append(f"__init__ param: {prop.name}")
 
     def _build_navigation_properties(self, class_node: ast.ClassDef):
@@ -265,7 +219,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _build_post(self, class_node: ast.ClassDef):
         """Remove pass statements if there are other statements in the class body"""
-        if len(self._properties) or len(self._members) == 0:
+        if len(self._properties) == 0 and len(self._members) == 0:
             return
 
         class_node.body = [

@@ -63,4 +63,4 @@ class SectionGroup(OnenoteEntityHierarchyModel):
                 "sectionGroups": self.section_groups,
             }
             default_value = property_mapping.get(name, None)
-        return super(SectionGroup, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

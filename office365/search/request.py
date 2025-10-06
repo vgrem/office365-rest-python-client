@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -16,7 +16,7 @@ class SearchRequest(ClientValue):
     def __init__(
         self,
         query: SearchQuery,
-        aggregation_filters=None,
+        aggregation_filters: List[str] = None,
         aggregations=None,
         enable_top_results=None,
         size: int = None,

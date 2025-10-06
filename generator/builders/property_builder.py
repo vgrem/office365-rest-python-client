@@ -28,6 +28,41 @@ class PropertyBuilder:
 
         return methods
 
+    def build_param(self):
+        """Build an ast.arg parameter"""
+        return ast.arg(
+            arg=self.name,
+            annotation=(
+                ast.Name(id=self.client_type, ctx=ast.Load())
+                if self.type_name
+                else None
+            ),
+        )
+
+    def build_default(self):
+        """Build default value"""
+        if ODataType.is_primitive_type(self.schema.TypeName):
+            return ast.Constant(value=None)
+        else:
+            return ast.Call(
+                func=ast.Name(id=self.client_type, ctx=ast.Load()),
+                args=[],
+                keywords=[],
+            )
+
+    def build_assign(self):
+        """Build assignment statement"""
+        return ast.Assign(
+            targets=[
+                ast.Attribute(
+                    value=ast.Name(id="self", ctx=ast.Load()),
+                    attr=self.schema.Name,
+                    ctx=ast.Store(),
+                )
+            ],
+            value=ast.Name(id=self.name, ctx=ast.Load()),
+        )
+
     @property
     def name(self) -> str:
         """Convert CamelCase to snake_case"""

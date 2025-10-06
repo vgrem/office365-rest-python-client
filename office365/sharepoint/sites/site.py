@@ -62,7 +62,7 @@ class Site(Entity):
     """
 
     def __init__(self, context, resource_path=None):
-        super(Site, self).__init__(context, ResourcePath("Site", resource_path))
+        super().__init__(context, ResourcePath("Site", resource_path))
 
     def __repr__(self):
         return self.url or self.entity_type_name
@@ -102,7 +102,7 @@ class Site(Entity):
         azure_container_manifest_uri,
         azure_queue_report_uri,
         ingestion_task_key,
-    ):
+    ) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
         payload = {
@@ -229,7 +229,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_copy_job_progress(self, copy_job_info=None):
+    def get_copy_job_progress(
+        self, copy_job_info=None
+    ) -> ClientResult[CopyJobProgress]:
         """
         :param copy_job_info: Optional copyJobInfo object.
         """
@@ -284,7 +286,7 @@ class Site(Entity):
         self.ensure_property("Url", _site_loaded)
         return return_type
 
-    def is_valid_home_site(self):
+    def is_valid_home_site(self) -> ClientResult[bool]:
         """Determines whether a site is landing site for your intranet."""
         return_type: ClientResult[bool] = ClientResult(self.context)
 
@@ -306,7 +308,7 @@ class Site(Entity):
         self.ensure_property("Url", _site_loaded)
         return return_type
 
-    def get_changes(self, query=None):
+    def get_changes(self, query=None) -> ChangeCollection:
         """Returns the collection of all changes from the change log that have occurred within the scope of the site,
         based on the specified query.
 
@@ -322,7 +324,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_recycle_bin_items(self, row_limit=100, is_ascending=True):
+    def get_recycle_bin_items(
+        self, row_limit: int = 100, is_ascending: bool = True
+    ) -> RecycleBinItemCollection:
         """
         Returns a collection of recycle bin items based on the specified query.
 
@@ -365,7 +369,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_web_templates(self, lcid=1033, override_compat_level=0):
+    def get_web_templates(
+        self, lcid=1033, override_compat_level=0
+    ) -> WebTemplateCollection:
         """
         Returns the collection of site definitions that are available for creating
             Web sites within the site collection.
@@ -388,7 +394,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def invalidate(self):
+    def invalidate(self) -> Self:
         """
         Invalidates cached upgrade information about the site collection so that this information will be
         recomputed the next time it is needed
@@ -397,7 +403,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def needs_upgrade_by_type(self, version_upgrade, recursive):
+    def needs_upgrade_by_type(
+        self, version_upgrade: bool, recursive: bool
+    ) -> ClientResult[bool]:
         """
         Returns "true" if this site collection requires site collection upgrade of the specified type;
         otherwise, "false"
@@ -418,8 +426,11 @@ class Site(Entity):
         return return_type
 
     def join_hub_site(
-        self, hub_site_id, approval_token=None, approval_correlation_id=None
-    ):
+        self,
+        hub_site_id: str,
+        approval_token: str = None,
+        approval_correlation_id: str = None,
+    ) -> Self:
         """
         Associates a site with an existing hub site.
 
@@ -471,7 +482,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    def exists(context, url):
+    def exists(context, url: str) -> ClientResult[bool]:
         """Determine whether site exists
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -521,7 +532,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def open_web_by_id(self, web_id: str):
+    def open_web_by_id(self, web_id: str) -> Web:
         """Returns the specified Web site from the site collection.
 
         :param str web_id: An identifier of the Web site

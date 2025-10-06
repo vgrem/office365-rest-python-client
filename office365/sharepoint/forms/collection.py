@@ -11,7 +11,7 @@ class FormCollection(EntityCollection[Form]):
         """Specifies a collection of list forms for a list."""
         super().__init__(context, Form, resource_path)
 
-    def get_by_id(self, id_: str):
+    def get_by_id(self, id_: str) -> Form:
         """Gets the form with the specified ID.
 
         :param str id_: Specifies the identifier of the list form.

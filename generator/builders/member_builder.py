@@ -1,5 +1,6 @@
 import ast
 
+from generator.builders.template_context import TemplateContext
 from office365.runtime.odata.member import MemberInformation
 
 
@@ -9,7 +10,7 @@ class MemberBuilder:
         self.schema = schema
         self.status = status
 
-    def build(self, template_context) -> list:
+    def build(self, template: TemplateContext) -> list:
         """Build AST nodes for this member"""
         if self.status == "attached":
             return []

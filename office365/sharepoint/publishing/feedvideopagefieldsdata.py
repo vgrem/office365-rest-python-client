@@ -2,4 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class FeedVideoPageFieldsData(ClientValue):
-    pass
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.FeedVideoPageFieldsData"

@@ -9,7 +9,11 @@ class RestrictAccessControlUpdate(ClientValue):
         enable_restricted_access_policy: bool = None,
         justification: str = None,
         restricted_access_control_groups: StringCollection = StringCollection(),
+        is_policy_enabled_at_site: bool = None,
+        is_policy_enabled_at_tenant: bool = None,
     ):
         self.EnableRestrictedAccessPolicy = enable_restricted_access_policy
         self.Justification = justification
         self.RestrictedAccessControlGroups = restricted_access_control_groups
+        self.IsPolicyEnabledAtSite = is_policy_enabled_at_site
+        self.IsPolicyEnabledAtTenant = is_policy_enabled_at_tenant

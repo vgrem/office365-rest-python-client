@@ -1,9 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-
-
-class MissingLink(ClientValue):
-    pass
+from office365.sharepoint.sites.manager.missinglink import MissingLink
 
 
 class MissingLinksResult(ClientValue):

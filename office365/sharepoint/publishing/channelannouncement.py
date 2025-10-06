@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.publishing.announcementauthor import AnnouncementAuthor
+from office365.sharepoint.publishing.announcements.author import AnnouncementAuthor
 from office365.sharepoint.publishing.calltoaction import CallToAction
 from office365.sharepoint.publishing.icon import Icon
 

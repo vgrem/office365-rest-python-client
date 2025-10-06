@@ -9,7 +9,7 @@ class SiteCollectionCorporateCatalogAccessor(Entity):
     """Accessor for the site collection corporate catalog."""
 
     @property
-    def available_apps(self):
+    def available_apps(self) -> CorporateCatalogAppMetadataCollection:
         """Returns the apps available in this corporate catalog."""
         return self.properties.get(
             "AvailableApps",
