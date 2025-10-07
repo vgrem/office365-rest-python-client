@@ -1,5 +1,2 @@
-import ast
-
-
-class MethodBuilder(ast.NodeTransformer):
+class MethodBuilder:
     pass

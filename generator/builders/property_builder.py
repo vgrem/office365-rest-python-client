@@ -18,15 +18,20 @@ class PropertyBuilder:
     def __init__(self, schema: PropertyInformation, status="detached"):
         self.schema = schema
         self.status = status
+        self.docstring = None
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
-        methods = [template.build_getter(self)]
+
+        getter_node = template.build_getter(self)
+
+        # Add docstring if available
+        if self.docstring and getter_node.body:
+            docstring_node = ast.Expr(value=ast.Constant(value=self.docstring))
+            getter_node.body.insert(0, docstring_node)
 
         # setter = self.build_setter(self)
-        # if setter is not None:
-        #    methods.append(setter)
 
-        return methods
+        return [getter_node]
 
     def build_param(self):
         """Build an ast.arg parameter"""
@@ -39,7 +44,7 @@ class PropertyBuilder:
             ),
         )
 
-    def build_default(self):
+    def build_default_value(self):
         """Build default value"""
         if ODataType.is_primitive_type(self.schema.TypeName):
             return ast.Constant(value=None)

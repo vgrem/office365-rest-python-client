@@ -1,4 +1,4 @@
-from typing import AnyStr, Optional
+from typing import Optional
 
 from office365.todo.attachments.base import AttachmentBase
 

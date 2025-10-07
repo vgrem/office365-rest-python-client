@@ -11,6 +11,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 if TYPE_CHECKING:
     from office365.onenote.pages.page import OnenotePage
+    from office365.onenote.sectiongroups.section_group import SectionGroup
 
 
 class OnenoteSection(OnenoteEntityHierarchyModel):
@@ -23,7 +24,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         rename_as: str = None,
         site_collection_id: str = None,
         site_id: str = None,
-    ):
+    ) -> OnenoteOperation:
         """For Copy operations, you follow an asynchronous calling pattern: First call the Copy action,
         and then poll the operation endpoint for the result.
 
@@ -86,7 +87,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         )
 
     @property
-    def parent_section_group(self):
+    def parent_section_group(self) -> SectionGroup:
         """
         The section group that contains the section. Read-only.
         """
@@ -106,4 +107,4 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
                 "parentSectionGroup": self.parent_section_group,
             }
             default_value = property_mapping.get(name, None)
-        return super(OnenoteSection, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

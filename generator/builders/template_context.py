@@ -3,6 +3,7 @@ import os
 from os.path import abspath
 from typing import cast
 
+from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
 from office365.runtime.odata.type_information import TypeInformation
 
@@ -13,9 +14,15 @@ class TemplateContext:
         self._schema = schema
 
     def load(self) -> ast.Module:
-        template_file = self._resolve_template_file(self._schema.BaseTypeFullName)
+        template_file = self._resolve_template_file()
         with open(template_file, encoding="utf-8") as f:
             return ast.parse(f.read())
+
+    def build_member(self, builder: MemberBuilder):
+        return ast.Assign(
+            targets=[ast.Name(id=builder.name, ctx=ast.Store())],
+            value=ast.Constant(value=builder.value),
+        )
 
     def build_getter(self, builder: PropertyBuilder) -> ast.FunctionDef:
         """Build the getter property method"""
@@ -37,7 +44,7 @@ def {method_name}(self) -> {type_annotation}:
 
     def build_entity_type_name(self):
         """Ensure the class has an entity_type_name property that returns the correct type name"""
-        method = ast.FunctionDef(
+        node = ast.FunctionDef(
             name="entity_type_name",
             args=ast.arguments(
                 posonlyargs=[],
@@ -53,13 +60,17 @@ def {method_name}(self) -> {type_annotation}:
             returns=None,
         )
 
-        return method
+        return node
 
-    def _resolve_template_file(self, type_name: str):
+    def _resolve_template_file(self):
         file_mapping = {
             "ComplexType": "complex_type.py",
             "EntityType": "entity_type.py",
             "EnumType": "enum_type.py",
         }
-        path = abspath(os.path.join(self._template_path, file_mapping[type_name]))
+        path = abspath(
+            os.path.join(
+                self._template_path, file_mapping[self._schema.BaseTypeFullName]
+            )
+        )
         return path

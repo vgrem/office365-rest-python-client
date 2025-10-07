@@ -26,7 +26,7 @@ class ListItemCollection(EntityCollection[ListItem]):
     """
 
     def __init__(self, context: "GraphClient", resource_path: ResourcePath):
-        super(ListItemCollection, self).__init__(context, ListItem, resource_path)
+        super().__init__(context, ListItem, resource_path)
         """Initialize a list item collection.
 
         Args:
@@ -45,7 +45,7 @@ class ListItemCollection(EntityCollection[ListItem]):
             ListItem: The newly created list item (not yet executed)
         """
         payload = {"fields": kwargs}
-        return super(ListItemCollection, self).add(**payload)
+        return super().add(**payload)
 
     def honor_nonindexed(self, value: bool) -> "ListItemCollection":
         """Configure whether to allow queries on non-indexed properties.

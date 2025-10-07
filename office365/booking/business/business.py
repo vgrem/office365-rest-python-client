@@ -60,7 +60,7 @@ class BookingBusiness(Entity):
         return self
 
     @property
-    def address(self):
+    def address(self) -> PhysicalAddress:
         """
         The street address of the business. The address property, together with phone and webSiteUrl, appear in the
         footer of a business scheduling page. The attribute type of physicalAddress is not supported in v1.0.
@@ -136,7 +136,7 @@ class BookingBusiness(Entity):
         )
 
     @property
-    def services(self):
+    def services(self) -> EntityCollection[BookingService]:
         """All the services offered by this business. Read-only. Nullable."""
         return self.properties.get(
             "services",

@@ -85,4 +85,4 @@ class SharedDriveItem(BaseItem):
                 "listItem": self.list_item,
             }
             default_value = property_mapping.get(name, None)
-        super(SharedDriveItem, self).get_property(name, default_value)
+        super().get_property(name, default_value)

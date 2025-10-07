@@ -1,4 +1,7 @@
-class CustomizedPageStatus:
+from enum import Enum
+
+
+class CustomizedPageStatus(Enum):
     """Specifies the customization (ghost) status of the SPFile."""
 
     None_ = 0

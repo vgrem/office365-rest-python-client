@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.compliance.classificationpublishconfig import (
+from office365.sharepoint.compliance.classification.publishconfig import (
     SPClassificationPublishConfig,
 )
 from office365.sharepoint.contentcenter.machinelearning.extractorpublishconfig import (

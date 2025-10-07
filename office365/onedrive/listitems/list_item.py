@@ -104,4 +104,4 @@ class ListItem(BaseItem):
                 "driveItem": self.drive_item,
             }
             default_value = property_mapping.get(name, None)
-        return super(ListItem, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

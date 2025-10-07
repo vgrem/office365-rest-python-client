@@ -1,7 +1,12 @@
-import ast
+from __future__ import annotations
 
-from generator.builders.template_context import TemplateContext
+import ast
+from typing import TYPE_CHECKING
+
 from office365.runtime.odata.member import MemberInformation
+
+if TYPE_CHECKING:
+    from generator.builders.template_context import TemplateContext
 
 
 class MemberBuilder:
@@ -9,17 +14,22 @@ class MemberBuilder:
     def __init__(self, schema: MemberInformation, status="detached"):
         self.schema = schema
         self.status = status
+        self.docstring = None
 
     def build(self, template: TemplateContext) -> list:
         """Build AST nodes for this member"""
         if self.status == "attached":
             return []
 
-        member_assign = ast.Assign(
-            targets=[ast.Name(id=self.name, ctx=ast.Store())],
-            value=ast.Constant(value=self.value),
-        )
-        return [member_assign]
+        member_node = template.build_member(self)
+
+        # Add docstring if available
+        if self.docstring:
+            # Create a docstring node before the assignment
+            docstring_node = ast.Expr(value=ast.Constant(value=self.docstring))
+            return [docstring_node, member_node]
+
+        return [member_node]
 
     @property
     def name(self):

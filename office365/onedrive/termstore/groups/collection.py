@@ -16,4 +16,4 @@ class GroupCollection(EntityCollection[Group]):
 
     def get_by_name(self, name: str) -> Group:
         """Returns the group with the specified name."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")

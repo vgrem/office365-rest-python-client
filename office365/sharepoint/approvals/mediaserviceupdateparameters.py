@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.approvals.spagreementresults import SPAgreementResults
-from office365.sharepoint.compliance.classificationresult import ClassificationResult
+from office365.sharepoint.compliance.classification.result import ClassificationResult
 from office365.sharepoint.contentcenter.machinelearning.samples.meta import (
     MachineLearningSampleMeta,
 )

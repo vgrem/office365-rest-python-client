@@ -19,7 +19,7 @@ class Drive(BaseItem):
     """The drive resource is the top level object representing a user's OneDrive or a document library in
     SharePoint."""
 
-    def create_bundle(self, name: str, children: Optional[list] = None):
+    def create_bundle(self, name: str, children: Optional[list] = None) -> DriveItem:
         """
         Add a new bundle to the user's drive.
 

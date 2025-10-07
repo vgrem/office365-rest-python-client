@@ -33,10 +33,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return_type = ContentType(self.context)
         self.add_child(return_type)
 
-        def _create(parent_id):
-            """
-            :type parent_id: str
-            """
+        def _create(parent_id: str):
             payload = {
                 "name": name,
                 "base": {"id": parent_id},

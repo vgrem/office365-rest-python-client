@@ -1,4 +1,4 @@
-from typing import AnyStr, Optional
+from typing import Optional
 
 from office365.onenote.entity_schema_object_model import OnenoteEntitySchemaObjectModel
 from office365.onenote.notebooks.notebook import Notebook
@@ -13,7 +13,7 @@ from office365.runtime.types.collections import StringCollection
 class OnenotePage(OnenoteEntitySchemaObjectModel):
     """A page in a OneNote notebook."""
 
-    def get_content(self) -> ClientResult[AnyStr]:
+    def get_content(self) -> ClientResult[bytes]:
         """Download the page's HTML content."""
         return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "content", None, return_type)
@@ -26,7 +26,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         return self.properties.get("contentUrl", None)
 
     @property
-    def links(self):
+    def links(self) -> PageLinks:
         """Links for opening the page. The oneNoteClientURL link opens the page in the OneNote native client
         if it 's installed. The oneNoteWebUrl link opens the page in OneNote on the web. Read-only.
 
@@ -39,7 +39,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         return self.properties.get("title", None)
 
     @property
-    def user_tags(self):
+    def user_tags(self) -> StringCollection:
         """Links for opening the page. The oneNoteClientURL link opens the page in the OneNote native client
         if it 's installed. The oneNoteWebUrl link opens the page in OneNote on the web. Read-only.
 
@@ -47,7 +47,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         return self.properties.get("userTags", StringCollection())
 
     @property
-    def parent_notebook(self):
+    def parent_notebook(self) -> Notebook:
         """The notebook that contains the page. Read-only."""
         return self.properties.get(
             "parentNotebook",
@@ -55,7 +55,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         )
 
     @property
-    def parent_section(self):
+    def parent_section(self) -> OnenoteSection:
         """The section that contains the page."""
         return self.properties.get(
             "parentSection",

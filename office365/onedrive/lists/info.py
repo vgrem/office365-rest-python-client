@@ -12,7 +12,7 @@ class ListInfo(ClientValue):
         :param bool hidden: 	If true, indicates that the list is not normally visible in the SharePoint user
             experience.
         """
-        super(ListInfo, self).__init__()
+        super().__init__()
         self.template = template
         self.contentTypesEnabled = content_types_enabled
         self.hidden = hidden

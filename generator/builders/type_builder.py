@@ -5,13 +5,14 @@ import os
 import pkgutil
 from functools import lru_cache
 from os.path import abspath
-from typing import Dict
+from typing import Dict, List
 
 from typing_extensions import Self
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
 from generator.builders.template_context import TemplateContext
+from generator.documentation.baseservice import BaseDocumentationService
 from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
 
@@ -19,7 +20,12 @@ from office365.runtime.odata.type_information import TypeInformation
 class TypeBuilder(ast.NodeTransformer):
     """Type builder"""
 
-    def __init__(self, type_schema: TypeInformation, options: Dict[str, str] = None):
+    def __init__(
+        self,
+        type_schema: TypeInformation,
+        options: Dict[str, str] = None,
+        docs_service: BaseDocumentationService = None,
+    ):
         self._template = None
         self._schema = type_schema
         self._options = options
@@ -29,9 +35,12 @@ class TypeBuilder(ast.NodeTransformer):
         self._properties = []
         self._members = []
         self._changes = []
+        self._docstring = None
         self._entity_type_name_exists = False
+        self._docs_service = docs_service
 
     def visit_ClassDef(self, node: ast.ClassDef):
+
         if self._schema:
             node.name = self.client_type_name
 
@@ -44,6 +53,9 @@ class TypeBuilder(ast.NodeTransformer):
             self._members.append(MemberBuilder(member_schema))
             for _, member_schema in self._schema.Members.items()
         ]
+
+        if self._docs_service:
+            self._docs_service.build_documentation(self)
 
         self.generic_visit(node)
 
@@ -105,6 +117,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._template = TemplateContext(
             self._options.get("templatepath"), self._schema
         )
+
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
                 self._source_tree = ast.parse(f.read())
@@ -152,7 +165,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         init_method = None
 
-        for i, node in enumerate(class_node.body):
+        for _, node in enumerate(class_node.body):
             if isinstance(node, ast.FunctionDef) and node.name == "__init__":
                 init_method = node
                 break
@@ -169,7 +182,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         for prop in self._properties:
             args.append(prop.build_param())
-            defaults.append(prop.build_default())
+            defaults.append(prop.build_default_value())
 
         function_args = ast.arguments(
             posonlyargs=[],
@@ -204,7 +217,7 @@ class TypeBuilder(ast.NodeTransformer):
         for prop in self._properties:
             if prop.name not in existing_params and prop.status == "detached":
                 init_method.args.args.append(prop.build_param())
-                init_method.args.defaults.append(prop.build_default())
+                init_method.args.defaults.append(prop.build_default_value())
                 init_method.body.append(prop.build_assign())
                 self._changes.append(f"__init__ param: {prop.name}")
 
@@ -240,7 +253,7 @@ class TypeBuilder(ast.NodeTransformer):
         for module_name in self._options["modules"].split(","):
             try:
                 module = importlib.import_module(module_name.strip())
-                for _, name, is_pkg in pkgutil.walk_packages(
+                for _, name, _ in pkgutil.walk_packages(
                     module.__path__, module.__name__ + "."
                 ):
                     submodule = importlib.import_module(name)
@@ -309,3 +322,15 @@ class TypeBuilder(ast.NodeTransformer):
     @property
     def client_type_name(self):
         return ODataType.resolve_client_type(self._schema.FullName)
+
+    @property
+    def properties(self) -> List[PropertyBuilder]:
+        return self._properties
+
+    @property
+    def members(self) -> List[MemberBuilder]:
+        return self._members
+
+    @property
+    def entity_type_name(self) -> str:
+        return self._schema.FullName

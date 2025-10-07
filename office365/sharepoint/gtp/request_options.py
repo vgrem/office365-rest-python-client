@@ -10,4 +10,9 @@ class ChatGptRequestOptions(BaseGptRequestOptions):
         """
         :param list[MessageEntry] messages:
         """
+        super().__init__()
         self.Messages = ClientValueCollection(MessageEntry, messages)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Internal.ChatGptRequestOptions"

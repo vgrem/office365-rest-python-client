@@ -25,6 +25,7 @@ from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.pages.customized_page_status import CustomizedPageStatus
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.irm.effective_settings import (
     EffectiveInformationRightsManagementSettings,
@@ -970,9 +971,9 @@ class File(AbstractFile):
         return self.properties.get("UniqueId", None)
 
     @property
-    def customized_page_status(self) -> Optional[int]:
+    def customized_page_status(self) -> Optional[CustomizedPageStatus]:
         """Specifies the customization status of the file."""
-        return self.properties.get("CustomizedPageStatus", None)
+        return self.properties.get("CustomizedPageStatus", CustomizedPageStatus.None_)
 
     @property
     def parent_folder(self) -> Optional[Folder]:
