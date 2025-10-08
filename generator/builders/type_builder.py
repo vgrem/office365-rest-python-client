@@ -1,20 +1,19 @@
 import ast
-import importlib
 import inspect
 import os
-import pkgutil
-from functools import lru_cache
 from os.path import abspath
-from typing import Dict, List
+from typing import TYPE_CHECKING, Dict, List
 
 from typing_extensions import Self
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
-from generator.builders.template_context import TemplateContext
 from generator.documentation.baseservice import BaseDocumentationService
 from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
+
+if TYPE_CHECKING:
+    pass
 
 
 class TypeBuilder(ast.NodeTransformer):
@@ -114,6 +113,8 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def build(self) -> Self:
+        from generator.builders.template_context import TemplateContext
+
         self._template = TemplateContext(
             self._options.get("templatepath"), self._schema
         )
@@ -126,10 +127,23 @@ class TypeBuilder(ast.NodeTransformer):
             self._source_tree = self._template.load()
             self._status = "created"
         self.visit(self._source_tree)
+        self._build_imports(self._source_tree)
 
         if self._status == "updated" and len(self._changes) == 0:
             self._status = None
         return self
+
+    def _build_imports(self, module: ast.Module):
+        """Build missing imports"""
+        imports = self._template.build_imports(self)
+
+        existing_imports = [
+            n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))
+        ]
+        insert_index = len(existing_imports)
+        for imp in imports:
+            module.body.insert(insert_index, imp)
+            insert_index += 1
 
     def _build_members(self, class_node: ast.ClassDef):
         if not self._members:
@@ -248,23 +262,6 @@ class TypeBuilder(ast.NodeTransformer):
         with open(self.file, "w", encoding="utf-8") as f:
             f.write(code)
 
-    @lru_cache(maxsize=512)
-    def _find_model_class(self, class_name: str):
-        for module_name in self._options["modules"].split(","):
-            try:
-                module = importlib.import_module(module_name.strip())
-                for _, name, _ in pkgutil.walk_packages(
-                    module.__path__, module.__name__ + "."
-                ):
-                    submodule = importlib.import_module(name)
-                    if hasattr(submodule, class_name):
-                        cls = getattr(submodule, class_name)
-                        if inspect.isclass(cls):
-                            return cls
-            except (ImportError, AttributeError):
-                continue
-        return None
-
     def _ensure_entity_type_name(self, class_node: ast.ClassDef):
         """Ensure the class has an entity_type_name property that returns the correct type name"""
 
@@ -280,14 +277,16 @@ class TypeBuilder(ast.NodeTransformer):
             return
 
         if not self._entity_type_name_exists:
-            entity_type_name_method = self._template.build_entity_type_name()
+            entity_type_name_method = self._template.build_type_name_property()
             class_node.body.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
 
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = self._find_model_class(self.client_type_name)
+        cls = ODataType.find_client_type(
+            self.client_type_name, tuple(self._options["modules"].split(","))
+        )
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)
@@ -321,7 +320,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     @property
     def client_type_name(self):
-        return ODataType.resolve_client_type(self._schema.FullName)
+        return ODataType.resolve_client_type_name(self._schema.FullName)
 
     @property
     def properties(self) -> List[PropertyBuilder]:

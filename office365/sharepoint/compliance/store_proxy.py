@@ -14,7 +14,12 @@ if TYPE_CHECKING:
 
 
 class SPPolicyStoreProxy(Entity):
-    """ """
+    """
+    Represents a proxy to the SharePoint policy store for compliance and retention operations.
+
+    This class provides methods to manage compliance tags, retention policies,
+    site deletion checks, and record management in SharePoint.
+    """
 
     @staticmethod
     def check_site_is_deletable_by_id(
@@ -22,7 +27,21 @@ class SPPolicyStoreProxy(Entity):
         site_id: str,
         return_type: Optional[ClientResult[bool]] = None,
     ) -> ClientResult[bool]:
-        """ """
+        """
+        Checks whether a site can be deleted based on its ID and compliance policies.
+
+        Args:
+            context: SharePoint client context
+            site_id: The unique identifier of the site to check
+            return_type: Optional client result object for the operation
+
+        Returns:
+            ClientResult[bool]: Result indicating whether the site can be deleted
+
+        Remarks:
+            This method considers compliance policies, retention holds, and other
+            governance rules that might prevent site deletion.
+        """
         if return_type is None:
             return_type = ClientResult(context, bool())
         payload = {"siteId": site_id}
@@ -44,7 +63,17 @@ class SPPolicyStoreProxy(Entity):
         site_url: str,
         return_type: Optional[ClientResult[bool]] = None,
     ) -> ClientResult[bool]:
-        """ """
+        """
+        Determines if a site can be deleted based on its URL and compliance policies.
+
+        Args:
+            context: SharePoint client context
+            site_url: The URL of the site to check
+            return_type: Optional client result object for the operation
+
+        Returns:
+            ClientResult[bool]: Result indicating whether the site can be deleted
+        """
         if return_type is None:
             return_type = ClientResult(context, bool())
         payload = {"siteUrl": site_url}
@@ -65,9 +94,19 @@ class SPPolicyStoreProxy(Entity):
         context: ClientContext, site_url: str, return_type=None
     ):
         """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        :param str site_url:
-        :param ClientResult return_type:
+        Retrieves all available compliance tags that can be applied to a site.
+
+        Args:
+            context: SharePoint client context
+            site_url: The URL of the site to get available tags for
+            return_type: Optional client result object for the operation
+
+        Returns:
+            ClientResult[ClientValueCollection[ComplianceTag]]: Collection of available compliance tags
+
+        Remarks:
+            Compliance tags are retention labels that can be applied to content
+            to enforce retention policies and records management.
         """
         if return_type is None:
             return_type = ClientResult(context, ClientValueCollection(ComplianceTag))
@@ -86,7 +125,17 @@ class SPPolicyStoreProxy(Entity):
 
     def get_dynamic_scope_binding_by_site_id(self, site_id):
         """
-        :param str site_id:
+        Gets dynamic scope bindings for a specific site by its ID.
+
+        Args:
+            site_id: The unique identifier of the site
+
+        Returns:
+            ClientResult[StringCollection]: Collection of dynamic scope bindings
+
+        Remarks:
+            Dynamic scopes are used in compliance policies to dynamically determine
+            which sites the policy applies to based on conditions.
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"siteId": site_id}
@@ -102,7 +151,17 @@ class SPPolicyStoreProxy(Entity):
         list_url: str,
         return_type: ClientResult[ComplianceTag] = None,
     ) -> ClientResult[ComplianceTag]:
-        """ """
+        """
+        Gets the compliance tag currently applied to a list or document library.
+
+        Args:
+            context: SharePoint client context
+            list_url: The URL of the list or document library
+            return_type: Optional client result object for the operation
+
+        Returns:
+            ClientResult[ComplianceTag]: The compliance tag applied to the list
+        """
         if return_type is None:
             return_type = ClientResult(context, ComplianceTag())
         payload = {"listUrl": list_url}
@@ -122,7 +181,21 @@ class SPPolicyStoreProxy(Entity):
     def register_site_hold_event_receiver(
         context: ClientContext, site_url: str = None, site_id: str = None
     ):
-        """ """
+        """
+        Registers an event receiver for site hold operations.
+
+        Args:
+            context: SharePoint client context
+            site_url: The URL of the site (optional if site_id is provided)
+            site_id: The unique identifier of the site (optional if site_url is provided)
+
+        Returns:
+            SPPolicyStoreProxy: The policy store proxy instance
+
+        Remarks:
+            This method enables receiving events when sites are placed on hold
+            for legal or compliance reasons.
+        """
         payload = {"siteUrl": site_url, "siteId": site_id}
         binding_type = SPPolicyStoreProxy(context)
         qry = ServiceOperationQuery(
@@ -175,7 +248,23 @@ class SPPolicyStoreProxy(Entity):
         refresh_labeled_time=None,
         return_type=None,
     ):
-        """ """
+        """
+        Locks a record item to prevent modifications.
+
+        Args:
+            context: SharePoint client context
+            list_url: The URL of the list containing the item
+            item_id: The ID of the item to lock
+            refresh_labeled_time: Whether to refresh the labeled timestamp (optional)
+            return_type: Optional client result object for the operation
+
+        Returns:
+            ClientResult[int]: Result containing status or identifier of the operation
+
+        Remarks:
+            Locking a record item typically prevents any modifications to ensure
+            the integrity of records for compliance and legal purposes.
+        """
         if return_type is None:
             return_type = ClientResult(context, int())
         payload = {

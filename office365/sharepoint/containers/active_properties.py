@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
 
 
-class CopilotFileMetadata(ClientValue):
-    """ """
+class SPActiveContainerProperties(ClientValue):
+    pass

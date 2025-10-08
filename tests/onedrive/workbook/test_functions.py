@@ -8,12 +8,12 @@ from tests.graph_case import GraphTestCase
 class TestExcelFunctions(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_item = None  # type: DriveItem
-    table = None  # type: WorkbookTable
+    target_item: DriveItem = None
+    table: WorkbookTable = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestExcelFunctions, cls).setUpClass()
+        super().setUpClass()
         path = "{0}/../../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
         cls.target_item = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.target_item.resource_path is not None

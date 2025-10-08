@@ -8,9 +8,9 @@ from tests.graph_case import GraphTestCase
 
 
 class TestExcelTables(GraphTestCase):
-    excel_file = None  # type: DriveItem
-    worksheet = None  # type: WorkbookWorksheet
-    table = None  # type: WorkbookTable
+    excel_file: DriveItem = None
+    worksheet: WorkbookWorksheet = None
+    table: WorkbookTable = None
 
     @classmethod
     def setUpClass(cls):

@@ -22,14 +22,14 @@ class PropertyBuilder:
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
 
-        getter_node = template.build_getter(self)
+        getter_node = template.build_get_property(self)
 
         # Add docstring if available
         if self.docstring and getter_node.body:
             docstring_node = ast.Expr(value=ast.Constant(value=self.docstring))
             getter_node.body.insert(0, docstring_node)
 
-        # setter = self.build_setter(self)
+        # setter = self.build_set_property(self)
 
         return [getter_node]
 
@@ -39,7 +39,7 @@ class PropertyBuilder:
             arg=self.name,
             annotation=(
                 ast.Name(id=self.client_type, ctx=ast.Load())
-                if self.type_name
+                if self.client_type_name
                 else None
             ),
         )
@@ -79,15 +79,15 @@ class PropertyBuilder:
         return snake_case
 
     @property
-    def type_name(self) -> str:
+    def client_type_name(self) -> str:
         from office365.runtime.odata.type import ODataType
 
-        model_type = ODataType.get_client_type(self.schema.TypeName)
-        if model_type:
-            return model_type.__name__
-
-        return self.schema.TypeName
+        # model_type = ODataType.get_client_type(self.schema.TypeName)
+        # if model_type:
+        #    return model_type.__name__
+        type_name = ODataType.resolve_client_type_name(self.schema.TypeName)
+        return type_name or self.schema.TypeName
 
     @property
     def client_type(self) -> str:
-        return ODataType.resolve_client_type(self.type_name)
+        return ODataType.resolve_client_type_name(self.client_type_name)

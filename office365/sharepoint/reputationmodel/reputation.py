@@ -7,7 +7,13 @@ class Reputation(Entity):
     """The Reputation static type includes methods to set the reputation properties on a list item."""
 
     @staticmethod
-    def set_rating(context, list_id, item_id, rating, return_type=None):
+    def set_rating(
+        context,
+        list_id: str,
+        item_id: int,
+        rating: int,
+        return_type: ClientResult[float] = None,
+    ) -> ClientResult[float]:
         """
         The SetRating static method rates an item within the specified list.
         The return value is the average rating for the specified list item.
@@ -32,7 +38,13 @@ class Reputation(Entity):
         return return_type
 
     @staticmethod
-    def set_like(context, list_id, item_id, like, return_type=None):
+    def set_like(
+        context,
+        list_id: str,
+        item_id: int,
+        like: bool,
+        return_type: ClientResult[int] = None,
+    ) -> ClientResult[int]:
         """
         The SetLike static method sets or unsets the like quality for the current user for an item within
            the specified list. The return value is the total number of likes for the specified list item.

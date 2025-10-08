@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import datetime
+import importlib
+import inspect
+import pkgutil
 import uuid
-from typing import Optional, Type, TypeVar
+from functools import lru_cache
+from typing import Optional, Sequence, Type, TypeVar
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import GuidCollection, StringCollection
@@ -44,8 +48,11 @@ class ODataType:
         self.is_collection = is_collection
 
     @classmethod
-    def resolve_client_type(cls, type_name: str) -> str:
+    def resolve_client_type_name(cls, type_name: str) -> str:
         """Parse OData type and return ClientValue format string"""
+
+        if ODataType.is_primitive_type(type_name):
+            return _PRIMITIVE_TYPES.get(type_name).__name__
 
         is_collection = False
 
@@ -109,7 +116,20 @@ class ODataType:
         """Checks if a type is a known OData primitive type."""
         return any(odata_type == type_name for odata_type in _PRIMITIVE_TYPES.keys())
 
-    @classmethod
-    def get_client_type(cls, type_name: str) -> Optional[Type]:
-        """Returns the Model type for a given OData type name."""
-        return _PRIMITIVE_TYPES.get(type_name, None)
+    @staticmethod
+    @lru_cache(maxsize=512)
+    def find_client_type(class_name: str, modules: Sequence[str]) -> Optional[Type]:
+        for module_name in modules:
+            try:
+                module = importlib.import_module(module_name.strip())
+                for _, name, _ in pkgutil.walk_packages(
+                    module.__path__, module.__name__ + "."
+                ):
+                    submodule = importlib.import_module(name)
+                    if hasattr(submodule, class_name):
+                        cls = getattr(submodule, class_name)
+                        if inspect.isclass(cls):
+                            return cls
+            except (ImportError, AttributeError):
+                continue
+        return None

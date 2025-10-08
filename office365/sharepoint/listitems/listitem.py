@@ -73,7 +73,16 @@ class ListItem(SecurableObject):
         return return_type
 
     def lock_record_item(self) -> ClientResult[int]:
-        """Locks the list item."""
+        """
+        Locks a record item to prevent modifications.
+
+        Returns:
+            ClientResult[int]: Result containing status or identifier of the operation
+
+        Remarks:
+            Locking a record item typically prevents any modifications to ensure
+            the integrity of records for compliance and legal purposes.
+        """
         list_folder = self.parent_list.root_folder
         return_type = ClientResult(self.context, int())
         from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
@@ -153,7 +162,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_rating(self, value):
+    def set_rating(self, value: int) -> ClientResult[float]:
         """
         Rates an item within the specified list. The return value is the average rating for the specified list item.
 
@@ -170,7 +179,7 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
         return return_value
 
-    def set_like(self, value):
+    def set_like(self, value: bool) -> ClientResult[int]:
         """
         Sets or unsets the like quality for the current user for an item within
            the specified list. The return value is the total number of likes for the specified list item.
@@ -188,7 +197,7 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
         return return_value
 
-    def get_wopi_frame_url(self, action: SPWOPIAction):
+    def get_wopi_frame_url(self, action: SPWOPIAction) -> ClientResult[str]:
         """
         Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
             application associated with the list item.
@@ -202,7 +211,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return result
 
-    def recycle(self):
+    def recycle(self) -> ClientResult[str]:
         """Moves the listItem to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
 
         result = ClientResult(self.context)
@@ -349,7 +358,9 @@ class ListItem(SecurableObject):
         super(ListItem, self).update()
         return self
 
-    def update_ex(self, bypass_quota_check=None, bypass_shared_lock=None):
+    def update_ex(
+        self, bypass_quota_check: bool = None, bypass_shared_lock: bool = None
+    ):
         """
 
         :param bool bypass_quota_check:
@@ -411,7 +422,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_comments_disabled(self, value):
+    def set_comments_disabled(self, value: bool) -> Self:
         """
         Sets the value of CommentsDisabled for the item.
 
@@ -421,7 +432,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_compliance_tag_with_hold(self, compliance_tag):
+    def set_compliance_tag_with_hold(self, compliance_tag: str) -> Self:
         """
         Sets a compliance tag with a hold
 
@@ -460,7 +471,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def parse_and_set_field_value(self, field_name, value):
+    def parse_and_set_field_value(self, field_name: str, value: str) -> Self:
         """Sets the value of the field (2) for the list item based on an implementation-specific transformation
            of the value.
 
