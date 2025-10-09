@@ -26,7 +26,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def add_site_theme(self, theme_data) -> ClientResult[ThemeData]:
+    def add_site_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """ """
         return_type = ClientResult(self.context, ThemeData())
         payload = {"themeData": theme_data}

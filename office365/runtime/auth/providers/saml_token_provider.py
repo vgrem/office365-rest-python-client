@@ -7,8 +7,10 @@ from xml.etree import ElementTree
 
 import requests
 import requests.utils
+from requests import Response
 
 import office365.logger
+from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.auth_cookies import AuthCookies
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
 from office365.runtime.auth.sts_profile import STSProfile
@@ -33,7 +35,15 @@ def datetime_escape(value):
 
 
 class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
-    def __init__(self, url, credential: UserCredential, browser_mode, environment=None):
+    """SAML Security Token Service provider (claims-based authentication)"""
+
+    def __init__(
+        self,
+        url,
+        credential: UserCredential,
+        browser_mode: bool,
+        environment: Optional[AzureEnvironment] = None,
+    ):
         """
         SAML Security Token Service provider (claims-based authentication)
 
@@ -195,7 +205,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         logger.debug_secrets("security token: %s", token)
         return token
 
-    def _process_service_token_response(self, response):
+    def _process_service_token_response(self, response: Response):
         logger = self.logger(self._process_service_token_response.__name__)
         logger.debug_secrets(
             "response: %s\nresponse.content: %s", response, response.content

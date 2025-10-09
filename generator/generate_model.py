@@ -16,6 +16,8 @@ def generate_files(
     ignored_types = [t.strip() for t in options["ignoredtypes"].split(",")]
     exact_ignored = []
     prefix_ignored = []
+    total_types = len(model.types)
+    processed_count = 0
 
     for ignored_type in ignored_types:
         if ignored_type.endswith(".*"):
@@ -29,6 +31,9 @@ def generate_files(
 
         if any(name.startswith(prefix) for prefix in prefix_ignored):
             continue
+
+        processed_count += 1
+        print(f"[{processed_count}/{total_types}] Processing: {name}")
 
         type_schema = model.types[name]
         builder = TypeBuilder(type_schema, options, docs_service)

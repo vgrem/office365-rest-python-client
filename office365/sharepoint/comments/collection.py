@@ -6,9 +6,9 @@ from office365.sharepoint.entity_collection import EntityCollection
 
 class CommentCollection(EntityCollection[Comment]):
     def __init__(self, context, resource_path=None):
-        super(CommentCollection, self).__init__(context, Comment, resource_path)
+        super().__init__(context, Comment, resource_path)
 
-    def delete_all(self):
+    def delete_all(self) -> ClientResult[bool]:
         """Deletes all the comments."""
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "DeleteAll", None, None, None, return_type)

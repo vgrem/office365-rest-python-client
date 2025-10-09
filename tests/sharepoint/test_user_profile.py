@@ -1,8 +1,10 @@
 from unittest import TestCase
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
 from office365.sharepoint.userprofiles.people_manager import PeopleManager
+from office365.sharepoint.webparts.tile_data import TileData
 from tests import (
     test_client_id,
     test_password,
@@ -14,7 +16,7 @@ from tests import (
 
 
 class TestUserProfile(TestCase):
-    promoted_links = None
+    promoted_links: ClientValueCollection[TileData] = None
 
     @classmethod
     def setUpClass(cls):
@@ -134,7 +136,7 @@ class TestUserProfile(TestCase):
     def test_16_get_promoted_links_as_tiles(self):
         from office365.sharepoint.userprofiles.promoted_sites import PromotedSites
 
-        for promoted_link in self.__class__.promoted_links:
+        for promoted_link in self.promoted_links:
             PromotedSites.delete_site_link(self.my_client, promoted_link.ID)
         self.my_client.execute_batch()
         after_result = PromotedSites.get_promoted_links_as_tiles(
