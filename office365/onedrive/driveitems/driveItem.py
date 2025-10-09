@@ -384,7 +384,7 @@ class DriveItem(BaseItem):
         return_type = ClientResult(self.context)
         action_name = "content"
         if format_name is not None:
-            action_name = action_name + r"?format={0}".format(format_name)
+            action_name = action_name + rf"?format={format_name}"
         qry = FunctionQuery(self, action_name, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -534,8 +534,8 @@ class DriveItem(BaseItem):
         def _copy(parent_reference: ItemReference) -> None:
 
             def _create_request(request: RequestOptions) -> None:
-                request.url += "?@microsoft.graph.conflictBehavior={0}".format(
-                    conflict_behavior.value
+                request.url += (
+                    f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
                 )
 
             def _process_response(resp: requests.Response) -> None:

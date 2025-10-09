@@ -326,7 +326,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
         def _after_loaded(col: ClientObjectCollection) -> None:
             if len(col) < 1:
-                message = "Not found for filter: {0}".format(self.query_options.filter)
+                message = f"Not found for filter: {self.query_options.filter}"
                 raise ValueError(message)
             [
                 return_type.set_property(k, v, False)

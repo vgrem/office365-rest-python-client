@@ -23,9 +23,7 @@ class TestShares(GraphTestCase):
         cls.file_item.delete_object().execute_query_retry()
 
     def test1_get_file_by_abs_url(self):
-        file_abs_url = "{0}/Shared Documents/Financial Sample.xlsx".format(
-            test_team_site_url
-        )
+        file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"
         result = (
             self.client.shares.by_url(file_abs_url).drive_item.get().execute_query()
         )

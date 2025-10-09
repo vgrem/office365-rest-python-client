@@ -7,7 +7,7 @@ from office365.runtime.types.collections import StringCollection
 
 class ContactCollection(DeltaCollection[Contact]):
     def __init__(self, context, resource_path=None):
-        super(ContactCollection, self).__init__(context, Contact, resource_path)
+        super().__init__(context, Contact, resource_path)
 
     def add(
         self, given_name, surname, email_address=None, business_phone=None, **kwargs
@@ -21,7 +21,7 @@ class ContactCollection(DeltaCollection[Contact]):
         """
 
         def _create_email_address(address):
-            return EmailAddress(address, "{0} {1}".format(given_name, surname))
+            return EmailAddress(address, f"{given_name} {surname}")
 
         kwargs["givenName"] = given_name
         kwargs["surname"] = surname
@@ -31,4 +31,4 @@ class ContactCollection(DeltaCollection[Contact]):
             )
         if business_phone:
             kwargs["businessPhones"] = StringCollection([business_phone])
-        return super(ContactCollection, self).add(**kwargs)
+        return super().add(**kwargs)

@@ -86,7 +86,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
                 def _construct_request(request: RequestOptions) -> None:
                     auth_token = parse_query_param(request.url, "authtoken")
-                    request.set_header("Authorization", "Bearer {0}".format(auth_token))
+                    request.set_header("Authorization", f"Bearer {auth_token}")
 
                 def _process_response(response: requests.Response) -> None:
                     location = response.headers.get("Location", None)

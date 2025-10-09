@@ -29,7 +29,7 @@ class TestTeamSite(TestCase):
         self.assertIsNotNone(result.value)
 
     def test2_create_site(self):
-        site_name = "TeamSite{0}".format(uuid.uuid4().hex)
+        site_name = f"TeamSite{uuid.uuid4().hex}"
         site = self.client.create_team_site(
             site_name, "Team Site", True
         ).execute_query()

@@ -82,7 +82,7 @@ class BatchQuery(ClientQuery):
     @property
     def url(self) -> str:
         """Gets the batch request URL."""
-        return "{0}/$batch".format(self.context.service_root_url)
+        return f"{self.context.service_root_url}/$batch"
 
     @property
     def return_type(self) -> List[T]:

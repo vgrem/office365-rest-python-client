@@ -1,15 +1,23 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-
-
-class CollaborativeUsers(ClientValue):
-    @property
-    def entity_type_name(self):
-        return "Microsoft.SharePoint.Administration.TenantAdmin.CollaborativeUsers"
+from office365.sharepoint.tenant.administration.collaboration.collaborativeusers import (
+    CollaborativeUsers,
+)
+from office365.sharepoint.tenant.administration.collaborativeonedriveuser import (
+    CollaborativeOneDriveUser,
+)
 
 
 class CollaborationInsightsData(ClientValue):
-    def __init__(self, last_report_date=None, collaborative_users=None):
+
+    def __init__(
+        self,
+        last_report_date=None,
+        collaborative_users=None,
+        collaborative_one_drive_users: ClientValueCollection[
+            CollaborativeOneDriveUser
+        ] = ClientValueCollection(CollaborativeOneDriveUser),
+    ):
         """
         :param str last_report_date:
         :param list[CollaborativeUsers] collaborative_users:
@@ -18,6 +26,7 @@ class CollaborationInsightsData(ClientValue):
             CollaborativeUsers, collaborative_users
         )
         self.lastReportDate = last_report_date
+        self.collaborativeOneDriveUsers = collaborative_one_drive_users
 
     @property
     def entity_type_name(self):

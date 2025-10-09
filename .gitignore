@@ -82,3 +82,6 @@ Pipfile.lock
 
 # Self signed certificates
 examples/*.pem
+
+# Checkpoint files
+.checkpoints/

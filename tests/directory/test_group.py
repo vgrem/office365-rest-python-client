@@ -10,8 +10,8 @@ from tests.graph_case import GraphTestCase
 class TestGraphGroup(GraphTestCase):
     """Tests for Azure Active Directory (Azure AD) groups"""
 
-    target_group = None  # type: Group
-    target_user = None  # type: User
+    target_group: Group = None
+    target_user: User = None
     directory_quota_exceeded = False
 
     def test1_create_group(self):
@@ -47,9 +47,7 @@ class TestGraphGroup(GraphTestCase):
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test5_add_group_owner(self):
         users = (
-            self.client.users.filter(
-                "mail eq '{mail}'".format(mail=test_user_principal_name)
-            )
+            self.client.users.filter(f"mail eq '{test_user_principal_name}'")
             .get()
             .execute_query()
         )

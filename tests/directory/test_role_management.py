@@ -38,7 +38,7 @@ class TestRoleManagement(GraphTestCase):
         )
         result = (
             self.client.role_management.directory.role_assignments.filter(
-                "principalId eq '{0}'".format(user.id)
+                f"principalId eq '{user.id}'"
             )
             .get()
             .execute_query()

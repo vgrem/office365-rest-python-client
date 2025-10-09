@@ -43,9 +43,9 @@ class Application(DirectoryObject):
 
     def __str__(self):
         if self.display_name:
-            return "Name: {0}".format(self.display_name)
+            return f"Name: {self.display_name}"
         elif self.app_id:
-            return "App Id: {0}".format(self.app_id)
+            return f"App Id: {self.app_id}"
         else:
             return self.entity_type_name
 
@@ -74,7 +74,7 @@ class Application(DirectoryObject):
             start_datetime=start_datetime.isoformat(),
             end_datetime=end_datetime.isoformat(),
             key=base64.b64encode(cert_data).decode("utf-8"),
-            display_name="CN={0}".format(display_name),
+            display_name=f"CN={display_name}",
         )
         self.key_credentials.add(params)
         self.update()

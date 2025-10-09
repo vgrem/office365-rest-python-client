@@ -18,4 +18,4 @@ result = client.reports.get_m365_app_user_counts("D180").execute_query()
 download_path = os.path.join(tempfile.mkdtemp(), "Report.csv")
 with open(download_path, "wb") as f:
     f.write(result.value)
-print("Report saved into : {0}".format(download_path))
+print(f"Report saved into : {download_path}")

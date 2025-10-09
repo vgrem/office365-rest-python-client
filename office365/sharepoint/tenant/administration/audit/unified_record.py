@@ -12,6 +12,7 @@ class UnifiedAuditRecord(ClientValue):
         record_id=None,
         record_type=None,
         user_id=None,
+        raw_audit_data: str = None,
     ):
         self.AuditData = audit_data
         self.CreationDate = creation_date
@@ -19,6 +20,7 @@ class UnifiedAuditRecord(ClientValue):
         self.RecordId = record_id
         self.RecordType = record_type
         self.UserId = user_id
+        self.RawAuditData = raw_audit_data
 
     @property
     def entity_type_name(self):

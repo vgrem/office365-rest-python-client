@@ -58,9 +58,7 @@ class OneNotePageCreateQuery(ClientQuery):
             file_message = Message()
             c_type, _enc = get_mime_type(file.name)
             file_message.add_header("Content-Type", c_type)
-            file_message.add_header(
-                "Content-Disposition", 'form-data; name="{0}"'.format(name)
-            )
+            file_message.add_header("Content-Disposition", f'form-data; name="{name}"')
             file_content = file.read()
             file_message.set_payload(file_content)
             main_message.attach(file_message)

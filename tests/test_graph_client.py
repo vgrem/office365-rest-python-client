@@ -21,9 +21,7 @@ class TestGraphClient(GraphTestCase):
 
     def test2_build_resource_path(self):
         result = self.client.me.drive.root.get().execute_query()
-        self.assertEqual(
-            "/me/drive/items/{0}".format(result.id), str(result.resource_path)
-        )
+        self.assertEqual(f"/me/drive/items/{result.id}", str(result.resource_path))
 
     def test3_build_url_resource_path(self):
         path = UrlPath(
@@ -90,9 +88,7 @@ class TestGraphClient(GraphTestCase):
 
     def test_13_resolve_me_resource_path(self):
         current_user = self.client.me.get().execute_query()
-        self.assertEqual(
-            "/users/{0}".format(current_user.id), str(current_user.resource_path)
-        )
+        self.assertEqual(f"/users/{current_user.id}", str(current_user.resource_path))
 
     def test_15_resolve_my_drive_resource_path(self):
         my_drive = self.client.me.drive.get().execute_query()

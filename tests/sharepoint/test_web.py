@@ -22,12 +22,12 @@ class TestSharePointWeb(SPTestCase):
         self.__class__.target_user = result
 
     def test2_get_web_from_page_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
+        page_url = f"{test_site_url}/SitePages/Home.aspx"
         result = Web.get_web_url_from_page_url(self.client, page_url).execute_query()
         self.assertIsNotNone(result.value)
 
     def test3_get_list_item_by_abs_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
+        page_url = f"{test_site_url}/SitePages/Home.aspx"
         result = self.client.web.get_list_item(page_url).execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -54,7 +54,7 @@ class TestSharePointWeb(SPTestCase):
         ).execute_query()
 
         results = (
-            self.client.web.webs.filter("Title eq '{0}'".format(target_web_name))
+            self.client.web.webs.filter(f"Title eq '{target_web_name}'")
             .get()
             .execute_query()
         )
@@ -82,9 +82,7 @@ class TestSharePointWeb(SPTestCase):
         self.__class__.target_web.delete_object().execute_query()
 
         results = (
-            self.client.web.webs.filter("Title eq '{0}'".format(title))
-            .get()
-            .execute_query()
+            self.client.web.webs.filter(f"Title eq '{title}'").get().execute_query()
         )
         self.assertEqual(len(results), 0)
 

@@ -22,7 +22,7 @@ class SetCollection(EntityCollection[Set]):
 
     def get_by_name(self, name: str) -> Set:
         """Returns the TermSet specified by its name."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")
 
     def add(self, name: str, parent_group: Group = None) -> Set:
         """Create a new set object.

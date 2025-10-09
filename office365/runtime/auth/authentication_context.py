@@ -157,9 +157,7 @@ class AuthenticationContext:
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(
-                    get_login_authority(self._environment), tenant
-                ),
+                authority=f"{get_login_authority(self._environment)}/{tenant}",
                 client_credential=None,
             )
 

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self
-
 from office365.onedrive.internal.paths.root import RootPath
 from office365.runtime.paths.v4.entity import EntityPath
 
@@ -29,14 +27,11 @@ class UrlPath(EntityPath):
             collection = parent.collection
         elif isinstance(parent, EntityPath):
             collection = parent.collection
-        super(UrlPath, self).__init__(url, parent, collection)
-
-    def patch(self, key: str) -> Self:
-        return super(UrlPath, self).patch(key)
+        super().__init__(url, parent, collection)
 
     @property
     def segment(self):
-        return ":/{0}:/".format(self._key)
+        return f":/{self._key}:/"
 
     @property
     def delimiter(self):

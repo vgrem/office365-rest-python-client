@@ -39,9 +39,7 @@ class UploadSessionRequest(ClientRequest):
         request.set_header("Content-Length", str(len(self._range_data)))
         request.set_header(
             "Content-Range",
-            "bytes {0}-{1}/{2}".format(
-                self.range_start, self.range_end - 1, self.file_size
-            ),
+            f"bytes {self.range_start}-{self.range_end - 1}/{self.file_size}",
         )
         request.set_header("Accept", "*/*")
         request.data = self._range_data

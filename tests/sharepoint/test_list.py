@@ -48,9 +48,7 @@ class TestSPList(SPTestCase):
         ).update().execute_query()
 
         result = (
-            self.client.web.lists.filter(
-                "Title eq '{0}'".format(self.target_list_title)
-            )
+            self.client.web.lists.filter(f"Title eq '{self.target_list_title}'")
             .get()
             .execute_query()
         )

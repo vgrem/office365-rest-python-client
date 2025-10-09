@@ -16,4 +16,4 @@ class TimeSlot(ClientValue):
         self.end = end
 
     def __repr__(self):
-        return "({0} - {1})".format(self.start, self.end)
+        return f"({self.start} - {self.end})"

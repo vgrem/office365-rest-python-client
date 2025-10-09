@@ -8,15 +8,15 @@ from tests.graph_case import GraphTestCase
 
 def upload_excel(target_drive):
     # type: (Drive) -> DriveItem
-    path = "{0}/../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+    path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
     return target_drive.root.upload_file(path).execute_query()
 
 
 class TestExcel(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_item = None  # type: DriveItem
-    table = None  # type: WorkbookTable
+    target_item: DriveItem = None
+    table: WorkbookTable = None
 
     @classmethod
     def setUpClass(cls):
