@@ -9,8 +9,8 @@ class TestShares(GraphTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestShares, cls).setUpClass()
-        path = "{0}/../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+        super().setUpClass()
+        path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
         cls.file_item = (
             cls.client.sites.get_by_url(test_team_site_url)
             .drive.root.upload_file(path)

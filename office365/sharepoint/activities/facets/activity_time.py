@@ -13,3 +13,7 @@ class ActivityTimeFacet(ClientValue):
         self.lastRecordedTime = last_recorded_time
         self.observedTime = observed_time
         self.recordedTime = recorded_time
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Activities.ActivityTimeFacet"

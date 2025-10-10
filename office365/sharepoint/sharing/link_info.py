@@ -28,3 +28,7 @@ class LinkInfo(ClientValue):
         self.linkMembers = ClientValueCollection(Principal, link_members)
         self.linkStatus = link_status
         self.totalLinkMembersCount = total_link_members_count
+
+    @property
+    def entity_type_name(self):
+        return "SP.Sharing.LinkInfo"

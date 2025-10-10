@@ -33,8 +33,15 @@ class TemplateContext:
     def build_imports(self, builder: TypeBuilder):
         """Add import statements for dependent types."""
         imports = []
-        for prop in builder.properties:
+        for _ in builder.properties:
             pass
+            #prop_type = prop.client_type_name
+            #ODataType.resolve_client_type_name(prop_type)
+            #imports.append(ast.ImportFrom(
+            #    module='uuid',
+            #    names=[ast.alias(name='UUID', asname=None)],
+            #    level=0
+            #))
         return imports
 
     def build_member(self, builder: MemberBuilder):

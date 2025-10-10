@@ -1,10 +1,7 @@
-from enum import Enum
-
+from office365.directory.identitygovernance.workflow.triggertimebasedattribute import (
+    WorkflowTriggerTimeBasedAttribute,
+)
 from office365.runtime.client_value import ClientValue
-
-
-class WorkflowTriggerTimeBasedAttribute(Enum):
-    pass
 
 
 class TimeBasedAttributeTrigger(ClientValue):

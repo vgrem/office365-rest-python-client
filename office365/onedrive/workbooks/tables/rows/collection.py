@@ -6,11 +6,9 @@ from office365.runtime.queries.function import FunctionQuery
 
 class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookTableRowCollection, self).__init__(
-            context, WorkbookTableRow, resource_path
-        )
+        super().__init__(context, WorkbookTableRow, resource_path)
 
-    def add(self, values, index=None):
+    def add(self, values, index: int = None):
         """
         Adds rows to the end of a table.
         Note that this API can accept multiple rows of data. Adding one row at a time can affect performance.
@@ -26,9 +24,9 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         :param int index: Specifies the relative position of the new row. If null, the addition happens at the end.
              Any rows below the inserted row are shifted downwards. Zero-indexed.
         """
-        return super(WorkbookTableRowCollection, self).add(values=values, index=index)
+        return super().add(values=values, index=index)
 
-    def count(self):
+    def count(self) -> ClientResult[int]:
         """"""
         return_type = ClientResult(self.context, int())
         qry = FunctionQuery(self, "count", None, return_type)

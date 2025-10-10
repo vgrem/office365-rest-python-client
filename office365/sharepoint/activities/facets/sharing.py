@@ -4,6 +4,7 @@ from office365.sharepoint.activities.identity import ActivityIdentity
 
 
 class SharingFacet(ClientValue):
+
     def __init__(self, recipients=None, sharing_type=None):
         """
         :param list[ActivityIdentity] recipients:
@@ -11,3 +12,7 @@ class SharingFacet(ClientValue):
         """
         self.recipients = ClientValueCollection(ActivityIdentity, recipients)
         self.sharingType = sharing_type
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Activities.SharingFacet"

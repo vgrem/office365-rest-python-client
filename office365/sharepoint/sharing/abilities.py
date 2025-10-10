@@ -1,6 +1,10 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.direct_abilities import DirectSharingAbilities
 from office365.sharepoint.sharing.link_abilities import SharingLinkAbilities
+from office365.sharepoint.sharing.mainlinkabilities import MainLinkAbilities
+from office365.sharepoint.sharing.sharingsettingsabilities import (
+    SharingSettingsAbilities,
+)
 
 
 class SharingAbilities(ClientValue):
@@ -16,6 +20,9 @@ class SharingAbilities(ClientValue):
         direct_sharing_abilities=DirectSharingAbilities(),
         organization_link_abilities=SharingLinkAbilities(),
         people_sharing_link_abilities=SharingLinkAbilities(),
+        can_stop_sharing: bool = None,
+        main_link_abilities: MainLinkAbilities = MainLinkAbilities(),
+        sharing_settings_abilities: SharingSettingsAbilities = SharingSettingsAbilities(),
     ):
         """
         :param SharingLinkAbilities anonymous_link_abilities: Indicates abilities for anonymous access links.
@@ -31,6 +38,9 @@ class SharingAbilities(ClientValue):
         self.directSharingAbilities = direct_sharing_abilities
         self.organizationLinkAbilities = organization_link_abilities
         self.peopleSharingLinkAbilities = people_sharing_link_abilities
+        self.canStopSharing = can_stop_sharing
+        self.mainLinkAbilities = main_link_abilities
+        self.sharingSettingsAbilities = sharing_settings_abilities
 
     @property
     def entity_type_name(self):

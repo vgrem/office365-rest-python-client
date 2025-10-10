@@ -14,7 +14,7 @@ class TestExcelFunctions(GraphTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        path = "{0}/../../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../../data/Financial Sample.xlsx"
         cls.target_item = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.target_item.resource_path is not None
 

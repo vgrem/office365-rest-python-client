@@ -8,7 +8,7 @@ from office365.runtime.queries.function import FunctionQuery
 class WorkbookTableColumn(Entity):
     """Represents a column in a table."""
 
-    def header_row_range(self):
+    def header_row_range(self) -> WorkbookRange:
         """
         Gets the range object associated with the header row of the column.
         """
@@ -17,7 +17,7 @@ class WorkbookTableColumn(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def range(self):
+    def range(self) -> WorkbookRange:
         """
         Gets the range object associated with the entire column.
         """
@@ -35,7 +35,7 @@ class WorkbookTableColumn(Entity):
         return self.properties.get("values", None)
 
     @property
-    def filter(self):
+    def filter(self) -> WorkbookFilter:
         """Retrieve the filter applied to the column."""
         return self.properties.get(
             "filter",

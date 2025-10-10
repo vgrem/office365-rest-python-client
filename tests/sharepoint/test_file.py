@@ -138,7 +138,7 @@ class TestSharePointFile(SPTestCase):
         self.assertEqual(len(files_after), len(files_before) - 1)
 
     def test_22_upload_large_file(self):
-        path = "{0}/../data/big_buck_bunny.mp4".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../data/big_buck_bunny.mp4"
         file_size = os.path.getsize(path)
         size_1mb = 1000000
         file = self.folder_from.files.create_upload_session(

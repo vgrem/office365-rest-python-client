@@ -4,6 +4,7 @@ import ast
 import builtins
 import keyword
 import re
+from _ast import Assign, Call, Constant
 from typing import TYPE_CHECKING, List
 
 from office365.runtime.odata.type import ODataType
@@ -38,24 +39,24 @@ class PropertyBuilder:
         return ast.arg(
             arg=self.name,
             annotation=(
-                ast.Name(id=self.client_type, ctx=ast.Load())
+                ast.Name(id=self.client_type_name, ctx=ast.Load())
                 if self.client_type_name
                 else None
             ),
         )
 
-    def build_default_value(self):
+    def build_default_value(self) -> Constant | Call:
         """Build default value"""
         if ODataType.is_primitive_type(self.schema.TypeName):
             return ast.Constant(value=None)
         else:
             return ast.Call(
-                func=ast.Name(id=self.client_type, ctx=ast.Load()),
+                func=ast.Name(id=self.client_type_name, ctx=ast.Load()),
                 args=[],
                 keywords=[],
             )
 
-    def build_assign(self):
+    def build_assign(self) -> Assign:
         """Build assignment statement"""
         return ast.Assign(
             targets=[
@@ -82,12 +83,5 @@ class PropertyBuilder:
     def client_type_name(self) -> str:
         from office365.runtime.odata.type import ODataType
 
-        # model_type = ODataType.get_client_type(self.schema.TypeName)
-        # if model_type:
-        #    return model_type.__name__
         type_name = ODataType.resolve_client_type_name(self.schema.TypeName)
         return type_name or self.schema.TypeName
-
-    @property
-    def client_type(self) -> str:
-        return ODataType.resolve_client_type_name(self.client_type_name)

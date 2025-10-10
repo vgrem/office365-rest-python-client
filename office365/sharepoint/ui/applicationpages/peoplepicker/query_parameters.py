@@ -1,9 +1,15 @@
+from uuid import UUID
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.principal.source import PrincipalSource
 from office365.sharepoint.principal.type import PrincipalType
+from office365.sharepoint.ui.applicationpages.peoplepicker.query_settings import (
+    PeoplePickerQuerySettings,
+)
 
 
 class ClientPeoplePickerQueryParameters(ClientValue):
+
     def __init__(
         self,
         query_string: str,
@@ -19,6 +25,12 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         url_zone: int = 0,
         url_zone_specified: bool = False,
         sharepoint_group_id: int = 0,
+        allow_email_addresses: bool = None,
+        query_settings: PeoplePickerQuerySettings = PeoplePickerQuerySettings(),
+        required: bool = None,
+        share_point_group_id: int = None,
+        use_substrate_search: bool = None,
+        web_application_id: UUID = None,
     ):
         """
         Specifies the properties of a principal query
@@ -55,6 +67,12 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         self.UrlZone = url_zone
         self.UrlZoneSpecified = url_zone_specified
         self.SharePointGroupID = sharepoint_group_id
+        self.AllowEmailAddresses = allow_email_addresses
+        self.QuerySettings = query_settings
+        self.Required = required
+        self.SharePointGroupID = share_point_group_id
+        self.UseSubstrateSearch = use_substrate_search
+        self.WebApplicationID = web_application_id
 
     @property
     def entity_type_name(self):

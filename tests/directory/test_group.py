@@ -25,7 +25,7 @@ class TestGraphGroup(GraphTestCase):
                 self.directory_quota_exceeded = True
                 result = self.client.me.get_member_groups().execute_query()
                 self.assertIsNotNone(result.value)
-                filter_expr = "displayName eq '{0}'".format(result.value[0])
+                filter_expr = f"displayName eq '{result.value[0]}'"
                 result = self.client.groups.filter(filter_expr).get().execute_query()
                 self.__class__.target_group = result[0]
 

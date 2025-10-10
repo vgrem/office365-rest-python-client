@@ -8,3 +8,7 @@ class GetMentionFacet(ClientValue):
 
     def __init__(self, mentionees=None):
         self.mentionees = ClientValueCollection(ActivityIdentity, mentionees)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Activities.GetMentionFacet"

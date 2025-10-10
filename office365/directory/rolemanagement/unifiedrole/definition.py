@@ -61,4 +61,4 @@ class UnifiedRoleDefinition(Entity):
                 "rolePermissions": self.role_permissions,
             }
             default_value = property_mapping.get(name, None)
-        return super(UnifiedRoleDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

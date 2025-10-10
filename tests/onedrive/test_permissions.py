@@ -87,9 +87,7 @@ class TestPermissions(TestCase):
         perm_to_delete.delete_object().execute_query()
 
     def test8_driveitem_grant_access(self):
-        file_abs_url = "{0}/Shared Documents/Financial Sample.xlsx".format(
-            test_team_site_url
-        )
+        file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"
         permissions = (
             self.client.shares.by_url(file_abs_url)
             .permission.grant(recipients=[test_user_principal_name_alt], roles=["read"])

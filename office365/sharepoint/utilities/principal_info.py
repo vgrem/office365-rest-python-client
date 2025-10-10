@@ -1,5 +1,11 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.principal.type import PrincipalType
+from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
+from office365.sharepoint.sharing.inherited_from import InheritedFrom
+from office365.sharepoint.sharing.principal import Principal
 
 
 class PrincipalInfo(ClientValue):
@@ -22,6 +28,15 @@ class PrincipalInfo(ClientValue):
         department: str = None,
         job_title: str = None,
         principal_type: PrincipalType = None,
+        can_be_modified: SharingAbilityStatus = SharingAbilityStatus(),
+        expiration_date_time_on_ace: datetime = None,
+        inherited_from: InheritedFrom = InheritedFrom(),
+        is_inherited: bool = None,
+        members: ClientValueCollection[Principal] = ClientValueCollection(Principal),
+        principal: Principal = Principal(),
+        role: int = None,
+        mobile: str = None,
+        sip_address: str = None,
     ):
         """Initialize principal information.
 
@@ -41,6 +56,15 @@ class PrincipalInfo(ClientValue):
         self.Department = department
         self.JobTitle = job_title
         self.PrincipalType = principal_type
+        self.canBeModified = can_be_modified
+        self.ExpirationDateTimeOnACE = expiration_date_time_on_ace
+        self.inheritedFrom = inherited_from
+        self.isInherited = is_inherited
+        self.members = members
+        self.principal = principal
+        self.role = role
+        self.Mobile = mobile
+        self.SIPAddress = sip_address
 
     @property
     def entity_type_name(self):

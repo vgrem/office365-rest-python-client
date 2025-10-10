@@ -56,7 +56,7 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def fill(self):
+    def fill(self) -> WorkbookRangeFill:
         """Returns the fill object defined on the overall range"""
         return self.properties.get(
             "fill",
@@ -64,7 +64,7 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def font(self):
+    def font(self) -> WorkbookRangeFont:
         """Returns the font object defined on the overall range selected"""
         return self.properties.get(
             "font",
@@ -72,7 +72,7 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def protection(self):
+    def protection(self) -> WorkbookFormatProtection:
         """Returns the format protection object for a range"""
         return self.properties.get(
             "protection",

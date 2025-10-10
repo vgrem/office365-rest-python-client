@@ -136,7 +136,7 @@ ctx = ClientContext(site_url).with_credentials(UserCredential("{username}", "{pa
 web = ctx.web
 ctx.load(web)
 ctx.execute_query()
-print("Web title: {0}".format(web.properties['Title']))
+print(f"Web title: {web.properties['Title']}")
 ```
 or alternatively via method chaining (a.k.a Fluent Interface): 
 
@@ -146,7 +146,7 @@ from office365.sharepoint.client_context import ClientContext
 site_url = "https://{your-tenant-prefix}.sharepoint.com"
 ctx = ClientContext(site_url).with_credentials(UserCredential("{username}", "{password}"))
 web = ctx.web.get().execute_query()
-print("Web title: {0}".format(web.properties['Title']))
+print(f"Web title: {web.properties['Title']}")
 ```
 
 
@@ -163,7 +163,7 @@ request = SharePointRequest(site_url).with_credentials(UserCredential("{username
 response = request.execute_request("web")
 json = json.loads(response.content)
 web_title = json['d']['Title']
-print("Web title: {0}".format(web_title))
+print(f"Web title: {web_title}")
 ```
   
 For SharePoint-specific examples, see:  
@@ -323,7 +323,7 @@ tenant_name = "contoso.onmicrosoft.com"
 client = GraphClient(tenant=tenant_name)
 drives = client.drives.get().execute_query()
 for drive in drives:
-    print("Drive url: {0}".format(drive.web_url))
+    print(f"Drive url: {drive.web_url}")
 ```
 
 

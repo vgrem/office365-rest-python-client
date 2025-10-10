@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from office365.runtime.client_value import ClientValue
@@ -20,6 +21,8 @@ class UserSharingResult(ClientValue):
         message: str = None,
         status: bool = None,
         user: str = None,
+        expiration_date_time_on_ace: datetime = None,
+        other_mails: str = None,
     ):
         """
         :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
@@ -44,6 +47,8 @@ class UserSharingResult(ClientValue):
         self.Message = message
         self.Status = status
         self.User = user
+        self.ExpirationDateTimeOnACE = expiration_date_time_on_ace
+        self.OtherMails = other_mails
 
     @property
     def current_role_name(self):

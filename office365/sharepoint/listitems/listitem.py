@@ -39,7 +39,7 @@ from office365.sharepoint.sharing.object_sharing_information import (
     ObjectSharingInformation,
 )
 from office365.sharepoint.sharing.result import SharingResult
-from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValueCollection
+from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
 from office365.sharepoint.types.wopi_action import SPWOPIAction
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,

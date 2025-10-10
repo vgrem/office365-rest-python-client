@@ -5,6 +5,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class EmailProperties(ClientValue):
+
     def __init__(
         self,
         body: str,
@@ -14,6 +15,7 @@ class EmailProperties(ClientValue):
         cc: List[str] = None,
         bcc: List[str] = None,
         additional_headers: Dict = None,
+        from_: str = None,
     ):
         """
         Specifies the definition of the email to send which includes both the message fields and body
@@ -34,6 +36,7 @@ class EmailProperties(ClientValue):
         self.CC = StringCollection(cc)
         self.BCC = StringCollection(bcc)
         self.AdditionalHeaders = additional_headers
+        self.From = from_
 
     @property
     def entity_type_name(self):

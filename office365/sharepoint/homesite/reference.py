@@ -6,7 +6,7 @@ class HomeSiteReference(ClientValue):
 
     def __init__(
         self,
-        audiences: GuidCollection = None,
+        audiences: GuidCollection = GuidCollection(),
         site_flags: int = None,
         site_id: str = None,
         web_id: str = None,

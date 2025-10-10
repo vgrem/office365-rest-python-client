@@ -74,7 +74,7 @@ class TestSPList(SPTestCase):
         self.client.web.lists.get_by_title(list_title).delete_object().execute_query()
 
         result = (
-            self.client.web.lists.filter("Title eq '{0}'".format(list_title))
+            self.client.web.lists.filter(f"Title eq '{list_title}'")
             .get()
             .execute_query()
         )

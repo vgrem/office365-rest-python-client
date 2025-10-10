@@ -25,7 +25,7 @@ class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
     It doesn't contain any usable properties."""
 
-    def run_hunting_query(self, query: str):
+    def run_hunting_query(self, query: str) -> ClientResult[HuntingQueryResults]:
         """
         Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
         to proactively look for specific threats in your environment.

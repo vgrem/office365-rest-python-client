@@ -1,6 +1,8 @@
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.sharing.internal.types import CAnonymousLinkUseLimit
+from office365.sharepoint.sharing.internal.canonymouslinkuselimit import (
+    CAnonymousLinkUseLimit,
+)
 
 
 class SharingRestrictions(Entity):

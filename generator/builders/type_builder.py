@@ -2,7 +2,7 @@ import ast
 import inspect
 import os
 from os.path import abspath
-from typing import TYPE_CHECKING, Dict, List
+from typing import Dict, List
 
 from typing_extensions import Self
 
@@ -11,9 +11,6 @@ from generator.builders.property_builder import PropertyBuilder
 from generator.documentation.baseservice import BaseDocumentationService
 from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
-
-if TYPE_CHECKING:
-    pass
 
 
 class TypeBuilder(ast.NodeTransformer):

@@ -14,6 +14,11 @@ class TileData(ClientValue):
         description=None,
         hover_disabled=None,
         id_=None,
+        is_wide: bool = None,
+        link_location: str = None,
+        tile_order: int = None,
+        title: str = None,
+        transparent_overlay: bool = None,
     ):
         self.BackgroundCollageImageLocations = StringCollection(
             background_collage_image_locations
@@ -24,3 +29,12 @@ class TileData(ClientValue):
         self.Description = description
         self.HoverDisabled = hover_disabled
         self.ID = id_
+        self.IsWide = is_wide
+        self.LinkLocation = link_location
+        self.TileOrder = tile_order
+        self.Title = title
+        self.TransparentOverlay = transparent_overlay
+
+    @property
+    def entity_type_name(self):
+        return "SP.WebParts.TileData"

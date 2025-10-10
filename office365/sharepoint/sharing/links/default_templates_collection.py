@@ -6,5 +6,10 @@ from office365.sharepoint.sharing.links.default_template import (
 
 
 class SharingLinkDefaultTemplatesCollection(ClientValue):
+
     def __init__(self, templates=None):
         self.templates = ClientValueCollection(SharingLinkDefaultTemplate, templates)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Sharing.SharingLinkDefaultTemplatesCollection"

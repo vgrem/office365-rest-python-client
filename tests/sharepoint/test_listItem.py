@@ -15,7 +15,7 @@ class TestSharePointListItem(SPTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestSharePointListItem, cls).setUpClass()
+        super().setUpClass()
         list_title = create_unique_name("Tasks")
         cls.target_list = cls.client.web.lists.add_tasks(list_title).execute_query()
         cls.default_title = create_unique_name("Task")

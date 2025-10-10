@@ -11,6 +11,9 @@ class SharePointIds(ClientValue):
         web_id: str = None,
         list_id: str = None,
         unique_id: str = None,
+        list_item_id: str = None,
+        list_item_unique_id: str = None,
+        tenant_id: str = None,
     ):
         self.hub_site_id = hub_site_id
         self.site_id = site_id
@@ -18,6 +21,9 @@ class SharePointIds(ClientValue):
         self.web_id = web_id
         self.listId = list_id
         self.uniqueId = unique_id
+        self.listItemId = list_item_id
+        self.listItemUniqueId = list_item_unique_id
+        self.tenantId = tenant_id
 
     @property
     def entity_type_name(self):
