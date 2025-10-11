@@ -17,4 +17,4 @@ if len(messages) == 0:
     sys.exit("No messages were found")
 first_message = messages[0]
 first_message.set_property("isRead", True).update().execute_query()
-print("Message {0} has been marked as read".format(first_message.subject))
+print(f"Message {first_message.subject} has been marked as read")

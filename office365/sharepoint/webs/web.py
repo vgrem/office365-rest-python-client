@@ -119,7 +119,7 @@ from office365.sharepoint.webs.modernize_homepage_result import ModernizeHomepag
 from office365.sharepoint.webs.multilingual_settings import MultilingualSettings
 from office365.sharepoint.webs.regional_settings import RegionalSettings
 from office365.sharepoint.webs.subweb_query import SubwebQuery
-from office365.sharepoint.webs.template_collection import WebTemplateCollection
+from office365.sharepoint.webs.templates.collection import WebTemplateCollection
 from office365.sharepoint.webs.theme_info import ThemeInfo
 
 if TYPE_CHECKING:

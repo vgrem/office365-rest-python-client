@@ -11,4 +11,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
     test_client_id, test_client_secret
 )
 site = client.sites.get_by_url(test_team_site_url).get().execute_query()
-print("Site Id: {0}".format(site.id))
+print(f"Site Id: {site.id}")

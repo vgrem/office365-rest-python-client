@@ -47,7 +47,7 @@ from office365.sharepoint.tenant.administration.sites.administrators_info import
 )
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
-from office365.sharepoint.webs.template_collection import WebTemplateCollection
+from office365.sharepoint.webs.templates.collection import WebTemplateCollection
 from office365.sharepoint.webs.web import Web
 
 

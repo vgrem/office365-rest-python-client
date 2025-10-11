@@ -16,4 +16,4 @@ plans = group.planner.plans.get().execute_query()
 if len(plans) == 0:
     sys.exit("No plans were found")
 task = client.planner.tasks.add("Update client list", plans[0]).execute_query()
-print("Task {0} has been created".format(task.title))
+print(f"Task {task.title} has been created")

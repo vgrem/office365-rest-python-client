@@ -12,4 +12,4 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
 )
 drive_items = client.me.drive.shared_with_me().execute_query()
 for item in drive_items:
-    print("Drive Item url: {0}".format(item.web_url))
+    print(f"Drive Item url: {item.web_url}")

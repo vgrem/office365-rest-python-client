@@ -56,9 +56,7 @@ class TestSharePointListItem(SPTestCase):
     def test5_get_list_item_via_caml(self):
         item_id = self.__class__.target_item.id
         caml_query = CamlQuery.parse(
-            "<Where><Eq><FieldRef Name='ID' /><Value Type='Counter'>{0}</Value></Eq></Where>".format(
-                item_id
-            )
+            f"<Where><Eq><FieldRef Name='ID' /><Value Type='Counter'>{item_id}</Value></Eq></Where>"
         )
         result = self.target_list.get_items(caml_query).execute_query()
         self.assertEqual(len(result), 1)
@@ -134,16 +132,12 @@ class TestSharePointListItem(SPTestCase):
         item_to_delete = self.__class__.target_item
         item_to_delete.delete_object().execute_query()
 
-        result = (
-            self.target_list.items.filter("Id eq {0}".format(item_id))
-            .get()
-            .execute_query()
-        )
+        result = self.target_list.items.filter(f"Id eq {item_id}").get().execute_query()
         self.assertEqual(0, len(result))
 
     def test_18_create_multiple_items(self):
         for i in range(0, self.batch_items_count):
-            item_properties = {"Title": "Task {0}".format(i)}
+            item_properties = {"Title": f"Task {i}"}
             self.target_list.add_item(item_properties)
         self.client.execute_batch()
         result = self.target_list.items.get().execute_query()

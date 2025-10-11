@@ -65,7 +65,7 @@ class TestView(SPTestCase):
         view_to_update.set_property("Title", title_updated).update().execute_query()
 
         result = (
-            self.target_list.views.filter("Title eq '{0}'".format(title_updated))
+            self.target_list.views.filter(f"Title eq '{title_updated}'")
             .get()
             .execute_query()
         )

@@ -16,6 +16,6 @@ from tests import test_client_id, test_tenant
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id)
 me = client.me.get().execute_query()
-print("Welcome,  {0}!".format(me.given_name))
+print(f"Welcome,  {me.given_name}!")
 site = client.sites.root.get().execute_query()
-print("Site Url:  {0}".format(site.web_url))
+print(f"Site Url:  {site.web_url}")

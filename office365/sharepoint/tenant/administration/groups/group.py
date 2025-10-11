@@ -1,16 +1,10 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
-from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-
-
-class GroupInfo(ClientValue):
-    """"""
-
-    @property
-    def entity_type_name(self):
-        return "Microsoft.Online.SharePoint.TenantAdministration.GroupInfo"
+from office365.sharepoint.tenant.administration.groups.info import GroupInfo
 
 
 class SPOGroup(Entity):
@@ -23,7 +17,9 @@ class SPOGroup(Entity):
             )
         super(SPOGroup, self).__init__(context, resource_path)
 
-    def add_as_group_owner_and_member(self, group_id, user_id, user_principal_name):
+    def add_as_group_owner_and_member(
+        self, group_id: str, user_id: str, user_principal_name: str
+    ) -> Self:
         """ """
         payload = {
             "groupId": group_id,

@@ -13,3 +13,7 @@ class SyntexPowerAppsEnvironmentsContext(ClientValue):
             PowerAppsEnvironmentContext, environments
         )
         self.TimerJobSyncDisabled = timer_job_sync_disabled
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Online.SharePoint.TenantAdministration.SyntexPowerAppsEnvironmentsContext"

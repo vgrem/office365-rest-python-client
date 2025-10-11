@@ -31,4 +31,4 @@ with tempfile.TemporaryDirectory() as local_path:
         for attachment in message.attachments:
             with open(os.path.join(local_path, attachment.name), "wb") as local_file:
                 attachment.download(local_file).execute_query()
-            print("Message attachment downloaded into {0}".format(local_file.name))
+            print(f"Message attachment downloaded into {local_file.name}")

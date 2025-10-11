@@ -26,7 +26,7 @@ group = client.groups.create_m365(group_name)
 team = group.add_team().execute_query_retry(
     max_retry=10, failure_callback=print_failure
 )
-print("Team has been created:  {0}".format(team.web_url))
+print(f"Team has been created:  {team.web_url}")
 
 # clean up resources
 print("Deleting a group...")

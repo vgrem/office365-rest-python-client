@@ -15,7 +15,7 @@ from tests import test_client_id, test_client_secret, test_tenant
 
 
 def acquire_token():
-    authority_url = "https://login.microsoftonline.com/{0}".format(test_tenant)
+    authority_url = f"https://login.microsoftonline.com/{test_tenant}"
     app = msal.ConfidentialClientApplication(
         authority=authority_url,
         client_id=test_client_id,

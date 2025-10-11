@@ -11,7 +11,7 @@ class TestSharePointRecycleBin(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSharePointRecycleBin, cls).setUpClass()
-        file_name = "Sample{0}.txt".format(str(randint(0, 10000)))
+        file_name = f"Sample{str(randint(0, 10000))}.txt"
         target_file = (
             cls.client.web.default_document_library()
             .root_folder.upload_file(file_name, "--some content goes here--")
@@ -30,7 +30,7 @@ class TestSharePointRecycleBin(SPTestCase):
     def test2_find_removed_file(self):
         file_name = self.__class__.target_file.name
         items = (
-            self.client.site.recycle_bin.filter("LeafName eq '{0}'".format(file_name))
+            self.client.site.recycle_bin.filter(f"LeafName eq '{file_name}'")
             .get()
             .execute_query()
         )

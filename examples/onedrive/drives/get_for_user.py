@@ -18,4 +18,4 @@ site = (
     .get_my_site()
     .execute_query()
 )
-print("Drive url: {0}".format(site.web_url))
+print(f"Drive url: {site.web_url}")

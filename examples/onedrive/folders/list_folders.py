@@ -20,6 +20,6 @@ site = client.sites.get_by_url(test_team_site_url)
 items = (
     site.lists["Documents_Archive"].drive.root.get_folders(False, 10000).execute_query()
 )
-print("{0} folders found".format(len(items)))
+print(f"{len(items)} folders found")
 # for folder_item in items:
 #    print(folder_item.web_url)

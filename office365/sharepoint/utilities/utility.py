@@ -129,7 +129,7 @@ class Utility(Entity):
         context: ClientContext,
         parameters: WikiPageCreationInformation,
         return_type: File = None,
-    ):
+    ) -> File:
         """
         Creates a wiki page.
         """
@@ -138,9 +138,14 @@ class Utility(Entity):
         utility = Utility(context)
         payload = {"parameters": parameters}
         qry = ServiceOperationQuery(
-            utility, "CreateWikiPageInContextWeb", None, payload, None, return_type
+            utility,
+            "CreateWikiPageInContextWeb",
+            None,
+            payload,
+            None,
+            return_type,
+            True,
         )
-        qry.static = True
         context.add_query(qry)
         return return_type
 
@@ -162,7 +167,7 @@ class Utility(Entity):
     @staticmethod
     def unmark_discussion_as_featured(
         context: ClientContext, list_id: str, topic_ids: str
-    ):
+    ) -> Utility:
         """
         This method is a static method.
         :type context: office365.sharepoint.client_context.ClientContext

@@ -27,7 +27,7 @@ class TestCommunicationSite(TestCase):
         cls.client = ctx
 
     def test1_create_site(self):
-        site_alias = "site{0}".format(uuid.uuid4().hex)
+        site_alias = f"site{uuid.uuid4().hex}"
         comm_site = self.client.create_communication_site(
             site_alias, site_alias
         ).execute_query()

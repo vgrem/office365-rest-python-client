@@ -23,10 +23,6 @@ for name in os.listdir(local_path):
                 uploaded_file = remote_drive.root.upload_file(
                     local_file
                 ).execute_query()
-            print("File '{0}' uploaded into '{1}'".format(path, uploaded_file.web_url))
+            print(f"File '{path}' uploaded into '{uploaded_file.web_url}'")
         except ClientRequestException as e:
-            print(
-                "An error occured while uploading a file {0}: {1}".format(
-                    path, e.message
-                )
-            )
+            print(f"An error occured while uploading a file {path}: {e.message}")

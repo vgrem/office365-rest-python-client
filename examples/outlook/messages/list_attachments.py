@@ -20,4 +20,4 @@ messages = (
 
 for message in messages:
     for attachment in message.attachments:
-        print("Message: {0}, Attachment: {1}".format(message.subject, attachment.name))
+        print(f"Message: {message.subject}, Attachment: {attachment.name}")

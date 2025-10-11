@@ -19,10 +19,10 @@ from tests import test_client_id, test_site_url, test_tenant, test_tenant_name
 def acquire_token():
     app = msal.PublicClientApplication(
         test_client_id,
-        authority="https://login.microsoftonline.com/{0}".format(test_tenant),
+        authority=f"https://login.microsoftonline.com/{test_tenant}",
         client_credential=None,
     )
-    scopes = ["https://{0}.sharepoint.com/.default".format(test_tenant_name)]
+    scopes = [f"https://{test_tenant_name}.sharepoint.com/.default"]
     result = app.acquire_token_interactive(scopes=scopes)
     return TokenResponse.from_json(result)
 

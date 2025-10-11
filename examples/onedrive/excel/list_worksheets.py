@@ -18,4 +18,4 @@ if len(worksheets) == 0:
     sys.exit("No worksheets found")
 
 for worksheet in worksheets:
-    print("Worksheet name: {0}".format(worksheet))
+    print(f"Worksheet name: {worksheet}")

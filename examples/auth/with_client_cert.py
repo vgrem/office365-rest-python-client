@@ -12,7 +12,7 @@ def acquire_token():
     with open(test_cert_path, "r", encoding="utf-8") as f:
         private_key = f.read()
 
-    authority_url = "https://login.microsoftonline.com/{0}".format(test_tenant_name)
+    authority_url = f"https://login.microsoftonline.com/{test_tenant_name}"
     credentials = {"thumbprint": test_cert_thumbprint, "private_key": private_key}
     import msal
 

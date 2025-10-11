@@ -1,10 +1,10 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.tenant.administration.collaboration.collaborativeonedriveuser import (
+    CollaborativeOneDriveUser,
+)
 from office365.sharepoint.tenant.administration.collaboration.collaborativeusers import (
     CollaborativeUsers,
-)
-from office365.sharepoint.tenant.administration.collaborativeonedriveuser import (
-    CollaborativeOneDriveUser,
 )
 
 

@@ -43,7 +43,7 @@ class Subscription(Entity):
                 self._resource_path = ServiceOperationPath(
                     "getById", [value], self._parent_collection.resource_path
                 )
-        return super(Subscription, self).set_property(name, value, persist_changes)
+        return super().set_property(name, value, persist_changes)
 
     @property
     def entity_type_name(self):

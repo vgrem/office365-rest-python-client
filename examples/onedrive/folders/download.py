@@ -12,9 +12,8 @@ from office365.onedrive.driveitems.driveItem import DriveItem
 from tests import test_client_id, test_password, test_tenant, test_username
 
 
-def print_progress(downloaded_file):
-    # type: (DriveItem) -> None
-    print("File {0} has been downloaded..".format(downloaded_file.web_url))
+def print_progress(downloaded_file: DriveItem) -> None:
+    print(f"File {downloaded_file.web_url} has been downloaded..")
 
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(
@@ -25,4 +24,4 @@ folder_item = client.me.drive.root.get_by_path("archive")
 zip_path = os.path.join(tempfile.mkdtemp(), "download.zip")
 with open(zip_path, "wb") as f:
     folder_item.download_folder(f, print_progress).execute_query()
-print("Folder has been downloaded to {0}".format(zip_path))
+print(f"Folder has been downloaded to {zip_path}")

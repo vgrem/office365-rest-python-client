@@ -33,7 +33,13 @@ class TermStore(TaxonomyItem):
         self.term_groups.get().after_execute(_groups_loaded)
         return return_type
 
-    def search_term(self, label, set_id=None, parent_term_id=None, language_tag=None):
+    def search_term(
+        self,
+        label: str,
+        set_id: str = None,
+        parent_term_id: str = None,
+        language_tag: str = None,
+    ):
         """
         Search term by name
 
@@ -61,7 +67,7 @@ class TermStore(TaxonomyItem):
         return self.properties.get("defaultLanguageTag", None)
 
     @property
-    def language_tags(self):
+    def language_tags(self) -> StringCollection:
         """Gets an integer collection of LCIDs."""
         return self.properties.get("languageTags", StringCollection())
 
@@ -82,4 +88,4 @@ class TermStore(TaxonomyItem):
                 "languageTags": self.language_tags,
             }
             default_value = property_mapping.get(name, None)
-        return super(TermStore, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

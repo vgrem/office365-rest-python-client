@@ -13,4 +13,4 @@ permissions = (
     client.sites.get_by_url(test_team_site_url).permissions.get().execute_query()
 )
 for perm in permissions:
-    print("Roles: {0}, Granted to: {1}".format(perm.roles, perm.granted_to))
+    print(f"Roles: {perm.roles}, Granted to: {perm.granted_to}")

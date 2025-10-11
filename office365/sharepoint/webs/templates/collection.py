@@ -1,6 +1,6 @@
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.webs.template import WebTemplate
+from office365.sharepoint.webs.templates.template import WebTemplate
 from office365.sharepoint.webs.templates.type import WebTemplateType
 
 

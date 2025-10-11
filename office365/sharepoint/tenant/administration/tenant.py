@@ -29,6 +29,9 @@ from office365.sharepoint.tenant.administration.collaboration.insights_data impo
 from office365.sharepoint.tenant.administration.collaboration.insights_overview import (
     CollaborationInsightsOverview,
 )
+from office365.sharepoint.tenant.administration.copilot.promousage import (
+    SPOCopilotPromoUsage,
+)
 from office365.sharepoint.tenant.administration.hubsites.properties import (
     HubSiteProperties,
 )
@@ -44,11 +47,16 @@ from office365.sharepoint.tenant.administration.policies.app_billing_properties 
 from office365.sharepoint.tenant.administration.policies.content_security_configuration import (
     SPOContentSecurityPolicyConfiguration,
 )
+from office365.sharepoint.tenant.administration.policies.create_request import (
+    CreatePolicyRequest,
+)
 from office365.sharepoint.tenant.administration.policies.definition import (
     TenantAdminPolicyDefinition,
 )
 from office365.sharepoint.tenant.administration.policies.file_version_types import (
     SPOFileVersionBatchDeleteJobProgress,
+)
+from office365.sharepoint.tenant.administration.policies.fileversionsettings import (
     SPOFileVersionPolicySettings,
 )
 from office365.sharepoint.tenant.administration.powerapps.environment import (
@@ -88,10 +96,6 @@ from office365.sharepoint.tenant.administration.syntex.billing_context import (
 )
 from office365.sharepoint.tenant.administration.syntex.power_apps import (
     SyntexPowerAppsEnvironmentsContext,
-)
-from office365.sharepoint.tenant.administration.types import (
-    CreatePolicyRequest,
-    SPOCopilotPromoUsage,
 )
 from office365.sharepoint.tenant.administration.webs.templates.collection import (
     SPOTenantWebTemplateCollection,

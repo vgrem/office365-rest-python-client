@@ -23,5 +23,5 @@ local_path = "../../data/Financial Sample.xlsx"
 # file = folder.upload_file(local_path).execute_query()
 with open(local_path, "rb") as f:
     file = folder.upload_file(f).execute_query()
-print("File {0} has been uploaded".format(file.web_url))
+print(f"File {file.web_url} has been uploaded")
 result = folder.children.get().execute_query()

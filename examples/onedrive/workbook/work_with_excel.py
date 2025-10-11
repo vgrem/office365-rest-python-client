@@ -13,7 +13,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
 
 local_path = "../../data/Financial Sample.xlsx"
 excel_file = client.me.drive.root.upload_file(local_path).execute_query()
-print("File {0} has been uploaded".format(excel_file.web_url))
+print(f"File {excel_file.web_url} has been uploaded")
 workbook = excel_file.workbook
 
 print("Creating a session...")

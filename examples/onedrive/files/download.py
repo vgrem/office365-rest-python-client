@@ -23,4 +23,4 @@ with tempfile.TemporaryDirectory() as local_path:
         os.path.join(local_path, os.path.basename(remote_path)), "wb"
     ) as local_file:
         remote_file.download(local_file).execute_query()
-        print("File has been downloaded into {0}".format(local_file.name))
+        print(f"File has been downloaded into {local_file.name}")

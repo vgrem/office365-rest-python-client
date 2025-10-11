@@ -32,16 +32,30 @@ class TemplateContext:
 
     def build_imports(self, builder: TypeBuilder):
         """Add import statements for dependent types."""
+        type_to_module = {
+            "UUID": "uuid",
+            "datetime": "datetime",
+            "date": "datetime",
+            "StringCollection": "office365.runtime.types.collections",
+            "GuidCollection": "office365.runtime.types.collections"
+        }
+
         imports = []
-        for _ in builder.properties:
-            pass
-            #prop_type = prop.client_type_name
-            #ODataType.resolve_client_type_name(prop_type)
-            #imports.append(ast.ImportFrom(
-            #    module='uuid',
-            #    names=[ast.alias(name='UUID', asname=None)],
-            #    level=0
-            #))
+        added_types = set()
+
+        for prop in builder.properties:
+            prop_type = prop.client_type_name
+            if prop_type in type_to_module and prop_type not in added_types:
+
+                imports.append(
+                    ast.ImportFrom(
+                        module=type_to_module[prop_type],
+                        names=[ast.alias(name=prop_type, asname=None)],
+                        level=0,
+                    )
+                )
+                added_types.add(prop_type)
+
         return imports
 
     def build_member(self, builder: MemberBuilder):

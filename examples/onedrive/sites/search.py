@@ -12,4 +12,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(
 )
 sites = client.sites.search("team").execute_query()
 for site in sites:
-    print("Site url: {0}".format(site.web_url))
+    print(f"Site url: {site.web_url}")
