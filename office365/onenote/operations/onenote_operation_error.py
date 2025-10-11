@@ -9,6 +9,6 @@ class OnenoteOperationError(ClientValue):
         :param str message: The error message.
         :param str code: The error code.
         """
-        super(OnenoteOperationError, self).__init__()
+        super().__init__()
         self.message = message
         self.code = code

@@ -10,7 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class NotebookCollection(EntityCollection[Notebook]):
     def __init__(self, context, resource_path=None):
-        super(NotebookCollection, self).__init__(context, Notebook, resource_path)
+        super().__init__(context, Notebook, resource_path)
 
     def add(self, display_name: str) -> Notebook:
         """

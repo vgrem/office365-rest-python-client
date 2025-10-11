@@ -24,7 +24,7 @@ class DeviceManagement(Entity):
     configuration.
     """
 
-    def get_effective_permissions(self, scope=None):
+    def get_effective_permissions(self, scope=None) -> ClientResult[ClientValueCollection[RolePermission]]:
         """Retrieves the effective permissions of the currently authenticated user"""
         return_type = ClientResult(self.context, ClientValueCollection(RolePermission))
         # params = {"scope": scope}
@@ -33,7 +33,7 @@ class DeviceManagement(Entity):
         return return_type
 
     @property
-    def audit_events(self):
+    def audit_events(self) -> AuditEventCollection:
         """"""
         return self.properties.get(
             "auditEvents",
@@ -41,7 +41,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def virtual_endpoint(self):
+    def virtual_endpoint(self) -> VirtualEndpoint:
         """"""
         return self.properties.get(
             "virtualEndpoint",
@@ -49,7 +49,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def terms_and_conditions(self):
+    def terms_and_conditions(self) -> EntityCollection[TermsAndConditions]:
         """"""
         return self.properties.get(
             "termsAndConditions",
@@ -61,7 +61,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def device_categories(self):
+    def device_categories(self) -> EntityCollection[DeviceCategory]:
         """"""
         return self.properties.get(
             "deviceCategories",
@@ -73,7 +73,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def device_enrollment_configurations(self):
+    def device_enrollment_configurations(self) -> EntityCollection[DeviceEnrollmentConfiguration]:
         """"""
         return self.properties.get(
             "deviceEnrollmentConfigurations",
@@ -101,7 +101,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def reports(self):
+    def reports(self) -> DeviceManagementReports:
         """"""
         return self.properties.get(
             "reports",
@@ -120,4 +120,4 @@ class DeviceManagement(Entity):
                 "virtualEndpoint": self.virtual_endpoint,
             }
             default_value = property_mapping.get(name, None)
-        return super(DeviceManagement, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -49,4 +49,4 @@ class ServiceAnnouncement(Entity):
         if default_value is None:
             property_mapping = {"healthOverviews": self.health_overviews}
             default_value = property_mapping.get(name, None)
-        return super(ServiceAnnouncement, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

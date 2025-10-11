@@ -9,7 +9,7 @@ class OrgContact(DirectoryObject):
     from on-premises directories or from Exchange Online, and are read-only."""
 
     @property
-    def direct_reports(self):
+    def direct_reports(self) -> DirectoryObjectCollection:
         """
         Get a user's direct reports.
         """
@@ -19,7 +19,7 @@ class OrgContact(DirectoryObject):
         )
 
     @property
-    def manager(self):
+    def manager(self) -> DirectoryObject:
         """
         The user or contact that is this contact's manager.
         """
@@ -29,7 +29,7 @@ class OrgContact(DirectoryObject):
         )
 
     @property
-    def member_of(self):
+    def member_of(self) -> DirectoryObjectCollection:
         """Groups that this contact is a member of."""
         return self.properties.get(
             "memberOf",
@@ -37,7 +37,7 @@ class OrgContact(DirectoryObject):
         )
 
     @property
-    def transitive_member_of(self):
+    def transitive_member_of(self) -> DirectoryObjectCollection:
         """Groups that this contact is a member of, including groups that the contact is nested under."""
         return self.properties.get(
             "transitiveMemberOf",
@@ -52,4 +52,4 @@ class OrgContact(DirectoryObject):
                 "transitiveMemberOf": self.transitive_member_of,
             }
             default_value = property_mapping.get(name, None)
-        return super(OrgContact, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -80,4 +80,4 @@ class Organization(DirectoryObject):
                 "verifiedDomains": self.verified_domains,
             }
             default_value = property_mapping.get(name, None)
-        return super(Organization, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

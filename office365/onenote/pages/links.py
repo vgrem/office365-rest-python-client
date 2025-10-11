@@ -10,6 +10,6 @@ class PageLinks(ClientValue):
         :param ExternalLink onenote_client_url: Opens the page in the OneNote native client if it's installed.
         :param ExternalLink onenote_web_url: Opens the page in OneNote on the web.
         """
-        super(PageLinks, self).__init__()
+        super().__init__()
         self.oneNoteClientUrl = onenote_client_url
         self.oneNoteWebUrl = onenote_web_url

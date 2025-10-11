@@ -25,4 +25,4 @@ class DeviceAppManagement(Entity):
                 "managedAppRegistrations": self.managed_app_registrations,
             }
             default_value = property_mapping.get(name, None)
-        return super(DeviceAppManagement, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
