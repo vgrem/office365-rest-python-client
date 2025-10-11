@@ -10,19 +10,9 @@ class TestSharePointWebTemplates(SPTestCase):
 
     def test4_get_web_template_by_name(self):
         template_name = "GLOBAL#0"
-        result = (
-            self.client.site.get_web_templates()
-            .get_by_name(template_name)
-            .get()
-            .execute_query()
-        )
+        result = self.client.site.get_web_templates().get_by_name(template_name).get().execute_query()
         self.assertIsNotNone(result)
 
     def test4_get_web_template_by_type(self):
-        result = (
-            self.client.site.get_web_templates()
-            .get_by_type(WebTemplateType.GROUP)
-            .get()
-            .execute_query()
-        )
+        result = self.client.site.get_web_templates().get_by_type(WebTemplateType.GROUP).get().execute_query()
         self.assertIsNotNone(result)

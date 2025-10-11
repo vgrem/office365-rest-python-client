@@ -7,9 +7,7 @@ class MicrofeedUserPostCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[MicrofeedUserPosts] = ClientValueCollection(
-            MicrofeedUserPosts
-        ),
+        items: ClientValueCollection[MicrofeedUserPosts] = ClientValueCollection(MicrofeedUserPosts),
     ):
         self.Items = items
 

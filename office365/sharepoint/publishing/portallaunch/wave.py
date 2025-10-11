@@ -9,9 +9,7 @@ class PortalLaunchWave(ClientValue):
 
     def __init__(
         self,
-        groups: ClientValueCollection[PortalLaunchWaveGroup] = ClientValueCollection(
-            PortalLaunchWaveGroup
-        ),
+        groups: ClientValueCollection[PortalLaunchWaveGroup] = ClientValueCollection(PortalLaunchWaveGroup),
         launch_date_utc: datetime = None,
         name: str = None,
         order: int = None,

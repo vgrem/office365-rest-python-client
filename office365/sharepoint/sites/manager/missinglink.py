@@ -9,9 +9,7 @@ class MissingLink(ClientValue):
         self,
         hits: int = None,
         not_found_url: str = None,
-        referrers: ClientValueCollection[MissingLinkReferrer] = ClientValueCollection(
-            MissingLinkReferrer
-        ),
+        referrers: ClientValueCollection[MissingLinkReferrer] = ClientValueCollection(MissingLinkReferrer),
     ):
         self.Hits = hits
         self.NotFoundUrl = not_found_url

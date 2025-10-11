@@ -9,9 +9,7 @@ class TeamsPackageDownload(Entity):
     def download_teams(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "DownloadTeams", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DownloadTeams", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

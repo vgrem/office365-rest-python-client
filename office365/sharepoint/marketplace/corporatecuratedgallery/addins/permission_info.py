@@ -20,9 +20,9 @@ class SPAddinPermissionInfo(ClientValue):
         site_collection_scoped_permissions: ClientValueCollection[
             SPSiteCollectionScopedPermissionInfo
         ] = ClientValueCollection(SPSiteCollectionScopedPermissionInfo),
-        tenant_scoped_permissions: ClientValueCollection[
+        tenant_scoped_permissions: ClientValueCollection[SPTenantScopedPermissionInfo] = ClientValueCollection(
             SPTenantScopedPermissionInfo
-        ] = ClientValueCollection(SPTenantScopedPermissionInfo),
+        ),
     ):
         self.absoluteUrl = absolute_url
         self.allowAppOnly = allow_app_only

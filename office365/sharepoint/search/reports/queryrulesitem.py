@@ -8,9 +8,7 @@ class ReportQueryRulesItem(ClientValue):
     def __init__(
         self,
         date: str = None,
-        report: ClientValueCollection[ReportQueryRulesData] = ClientValueCollection(
-            ReportQueryRulesData
-        ),
+        report: ClientValueCollection[ReportQueryRulesData] = ClientValueCollection(ReportQueryRulesData),
     ):
         self.Date = date
         self.Report = report

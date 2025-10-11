@@ -11,7 +11,5 @@ from tests import (
 )
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-result = ctx.web.remove_role_assignment(
-    test_user_principal_name_alt, RoleType.Contributor
-).execute_query()
+result = ctx.web.remove_role_assignment(test_user_principal_name_alt, RoleType.Contributor).execute_query()
 print("Access has been revoked")

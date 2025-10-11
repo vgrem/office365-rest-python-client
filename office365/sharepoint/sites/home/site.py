@@ -35,9 +35,7 @@ class SPHSite(Entity):
         if return_value is None:
             return_value = ClientResult(context)
         params = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            SPHSite(context), "IsCommSite", params, None, None, return_value, True
-        )
+        qry = ServiceOperationQuery(SPHSite(context), "IsCommSite", params, None, None, return_value, True)
         context.add_query(qry)
         return return_value
 
@@ -79,9 +77,7 @@ class SPHSite(Entity):
             return_value = ClientResult(context)
         sph = SPHSite(context)
         params = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            sph, "IsValidHomeSite", params, None, None, return_value
-        )
+        qry = ServiceOperationQuery(sph, "IsValidHomeSite", params, None, None, return_value)
         qry.static = True
         context.add_query(qry)
         return return_value
@@ -96,16 +92,12 @@ class SPHSite(Entity):
         """
         sph = SPHSite(context)
         params = {"siteUrl": site_url, "validationActionType": validation_action_type}
-        qry = ServiceOperationQuery(
-            sph, "ValidateHomeSite", params, None, None, None, True
-        )
+        qry = ServiceOperationQuery(sph, "ValidateHomeSite", params, None, None, None, True)
         context.add_query(qry)
         return sph
 
     @staticmethod
-    def set_as_home_site(
-        context, site_url, viva_connections_default_start=None, return_value=None
-    ):
+    def set_as_home_site(context, site_url, viva_connections_default_start=None, return_value=None):
         """
         Sets a site as a landing site for your intranet.
 

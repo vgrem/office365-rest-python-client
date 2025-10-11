@@ -8,9 +8,7 @@ class TeamChannelManager(Entity):
     """This class is a placeholder for all TeamChannel related methods."""
 
     @staticmethod
-    def add_team_channel(
-        context, channel_url, private_channel=False, private_channel_group_owner=None
-    ):
+    def add_team_channel(context, channel_url, private_channel=False, private_channel_group_owner=None):
         """
         Create Team Channel based folder with specific prodID.
 
@@ -26,9 +24,7 @@ class TeamChannelManager(Entity):
             "privateChannelGroupOwner": private_channel_group_owner,
         }
         return_type = TeamChannel(context)
-        qry = ServiceOperationQuery(
-            manager, "AddTeamChannel", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(manager, "AddTeamChannel", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -71,9 +67,7 @@ class TeamChannelManager(Entity):
             "updatedConversationsObject": updated_conversations_object,
         }
         binding_type = TeamChannelManager(context)
-        qry = ServiceOperationQuery(
-            binding_type, "SaveConversations", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "SaveConversations", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 

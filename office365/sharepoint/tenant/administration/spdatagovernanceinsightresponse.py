@@ -48,13 +48,9 @@ class SPDataGovernanceInsightResponse(ClientValue):
         workload: str = None,
     ):
         self.CountOfSitesInReport = count_of_sites_in_report
-        self.CountOfSitesInReportUserPermissions = (
-            count_of_sites_in_report_user_permissions
-        )
+        self.CountOfSitesInReportUserPermissions = count_of_sites_in_report_user_permissions
         self.CountOfSitesInTenant = count_of_sites_in_tenant
-        self.CountOfSitesInTenantUserPermissions = (
-            count_of_sites_in_tenant_user_permissions
-        )
+        self.CountOfSitesInTenantUserPermissions = count_of_sites_in_tenant_user_permissions
         self.CreatedDateTime = created_date_time
         self.EEEUType = eeeu_type
         self.InvalidUserEntries = invalid_user_entries

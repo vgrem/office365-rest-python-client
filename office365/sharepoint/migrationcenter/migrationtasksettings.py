@@ -67,9 +67,7 @@ class MigrationTaskSettings(ClientValue):
         self.ScanOnly = scan_only
         self.SettingsUpdateTime = settings_update_time
         self.SkipListWithAudienceEnabled = skip_list_with_audience_enabled
-        self.StartMigrationAutomaticallyWhenNoScanIssue = (
-            start_migration_automatically_when_no_scan_issue
-        )
+        self.StartMigrationAutomaticallyWhenNoScanIssue = start_migration_automatically_when_no_scan_issue
         self.Tags = tags
         self.TurnOnDateCreatedFilter = turn_on_date_created_filter
         self.TurnOnDateModifiedFilter = turn_on_date_modified_filter
@@ -80,6 +78,4 @@ class MigrationTaskSettings(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Online.SharePoint.MigrationCenter.Common.MigrationTaskSettings"
-        )
+        return "Microsoft.Online.SharePoint.MigrationCenter.Common.MigrationTaskSettings"

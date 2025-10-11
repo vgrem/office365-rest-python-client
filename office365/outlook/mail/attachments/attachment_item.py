@@ -7,9 +7,7 @@ from office365.runtime.client_value import ClientValue
 class AttachmentItem(ClientValue):
     """Represents attributes of an item to be attached."""
 
-    def __init__(
-        self, attachment_type: AttachmentType = None, name: str = None, size: int = None
-    ):
+    def __init__(self, attachment_type: AttachmentType = None, name: str = None, size: int = None):
         """
         :param AttachmentType attachment_type:
         :param str name:
@@ -26,6 +24,4 @@ class AttachmentItem(ClientValue):
         file_size = os.stat(path).st_size
         from office365.outlook.mail.attachments.attachment_type import AttachmentType
 
-        return AttachmentItem(
-            attachment_type=AttachmentType.file, name=file_name, size=file_size
-        )
+        return AttachmentItem(attachment_type=AttachmentType.file, name=file_name, size=file_size)

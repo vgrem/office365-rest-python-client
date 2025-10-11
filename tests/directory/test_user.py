@@ -30,9 +30,7 @@ class TestGraphUser(GraphTestCase):
         self.assertIsNotNone(result.value)
 
     def test4_get_user_licences(self):
-        user = (
-            self.__class__.test_user.select(["assignedLicenses"]).get().execute_query()
-        )
+        user = self.__class__.test_user.select(["assignedLicenses"]).get().execute_query()
         self.assertIsInstance(user.assigned_licenses, ClientValueCollection)
 
     def test5_list_subscribed_skus(self):
@@ -52,11 +50,7 @@ class TestGraphUser(GraphTestCase):
         prop_val = create_unique_name("city_")
         user_to_update.set_property(prop_name, prop_val).update().execute_query()
 
-        result = (
-            self.client.users.filter(f"{prop_name} eq '{prop_val}'")
-            .get()
-            .execute_query()
-        )
+        result = self.client.users.filter(f"{prop_name} eq '{prop_val}'").get().execute_query()
         self.assertEqual(1, len(result))
 
     # def test9_check_member_groups(self):

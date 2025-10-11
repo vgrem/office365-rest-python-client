@@ -22,18 +22,14 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_token_interactive(
-    test_client_id, test_admin_principal_name
-)
+client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
 # Step 1: Get the resource service principal
 resource = client.service_principals.get_by_name("Microsoft Graph")
 
 # Step 2: Grant an app role to a client app
 app = client.applications.get_by_app_id(test_client_id)
-resource.grant_application_permissions(
-    app, "IdentityRiskyUser.Read.All"
-).execute_query()
+resource.grant_application_permissions(app, "IdentityRiskyUser.Read.All").execute_query()
 
 
 # Step 3 (optional). Print app role assignments

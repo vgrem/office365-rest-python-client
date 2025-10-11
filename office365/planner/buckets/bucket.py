@@ -14,7 +14,5 @@ class PlannerBucket(Entity):
         """Read-only. Nullable. Collection of tasks in the bucket."""
         return self.properties.get(
             "tasks",
-            EntityCollection(
-                self.context, PlannerTask, ResourcePath("tasks", self.resource_path)
-            ),
+            EntityCollection(self.context, PlannerTask, ResourcePath("tasks", self.resource_path)),
         )

@@ -28,9 +28,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         super().__init__(context, Attachment, resource_path, parent)
 
-    def add(
-        self, attachment_file_information: Union[AttachmentCreationInformation, Dict]
-    ) -> Attachment:
+    def add(self, attachment_file_information: Union[AttachmentCreationInformation, Dict]) -> Attachment:
         """
         Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
@@ -71,9 +69,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return_type = Attachment(self.context)
         params = {"DecodedUrl": decoded_url}
-        qry = ServiceOperationQuery(
-            self, "AddUsingPath", params, content_stream, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)
         self.context.add_query(qry)
         self.add_child(return_type)
         return return_type
@@ -101,9 +97,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         import zipfile
 
-        def _file_downloaded(
-            attachment_file: Attachment, result: ClientResult[AnyStr]
-        ) -> None:
+        def _file_downloaded(attachment_file: Attachment, result: ClientResult[AnyStr]) -> None:
             with zipfile.ZipFile(output_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr(attachment_file.file_name, result.value)
                 if callable(file_downloaded):
@@ -111,9 +105,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
         def _download(return_type):
             for attachment_file in return_type:
-                attachment_file.get_content().after_execute(
-                    partial(_file_downloaded, attachment_file)
-                )
+                attachment_file.get_content().after_execute(partial(_file_downloaded, attachment_file))
 
         self.get().after_execute(_download)
         return self
@@ -163,7 +155,5 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return Attachment(
             self.context,
-            ServiceOperationPath(
-                "GetByFileNameAsPath", [decoded_url], self.resource_path
-            ),
+            ServiceOperationPath("GetByFileNameAsPath", [decoded_url], self.resource_path),
         )

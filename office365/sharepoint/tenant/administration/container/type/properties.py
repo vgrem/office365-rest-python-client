@@ -40,12 +40,8 @@ class SPContainerTypeProperties(ClientValue):
         self.OwningTenantId = owning_tenant_id
         self.Region = region
         self.ResourceGroup = resource_group
-        self.SPContainerTypeBillingClassification = (
-            sp_container_type_billing_classification
-        )
+        self.SPContainerTypeBillingClassification = sp_container_type_billing_classification
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeProperties"
-        )
+        return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeProperties"

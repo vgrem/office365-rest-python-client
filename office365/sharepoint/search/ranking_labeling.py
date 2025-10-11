@@ -10,9 +10,7 @@ class RankingLabeling(Entity):
     """Provides methods for getting and adding relevance judgments"""
 
     def __init__(self, context):
-        static_path = StaticPath(
-            "Microsoft.SharePoint.Client.Search.Query.RankingLabeling"
-        )
+        static_path = StaticPath("Microsoft.SharePoint.Client.Search.Query.RankingLabeling")
         super().__init__(context, static_path)
 
     def add_judgment(self, user_query: str, url: str, label_id: str) -> Self:
@@ -37,9 +35,7 @@ class RankingLabeling(Entity):
         """
         return_type = ClientResult(self.context)
         payload = {"url": url}
-        qry = ServiceOperationQuery(
-            self, "NormalizeResultUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "NormalizeResultUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

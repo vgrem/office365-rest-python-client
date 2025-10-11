@@ -54,9 +54,7 @@ class SearchEntity(Entity):
         )
 
         def _patch_hit(search_hit: SearchHit) -> None:
-            resource_type_name = search_hit.get_property("resource").get(
-                "@odata.type", None
-            )
+            resource_type_name = search_hit.get_property("resource").get("@odata.type", None)
             resource_type = EntityType.resolve(resource_type_name)
             resource = resource_type(self.context, EntityPath())
             self.context.pending_request().map_json(search_hit.resource, resource)
@@ -96,9 +94,7 @@ class SearchEntity(Entity):
             enable_top_results=enable_top_results,
         )
 
-    def query_events(
-        self, query_string: str
-    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
+    def query_events(self, query_string: str) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook calendar events. Alias to query method
         :param str query_string: Contains the query terms.
         """

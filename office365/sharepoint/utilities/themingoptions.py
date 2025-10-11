@@ -8,9 +8,7 @@ class ThemingOptions(ClientValue):
     def __init__(
         self,
         hide_default_themes: bool = None,
-        theme_previews: ClientValueCollection[JsonTheme] = ClientValueCollection(
-            JsonTheme
-        ),
+        theme_previews: ClientValueCollection[JsonTheme] = ClientValueCollection(JsonTheme),
     ):
         self.hideDefaultThemes = hide_default_themes
         self.themePreviews = theme_previews

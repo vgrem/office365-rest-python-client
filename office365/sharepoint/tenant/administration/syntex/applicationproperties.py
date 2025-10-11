@@ -27,9 +27,7 @@ class SPSyntexApplicationProperties(ClientValue):
         self.CopilotEmbeddedChatHosts = copilot_embedded_chat_hosts
         self.DelegatedPermissions = delegated_permissions
         self.OverrideTenantSharingCapability = override_tenant_sharing_capability
-        self.OverrideTenantSharingCapabilityNullable = (
-            override_tenant_sharing_capability_nullable
-        )
+        self.OverrideTenantSharingCapabilityNullable = override_tenant_sharing_capability_nullable
         self.OwningApplicationId = owning_application_id
         self.OwningApplicationName = owning_application_name
         self.SharingCapability = sharing_capability

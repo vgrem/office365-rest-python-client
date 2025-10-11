@@ -29,9 +29,7 @@ class Device(DirectoryObject):
     @property
     def alternative_security_ids(self) -> ClientValueCollection[AlternativeSecurityId]:
         """For internal use only."""
-        return self.properties.get(
-            "alternativeSecurityIds", ClientValueCollection(AlternativeSecurityId)
-        )
+        return self.properties.get("alternativeSecurityIds", ClientValueCollection(AlternativeSecurityId))
 
     @property
     def approximate_last_signin_datetime(self) -> datetime:
@@ -63,9 +61,7 @@ class Device(DirectoryObject):
         """Groups and administrative units that this device is a member of."""
         return self.properties.get(
             "memberOf",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("memberOf", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path)),
         )
 
     @property
@@ -75,9 +71,7 @@ class Device(DirectoryObject):
         """
         return self.properties.get(
             "registeredOwners",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("registeredOwners", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("registeredOwners", self.resource_path)),
         )
 
     @property
@@ -87,9 +81,7 @@ class Device(DirectoryObject):
         """
         return self.properties.get(
             "registeredUsers",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("registeredUsers", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("registeredUsers", self.resource_path)),
         )
 
     @property
@@ -98,9 +90,7 @@ class Device(DirectoryObject):
         return all groups the user is a nested member of."""
         return self.properties.get(
             "transitiveMemberOf",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("transitiveMemberOf", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

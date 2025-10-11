@@ -34,18 +34,14 @@ class FileVersion(Entity):
     def open_binary_stream(self) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStream", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStream", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def open_binary_stream_with_options(self, open_options: int) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStreamWithOptions", [open_options], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStreamWithOptions", [open_options], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -101,9 +97,7 @@ class FileVersion(Entity):
         super(FileVersion, self).set_property(key, value, persist_changes)
         if key.lower() == self.property_ref_name.lower():
             if self._resource_path is None:
-                self._resource_path = EntityPath(
-                    value, self.parent_collection.resource_path
-                )
+                self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

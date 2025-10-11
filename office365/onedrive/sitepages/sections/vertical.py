@@ -12,9 +12,7 @@ class VerticalSection(Entity):
         """The set of web parts in this section."""
         return self.properties.get(
             "webParts",
-            EntityCollection(
-                self.context, WebPart, ResourcePath("webParts", self.resource_path)
-            ),
+            EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

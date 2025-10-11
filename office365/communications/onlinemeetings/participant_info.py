@@ -5,9 +5,7 @@ from office365.runtime.client_value import ClientValue
 class MeetingParticipantInfo(ClientValue):
     """Information about a participant in a meeting."""
 
-    def __init__(
-        self, identity: IdentitySet = IdentitySet(), role: str = None, upn: str = None
-    ):
+    def __init__(self, identity: IdentitySet = IdentitySet(), role: str = None, upn: str = None):
         """
         :param IdentitySet identity: Identity information of the participant.
         :param str role: Specifies the participant's role in the meeting.

@@ -10,9 +10,7 @@ class CalendarSharingMessage(Message):
     @property
     def sharing_message_action(self) -> CalendarSharingMessageAction:
         """"""
-        return self.properties.setdefault(
-            "sharingMessageAction", CalendarSharingMessageAction()
-        )
+        return self.properties.setdefault("sharingMessageAction", CalendarSharingMessageAction())
 
     def get_property(self, name, default_value=None):
         if default_value is None:

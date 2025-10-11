@@ -21,9 +21,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         """
         return super().add(displayName=display_name)
 
-    def get_notebook_from_web_url(
-        self, web_url: str
-    ) -> ClientResult[CopyNotebookModel]:
+    def get_notebook_from_web_url(self, web_url: str) -> ClientResult[CopyNotebookModel]:
         """
         Retrieve the properties and relationships of a notebook object by using its URL path.
         The location can be user notebooks on Microsoft 365, group notebooks,
@@ -33,9 +31,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         """
         return_type = ClientResult(self.context, CopyNotebookModel())
         params = {"webUrl": web_url}
-        qry = ServiceOperationQuery(
-            self, "getNotebookFromWebUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getNotebookFromWebUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

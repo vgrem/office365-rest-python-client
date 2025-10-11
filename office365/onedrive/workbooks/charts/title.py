@@ -11,7 +11,5 @@ class WorkbookChartTitle(Entity):
         """The formatting of a chart title, which includes fill and font formatting."""
         return self.properties.get(
             "format",
-            WorkbookChartTitleFormat(
-                self.context, ResourcePath("format", self.resource_path)
-            ),
+            WorkbookChartTitleFormat(self.context, ResourcePath("format", self.resource_path)),
         )

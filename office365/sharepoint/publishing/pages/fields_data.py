@@ -30,9 +30,7 @@ class SitePageFieldsData(ClientValue):
         canvas_json1: str = None,
         categories: str = None,
         co_auth_state: SitePageCoAuthState = SitePageCoAuthState(),
-        collaborators: ClientValueCollection[
-            SitePageCollaborator
-        ] = ClientValueCollection(SitePageCollaborator),
+        collaborators: ClientValueCollection[SitePageCollaborator] = ClientValueCollection(SitePageCollaborator),
         description: str = None,
         email_transpile_content: str = None,
         hidden_highlights_metadata: str = None,

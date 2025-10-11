@@ -18,6 +18,4 @@ class SPMachineLearningPublicationResult(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Office.Server.ContentCenter.SPMachineLearningPublicationResult"
-        )
+        return "Microsoft.Office.Server.ContentCenter.SPMachineLearningPublicationResult"

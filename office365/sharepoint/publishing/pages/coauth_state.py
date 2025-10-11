@@ -17,9 +17,9 @@ class SitePageCoAuthState(ClientValue):
         lock_duration=None,
         overwrite_existing_version=None,
         shared_lock_id=None,
-        authoring_schema_feature_versions: ClientValueCollection[
+        authoring_schema_feature_versions: ClientValueCollection[AuthoringSchemaFeatureVersion] = ClientValueCollection(
             AuthoringSchemaFeatureVersion
-        ] = ClientValueCollection(AuthoringSchemaFeatureVersion),
+        ),
     ):
         self.Action = action
         self.HasReachedMinorVersionsLimit = has_reached_minor_versions_limit

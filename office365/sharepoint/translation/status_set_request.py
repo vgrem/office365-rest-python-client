@@ -8,9 +8,9 @@ class TranslationStatusSetRequest(ClientValue):
     def __init__(
         self,
         values=None,
-        requested_translations: ClientValueCollection[
+        requested_translations: ClientValueCollection[RequestedTranslation] = ClientValueCollection(
             RequestedTranslation
-        ] = ClientValueCollection(RequestedTranslation),
+        ),
     ):
         """
         :param list[RequestedTranslation] values:

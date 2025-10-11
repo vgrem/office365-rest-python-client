@@ -29,9 +29,7 @@ class NavigationNode(Entity):
         """Gets the collection of child nodes of the navigation node."""
         return self.properties.get(
             "Children",
-            NavigationNodeCollection(
-                self.context, ResourcePath("Children", self.resource_path)
-            ),
+            NavigationNodeCollection(self.context, ResourcePath("Children", self.resource_path)),
         )
 
     @property
@@ -69,9 +67,7 @@ class NavigationNode(Entity):
         """Represents the title of this node."""
         return self.properties.get(
             "TitleResource",
-            UserResource(
-                self.context, ResourcePath("TitleResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

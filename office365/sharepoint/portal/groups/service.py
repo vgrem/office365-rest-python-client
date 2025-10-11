@@ -20,9 +20,7 @@ class GroupService(Entity):
             return_type = ClientResult(self.context)
         if image_hash is None:
             image_hash = random.getrandbits(64)
-        qry = ServiceOperationQuery(
-            self, "GetGroupImage", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetGroupImage", None, None, None, return_type)
 
         def _create_request(request: RequestOptions) -> None:
             request.url += "?id='{0}'&hash={1}".format(group_id, image_hash)

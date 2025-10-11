@@ -22,11 +22,7 @@ class TemplateContext:
             "EntityType": "entity_type.py",
             "EnumType": "enum_type.py",
         }
-        template_file = abspath(
-            os.path.join(
-                self._template_path, file_mapping[self._schema.BaseTypeFullName]
-            )
-        )
+        template_file = abspath(os.path.join(self._template_path, file_mapping[self._schema.BaseTypeFullName]))
         with open(template_file, encoding="utf-8") as f:
             return ast.parse(f.read())
 
@@ -37,7 +33,7 @@ class TemplateContext:
             "datetime": "datetime",
             "date": "datetime",
             "StringCollection": "office365.runtime.types.collections",
-            "GuidCollection": "office365.runtime.types.collections"
+            "GuidCollection": "office365.runtime.types.collections",
         }
 
         imports = []

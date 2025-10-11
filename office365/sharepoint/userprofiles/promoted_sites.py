@@ -13,9 +13,7 @@ class PromotedSites(Entity):
     """
 
     @staticmethod
-    def add_site_link(
-        context, url: str, title: str, description: str = None, image_url: str = None
-    ) -> PromotedSites:
+    def add_site_link(context, url: str, title: str, description: str = None, image_url: str = None) -> PromotedSites:
         """
         Creates a new site link in the collection of promoted sites.
 
@@ -32,9 +30,7 @@ class PromotedSites(Entity):
             "imageUrl": image_url,
         }
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "AddSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "AddSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 
@@ -48,9 +44,7 @@ class PromotedSites(Entity):
         """
         payload = {"itemID": item_id}
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "DeleteSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "DeleteSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 

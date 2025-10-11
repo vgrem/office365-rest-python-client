@@ -16,9 +16,7 @@ class TestSharePointFolder(SPTestCase):
         cls.parent_folder = cls.client.web.default_document_library().root_folder
 
     def test1_create_folder(self):
-        result = self.parent_folder.folders.add(
-            create_unique_name("input")
-        ).execute_query()
+        result = self.parent_folder.folders.add(create_unique_name("input")).execute_query()
         self.assertTrue(result.exists)
         self.__class__.input_folder = result
 
@@ -35,11 +33,7 @@ class TestSharePointFolder(SPTestCase):
         self.assertTrue(folder.exists)
 
     def test5_get_by_path(self):
-        folder = (
-            self.parent_folder.folders.get_by_path(self.__class__.input_folder.name)
-            .get()
-            .execute_query()
-        )
+        folder = self.parent_folder.folders.get_by_path(self.__class__.input_folder.name).get().execute_query()
         self.assertIsNotNone(folder.unique_id)
 
     # def test6_get_by_path_with_props(self):
@@ -52,9 +46,7 @@ class TestSharePointFolder(SPTestCase):
         list_item.set_property("Title", "New folder title").update().execute_query()
 
     def test8_upload_file_into_folder(self):
-        result = self.__class__.input_folder.upload_file(
-            "sample.txt", "Some content goes here..."
-        ).execute_query()
+        result = self.__class__.input_folder.upload_file("sample.txt", "Some content goes here...").execute_query()
         self.assertIsNotNone(result.server_relative_url)
 
     def test9_list_files(self):
@@ -66,9 +58,7 @@ class TestSharePointFolder(SPTestCase):
             self.assertIsNotNone(file.resource_path)
 
     def test_10_copy_folder(self):
-        output_folder = self.parent_folder.folders.add(
-            create_unique_name("output")
-        ).execute_query()
+        output_folder = self.parent_folder.folders.add(create_unique_name("output")).execute_query()
         folder_to = self.__class__.input_folder.copy_to(output_folder).execute_query()
         files_to = folder_to.files.get().execute_query()
         self.assertGreater(len(files_to), 0)
@@ -91,9 +81,7 @@ class TestSharePointFolder(SPTestCase):
         self.__class__.deleted_folder_guid = result.value
 
     def test_14_restore_folder(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(
-            self.__class__.deleted_folder_guid
-        )
+        recycle_item = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_folder_guid)
         recycle_item.restore().execute_query()
 
     def test_15_get_folder_changes(self):

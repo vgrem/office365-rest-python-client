@@ -16,9 +16,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, NavigationNode, resource_path)
 
-    def add(
-        self, create_node_info: NavigationNodeCreationInformation
-    ) -> NavigationNode:
+    def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:
         """
         Creates a navigation node object and adds it to the collection.
         """
@@ -50,9 +48,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         """
         return_type = NavigationNode(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "GetByIndex", [index], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetByIndex", [index], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -62,6 +58,4 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
 
         :param int node_id: Specifies the identifier of the navigation node.
         """
-        return NavigationNode(
-            self.context, ServiceOperationPath("GetById", [node_id], self.resource_path)
-        )
+        return NavigationNode(self.context, ServiceOperationPath("GetById", [node_id], self.resource_path))

@@ -32,9 +32,7 @@ class TestApplication(GraphTestCase):
         self.__class__.target_password = result.value
 
     def test6_remove_password(self):
-        self.__class__.target_app.remove_password(
-            self.__class__.target_password.keyId
-        ).execute_query()
+        self.__class__.target_app.remove_password(self.__class__.target_password.keyId).execute_query()
 
     def test7_delete_app(self):
         result = self.__class__.target_app

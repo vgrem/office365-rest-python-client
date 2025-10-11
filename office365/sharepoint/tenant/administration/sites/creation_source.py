@@ -19,9 +19,7 @@ class SiteCreationSource(ClientValue):
     ) -> None:
         self.IsSyncThresholdLimitReached = is_sync_threshold_limit_reached
         self.LastRefreshTimeStamp = last_refresh_time_stamp
-        self.SiteCreationData = ClientValueCollection(
-            SiteCreationData, site_creation_data
-        )
+        self.SiteCreationData = ClientValueCollection(SiteCreationData, site_creation_data)
         self.SyncThresholdLimit = sync_threshold_limit
         self.TotalSitesCount = total_sites_count
 

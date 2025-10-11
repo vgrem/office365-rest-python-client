@@ -45,9 +45,7 @@ class ConversationThread(Entity):
         """"""
         return self.properties.get(
             "posts",
-            EntityCollection(
-                self.context, Post, ResourcePath("posts", self.resource_path)
-            ),
+            EntityCollection(self.context, Post, ResourcePath("posts", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

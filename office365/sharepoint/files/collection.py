@@ -35,9 +35,7 @@ class FileCollection(EntityCollection[File]):
     def get_published_file(self, base_file_path: str) -> FileStatus:
         """ """
         return_type = FileStatus(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetPublishedFile", [base_file_path], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPublishedFile", [base_file_path], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -117,17 +115,11 @@ class FileCollection(EntityCollection[File]):
                 return
 
             if uploaded_bytes == 0:
-                return_type.start_upload(upload_id, content).after_execute(
-                    _after_uploaded
-                )
+                return_type.start_upload(upload_id, content).after_execute(_after_uploaded)
             elif uploaded_bytes + len(content) < file_size:
-                return_type.continue_upload(
-                    upload_id, uploaded_bytes, content
-                ).after_execute(_after_uploaded)
+                return_type.continue_upload(upload_id, uploaded_bytes, content).after_execute(_after_uploaded)
             else:
-                return_type.finish_upload(
-                    upload_id, uploaded_bytes, content
-                ).after_execute(_upload)
+                return_type.finish_upload(upload_id, uploaded_bytes, content).after_execute(_upload)
 
         if file_size > chunk_size:
             return self.add(file_name, None, True).after_execute(_upload)
@@ -148,9 +140,7 @@ class FileCollection(EntityCollection[File]):
         return_type = File(self.context)
         self.add_child(return_type)
         params = FileCreationInformation(url=url, overwrite=overwrite)
-        qry = ServiceOperationQuery(
-            self, "add", params.to_json(), content, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -165,16 +155,10 @@ class FileCollection(EntityCollection[File]):
 
         def _add_template_file():
             params = {
-                "urlOfFile": str(
-                    SPResPath.create_relative(
-                        self.parent.properties["ServerRelativeUrl"], url_of_file
-                    )
-                ),
+                "urlOfFile": str(SPResPath.create_relative(self.parent.properties["ServerRelativeUrl"], url_of_file)),
                 "templateFileType": template_file_type.value,
             }
-            qry = ServiceOperationQuery(
-                self, "addTemplateFile", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "addTemplateFile", params, None, None, return_type)
             self.context.add_query(qry)
 
         self.parent.ensure_property("ServerRelativeUrl", _add_template_file)
@@ -182,15 +166,11 @@ class FileCollection(EntityCollection[File]):
 
     def get_by_url(self, url: str) -> File:
         """Retrieve File object by url"""
-        return File(
-            self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
-        )
+        return File(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_id(self, id_: int) -> File:
         """Gets the File with the specified ID."""
-        return File(
-            self.context, ServiceOperationPath("getById", [id_], self.resource_path)
-        )
+        return File(self.context, ServiceOperationPath("getById", [id_], self.resource_path))
 
     @property
     def parent(self) -> Folder:

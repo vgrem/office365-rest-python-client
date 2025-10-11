@@ -33,15 +33,9 @@ class DirectSharingAbilities(ClientValue):
         self.canRequestGrantAccess = can_request_grant_access
         self.supportsReviewPermission = supports_review_permission
         self.canAddNewExternalPrincipal = can_add_new_external_principal
-        self.canRequestGrantAccessForExistingExternalPrincipal = (
-            can_request_grant_access_for_existing_external_principal
-        )
-        self.canRequestGrantAccessForInternalPrincipal = (
-            can_request_grant_access_for_internal_principal
-        )
-        self.canRequestGrantAccessForNewExternalPrincipal = (
-            can_request_grant_access_for_new_external_principal
-        )
+        self.canRequestGrantAccessForExistingExternalPrincipal = can_request_grant_access_for_existing_external_principal
+        self.canRequestGrantAccessForInternalPrincipal = can_request_grant_access_for_internal_principal
+        self.canRequestGrantAccessForNewExternalPrincipal = can_request_grant_access_for_new_external_principal
         self.supportsEditPermission = supports_edit_permission
         self.supportsManageListPermission = supports_manage_list_permission
         self.supportsReadPermission = supports_read_permission

@@ -59,9 +59,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         """The section that contains the page."""
         return self.properties.get(
             "parentSection",
-            OnenoteSection(
-                self.context, ResourcePath("parentSection", self.resource_path)
-            ),
+            OnenoteSection(self.context, ResourcePath("parentSection", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

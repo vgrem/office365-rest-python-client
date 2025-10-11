@@ -37,9 +37,7 @@ class TestListItemAttachment(SPTestCase):
         self.assertEqual(len(result), 1)
 
     def test3_get_by_filename(self):
-        result = self.__class__.target_item.attachment_files.get_by_filename(
-            self.attachment_file_name
-        )
+        result = self.__class__.target_item.attachment_files.get_by_filename(self.attachment_file_name)
         self.assertIsNotNone(result.resource_path)
 
     def test4_download_attachment(self):

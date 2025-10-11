@@ -12,9 +12,7 @@ class QueryAutoCompletion(ClientValue):
         query=None,
         score=None,
         source=None,
-        matches: ClientValueCollection[
-            QueryAutoCompletionMatch
-        ] = ClientValueCollection(QueryAutoCompletionMatch),
+        matches: ClientValueCollection[QueryAutoCompletionMatch] = ClientValueCollection(QueryAutoCompletionMatch),
     ):
         """
         The QueryAutoCompletion complex type represents the matches for the Query in one Source.

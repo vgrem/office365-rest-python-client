@@ -13,9 +13,9 @@ class SPUninstallAddinJobDetail(ClientValue):
         self,
         absolute_url: str = None,
         app_instance_id: str = None,
-        error_details: ClientValueCollection[
+        error_details: ClientValueCollection[SPUninstallAddinErrorDetail] = ClientValueCollection(
             SPUninstallAddinErrorDetail
-        ] = ClientValueCollection(SPUninstallAddinErrorDetail),
+        ),
         job_id: str = None,
         server_relative_url: str = None,
         site_id: str = None,

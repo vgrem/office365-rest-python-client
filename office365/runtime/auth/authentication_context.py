@@ -77,9 +77,7 @@ class AuthenticationContext:
             resource = get_absolute_url(self.url)
             scopes = [f"{resource}/.default"]
         if cert_path is None and private_key is None:
-            raise ValueError(
-                "Private key is missing. Use either 'cert_path' or 'private_key' to pass the value"
-            )
+            raise ValueError("Private key is missing. Use either 'cert_path' or 'private_key' to pass the value")
         elif cert_path is not None:
             with open(cert_path, "r", encoding="utf8") as f:
                 private_key = f.read()
@@ -104,9 +102,7 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_interactive(
-        self, tenant: str, client_id: str, scopes: List[str] = None
-    ) -> Self:
+    def with_interactive(self, tenant: str, client_id: str, scopes: List[str] = None) -> Self:
         """
         Authenticate interactively via browser
 
@@ -163,9 +159,7 @@ class AuthenticationContext:
 
             flow = app.initiate_device_flow(scopes=scopes)
             if "user_code" not in flow:
-                raise ValueError(
-                    "Failed to create device flow: %s" % json.dumps(flow, indent=4)
-                )
+                raise ValueError("Failed to create device flow: %s" % json.dumps(flow, indent=4))
 
             print(flow["message"])
             sys.stdout.flush()
@@ -194,12 +188,8 @@ class AuthenticationContext:
             if self._cached_token is None or request_time > self._token_expires:
                 self._cached_token = token_func()
                 if hasattr(self._cached_token, "expiresIn"):
-                    self._token_expires = request_time + timedelta(
-                        seconds=self._cached_token.expiresIn
-                    )
-            request.set_header(
-                "Authorization", _get_authorization_header(self._cached_token)
-            )
+                    self._token_expires = request_time + timedelta(seconds=self._cached_token.expiresIn)
+            request.set_header("Authorization", _get_authorization_header(self._cached_token))
 
         self._authenticate = _authenticate
         return self
@@ -247,9 +237,7 @@ class AuthenticationContext:
 
         return self.with_access_token(_acquire_token)
 
-    def with_credentials(
-        self, credentials: Union[UserCredential, ClientCredential]
-    ) -> AuthenticationContext:
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> AuthenticationContext:
         """
         Initialize authentication with user or client credentials
 
@@ -304,9 +292,7 @@ class AuthenticationContext:
         :param str password: The user password
         :param str username: Typically a UPN in the form of an email address
         """
-        provider = SamlTokenProvider(
-            self.url, UserCredential(username, password), self._browser_mode
-        )
+        provider = SamlTokenProvider(self.url, UserCredential(username, password), self._browser_mode)
         self._authenticate = provider.authenticate_request
         return self
 
@@ -317,9 +303,7 @@ class AuthenticationContext:
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
         """
-        provider = ACSTokenProvider(
-            self.url, ClientCredential(client_id, client_secret)
-        )
+        provider = ACSTokenProvider(self.url, ClientCredential(client_id, client_secret))
         self._authenticate = provider.authenticate_request
         return self
 

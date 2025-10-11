@@ -61,9 +61,7 @@ class UserRegistrationDetails(Entity):
         """
         The method the user selected as the default second-factor for performing multifactor authentication.
         """
-        return self.properties.get(
-            "userPreferredMethodForSecondaryAuthentication", None
-        )
+        return self.properties.get("userPreferredMethodForSecondaryAuthentication", None)
 
     @property
     def user_principal_name(self) -> Optional[str]:

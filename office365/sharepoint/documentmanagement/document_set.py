@@ -54,9 +54,7 @@ class DocumentSet(Folder):
             target_list = context.web.lists.get_by_id(list_id)
             target_list.ensure_property("Title", _create, target_list=target_list)
 
-        parent_folder.ensure_properties(
-            ["UniqueId", "Properties", "ServerRelativeUrl"], _parent_folder_loaded
-        )
+        parent_folder.ensure_properties(["UniqueId", "Properties", "ServerRelativeUrl"], _parent_folder_loaded)
         return return_type
 
     @staticmethod

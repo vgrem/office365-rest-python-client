@@ -11,9 +11,7 @@ class CommentFacet(ClientValue):
         self,
         comment_text: str = None,
         parent_author: ActivityClientIdentity = ActivityClientIdentity(),
-        participants: ClientValueCollection[
-            ActivityClientIdentity
-        ] = ClientValueCollection(ActivityClientIdentity),
+        participants: ClientValueCollection[ActivityClientIdentity] = ClientValueCollection(ActivityClientIdentity),
     ):
         self.commentText = comment_text
         self.parentAuthor = parent_author

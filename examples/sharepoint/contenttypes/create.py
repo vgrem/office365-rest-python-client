@@ -11,16 +11,12 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 
 logger.info("Creating content type ...")
 parent_ct = ctx.web.available_content_types.get_by_name("Document")
-ct = ctx.web.content_types.create(
-    "Contoso Document", parent_content_type=parent_ct
-).execute_query()
+ct = ctx.web.content_types.create("Contoso Document", parent_content_type=parent_ct).execute_query()
 # ct = ctx.web.content_types.create("Contoso Document", parent_content_type="0x0101").execute_query()
 logger.info(f"Successfully created content type with ID: {ct.id}")
 
 logger.info("Updating content type properties ...")
-ct.set_property("Description", "Contoso Document content type").update(
-    True
-).execute_query()
+ct.set_property("Description", "Contoso Document content type").update(True).execute_query()
 logger.info("Successfully updated content type properties")
 
 # 3. Link the fields to the content type
@@ -29,9 +25,7 @@ logger.info("Successfully updated content type properties")
 
 # 4. Localize content type
 logger.info("Adding localization for content type ...")
-result = ct.name_resource.set_value_for_ui_culture(
-    "fi-FI", "Contoso Dokumentti"
-).execute_query()
+result = ct.name_resource.set_value_for_ui_culture("fi-FI", "Contoso Dokumentti").execute_query()
 logger.info("Successfully added localization")
 
 

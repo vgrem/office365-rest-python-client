@@ -71,18 +71,12 @@ class Presence(Entity):
             message = ItemBody(message)
         if expiry:
             expiry = DateTimeTimeZone.parse(expiry)
-        payload = {
-            "statusMessage": PresenceStatusMessage(
-                message=message, expiry_datetime=expiry
-            )
-        }
+        payload = {"statusMessage": PresenceStatusMessage(message=message, expiry_datetime=expiry)}
         qry = ServiceOperationQuery(self, "setStatusMessage", None, payload)
         self.context.add_query(qry)
         return self
 
-    def set_user_preferred_presence(
-        self, availability="Available", activity="Available", expiration_duration=None
-    ):
+    def set_user_preferred_presence(self, availability="Available", activity="Available", expiration_duration=None):
         """
         Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
         the user's presence shows as the preferred status.

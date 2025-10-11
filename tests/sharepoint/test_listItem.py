@@ -36,13 +36,9 @@ class TestSharePointListItem(SPTestCase):
             if not self.target_list.enable_folder_creation:
                 self.target_list.enable_folder_creation = True
                 self.target_list.update().execute_query()
-            self.assertTrue(
-                self.target_list.enable_folder_creation, "Folder creation enabled"
-            )
+            self.assertTrue(self.target_list.enable_folder_creation, "Folder creation enabled")
 
-        self.target_list.ensure_property(
-            "EnableFolderCreation", _init_list
-        ).execute_query()
+        self.target_list.ensure_property("EnableFolderCreation", _init_list).execute_query()
 
     def test3_create_folder_in_list(self):
         result = self.target_list.root_folder.add("Archive").execute_query()
@@ -62,9 +58,7 @@ class TestSharePointListItem(SPTestCase):
         self.assertEqual(len(result), 1)
 
     def test6_get_wopi_frame_url(self):
-        result = self.__class__.target_item.get_wopi_frame_url(
-            SPWOPIAction.default
-        ).execute_query()
+        result = self.__class__.target_item.get_wopi_frame_url(SPWOPIAction.default).execute_query()
         self.assertIsNotNone(result.value)
 
     def test7_update_listItem(self):
@@ -117,9 +111,7 @@ class TestSharePointListItem(SPTestCase):
         self.__class__.deleted_item_guid = result.value
 
     def test_15_restore_item(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(
-            self.__class__.deleted_item_guid
-        )
+        recycle_item = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_item_guid)
         recycle_item.restore().execute_query()
         self.assertIsNotNone(recycle_item.resource_path)
 

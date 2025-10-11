@@ -103,9 +103,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
     def __repr__(self) -> str:
         return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"
 
-    def to_json(
-        self, json_format: Optional[ODataJsonFormat] = None
-    ) -> Union[List[Any], Dict[str, Any]]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Union[List[Any], Dict[str, Any]]:
         """Serializes the collection to OData JSON format.
 
         Args:
@@ -131,10 +129,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
                 json[i] = v.to_json(json_format)
             elif isinstance(v, uuid.UUID):
                 json[i] = str(v)
-        if (
-            isinstance(json_format, JsonLightFormat)
-            and json_format.include_control_information
-        ):
+        if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:
             json = {
                 json_format.collection: json,
                 json_format.metadata_type: {"type": self.entity_type_name},

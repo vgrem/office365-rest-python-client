@@ -12,9 +12,7 @@ class SharePointSharingSettings(Entity):
         to search for and resolve desired users and groups."""
         return self.properties.get(
             "PickerProperties",
-            PickerSettings(
-                self.context, ResourcePath("PickerProperties", self.resource_path)
-            ),
+            PickerSettings(self.context, ResourcePath("PickerProperties", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

@@ -10,12 +10,8 @@ class PotentialAction(ClientValue):
 
     def __init__(
         self,
-        actions: ClientValueCollection[MessageCardActionButton] = ClientValueCollection(
-            MessageCardActionButton
-        ),
-        inputs: ClientValueCollection[MessageCardInput] = ClientValueCollection(
-            MessageCardInput
-        ),
+        actions: ClientValueCollection[MessageCardActionButton] = ClientValueCollection(MessageCardActionButton),
+        inputs: ClientValueCollection[MessageCardInput] = ClientValueCollection(MessageCardInput),
         type_: str = None,
     ):
         self.actions = actions

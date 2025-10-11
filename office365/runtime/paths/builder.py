@@ -88,11 +88,7 @@ class ODataPathBuilder(object):
                 if value is not None
             )
         elif isinstance(parameters, (list, tuple)):
-            return ",".join(
-                ODataPathBuilder._encode_odata_value(value)
-                for value in parameters
-                if value is not None
-            )
+            return ",".join(ODataPathBuilder._encode_odata_value(value) for value in parameters if value is not None)
         return ""
 
     @staticmethod

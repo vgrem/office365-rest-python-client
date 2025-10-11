@@ -12,9 +12,7 @@ class SocialRestThread(Entity):
     """
 
     def __init__(self, context):
-        super(SocialRestThread, self).__init__(
-            context, ResourcePath("SP.Social.SocialRestThread")
-        )
+        super(SocialRestThread, self).__init__(context, ResourcePath("SP.Social.SocialRestThread"))
 
     def like(self, post_id):
         """

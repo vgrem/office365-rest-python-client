@@ -55,9 +55,7 @@ class ViewFieldCollection(Entity):
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property(
-                "InternalName", lambda: _add_view_field(field.internal_name)
-            )
+            field.ensure_property("InternalName", lambda: _add_view_field(field.internal_name))
         else:
             _add_view_field(field)
         return self
@@ -76,9 +74,7 @@ class ViewFieldCollection(Entity):
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property(
-                "InternalName", lambda: _move_view_field_to(field.internal_name)
-            )
+            field.ensure_property("InternalName", lambda: _move_view_field_to(field.internal_name))
         else:
             _move_view_field_to(field)
 
@@ -102,9 +98,7 @@ class ViewFieldCollection(Entity):
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property(
-                "InternalName", lambda: _remove_view_field(field.internal_name)
-            )
+            field.ensure_property("InternalName", lambda: _remove_view_field(field.internal_name))
         else:
             _remove_view_field(field)
 

@@ -29,9 +29,7 @@ class SPMachineLearningHub(Entity):
         """
         return_type = SyntexModelsLandingInfo(self.context)
         payload = {"contentTypeId": content_type_id}
-        qry = ServiceOperationQuery(
-            self, "GetByContentTypeId", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetByContentTypeId", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -62,9 +60,7 @@ class SPMachineLearningHub(Entity):
     def get_retention_labels(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
-        qry = ServiceOperationQuery(
-            self, "GetRetentionLabels", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRetentionLabels", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -91,9 +87,7 @@ class SPMachineLearningHub(Entity):
         """ """
         return self.properties.get(
             "MachineLearningEnabled",
-            SPMachineLearningEnabled(
-                self.context, ResourcePath("MachineLearningEnabled", self.resource_path)
-            ),
+            SPMachineLearningEnabled(self.context, ResourcePath("MachineLearningEnabled", self.resource_path)),
         )
 
     @property
@@ -101,9 +95,7 @@ class SPMachineLearningHub(Entity):
         """ """
         return self.properties.get(
             "Models",
-            SPMachineLearningModelCollection(
-                self.context, ResourcePath("Models", self.resource_path)
-            ),
+            SPMachineLearningModelCollection(self.context, ResourcePath("Models", self.resource_path)),
         )
 
     @property
@@ -111,9 +103,7 @@ class SPMachineLearningHub(Entity):
         """ """
         return self.properties.get(
             "Samples",
-            SPMachineLearningSampleCollection(
-                self.context, ResourcePath("Samples", self.resource_path)
-            ),
+            SPMachineLearningSampleCollection(self.context, ResourcePath("Samples", self.resource_path)),
         )
 
     @property

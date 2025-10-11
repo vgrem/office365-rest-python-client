@@ -10,9 +10,7 @@ class TeamsPublishingStatus(ClientValue):
         audience_id: str = None,
         error_code: int = None,
         error_message: str = None,
-        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
+        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
         http_status_code: int = None,
         status: int = None,
     ):

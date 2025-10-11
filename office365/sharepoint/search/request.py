@@ -145,18 +145,14 @@ class SearchRequest(ClientValue):
         self.Properties = ClientValueCollection(QueryProperty, properties)
         self.UILanguage = ui_language
         self.HitHighlightedProperties = StringCollection(hit_highlighted_properties)
-        self.HitHighlightedMultivaluePropertyLimit = (
-            hit_highlighted_multivalue_property_limit
-        )
+        self.HitHighlightedMultivaluePropertyLimit = hit_highlighted_multivalue_property_limit
         self.BlockDedupeMode = block_dedupe_mode
         self.BypassResultTypes = bypass_result_types
         self.DesiredSnippetLength = desired_snippet_length
         self.EnableFQL = enable_fql
         self.EnableInterleaving = enable_interleaving
         self.EnableNicknames = enable_nicknames
-        self.EnableOrderingHitHighlightedProperty = (
-            enable_ordering_hit_highlighted_property
-        )
+        self.EnableOrderingHitHighlightedProperty = enable_ordering_hit_highlighted_property
         self.EnablePhonetic = enable_phonetic
         self.EnableStemming = enable_stemming
         self.GenerateBlockRankLog = generate_block_rank_log

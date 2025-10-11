@@ -34,16 +34,12 @@ class SPHelper(Entity):
         if result is None:
             result = ClientResult(context)
         payload = {"principalName": principal_name, "groupId": group_id}
-        qry = ServiceOperationQuery(
-            SPHelper(context), "IsMemberOf", None, payload, None, result, True
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "IsMemberOf", None, payload, None, result, True)
         context.add_query(qry)
         return result
 
     @staticmethod
-    def check_site_availability(
-        context: ClientContext, site_url: str
-    ) -> ClientResult[bool]:
+    def check_site_availability(context: ClientContext, site_url: str) -> ClientResult[bool]:
         """ """
         return_type = ClientResult(context)
         qry = ServiceOperationQuery(
@@ -66,9 +62,7 @@ class SPHelper(Entity):
         """
         payload = {"userId": user_id}
         return_type = MembershipResult(context)
-        qry = ServiceOperationQuery(
-            SPHelper(context), "GetMembership", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "GetMembership", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -86,9 +80,7 @@ class SPHelper(Entity):
             "groupId": group_id,
             "rowLimit": row_limit,
         }
-        qry = ServiceOperationQuery(
-            SPHelper(context), "GetMembersInfo", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "GetMembersInfo", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -106,9 +98,7 @@ class SPHelper(Entity):
         if return_type is None:
             return_type = MyGroupsResult(context)
         payload = {"logOnName": logon_name, "offset": offset, "len": length}
-        qry = ServiceOperationQuery(
-            SPHelper(context), "GetMyGroups", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "GetMyGroups", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -121,9 +111,7 @@ class SPHelper(Entity):
         """
         if return_type is None:
             return_type = EntityCollection(context, User)
-        qry = ServiceOperationQuery(
-            SPHelper(context), "GetMembers", [group_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "GetMembers", [group_id], None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -141,9 +129,7 @@ class SPHelper(Entity):
         """
         if return_type is None:
             return_type = EntityCollection(context, User)
-        qry = ServiceOperationQuery(
-            SPHelper(context), "GetOwners", [group_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(SPHelper(context), "GetOwners", [group_id], None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -155,9 +141,7 @@ class SPHelper(Entity):
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         """
         binding_type = SPHelper(context)
-        qry = ServiceOperationQuery(
-            binding_type, "RemoveExternalMembers", [group_id], is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "RemoveExternalMembers", [group_id], is_static=True)
         context.add_query(qry)
         return binding_type
 

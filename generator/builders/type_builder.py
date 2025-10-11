@@ -40,15 +40,9 @@ class TypeBuilder(ast.NodeTransformer):
         if self._schema:
             node.name = self.client_type_name
 
-        [
-            self._properties.append(PropertyBuilder(prop_schema))
-            for _, prop_schema in self._schema.Properties.items()
-        ]
+        [self._properties.append(PropertyBuilder(prop_schema)) for _, prop_schema in self._schema.Properties.items()]
 
-        [
-            self._members.append(MemberBuilder(member_schema))
-            for _, member_schema in self._schema.Members.items()
-        ]
+        [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
 
         if self._docs_service:
             self._docs_service.build_documentation(self)
@@ -84,9 +78,7 @@ class TypeBuilder(ast.NodeTransformer):
             if node.name == "entity_type_name":
                 self._entity_type_name_exists = True
 
-            matching_prop = next(
-                (prop for prop in self._properties if prop.name == node.name), None
-            )
+            matching_prop = next((prop for prop in self._properties if prop.name == node.name), None)
             if matching_prop:
                 matching_prop.status = "attached"
 
@@ -101,9 +93,7 @@ class TypeBuilder(ast.NodeTransformer):
         ):
 
             prop_name = node.attr
-            matching_prop = next(
-                (prop for prop in self._properties if prop.name == prop_name), None
-            )
+            matching_prop = next((prop for prop in self._properties if prop.name == prop_name), None)
             if matching_prop:
                 matching_prop.status = "attached"
 
@@ -112,9 +102,7 @@ class TypeBuilder(ast.NodeTransformer):
     def build(self) -> Self:
         from generator.builders.template_context import TemplateContext
 
-        self._template = TemplateContext(
-            self._options.get("templatepath"), self._schema
-        )
+        self._template = TemplateContext(self._options.get("templatepath"), self._schema)
 
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
@@ -134,9 +122,7 @@ class TypeBuilder(ast.NodeTransformer):
         """Build missing imports"""
         imports = self._template.build_imports(self)
 
-        existing_imports = [
-            n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))
-        ]
+        existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
         insert_index = len(existing_imports)
         for imp in imports:
             module.body.insert(insert_index, imp)
@@ -221,9 +207,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _update_init_method(self, init_method: ast.FunctionDef):
 
-        existing_params = {
-            arg.arg for arg in init_method.args.args if arg.arg != "self"
-        }
+        existing_params = {arg.arg for arg in init_method.args.args if arg.arg != "self"}
 
         for prop in self._properties:
             if prop.name not in existing_params and prop.status == "detached":
@@ -246,9 +230,7 @@ class TypeBuilder(ast.NodeTransformer):
         if len(self._properties) == 0 and len(self._members) == 0:
             return
 
-        class_node.body = [
-            stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)
-        ]
+        class_node.body = [stmt for stmt in class_node.body if not isinstance(stmt, ast.Pass)]
 
         self._ensure_entity_type_name(class_node)
 
@@ -281,19 +263,13 @@ class TypeBuilder(ast.NodeTransformer):
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = ODataType.find_client_type(
-            self.client_type_name, tuple(self._options["modules"].split(","))
-        )
+        cls = ODataType.find_client_type(self.client_type_name, tuple(self._options["modules"].split(",")))
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)
         else:
             type_info["state"] = "detached"
-            type_info["file"] = abspath(
-                os.path.join(
-                    self._options["outputpath"], self.client_type_name.lower() + ".py"
-                )
-            )
+            type_info["file"] = abspath(os.path.join(self._options["outputpath"], self.client_type_name.lower() + ".py"))
         return type_info
 
     def _ensure_type_info(self):

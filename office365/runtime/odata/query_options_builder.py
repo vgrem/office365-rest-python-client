@@ -9,9 +9,7 @@ class QueryOptionsBuilder:
     """Builder for constructing QueryOptions instances."""
 
     @staticmethod
-    def build(
-        client_object: ClientObject, properties_to_include: List[str] = None
-    ) -> QueryOptions:
+    def build(client_object: ClientObject, properties_to_include: List[str] = None) -> QueryOptions:
         """Builds optimized query options for the given client object.
 
         Args:

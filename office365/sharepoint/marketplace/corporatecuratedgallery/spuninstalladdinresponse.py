@@ -12,12 +12,12 @@ class SPUninstallAddinResponse(ClientValue):
 
     def __init__(
         self,
-        executing: ClientValueCollection[
+        executing: ClientValueCollection[SPTriggeredUninstallAddinJobResponse] = ClientValueCollection(
             SPTriggeredUninstallAddinJobResponse
-        ] = ClientValueCollection(SPTriggeredUninstallAddinJobResponse),
-        failed: ClientValueCollection[
+        ),
+        failed: ClientValueCollection[SPFailToTriggerUninstallAddinJobResponse] = ClientValueCollection(
             SPFailToTriggerUninstallAddinJobResponse
-        ] = ClientValueCollection(SPFailToTriggerUninstallAddinJobResponse),
+        ),
     ):
         self.executing = executing
         self.failed = failed

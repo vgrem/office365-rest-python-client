@@ -41,9 +41,7 @@ class TestDirectorySession(TestCase):
     #    self.assertIsNotNone(result.value)
 
     def test_5_check_site_availability(self):
-        result = self.client.directory_provider.check_site_availability(
-            test_site_url
-        ).execute_query()
+        result = self.client.directory_provider.check_site_availability(test_site_url).execute_query()
         self.assertIsNotNone(result.value)
 
     # def test_6_get_graph_user(self):

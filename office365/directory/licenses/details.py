@@ -14,9 +14,7 @@ class LicenseDetails(Entity):
     @property
     def service_plans(self) -> ClientValueCollection[ServicePlanInfo]:
         """Information about the service plans assigned with the license. Read-only, Not nullable"""
-        return self.properties.get(
-            "servicePlans", ClientValueCollection(ServicePlanInfo)
-        )
+        return self.properties.get("servicePlans", ClientValueCollection(ServicePlanInfo))
 
     @property
     def sku_id(self) -> Optional[str]:

@@ -9,9 +9,7 @@ class CopilotTranspilerPayload(ClientValue):
 
     def __init__(
         self,
-        statement_list: ClientValueCollection[
-            TranspilerStatement
-        ] = ClientValueCollection(TranspilerStatement),
+        statement_list: ClientValueCollection[TranspilerStatement] = ClientValueCollection(TranspilerStatement),
     ):
         self.StatementList = statement_list
 

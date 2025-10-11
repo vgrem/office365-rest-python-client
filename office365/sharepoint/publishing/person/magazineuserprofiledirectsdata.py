@@ -9,9 +9,9 @@ class PersonMagazineUserProfileDirectsData(ClientValue):
 
     def __init__(
         self,
-        direct_reports: ClientValueCollection[
+        direct_reports: ClientValueCollection[PersonMagazineUserProfile] = ClientValueCollection(
             PersonMagazineUserProfile
-        ] = ClientValueCollection(PersonMagazineUserProfile),
+        ),
     ):
         self.DirectReports = direct_reports
 

@@ -12,12 +12,10 @@ class SPOContainerQueryParams(ClientValue):
 
     def __init__(
         self,
-        filter_by_columns_list: ClientValueCollection[
+        filter_by_columns_list: ClientValueCollection[SPContainerFilterOrder] = ClientValueCollection(
             SPContainerFilterOrder
-        ] = ClientValueCollection(SPContainerFilterOrder),
-        order_by_columns_list: ClientValueCollection[
-            SPContainerSortOrder
-        ] = ClientValueCollection(SPContainerSortOrder),
+        ),
+        order_by_columns_list: ClientValueCollection[SPContainerSortOrder] = ClientValueCollection(SPContainerSortOrder),
         paging_token: str = None,
     ):
         self.FilterByColumnsList = filter_by_columns_list
@@ -26,6 +24,4 @@ class SPOContainerQueryParams(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Online.SharePoint.TenantAdministration.SPOContainerQueryParams"
-        )
+        return "Microsoft.Online.SharePoint.TenantAdministration.SPOContainerQueryParams"

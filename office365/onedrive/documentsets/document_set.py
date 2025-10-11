@@ -26,11 +26,7 @@ class DocumentSet(ClientValue):
         :param bool should_prefix_name_to_file:  Indicates whether to add the name of the document set to each file name.
         """
         self.welcomePageUrl = welcome_page_url
-        self.allowedContentTypes = ClientValueCollection(
-            ContentTypeInfo, allowed_content_types
-        )
-        self.defaultContents = ClientValueCollection(
-            DocumentSetContent, default_contents
-        )
+        self.allowedContentTypes = ClientValueCollection(ContentTypeInfo, allowed_content_types)
+        self.defaultContents = ClientValueCollection(DocumentSetContent, default_contents)
         self.propagateWelcomePageChanges = propagate_welcome_page_changes
         self.shouldPrefixNameToFile = should_prefix_name_to_file

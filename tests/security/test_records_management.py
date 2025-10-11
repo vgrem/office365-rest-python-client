@@ -4,13 +4,9 @@ from tests.graph_case import GraphTestCase
 
 class TestRecordsManagement(GraphTestCase):
 
-    @requires_delegated_permission(
-        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All"
-    )
+    @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
     def test2_list_retention_event_types(self):
-        result = (
-            self.client.security.trigger_types.retention_event_types.get().execute_query()
-        )
+        result = self.client.security.trigger_types.retention_event_types.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     # @requires_delegated_permission(
@@ -27,9 +23,7 @@ class TestRecordsManagement(GraphTestCase):
     #    ).execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission(
-        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All"
-    )
+    @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
     def test4_list_retention_labels(self):
         result = self.client.security.labels.retention_labels.get().execute_query()
         self.assertIsNotNone(result.resource_path)

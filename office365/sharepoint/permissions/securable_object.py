@@ -38,9 +38,7 @@ class SecurableObject(Entity):
         principal.ensure_property("Id", _principal_loaded)
         return return_type
 
-    def add_role_assignment(
-        self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]
-    ) -> Self:
+    def add_role_assignment(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
         """Adds a role assignment to securable resource.
 
         :param RoleDefinition or int principal: Specifies the role definition or role type.
@@ -62,9 +60,7 @@ class SecurableObject(Entity):
         principal.ensure_property("Id", _ensure_role_def)
         return self
 
-    def remove_role_assignment(
-        self, principal: Principal | str, role_def: RoleDefinition | RoleType
-    ) -> Self:
+    def remove_role_assignment(self, principal: Principal | str, role_def: RoleDefinition | RoleType) -> Self:
         """Removes a role assignment from a securable resource.
         :param Principal principal: Specifies the user or group of the
         role assignment.
@@ -110,24 +106,18 @@ class SecurableObject(Entity):
             "copyRoleAssignments": copy_role_assignments,
             "clearSubscopes": clear_sub_scopes,
         }
-        qry = ServiceOperationQuery(
-            self, "BreakRoleInheritance", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "BreakRoleInheritance", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
     def reset_role_inheritance(self) -> Self:
         """Resets the role inheritance for the securable object and inherits role assignments from
         the parent securable object."""
-        qry = ServiceOperationQuery(
-            self, "ResetRoleInheritance", None, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "ResetRoleInheritance", None, None, None, None)
         self.context.add_query(qry)
         return self
 
-    def get_user_effective_permissions(
-        self, user: str | User
-    ) -> ClientResult[BasePermissions]:
+    def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """
         Returns the user permissions for secured object.
 
@@ -180,9 +170,7 @@ class SecurableObject(Entity):
         """The role assignments for the securable object."""
         return self.properties.get(
             "RoleAssignments",
-            RoleAssignmentCollection(
-                self.context, ResourcePath("RoleAssignments", self.resource_path)
-            ),
+            RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

@@ -25,10 +25,7 @@ class TermStore(TaxonomyItem):
             [return_type.add_child(ts) for ts in sets]
 
         def _groups_loaded(col: TermGroupCollection) -> None:
-            [
-                grp.get_term_sets_by_name(label, lcid).after_execute(_sets_loaded)
-                for grp in col
-            ]
+            [grp.get_term_sets_by_name(label, lcid).after_execute(_sets_loaded) for grp in col]
 
         self.term_groups.get().after_execute(_groups_loaded)
         return return_type
@@ -48,9 +45,7 @@ class TermStore(TaxonomyItem):
         :param str or None parent_term_id:
         :param str or None language_tag:
         """
-        return_type = TaxonomyItemCollection[Term](
-            self.context, Term, self.resource_path
-        )
+        return_type = TaxonomyItemCollection[Term](self.context, Term, self.resource_path)
         params = {
             "label": label,
             "setId": set_id,
@@ -76,9 +71,7 @@ class TermStore(TaxonomyItem):
         """Gets a collection of the child Group objects"""
         return self.properties.get(
             "termGroups",
-            TermGroupCollection(
-                self.context, ResourcePath("termGroups", self.resource_path)
-            ),
+            TermGroupCollection(self.context, ResourcePath("termGroups", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

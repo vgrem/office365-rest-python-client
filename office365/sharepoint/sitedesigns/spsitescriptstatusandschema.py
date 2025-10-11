@@ -7,9 +7,7 @@ class SPSiteScriptStatusAndSchema(ClientValue):
 
     def __init__(
         self,
-        action_status: ClientValueCollection[
-            SiteScriptActionStatus
-        ] = ClientValueCollection(SiteScriptActionStatus),
+        action_status: ClientValueCollection[SiteScriptActionStatus] = ClientValueCollection(SiteScriptActionStatus),
         schema: str = None,
     ):
         self.ActionStatus = action_status

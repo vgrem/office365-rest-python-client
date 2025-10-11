@@ -42,8 +42,6 @@ class AuthenticationStrengthPolicy(Entity):
         """
         return_type = ClientResult(self.context, UpdateAllowedCombinationsResult())
         payload = {"allowedCombinations": allowed_combinations}
-        qry = ServiceOperationQuery(
-            self, "updateAllowedCombinations", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "updateAllowedCombinations", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

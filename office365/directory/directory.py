@@ -84,17 +84,13 @@ class Directory(Entity):
                 "deletedItems",
                 DirectoryObjectCollection(
                     self.context,
-                    ResourcePath(
-                        entity_type, ResourcePath("deletedItems", self.resource_path)
-                    ),
+                    ResourcePath(entity_type, ResourcePath("deletedItems", self.resource_path)),
                 ),
             )
         else:
             return self.properties.get(
                 "deletedItems",
-                DirectoryObjectCollection(
-                    self.context, ResourcePath("deletedItems", self.resource_path)
-                ),
+                DirectoryObjectCollection(self.context, ResourcePath("deletedItems", self.resource_path)),
             )
 
     @property

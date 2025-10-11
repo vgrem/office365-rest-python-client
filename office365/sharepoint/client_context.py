@@ -122,9 +122,7 @@ class ClientContext(ClientRuntimeContext):
         )
         return self
 
-    def with_interactive(
-        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
-    ) -> Self:
+    def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """
         Initializes a client to acquire a token interactively i.e. via a local browser.
 
@@ -138,9 +136,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_interactive(tenant, client_id, scopes)
         return self
 
-    def with_device_flow(
-        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
-    ) -> Self:
+    def with_device_flow(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """
         Initializes a client to acquire a token via device flow auth.
 
@@ -173,9 +169,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(UserCredential(username, password))
         return self
 
-    def with_username_and_password(
-        self, tenant: str, client_id: str, username: str, password: str
-    ) -> Self:
+    def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via Username and password authentication flow.
         :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
@@ -185,9 +179,7 @@ class ClientContext(ClientRuntimeContext):
         """
         resource = get_absolute_url(self.base_url)
         scopes = [f"{resource}/.default"]
-        self.authentication_context.with_username_and_password(
-            tenant, client_id, username, password, scopes
-        )
+        self.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
     def with_client_credentials(self, client_id: str, client_secret: str) -> Self:
@@ -200,14 +192,10 @@ class ClientContext(ClientRuntimeContext):
         :param str client_id: The OAuth client id of the calling application
         :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
         """
-        self.authentication_context.with_credentials(
-            ClientCredential(client_id, client_secret)
-        )
+        self.authentication_context.with_credentials(ClientCredential(client_id, client_secret))
         return self
 
-    def with_credentials(
-        self, credentials: Union[UserCredential, ClientCredential]
-    ) -> Self:
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
         Initializes a client to acquire a token via user or client credentials
         """
@@ -238,9 +226,7 @@ class ClientContext(ClientRuntimeContext):
         """Provides access to underlying request instance"""
         if self._pending_request is None:
             self._pending_request = ODataRequest(JsonLightFormat())
-            self._pending_request.beforeExecute += (
-                self.authentication_context.authenticate_request
-            )
+            self._pending_request.beforeExecute += self.authentication_context.authenticate_request
             self._pending_request.beforeExecute += self._build_modification_query
         return self._pending_request
 
@@ -311,9 +297,7 @@ class ClientContext(ClientRuntimeContext):
                 request.ensure_header("X-HTTP-Method", "MERGE")
                 request.ensure_header("IF-MATCH", "*")
 
-    def create_modern_site(
-        self, title: str, alias: str, owner: Optional[Union[str, User]] = None
-    ) -> Site:
+    def create_modern_site(self, title: str, alias: str, owner: Optional[Union[str, User]] = None) -> Site:
         """
         Creates a modern (Communication) site
         https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest#create-a-modern-site
@@ -331,16 +315,10 @@ class ClientContext(ClientRuntimeContext):
             elif result.value.SiteStatus == SiteStatus.Ready:
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
-        (
-            self.site_manager.create(title, site_url, owner).after_execute(
-                _after_site_create
-            )
-        )
+        (self.site_manager.create(title, site_url, owner).after_execute(_after_site_create))
         return return_type
 
-    def create_team_site(
-        self, alias: str, title: str, is_public: bool = True, owners: List[str] = None
-    ) -> Site:
+    def create_team_site(self, alias: str, title: str, is_public: bool = True, owners: List[str] = None) -> Site:
         """Creates a modern SharePoint Team site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
@@ -356,9 +334,7 @@ class ClientContext(ClientRuntimeContext):
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
         opt_params = GroupCreationParams(owners=owners)
-        self.group_site_manager.create_group_ex(
-            title, alias, is_public, opt_params
-        ).after_execute(_after_site_created)
+        self.group_site_manager.create_group_ex(title, alias, is_public, opt_params).after_execute(_after_site_created)
         return return_type
 
     def create_communication_site(self, alias: str, title: str) -> Site:
@@ -379,9 +355,7 @@ class ClientContext(ClientRuntimeContext):
             elif result.value.SiteStatus == SiteStatus.Ready:
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
-        self.site_pages.communication_site.create(title, site_url).after_execute(
-            _after_site_created
-        )
+        self.site_pages.communication_site.create(title, site_url).after_execute(_after_site_created)
         return return_type
 
     @property
@@ -720,9 +694,7 @@ class ClientContext(ClientRuntimeContext):
         )
         from office365.sharepoint.entity_collection import EntityCollection
 
-        return EntityCollection(
-            self, SPMachineLearningPublication, ResourcePath("publications")
-        )
+        return EntityCollection(self, SPMachineLearningPublication, ResourcePath("publications"))
 
     @property
     def server_settings(self) -> ServerSettings:

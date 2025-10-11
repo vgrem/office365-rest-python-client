@@ -12,19 +12,15 @@ from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
 from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
 
 
-def generate_files(
-    model: ODataModel, options: dict, docs_service: BaseDocumentationService = None
-) -> None:
+def generate_files(model: ODataModel, options: dict, docs_service: BaseDocumentationService = None) -> None:
     metadata_path = options["metadatapath"]
     checkpoint_file = f".checkpoints/{os.path.basename(metadata_path)}.json"
     os.makedirs(".checkpoints", exist_ok=True)
 
     if os.path.exists(checkpoint_file):
-        with open(checkpoint_file, "r") as f:
+        with open(checkpoint_file, "r", encoding="utf-8") as f:
             processed_types = set(json.load(f))
-        print(
-            f"Resuming from checkpoint: {len(processed_types)} types already processed"
-        )
+        print(f"Resuming from checkpoint: {len(processed_types)} types already processed")
     else:
         processed_types = set()
 
@@ -61,14 +57,12 @@ def generate_files(
                 builder.save()
 
             processed_types.add(name)
-            with open(checkpoint_file, "w") as f:
+            with open(checkpoint_file, "w", encoding="utf-8") as f:
                 json.dump(list(processed_types), f)
 
         except Exception as e:
             print(f"Failed on {name}: {e}")
-            print(
-                f"Checkpoint saved. Resume will skip {len(processed_types)} processed types"
-            )
+            print(f"Checkpoint saved. Resume will skip {len(processed_types)} processed types")
             raise
 
     if checkpoint_file and os.path.exists(checkpoint_file):

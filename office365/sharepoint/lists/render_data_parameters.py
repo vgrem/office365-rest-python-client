@@ -52,16 +52,12 @@ class RenderListDataParameters(ClientValue):
         self.AddAllViewFields = add_all_view_fields
         self.AddRegionalSettings = add_regional_settings
         self.AddRequiredFields = add_required_fields
-        self.AllowMultipleValueFilterForTaxonomyFields = (
-            allow_multiple_value_filter_for_taxonomy_fields
-        )
+        self.AllowMultipleValueFilterForTaxonomyFields = allow_multiple_value_filter_for_taxonomy_fields
         self.AudienceTarget = audience_target
         self.DatesInUtc = dates_in_utc
         self.ExpandGroups = expand_groups
         self.ExpandUserField = expand_user_field
-        self.FilterOutChannelFoldersInDefaultDocLib = (
-            filter_out_channel_folders_in_default_doc_lib
-        )
+        self.FilterOutChannelFoldersInDefaultDocLib = filter_out_channel_folders_in_default_doc_lib
         self.RenderOptions = render_options
         self.RequireFolderColoringFields = require_folder_coloring_fields
         self.ShowStubFile = show_stub_file

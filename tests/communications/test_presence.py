@@ -15,15 +15,11 @@ class TestPresence(GraphTestCase):
 
     def test3_get_presences_by_user_id(self):
         me = self.client.me.get().execute_query()
-        result = self.client.communications.get_presences_by_user_id(
-            [me.id]
-        ).execute_query()
+        result = self.client.communications.get_presences_by_user_id([me.id]).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test4_set_status_message(self):
-        result = self.client.me.presence.set_status_message(
-            "Hey I'm currently in a meeting"
-        ).execute_query()
+        result = self.client.me.presence.set_status_message("Hey I'm currently in a meeting").execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test5_clear_my_presence(self):

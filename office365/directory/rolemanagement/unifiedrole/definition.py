@@ -35,9 +35,7 @@ class UnifiedRoleDefinition(Entity):
         """
         List of permissions included in the role. Read-only when isBuiltIn is true. Required.
         """
-        return self.properties.get(
-            "rolePermissions", ClientValueCollection(UnifiedRolePermission)
-        )
+        return self.properties.get("rolePermissions", ClientValueCollection(UnifiedRolePermission))
 
     @property
     def inherits_permissions_from(self) -> EntityCollection[UnifiedRoleDefinition]:

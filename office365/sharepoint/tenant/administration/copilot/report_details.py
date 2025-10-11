@@ -12,9 +12,7 @@ class ReportDetails(BaseRawDataSources):
         self,
         headers: StringCollection = None,
         report_download_url: str = None,
-        report_rows: ClientValueCollection[ReportRow] = ClientValueCollection(
-            ReportRow
-        ),
+        report_rows: ClientValueCollection[ReportRow] = ClientValueCollection(ReportRow),
     ):
         super().__init__()
         self.Headers = headers

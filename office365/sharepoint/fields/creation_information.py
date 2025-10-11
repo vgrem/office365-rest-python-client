@@ -41,8 +41,7 @@ class FieldCreationInformation(ClientValue):
         self.Description = description
         self.Choices = (
             StringCollection(choices)
-            if field_type_kind == FieldType.MultiChoice
-            or field_type_kind == FieldType.Choice
+            if field_type_kind == FieldType.MultiChoice or field_type_kind == FieldType.Choice
             else None
         )
         self.LookupListId = lookup_list_id

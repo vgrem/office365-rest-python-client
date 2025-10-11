@@ -55,23 +55,17 @@ class Site(BaseItem):
         self.context.add_query(qry)
         return return_type
 
-    def get_applicable_content_types_for_list(
-        self, list_or_id: Union[List, str]
-    ) -> ContentTypeCollection:
+    def get_applicable_content_types_for_list(self, list_or_id: Union[List, str]) -> ContentTypeCollection:
         """
         Get site contentTypes that can be added to a list.
 
         :param str|List list_or_id: GUID of the list for which the applicable content types need to be fetched.
         """
-        return_type = ContentTypeCollection(
-            self.context, self.content_types.resource_path
-        )
+        return_type = ContentTypeCollection(self.context, self.content_types.resource_path)
 
         def _get_applicable_content_types_for_list(list_id: str) -> None:
             params = {"listId": list_id}
-            qry = FunctionQuery(
-                self, "getApplicableContentTypesForList", params, return_type
-            )
+            qry = FunctionQuery(self, "getApplicableContentTypesForList", params, return_type)
             self.context.add_query(qry)
 
         if isinstance(list_or_id, List):
@@ -123,9 +117,7 @@ class Site(BaseItem):
         """Used to address any item contained in this site. This collection cannot be enumerated."""
         return self.properties.get(
             "items",
-            EntityCollection(
-                self.context, ListItem, ResourcePath("items", self.resource_path)
-            ),
+            EntityCollection(self.context, ListItem, ResourcePath("items", self.resource_path)),
         )
 
     @property
@@ -133,9 +125,7 @@ class Site(BaseItem):
         """The collection of columns under this site."""
         return self.properties.get(
             "columns",
-            ColumnDefinitionCollection(
-                self.context, ResourcePath("columns", self.resource_path), self
-            ),
+            ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
         )
 
     @property
@@ -143,9 +133,7 @@ class Site(BaseItem):
         """The collection of columns under this site."""
         return self.properties.get(
             "externalColumns",
-            ColumnDefinitionCollection(
-                self.context, ResourcePath("externalColumns", self.resource_path), self
-            ),
+            ColumnDefinitionCollection(self.context, ResourcePath("externalColumns", self.resource_path), self),
         )
 
     @property
@@ -153,9 +141,7 @@ class Site(BaseItem):
         """The collection of content types under this site."""
         return self.properties.get(
             "contentTypes",
-            ContentTypeCollection(
-                self.context, ResourcePath("contentTypes", self.resource_path)
-            ),
+            ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path)),
         )
 
     @property
@@ -183,26 +169,20 @@ class Site(BaseItem):
         """The permissions associated with the site."""
         return self.properties.get(
             "permissions",
-            PermissionCollection(
-                self.context, ResourcePath("permissions", self.resource_path)
-            ),
+            PermissionCollection(self.context, ResourcePath("permissions", self.resource_path)),
         )
 
     @property
     def drive(self) -> Drive:
         """The default drive (document library) for this site."""
-        return self.properties.get(
-            "drive", Drive(self.context, ResourcePath("drive", self.resource_path))
-        )
+        return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
     @property
     def drives(self) -> EntityCollection[Drive]:
         """The collection of drives under this site."""
         return self.properties.get(
             "drives",
-            EntityCollection(
-                self.context, Drive, ResourcePath("drives", self.resource_path)
-            ),
+            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path)),
         )
 
     @property
@@ -210,9 +190,7 @@ class Site(BaseItem):
         """The collection of sites under this site."""
         return self.properties.get(
             "sites",
-            EntityCollection(
-                self.context, Site, ResourcePath("sites", self.resource_path)
-            ),
+            EntityCollection(self.context, Site, ResourcePath("sites", self.resource_path)),
         )
 
     @property
@@ -236,9 +214,7 @@ class Site(BaseItem):
         """The collection of site pages under this site."""
         return self.properties.get(
             "pages",
-            SitePageCollection(
-                self.context, ResourcePath("pages", self.resource_path), self.pages_list
-            ),
+            SitePageCollection(self.context, ResourcePath("pages", self.resource_path), self.pages_list),
         )
 
     @property
@@ -259,9 +235,7 @@ class Site(BaseItem):
         """The collection of termStores under this site."""
         return self.properties.get(
             "termStores",
-            EntityCollection(
-                self.context, Store, ResourcePath("termStores", self.resource_path)
-            ),
+            EntityCollection(self.context, Store, ResourcePath("termStores", self.resource_path)),
         )
 
     def get_property(self, name: str, default_value: Any = None) -> Self:

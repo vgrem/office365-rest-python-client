@@ -9,9 +9,7 @@ class ContentManagementAssessmentOperationResult(ClientValue):
         site_lifecycle_management_error_message: str = None,
     ):
         self.dataAccessGovernanceErrorMessage = data_access_governance_error_message
-        self.siteLifecycleManagementErrorMessage = (
-            site_lifecycle_management_error_message
-        )
+        self.siteLifecycleManagementErrorMessage = site_lifecycle_management_error_message
 
     @property
     def entity_type_name(self):

@@ -28,9 +28,7 @@ class DocumentSetVersion(ListItemVersion):
     @property
     def items(self) -> ClientValueCollection[DocumentSetVersionItem]:
         """Items within the document set that are captured as part of this version."""
-        return self.properties.get(
-            "items", ClientValueCollection(DocumentSetVersionItem)
-        )
+        return self.properties.get("items", ClientValueCollection(DocumentSetVersionItem))
 
     @property
     def should_capture_minor_version(self) -> Optional[bool]:

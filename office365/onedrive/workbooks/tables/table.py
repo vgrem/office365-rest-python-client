@@ -24,18 +24,14 @@ class WorkbookTable(Entity):
 
     def data_body_range(self) -> WorkbookRange:
         """Gets the range object associated with the data body of the table."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("dataBodyRange", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("dataBodyRange", self.resource_path))
         qry = FunctionQuery(self, "dataBodyRange", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
     def range(self) -> WorkbookRange:
         """Get the range object associated with the entire table."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         qry = FunctionQuery(self, "range", return_type=return_type)
         self.context.add_query(qry)
         return return_type
@@ -109,9 +105,7 @@ class WorkbookTable(Entity):
         """Represents a collection of all the columns in the table."""
         return self.properties.get(
             "columns",
-            WorkbookTableColumnCollection(
-                self.context, ResourcePath("columns", self.resource_path)
-            ),
+            WorkbookTableColumnCollection(self.context, ResourcePath("columns", self.resource_path)),
         )
 
     @property
@@ -119,9 +113,7 @@ class WorkbookTable(Entity):
         """Represents a collection of all the rows in the table."""
         return self.properties.get(
             "rows",
-            WorkbookTableRowCollection(
-                self.context, ResourcePath("rows", self.resource_path)
-            ),
+            WorkbookTableRowCollection(self.context, ResourcePath("rows", self.resource_path)),
         )
 
     @property
@@ -139,7 +131,5 @@ class WorkbookTable(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )

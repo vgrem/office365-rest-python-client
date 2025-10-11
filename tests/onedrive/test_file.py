@@ -20,9 +20,7 @@ class TestFile(GraphTestCase):
     def setUpClass(cls):
         super(TestFile, cls).setUpClass()
         lib_name = create_unique_name("Lib")
-        lib = cls.client.sites.root.lists.add(
-            lib_name, ListTemplateType.documentLibrary
-        ).execute_query()
+        lib = cls.client.sites.root.lists.add(lib_name, ListTemplateType.documentLibrary).execute_query()
         cls.target_drive = lib.drive
 
     @classmethod
@@ -31,9 +29,7 @@ class TestFile(GraphTestCase):
 
     def test1_create_folder(self):
         target_folder_name = "New_" + uuid.uuid4().hex
-        folder = self.target_drive.root.create_folder(
-            target_folder_name
-        ).execute_query()
+        folder = self.target_drive.root.create_folder(target_folder_name).execute_query()
         self.assertEqual(folder.name, target_folder_name)
         self.__class__.target_folder = folder
 
@@ -44,9 +40,7 @@ class TestFile(GraphTestCase):
     def test3_upload_file(self):
         file_name = "SharePoint User Guide.docx"
         file_path = f"{os.path.dirname(__file__)}/../data/{file_name}"
-        self.__class__.target_file = self.target_drive.root.upload_file(
-            file_path
-        ).execute_query()
+        self.__class__.target_file = self.target_drive.root.upload_file(file_path).execute_query()
         self.assertIsNotNone(self.target_file.web_url)
 
     def test4_preview_file(self):
@@ -58,16 +52,12 @@ class TestFile(GraphTestCase):
 
     def test6_checkout(self):
         self.__class__.target_file.checkout().execute_query()
-        target_item = (
-            self.__class__.target_file.get().select(["publication"]).execute_query()
-        )
+        target_item = self.__class__.target_file.get().select(["publication"]).execute_query()
         self.assertEqual(target_item.publication.level, "checkout")
 
     def test7_checkin(self):
         self.__class__.target_file.checkin("").execute_query()
-        target_item = (
-            self.__class__.target_file.get().select(["publication"]).execute_query()
-        )
+        target_item = self.__class__.target_file.get().select(["publication"]).execute_query()
         self.assertEqual(target_item.publication.level, "published")
 
     def test8_list_versions(self):
@@ -85,9 +75,7 @@ class TestFile(GraphTestCase):
     def test_11_upload_file_session(self):
         file_name = "big_buck_bunny.mp4"
         local_path = f"{os.path.dirname(__file__)}/../data/{file_name}"
-        target_file = (
-            self.target_drive.root.resumable_upload(local_path).get().execute_query()
-        )
+        target_file = self.target_drive.root.resumable_upload(local_path).get().execute_query()
         self.assertIsNotNone(target_file.web_url)
 
     def test_12_download_file(self):
@@ -114,9 +102,7 @@ class TestFile(GraphTestCase):
     def test_15_get_activities_by_interval(self):
         end_time = datetime.now()
         start_time = end_time - timedelta(days=14)
-        result = self.__class__.target_file.get_activities_by_interval(
-            start_time, end_time, "day"
-        ).execute_query()
+        result = self.__class__.target_file.get_activities_by_interval(start_time, end_time, "day").execute_query()
         self.assertIsNotNone(result)
 
     def test_16_get_item_analytics(self):

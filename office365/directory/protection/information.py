@@ -11,9 +11,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 class InformationProtection(Entity):
     """Exposes methods that you can use to get Microsoft Purview Information Protection labels and label policies."""
 
-    def create_email_file_assessment(
-        self, recipient_email, content_data, expected_assessment, category
-    ):
+    def create_email_file_assessment(self, recipient_email, content_data, expected_assessment, category):
         """Create an email assessment request
 
         :param str recipient_email: The mail recipient whose policies are used to assess the mail.
@@ -32,15 +30,11 @@ class InformationProtection(Entity):
         return_type.set_property("expectedAssessment", expected_assessment)
         return_type.set_property("category", category)
         self.threat_assessment_requests.add_child(return_type)
-        qry = CreateEntityQuery(
-            self.threat_assessment_requests, return_type, return_type
-        )
+        qry = CreateEntityQuery(self.threat_assessment_requests, return_type, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_file_assessment(
-        self, file_name, content_data, expected_assessment, category
-    ):
+    def create_file_assessment(self, file_name, content_data, expected_assessment, category):
         """Create a new threat assessment request.
 
         :param str file_name: File name
@@ -59,9 +53,7 @@ class InformationProtection(Entity):
         return_type.set_property("expectedAssessment", expected_assessment)
         return_type.set_property("category", category)
         self.threat_assessment_requests.add_child(return_type)
-        qry = CreateEntityQuery(
-            self.threat_assessment_requests, return_type, return_type
-        )
+        qry = CreateEntityQuery(self.threat_assessment_requests, return_type, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -76,15 +68,11 @@ class InformationProtection(Entity):
         return_type.set_property("expectedAssessment", expected_assessment)
         return_type.set_property("category", category)
         self.threat_assessment_requests.add_child(return_type)
-        qry = CreateEntityQuery(
-            self.threat_assessment_requests, return_type, return_type
-        )
+        qry = CreateEntityQuery(self.threat_assessment_requests, return_type, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_mail_assessment(
-        self, message, recipient=None, expected_assessment="block", category="spam"
-    ):
+    def create_mail_assessment(self, message, recipient=None, expected_assessment="block", category="spam"):
         """
         Create a mail assessment request
         :param str recipient: Recipient email
@@ -104,15 +92,11 @@ class InformationProtection(Entity):
             request.set_header("Content-Type", "application/json")
 
         def _create_and_add_query():
-            return_type.set_property(
-                "recipientEmail", str(message.to_recipients[0].emailAddress)
-            )
+            return_type.set_property("recipientEmail", str(message.to_recipients[0].emailAddress))
             return_type.set_property("expectedAssessment", expected_assessment)
             return_type.set_property("category", category)
             return_type.set_property("message", message.resource_url)
-            qry = CreateEntityQuery(
-                self.threat_assessment_requests, return_type, return_type
-            )
+            qry = CreateEntityQuery(self.threat_assessment_requests, return_type, return_type)
             self.context.add_query(qry).before_query_execute(_construct_request)
 
         message.ensure_properties(["id", "toRecipients"], _create_and_add_query)

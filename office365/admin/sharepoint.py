@@ -11,7 +11,5 @@ class Sharepoint(Entity):
         """Represents the tenant-level settings for SharePoint and OneDrive."""
         return self.properties.get(
             "settings",
-            SharepointSettings(
-                self.context, ResourcePath("settings", self.resource_path)
-            ),
+            SharepointSettings(self.context, ResourcePath("settings", self.resource_path)),
         )

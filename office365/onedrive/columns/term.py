@@ -4,9 +4,7 @@ from office365.runtime.client_value import ClientValue
 class TermColumn(ClientValue):
     """Represents a managed metadata column in SharePoint."""
 
-    def __init__(
-        self, allow_multiple_values: bool = None, show_fully_qualified_name: bool = None
-    ):
+    def __init__(self, allow_multiple_values: bool = None, show_fully_qualified_name: bool = None):
         """
         :param bool allow_multiple_values: Specifies whether the column will allow more than one value.
         :param bool show_fully_qualified_name: Specifies whether to display the entire term path or only the term label.

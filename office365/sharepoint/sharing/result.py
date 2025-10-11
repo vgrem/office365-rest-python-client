@@ -53,23 +53,17 @@ class SharingResult(Entity):
         Gets a list of SPInvitationCreationResult (section 3.2.5.325) objects representing the external users being
         invited to have access.
         """
-        return self.properties.get(
-            "InvitedUsers", ClientValueCollection(SPInvitationCreationResult)
-        )
+        return self.properties.get("InvitedUsers", ClientValueCollection(SPInvitationCreationResult))
 
     @property
     def uniquely_permissioned_users(self) -> ClientValueCollection[UserSharingResult]:
-        return self.properties.get(
-            "UniquelyPermissionedUsers", ClientValueCollection(UserSharingResult)
-        )
+        return self.properties.get("UniquelyPermissionedUsers", ClientValueCollection(UserSharingResult))
 
     @property
     def groups_shared_with(self) -> GroupCollection:
         return self.properties.get(
             "GroupsSharedWith",
-            GroupCollection(
-                self.context, ResourcePath("GroupsSharedWith", self.resource_path)
-            ),
+            GroupCollection(self.context, ResourcePath("GroupsSharedWith", self.resource_path)),
         )
 
     @property
@@ -92,9 +86,7 @@ class SharingResult(Entity):
     @property
     def users_added_to_group(self) -> ClientValueCollection[UserSharingResult]:
         """Gets the list of users being added to the SharePoint permissions group."""
-        return self.properties.get(
-            "UsersAddedToGroup", ClientValueCollection(UserSharingResult)
-        )
+        return self.properties.get("UsersAddedToGroup", ClientValueCollection(UserSharingResult))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

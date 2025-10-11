@@ -14,9 +14,7 @@ class SPACSServicePrincipalInfo(ClientValue):
         redirect_uri: str = None,
         title: str = None,
     ):
-        self.ApplicationEndpointAuthorities = StringCollection(
-            application_endpoint_authorities
-        )
+        self.ApplicationEndpointAuthorities = StringCollection(application_endpoint_authorities)
         self.DisplayName = display_name
         self.appDomains = app_domains
         self.appId = app_id

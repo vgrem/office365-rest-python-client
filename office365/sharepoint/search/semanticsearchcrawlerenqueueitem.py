@@ -18,9 +18,7 @@ class SemanticSearchCrawlerEnqueueItem(ClientValue):
         self.associate_site_id = associate_site_id
         self.item_unique_id = item_unique_id
         self.seconds_in_db = seconds_in_db
-        self.semantic_search_service_end_point_json = (
-            semantic_search_service_end_point_json
-        )
+        self.semantic_search_service_end_point_json = semantic_search_service_end_point_json
         self.source_action = source_action
         self.work_item_id = work_item_id
         self.ItemId = item_id

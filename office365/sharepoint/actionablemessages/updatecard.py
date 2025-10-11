@@ -7,9 +7,7 @@ class UpdateCard(ClientValue):
 
     def __init__(
         self,
-        card_updates: ClientValueCollection[ElementUpdate] = ClientValueCollection(
-            ElementUpdate
-        ),
+        card_updates: ClientValueCollection[ElementUpdate] = ClientValueCollection(ElementUpdate),
         type_: str = None,
     ):
         self.cardUpdates = card_updates

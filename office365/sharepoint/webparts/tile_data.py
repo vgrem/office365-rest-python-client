@@ -20,9 +20,7 @@ class TileData(ClientValue):
         title: str = None,
         transparent_overlay: bool = None,
     ):
-        self.BackgroundCollageImageLocations = StringCollection(
-            background_collage_image_locations
-        )
+        self.BackgroundCollageImageLocations = StringCollection(background_collage_image_locations)
         self.BackgroundImageLocation = background_image_location
         self.BackgroundImageRendersAsIcon = background_image_renders_as_icon
         self.BodyText = body_text

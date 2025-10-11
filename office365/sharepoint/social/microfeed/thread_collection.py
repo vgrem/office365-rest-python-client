@@ -12,9 +12,7 @@ class MicrofeedThreadCollection(ClientValue):
         current_user_unread_mention_count: int = None,
         newest_processed: datetime = None,
         oldest_processed: datetime = None,
-        items: ClientValueCollection[MicrofeedThread] = ClientValueCollection(
-            MicrofeedThread
-        ),
+        items: ClientValueCollection[MicrofeedThread] = ClientValueCollection(MicrofeedThread),
     ):
         self.CurrentUserUnreadMentionCount = current_user_unread_mention_count
         self.NewestProcessed = newest_processed

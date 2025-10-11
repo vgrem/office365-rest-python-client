@@ -9,9 +9,7 @@ class BookingBusinessCollection(EntityCollection[BookingBusiness]):
     """"""
 
     def __init__(self, context, resource_path=None):
-        super(BookingBusinessCollection, self).__init__(
-            context, BookingBusiness, resource_path
-        )
+        super(BookingBusinessCollection, self).__init__(context, BookingBusiness, resource_path)
 
     def add(self, display_name, address=None, email=None):
         # type: (str, Optional[PhysicalAddress], Optional[str]) -> BookingBusiness

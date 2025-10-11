@@ -8,13 +8,7 @@ ctx = ClientContext(test_site_url).with_credentials(test_user_credentials)
 lib_title = "Documents"
 lib = ctx.web.lists.get_by_title(lib_title)
 
-recent_items = (
-    lib.items.order_by("Created desc")
-    .select(["ID", "FileRef"])
-    .top(1)
-    .get()
-    .execute_query()
-)
+recent_items = lib.items.order_by("Created desc").select(["ID", "FileRef"]).top(1).get().execute_query()
 for item in recent_items:
     file_url = item.properties.get("FileRef")
     download_path = os.path.join(tempfile.mkdtemp(), os.path.basename(file_url))

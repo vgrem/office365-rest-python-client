@@ -9,9 +9,9 @@ class DashboardContent(ClientValue):
 
     def __init__(
         self,
-        dashboard_card_details: ClientValueCollection[
+        dashboard_card_details: ClientValueCollection[DashboardCardDetails] = ClientValueCollection(
             DashboardCardDetails
-        ] = ClientValueCollection(DashboardCardDetails),
+        ),
         dashboard_form_factor: str = None,
         dashboard_id: str = None,
         last_modified_date: datetime = None,

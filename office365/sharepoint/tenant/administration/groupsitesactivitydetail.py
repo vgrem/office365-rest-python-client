@@ -11,6 +11,4 @@ class GroupSitesActivityDetail(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.GroupSitesActivityDetail"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.GroupSitesActivityDetail"

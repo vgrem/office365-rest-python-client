@@ -21,9 +21,7 @@ class LimitedWebPartManager(Entity):
 
         def _export_web_part(web_part_id: str) -> None:
             params = {"webPartId": web_part_id}
-            qry = ServiceOperationQuery(
-                self, "ExportWebPart", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "ExportWebPart", params, None, None, return_type)
             self.context.add_query(qry)
 
         if isinstance(web_part, WebPartDefinition):
@@ -53,9 +51,7 @@ class LimitedWebPartManager(Entity):
         return_type = WebPartDefinition(self.context)
         self.web_parts.add_child(return_type)
         payload = {"webPartXml": web_part_xml}
-        qry = ServiceOperationQuery(
-            self, "ImportWebPart", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ImportWebPart", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -65,9 +61,7 @@ class LimitedWebPartManager(Entity):
         on the current user’s permissions."""
         return self.properties.get(
             "WebParts",
-            WebPartDefinitionCollection(
-                self.context, ResourcePath("WebParts", self.resource_path)
-            ),
+            WebPartDefinitionCollection(self.context, ResourcePath("WebParts", self.resource_path)),
         )
 
     @property

@@ -9,9 +9,9 @@ class SPOServicePrioritizationAppRegistrations(ClientValue):
 
     def __init__(
         self,
-        registrations: ClientValueCollection[
+        registrations: ClientValueCollection[SPOServicePrioritizationAppRegistration] = ClientValueCollection(
             SPOServicePrioritizationAppRegistration
-        ] = ClientValueCollection(SPOServicePrioritizationAppRegistration),
+        ),
     ):
         self.Registrations = registrations
 

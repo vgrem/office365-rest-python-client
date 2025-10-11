@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 class FontPackageCollection(EntityCollection):
     """Represents a collection of View resources."""
 
-    def __init__(
-        self, context: ClientContext, resource_path: Optional[ResourcePath] = None
-    ) -> None:
+    def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None) -> None:
         """Initialize a font package collection.
 
         Args:

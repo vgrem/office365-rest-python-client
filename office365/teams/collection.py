@@ -17,9 +17,7 @@ class TeamCollection(EntityCollection[Team]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Team, resource_path)
 
-    def get_all(
-        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
-    ) -> Self:
+    def get_all(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
         def _init_teams(groups: Self) -> None:

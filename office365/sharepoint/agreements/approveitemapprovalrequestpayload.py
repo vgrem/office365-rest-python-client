@@ -19,6 +19,4 @@ class ApproveItemApprovalRequestPayload(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Agreements.Models.ApproveItemApprovalRequestPayload"
-        )
+        return "Microsoft.SharePoint.Agreements.Models.ApproveItemApprovalRequestPayload"

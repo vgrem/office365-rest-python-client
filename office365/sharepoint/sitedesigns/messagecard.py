@@ -15,9 +15,7 @@ class MessageCard(ClientValue):
         context: str = None,
         hide_original_body: str = None,
         originator: str = None,
-        potential_action: ClientValueCollection[
-            PotentialAction
-        ] = ClientValueCollection(PotentialAction),
+        potential_action: ClientValueCollection[PotentialAction] = ClientValueCollection(PotentialAction),
         sections: ClientValueCollection[Section] = ClientValueCollection(Section),
         text: str = None,
         theme_color: str = None,

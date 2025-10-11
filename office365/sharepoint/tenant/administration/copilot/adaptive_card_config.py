@@ -6,9 +6,7 @@ from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources im
 
 class AdaptiveCardConfig(ClientValue):
 
-    def __init__(
-        self, data: BaseRawDataSources = BaseRawDataSources(), feature_name: str = None
-    ):
+    def __init__(self, data: BaseRawDataSources = BaseRawDataSources(), feature_name: str = None):
         self.data = data
         self.featureName = feature_name
 
@@ -16,6 +14,4 @@ class AdaptiveCardConfig(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.AdaptiveCardConfig"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.AdaptiveCardConfig"

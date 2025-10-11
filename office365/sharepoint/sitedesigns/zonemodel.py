@@ -8,9 +8,7 @@ class ZoneModel(ClientValue):
     def __init__(
         self,
         index: int = None,
-        sections: ClientValueCollection[SectionModel] = ClientValueCollection(
-            SectionModel
-        ),
+        sections: ClientValueCollection[SectionModel] = ClientValueCollection(SectionModel),
     ):
         self.index = index
         self.sections = sections

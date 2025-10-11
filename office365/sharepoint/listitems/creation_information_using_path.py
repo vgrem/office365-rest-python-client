@@ -24,9 +24,5 @@ class ListItemCreationInformationUsingPath(ClientValue):
         super().__init__()
         self.LeafName = leaf_name
         self.UnderlyingObjectType = object_type
-        self.FolderPath = (
-            folder_path
-            if isinstance(folder_path, SPResPath)
-            else SPResPath(folder_path)
-        )
+        self.FolderPath = folder_path if isinstance(folder_path, SPResPath) else SPResPath(folder_path)
         self.UnderlyingObjectType = underlying_object_type

@@ -30,14 +30,10 @@ class GraphRequest(ODataRequest):
         super().__init__(V4JsonFormat())
         self._version = version
         self._environment = environment
-        self._auth_context = AuthenticationContext(
-            environment=environment, tenant=tenant
-        )
+        self._auth_context = AuthenticationContext(environment=environment, tenant=tenant)
         self.beforeExecute += self.authenticate_request
 
-    def with_access_token(
-        self, token_callback: Callable[[], Dict[str, str]]
-    ) -> GraphRequest:
+    def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
         """
         Initialize with a token callback function.
 
@@ -50,9 +46,7 @@ class GraphRequest(ODataRequest):
         self._auth_context.with_access_token(token_callback)
         return self
 
-    def with_certificate(
-        self, client_id: str, thumbprint: str, private_key: str
-    ) -> GraphRequest:
+    def with_certificate(self, client_id: str, thumbprint: str, private_key: str) -> GraphRequest:
         """
         Initialize with client certificate authentication.
 
@@ -81,9 +75,7 @@ class GraphRequest(ODataRequest):
         self._auth_context.with_client_secret(client_id, client_secret)
         return self
 
-    def with_token_interactive(
-        self, client_id: str, username: Optional[str] = None
-    ) -> GraphRequest:
+    def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> GraphRequest:
         """
         Initialize with interactive authentication flow.
 
@@ -99,9 +91,7 @@ class GraphRequest(ODataRequest):
         self._auth_context.with_token_interactive(client_id, username)
         return self
 
-    def with_username_and_password(
-        self, client_id: str, username: str, password: str
-    ) -> GraphRequest:
+    def with_username_and_password(self, client_id: str, username: str, password: str) -> GraphRequest:
         """
         Initialize with username/password authentication.
 

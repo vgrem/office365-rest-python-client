@@ -14,6 +14,4 @@ class ListTemplateCollection(EntityCollection[ListTemplate]):
         """Returns the list template with the specified name.
         :param str name: The specified name.
         """
-        return ListTemplate(
-            self.context, ServiceOperationPath("getByName", [name], self.resource_path)
-        )
+        return ListTemplate(self.context, ServiceOperationPath("getByName", [name], self.resource_path))

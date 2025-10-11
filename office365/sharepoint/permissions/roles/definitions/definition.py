@@ -64,7 +64,5 @@ class RoleDefinition(Entity):
     def set_property(self, name, value, persist_changes=True):
         if self.resource_path is None:
             if name == "Id":
-                self._resource_path = ServiceOperationPath(
-                    "GetById", [value], self.parent_collection.resource_path
-                )
+                self._resource_path = ServiceOperationPath("GetById", [value], self.parent_collection.resource_path)
         return super(RoleDefinition, self).set_property(name, value, persist_changes)

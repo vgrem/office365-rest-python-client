@@ -35,9 +35,7 @@ class NavigationService(Entity):
         """
         return_type = ClientResult(self.context, int())
         params = {"mapProviderName": map_provider_name.value}
-        qry = ServiceOperationQuery(
-            self, "GetPublishingNavigationProviderType", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPublishingNavigationProviderType", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -51,9 +49,7 @@ class NavigationService(Entity):
     def global_nav_enabled(self) -> ClientResult[bool]:
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "GlobalNavEnabled", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GlobalNavEnabled", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -61,9 +57,7 @@ class NavigationService(Entity):
         """
         :param bool is_enabled:
         """
-        qry = ServiceOperationQuery(
-            self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled}
-        )
+        qry = ServiceOperationQuery(self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled})
         self.context.add_query(qry)
         return self
 
@@ -76,9 +70,7 @@ class NavigationService(Entity):
         """
         return_type = ClientResult(self.context, str())
         params = {"currentUrl": current_url, "mapProviderName": map_provider_name}
-        qry = ServiceOperationQuery(
-            self, "MenuNodeKey", None, params, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "MenuNodeKey", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -111,9 +103,7 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def save_menu_state(
-        self, menu_node_key: str, map_provider_name: NavigationProviderType
-    ) -> ClientResult[int]:
+    def save_menu_state(self, menu_node_key: str, map_provider_name: NavigationProviderType) -> ClientResult[int]:
         """Updates the menu tree rooted at the specified root node for a given provider.
 
         :param str menu_node_key: A unique key identifying the node that will be used as root node in the returned
@@ -125,9 +115,7 @@ class NavigationService(Entity):
             "menuNodeKey": menu_node_key,
             "mapProviderName": map_provider_name.value,
         }
-        qry = ServiceOperationQuery(
-            self, "SaveMenuState", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SaveMenuState", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -135,9 +123,7 @@ class NavigationService(Entity):
     def home_site_settings(self) -> HomeSiteNavigationSettings:
         return self.properties.get(
             "HomeSiteSettings",
-            HomeSiteNavigationSettings(
-                self.context, ResourcePath("HomeSiteSettings", self.resource_path)
-            ),
+            HomeSiteNavigationSettings(self.context, ResourcePath("HomeSiteSettings", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

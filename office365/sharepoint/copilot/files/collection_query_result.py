@@ -7,9 +7,7 @@ class CopilotFileCollectionQueryResult(ClientValue):
 
     def __init__(
         self,
-        files: ClientValueCollection[CopilotFileMetadata] = ClientValueCollection(
-            CopilotFileMetadata
-        ),
+        files: ClientValueCollection[CopilotFileMetadata] = ClientValueCollection(CopilotFileMetadata),
         skip_token: str = None,
     ):
         self.Files = files

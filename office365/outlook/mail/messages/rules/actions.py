@@ -40,9 +40,7 @@ class MessageRuleActions(ClientValue):
         self.assignCategories = StringCollection(assign_categories)
         self.copyToFolder = copy_to_folder
         self.delete = delete
-        self.forwardAsAttachmentTo = ClientValueCollection(
-            Recipient, forward_as_attachment_to
-        )
+        self.forwardAsAttachmentTo = ClientValueCollection(Recipient, forward_as_attachment_to)
         self.forwardTo = ClientValueCollection(Recipient, forward_to)
         self.markAsRead = mark_as_read
         self.markImportance = mark_importance

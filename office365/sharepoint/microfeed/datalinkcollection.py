@@ -7,9 +7,7 @@ class MicrofeedDataLinkCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(
-            MicrofeedDataLink
-        ),
+        items: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(MicrofeedDataLink),
     ):
         self.Items = items
 

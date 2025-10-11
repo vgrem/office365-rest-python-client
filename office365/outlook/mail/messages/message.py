@@ -63,9 +63,7 @@ class Message(OutlookItem):
             "Message": message,
             "Comment": comment,
         }
-        qry = ServiceOperationQuery(
-            self, "createForward", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "createForward", None, payload, None, return_type)
         self.context.add_query(qry)
         return self
 
@@ -85,9 +83,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return return_type
 
-    def add_file_attachment(
-        self, name: str, content=None, content_type=None, base64_content=None
-    ):
+    def add_file_attachment(self, name: str, content=None, content_type=None, base64_content=None):
         """
         Attach a file to message
 
@@ -102,9 +98,7 @@ class Message(OutlookItem):
         self.attachments.add_file(name, content, content_type, base64_content)
         return self
 
-    def upload_attachment(
-        self, file_path: str, chunk_uploaded: Optional[Callable[[int], None]] = None
-    ):
+    def upload_attachment(self, file_path: str, chunk_uploaded: Optional[Callable[[int], None]] = None):
         """
         This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
         if a file that's smaller than 3 MB, then add_file_attachment method is utilized
@@ -117,17 +111,13 @@ class Message(OutlookItem):
         if file_size > max_upload_chunk:
 
             def _message_loaded():
-                self.attachments.resumable_upload(
-                    file_path, max_upload_chunk, chunk_uploaded
-                )
+                self.attachments.resumable_upload(file_path, max_upload_chunk, chunk_uploaded)
 
             self.ensure_property("id", _message_loaded)
         else:
             with open(file_path, "rb") as file_object:
                 content = file_object.read()
-            self.attachments.add_file(
-                os.path.basename(file_object.name), content.decode("utf-8")
-            )
+            self.attachments.add_file(os.path.basename(file_object.name), content.decode("utf-8"))
         return self
 
     def send(self) -> Self:
@@ -165,9 +155,7 @@ class Message(OutlookItem):
         """
         return_type = Message(self.context)
         payload = {"comment": comment}
-        qry = ServiceOperationQuery(
-            self, "createReply", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "createReply", None, payload, None, return_type)
         self.context.add_query(qry)
         return self
 
@@ -238,9 +226,7 @@ class Message(OutlookItem):
         :param str comment: A comment to include. Can be an empty string.
         """
         payload = {
-            "toRecipients": ClientValueCollection(
-                Recipient, [Recipient.from_email(v) for v in to_recipients]
-            ),
+            "toRecipients": ClientValueCollection(Recipient, [Recipient.from_email(v) for v in to_recipients]),
             "comment": comment,
         }
         qry = ServiceOperationQuery(self, "forward", None, payload)
@@ -263,9 +249,7 @@ class Message(OutlookItem):
         """The fileAttachment and itemAttachment attachments for the message."""
         return self.properties.setdefault(
             "attachments",
-            AttachmentCollection(
-                self.context, ResourcePath("attachments", self.resource_path)
-            ),
+            AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path)),
         )
 
     @property
@@ -273,9 +257,7 @@ class Message(OutlookItem):
         """The collection of open extensions defined for the message. Nullable."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
@@ -352,9 +334,7 @@ class Message(OutlookItem):
         path taken by a message from the sender to the recipient. It can also contain custom message headers that
         hold app data for the message.
         """
-        return self.properties.get(
-            "internetMessageHeaders", ClientValueCollection(InternetMessageHeader)
-        )
+        return self.properties.get("internetMessageHeaders", ClientValueCollection(InternetMessageHeader))
 
     @property
     def internet_message_id(self) -> Optional[str]:
@@ -411,25 +391,19 @@ class Message(OutlookItem):
     @persist_property("toRecipients")
     def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the message."""
-        return self.properties.setdefault(
-            "toRecipients", ClientValueCollection(Recipient)
-        )
+        return self.properties.setdefault("toRecipients", ClientValueCollection(Recipient))
 
     @property
     @persist_property("bccRecipients")
     def bcc_recipients(self) -> ClientValueCollection[Recipient]:
         """The BCC: recipients for the message."""
-        return self.properties.setdefault(
-            "bccRecipients", ClientValueCollection(Recipient)
-        )
+        return self.properties.setdefault("bccRecipients", ClientValueCollection(Recipient))
 
     @property
     @persist_property("ccRecipients")
     def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The CC: recipients for the message."""
-        return self.properties.setdefault(
-            "ccRecipients", ClientValueCollection(Recipient)
-        )
+        return self.properties.setdefault("ccRecipients", ClientValueCollection(Recipient))
 
     @property
     @persist_property("replyTo")

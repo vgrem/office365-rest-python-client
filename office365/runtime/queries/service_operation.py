@@ -41,9 +41,7 @@ class ServiceOperationQuery(ClientQuery[T]):
             static_name = f"{self.binding_type.entity_type_name}.{self._method_name}"
             return ServiceOperationPath(static_name, self._method_params)
         else:
-            return ServiceOperationPath(
-                self._method_name, self._method_params, self.binding_type.resource_path
-            )
+            return ServiceOperationPath(self._method_name, self._method_params, self.binding_type.resource_path)
 
     @property
     def url(self) -> str:

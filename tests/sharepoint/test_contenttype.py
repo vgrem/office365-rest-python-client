@@ -18,11 +18,7 @@ class TestContentType(SPTestCase):
         self.assertIsInstance(result, ContentTypeCollection)
 
     def test2_get_content_type_by_id(self):
-        result = (
-            self.client.site.root_web.content_types.get_by_id("0x0101")
-            .get()
-            .execute_query()
-        )
+        result = self.client.site.root_web.content_types.get_by_id("0x0101").get().execute_query()
         self.assertIsNotNone(result.name)
 
     def test3_create_content_type(self):
@@ -39,9 +35,7 @@ class TestContentType(SPTestCase):
 
     def test5_set_value_for_ui_culture(self):
         ct = self.__class__.target_ct
-        result = ct.name_resource.set_value_for_ui_culture(
-            "fi-FI", self.localized_title
-        ).execute_query()
+        result = ct.name_resource.set_value_for_ui_culture("fi-FI", self.localized_title).execute_query()
         self.assertIsNotNone(result.value)
 
     def test6_get_value_for_ui_culture(self):
@@ -58,7 +52,5 @@ class TestContentType(SPTestCase):
         self.assertTrue(before_count, len(web_cts) + 1)
 
     def test9_get_content_types_changes(self):
-        result = self.client.web.get_changes(
-            ChangeQuery(content_type=True)
-        ).execute_query()
+        result = self.client.web.get_changes(ChangeQuery(content_type=True)).execute_query()
         self.assertGreater(len(result), 0)

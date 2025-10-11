@@ -13,12 +13,8 @@ class TemplatizationMetaData(ClientValue):
         self,
         file_info: ContentAssemblyFileInfo = ContentAssemblyFileInfo(),
         is_template_view_default: bool = None,
-        placeholder_column_type_info: ClientValueCollection[
-            ColumnTypeInfo
-        ] = ClientValueCollection(ColumnTypeInfo),
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(
-            PlaceholderV2
-        ),
+        placeholder_column_type_info: ClientValueCollection[ColumnTypeInfo] = ClientValueCollection(ColumnTypeInfo),
+        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
     ):
         self.FileInfo = file_info
         self.IsTemplateViewDefault = is_template_view_default

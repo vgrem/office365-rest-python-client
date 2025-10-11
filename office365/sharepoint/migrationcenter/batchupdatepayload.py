@@ -6,9 +6,7 @@ from office365.runtime.types.collections import StringCollection
 
 class BatchUpdatePayload(ClientValue):
 
-    def __init__(
-        self, tags: StringCollection = StringCollection(), task_id: UUID = None
-    ):
+    def __init__(self, tags: StringCollection = StringCollection(), task_id: UUID = None):
         self.Tags = tags
         self.TaskId = task_id
 

@@ -107,9 +107,7 @@ class ClientRuntimeContext(ABC):
         self.add_query(qry)
         return self
 
-    def before_query_execute(
-        self, action: Callable[[RequestOptions], None], once: bool = True
-    ) -> Self:
+    def before_query_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
         """
         Attach an event handler which is triggered before query is submitted to server
         """
@@ -126,9 +124,7 @@ class ClientRuntimeContext(ABC):
         self.pending_request().beforeExecute += _prepare_request
         return self
 
-    def before_execute(
-        self, action: Callable[[RequestOptions], None], once: bool = True
-    ) -> Self:
+    def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
         """Attaches pre-query execution handler.
 
         Args:
@@ -180,9 +176,7 @@ class ClientRuntimeContext(ABC):
 
         return self
 
-    def after_execute(
-        self, action: Callable[[Response], None], once: bool = True
-    ) -> Self:
+    def after_execute(self, action: Callable[[Response], None], once: bool = True) -> Self:
         """Attaches post-execution handler for all requests.
 
         Args:
@@ -264,11 +258,7 @@ class ClientRuntimeContext(ABC):
             return_type.set_property("__value", response.content)
 
         qry = ClientQuery(self)
-        (
-            self.add_query(qry)
-            .before_execute(_construct_request)
-            .after_execute(_process_response)
-        )
+        (self.add_query(qry).before_execute(_construct_request).after_execute(_process_response))
         return return_type
 
     def _get_next_query(self, count: int = 1) -> ClientQuery:

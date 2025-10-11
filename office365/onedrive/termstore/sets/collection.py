@@ -38,18 +38,12 @@ class SetCollection(EntityCollection[Set]):
             self.context.add_query(qry)
 
         if self._parent_group is not None:
-            props = {
-                "localizedNames": ClientValueCollection(
-                    LocalizedName, [LocalizedName(name)]
-                )
-            }
+            props = {"localizedNames": ClientValueCollection(LocalizedName, [LocalizedName(name)])}
             self._parent_group.ensure_property("id", _group_loaded, props)
         elif parent_group is not None:
             props = {
                 "parentGroup": {"id": parent_group.id},
-                "localizedNames": ClientValueCollection(
-                    LocalizedName, [LocalizedName(name)]
-                ),
+                "localizedNames": ClientValueCollection(LocalizedName, [LocalizedName(name)]),
             }
             parent_group.ensure_property("id", _group_loaded, props)
         else:

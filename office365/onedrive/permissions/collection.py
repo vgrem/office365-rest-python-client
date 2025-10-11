@@ -51,9 +51,7 @@ class PermissionCollection(EntityCollection[Permission]):
             identity_type = type(identity).__name__.lower()
         else:
             if identity_type is None:
-                raise ValueError(
-                    "Identity type is a mandatory when identity identifier is specified"
-                )
+                raise ValueError("Identity type is a mandatory when identity identifier is specified")
             known_identity = known_identities.get(identity_type, None)
             if known_identity is None:
                 raise ValueError("Unknown identity type")
@@ -62,13 +60,7 @@ class PermissionCollection(EntityCollection[Permission]):
         def _add():
             payload = {
                 "roles": roles,
-                "grantedToIdentities": [
-                    {
-                        identity_type: Identity(
-                            display_name=identity.display_name, _id=identity.id
-                        )
-                    }
-                ],
+                "grantedToIdentities": [{identity_type: Identity(display_name=identity.display_name, _id=identity.id)}],
             }
 
             qry = CreateEntityQuery(self, payload, return_type)

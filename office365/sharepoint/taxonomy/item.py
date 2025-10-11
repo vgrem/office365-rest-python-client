@@ -27,9 +27,7 @@ class TaxonomyItem(ClientObject):
         super(TaxonomyItem, self).set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self._resource_path is None:
-                self._resource_path = ResourcePath(
-                    value, self.parent_collection.resource_path
-                )
+                self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

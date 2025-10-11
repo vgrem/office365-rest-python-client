@@ -7,15 +7,11 @@ class AgreementReportBaseData(ClientValue):
 
     def __init__(
         self,
-        by_expiration_status: ClientValueCollection[
-            AgreementDataPair
-        ] = ClientValueCollection(AgreementDataPair),
+        by_expiration_status: ClientValueCollection[AgreementDataPair] = ClientValueCollection(AgreementDataPair),
         error_message: str = None,
         expired: int = None,
         in_effect: int = None,
-        in_progress_by_state: ClientValueCollection[
-            AgreementDataPair
-        ] = ClientValueCollection(AgreementDataPair),
+        in_progress_by_state: ClientValueCollection[AgreementDataPair] = ClientValueCollection(AgreementDataPair),
         near_expiration: int = None,
     ):
         self.by_expiration_status = by_expiration_status

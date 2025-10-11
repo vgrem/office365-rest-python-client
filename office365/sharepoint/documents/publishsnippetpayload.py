@@ -7,9 +7,7 @@ class PublishSnippetPayload(ClientValue):
 
     def __init__(
         self,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(
-            PlaceholderV2
-        ),
+        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
         url: str = None,
     ):
         self.placeholders = placeholders

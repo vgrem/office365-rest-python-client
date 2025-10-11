@@ -10,9 +10,7 @@ class ColumnSet(ClientValue):
 
     def __init__(
         self,
-        columns: ClientValueCollection[AdaptiveCardColumn] = ClientValueCollection(
-            AdaptiveCardColumn
-        ),
+        columns: ClientValueCollection[AdaptiveCardColumn] = ClientValueCollection(AdaptiveCardColumn),
         horizontal_alignment: str = None,
         padding: Padding = Padding(),
     ):

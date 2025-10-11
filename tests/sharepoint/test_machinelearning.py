@@ -3,9 +3,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 class TestMachineLearningHub(SPTestCase):
     def test1_enabled(self):
-        result = (
-            self.client.machine_learning.machine_learning_enabled.get().execute_query()
-        )
+        result = self.client.machine_learning.machine_learning_enabled.get().execute_query()
         self.assertIsNotNone(result)
 
     def test2_get_default_content_center_site(self):

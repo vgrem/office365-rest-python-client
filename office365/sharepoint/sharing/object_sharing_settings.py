@@ -41,9 +41,7 @@ class ObjectSharingSettings(Entity):
     @property
     def can_current_user_manage_organization_read_write_link(self) -> Optional[bool]:
         """Boolean indicating whether the current user can create or disable an organization Edit link."""
-        return self.properties.get(
-            "CanCurrentUserManageOrganizationReadWriteLink", None
-        )
+        return self.properties.get("CanCurrentUserManageOrganizationReadWriteLink", None)
 
     @property
     def can_current_user_manage_readonly_link(self) -> Optional[bool]:
@@ -95,9 +93,7 @@ class ObjectSharingSettings(Entity):
         """An object that contains the SharePoint UI specific sharing settings."""
         return self.properties.get(
             "SharePointSettings",
-            SharePointSharingSettings(
-                self.context, ResourcePath("SharePointSettings", self.resource_path)
-            ),
+            SharePointSharingSettings(self.context, ResourcePath("SharePointSettings", self.resource_path)),
         )
 
     @property
@@ -105,9 +101,7 @@ class ObjectSharingSettings(Entity):
         """A list of SharingPermissionInformation objects that can be used to share."""
         return self.properties.get(
             "SharingPermissions",
-            SharingPermissionInformation(
-                self.context, ResourcePath("SharingPermissions", self.resource_path)
-            ),
+            SharingPermissionInformation(self.context, ResourcePath("SharingPermissions", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

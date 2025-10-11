@@ -14,9 +14,7 @@ class PageDiagnosticsResult(ClientValue):
         created_date: datetime = None,
         page_details: PageDetails = PageDetails(),
         result_status: int = None,
-        suggestions: ClientValueCollection[RuleResult] = ClientValueCollection(
-            RuleResult
-        ),
+        suggestions: ClientValueCollection[RuleResult] = ClientValueCollection(RuleResult),
         score: int = None,
         tool_details: ToolDetails = ToolDetails(),
     ):

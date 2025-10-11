@@ -19,9 +19,7 @@ class ListItemVersion(Entity):
     """Represents a version of a list item."""
 
     def __repr__(self):
-        return (
-            f"Label: {self.version_label}, Url: {self.properties.get('FileRef', None)}"
-        )
+        return f"Label: {self.version_label}, Url: {self.properties.get('FileRef', None)}"
 
     @property
     def version_id(self) -> Optional[int]:
@@ -40,9 +38,7 @@ class ListItemVersion(Entity):
 
     @property
     def changes(self) -> ClientValueCollection[SPListItemVersionChange]:
-        return self.properties.get(
-            "Changes", ClientValueCollection(SPListItemVersionChange)
-        )
+        return self.properties.get("Changes", ClientValueCollection(SPListItemVersionChange))
 
     @property
     def created(self) -> datetime:
@@ -108,7 +104,5 @@ class ListItemVersion(Entity):
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None:
             if name == "VersionId":
-                self._resource_path = self.parent_collection.get_by_id(
-                    value
-                ).resource_path
+                self._resource_path = self.parent_collection.get_by_id(value).resource_path
         return super(ListItemVersion, self).set_property(name, value, persist_changes)

@@ -16,8 +16,6 @@ class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
         :param str decoded_url: Specifies the path for the checked-out file.
         """
         return_type = CheckedOutFile(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetByPath", [decoded_url], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetByPath", [decoded_url], None, None, return_type)
         self.context.add_query(qry)
         return return_type

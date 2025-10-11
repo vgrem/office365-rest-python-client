@@ -10,9 +10,7 @@ class ProfileData(ClientValue):
 
     def __init__(
         self,
-        manager_chain: ClientValueCollection[
-            ProfileCoreProperties
-        ] = ClientValueCollection(ProfileCoreProperties),
+        manager_chain: ClientValueCollection[ProfileCoreProperties] = ClientValueCollection(ProfileCoreProperties),
         primary: PersonMagazineUserProfile = PersonMagazineUserProfile(),
     ):
         self.ManagerChain = manager_chain

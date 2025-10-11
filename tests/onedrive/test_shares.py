@@ -11,11 +11,7 @@ class TestShares(GraphTestCase):
     def setUpClass(cls):
         super().setUpClass()
         path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
-        cls.file_item = (
-            cls.client.sites.get_by_url(test_team_site_url)
-            .drive.root.upload_file(path)
-            .execute_query()
-        )
+        cls.file_item = cls.client.sites.get_by_url(test_team_site_url).drive.root.upload_file(path).execute_query()
         assert cls.file_item.resource_path is not None
 
     @classmethod
@@ -24,8 +20,6 @@ class TestShares(GraphTestCase):
 
     def test1_get_file_by_abs_url(self):
         file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"
-        result = (
-            self.client.shares.by_url(file_abs_url).drive_item.get().execute_query()
-        )
+        result = self.client.shares.by_url(file_abs_url).drive_item.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertTrue(result.is_file)

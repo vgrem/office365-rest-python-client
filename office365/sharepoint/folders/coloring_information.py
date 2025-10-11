@@ -5,9 +5,7 @@ from office365.sharepoint.folders.colors import FolderColors
 class FolderColoringInformation(ClientValue):
     """"""
 
-    def __init__(
-        self, color_hex: FolderColors = None, color_tag: str = None, emoji: str = None
-    ):
+    def __init__(self, color_hex: FolderColors = None, color_tag: str = None, emoji: str = None):
         """
         :param FolderColors color_hex:
         :param str color_tag:

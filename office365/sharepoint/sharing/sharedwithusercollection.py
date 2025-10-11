@@ -7,8 +7,6 @@ class SharedWithUserCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[SharedWithUser] = ClientValueCollection(
-            SharedWithUser
-        ),
+        items: ClientValueCollection[SharedWithUser] = ClientValueCollection(SharedWithUser),
     ):
         self.items = items

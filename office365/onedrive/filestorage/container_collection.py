@@ -9,9 +9,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
     """FileStorageContainer collection"""
 
     def __init__(self, context, resource_path=None):
-        super(FileStorageContainerCollection, self).__init__(
-            context, FileStorageContainer, resource_path
-        )
+        super(FileStorageContainerCollection, self).__init__(context, FileStorageContainer, resource_path)
 
     def add(self, display_name, container_type_id=uuid.uuid4()):
         """

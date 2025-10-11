@@ -9,6 +9,4 @@ class ClientAmplifyExtraProperty(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyExtraProperty"
-        )
+        return "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyExtraProperty"

@@ -12,9 +12,7 @@ class SharePointPublishingStatus(ClientValue):
         destination_page_url: str = None,
         destination_page_version: str = None,
         error_code: int = None,
-        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
+        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
         status: int = None,
     ):
         self.DestinationPageId = destination_page_id

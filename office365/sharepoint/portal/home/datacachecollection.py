@@ -7,9 +7,7 @@ class SharePointHomeDataCacheCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[SharePointHomeDataCache] = ClientValueCollection(
-            SharePointHomeDataCache
-        ),
+        items: ClientValueCollection[SharePointHomeDataCache] = ClientValueCollection(SharePointHomeDataCache),
     ):
         self.Items = items
 

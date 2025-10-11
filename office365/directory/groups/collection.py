@@ -42,9 +42,7 @@ class GroupCollection(CountCollection[Group]):
         :param list[str] owners: The group owners
         :param list[str] members: The group members
         """
-        params = GroupProfile(
-            name, description, True, False, ["Unified"], owners, members
-        )
+        params = GroupProfile(name, description, True, False, ["Unified"], owners, members)
         return self.add(params)
 
     def create_security(self, name: str, description: str = None) -> Group:

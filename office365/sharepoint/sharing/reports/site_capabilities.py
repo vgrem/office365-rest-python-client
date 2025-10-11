@@ -16,9 +16,7 @@ class SiteSharingReportCapabilities(ClientValue):
     ):
         self.canCancelSharingReport = can_cancel_sharing_report
         self.canCreateSharingReport = can_create_sharing_report
-        self.createSharingReportNotAllowedReason = (
-            create_sharing_report_not_allowed_reason
-        )
+        self.createSharingReportNotAllowedReason = create_sharing_report_not_allowed_reason
         self.jobData = job_data
         self.stopSharingReportNotAllowedReason = stop_sharing_report_not_allowed_reason
 

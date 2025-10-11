@@ -10,9 +10,7 @@ class TestOnlineMeetings(GraphTestCase):
     target_meeting: OnlineMeeting = None
 
     def test1_create_meeting(self):
-        result = self.client.me.online_meetings.create(
-            subject="User Token Meeting"
-        ).execute_query()
+        result = self.client.me.online_meetings.create(subject="User Token Meeting").execute_query()
         self.assertIsNotNone(result.resource_path)
         self.__class__.target_meeting = result
 

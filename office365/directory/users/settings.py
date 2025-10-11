@@ -19,9 +19,7 @@ class UserSettings(Entity):
         displayed in Microsoft 365, for example in Suggested sites in SharePoint Home and the Discover view in
         OneDrive for work or school is affected for the whole organization. This setting is read-only and can only
         be changed by administrators in the SharePoint admin center."""
-        return self.properties.get(
-            "contributionToContentDiscoveryAsOrganizationDisabled", None
-        )
+        return self.properties.get("contributionToContentDiscoveryAsOrganizationDisabled", None)
 
     @property
     def contribution_to_content_discovery_disabled(self) -> Optional[bool]:
@@ -39,18 +37,14 @@ class UserSettings(Entity):
         Get userInsightsSettings through this navigation property."""
         return self.properties.get(
             "itemInsights",
-            UserInsightsSettings(
-                self.context, ResourcePath("itemInsights", self.resource_path)
-            ),
+            UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path)),
         )
 
     @property
     def shift_preferences(self) -> ShiftPreferences:
         return self.properties.get(
             "shiftPreferences",
-            ShiftPreferences(
-                self.context, ResourcePath("shiftPreferences", self.resource_path)
-            ),
+            ShiftPreferences(self.context, ResourcePath("shiftPreferences", self.resource_path)),
         )
 
     @property

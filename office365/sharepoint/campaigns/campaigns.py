@@ -12,8 +12,6 @@ class Campaigns(Entity):
         """
         return_type = ClientResult(context)
         payload = {"campaignId": campaign_id}
-        qry = ServiceOperationQuery(
-            Campaigns(context), "GetCampaign", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(Campaigns(context), "GetCampaign", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type

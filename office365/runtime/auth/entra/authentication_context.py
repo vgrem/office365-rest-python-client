@@ -95,9 +95,7 @@ class AuthenticationContext:
 
         return self.with_access_token(_acquire_token)
 
-    def with_token_interactive(
-        self, client_id: str, username: Optional[str] = None
-    ) -> Self:
+    def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> Self:
         """
         Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
@@ -129,9 +127,7 @@ class AuthenticationContext:
 
         return self.with_access_token(_acquire_token)
 
-    def with_username_and_password(
-        self, client_id: str, username: str, password: str
-    ) -> Self:
+    def with_username_and_password(self, client_id: str, username: str, password: str) -> Self:
         """
         Initializes the client via user credentials
 

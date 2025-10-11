@@ -13,7 +13,5 @@ class TestUsageReports(GraphTestCase):
 
     @requires_delegated_permission("PartnerBilling.Read.All")
     def test1_billed_usage_export(self):
-        result = self.client.reports.partners.billing.usage.billed.export(
-            "G016907411"
-        ).execute_query()
+        result = self.client.reports.partners.billing.usage.billed.export("G016907411").execute_query()
         self.assertIsNotNone(result.value)

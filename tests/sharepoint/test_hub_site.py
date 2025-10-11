@@ -9,9 +9,7 @@ class TestHubSite(SPTestCase):
     def setUpClass(cls):
         super(TestHubSite, cls).setUpClass()
         cls.target_site = cls.client.site.get().execute_query()
-        cls.is_hub_site = (
-            cls.target_site.is_hub_site or cls.target_site.hub_site_id is not None
-        )
+        cls.is_hub_site = cls.target_site.is_hub_site or cls.target_site.hub_site_id is not None
 
     def test1_register_hub_site(self):
         if self.is_hub_site:

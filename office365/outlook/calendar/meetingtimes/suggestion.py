@@ -26,9 +26,7 @@ class MeetingTimeSuggestion(ClientValue):
              for this meeting suggestion.
         :param meeting_timeslot: A time period suggested for the meeting.
         """
-        self.attendeeAvailability = ClientValueCollection(
-            AttendeeAvailability, attendee_availability
-        )
+        self.attendeeAvailability = ClientValueCollection(AttendeeAvailability, attendee_availability)
         self.confidence = confidence
         self.locations = ClientValueCollection(Location, locations)
         self.meetingTimeSlot = meeting_timeslot

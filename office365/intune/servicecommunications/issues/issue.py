@@ -23,9 +23,7 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
     @property
     def classification(self) -> ServiceHealthClassificationType:
         """The type of service health issue"""
-        return self.properties.get(
-            "classification", ServiceHealthClassificationType.none
-        )
+        return self.properties.get("classification", ServiceHealthClassificationType.none)
 
     @property
     def feature(self) -> Optional[str]:

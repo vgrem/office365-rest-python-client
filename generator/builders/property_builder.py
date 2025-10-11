@@ -38,11 +38,7 @@ class PropertyBuilder:
         """Build an ast.arg parameter"""
         return ast.arg(
             arg=self.name,
-            annotation=(
-                ast.Name(id=self.client_type_name, ctx=ast.Load())
-                if self.client_type_name
-                else None
-            ),
+            annotation=(ast.Name(id=self.client_type_name, ctx=ast.Load()) if self.client_type_name else None),
         )
 
     def build_default_value(self) -> Constant | Call:

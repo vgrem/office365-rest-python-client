@@ -20,9 +20,7 @@ class ShareLinkSettings(ClientValue):
         update_password=None,
         description: str = None,
         embeddable: bool = None,
-        invitees_to_remove: ClientValueCollection[Principal] = ClientValueCollection(
-            Principal
-        ),
+        invitees_to_remove: ClientValueCollection[Principal] = ClientValueCollection(Principal),
         limit_use_to_application: bool = None,
         nav: str = None,
         non_default_link: bool = None,

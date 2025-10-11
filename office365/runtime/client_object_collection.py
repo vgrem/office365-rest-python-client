@@ -82,25 +82,15 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             AttributeError: If no item type was specified for the collection
         """
         if self._item_type is None:
-            raise AttributeError(
-                "Cannot create object - no type specified for collection"
-            )
+            raise AttributeError("Cannot create object - no type specified for collection")
         if resource_path is None:
             resource_path = ResourcePath(None, self.resource_path)
-        client_object = self._item_type(
-            context=self.context, resource_path=resource_path
-        )  # type: T
+        client_object = self._item_type(context=self.context, resource_path=resource_path)  # type: T
         if initial_properties is not None:
-            [
-                client_object.set_property(k, v)
-                for k, v in initial_properties.items()
-                if v is not None
-            ]
+            [client_object.set_property(k, v) for k, v in initial_properties.items() if v is not None]
         return client_object
 
-    def set_property(
-        self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False
-    ):
+    def set_property(self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False):
         """
         Set a property on the collection or handle special properties.
 
@@ -120,10 +110,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         else:
             client_object = self.create_typed_object()
             self.add_child(client_object)
-            [
-                client_object.set_property(k, v, persist_changes)
-                for k, v in value.items()
-            ]
+            [client_object.set_property(k, v, persist_changes) for k, v in value.items()]
         return self
 
     def add_child(self, client_object: T) -> Self:
@@ -176,9 +163,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Get an item by its index position."""
         return self._data[index]
 
-    def to_json(
-        self, json_format: Optional[ODataJsonFormat] = None
-    ) -> List[Dict[str, Any]]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> List[Dict[str, Any]]:
         """
         Serialize the collection to JSON format.
 
@@ -245,9 +230,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.query_options.top = value
         return self
 
-    def paged(
-        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
-    ) -> Self:
+    def paged(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:
         """
         Enable server-driven paging mode.
 
@@ -279,9 +262,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.context.load(self).after_query_execute(_loaded)
         return self
 
-    def get_all(
-        self, page_size: int = None, page_loaded: Callable[[Self], None] = None
-    ) -> Self:
+    def get_all(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:
         """
         Load all items in the collection, automatically handling paging.
 
@@ -328,10 +309,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             if len(col) < 1:
                 message = f"Not found for filter: {self.query_options.filter}"
                 raise ValueError(message)
-            [
-                return_type.set_property(k, v, False)
-                for k, v in col[0].properties.items()
-            ]
+            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
@@ -359,10 +337,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             elif len(col) > 1:
                 message = "Ambiguous match found for filter: {0}".format(expression)
                 raise ValueError(message)
-            [
-                return_type.set_property(k, v, False)
-                for k, v in col[0].properties.items()
-            ]
+            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
         self.get().filter(expression).top(2).after_execute(_after_loaded)
         return return_type

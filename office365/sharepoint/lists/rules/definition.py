@@ -16,9 +16,7 @@ class RulesDefinition(ClientValue):
         is_manual: bool = None,
         modified_by_user: ReviewerInfo = None,
         modified_date_time: str = None,
-        properties: ClientValueCollection[RulesProperties] = ClientValueCollection(
-            RulesProperties
-        ),
+        properties: ClientValueCollection[RulesProperties] = ClientValueCollection(RulesProperties),
         risk: int = None,
         rule_group: str = None,
         rule_id: int = None,

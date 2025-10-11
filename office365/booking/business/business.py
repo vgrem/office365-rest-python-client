@@ -22,9 +22,7 @@ class BookingBusiness(Entity):
     It contains business information and related business objects such as appointments, customers, services,
     and staff members."""
 
-    def get_staff_availability(
-        self, staff_ids=None, start_datetime=None, end_datetime=None
-    ):
+    def get_staff_availability(self, staff_ids=None, start_datetime=None, end_datetime=None):
         # type: (List[str], datetime, datetime) -> ClientResult[ClientValueCollection[StaffAvailabilityItem]]
         """
         Get the availability information of staff members of a Microsoft Bookings calendar.
@@ -32,17 +30,13 @@ class BookingBusiness(Entity):
         :param datetime.datetime start_datetime:
         :param datetime.datetime end_datetime:
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(StaffAvailabilityItem)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(StaffAvailabilityItem))
         payload = {
             "staffIds": staff_ids,
             "startDateTime": start_datetime,
             "endDateTime": end_datetime,
         }
-        qry = ServiceOperationQuery(
-            self, "getStaffAvailability", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getStaffAvailability", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -72,9 +66,7 @@ class BookingBusiness(Entity):
     def business_hours(self):
         # type: () -> ClientValueCollection[BookingWorkHours]
         """The hours of operation for the business."""
-        return self.properties.get(
-            "businessHours", ClientValueCollection(BookingWorkHours)
-        )
+        return self.properties.get("businessHours", ClientValueCollection(BookingWorkHours))
 
     def display_name(self):
         # type: () -> Optional[str]

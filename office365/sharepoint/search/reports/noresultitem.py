@@ -8,9 +8,7 @@ class ReportNoResultItem(ClientValue):
     def __init__(
         self,
         date: str = None,
-        report: ClientValueCollection[ReportNoResultData] = ClientValueCollection(
-            ReportNoResultData
-        ),
+        report: ClientValueCollection[ReportNoResultData] = ClientValueCollection(ReportNoResultData),
     ):
         self.Date = date
         self.Report = report

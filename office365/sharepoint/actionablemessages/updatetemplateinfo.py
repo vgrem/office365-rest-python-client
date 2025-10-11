@@ -9,9 +9,7 @@ class UpdateTemplateInfo(ClientValue):
         self,
         new_name: str = None,
         operation: int = None,
-        placeholders: ClientValueCollection[Placeholder] = ClientValueCollection(
-            Placeholder
-        ),
+        placeholders: ClientValueCollection[Placeholder] = ClientValueCollection(Placeholder),
     ):
         self.new_name = new_name
         self.operation = operation

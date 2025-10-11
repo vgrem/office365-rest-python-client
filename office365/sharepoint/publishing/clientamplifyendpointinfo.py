@@ -11,9 +11,9 @@ class ClientAmplifyEndpointInfo(ClientValue):
         self,
         endpoint_sub_type: str = None,
         endpoint_type: str = None,
-        extra_properties: ClientValueCollection[
+        extra_properties: ClientValueCollection[ClientAmplifyExtraProperty] = ClientValueCollection(
             ClientAmplifyExtraProperty
-        ] = ClientValueCollection(ClientAmplifyExtraProperty),
+        ),
         href: str = None,
         id_: str = None,
         name: str = None,
@@ -27,6 +27,4 @@ class ClientAmplifyEndpointInfo(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyEndpointInfo"
-        )
+        return "Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyEndpointInfo"

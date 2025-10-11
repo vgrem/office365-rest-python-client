@@ -29,7 +29,5 @@ class CallRecord(Entity):
         """
         return self.properties.get(
             "sessions",
-            EntityCollection(
-                self.context, Session, ResourcePath("sessions", self.resource_path)
-            ),
+            EntityCollection(self.context, Session, ResourcePath("sessions", self.resource_path)),
         )

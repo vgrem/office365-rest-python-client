@@ -12,9 +12,7 @@ class SPListInformation(ClientValue):
         absolute_url: str = None,
         base_template: int = None,
         display_title: str = None,
-        folder_info_list: ClientValueCollection[
-            SPFolderInformation
-        ] = ClientValueCollection(SPFolderInformation),
+        folder_info_list: ClientValueCollection[SPFolderInformation] = ClientValueCollection(SPFolderInformation),
         id_: UUID = None,
         is_list_path_used_as_title: bool = None,
         is_my_site_document_library: bool = None,

@@ -47,6 +47,4 @@ class AuditSearchRequestStatus(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.AuditSearchRequestStatus"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.AuditSearchRequestStatus"

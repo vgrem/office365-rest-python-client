@@ -116,9 +116,7 @@ class Application(DirectoryObject):
         super().delete_object()
         deleted_app = DirectoryObject(
             self.context,
-            EntityPath(
-                self.id, self.context.directory.deleted_applications.resource_path
-            ),
+            EntityPath(self.id, self.context.directory.deleted_applications.resource_path),
         )
         self.context.directory.deleted_applications.add_child(deleted_app)
         if permanent_delete:
@@ -192,9 +190,7 @@ class Application(DirectoryObject):
                  nbf - Not before time.
                  exp - Expiration time should be "nbf" + 10 mins.
         """
-        qry = ServiceOperationQuery(
-            self, "removeKey", None, {"keyId": key_id, "proof": proof}
-        )
+        qry = ServiceOperationQuery(self, "removeKey", None, {"keyId": key_id, "proof": proof})
         self.context.add_query(qry)
         return self
 
@@ -247,9 +243,7 @@ class Application(DirectoryObject):
     @persist_property("keyCredentials")
     def key_credentials(self) -> ClientValueCollection[KeyCredential]:
         """The collection of key credentials associated with the application. Not nullable."""
-        return self.properties.setdefault(
-            "keyCredentials", ClientValueCollection(KeyCredential)
-        )
+        return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
 
     @property
     def display_name(self) -> Optional[str]:
@@ -278,9 +272,7 @@ class Application(DirectoryObject):
     @property
     def password_credentials(self) -> ClientValueCollection[PasswordCredential]:
         """The collection of password credentials associated with the application"""
-        return self.properties.get(
-            "passwordCredentials", ClientValueCollection(PasswordCredential)
-        )
+        return self.properties.get("passwordCredentials", ClientValueCollection(PasswordCredential))
 
     @property
     def public_client(self) -> PublicClientApplication:
@@ -301,9 +293,7 @@ class Application(DirectoryObject):
         """"""
         return self.properties.get(
             "createdOnBehalfOf",
-            DirectoryObject(
-                self.context, ResourcePath("createdOnBehalfOf", self.resource_path)
-            ),
+            DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path)),
         )
 
     @property
@@ -311,9 +301,7 @@ class Application(DirectoryObject):
         """Directory objects that are owners of the application."""
         return self.properties.get(
             "owners",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("owners", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
     @property
@@ -334,9 +322,7 @@ class Application(DirectoryObject):
         of delegated permissions and application roles that it needs for each of those resources.
         This configuration of access to the required resources drives the consent experience.
         """
-        return self.properties.get(
-            "requiredResourceAccess", ClientValueCollection(RequiredResourceAccess)
-        )
+        return self.properties.get("requiredResourceAccess", ClientValueCollection(RequiredResourceAccess))
 
     @property
     def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:

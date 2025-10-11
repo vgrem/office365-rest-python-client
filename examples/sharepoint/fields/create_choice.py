@@ -10,9 +10,7 @@ from tests import (
     test_team_site_url,
 )
 
-client = ClientContext(test_team_site_url).with_client_credentials(
-    test_client_id, test_client_secret
-)
+client = ClientContext(test_team_site_url).with_client_credentials(test_client_id, test_client_secret)
 lib = client.web.default_document_library()
 
 field_name = create_unique_name("ChoiceField")

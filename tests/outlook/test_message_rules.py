@@ -16,19 +16,13 @@ class TestMessageRules(GraphTestCase):
             stop_processing_rules=True,
             mark_importance=Importance.normal,
         )
-        result = (
-            self.client.me.mail_folders["inbox"]
-            .message_rules.add("From partner", 2, actions)
-            .execute_query()
-        )
+        result = self.client.me.mail_folders["inbox"].message_rules.add("From partner", 2, actions).execute_query()
         self.assertIsNotNone(result.resource_path)
         self.__class__.target_message_rule = result
 
     @requires_delegated_permission("MailboxSettings.Read", "MailboxSettings.ReadWrite")
     def test2_list_rules(self):
-        message_rules = (
-            self.client.me.mail_folders["inbox"].message_rules.get().execute_query()
-        )
+        message_rules = self.client.me.mail_folders["inbox"].message_rules.get().execute_query()
         self.assertIsNotNone(message_rules.resource_path)
 
     @requires_delegated_permission("MailboxSettings.ReadWrite")

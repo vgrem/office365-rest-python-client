@@ -23,9 +23,7 @@ if TYPE_CHECKING:
 class AttachmentCollection(EntityCollection[Attachment]):
     """Attachment collection"""
 
-    def __init__(
-        self, context: GraphClient, resource_path: ResourcePath = None
-    ) -> None:
+    def __init__(self, context: GraphClient, resource_path: ResourcePath = None) -> None:
         super().__init__(context, Attachment, resource_path)
 
     def add_file(self, name, content=None, content_type=None, base64_content=None):
@@ -74,15 +72,11 @@ class AttachmentCollection(EntityCollection[Attachment]):
         return_type = FileAttachment(self.context)
         self.add_child(return_type)
 
-        qry = UploadSessionQuery(
-            self, {"AttachmentItem": AttachmentItem.create_file(source_path)}
-        )
+        qry = UploadSessionQuery(self, {"AttachmentItem": AttachmentItem.create_file(source_path)})
 
         def _start_upload(result: ClientResult[UploadSession]) -> None:
             with open(source_path, "rb") as local_file:
-                session_request = UploadSessionRequest(
-                    local_file, chunk_size, chunk_uploaded
-                )
+                session_request = UploadSessionRequest(local_file, chunk_size, chunk_uploaded)
 
                 def _construct_request(request: RequestOptions) -> None:
                     auth_token = parse_query_param(request.url, "authtoken")
@@ -99,14 +93,10 @@ class AttachmentCollection(EntityCollection[Attachment]):
                 session_request.afterExecute += _process_response
                 session_request.execute_query(qry)
 
-        self.context.add_query(qry).after_query_execute(
-            _start_upload, execute_first=True
-        )
+        self.context.add_query(qry).after_query_execute(_start_upload, execute_first=True)
         return self
 
-    def create_upload_session(
-        self, attachment_item: AttachmentItem
-    ) -> ClientResult[UploadSession]:
+    def create_upload_session(self, attachment_item: AttachmentItem) -> ClientResult[UploadSession]:
         """
         Create an upload session that allows an app to iteratively upload ranges of a file,
              so as to attach the file to the specified Outlook item. The item can be a message or event.

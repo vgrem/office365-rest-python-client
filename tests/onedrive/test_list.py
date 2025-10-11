@@ -21,9 +21,7 @@ class TestList(GraphTestCase):
         pass
 
     def test1_create_list(self):
-        result = self.client.sites.root.lists.add(
-            self.list_name, ListTemplateType.documentLibrary
-        ).execute_query()
+        result = self.client.sites.root.lists.add(self.list_name, ListTemplateType.documentLibrary).execute_query()
         self.__class__.target_list = result
 
     def test2_get_list(self):
@@ -52,7 +50,5 @@ class TestList(GraphTestCase):
         self.__class__.target_list.delete_object().execute_query()
 
     def test8_get_pages_list(self):
-        result = (
-            self.client.sites.root.lists.get_by_name("Site Pages").get().execute_query()
-        )
+        result = self.client.sites.root.lists.get_by_name("Site Pages").get().execute_query()
         self.assertIsNotNone(result.resource_path)

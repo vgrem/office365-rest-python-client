@@ -10,9 +10,7 @@ class VivaEngagePublishingStatus(ClientValue):
         destination_id: str = None,
         error_code: int = None,
         error_message: str = None,
-        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
+        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
         status: int = None,
     ):
         self.DestinationId = destination_id

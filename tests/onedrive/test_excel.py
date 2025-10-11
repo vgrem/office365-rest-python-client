@@ -33,9 +33,7 @@ class TestExcel(GraphTestCase):
         self.assertIsNotNone(workbook.resource_path)
 
     def test2_create_workbook_table(self):
-        table = self.__class__.target_item.workbook.tables.add(
-            "A10000:C10002", True
-        ).execute_query()
+        table = self.__class__.target_item.workbook.tables.add("A10000:C10002", True).execute_query()
         self.assertIsNotNone(table.resource_path)
         self.__class__.table = table
 
@@ -65,9 +63,7 @@ class TestExcel(GraphTestCase):
         self.assertIsNotNone(rows.resource_path)
 
     def test9_create_table_rows(self):
-        row = self.__class__.table.rows.add(
-            [["Val11", "Val12", "Val13", "Val14"]]
-        ).execute_query()
+        row = self.__class__.table.rows.add([["Val11", "Val12", "Val13", "Val14"]]).execute_query()
         self.assertIsNotNone(row.resource_path)
         self.assertIsNotNone(row.index)
         self.assertIsNotNone(row.values)

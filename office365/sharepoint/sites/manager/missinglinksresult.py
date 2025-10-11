@@ -7,9 +7,7 @@ class MissingLinksResult(ClientValue):
 
     def __init__(
         self,
-        missing_links: ClientValueCollection[MissingLink] = ClientValueCollection(
-            MissingLink
-        ),
+        missing_links: ClientValueCollection[MissingLink] = ClientValueCollection(MissingLink),
     ):
         self.MissingLinks = missing_links
 

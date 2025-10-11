@@ -14,9 +14,7 @@ class EventMessage(Message):
         messages arrive. Navigation property. Read-only."""
         from office365.outlook.calendar.events.event import Event
 
-        return self.properties.get(
-            "event", Event(self.context, ResourcePath("event", self.resource_path))
-        )
+        return self.properties.get("event", Event(self.context, ResourcePath("event", self.resource_path)))
 
     @property
     def patterned_recurrence(self) -> PatternedRecurrence:

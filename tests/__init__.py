@@ -8,9 +8,7 @@ from tests.config import SecEnvInterpolation, load_config
 
 
 def create_unique_name(prefix: str) -> str:
-    return prefix + "".join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
-    )
+    return prefix + "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
 def create_unique_file_name(prefix, ext):

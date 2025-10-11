@@ -73,13 +73,9 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """
 
         def _create(parent_content_type_id: Optional[str]):
-            parameters = ContentTypeEntityData(
-                name, description, group, parent_content_type_id
-            )
+            parameters = ContentTypeEntityData(name, description, group, parent_content_type_id)
             payload = {"parameters": parameters}
-            qry = ServiceOperationQuery(
-                self, "Create", None, payload, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "Create", None, payload, None, return_type)
             self.context.add_query(qry)
 
         return_type = ContentType(self.context)
@@ -102,8 +98,6 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "AddAvailableContentType", [content_type_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddAvailableContentType", [content_type_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type

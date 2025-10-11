@@ -19,16 +19,12 @@ class AnalyticsUsageEntry(Entity):
             "itemId": item_id,
         }
         binding_type = AnalyticsUsageEntry(context)
-        qry = ServiceOperationQuery(
-            binding_type, "LogAnalyticsEvent", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "LogAnalyticsEvent", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 
     @staticmethod
-    def log_analytics_app_event2(
-        context, app_event_type_id, item_id, rollup_scope_id, site_id, user_id
-    ):
+    def log_analytics_app_event2(context, app_event_type_id, item_id, rollup_scope_id, site_id, user_id):
         """
         Creates and logs an analytics event into the analytics pipeline with additional parameters.
 
@@ -48,9 +44,7 @@ class AnalyticsUsageEntry(Entity):
             "userId": user_id,
         }
         binding_type = AnalyticsUsageEntry(context)
-        qry = ServiceOperationQuery(
-            binding_type, "LogAnalyticsAppEvent2", None, payload
-        )
+        qry = ServiceOperationQuery(binding_type, "LogAnalyticsAppEvent2", None, payload)
         qry.static = True
         context.add_query(qry)
         return binding_type

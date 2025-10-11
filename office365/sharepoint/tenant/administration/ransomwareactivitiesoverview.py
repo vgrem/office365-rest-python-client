@@ -25,9 +25,7 @@ class TenantAdminRansomwareActivitiesOverview(ClientValue):
         self.oneDriveActivityCount = one_drive_activity_count
         self.sharePointActivityCount = share_point_activity_count
         self.totalActivitiesCount = total_activities_count
-        self.totalHighVolumeComponentActivityDetectionCount = (
-            total_high_volume_component_activity_detection_count
-        )
+        self.totalHighVolumeComponentActivityDetectionCount = total_high_volume_component_activity_detection_count
         self.unresolvedActivitiesCount = unresolved_activities_count
         self.usersCount = users_count
 

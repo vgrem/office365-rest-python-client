@@ -45,9 +45,7 @@ class GroupCreationContext(ClientValue):
         self.ShowSelfServiceSiteCreation = show_self_service_site_creation
         self.SiteCreationNewUX = site_creation_new_ux
         self.SiteSensitivityLabelId = site_sensitivity_label_id
-        self.URLForCustomHelpPageSensitivityLabel = (
-            url_for_custom_help_page_sensitivity_label
-        )
+        self.URLForCustomHelpPageSensitivityLabel = url_for_custom_help_page_sensitivity_label
         self.UsageGuidelineUrl = usage_guideline_url
 
     @property

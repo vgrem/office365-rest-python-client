@@ -15,9 +15,9 @@ class DashboardConfiguration(ClientValue):
         dashboard_list_id: str = None,
         dashboard_unique_item_id: str = None,
         dashboard_url: str = None,
-        extra_components: ClientValueCollection[
+        extra_components: ClientValueCollection[SPClientSideComponentQueryResult] = ClientValueCollection(
             SPClientSideComponentQueryResult
-        ] = ClientValueCollection(SPClientSideComponentQueryResult),
+        ),
         personalization_data: DashboardContent = DashboardContent(),
     ):
         self.canvasContent = canvas_content

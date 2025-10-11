@@ -45,8 +45,6 @@ result = item_to_update.validate_update_list_item(
 
 has_any_error = any([item.HasException for item in result.value])
 if has_any_error:
-    print(
-        "Item update completed with errors, for details refer 'ErrorMessage' property"
-    )
+    print("Item update completed with errors, for details refer 'ErrorMessage' property")
 else:
     print("Item has been updated successfully")

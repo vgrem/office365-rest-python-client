@@ -14,9 +14,7 @@ class WorkflowServicesManager(Entity):
         )
 
         return_type = WorkflowInstanceService(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetWorkflowInstanceService", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetWorkflowInstanceService", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -27,9 +25,7 @@ class WorkflowServicesManager(Entity):
 
         :type context: office365.sharepoint.client_context.ClientContext
         """
-        return WorkflowServicesManager(
-            context, ResourcePath("SP.WorkflowServices.WorkflowServicesManager.Current")
-        )
+        return WorkflowServicesManager(context, ResourcePath("SP.WorkflowServices.WorkflowServicesManager.Current"))
 
     @property
     def entity_type_name(self):

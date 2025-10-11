@@ -50,9 +50,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         :param str _id: The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46)
             that is returned.
         """
-        return FieldLink(
-            self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
-        )
+        return FieldLink(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def reorder(self, internal_names: list[str]) -> Self:
         """

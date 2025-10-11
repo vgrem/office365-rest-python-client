@@ -9,9 +9,7 @@ class SocialPostDefinitionData(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[
-            SocialPostDefinitionDataItem
-        ] = ClientValueCollection(SocialPostDefinitionDataItem),
+        items: ClientValueCollection[SocialPostDefinitionDataItem] = ClientValueCollection(SocialPostDefinitionDataItem),
         name: str = None,
     ):
         """The SocialPostDefinitionData type provides additional information about server-generated posts.

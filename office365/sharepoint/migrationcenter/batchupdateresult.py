@@ -10,9 +10,7 @@ class BatchUpdateResult(ClientValue):
         error_code: str = None,
         fail_count: int = None,
         processing_milliseconds: int = None,
-        result_list: ClientValueCollection[TaskUpdateResult] = ClientValueCollection(
-            TaskUpdateResult
-        ),
+        result_list: ClientValueCollection[TaskUpdateResult] = ClientValueCollection(TaskUpdateResult),
         success_count: int = None,
     ):
         self.ErrorCode = error_code

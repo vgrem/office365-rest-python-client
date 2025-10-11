@@ -12,9 +12,7 @@ class WorkflowInstanceService(Entity):
         Returns the site workflow instances for the current site.
         """
         return_type = EntityCollection(self.context, WorkflowInstance)
-        qry = ServiceOperationQuery(
-            self, "EnumerateInstancesForSite", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnumerateInstancesForSite", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

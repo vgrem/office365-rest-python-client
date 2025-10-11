@@ -18,9 +18,7 @@ class TaxonomyService(ClientRuntimeContext):
     def __init__(self, context: ClientContext):
         super().__init__()
         self._pending_request = ODataRequest(V4JsonFormat())
-        self._pending_request.beforeExecute += (
-            context.authentication_context.authenticate_request
-        )
+        self._pending_request.beforeExecute += context.authentication_context.authenticate_request
         self._service_root_url = f"{context.service_root_url}/v2.1"
 
     def pending_request(self):

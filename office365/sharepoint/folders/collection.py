@@ -26,9 +26,7 @@ class FolderCollection(EntityCollection[Folder]):
         """
         parameters = {"DecodedUrl": decoded_url, "Overwrite": overwrite}
         return_type = Folder(self.context)
-        qry = ServiceOperationQuery(
-            self, "AddUsingPath", parameters, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddUsingPath", parameters, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -57,13 +55,9 @@ class FolderCollection(EntityCollection[Folder]):
         if color_hex:
 
             def _add_coloring():
-                path = os.path.join(
-                    self.parent.properties.get("ServerRelativeUrl"), name
-                )
+                path = os.path.join(self.parent.properties.get("ServerRelativeUrl"), name)
                 coloring_info = FolderColoringInformation(color_hex=color_hex)
-                self.context.folder_coloring.create_folder(
-                    path, coloring_info, return_type=return_type
-                )
+                self.context.folder_coloring.create_folder(path, coloring_info, return_type=return_type)
 
             self.parent.ensure_property("ServerRelativeUrl", _add_coloring)
         else:
@@ -78,9 +72,7 @@ class FolderCollection(EntityCollection[Folder]):
             a site-relative URL relative to the site (2) containing the collection of list folders, or relative to the
             list folder that directly contains this collection of list folders.
         """
-        return Folder(
-            self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
-        )
+        return Folder(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_path(self, decoded_url: str) -> Folder:
         """
@@ -89,7 +81,5 @@ class FolderCollection(EntityCollection[Folder]):
         """
         return Folder(
             self.context,
-            ServiceOperationPath(
-                "GetByPath", SPResPath(decoded_url), self.resource_path
-            ),
+            ServiceOperationPath("GetByPath", SPResPath(decoded_url), self.resource_path),
         )

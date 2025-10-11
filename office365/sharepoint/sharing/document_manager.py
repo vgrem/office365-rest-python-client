@@ -58,9 +58,7 @@ class DocumentSharingManager(Entity):
         :param list[str] item_urls: A list of absolute URLs of the items to be removed from the view.
             These items might belong to any site or site collection in the tenant.
         """
-        return_type = ClientResult(
-            context, ClientValueCollection(SharedWithMeViewItemRemovalResult)
-        )
+        return_type = ClientResult(context, ClientValueCollection(SharedWithMeViewItemRemovalResult))
         binding_type = DocumentSharingManager(context)
         qry = ServiceOperationQuery(
             binding_type,
@@ -120,9 +118,7 @@ class DocumentSharingManager(Entity):
         :param ClientResult return_type:
         """
         if return_type is None:
-            return_type = ClientResult(
-                context, ClientValueCollection(UserSharingResult)
-            )
+            return_type = ClientResult(context, ClientValueCollection(UserSharingResult))
         payload = {
             "resourceAddress": resource_address,
             "userRoleAssignments": user_role_assignments,

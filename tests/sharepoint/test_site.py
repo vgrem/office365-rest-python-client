@@ -13,9 +13,7 @@ class TestSite(SPTestCase):
 
     def test1_if_site_loaded(self):
         site = self.client.site.get().execute_query()
-        self.assertIs(
-            site.is_property_available("Url"), True, "Site resource was not requested"
-        )
+        self.assertIs(site.is_property_available("Url"), True, "Site resource was not requested")
         self.assertIs(site.is_property_available("RootWeb"), False)
 
     def test2_if_site_exists(self):
@@ -33,11 +31,7 @@ class TestSite(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test5_get_site_catalog(self):
-        result = (
-            self.client.site.get_catalog(ListTemplateType.AppDataCatalog)
-            .get()
-            .execute_query()
-        )
+        result = self.client.site.get_catalog(ListTemplateType.AppDataCatalog).get().execute_query()
         self.assertIsNotNone(result.title)
 
     def test6_get_web_templates(self):
@@ -59,9 +53,7 @@ class TestSite(SPTestCase):
 
     def test_11_create_site(self):
         site_url = f"{test_site_url}/sites/{uuid.uuid4().hex}"
-        result = self.client.site_manager.create(
-            "Comm Site", site_url, test_user_principal_name_alt
-        ).execute_query()
+        result = self.client.site_manager.create("Comm Site", site_url, test_user_principal_name_alt).execute_query()
         self.assertIsNotNone(result.value)
         self.__class__.site_response = result.value
 
@@ -84,9 +76,7 @@ class TestSite(SPTestCase):
     def test_15_delete_site(self):
         from office365.sharepoint.client_context import ClientContext
 
-        admin_ctx = ClientContext(self.client.base_url).with_credentials(
-            test_admin_credentials
-        )
+        admin_ctx = ClientContext(self.client.base_url).with_credentials(test_admin_credentials)
         site_id = self.__class__.site_response.SiteId
         admin_ctx.site_manager.delete(site_id).execute_query()
 

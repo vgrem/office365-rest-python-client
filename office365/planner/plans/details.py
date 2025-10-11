@@ -14,9 +14,7 @@ class PlannerPlanDetails(Entity):
         """
         An object that specifies the descriptions of the 25 categories that can be associated with tasks in the plan.
         """
-        return self.properties.get(
-            "categoryDescriptions", PlannerCategoryDescriptions()
-        )
+        return self.properties.get("categoryDescriptions", PlannerCategoryDescriptions())
 
     @property
     def shared_with(self) -> PlannerUserIds:

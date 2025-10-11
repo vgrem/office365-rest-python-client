@@ -33,6 +33,4 @@ class ObjectSharingInformationUser(Entity):
 
     def user(self):
         """Specifies the user with whom a securable object is shared."""
-        return self.properties.get(
-            "User", User(self.context, ResourcePath("User", self.resource_path))
-        )
+        return self.properties.get("User", User(self.context, ResourcePath("User", self.resource_path)))

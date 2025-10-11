@@ -9,9 +9,9 @@ class CopilotTransitiveSharingStatusInformation(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[
+        items: ClientValueCollection[CopilotTransitiveSharingStatusItem] = ClientValueCollection(
             CopilotTransitiveSharingStatusItem
-        ] = ClientValueCollection(CopilotTransitiveSharingStatusItem),
+        ),
     ):
         self.Items = items
 

@@ -23,9 +23,7 @@ class PortalLaunchWaveSetup(ClientValue):
         site_id: str = None,
         status: int = None,
         wave_override_users: str = None,
-        waves: ClientValueCollection[PortalLaunchWave] = ClientValueCollection(
-            PortalLaunchWave
-        ),
+        waves: ClientValueCollection[PortalLaunchWave] = ClientValueCollection(PortalLaunchWave),
     ):
         self.AlternativeUrlsOfNewSite = alternative_urls_of_new_site
         self.AlternativeUrlsOfOldSite = alternative_urls_of_old_site

@@ -31,9 +31,7 @@ class CallRecordCollection(EntityCollection[CallRecord]):
         if from_datetime is None:
             from_datetime = to_datetime - timedelta(days=30)
 
-        return_type = ClientResult(
-            self.context, ClientValueCollection(DirectRoutingLogRow)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(DirectRoutingLogRow))
         payload = {
             "fromDateTime": from_datetime.strftime("%Y-%m-%d"),
             "toDateTime": to_datetime.strftime("%Y-%m-%d"),

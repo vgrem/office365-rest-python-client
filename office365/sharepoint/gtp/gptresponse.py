@@ -8,9 +8,7 @@ class GptResponse(ClientValue):
 
     def __init__(
         self,
-        choices: ClientValueCollection[GptResponseChoice] = ClientValueCollection(
-            GptResponseChoice
-        ),
+        choices: ClientValueCollection[GptResponseChoice] = ClientValueCollection(GptResponseChoice),
         usage: GptResponseUsage = GptResponseUsage(),
     ):
         self.Choices = choices

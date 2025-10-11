@@ -11,15 +11,11 @@ class SubscriptionCollection(EntityCollection[Subscription]):
     """Represents a collection of Subscription (WebHook) resources."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(SubscriptionCollection, self).__init__(
-            context, Subscription, resource_path, parent
-        )
+        super(SubscriptionCollection, self).__init__(context, Subscription, resource_path, parent)
 
     def get_by_id(self, _id):
         """Gets the subscription with the specified ID."""
-        return Subscription(
-            self.context, ServiceOperationPath("getById", [_id], self.resource_path)
-        )
+        return Subscription(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
     def add(self, parameters):
         """
@@ -41,9 +37,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         else:
 
             def _parent_loaded():
-                _create_and_add_query(
-                    SubscriptionInformation(parameters, self._parent.properties["Id"])
-                )
+                _create_and_add_query(SubscriptionInformation(parameters, self._parent.properties["Id"]))
 
             self._parent.ensure_property("Id", _parent_loaded)
         return return_type

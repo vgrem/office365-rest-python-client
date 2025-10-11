@@ -13,7 +13,5 @@ class TranslationNotificationRecipientUsers(Entity):
 
         return self.properties.get(
             "Recipients",
-            UserCollection(
-                self.context, ResourcePath("Recipients", self.resource_path)
-            ),
+            UserCollection(self.context, ResourcePath("Recipients", self.resource_path)),
         )

@@ -18,16 +18,16 @@ class PublishingStatusResponse(ClientValue):
         last_tried_at: datetime = None,
         pre_publish_validation_error_code: int = None,
         publishing_status: int = None,
-        share_point_publishing_status: ClientValueCollection[
+        share_point_publishing_status: ClientValueCollection[SharePointPublishingStatusResponse] = ClientValueCollection(
             SharePointPublishingStatusResponse
-        ] = ClientValueCollection(SharePointPublishingStatusResponse),
-        teams_publishing_status: ClientValueCollection[
+        ),
+        teams_publishing_status: ClientValueCollection[TeamsPublishingStatusResponse] = ClientValueCollection(
             TeamsPublishingStatusResponse
-        ] = ClientValueCollection(TeamsPublishingStatusResponse),
+        ),
         viva_engage_publishing_status: VivaEngagePublishingStatus = VivaEngagePublishingStatus(),
-        viva_engage_v2_publishing_status: ClientValueCollection[
+        viva_engage_v2_publishing_status: ClientValueCollection[VivaEngagePublishingStatus] = ClientValueCollection(
             VivaEngagePublishingStatus
-        ] = ClientValueCollection(VivaEngagePublishingStatus),
+        ),
         yammer_publishing_status: dict = None,
     ):
         self.EmailPublishingStatus = email_publishing_status

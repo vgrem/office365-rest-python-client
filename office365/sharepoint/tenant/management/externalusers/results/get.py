@@ -20,9 +20,7 @@ class GetExternalUsersResults(Entity):
     def external_user_collection(self):
         return self.properties.get(
             "ExternalUserCollection",
-            ExternalUserCollection(
-                self.context, ResourcePath("ExternalUserCollection")
-            ),
+            ExternalUserCollection(self.context, ResourcePath("ExternalUserCollection")),
         )
 
     @property

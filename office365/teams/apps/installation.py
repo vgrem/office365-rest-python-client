@@ -23,9 +23,7 @@ class TeamsAppInstallation(Entity):
         """The details of this version of the app."""
         return self.properties.get(
             "teamsAppDefinition",
-            TeamsAppDefinition(
-                self.context, ResourcePath("teamsAppDefinition", self.resource_path)
-            ),
+            TeamsAppDefinition(self.context, ResourcePath("teamsAppDefinition", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

@@ -7,12 +7,8 @@ class OrgAssetsLibraryCollection(ClientValue):
 
     def __init__(
         self,
-        org_assets_libraries: ClientValueCollection[
-            OrgAssetsLibrary
-        ] = ClientValueCollection(OrgAssetsLibrary),
-        items: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(
-            OrgAssetsLibrary
-        ),
+        org_assets_libraries: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(OrgAssetsLibrary),
+        items: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(OrgAssetsLibrary),
     ):
         self.OrgAssetsLibraries = org_assets_libraries
         self.Items = items

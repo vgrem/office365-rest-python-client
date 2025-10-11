@@ -86,9 +86,7 @@ class MediaServiceUpdateParameters(ClientValue):
         self.media_service_key_points = media_service_key_points
         self.media_service_location = media_service_location
         self.media_service_metadata = media_service_metadata
-        self.media_service_object_detector_versions = (
-            media_service_object_detector_versions
-        )
+        self.media_service_object_detector_versions = media_service_object_detector_versions
         self.media_service_ocr = media_service_ocr
         self.media_service_photo_category = media_service_photo_category
         self.media_service_protection_key = media_service_protection_key

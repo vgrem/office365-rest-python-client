@@ -32,6 +32,4 @@ class SPClientSideComponentQueryResult(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.ClientSideComponent.SPClientSideComponentQueryResult"
-        )
+        return "Microsoft.SharePoint.ClientSideComponent.SPClientSideComponentQueryResult"

@@ -9,9 +9,7 @@ class SPOCopilotPromoUsage(ClientValue):
         self,
         is_copilot_promo_eligible: bool = None,
         is_copilot_promo_status_enabled: bool = None,
-        monthly_usage: ClientValueCollection[MonthlyUsage] = ClientValueCollection(
-            MonthlyUsage
-        ),
+        monthly_usage: ClientValueCollection[MonthlyUsage] = ClientValueCollection(MonthlyUsage),
     ):
         self.IsCopilotPromoEligible = is_copilot_promo_eligible
         self.IsCopilotPromoStatusEnabled = is_copilot_promo_status_enabled

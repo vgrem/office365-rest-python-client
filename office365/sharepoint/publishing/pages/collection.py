@@ -34,9 +34,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         """
         return_type = ClientResult(self.context)
         payload = {"webPartDataAsJson": web_part_data}
-        qry = ServiceOperationQuery(
-            self, "CreateAppPage", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateAppPage", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -45,9 +43,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         :param str source_item_id:
         """
         return_type = TranslationStatusCollection(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetTranslations", [source_item_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTranslations", [source_item_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -68,9 +64,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         :param str url: URL of the SitePage for which to return state.
         """
         return_type = ClientResult(self.context, int())
-        qry = ServiceOperationQuery(
-            self, "GetPageColumnState", [url], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPageColumnState", [url], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -79,9 +73,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
 
         :param str url: Specifies the server relative url of the site page.
         """
-        return SitePage(
-            self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
-        )
+        return SitePage(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_name(self, name):
         """Gets the site page with the specified file name.

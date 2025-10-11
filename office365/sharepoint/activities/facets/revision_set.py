@@ -11,9 +11,7 @@ class RevisionSetFacet(ClientValue):
     def __init__(
         self,
         author: ActivityClientIdentity = ActivityClientIdentity(),
-        revisions: ClientValueCollection[RevisionInfo] = ClientValueCollection(
-            RevisionInfo
-        ),
+        revisions: ClientValueCollection[RevisionInfo] = ClientValueCollection(RevisionInfo),
     ):
         self.author = author
         self.revisions = revisions

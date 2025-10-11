@@ -12,12 +12,12 @@ class SPModelPublishConfig(ClientValue):
 
     def __init__(
         self,
-        classification_publish_configs: ClientValueCollection[
+        classification_publish_configs: ClientValueCollection[SPClassificationPublishConfig] = ClientValueCollection(
             SPClassificationPublishConfig
-        ] = ClientValueCollection(SPClassificationPublishConfig),
-        extractor_publish_configs: ClientValueCollection[
+        ),
+        extractor_publish_configs: ClientValueCollection[SPExtractorPublishConfig] = ClientValueCollection(
             SPExtractorPublishConfig
-        ] = ClientValueCollection(SPExtractorPublishConfig),
+        ),
     ):
         self.ClassificationPublishConfigs = classification_publish_configs
         self.ExtractorPublishConfigs = extractor_publish_configs

@@ -62,9 +62,7 @@ class UserTeamwork(Entity):
             ),
         )
 
-    def send_activity_notification(
-        self, topic, activity_type, chain_id, preview_text, template_parameters=None
-    ):
+    def send_activity_notification(self, topic, activity_type, chain_id, preview_text, template_parameters=None):
         """
         Send an activity feed notification in the scope of a team. For more details about sending notifications
         and the requirements for doing so, see sending Teams activity notifications.

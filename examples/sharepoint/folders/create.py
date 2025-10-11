@@ -10,8 +10,6 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
 
 folder_name = "Reports"  # creates a temporary folder first in Documents library
 folder = (
-    ctx.web.default_document_library()
-    .root_folder.folders.add_using_path(folder_name, overwrite=True)
-    .execute_query()
+    ctx.web.default_document_library().root_folder.folders.add_using_path(folder_name, overwrite=True).execute_query()
 )
 print("Folder : {0} has been created".format(folder.server_relative_url))

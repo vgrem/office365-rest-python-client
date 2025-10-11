@@ -50,9 +50,7 @@ class IdentityContainer(Entity):
         """The entry point for the Conditional Access (CA) object model."""
         return self.properties.get(
             "conditionalAccess",
-            ConditionalAccessRoot(
-                self.context, ResourcePath("conditionalAccess", self.resource_path)
-            ),
+            ConditionalAccessRoot(self.context, ResourcePath("conditionalAccess", self.resource_path)),
         )
 
     @property
@@ -60,9 +58,7 @@ class IdentityContainer(Entity):
         """Represents entry point for identity provider base."""
         return self.properties.get(
             "identityProviders",
-            IdentityProviderBaseCollection(
-                self.context, ResourcePath("identityProviders", self.resource_path)
-            ),
+            IdentityProviderBaseCollection(self.context, ResourcePath("identityProviders", self.resource_path)),
         )
 
     @property

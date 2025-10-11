@@ -37,9 +37,7 @@ class DeviceManagement(Entity):
         """"""
         return self.properties.get(
             "auditEvents",
-            AuditEventCollection(
-                self.context, ResourcePath("auditEvents", self.resource_path)
-            ),
+            AuditEventCollection(self.context, ResourcePath("auditEvents", self.resource_path)),
         )
 
     @property
@@ -47,9 +45,7 @@ class DeviceManagement(Entity):
         """"""
         return self.properties.get(
             "virtualEndpoint",
-            VirtualEndpoint(
-                self.context, ResourcePath("virtualEndpoint", self.resource_path)
-            ),
+            VirtualEndpoint(self.context, ResourcePath("virtualEndpoint", self.resource_path)),
         )
 
     @property
@@ -109,9 +105,7 @@ class DeviceManagement(Entity):
         """"""
         return self.properties.get(
             "reports",
-            DeviceManagementReports(
-                self.context, ResourcePath("reports", self.resource_path)
-            ),
+            DeviceManagementReports(self.context, ResourcePath("reports", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

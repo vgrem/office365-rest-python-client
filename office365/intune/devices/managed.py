@@ -39,9 +39,7 @@ class ManagedDevice(Entity):
         """Device category"""
         return self.properties.get(
             "deviceCategory",
-            DeviceCategory(
-                self.context, ResourcePath("deviceCategory", self.resource_path)
-            ),
+            DeviceCategory(self.context, ResourcePath("deviceCategory", self.resource_path)),
         )
 
     @property

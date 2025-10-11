@@ -35,22 +35,16 @@ class OneNotePageCreateQuery(ClientQuery):
     def _construct_multipart_request(self, request: RequestOptions) -> None:
         request.method = HttpMethod.Post
         boundary = create_boundary("PageBoundary", True)
-        request.set_header(
-            "Content-Type", "multipart/form-data; boundary={0}".format(boundary)
-        )
+        request.set_header("Content-Type", "multipart/form-data; boundary={0}".format(boundary))
 
         main_message = Message()
-        main_message.add_header(
-            "Content-Type", "multipart/form-data; boundary={0}".format(boundary)
-        )
+        main_message.add_header("Content-Type", "multipart/form-data; boundary={0}".format(boundary))
         main_message.set_boundary(boundary)
 
         c_type, _enc = get_mime_type(self._presentation.name)
         presentation_message = Message()
         presentation_message.add_header("Content-Type", c_type)
-        presentation_message.add_header(
-            "Content-Disposition", 'form-data; name="Presentation"'
-        )
+        presentation_message.add_header("Content-Disposition", 'form-data; name="Presentation"')
         presentation_message.set_payload(self._presentation.read())
         main_message.attach(presentation_message)
 

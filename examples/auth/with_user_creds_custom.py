@@ -12,9 +12,7 @@ from tests import test_client_id, test_tenant, test_user_credentials
 
 def acquire_token():
     authority_url = f"https://login.microsoftonline.com/{test_tenant}"
-    app = msal.PublicClientApplication(
-        authority=authority_url, client_id=test_client_id
-    )
+    app = msal.PublicClientApplication(authority=authority_url, client_id=test_client_id)
 
     result = app.acquire_token_by_username_password(
         username=test_user_credentials.userName,

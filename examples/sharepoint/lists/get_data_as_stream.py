@@ -23,7 +23,5 @@ view_xml = """
 """
 
 
-result = ctx.web.get_list_data_as_stream(
-    "/Shared Documents", view_xml=view_xml
-).execute_query()
+result = ctx.web.get_list_data_as_stream("/Shared Documents", view_xml=view_xml).execute_query()
 print(result.value)

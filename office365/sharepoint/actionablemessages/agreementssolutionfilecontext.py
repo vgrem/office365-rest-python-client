@@ -41,9 +41,7 @@ class AgreementsSolutionFileContext(ClientValue):
         self.category_term_set_id = category_term_set_id
         self.check_out_type = check_out_type
         self.current_version = current_version
-        self.does_user_have_edit_permission_on_parent = (
-            does_user_have_edit_permission_on_parent
-        )
+        self.does_user_have_edit_permission_on_parent = does_user_have_edit_permission_on_parent
         self.effective_base_permissions = effective_base_permissions
         self.field_library = field_library
         self.file_properties = file_properties

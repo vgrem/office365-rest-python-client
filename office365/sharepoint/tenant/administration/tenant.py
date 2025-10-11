@@ -122,15 +122,11 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def activate_application_billing_policy(
-        self, billing_policy_id: str
-    ) -> ClientResult[SPOAppBillingProperties]:
+    def activate_application_billing_policy(self, billing_policy_id: str) -> ClientResult[SPOAppBillingProperties]:
         """ """
         payload = {"billingPolicyId": billing_policy_id}
         return_type = ClientResult(self.context, SPOAppBillingProperties())
-        qry = ServiceOperationQuery(
-            self, "ActivateApplicationBillingPolicy", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ActivateApplicationBillingPolicy", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -138,9 +134,7 @@ class Tenant(Entity):
         """Logs recent administrative actions within a SharePoint Online tenant"""
         return_type = ClientResult(self.context, RecentAdminActionReport())
         payload = {"payload": RecentAdminActionReportPayload()}
-        qry = ServiceOperationQuery(
-            self, "AddRecentAdminActionReport", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddRecentAdminActionReport", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -149,9 +143,7 @@ class Tenant(Entity):
         return_type = ClientResult(self.context, bool())
         from office365.sharepoint.policy.license_utilities import PolicyLicenseUtilities
 
-        PolicyLicenseUtilities.check_tenant_m365_copilot_business_chat_license(
-            self.context
-        )
+        PolicyLicenseUtilities.check_tenant_m365_copilot_business_chat_license(self.context)
         return return_type
 
     def get_corporate_catalog_site(self) -> Site:
@@ -169,9 +161,7 @@ class Tenant(Entity):
         """"""
         return_type = ClientResult(self.context)
         payload = {"requestOptions": ChatGptRequestOptions()}
-        qry = ServiceOperationQuery(
-            self, "GetChatGptResponse", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetChatGptResponse", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -180,9 +170,7 @@ class Tenant(Entity):
     ) -> ClientResult[SPOCopilotPromoUsage]:
         """ """
         return_type = ClientResult(self.context, SPOCopilotPromoUsage())
-        qry = ServiceOperationQuery(
-            self, "GetSPOCopilotPromoUsageStatistics", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPOCopilotPromoUsageStatistics", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -193,9 +181,7 @@ class Tenant(Entity):
         or site governance (such as site or group creation policies).
         :param int item_id:
         """
-        qry = ServiceOperationQuery(
-            self, "DeletePolicyDefinition", None, {"itemId": item_id}
-        )
+        qry = ServiceOperationQuery(self, "DeletePolicyDefinition", None, {"itemId": item_id})
         self.context.add_query(qry)
         return self
 
@@ -203,18 +189,14 @@ class Tenant(Entity):
         """
         :param int report_id:
         """
-        qry = ServiceOperationQuery(
-            self, "DeleteRecentAdminActionReport", None, {"reportId": report_id}
-        )
+        qry = ServiceOperationQuery(self, "DeleteRecentAdminActionReport", None, {"reportId": report_id})
         self.context.add_query(qry)
         return self
 
     def get_spo_tenant_all_web_templates(self) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetSPOTenantAllWebTemplates", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPOTenantAllWebTemplates", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -222,21 +204,15 @@ class Tenant(Entity):
         """Retrieves insights or reports related to OneDrive for Business site sharing activities"""
         return_type = ClientResult(self.context, OneDriveSiteSharingInsights())
         payload = {"queryMode": query_mode}
-        qry = ServiceOperationQuery(
-            self, "GetOneDriveSiteSharingInsights", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetOneDriveSiteSharingInsights", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_collaboration_insights_data(self):
         """"""
-        return_type = ClientResult[CollaborationInsightsData](
-            self.context, CollaborationInsightsData()
-        )
+        return_type = ClientResult[CollaborationInsightsData](self.context, CollaborationInsightsData())
 
-        qry = ServiceOperationQuery(
-            self, "GetCollaborationInsightsData", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCollaborationInsightsData", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -246,9 +222,7 @@ class Tenant(Entity):
         """"""
         return_type = ClientResult(self.context, CollaborationInsightsOverview())
 
-        qry = ServiceOperationQuery(
-            self, "GetCollaborationInsightsOverview", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCollaborationInsightsOverview", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -259,29 +233,21 @@ class Tenant(Entity):
             "parameters": RenderListDataParameters(),
             "overrideParameters": RenderListDataOverrideParameters(),
         }
-        qry = ServiceOperationQuery(
-            self, "RenderRecentAdminActions", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RenderRecentAdminActions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_content_security_policy(self) -> SPOContentSecurityPolicyConfiguration:
         """"""
         return_type = SPOContentSecurityPolicyConfiguration(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetContentSecurityPolicy", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetContentSecurityPolicy", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_spo_app_billing_policies(self):
         """ """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPOAppBillingProperties)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetSPOAppBillingPolicies", None, None, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPOAppBillingProperties))
+        qry = ServiceOperationQuery(self, "GetSPOAppBillingPolicies", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -292,9 +258,7 @@ class Tenant(Entity):
         """
         payload = {"queryMode": query_mode}
         return_type = EntityCollection(self.context, TopFilesSharingInsights)
-        qry = ServiceOperationQuery(
-            self, "GetTopFilesSharingInsights", payload, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTopFilesSharingInsights", payload, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -304,18 +268,14 @@ class Tenant(Entity):
         """
         payload = {"siteUrl": site_url}
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetSiteThumbnailLogo", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteThumbnailLogo", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_home_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetSPHSiteUrl", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPHSiteUrl", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -331,12 +291,8 @@ class Tenant(Entity):
 
     def get_home_sites_details(self):
         """Retrieves detailed information about the Home Sites configured in a SharePoint Online tenant."""
-        return_type = ClientResult(
-            self.context, ClientValueCollection(HomeSitesDetails)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetHomeSitesDetails", None, None, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
+        qry = ServiceOperationQuery(self, "GetHomeSitesDetails", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -354,9 +310,7 @@ class Tenant(Entity):
     def has_valid_education_license(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "HasValidEducationLicense", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "HasValidEducationLicense", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -407,9 +361,7 @@ class Tenant(Entity):
             "columnsInfo": columns_info,
             "listName": list_name,
         }
-        qry = ServiceOperationQuery(
-            self, "ExportToCSV", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ExportToCSV", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -420,9 +372,7 @@ class Tenant(Entity):
             "parameters": RenderListDataParameters(),
             "overrideParameters": RenderListDataOverrideParameters(),
         }
-        qry = ServiceOperationQuery(
-            self, "RenderPolicyReport", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RenderPolicyReport", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -451,9 +401,7 @@ class Tenant(Entity):
             self.context,
             ClientValueCollection(PowerAppsEnvironment),
         )
-        qry = ServiceOperationQuery(
-            self, "GetPowerAppsEnvironments", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPowerAppsEnvironments", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -461,18 +409,14 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context)
         payload = {"parameters": RenderListDataParameters()}
-        qry = ServiceOperationQuery(
-            self, "GetRansomwareActivities", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRansomwareActivities", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_ransomware_events_overview(self) -> ClientResult[AnyStr]:
         """ """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetRansomwareEventsOverview", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRansomwareEventsOverview", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -490,9 +434,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_authorization_code_for_migration(
-        self, endpoint_url: str
-    ) -> ClientResult[str]:
+    def get_site_authorization_code_for_migration(self, endpoint_url: str) -> ClientResult[str]:
         return_type = ClientResult(self.context, str())
         payload = {"endpointUrl": endpoint_url}
         qry = ServiceOperationQuery(
@@ -523,9 +465,7 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context)
         payload = {"listName": list_name}
-        qry = ServiceOperationQuery(
-            self, "GetSPListItemCount", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPListItemCount", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -533,9 +473,7 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context)
         payload = {"listName": list_name}
-        qry = ServiceOperationQuery(
-            self, "GetSPListRootFolderProperties", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPListRootFolderProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -548,18 +486,14 @@ class Tenant(Entity):
             "cultureName": culture_name,
             "compatibilityLevel": compatibility_level,
         }
-        qry = ServiceOperationQuery(
-            self, "GetSPOAllWebTemplates", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPOAllWebTemplates", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def check_tenant_intune_license(self) -> ClientResult[bool]:
         """Checks whether a tenant has the Intune license."""
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "CheckTenantIntuneLicense", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckTenantIntuneLicense", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -571,16 +505,12 @@ class Tenant(Entity):
         """
         return_type = ClientResult(self.context, bool())
         params = ClientValueCollection(str, licenses)
-        qry = ServiceOperationQuery(
-            self, "CheckTenantLicenses", None, params, "licenses", return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckTenantLicenses", None, params, "licenses", return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site(self, site_url: str) -> ListItem:
-        return self._aggregated_site_collections_list.items.single(
-            "SiteUrl eq '{0}'".format(site_url.rstrip("/"))
-        ).get()
+        return self._aggregated_site_collections_list.items.single("SiteUrl eq '{0}'".format(site_url.rstrip("/"))).get()
 
     def get_sites_by_state(self, states: List[int] = None):
         """
@@ -591,9 +521,7 @@ class Tenant(Entity):
             ResourcePath("items", self._aggregated_site_collections_list.resource_path),
         )
         payload = {"states": states}
-        qry = ServiceOperationQuery(
-            self, "GetSitesByState", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSitesByState", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -602,33 +530,20 @@ class Tenant(Entity):
         time.sleep(polling_interval_secs)
 
         def _after(items):
-            completed = (
-                len(
-                    [
-                        item
-                        for item in items
-                        if item.properties.get("SiteUrl") == site_url
-                    ]
-                )
-                > 0
-            )
+            completed = len([item for item in items if item.properties.get("SiteUrl") == site_url]) > 0
             if not completed:
                 self._poll_site_status(site_url, polling_interval_secs)
 
         self.get_sites_by_state(states).after_execute(_after, execute_first=True)
 
-    def get_site_health_status(
-        self, source_url: str
-    ) -> ClientResult[PortalHealthStatus]:
+    def get_site_health_status(self, source_url: str) -> ClientResult[PortalHealthStatus]:
         """
         Checks the sitehealth of a specific SharePoint site or site collection in their tenant
         :type source_url: str
         """
         result = ClientResult(self.context, PortalHealthStatus())
         params = {"sourceUrl": source_url}
-        qry = ServiceOperationQuery(
-            self, "GetSiteHealthStatus", None, params, None, result
-        )
+        qry = ServiceOperationQuery(self, "GetSiteHealthStatus", None, params, None, result)
         self.context.add_query(qry)
         return result
 
@@ -644,13 +559,9 @@ class Tenant(Entity):
         :type return_type: ClientResult
         """
         if return_type is None:
-            return_type = ClientResult(
-                self.context, ClientValueCollection(SiteAdministratorsInfo)
-            )
+            return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "GetSiteAdministrators", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteAdministrators", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -661,23 +572,13 @@ class Tenant(Entity):
         Gets site collection administrators
         :param str site_id: Site object or identifier
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SecondaryAdministratorsInfo)
-        )
-        payload = {
-            "secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(
-                site_id
-            )
-        }
-        qry = ServiceOperationQuery(
-            self, "GetSiteSecondaryAdministrators", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SecondaryAdministratorsInfo))
+        payload = {"secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(site_id)}
+        qry = ServiceOperationQuery(self, "GetSiteSecondaryAdministrators", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def set_site_secondary_administrators(
-        self, site_id: str, emails: List[str] = None, names: List[str] = None
-    ) -> Self:
+    def set_site_secondary_administrators(self, site_id: str, emails: List[str] = None, names: List[str] = None) -> Self:
         """
         Sets site collection administrators
 
@@ -685,14 +586,8 @@ class Tenant(Entity):
         :type emails: list[str]
         :type site_id: str
         """
-        payload = {
-            "secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(
-                site_id, emails, names
-            )
-        }
-        qry = ServiceOperationQuery(
-            self, "SetSiteSecondaryAdministrators", None, payload, None, None
-        )
+        payload = {"secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(site_id, emails, names)}
+        qry = ServiceOperationQuery(self, "SetSiteSecondaryAdministrators", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
@@ -700,18 +595,14 @@ class Tenant(Entity):
         """Registers an existing site as a hub site."""
         return_type = HubSiteProperties(self.context)
         params = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            self, "RegisterHubSite", None, params, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RegisterHubSite", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def unregister_hub_site(self, site_url: str) -> Self:
         """Unregisters a hub site so that it is no longer a hub site."""
         payload = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            self, "UnregisterHubSite", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "UnregisterHubSite", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
@@ -719,9 +610,7 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context, TenantAdminPolicyDefinition())
         payload = {"policyInputParameters": CreatePolicyRequest()}
-        qry = ServiceOperationQuery(
-            self, "CreatePolicyDefinition", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreatePolicyDefinition", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -733,14 +622,8 @@ class Tenant(Entity):
         :param str owner: Sets the login name of the owner of the new site.
         """
         return_type = SpoOperation(self.context)
-        payload = {
-            "siteCreationProperties": SiteCreationProperties(
-                title=title, url=url, owner=owner
-            )
-        }
-        qry = ServiceOperationQuery(
-            self, "CreateSite", None, payload, None, return_type
-        )
+        payload = {"siteCreationProperties": SiteCreationProperties(title=title, url=url, owner=owner)}
+        qry = ServiceOperationQuery(self, "CreateSite", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -778,9 +661,7 @@ class Tenant(Entity):
         :param str site_url: A string representing the URL of the site.
         """
         result = SpoOperation(self.context)
-        qry = ServiceOperationQuery(
-            self, "RemoveDeletedSite", [site_url], None, None, result
-        )
+        qry = ServiceOperationQuery(self, "RemoveDeletedSite", [site_url], None, None, result)
         self.context.add_query(qry)
         return result
 
@@ -792,12 +673,8 @@ class Tenant(Entity):
         :param list[str] home_sites_site_ids:
         """
         payload = {"homeSitesSiteIds": home_sites_site_ids}
-        return_type = ClientResult(
-            self.context, ClientValueCollection(HomeSitesDetails)
-        )
-        qry = ServiceOperationQuery(
-            self, "ReorderHomeSites", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
+        qry = ServiceOperationQuery(self, "ReorderHomeSites", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -806,9 +683,7 @@ class Tenant(Entity):
         :param str site_url: A string representing the URL of the site.
         """
         return_type = SpoOperation(self.context)
-        qry = ServiceOperationQuery(
-            self, "RestoreDeletedSite", [site_url], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RestoreDeletedSite", [site_url], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -817,9 +692,7 @@ class Tenant(Entity):
         :param str site_id: A string representing the site identifier.
         """
         return_type = SpoOperation(self.context)
-        qry = ServiceOperationQuery(
-            self, "RestoreDeletedSiteById", [site_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RestoreDeletedSiteById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -838,9 +711,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_version_batch_delete_job_progress_for_library(
-        self, site_url, list_params
-    ):
+    def get_file_version_batch_delete_job_progress_for_library(self, site_url, list_params):
         """Gets the progress of the file version batch delete job for the specified site and list parameters."""
         return_type = ClientResult(self.context, SPOFileVersionBatchDeleteJobProgress())
         payload = {"siteUrl": site_url, "listParams": list_params}
@@ -855,9 +726,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_properties_by_site_id(
-        self, site_id: str, include_detail: bool = False
-    ) -> SiteProperties:
+    def get_site_properties_by_site_id(self, site_id: str, include_detail: bool = False) -> SiteProperties:
         """Gets the site properties for the specified site ID.
 
         :param str site_id: A string that represents the site identifier.
@@ -867,15 +736,11 @@ class Tenant(Entity):
         return_type.set_property("siteId", site_id, False)
         self.sites.add_child(return_type)
         payload = {"siteId": site_id, "includeDetail": include_detail}
-        qry = ServiceOperationQuery(
-            self, "GetSitePropertiesBySiteId", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSitePropertiesBySiteId", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_site_properties_by_url(
-        self, url: str, include_detail: bool = False
-    ) -> SiteProperties:
+    def get_site_properties_by_url(self, url: str, include_detail: bool = False) -> SiteProperties:
         """
          Gets the site properties for the specified URL.
 
@@ -886,9 +751,7 @@ class Tenant(Entity):
         return_type.set_property("Url", url, False)
         self.sites.add_child(return_type)
         payload = {"url": url, "includeDetail": include_detail}
-        qry = ServiceOperationQuery(
-            self, "getSitePropertiesByUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getSitePropertiesByUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -897,11 +760,7 @@ class Tenant(Entity):
     ) -> SitePropertiesCollection:
         """ """
         return_type = SitePropertiesCollection(self.context)
-        payload = {
-            "speFilter": SitePropertiesEnumerableFilter(
-                _filter, start_index, include_detail
-            )
-        }
+        payload = {"speFilter": SitePropertiesEnumerableFilter(_filter, start_index, include_detail)}
         qry = ServiceOperationQuery(
             self,
             "getSitePropertiesFromSharePointByFilters",
@@ -917,9 +776,7 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context)
         payload = {"applicationId": application_id}
-        qry = ServiceOperationQuery(
-            self, "GetBillingPolicyIdForApp", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetBillingPolicyIdForApp", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -930,9 +787,7 @@ class Tenant(Entity):
         :param str hub_site_id:
         """
         params = {"siteUrl": site_url, "hubSiteId": hub_site_id}
-        qry = ServiceOperationQuery(
-            self, "ConnectSiteToHubSiteById", None, params, None, None
-        )
+        qry = ServiceOperationQuery(self, "ConnectSiteToHubSiteById", None, params, None, None)
         self.context.add_query(qry)
         return self
 
@@ -945,9 +800,7 @@ class Tenant(Entity):
     def export_unlicensed_one_drive_for_business_list_to_csv(self):
         """Exports a list of OneDrive for Business sites that are associated with unlicensed users into a CSV file"""
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "ExportUnlicensedOneDriveForBusinessListToCSV"
-        )
+        qry = ServiceOperationQuery(self, "ExportUnlicensedOneDriveForBusinessListToCSV")
         self.context.add_query(qry)
         return return_type
 
@@ -1070,16 +923,12 @@ class Tenant(Entity):
     @property
     def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """"""
-        return self.properties.get(
-            "AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker)
-        )
+        return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
     @property
     def _aggregated_site_collections_list(self):
         """ """
-        return self.context.web.lists.get_by_title(
-            "DO_NOT_DELETE_SPLIST_TENANTADMIN_AGGREGATED_SITECOLLECTIONS"
-        )
+        return self.context.web.lists.get_by_title("DO_NOT_DELETE_SPLIST_TENANTADMIN_AGGREGATED_SITECOLLECTIONS")
 
     @property
     def allow_comments_text_on_email_enabled(self) -> Optional[bool]:
@@ -1097,9 +946,7 @@ class Tenant(Entity):
         Gets the value if EveryoneExceptExternalUsers claim is allowed or not in people picker in a private group site.
         False value means it is blocked
         """
-        return self.properties.get(
-            "AllowEveryoneExceptExternalUsersClaimInPrivateSite", None
-        )
+        return self.properties.get("AllowEveryoneExceptExternalUsersClaimInPrivateSite", None)
 
     @property
     def allow_editing(self) -> Optional[bool]:
@@ -1193,9 +1040,7 @@ class Tenant(Entity):
         """Gets a collection of sites."""
         return self.properties.get(
             "sites",
-            SitePropertiesCollection(
-                self.context, ResourcePath("sites", self.resource_path)
-            ),
+            SitePropertiesCollection(self.context, ResourcePath("sites", self.resource_path)),
         )
 
     @property
@@ -1205,9 +1050,7 @@ class Tenant(Entity):
             "TotalTenantArchiveFileSizeAggregation",
             ArchiveFileSizeMetric(
                 self.context,
-                ResourcePath(
-                    "TotalTenantArchiveFileSizeAggregation", self.resource_path
-                ),
+                ResourcePath("TotalTenantArchiveFileSizeAggregation", self.resource_path),
             ),
         )
 
@@ -1216,9 +1059,7 @@ class Tenant(Entity):
         self,
     ) -> SyntexPowerAppsEnvironmentsContext:
         """ """
-        return self.properties.get(
-            "SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext()
-        )
+        return self.properties.get("SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext())
 
     @property
     def taxonomy_tagging_enabled(self) -> Optional[bool]:
@@ -1247,9 +1088,7 @@ class Tenant(Entity):
         """
         Manages billing and subscription details for Microsoft Syntex in SharePoint Online or Microsoft 365 environments
         """
-        return self.properties.get(
-            "SyntexBillingSubscriptionSettings", SyntexBillingContext()
-        )
+        return self.properties.get("SyntexBillingSubscriptionSettings", SyntexBillingContext())
 
     @property
     def admin_endpoints(self):

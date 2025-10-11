@@ -17,9 +17,9 @@ class ClientAmplifyResult(ClientValue):
         endpoint: ClientAmplifyEndpointInfo = ClientAmplifyEndpointInfo(),
         event_id: str = None,
         expected: bool = None,
-        extra_properties: ClientValueCollection[
+        extra_properties: ClientValueCollection[ClientAmplifyExtraProperty] = ClientValueCollection(
             ClientAmplifyExtraProperty
-        ] = ClientValueCollection(ClientAmplifyExtraProperty),
+        ),
         internal_description: str = None,
         origin: str = None,
         stage: str = None,

@@ -36,9 +36,7 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
 
         if isinstance(user, User):
 
-            user.ensure_property(
-                "id", lambda: return_type.set_property("userId", user.id)
-            )
+            user.ensure_property("id", lambda: return_type.set_property("userId", user.id))
         else:
             return_type.set_property("userId", user)
         return return_type

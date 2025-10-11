@@ -15,7 +15,5 @@ site_script = {
     "version": 1,
 }
 
-result = SiteScriptUtility.create_site_script(
-    ctx, "Contoso theme script", "", site_script
-).execute_query()
+result = SiteScriptUtility.create_site_script(ctx, "Contoso theme script", "", site_script).execute_query()
 print(json.dumps(result.value.to_json(), indent=4))

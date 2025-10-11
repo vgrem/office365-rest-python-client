@@ -7,9 +7,7 @@ class ReportNoResultQueries(ClientValue):
 
     def __init__(
         self,
-        reports: ClientValueCollection[ReportNoResultItem] = ClientValueCollection(
-            ReportNoResultItem
-        ),
+        reports: ClientValueCollection[ReportNoResultItem] = ClientValueCollection(ReportNoResultItem),
     ):
         self.Reports = reports
 

@@ -60,9 +60,7 @@ class Channel(Entity):
         To remove the email address of a channel, use the removeEmail method.
         """
         return_type = ClientResult(self.context, ProvisionChannelEmailResult())
-        qry = ServiceOperationQuery(
-            self, "provisionEmail", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "provisionEmail", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -146,9 +144,7 @@ class Channel(Entity):
         """A collection of all the tabs in the channel. A navigation property."""
         return self.properties.get(
             "tabs",
-            EntityCollection(
-                self.context, TeamsTab, ResourcePath("tabs", self.resource_path)
-            ),
+            EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
         )
 
     @property
@@ -156,9 +152,7 @@ class Channel(Entity):
         """A collection of all the messages in the channel."""
         return self.properties.get(
             "messages",
-            EntityCollection(
-                self.context, ChatMessage, ResourcePath("messages", self.resource_path)
-            ),
+            EntityCollection(self.context, ChatMessage, ResourcePath("messages", self.resource_path)),
         )
 
     @property

@@ -11,7 +11,5 @@ class ListDataValidationExceptionValue(ClientValue):
         field_failures=None,
         item_failure: ListDataValidationFailure = ListDataValidationFailure(),
     ):
-        self.FieldFailures = ClientValueCollection(
-            ListDataValidationFailure, field_failures
-        )
+        self.FieldFailures = ClientValueCollection(ListDataValidationFailure, field_failures)
         self.ItemFailure = item_failure

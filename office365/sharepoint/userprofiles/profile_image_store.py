@@ -9,9 +9,7 @@ class ProfileImageStore(Entity):
     """The ProfileImageStore class specifies the user profile and service context."""
 
     def __init__(self, context):
-        super(ProfileImageStore, self).__init__(
-            context, ResourcePath("SP.UserProfiles.ProfileImageStore")
-        )
+        super(ProfileImageStore, self).__init__(context, ResourcePath("SP.UserProfiles.ProfileImageStore"))
 
     def save_uploaded_file(
         self,
@@ -43,9 +41,7 @@ class ProfileImageStore(Entity):
             "fileStream": file_stream,
         }
         return_type = ClientResult(self.context, StringCollection())
-        qry = ServiceOperationQuery(
-            self, "SaveUploadedFile", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SaveUploadedFile", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

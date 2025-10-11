@@ -13,14 +13,10 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 client.me.send_mail(
     subject="Meet for lunch?",
     body="The new cafeteria is open.",
     to_recipients=["fannyd@contoso.onmicrosoft.com", test_user_principal_name_alt],
-).add_file_attachment(
-    "attachment.txt", "--Some content goes here--", "text/plain"
-).execute_query()
+).add_file_attachment("attachment.txt", "--Some content goes here--", "text/plain").execute_query()
 print("Message has been sent")

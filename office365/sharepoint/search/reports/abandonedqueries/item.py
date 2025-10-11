@@ -10,9 +10,7 @@ class ReportAbandonedQueriesItem(ClientValue):
     def __init__(
         self,
         date=None,
-        report: ClientValueCollection[
-            ReportAbandonedQueriesData
-        ] = ClientValueCollection(ReportAbandonedQueriesData),
+        report: ClientValueCollection[ReportAbandonedQueriesData] = ClientValueCollection(ReportAbandonedQueriesData),
     ):
         self.Date = date
         self.Report = report

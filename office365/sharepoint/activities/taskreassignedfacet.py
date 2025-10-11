@@ -7,12 +7,8 @@ class TaskReassignedFacet(ClientValue):
 
     def __init__(
         self,
-        assignees: ClientValueCollection[ActivityIdentity] = ClientValueCollection(
-            ActivityIdentity
-        ),
-        previous_assignees: ClientValueCollection[
-            ActivityIdentity
-        ] = ClientValueCollection(ActivityIdentity),
+        assignees: ClientValueCollection[ActivityIdentity] = ClientValueCollection(ActivityIdentity),
+        previous_assignees: ClientValueCollection[ActivityIdentity] = ClientValueCollection(ActivityIdentity),
         task_creator: ActivityIdentity = ActivityIdentity(),
     ):
         self.assignees = assignees

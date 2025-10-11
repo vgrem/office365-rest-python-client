@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
 
 
-def create_upload_file_query(
-    file: File | Attachment, file_object: IO
-) -> ServiceOperationQuery:
+def create_upload_file_query(file: File | Attachment, file_object: IO) -> ServiceOperationQuery:
     """Constructs upload file content query"""
     qry = ServiceOperationQuery(file, "$value")
 

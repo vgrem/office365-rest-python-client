@@ -3,9 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class SPOCopilotAgentInsightsSiteDistribution(ClientValue):
 
-    def __init__(
-        self, copilot_agents: int = None, sites: int = None, template: str = None
-    ):
+    def __init__(self, copilot_agents: int = None, sites: int = None, template: str = None):
         self.CopilotAgents = copilot_agents
         self.Sites = sites
         self.Template = template

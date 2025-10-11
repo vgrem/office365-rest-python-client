@@ -65,12 +65,8 @@ class Calendar(Entity):
             "endTime": DateTimeTimeZone.parse(end_time),
             "availabilityViewInterval": availability_view_interval,
         }
-        return_type = ClientResult(
-            self.context, ClientValueCollection(ScheduleInformation)
-        )
-        qry = ServiceOperationQuery(
-            self, "getSchedule", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(ScheduleInformation))
+        qry = ServiceOperationQuery(self, "getSchedule", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -129,9 +125,7 @@ class Calendar(Entity):
         The default online meeting provider for meetings sent from this calendar.
         Possible values are: unknown, skypeForBusiness, skypeForConsumer, teamsForBusiness.
         """
-        return self.properties.get(
-            "defaultOnlineMeetingProvider", OnlineMeetingProviderType.unknown
-        )
+        return self.properties.get("defaultOnlineMeetingProvider", OnlineMeetingProviderType.unknown)
 
     @property
     def name(self) -> Optional[str]:
@@ -181,9 +175,7 @@ class Calendar(Entity):
         """The calendar view for the calendar. Navigation property. Read-only."""
         return self.properties.get(
             "calendarView",
-            EventCollection(
-                self.context, ResourcePath("calendarView", self.resource_path)
-            ),
+            EventCollection(self.context, ResourcePath("calendarView", self.resource_path)),
         )
 
     @property
@@ -191,9 +183,7 @@ class Calendar(Entity):
         """The permissions of the users with whom the calendar is shared."""
         return self.properties.get(
             "calendarPermissions",
-            CalendarPermissionCollection(
-                self.context, ResourcePath("calendarPermissions", self.resource_path)
-            ),
+            CalendarPermissionCollection(self.context, ResourcePath("calendarPermissions", self.resource_path)),
         )
 
     @property

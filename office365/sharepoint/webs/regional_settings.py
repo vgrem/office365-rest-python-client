@@ -162,18 +162,14 @@ class RegionalSettings(Entity):
         """Gets the collection of time zones used in a server farm."""
         return self.properties.get(
             "TimeZones",
-            TimeZoneCollection(
-                self.context, ResourcePath("TimeZones", self.resource_path)
-            ),
+            TimeZoneCollection(self.context, ResourcePath("TimeZones", self.resource_path)),
         )
 
     @property
     def installed_languages(self):
         return self.properties.get(
             "InstalledLanguages",
-            LanguageCollection(
-                self.context, ResourcePath("InstalledLanguages", self.resource_path)
-            ),
+            LanguageCollection(self.context, ResourcePath("InstalledLanguages", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

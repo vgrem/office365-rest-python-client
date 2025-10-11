@@ -21,19 +21,11 @@ class TestSPList(SPTestCase):
         self.__class__.target_list = list_to_create
 
     def test_11_read_list_by_title(self):
-        result = (
-            self.client.web.lists.get_by_title(self.target_list_title)
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.get_by_title(self.target_list_title).get().execute_query()
         self.assertEqual(self.target_list_title, result.title)
 
     def test_12_read_list_by_id(self):
-        result = (
-            self.client.web.lists.get_by_id(self.__class__.target_list.id)
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.get_by_id(self.__class__.target_list.id).get().execute_query()
         self.assertEqual(self.target_list.id, result.id)
 
     def test_13_read_list_fields(self):
@@ -43,22 +35,14 @@ class TestSPList(SPTestCase):
     def test_14_update_list(self):
         list_to_update = self.__class__.target_list
         self.target_list_title += "_updated"
-        list_to_update.set_property(
-            "Title", self.target_list_title
-        ).update().execute_query()
+        list_to_update.set_property("Title", self.target_list_title).update().execute_query()
 
-        result = (
-            self.client.web.lists.filter(f"Title eq '{self.target_list_title}'")
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.filter(f"Title eq '{self.target_list_title}'").get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test_15_get_list_permissions(self):
         user = self.client.web.current_user
-        result = self.__class__.target_list.get_user_effective_permissions(
-            user
-        ).execute_query()
+        result = self.__class__.target_list.get_user_effective_permissions(user).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 
     def test_16_get_list_changes(self):
@@ -73,11 +57,7 @@ class TestSPList(SPTestCase):
         list_title = self.target_list_title + "_updated"
         self.client.web.lists.get_by_title(list_title).delete_object().execute_query()
 
-        result = (
-            self.client.web.lists.filter(f"Title eq '{list_title}'")
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.filter(f"Title eq '{list_title}'").get().execute_query()
         self.assertEqual(len(result), 0)
 
     def test_18_get_list_using_path(self):
@@ -97,9 +77,7 @@ class TestSPList(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_23_get_list_by_title(self):
-        site_pages = (
-            self.client.web.get_list_by_title("Site Pages").get().execute_query()
-        )
+        site_pages = self.client.web.get_list_by_title("Site Pages").get().execute_query()
         self.assertIsNotNone(site_pages.resource_path)
 
     def test_24_get_metadata_navigation_settings(self):
@@ -108,9 +86,5 @@ class TestSPList(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_25_render_list_data_as_stream(self):
-        result = (
-            self.client.web.get_list_by_title("Site Pages")
-            .render_list_data_as_stream()
-            .execute_query()
-        )
+        result = self.client.web.get_list_by_title("Site Pages").render_list_data_as_stream().execute_query()
         self.assertIsInstance(result.value, str)

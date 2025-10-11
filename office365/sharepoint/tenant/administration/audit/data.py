@@ -32,9 +32,7 @@ class AuditData(ClientValue):
         object_id: str = None,
         old_value: str = None,
         parameters: ClientValueCollection[Parameter] = ClientValueCollection(Parameter),
-        target: ClientValueCollection[TargetProperty] = ClientValueCollection(
-            TargetProperty
-        ),
+        target: ClientValueCollection[TargetProperty] = ClientValueCollection(TargetProperty),
         target_user_or_group_name: str = None,
         target_user_or_group_type: str = None,
         user_type: int = None,
@@ -44,9 +42,7 @@ class AuditData(ClientValue):
         self.EventSource = event_source
         self.ItemType = item_type
         self.ListItemUniqueId = list_item_unique_id
-        self.ModifiedProperties = ClientValueCollection(
-            ModifiedProperty, modified_properties
-        )
+        self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)
         self.Site = site
         self.TeamName = team_name
         self.UserId = user_id

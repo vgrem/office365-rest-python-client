@@ -12,9 +12,9 @@ class DocumentGenerationInfo(ClientValue):
     def __init__(
         self,
         conditional_fields_to_be_deleted: StringCollection = StringCollection(),
-        content_assembly_form_answers: ClientValueCollection[
+        content_assembly_form_answers: ClientValueCollection[ContentAssemblyFormAnswer] = ClientValueCollection(
             ContentAssemblyFormAnswer
-        ] = ClientValueCollection(ContentAssemblyFormAnswer),
+        ),
         copy_fields_from_existing_document: bool = None,
         file_name: str = None,
         folder_url: str = None,

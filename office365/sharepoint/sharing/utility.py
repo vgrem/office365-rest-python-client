@@ -19,9 +19,7 @@ class SharingUtility(Entity):
         super().__init__(context, ResourcePath("SharingUtility"))
 
     @staticmethod
-    def get_user_directory_info_by_email(
-        context: ClientContext, email: str
-    ) -> ClientResult[UserDirectoryInfo]:
+    def get_user_directory_info_by_email(context: ClientContext, email: str) -> ClientResult[UserDirectoryInfo]:
         """
         Get user information by the user’s email address in directory.
 
@@ -31,9 +29,7 @@ class SharingUtility(Entity):
         return_type = ClientResult(context, UserDirectoryInfo())
         payload = {"email": email}
         utility = SharingUtility(context)
-        qry = ServiceOperationQuery(
-            utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -57,8 +53,6 @@ class SharingUtility(Entity):
             "principalName": principal_name,
         }
         return_type = ClientResult(context, bool())
-        qry = ServiceOperationQuery(
-            utility, "ValidateSameUserEmails", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(utility, "ValidateSameUserEmails", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type

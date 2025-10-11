@@ -6,9 +6,7 @@ from tests.graph_case import GraphTestCase
 class TestDevices(GraphTestCase):
     device: Device = None
 
-    @requires_delegated_permission(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All"
-    )
+    @requires_delegated_permission("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")
     def test3_list_devices(self):
         result = self.client.devices.get().execute_query()
         self.assertIsNotNone(result.resource_path)
@@ -26,14 +24,10 @@ class TestDevices(GraphTestCase):
 
     @requires_delegated_permission("Directory.AccessAsUser.All")
     def test6_add_registered_owner(self):
-        result = self.__class__.device.registered_owners.add(
-            self.client.me
-        ).execute_query()
+        result = self.__class__.device.registered_owners.add(self.client.me).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission(
-        "Device.Read.All" "Directory.Read.All", "Directory.ReadWrite.All"
-    )
+    @requires_delegated_permission("Device.Read.All" "Directory.Read.All", "Directory.ReadWrite.All")
     def test7_list_registered_owners(self):
         result = self.__class__.device.registered_owners.get().execute_query()
         self.assertIsNotNone(result.resource_path)

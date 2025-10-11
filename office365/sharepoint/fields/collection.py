@@ -35,9 +35,7 @@ class FieldCollection(EntityCollection[Field]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
 
-    def add_calculated(
-        self, title: str, formula: str, description: str = None
-    ) -> FieldCalculated:
+    def add_calculated(self, title: str, formula: str, description: str = None) -> FieldCalculated:
         """
         Creates a Calculated field
         :param str title: Specifies the display name of the field
@@ -54,9 +52,7 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_datetime(
-        self, title: str, description: Optional[str] = None
-    ) -> FieldDateTime:
+    def add_datetime(self, title: str, description: Optional[str] = None) -> FieldDateTime:
         """
         Creates DateTime field
         :param str title: Specifies the display name of the field
@@ -71,9 +67,7 @@ class FieldCollection(EntityCollection[Field]):
         )
         return return_type
 
-    def add_geolocation_field(
-        self, title: str, description: Optional[str] = None
-    ) -> FieldGeolocation:
+    def add_geolocation_field(self, title: str, description: Optional[str] = None) -> FieldGeolocation:
         """
         Creates Geolocation field
 
@@ -111,9 +105,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str or None description:
         """
         return self.add_field(
-            FieldCreationInformation(
-                title=title, description=description, field_type_kind=FieldType.URL
-            )
+            FieldCreationInformation(title=title, description=description, field_type_kind=FieldType.URL)
         )
 
     def add_lookup_field(
@@ -170,9 +162,7 @@ class FieldCollection(EntityCollection[Field]):
             _add_lookup_field(lookup_list)
         return return_type
 
-    def add_choice_field(
-        self, title: str, values: list[str], multiple_values: bool = False
-    ):
+    def add_choice_field(self, title: str, values: list[str], multiple_values: bool = False):
         """
         Creates a Choice field
 
@@ -215,17 +205,11 @@ class FieldCollection(EntityCollection[Field]):
         """
         return self.add_field(FieldCreationInformation(title, FieldType.Text))
 
-    def add_note(
-        self, title: str, description: Optional[str] = None
-    ) -> FieldMultiLineText:
+    def add_note(self, title: str, description: Optional[str] = None) -> FieldMultiLineText:
         """Creates a text field that can contain multiple lines"""
-        return self.add_field(
-            FieldCreationInformation(title, FieldType.Note, description)
-        )
+        return self.add_field(FieldCreationInformation(title, FieldType.Note, description))
 
-    def add_dependent_lookup_field(
-        self, display_name: str, primary_lookup_field_id: str, show_field: bool
-    ) -> Field:
+    def add_dependent_lookup_field(self, display_name: str, primary_lookup_field_id: str, show_field: bool) -> Field:
         """Adds a secondary lookup field to a field collection (target).
         Args:
             display_name (str): title of the added field in the target FieldCollection.
@@ -242,9 +226,7 @@ class FieldCollection(EntityCollection[Field]):
             "primaryLookupFieldId": primary_lookup_field_id,
             "showField": show_field,
         }
-        qry = ServiceOperationQuery(
-            self, "AddDependentLookupField", None, parameters, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddDependentLookupField", None, parameters, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -259,9 +241,7 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def add_field(
-        self, parameters: FieldCreationInformation, return_type: T = None
-    ) -> T:
+    def add_field(self, parameters: FieldCreationInformation, return_type: T = None) -> T:
         """Adds a fields to the fields collection.
 
         :type parameters: FieldCreationInformation
@@ -310,9 +290,7 @@ class FieldCollection(EntityCollection[Field]):
             else:
                 _create_taxonomy_field(term_store.id, term_set)
 
-        self.context.load(self.context.taxonomy.term_store).after_query_execute(
-            _term_store_loaded
-        )
+        self.context.load(self.context.taxonomy.term_store).after_query_execute(_term_store_loaded)
 
         return return_type
 
@@ -327,9 +305,7 @@ class FieldCollection(EntityCollection[Field]):
             return_type = Field(self.context)
         self.add_child(return_type)
         payload = {"parameters": XmlSchemaFieldCreationInformation(schema_xml)}
-        qry = ServiceOperationQuery(
-            self, "CreateFieldAsXml", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateFieldAsXml", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -339,9 +315,7 @@ class FieldCollection(EntityCollection[Field]):
 
         :param str id_: The field identifier.
         """
-        return Field(
-            self.context, ServiceOperationPath("getById", [id_], self.resource_path)
-        )
+        return Field(self.context, ServiceOperationPath("getById", [id_], self.resource_path))
 
     def get_by_internal_name_or_title(self, value: str) -> Field:
         """Returns the first field in the collection based on the internal name or the title specified
@@ -351,9 +325,7 @@ class FieldCollection(EntityCollection[Field]):
         """
         return Field(
             self.context,
-            ServiceOperationPath(
-                "getByInternalNameOrTitle", [value], self.resource_path
-            ),
+            ServiceOperationPath("getByInternalNameOrTitle", [value], self.resource_path),
         )
 
     def get_by_title(self, title: str) -> Field:

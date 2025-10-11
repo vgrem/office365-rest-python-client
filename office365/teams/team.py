@@ -126,9 +126,7 @@ class Team(Entity):
         """
         return self.properties.get(
             "allChannels",
-            ChannelCollection(
-                self.context, ResourcePath("allChannels", self.resource_path)
-            ),
+            ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path)),
         )
 
     @property
@@ -136,9 +134,7 @@ class Team(Entity):
         """List of channels shared with the team."""
         return self.properties.get(
             "incomingChannels",
-            ChannelCollection(
-                self.context, ResourcePath("incomingChannels", self.resource_path)
-            ),
+            ChannelCollection(self.context, ResourcePath("incomingChannels", self.resource_path)),
         )
 
     @property
@@ -146,9 +142,7 @@ class Team(Entity):
         """The collection of channels & messages associated with the team."""
         return self.properties.get(
             "channels",
-            ChannelCollection(
-                self.context, ResourcePath("channels", self.resource_path)
-            ),
+            ChannelCollection(self.context, ResourcePath("channels", self.resource_path)),
         )
 
     @property
@@ -156,9 +150,7 @@ class Team(Entity):
         """"""
         from office365.directory.groups.group import Group
 
-        return self.properties.get(
-            "group", Group(self.context, ResourcePath("group", self.resource_path))
-        )
+        return self.properties.get("group", Group(self.context, ResourcePath("group", self.resource_path)))
 
     @property
     def primary_channel(self) -> Channel:
@@ -229,9 +221,7 @@ class Team(Entity):
         """The tags associated with the team."""
         return self.properties.get(
             "tags",
-            EntityCollection(
-                self.context, TeamworkTag, ResourcePath("tags", self.resource_path)
-            ),
+            EntityCollection(self.context, TeamworkTag, ResourcePath("tags", self.resource_path)),
         )
 
     @property

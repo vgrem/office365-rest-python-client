@@ -16,9 +16,7 @@ class ClientRequestException(RequestException):
         if getattr(self, "response", None) is None:
             return {}
 
-        content_type = (
-            self.response.headers.get("Content-Type", "").split(";")[0].lower()
-        )
+        content_type = self.response.headers.get("Content-Type", "").split(";")[0].lower()
         if content_type == "application/json" and self.response.content:
             try:
                 payload = self.response.json()

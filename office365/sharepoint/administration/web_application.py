@@ -16,9 +16,7 @@ class WebApplication(Entity):
         """ """
         return_type = WebApplication(context)
         payload = {"requestUri": request_uri}
-        qry = ServiceOperationQuery(
-            return_type, "Lookup", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "Lookup", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -31,9 +29,7 @@ class WebApplication(Entity):
     def sites(self) -> EntityCollection[Site]:
         return self.properties.get(
             "Sites",
-            EntityCollection(
-                self.context, Site, ResourcePath("Sites", self.resource_path)
-            ),
+            EntityCollection(self.context, Site, ResourcePath("Sites", self.resource_path)),
         )
 
     @property

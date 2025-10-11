@@ -17,15 +17,11 @@ class TestSPListPermissions(SPTestCase):
 
     def test2_break_role_inheritance(self):
         self.target_list.break_role_inheritance(False).execute_query()
-        result = (
-            self.target_list.get().select(["HasUniqueRoleAssignments"]).execute_query()
-        )
+        result = self.target_list.get().select(["HasUniqueRoleAssignments"]).execute_query()
         self.assertTrue(result.has_unique_role_assignments)
 
     def test5_assign_perms(self):
-        result = self.target_list.add_role_assignment(
-            self.client.web.current_user, RoleType.Contributor
-        ).execute_query()
+        result = self.target_list.add_role_assignment(self.client.web.current_user, RoleType.Contributor).execute_query()
         self.assertEqual(len(result.parent_collection), 1)
 
     def test6_get_user_perms(self):
@@ -41,19 +37,13 @@ class TestSPListPermissions(SPTestCase):
         self.assertIsNotNone(first.resource_path)
 
     def test8_revoke_perms(self):
-        target_role_def = self.client.web.role_definitions.get_by_type(
-            RoleType.Contributor
-        )
+        target_role_def = self.client.web.role_definitions.get_by_type(RoleType.Contributor)
         target_user = self.client.web.current_user
-        result = self.target_list.remove_role_assignment(
-            target_user, target_role_def
-        ).execute_query()
+        result = self.target_list.remove_role_assignment(target_user, target_role_def).execute_query()
 
         self.assertEqual(len(result.parent_collection), 0)
 
     def test9_reset_role_inheritance(self):
         self.target_list.reset_role_inheritance().execute_query()
-        result = (
-            self.target_list.get().select(["HasUniqueRoleAssignments"]).execute_query()
-        )
+        result = self.target_list.get().select(["HasUniqueRoleAssignments"]).execute_query()
         self.assertFalse(result.has_unique_role_assignments)

@@ -24,9 +24,7 @@ def create_boundary(prefix: str, compact: bool = False) -> str:
 class BatchQuery(ClientQuery):
     """Client query collection for batch requests."""
 
-    def __init__(
-        self, context: ClientRuntimeContext, queries: List[ClientQuery] = None
-    ) -> None:
+    def __init__(self, context: ClientRuntimeContext, queries: List[ClientQuery] = None) -> None:
         """
         Initialize a batch query collection.
 

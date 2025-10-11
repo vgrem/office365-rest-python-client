@@ -1,16 +1,19 @@
+[tool.black]
+line-length = 121
+target-version = ['py36']
+
 [tool.ruff]
 line-length = 121
 # pyflakes, pycodestyle, isort
 lint.select = ["F", "E", "W", "I001"]
 
 [tool.pylint]
-max-line-length = 120
+max-line-length = 121
 disable = [
     "C0103",
     "C0111",
     "C0112", # empty-docstring
     "C0114", # missing-module-docstring
-    "C0201", # consider-iterating-dictionary (Python 2)
     "C0206", # consider-using-dict-items (Python 2)
     "C0209", # consider-using f-string
     "C0302", # too-many-lines

@@ -12,6 +12,4 @@ class TranslationNotificationRecipientCollection(ClientValue):
         :param list[str] recipients:
         """
         self.LanguageCode = language_code
-        self.Recipients = ClientValueCollection(
-            TranslationNotificationRecipient, recipients
-        )
+        self.Recipients = ClientValueCollection(TranslationNotificationRecipient, recipients)

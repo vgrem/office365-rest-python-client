@@ -11,6 +11,4 @@ class TenantDefaultTimeZoneId(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Online.SharePoint.TenantAdministration.TenantDefaultTimeZoneId"
-        )
+        return "Microsoft.Online.SharePoint.TenantAdministration.TenantDefaultTimeZoneId"

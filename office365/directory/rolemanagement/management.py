@@ -16,9 +16,7 @@ class RoleManagement(Entity):
         """"""
         return self.properties.get(
             "directory",
-            RbacApplication(
-                self.context, ResourcePath("directory", self.resource_path)
-            ),
+            RbacApplication(self.context, ResourcePath("directory", self.resource_path)),
         )
 
     @property
@@ -26,7 +24,5 @@ class RoleManagement(Entity):
         """Container for roles and assignments for entitlement management resources."""
         return self.properties.get(
             "entitlementManagement",
-            RbacApplication(
-                self.context, ResourcePath("entitlementManagement", self.resource_path)
-            ),
+            RbacApplication(self.context, ResourcePath("entitlementManagement", self.resource_path)),
         )

@@ -17,7 +17,5 @@ class TargetResource(ClientValue):
         user_principal_name: str = None,
     ):
         self.displayName = display_name
-        self.ModifiedProperties = ClientValueCollection(
-            ModifiedProperty, modified_properties
-        )
+        self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)
         self.userPrincipalName = user_principal_name

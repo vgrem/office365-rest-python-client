@@ -14,16 +14,12 @@ class MicrofeedThread(ClientValue):
         can_have_attachments: bool = None,
         can_like: bool = None,
         can_reply: bool = None,
-        data_links: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(
-            MicrofeedDataLink
-        ),
+        data_links: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(MicrofeedDataLink),
         definition_id: int = None,
         definition_name: str = None,
         identifier: str = None,
         locked: bool = None,
-        microfeed_entities: ClientValueCollection[
-            MicroBlogEntity
-        ] = ClientValueCollection(MicroBlogEntity),
+        microfeed_entities: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(MicroBlogEntity),
         owner_index: int = None,
         ref_reply: MicrofeedPost = MicrofeedPost(),
         ref_root: MicrofeedPost = MicrofeedPost(),

@@ -7,8 +7,6 @@ class CustomizedFormsPageCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[CustomizedFormsPage] = ClientValueCollection(
-            CustomizedFormsPage
-        ),
+        items: ClientValueCollection[CustomizedFormsPage] = ClientValueCollection(CustomizedFormsPage),
     ):
         self.items = items

@@ -9,9 +9,7 @@ class TestSharePointGroup(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.target_user = cls.client.web.ensure_user(
-            test_user_principal_name
-        ).execute_query()
+        cls.target_user = cls.client.web.ensure_user(test_user_principal_name).execute_query()
 
     def test1_create_group(self):
         grp_title = create_unique_name("Custom Group")
@@ -23,9 +21,7 @@ class TestSharePointGroup(SPTestCase):
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
-        result = self.result_group.users.add_user(
-            self.target_user.login_name
-        ).execute_query()
+        result = self.result_group.users.add_user(self.target_user.login_name).execute_query()
         self.assertIsNotNone(result.id)
 
     def test3_get_group_users(self):
@@ -46,9 +42,7 @@ class TestSharePointGroup(SPTestCase):
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
-        result = self.result_group.users.remove_by_id(
-            self.target_user.id
-        ).execute_query()
+        result = self.result_group.users.remove_by_id(self.target_user.id).execute_query()
         self.assertEqual(len(result), 0)
 
     def test6_delete_group(self):

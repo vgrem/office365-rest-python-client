@@ -23,11 +23,7 @@ async def do_work(client: ClientContext, instance: int):
     def _execute(iteration: int):
         web = client.web.get().execute_query_with_incremental_retry()
         if iteration % 25 == 0:
-            print(
-                "Instance #{0}, iteration: {1}, result: {2}".format(
-                    instance, iteration, web.title
-                )
-            )
+            print("Instance #{0}, iteration: {1}, result: {2}".format(instance, iteration, web.title))
 
     for i in range(1000):
         await loop.run_in_executor(None, _execute, i)

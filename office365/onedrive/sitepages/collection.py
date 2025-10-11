@@ -22,9 +22,7 @@ class SitePageCollection(EntityCollection[SitePage]):
         resource_path: ResourcePath = None,
         parent_list: List = None,
     ) -> None:
-        super(SitePageCollection, self).__init__(
-            context, SitePage, resource_path, parent_list
-        )
+        super(SitePageCollection, self).__init__(context, SitePage, resource_path, parent_list)
 
     def get(self):
         def _construct_request(request: RequestOptions) -> None:

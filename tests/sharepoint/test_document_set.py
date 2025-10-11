@@ -20,9 +20,7 @@ class TestSharePointDocumentSet(SPTestCase):
 
     def test1_create_document_set(self):
         doc_set_title = create_unique_name("DocSet N")
-        doc_set = DocumentSet.create(
-            self.client, self.target_lib.root_folder, doc_set_title
-        ).execute_query()
+        doc_set = DocumentSet.create(self.client, self.target_lib.root_folder, doc_set_title).execute_query()
         self.assertEqual(doc_set.name, doc_set_title)
         self.assertIsNotNone(doc_set.resource_path)
         self.__class__.target_doc_set = doc_set

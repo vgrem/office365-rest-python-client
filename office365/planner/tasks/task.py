@@ -36,9 +36,7 @@ class PlannerTask(Entity):
         """Additional details about the task."""
         return self.properties.get(
             "details",
-            PlannerTaskDetails(
-                self.context, ResourcePath("details", self.resource_path)
-            ),
+            PlannerTaskDetails(self.context, ResourcePath("details", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

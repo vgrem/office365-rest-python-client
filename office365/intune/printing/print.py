@@ -27,7 +27,5 @@ class Print(Entity):
         """The list of printer shares registered in the tenant."""
         return self.properties.get(
             "shares",
-            EntityCollection(
-                self.context, PrinterShare, ResourcePath("shares", self.resource_path)
-            ),
+            EntityCollection(self.context, PrinterShare, ResourcePath("shares", self.resource_path)),
         )

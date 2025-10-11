@@ -34,9 +34,7 @@ class ODataBatchV3Request(ODataRequest):
         request = RequestOptions(url=query.url)
         request.method = HttpMethod.Post
         media_type = "multipart/mixed"
-        content_type = "; ".join(
-            [media_type, "boundary={0}".format(query.current_boundary)]
-        )
+        content_type = "; ".join([media_type, "boundary={0}".format(query.current_boundary)])
         request.ensure_header("Content-Type", content_type)
         request.data = self._prepare_payload(query)
         return request
@@ -52,9 +50,7 @@ class ODataBatchV3Request(ODataRequest):
             sub_resp.raise_for_status()
             super(ODataBatchV3Request, self).process_response(sub_resp, sub_qry)
 
-    def _extract_response(
-        self, response: Response, query: BatchQuery
-    ) -> Iterator[Tuple[ClientQuery, Response]]:
+    def _extract_response(self, response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:
         """Extract individual responses from a multipart batch response.
 
         Args:
@@ -163,9 +159,7 @@ class ODataBatchV3Request(ODataRequest):
         method = request.method
         if "X-HTTP-Method" in request.headers:
             method = request.headers["X-HTTP-Method"]
-        lines = [f"{method} {request.url} HTTP/1.1"] + [
-            ":".join(h) for h in request.headers.items()
-        ]
+        lines = [f"{method} {request.url} HTTP/1.1"] + [":".join(h) for h in request.headers.items()]
         if request.data:
             lines.append(eol)
             lines.append(json.dumps(request.data))

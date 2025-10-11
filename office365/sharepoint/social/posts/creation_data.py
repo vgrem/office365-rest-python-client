@@ -18,9 +18,7 @@ class SocialPostCreationData(ClientValue):
         self,
         content_text=None,
         attachment: SocialAttachment = SocialAttachment(),
-        content_items: ClientValueCollection[SocialDataItem] = ClientValueCollection(
-            SocialDataItem
-        ),
+        content_items: ClientValueCollection[SocialDataItem] = ClientValueCollection(SocialDataItem),
         definition_data: SocialPostDefinitionData = SocialPostDefinitionData(),
         security_uris: StringCollection = StringCollection(),
         source: SocialLink = SocialLink(),

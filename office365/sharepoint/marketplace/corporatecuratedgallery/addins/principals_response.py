@@ -12,12 +12,10 @@ class SPGetAddinPrincipalsResponse(ClientValue):
 
     def __init__(
         self,
-        addin_principals: ClientValueCollection[
-            SPAddinPrincipalInfo
-        ] = ClientValueCollection(SPAddinPrincipalInfo),
-        errors_with_server_relative_url: ClientValueCollection[
+        addin_principals: ClientValueCollection[SPAddinPrincipalInfo] = ClientValueCollection(SPAddinPrincipalInfo),
+        errors_with_server_relative_url: ClientValueCollection[SPErrorWithServerRelativeUrl] = ClientValueCollection(
             SPErrorWithServerRelativeUrl
-        ] = ClientValueCollection(SPErrorWithServerRelativeUrl),
+        ),
     ):
         self.addinPrincipals = addin_principals
         self.errorsWithServerRelativeUrl = errors_with_server_relative_url

@@ -11,9 +11,7 @@ class SPJitDlpPolicyData(ClientValue):
     ):
         self.ExecutionMode = execution_mode
         self.IsPolicyEnabled = is_policy_enabled
-        self.ODBSensitivityRefreshWindowInHours = (
-            odb_sensitivity_refresh_window_in_hours
-        )
+        self.ODBSensitivityRefreshWindowInHours = odb_sensitivity_refresh_window_in_hours
 
     @property
     def entity_type_name(self):

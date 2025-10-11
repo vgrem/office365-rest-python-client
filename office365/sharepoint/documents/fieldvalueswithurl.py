@@ -7,9 +7,7 @@ class FieldValuesWithUrl(ClientValue):
 
     def __init__(
         self,
-        field_values: ClientValueCollection[CAFieldValue] = ClientValueCollection(
-            CAFieldValue
-        ),
+        field_values: ClientValueCollection[CAFieldValue] = ClientValueCollection(CAFieldValue),
         server_redirected_embed_url: str = None,
     ):
         self.field_values = field_values

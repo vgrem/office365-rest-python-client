@@ -8,9 +8,7 @@ class CustomActionElementCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[CustomActionElement] = ClientValueCollection(
-            CustomActionElement
-        ),
+        items: ClientValueCollection[CustomActionElement] = ClientValueCollection(CustomActionElement),
     ):
         super().__init__()
         self.Items = items

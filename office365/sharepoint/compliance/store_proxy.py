@@ -90,9 +90,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def get_available_tags_for_site(
-        context: ClientContext, site_url: str, return_type=None
-    ):
+    def get_available_tags_for_site(context: ClientContext, site_url: str, return_type=None):
         """
         Retrieves all available compliance tags that can be applied to a site.
 
@@ -139,9 +137,7 @@ class SPPolicyStoreProxy(Entity):
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "GetDynamicScopeBindingBySiteId", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetDynamicScopeBindingBySiteId", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -178,9 +174,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def register_site_hold_event_receiver(
-        context: ClientContext, site_url: str = None, site_id: str = None
-    ):
+    def register_site_hold_event_receiver(context: ClientContext, site_url: str = None, site_id: str = None):
         """
         Registers an event receiver for site hold operations.
 

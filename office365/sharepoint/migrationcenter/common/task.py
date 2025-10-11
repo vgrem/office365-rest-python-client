@@ -7,9 +7,7 @@ from office365.sharepoint.migrationcenter.common.task_entity_data import (
 class MigrationTask(MigrationTaskEntityData):
 
     def __init__(self, context):
-        static_path = StaticPath(
-            "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationTask"
-        )
+        static_path = StaticPath("Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationTask")
         super().__init__(context, static_path)
 
     @property

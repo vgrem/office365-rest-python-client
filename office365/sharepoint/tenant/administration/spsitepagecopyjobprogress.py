@@ -23,6 +23,4 @@ class SPSitePageCopyJobProgress(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.Online.SharePoint.TenantAdministration.SPSitePageCopyJobProgress"
-        )
+        return "Microsoft.Online.SharePoint.TenantAdministration.SPSitePageCopyJobProgress"

@@ -12,9 +12,7 @@ class CampaignEntity(ClientValue):
         self,
         campaign_id: str = None,
         channels: StringCollection = None,
-        contributors: ClientValueCollection[CampaignUserInfo] = ClientValueCollection(
-            CampaignUserInfo
-        ),
+        contributors: ClientValueCollection[CampaignUserInfo] = ClientValueCollection(CampaignUserInfo),
         description: str = None,
         end_date: datetime = None,
         objectives: StringCollection = None,

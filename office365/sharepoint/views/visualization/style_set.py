@@ -9,9 +9,7 @@ class VisualizationStyleSet(ClientValue):
         self,
         aspect_ratio: str = None,
         background_color: str = None,
-        fields: ClientValueCollection[VisualizationField] = ClientValueCollection(
-            VisualizationField
-        ),
+        fields: ClientValueCollection[VisualizationField] = ClientValueCollection(VisualizationField),
         min_height: str = None,
     ):
         """Microsoft.SharePoint.Client.VisualizationStyleSet is not applicable."""

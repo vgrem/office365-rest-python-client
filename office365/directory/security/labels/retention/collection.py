@@ -18,9 +18,7 @@ class RetentionLabelCollection(EntityCollection[RetentionLabel]):
     """"""
 
     def __init__(self, context, resource_path=None):
-        super(RetentionLabelCollection, self).__init__(
-            context, RetentionLabel, resource_path
-        )
+        super(RetentionLabelCollection, self).__init__(context, RetentionLabel, resource_path)
 
     def add(
         self,

@@ -11,13 +11,7 @@ class MessageRuleCollection(EntityCollection[MessageRule]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, MessageRule, resource_path)
 
-    def add(
-        self,
-        display_name: str,
-        sequence: int,
-        actions: MessageRuleActions,
-        **kwargs: Any
-    ) -> MessageRule:
+    def add(self, display_name: str, sequence: int, actions: MessageRuleActions, **kwargs: Any) -> MessageRule:
         """
         Create a messageRule object by specifying a set of conditions and actions.
         Outlook carries out those actions if an incoming message in the user's Inbox meets the specified conditions.

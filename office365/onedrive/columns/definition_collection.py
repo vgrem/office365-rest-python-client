@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 
 class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
     def __init__(self, context, resource_path, parent):
-        super(ColumnDefinitionCollection, self).__init__(
-            context, ColumnDefinition, resource_path, parent
-        )
+        super(ColumnDefinitionCollection, self).__init__(context, ColumnDefinition, resource_path, parent)
 
     def add_number(self, name, minimum=None, maximum=None):
         """
@@ -39,9 +37,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         """
         from office365.onedrive.columns.text import TextColumn
 
-        return self.add(
-            name=name, text=TextColumn(max_length=max_length, text_type=text_type)
-        )
+        return self.add(name=name, text=TextColumn(max_length=max_length, text_type=text_type))
 
     def add_hyperlink_or_picture(self, name, is_picture=None):
         """

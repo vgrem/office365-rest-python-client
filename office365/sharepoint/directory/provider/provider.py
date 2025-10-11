@@ -8,9 +8,7 @@ from office365.sharepoint.entity import Entity
 class SharePointDirectoryProvider(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = StaticPath(
-                "SP.Directory.Provider.SharePointDirectoryProvider"
-            )
+            resource_path = StaticPath("SP.Directory.Provider.SharePointDirectoryProvider")
         super().__init__(context, resource_path)
 
     def check_site_availability(self, site_url):
@@ -19,15 +17,11 @@ class SharePointDirectoryProvider(Entity):
 
         return SPHelper.check_site_availability(self.context, site_url)
 
-    def read_directory_object(
-        self, data: DirectoryObjectData
-    ) -> ClientResult[DirectoryObjectData]:
+    def read_directory_object(self, data: DirectoryObjectData) -> ClientResult[DirectoryObjectData]:
         """"""
         return_type = ClientResult(self.context, DirectoryObjectData())
         payload = {"data": data}
-        qry = ServiceOperationQuery(
-            self, "ReadDirectoryObject", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ReadDirectoryObject", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

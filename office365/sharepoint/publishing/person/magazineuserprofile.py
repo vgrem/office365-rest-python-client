@@ -18,9 +18,9 @@ class PersonMagazineUserProfile(ClientValue):
         assistant: PersonCore = PersonCore(),
         birth_date: ProfileDateTime = ProfileDateTime(),
         birthday: str = None,
-        date_time_custom_properties: ClientValueCollection[
+        date_time_custom_properties: ClientValueCollection[DateTimeCustomProperty] = ClientValueCollection(
             DateTimeCustomProperty
-        ] = ClientValueCollection(DateTimeCustomProperty),
+        ),
         department_name: str = None,
         display_name: str = None,
         email: str = None,
@@ -35,9 +35,9 @@ class PersonMagazineUserProfile(ClientValue):
         office_location: str = None,
         one_drive_url: str = None,
         past_projects: str = None,
-        person_type_custom_properties: ClientValueCollection[
+        person_type_custom_properties: ClientValueCollection[PersonCustomProperty] = ClientValueCollection(
             PersonCustomProperty
-        ] = ClientValueCollection(PersonCustomProperty),
+        ),
         phone: str = None,
         picture_url: str = None,
         point_publishing_personal_site_url: str = None,

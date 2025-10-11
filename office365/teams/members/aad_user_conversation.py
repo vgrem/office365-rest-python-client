@@ -16,9 +16,7 @@ class AadUserConversationMember(ConversationMember):
     def user(self):
         from office365.directory.users.user import User
 
-        return self.properties.get(
-            "user", User(self.context, ResourcePath("user", self.resource_path))
-        )
+        return self.properties.get("user", User(self.context, ResourcePath("user", self.resource_path)))
 
     def to_json(self, json_format=None):
         return {

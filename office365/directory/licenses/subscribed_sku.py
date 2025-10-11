@@ -43,9 +43,7 @@ class SubscribedSku(Entity):
     @property
     def service_plans(self) -> ClientValueCollection[ServicePlanInfo]:
         """Information about the service plans that are available with the SKU. Not nullable"""
-        return self.properties.get(
-            "servicePlans", ClientValueCollection(ServicePlanInfo)
-        )
+        return self.properties.get("servicePlans", ClientValueCollection(ServicePlanInfo))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

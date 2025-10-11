@@ -7,9 +7,7 @@ class MicroBlogEntityCollection(ClientValue):
 
     def __init__(
         self,
-        items: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(
-            MicroBlogEntity
-        ),
+        items: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(MicroBlogEntity),
     ):
         self.Items = items
 

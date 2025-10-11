@@ -16,9 +16,7 @@ def print_progress(downloaded_file: DriveItem) -> None:
     print(f"File {downloaded_file.web_url} has been downloaded..")
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 folder_item = client.me.drive.root.get_by_path("archive")
 
 zip_path = os.path.join(tempfile.mkdtemp(), "download.zip")

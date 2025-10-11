@@ -22,8 +22,6 @@ class MountPoint(Entity):
             "targetWebId": target_web_id,
             "targetUniqueId": target_unique_id,
         }
-        qry = ServiceOperationQuery(
-            context.web, "GetMountedFolderInfo", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(context.web, "GetMountedFolderInfo", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type

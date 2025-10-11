@@ -114,7 +114,8 @@ class ODataType:
     @classmethod
     def is_primitive_type(cls, type_name: str) -> bool:
         """Checks if a type is a known OData primitive type."""
-        return any(odata_type == type_name for odata_type in _PRIMITIVE_TYPES.keys())
+        # return any(odata_type == type_name for odata_type in _PRIMITIVE_TYPES.keys())
+        return type_name in _PRIMITIVE_TYPES
 
     @staticmethod
     @lru_cache(maxsize=512)
@@ -122,9 +123,7 @@ class ODataType:
         for module_name in modules:
             try:
                 module = importlib.import_module(module_name.strip())
-                for _, name, _ in pkgutil.walk_packages(
-                    module.__path__, module.__name__ + "."
-                ):
+                for _, name, _ in pkgutil.walk_packages(module.__path__, module.__name__ + "."):
                     submodule = importlib.import_module(name)
                     if hasattr(submodule, class_name):
                         cls = getattr(submodule, class_name)

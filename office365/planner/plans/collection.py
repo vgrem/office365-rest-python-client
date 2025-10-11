@@ -21,9 +21,7 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
         def _add(owner_id: str) -> None:
             payload = {
                 "title": title,
-                "container": {
-                    "url": f"https://graph.microsoft.com/v1.0/groups/{owner_id}"
-                },
+                "container": {"url": f"https://graph.microsoft.com/v1.0/groups/{owner_id}"},
             }
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)

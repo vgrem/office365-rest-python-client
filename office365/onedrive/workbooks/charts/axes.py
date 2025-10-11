@@ -11,9 +11,7 @@ class WorkbookChartAxes(Entity):
         """Represents the category axis in a chart."""
         return self.properties.get(
             "categoryAxis",
-            WorkbookChartAxis(
-                self.context, ResourcePath("categoryAxis", self.resource_path)
-            ),
+            WorkbookChartAxis(self.context, ResourcePath("categoryAxis", self.resource_path)),
         )
 
     @property
@@ -21,9 +19,7 @@ class WorkbookChartAxes(Entity):
         """Represents the series axis of a 3-dimensional chart."""
         return self.properties.get(
             "seriesAxis",
-            WorkbookChartAxis(
-                self.context, ResourcePath("seriesAxis", self.resource_path)
-            ),
+            WorkbookChartAxis(self.context, ResourcePath("seriesAxis", self.resource_path)),
         )
 
     @property
@@ -31,9 +27,7 @@ class WorkbookChartAxes(Entity):
         """Represents the value axis in an axis."""
         return self.properties.get(
             "valueAxis",
-            WorkbookChartAxis(
-                self.context, ResourcePath("valueAxis", self.resource_path)
-            ),
+            WorkbookChartAxis(self.context, ResourcePath("valueAxis", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

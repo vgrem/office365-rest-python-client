@@ -29,9 +29,7 @@ class RoleAssignment(Entity):
         """Specifies a collection of role definitions for this role assignment."""
         return self.properties.get(
             "RoleDefinitionBindings",
-            RoleDefinitionCollection(
-                self.context, ResourcePath("RoleDefinitionBindings", self.resource_path)
-            ),
+            RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitionBindings", self.resource_path)),
         )
 
     @property

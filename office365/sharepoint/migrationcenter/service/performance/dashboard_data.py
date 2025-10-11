@@ -9,9 +9,7 @@ from office365.sharepoint.migrationcenter.service.performance.throughput_data im
 class PerformanceDashboardData(ClientValue):
     """"""
 
-    def __init__(
-        self, bottleneck_list=None, recommendation_list=None, throughput_trend=None
-    ):
+    def __init__(self, bottleneck_list=None, recommendation_list=None, throughput_trend=None):
         self.BottleneckList = StringCollection(bottleneck_list)
         self.RecommendationList = StringCollection(recommendation_list)
         self.ThroughputTrend = ClientValueCollection(ThroughputData, throughput_trend)

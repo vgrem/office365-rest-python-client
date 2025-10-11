@@ -10,12 +10,6 @@ from tests import (
     test_user_principal_name,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
-site = (
-    client.users.get_by_principal_name(test_user_principal_name)
-    .get_my_site()
-    .execute_query()
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+site = client.users.get_by_principal_name(test_user_principal_name).get_my_site().execute_query()
 print(f"Drive url: {site.web_url}")

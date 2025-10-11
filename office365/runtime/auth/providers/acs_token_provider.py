@@ -52,28 +52,18 @@ class ACSTokenProvider(AuthenticationProvider):
             url_info = urlparse(self.url)
             return self._get_app_only_access_token(url_info.hostname, realm)
         except requests.exceptions.RequestException as e:
-            self._last_error = (
-                e.response.text
-                if e.response is not None
-                else "Acquire app-only access token failed."
-            )
+            self._last_error = e.response.text if e.response is not None else "Acquire app-only access token failed."
             raise ValueError(self._last_error)
 
-    def _get_app_only_access_token(
-        self, target_host: str, target_realm: str
-    ) -> TokenResponse:
+    def _get_app_only_access_token(self, target_host: str, target_realm: str) -> TokenResponse:
         """Retrieve app-only access token for target principal.
 
         Args:
             target_host: URL authority of the target principal
             target_realm: Realm for token's nameid and audience
         """
-        resource = self.get_formatted_principal(
-            self.SHAREPOINT_PRINCIPAL, target_host, target_realm
-        )
-        principal_id = self.get_formatted_principal(
-            self._credential.client_id, None, target_realm
-        )
+        resource = self.get_formatted_principal(self.SHAREPOINT_PRINCIPAL, target_host, target_realm)
+        principal_id = self.get_formatted_principal(self._credential.client_id, None, target_realm)
         sts_url = self.get_security_token_service_url(target_realm)
         oauth2_request = {
             "grant_type": "client_credentials",

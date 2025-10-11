@@ -14,11 +14,7 @@ class BasePermissions(ClientValue):
 
     def __repr__(self):
         perms = self.permission_levels
-        return (
-            f"BasePermissions({', '.join(perms)})"
-            if perms
-            else "BasePermissions(Empty)"
-        )
+        return f"BasePermissions({', '.join(perms)})" if perms else "BasePermissions(Empty)"
 
     def __iter__(self) -> Iterator[str]:
         for perm in PermissionKind:

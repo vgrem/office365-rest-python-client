@@ -50,6 +50,4 @@ class AuthorizationPolicy(PolicyBase):
     @property
     def default_user_role_permissions(self) -> Optional[DefaultUserRolePermissions]:
         """Specifies certain customizable permissions for default user role."""
-        return self.properties.get(
-            "defaultUserRolePermissions", DefaultUserRolePermissions()
-        )
+        return self.properties.get("defaultUserRolePermissions", DefaultUserRolePermissions())

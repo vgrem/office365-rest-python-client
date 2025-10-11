@@ -87,9 +87,7 @@ class Entity(ClientObject):
         """
         return "id"
 
-    def set_property(
-        self, name: str, value: PropertyT, persist_changes: bool = True
-    ) -> Self:
+    def set_property(self, name: str, value: PropertyT, persist_changes: bool = True) -> Self:
         """Sets a property value and updates the resource path if needed.
 
         Args:
@@ -104,13 +102,9 @@ class Entity(ClientObject):
         if name == self.property_ref_name:
             if self._resource_path is None:
                 if isinstance(self.parent_collection.resource_path, EntityPath):
-                    self._resource_path = self.parent_collection.resource_path.patch(
-                        value
-                    )
+                    self._resource_path = self.parent_collection.resource_path.patch(value)
                 else:
-                    self._resource_path = ResourcePath(
-                        value, self.parent_collection.resource_path
-                    )
+                    self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

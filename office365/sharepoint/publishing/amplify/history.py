@@ -9,9 +9,9 @@ class AmplifyPublishingHistory(ClientValue):
 
     def __init__(
         self,
-        results: ClientValueCollection[
+        results: ClientValueCollection[AmplifyPublishingHistoryResult] = ClientValueCollection(
             AmplifyPublishingHistoryResult
-        ] = ClientValueCollection(AmplifyPublishingHistoryResult),
+        ),
     ):
         self.results = results
 

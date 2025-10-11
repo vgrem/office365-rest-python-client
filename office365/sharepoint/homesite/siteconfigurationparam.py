@@ -22,18 +22,14 @@ class HomeSiteConfigurationParam(ClientValue):
     ):
         self.Audiences = audiences
         self.IsAudiencesPresent = is_audiences_present
-        self.isGoBackToConnectionsButtonDisabled = (
-            is_go_back_to_connections_button_disabled
-        )
+        self.isGoBackToConnectionsButtonDisabled = is_go_back_to_connections_button_disabled
         self.isInDraftMode = is_in_draft_mode
         self.IsInDraftModePresent = is_in_draft_mode_present
         self.IsOrderPresent = is_order_present
         self.IsTargetedLicenseTypePresent = is_targeted_license_type_present
         self.IsVivaBackendSite = is_viva_backend_site
         self.IsVivaBackendSitePresent = is_viva_backend_site_present
-        self.IsVivaConnectionsDefaultStartPresent = (
-            is_viva_connections_default_start_present
-        )
+        self.IsVivaConnectionsDefaultStartPresent = is_viva_connections_default_start_present
         self.Order = order
         self.TargetedLicenseType = targeted_license_type
         self.vivaConnectionsDefaultStart = viva_connections_default_start

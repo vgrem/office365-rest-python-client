@@ -9,9 +9,9 @@ class PersonMagazineUserProfileData(ClientValue):
 
     def __init__(
         self,
-        manager_chain: ClientValueCollection[
+        manager_chain: ClientValueCollection[PersonMagazineUserProfile] = ClientValueCollection(
             PersonMagazineUserProfile
-        ] = ClientValueCollection(PersonMagazineUserProfile),
+        ),
         primary: PersonMagazineUserProfile = PersonMagazineUserProfile(),
     ):
         self.ManagerChain = manager_chain

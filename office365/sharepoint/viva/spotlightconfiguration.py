@@ -10,12 +10,8 @@ class SpotlightConfiguration(ClientValue):
         self,
         is_hidden: bool = None,
         news_source: int = None,
-        pinned_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(
-            SpotlightNews
-        ),
-        selected_sites: ClientValueCollection[NewsSite] = ClientValueCollection(
-            NewsSite
-        ),
+        pinned_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(SpotlightNews),
+        selected_sites: ClientValueCollection[NewsSite] = ClientValueCollection(NewsSite),
     ):
         self.IsHidden = is_hidden
         self.NewsSource = news_source

@@ -11,13 +11,9 @@ class TestTeamChats(GraphTestCase):
 
     def test1_create(self):
         owner = self.client.me.get().execute_query()
-        another_owner = (
-            self.client.users[test_user_principal_name].get().execute_query()
-        )
+        another_owner = self.client.users[test_user_principal_name].get().execute_query()
 
-        new_chat = self.client.chats.add(
-            ChatType.oneOnOne, owner_ids=[owner.id, another_owner.id]
-        ).execute_query()
+        new_chat = self.client.chats.add(ChatType.oneOnOne, owner_ids=[owner.id, another_owner.id]).execute_query()
         self.assertIsNotNone(new_chat.resource_path)
         self.__class__.target_chat = new_chat
 

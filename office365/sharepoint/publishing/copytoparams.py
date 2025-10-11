@@ -15,9 +15,7 @@ class CopyToParams(ClientValue):
         create_copy_with_title_suffix: bool = None,
         create_if_missing: bool = None,
         delete_source_page: bool = None,
-        dependency_property_types_to_deep_copy: ClientValueCollection[
-            int
-        ] = ClientValueCollection(int),
+        dependency_property_types_to_deep_copy: ClientValueCollection[int] = ClientValueCollection(int),
         destination_page_unique_id: str = None,
         destination_type: int = None,
         destination_web_url: str = None,
@@ -41,9 +39,7 @@ class CopyToParams(ClientValue):
         self.DestinationWebUrl = destination_web_url
         self.ScenarioID = scenario_id
         self.ScenarioPayload = scenario_payload
-        self.ShouldAddFallbackLinkForVideoForAmplify = (
-            should_add_fallback_link_for_video_for_amplify
-        )
+        self.ShouldAddFallbackLinkForVideoForAmplify = should_add_fallback_link_for_video_for_amplify
         self.SitePageFlags = site_page_flags
 
     @property

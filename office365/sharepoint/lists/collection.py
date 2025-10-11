@@ -73,9 +73,7 @@ class ListCollection(EntityCollection[List]):
         """
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "EnsureClientRenderedSitePagesLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureClientRenderedSitePagesLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -88,9 +86,7 @@ class ListCollection(EntityCollection[List]):
         """
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "EnsureEventsList", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureEventsList", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -103,9 +99,7 @@ class ListCollection(EntityCollection[List]):
         """
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "ensureSiteAssetsLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ensureSiteAssetsLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -118,9 +112,7 @@ class ListCollection(EntityCollection[List]):
         """
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "ensureSitePagesLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ensureSitePagesLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -155,11 +147,7 @@ class ListCollection(EntityCollection[List]):
         :param str or None description: Specifies the description of the new list.
         :param bool allow_content_types:
         """
-        return self.add(
-            ListCreationInformation(
-                title, description, template_type, allow_content_types
-            )
-        )
+        return self.add(ListCreationInformation(title, description, template_type, allow_content_types))
 
     def add_library(
         self,

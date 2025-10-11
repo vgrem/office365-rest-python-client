@@ -22,12 +22,8 @@ class SecurityReportsRoot(Entity):
         """
         List the tenant users who have yielded to attacks more than once in attack simulation and training campaigns.
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(AttackSimulationRepeatOffender)
-        )
-        qry = FunctionQuery(
-            self, "getAttackSimulationRepeatOffenders", None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(AttackSimulationRepeatOffender))
+        qry = FunctionQuery(self, "getAttackSimulationRepeatOffenders", None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -37,11 +33,7 @@ class SecurityReportsRoot(Entity):
         """
         List training coverage for each tenant user in attack simulation and training campaigns.
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(AttackSimulationSimulationUserCoverage)
-        )
-        qry = FunctionQuery(
-            self, "getAttackSimulationSimulationUserCoverage", None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(AttackSimulationSimulationUserCoverage))
+        qry = FunctionQuery(self, "getAttackSimulationSimulationUserCoverage", None, return_type)
         self.context.add_query(qry)
         return return_type

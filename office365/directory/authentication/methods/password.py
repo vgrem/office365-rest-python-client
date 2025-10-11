@@ -22,6 +22,4 @@ class PasswordAuthenticationMethod(AuthenticationMethod):
         if default_value is None:
             property_mapping = {"createdDateTime": self.created_datetime}
             default_value = property_mapping.get(name, None)
-        return super(PasswordAuthenticationMethod, self).get_property(
-            name, default_value
-        )
+        return super(PasswordAuthenticationMethod, self).get_property(name, default_value)

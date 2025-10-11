@@ -42,9 +42,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             "siteCollectionId": site_collection_id,
             "siteId": site_id,
         }
-        qry = ServiceOperationQuery(
-            self, "copyToSectionGroup", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "copyToSectionGroup", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -69,9 +67,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
         return self.properties.get(
             "pages",
-            EntityCollection(
-                self.context, OnenotePage, ResourcePath("pages", self.resource_path)
-            ),
+            EntityCollection(self.context, OnenotePage, ResourcePath("pages", self.resource_path)),
         )
 
     @property
@@ -95,9 +91,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
         return self.properties.get(
             "parentSectionGroup",
-            SectionGroup(
-                self.context, ResourcePath("parentSectionGroup", self.resource_path)
-            ),
+            SectionGroup(self.context, ResourcePath("parentSectionGroup", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

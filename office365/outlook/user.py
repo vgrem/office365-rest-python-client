@@ -36,9 +36,7 @@ class OutlookUser(Entity):
         When setting up an Outlook client, the user selects the preferred time zone from this supported list.
         You can subsequently get the preferred time zone by getting the user's mailbox settings.
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(TimeZoneInformation)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(TimeZoneInformation))
         qry = FunctionQuery(self, "supportedTimeZones", None, return_type)
         self.context.add_query(qry)
         return return_type

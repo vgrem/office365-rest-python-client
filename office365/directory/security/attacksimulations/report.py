@@ -19,6 +19,4 @@ class SimulationReport(ClientValue):
         :param SimulationReportOverview overview: Overview of an attack simulation and training campaign.
         """
         self.overview = overview
-        self.simulationUsers = ClientValueCollection(
-            UserSimulationDetails, simulation_users
-        )
+        self.simulationUsers = ClientValueCollection(UserSimulationDetails, simulation_users)

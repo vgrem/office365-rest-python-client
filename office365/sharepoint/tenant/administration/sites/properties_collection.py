@@ -31,24 +31,18 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         :param str site_id: Site identifier
         """
         return_type = ClientResult(self.context, int())
-        qry = ServiceOperationQuery(
-            self, "GetLockStateById", [site_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetLockStateById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_site_state_properties(
-        self, site_id: str
-    ) -> ClientResult[SiteStateProperties]:
+    def get_site_state_properties(self, site_id: str) -> ClientResult[SiteStateProperties]:
         """
         Gets site state properties.
 
         :param str site_id: Site identifier
         """
         return_type = ClientResult(self.context, SiteStateProperties())
-        qry = ServiceOperationQuery(
-            self, "GetSiteStateProperties", [site_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteStateProperties", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -58,12 +52,8 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
 
         :param str site_id: Site identifier
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SiteUserGroupInfo)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetSiteUserGroups", [site_id], None, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SiteUserGroupInfo))
+        qry = ServiceOperationQuery(self, "GetSiteUserGroups", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -72,8 +62,6 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         :param str site_id: Site identifier
         """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CheckSiteIsArchivedById", [site_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckSiteIsArchivedById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type

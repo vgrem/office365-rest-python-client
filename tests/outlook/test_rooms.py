@@ -10,9 +10,7 @@ class TestRooms(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
+        cls.client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     @requires_app_permission("Place.Read.All")
     def test1_get_room_lists(self):

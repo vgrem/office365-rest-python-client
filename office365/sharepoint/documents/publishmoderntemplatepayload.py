@@ -10,9 +10,7 @@ class PublishModernTemplatePayload(ClientValue):
     def __init__(
         self,
         disable_search_and_approvals: bool = None,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(
-            PlaceholderV2
-        ),
+        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
         snippets: ClientValueCollection[Snippet] = ClientValueCollection(Snippet),
         url: str = None,
         document_location: DocumentLocation = DocumentLocation(),

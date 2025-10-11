@@ -18,9 +18,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Participant(Entity):
     """Represents a participant in a call."""
 
-    def invite(
-        self, participants: List[InvitationParticipantInfo], client_context: str
-    ) -> InviteParticipantsOperation:
+    def invite(self, participants: List[InvitationParticipantInfo], client_context: str) -> InviteParticipantsOperation:
         """Invite participants to the active call.
 
         :param list[InvitationParticipantInfo] participants: Unique Client Context string. Max limit is 256 chars.
@@ -28,18 +26,14 @@ class Participant(Entity):
         """
         return_type = InviteParticipantsOperation(self.context)
         payload = {
-            "participants": ClientValueCollection(
-                InvitationParticipantInfo, participants
-            ),
+            "participants": ClientValueCollection(InvitationParticipantInfo, participants),
             "clientContext": client_context,
         }
         qry = ServiceOperationQuery(self, "invite", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def start_hold_music(
-        self, custom_prompt: str = None, client_context: str = None
-    ) -> StartHoldMusicOperation:
+    def start_hold_music(self, custom_prompt: str = None, client_context: str = None) -> StartHoldMusicOperation:
         """
         Put a participant on hold and play music in the background.
 
@@ -48,9 +42,7 @@ class Participant(Entity):
         """
         return_type = StartHoldMusicOperation(self.context)
         payload = {"customPrompt": custom_prompt, "clientContext": client_context}
-        qry = ServiceOperationQuery(
-            self, "startHoldMusic", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "startHoldMusic", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -62,9 +54,7 @@ class Participant(Entity):
         """
         return_type = StopHoldMusicOperation(self.context)
         payload = {"clientContext": client_context}
-        qry = ServiceOperationQuery(
-            self, "stopHoldMusic", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "stopHoldMusic", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

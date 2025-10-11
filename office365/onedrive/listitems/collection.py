@@ -64,9 +64,7 @@ class ListItemCollection(EntityCollection[ListItem]):
 
         def _construct_request(request: RequestOptions) -> None:
             if self._honor_nonindexed:
-                request.headers["Prefer"] = (
-                    "HonorNonIndexedQueriesWarningMayFailRandomly"
-                )
+                request.headers["Prefer"] = "HonorNonIndexedQueriesWarningMayFailRandomly"
 
         return super().get().before_execute(_construct_request)
 

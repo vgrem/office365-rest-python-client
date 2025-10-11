@@ -9,14 +9,10 @@ https://learn.microsoft.com/en-us/graph/api/list-create?view=graph-rest-1.0
 from office365.graph_client import GraphClient
 from tests import create_unique_name, test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 print("Creating a custom list...")
-custom_list = client.sites.root.lists.add(
-    create_unique_name("Books"), "genericList"
-).execute_query()
+custom_list = client.sites.root.lists.add(create_unique_name("Books"), "genericList").execute_query()
 print(f"List has been created at {custom_list.web_url}")
 
 print("Cleaning up resources...")

@@ -17,18 +17,14 @@ class DocumentCrawlLog(Entity):
     about items that were crawled."""
 
     def __init__(self, context):
-        static_path = StaticPath(
-            "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
-        )
+        static_path = StaticPath("Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog")
         super().__init__(context, static_path)
 
     @staticmethod
     def create(context: ClientContext) -> DocumentCrawlLog:
         """"""
         return_type = DocumentCrawlLog(context)
-        qry = ServiceOperationQuery(
-            return_type, "Create", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "Create", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -55,15 +51,11 @@ class DocumentCrawlLog(Entity):
             "queryString": query_string,
             "contentSourceID": content_source_id,
         }
-        qry = ServiceOperationQuery(
-            self, "GetCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_unsuccesful_crawled_urls(
-        self, display_url: str = None
-    ) -> ClientResult[SimpleDataTable]:
+    def get_unsuccesful_crawled_urls(self, display_url: str = None) -> ClientResult[SimpleDataTable]:
         """
         Retrieves information about the contents that failed crawling.
 
@@ -71,9 +63,7 @@ class DocumentCrawlLog(Entity):
         """
         return_type = ClientResult(self.context, SimpleDataTable())
         payload = {"displayUrl": display_url}
-        qry = ServiceOperationQuery(
-            self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

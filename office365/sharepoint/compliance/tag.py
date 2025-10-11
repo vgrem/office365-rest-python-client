@@ -35,9 +35,7 @@ class ComplianceTag(ClientValue):
         :param bool accept_messages_only_from_senders_or_members:
         :param str access_type:
         """
-        self.AcceptMessagesOnlyFromSendersOrMembers = (
-            accept_messages_only_from_senders_or_members
-        )
+        self.AcceptMessagesOnlyFromSendersOrMembers = accept_messages_only_from_senders_or_members
         self.AccessType = access_type
         self.AllowAccessFromUnmanagedDevice = allow_access_from_unmanaged_device
         self.AutoDelete = auto_delete

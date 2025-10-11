@@ -9,9 +9,7 @@ class Snippet(ClientValue):
         self,
         id_: str = None,
         name: str = None,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(
-            PlaceholderV2
-        ),
+        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
         snippet_library_mapped_id: str = None,
         snippet_library_mapped_version: str = None,
     ):

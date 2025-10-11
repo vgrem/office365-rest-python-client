@@ -23,23 +23,23 @@ class SPActiveContainerProperties(ClientValue):
         description: str = None,
         last_archived_date_time: str = None,
         optical_character_recognition_enabled: bool = None,
-        owners: ClientValueCollection[
+        owners: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
             SPActiveContainerMemberProperties
-        ] = ClientValueCollection(SPActiveContainerMemberProperties),
+        ),
         owners_count: int = None,
         ownership_type: str = None,
         owning_application_id: str = None,
         principal_owner_identifier: str = None,
         publisher_name: str = None,
-        readers: ClientValueCollection[
+        readers: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
             SPActiveContainerMemberProperties
-        ] = ClientValueCollection(SPActiveContainerMemberProperties),
+        ),
         sensitivity_label: str = None,
         status: str = None,
         storage_used: int = None,
-        writers: ClientValueCollection[
+        writers: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
             SPActiveContainerMemberProperties
-        ] = ClientValueCollection(SPActiveContainerMemberProperties),
+        ),
     ):
         self.ApplicationName = application_name
         self.ArchivedBy = archived_by

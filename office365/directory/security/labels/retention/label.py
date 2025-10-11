@@ -40,9 +40,7 @@ class RetentionLabel(Entity):
     @property
     def behavior_during_retention_period(self) -> BehaviorDuringRetentionPeriod:
         """Specifies how the behavior of a document with this label should be during the retention period."""
-        return self.properties.get(
-            "behaviorDuringRetentionPeriod", BehaviorDuringRetentionPeriod.none
-        )
+        return self.properties.get("behaviorDuringRetentionPeriod", BehaviorDuringRetentionPeriod.none)
 
     @property
     def retention_trigger(self) -> RetentionTrigger:

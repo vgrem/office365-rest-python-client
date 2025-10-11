@@ -22,9 +22,7 @@ class NtlmProvider(AuthenticationProvider):
         timeout (int): Request timeout in seconds (default: 10)
     """
 
-    def __init__(
-        self, credentials: UserCredential, verify_ssl: bool = True, timeout: int = 10
-    ):
+    def __init__(self, credentials: UserCredential, verify_ssl: bool = True, timeout: int = 10):
         """
         Provides NTLM authentication (intended for SharePoint On-Premises)
 
@@ -70,8 +68,4 @@ class NtlmProvider(AuthenticationProvider):
         logger.debug("Successfully authenticated request with NTLM")
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}("
-            f"verify_ssl={self.verify_ssl}, "
-            f"timeout={self.timeout})"
-        )
+        return f"{self.__class__.__name__}(" f"verify_ssl={self.verify_ssl}, " f"timeout={self.timeout})"

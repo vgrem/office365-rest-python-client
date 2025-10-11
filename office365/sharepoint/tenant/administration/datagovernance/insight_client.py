@@ -74,9 +74,7 @@ class SPDataGovernanceInsightRestApiClient(SPDataGovernanceRestApiClientBase):
         self.context.add_query(qry)
         return return_type
 
-    def export_spo_data_access_governance_insight(
-        self, report_id: str
-    ) -> ClientResult[str]:
+    def export_spo_data_access_governance_insight(self, report_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
         payload = {"reportId": report_id}

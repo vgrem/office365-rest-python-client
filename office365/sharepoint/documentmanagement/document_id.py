@@ -25,9 +25,7 @@ class DocumentId(Entity):
              MUST be reset if it is not unique.
         """
         payload = {"DecodedUrl": decoded_url}
-        qry = ServiceOperationQuery(
-            self, "ResetDocIdByServerRelativePath", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "ResetDocIdByServerRelativePath", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
@@ -41,15 +39,11 @@ class DocumentId(Entity):
         :param str or None content_type_id: The content type identifier.
         """
         payload = {"decodedUrl": decoded_url, "contentTypeId": content_type_id}
-        qry = ServiceOperationQuery(
-            self, "ResetDocIdsInLibrary", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "ResetDocIdsInLibrary", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
-    def set_doc_id_site_prefix(
-        self, prefix: str, schedule_assignment: bool, overwrite_existing_ids: bool
-    ):
+    def set_doc_id_site_prefix(self, prefix: str, schedule_assignment: bool, overwrite_existing_ids: bool):
         """
         Allows to set or change the prefix used for Document IDs
 
@@ -62,9 +56,7 @@ class DocumentId(Entity):
             "scheduleAssignment": schedule_assignment,
             "overwriteExistingIds": overwrite_existing_ids,
         }
-        qry = ServiceOperationQuery(
-            self, "SetDocIdSitePrefix", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "SetDocIdSitePrefix", None, payload, None, None)
         self.context.add_query(qry)
         return self
 

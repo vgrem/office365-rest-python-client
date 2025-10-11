@@ -9,9 +9,7 @@ class VCConfiguration(ClientValue):
 
     def __init__(
         self,
-        company_links: ClientValueCollection[VivaResourceLink] = ClientValueCollection(
-            VivaResourceLink
-        ),
+        company_links: ClientValueCollection[VivaResourceLink] = ClientValueCollection(VivaResourceLink),
         spotlight_configuration: SpotlightConfiguration = SpotlightConfiguration(),
         title_region: VivaHomeTitleRegion = VivaHomeTitleRegion(),
     ):

@@ -16,9 +16,7 @@ class TestPublishing(SPTestCase):
     #    self.assertIsInstance(time_zone, PrimaryCityTime)
 
     def test4_compute_file_name(self):
-        result = SitePageService.compute_file_name(
-            self.client, "Test page"
-        ).execute_query()
+        result = SitePageService.compute_file_name(self.client, "Test page").execute_query()
         self.assertIsNotNone(result.value)
 
     def test5_file_picker_tab_options(self):
@@ -34,9 +32,7 @@ class TestPublishing(SPTestCase):
         self.assertIsNotNone(discoverer.video_portal_url)
 
     def test8_get_page_by_name(self):
-        page = (
-            self.client.site_pages.pages.get_by_name("Home.aspx").get().execute_query()
-        )
+        page = self.client.site_pages.pages.get_by_name("Home.aspx").get().execute_query()
         self.assertIsNotNone(page.resource_path)
 
     def test9_can_create_page(self):
@@ -44,15 +40,11 @@ class TestPublishing(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_10_get_current_user_memberships(self):
-        result = SitePageService.get_current_user_memberships(
-            self.client
-        ).execute_query()
+        result = SitePageService.get_current_user_memberships(self.client).execute_query()
         self.assertIsNotNone(result.value)
 
     def test_11_get_page_diagnostics(self):
-        result = self.client.page_diagnostics.by_page(
-            "/sites/team/SitePages/Home.aspx"
-        ).execute_query()
+        result = self.client.page_diagnostics.by_page("/sites/team/SitePages/Home.aspx").execute_query()
         self.assertIsNotNone(result.value)
 
     def test_12_checkout_page(self):

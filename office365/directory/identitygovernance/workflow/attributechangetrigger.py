@@ -9,8 +9,6 @@ class AttributeChangeTrigger(ClientValue):
 
     def __init__(
         self,
-        trigger_attributes: ClientValueCollection[
-            TriggerAttribute
-        ] = ClientValueCollection(TriggerAttribute),
+        trigger_attributes: ClientValueCollection[TriggerAttribute] = ClientValueCollection(TriggerAttribute),
     ):
         self.triggerAttributes = trigger_attributes

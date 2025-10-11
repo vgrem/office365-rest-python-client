@@ -7,21 +7,11 @@ class TaxonomicProperties(ClientValue):
 
     def __init__(
         self,
-        interest: ClientValueCollection[PropertyValue] = ClientValueCollection(
-            PropertyValue
-        ),
-        past_projects: ClientValueCollection[PropertyValue] = ClientValueCollection(
-            PropertyValue
-        ),
-        responsibilities: ClientValueCollection[PropertyValue] = ClientValueCollection(
-            PropertyValue
-        ),
-        schools: ClientValueCollection[PropertyValue] = ClientValueCollection(
-            PropertyValue
-        ),
-        skills: ClientValueCollection[PropertyValue] = ClientValueCollection(
-            PropertyValue
-        ),
+        interest: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
+        past_projects: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
+        responsibilities: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
+        schools: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
+        skills: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
     ):
         self.Interest = interest
         self.PastProjects = past_projects

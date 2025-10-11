@@ -19,7 +19,5 @@ class RoomList(Place):
         """The calendars in the calendar group. Navigation property. Read-only. Nullable."""
         return self.properties.get(
             "rooms",
-            EntityCollection(
-                self.context, Room, ResourcePath("rooms", self.resource_path)
-            ),
+            EntityCollection(self.context, Room, ResourcePath("rooms", self.resource_path)),
         )

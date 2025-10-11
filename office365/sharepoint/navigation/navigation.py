@@ -23,9 +23,7 @@ class Navigation(Entity):
         """Gets a value that collects navigation nodes corresponding to links in the Quick Launch area of the site."""
         return self.properties.get(
             "QuickLaunch",
-            NavigationNodeCollection(
-                self.context, ResourcePath("QuickLaunch", self.resource_path)
-            ),
+            NavigationNodeCollection(self.context, ResourcePath("QuickLaunch", self.resource_path)),
         )
 
     @property
@@ -33,9 +31,7 @@ class Navigation(Entity):
         """Gets a value that collects navigation nodes corresponding to links in the top navigation bar of the site."""
         return self.properties.get(
             "TopNavigationBar",
-            NavigationNodeCollection(
-                self.context, ResourcePath("TopNavigationBar", self.resource_path)
-            ),
+            NavigationNodeCollection(self.context, ResourcePath("TopNavigationBar", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

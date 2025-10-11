@@ -11,6 +11,4 @@ class SPTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = ClientContext(test_team_site_url).with_client_credentials(
-            test_client_id, test_client_secret
-        )
+        cls.client = ClientContext(test_team_site_url).with_client_credentials(test_client_id, test_client_secret)

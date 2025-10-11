@@ -18,24 +18,18 @@ def run_files_import(target_folder, files_amount=None):
         file_name = fake.file_name(extension="docx")
         target_file = target_folder.files.upload(path, file_name).execute_query()
         print(
-            "({0} of {1}) File '{2}' has been uploaded".format(
-                file_index, files_amount, target_file.server_relative_url
-            )
+            "({0} of {1}) File '{2}' has been uploaded".format(file_index, files_amount, target_file.server_relative_url)
         )
 
 
-def run_folders_import(
-    target_lib, folders_amount, include_files=False, files_amount=None
-):
+def run_folders_import(target_lib, folders_amount, include_files=False, files_amount=None):
     # type: (List, int, bool, int) -> None
     fake = Faker()
     for folder_index in range(0, folders_amount):
         # 1. Create a folder
         folder_name = fake.date()
         target_folder = target_lib.root_folder.add(folder_name).execute_query()
-        print(
-            f"({folder_index} of {folders_amount}) Folder '{target_folder.server_relative_url}' has been created"
-        )
+        print(f"({folder_index} of {folders_amount}) Folder '{target_folder.server_relative_url}' has been created")
 
         if include_files:
             # 2. Upload a file into a folder

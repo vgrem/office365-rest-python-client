@@ -9,6 +9,4 @@ class PlannerChecklistItems(ClientValueCollection):
     """
 
     def __init__(self, initial_values=None):
-        super(PlannerChecklistItems, self).__init__(
-            PlannerChecklistItem, initial_values
-        )
+        super(PlannerChecklistItems, self).__init__(PlannerChecklistItem, initial_values)

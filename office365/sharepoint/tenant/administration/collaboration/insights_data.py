@@ -14,22 +14,18 @@ class CollaborationInsightsData(ClientValue):
         self,
         last_report_date=None,
         collaborative_users=None,
-        collaborative_one_drive_users: ClientValueCollection[
+        collaborative_one_drive_users: ClientValueCollection[CollaborativeOneDriveUser] = ClientValueCollection(
             CollaborativeOneDriveUser
-        ] = ClientValueCollection(CollaborativeOneDriveUser),
+        ),
     ):
         """
         :param str last_report_date:
         :param list[CollaborativeUsers] collaborative_users:
         """
-        self.collaborativeUsers = ClientValueCollection(
-            CollaborativeUsers, collaborative_users
-        )
+        self.collaborativeUsers = ClientValueCollection(CollaborativeUsers, collaborative_users)
         self.lastReportDate = last_report_date
         self.collaborativeOneDriveUsers = collaborative_one_drive_users
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsData"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsData"

@@ -13,9 +13,7 @@ class TestWebPart(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = ClientContext(test_site_url).with_credentials(
-            test_client_credentials
-        )
+        cls.client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         page_url = "/SitePages/Home.aspx"
         cls.file = cls.client.web.get_file_by_server_relative_url(page_url)
         cls.file.checkout().execute_query()
@@ -34,11 +32,7 @@ class TestWebPart(TestCase):
     <HeaderTitle xmlns="http://schemas.microsoft.com/WebPart/v2/TitleBar">Home</HeaderTitle>
 </WebPart>"""
 
-        result = (
-            self.file.get_limited_webpart_manager()
-            .import_web_part(xml_content)
-            .execute_query()
-        )
+        result = self.file.get_limited_webpart_manager().import_web_part(xml_content).execute_query()
         self.assertIsNotNone(result.resource_path)
         self.__class__.target_web_part = result
 
@@ -52,12 +46,7 @@ class TestWebPart(TestCase):
     #   web_part.save_web_part_changes().execute_query()
 
     def test5_list_web_parts(self):
-        web_parts = (
-            self.file.get_limited_webpart_manager()
-            .web_parts.expand(["WebPart"])
-            .get()
-            .execute_query()
-        )
+        web_parts = self.file.get_limited_webpart_manager().web_parts.expand(["WebPart"]).get().execute_query()
         self.assertIsNotNone(web_parts.resource_path)
         self.assertGreater(len(web_parts), 0)
 

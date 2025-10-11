@@ -16,6 +16,4 @@ class TranspilerResponse(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.TranspilerResponse"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.TranspilerResponse"

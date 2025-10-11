@@ -61,9 +61,7 @@ class SPContainerProperties(ClientValue):
         self.CreatedBy = created_by
         self.CreatedOn = created_on
         self.Description = description
-        self.ExcludeBlockDownloadPolicyContainerOwners = (
-            exclude_block_download_policy_container_owners
-        )
+        self.ExcludeBlockDownloadPolicyContainerOwners = exclude_block_download_policy_container_owners
         self.LastArchivedDateTime = last_archived_date_time
         self.LimitedAccessFileType = limited_access_file_type
         self.Managers = managers
@@ -83,9 +81,7 @@ class SPContainerProperties(ClientValue):
         self.SharingDomainRestrictionMode = sharing_domain_restriction_mode
         self.Status = status
         self.StorageUsed = storage_used
-        self.TransferFromPrincipalOwnerIdentifier = (
-            transfer_from_principal_owner_identifier
-        )
+        self.TransferFromPrincipalOwnerIdentifier = transfer_from_principal_owner_identifier
         self.Writers = writers
 
     @property

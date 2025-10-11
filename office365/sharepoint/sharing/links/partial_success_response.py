@@ -7,9 +7,7 @@ class ShareLinkPartialSuccessResponse(ShareLinkResponse):
 
     def __init__(
         self,
-        entity_results: ClientValueCollection[
-            SharingEntityResult
-        ] = ClientValueCollection(SharingEntityResult),
+        entity_results: ClientValueCollection[SharingEntityResult] = ClientValueCollection(SharingEntityResult),
     ):
         super().__init__()
         self.entityResults = entity_results

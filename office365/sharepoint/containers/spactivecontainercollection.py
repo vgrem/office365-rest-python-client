@@ -9,9 +9,9 @@ class SPActiveContainerCollection(ClientValue):
 
     def __init__(
         self,
-        container_collection: ClientValueCollection[
+        container_collection: ClientValueCollection[SPActiveContainerProperties] = ClientValueCollection(
             SPActiveContainerProperties
-        ] = ClientValueCollection(SPActiveContainerProperties),
+        ),
         paging_token: str = None,
     ):
         self.ContainerCollection = container_collection

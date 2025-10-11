@@ -9,9 +9,7 @@ class RetirablePagesQueryResult(ClientValue):
 
     def __init__(
         self,
-        files: ClientValueCollection[RetirablePageMetadata] = ClientValueCollection(
-            RetirablePageMetadata
-        ),
+        files: ClientValueCollection[RetirablePageMetadata] = ClientValueCollection(RetirablePageMetadata),
     ):
         self.Files = files
 

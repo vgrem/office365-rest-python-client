@@ -4,9 +4,7 @@ from office365.sharepoint.entity import Entity
 
 class ResponseMessageCenter(Entity):
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.ResponseMessageCenter"
-        )
+        static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.ResponseMessageCenter")
         super(ResponseMessageCenter, self).__init__(context, static_path)
 
     @property

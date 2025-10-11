@@ -28,9 +28,7 @@ def generate_user_profile():
     return UserProfile(**user_json)
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 for idx in range(0, 1):
     user_profile = generate_user_profile()

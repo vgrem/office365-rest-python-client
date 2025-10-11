@@ -30,9 +30,7 @@ class MetadataNavigationSettings(Entity):
         """
 
         if return_type is None:
-            return_type = ClientResult(
-                context, ConfiguredMetadataNavigationItemCollection()
-            )
+            return_type = ClientResult(context, ConfiguredMetadataNavigationItemCollection())
         payload = {"DecodedUrl": url}
         qry = ServiceOperationQuery(
             MetadataNavigationSettings(context),

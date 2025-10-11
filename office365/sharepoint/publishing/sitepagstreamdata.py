@@ -9,9 +9,7 @@ class SitePagStreamData(ClientValue):
     def __init__(
         self,
         co_auth_state: SitePageCoAuthState = SitePageCoAuthState(),
-        stream_contents: ClientValueCollection[
-            SitePageStreamContent
-        ] = ClientValueCollection(SitePageStreamContent),
+        stream_contents: ClientValueCollection[SitePageStreamContent] = ClientValueCollection(SitePageStreamContent),
     ):
         self.CoAuthState = co_auth_state
         self.StreamContents = stream_contents

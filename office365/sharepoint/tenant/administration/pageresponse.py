@@ -11,9 +11,7 @@ class PageResponse(ClientValue):
         self,
         continuation_token: str = None,
         page_number: int = None,
-        page_result: ClientValueCollection[
-            AuditSearchRequestStatus
-        ] = ClientValueCollection(AuditSearchRequestStatus),
+        page_result: ClientValueCollection[AuditSearchRequestStatus] = ClientValueCollection(AuditSearchRequestStatus),
         page_size: int = None,
         total_count: int = None,
         total_pages: int = None,

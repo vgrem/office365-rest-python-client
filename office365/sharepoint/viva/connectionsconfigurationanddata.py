@@ -11,9 +11,7 @@ class ConnectionsConfigurationAndData(ClientValue):
         self,
         is_configured: bool = None,
         spotlight_configuration: SpotlightConfiguration = SpotlightConfiguration(),
-        spotlight_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(
-            SpotlightNews
-        ),
+        spotlight_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(SpotlightNews),
         title_region: VivaHomeTitleRegion = VivaHomeTitleRegion(),
     ):
         self.IsConfigured = is_configured

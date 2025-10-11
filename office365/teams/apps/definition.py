@@ -12,9 +12,7 @@ class TeamsAppDefinition(Entity):
     @property
     def bot(self):
         """The details of the bot specified in the Teams app manifest."""
-        return self.properties.get(
-            "bot", TeamworkBot(self.context, ResourcePath("bot", self.resource_path))
-        )
+        return self.properties.get("bot", TeamworkBot(self.context, ResourcePath("bot", self.resource_path)))
 
     @property
     def created_by(self):

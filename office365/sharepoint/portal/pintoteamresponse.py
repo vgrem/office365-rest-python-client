@@ -7,12 +7,8 @@ class PinToTeamResponse(ClientValue):
 
     def __init__(
         self,
-        failed_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(
-            M365TabItem
-        ),
-        successful_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(
-            M365TabItem
-        ),
+        failed_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(M365TabItem),
+        successful_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(M365TabItem),
     ):
         self.FailedPinning = failed_pinning
         self.SuccessfulPinning = successful_pinning

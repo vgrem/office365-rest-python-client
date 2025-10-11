@@ -17,7 +17,5 @@ class MeetingTimeSuggestionsResult(ClientValue):
             does include any meeting suggestions.
         """
         super(MeetingTimeSuggestionsResult, self).__init__()
-        self.meetingTimeSuggestions = ClientValueCollection(
-            MeetingTimeSuggestion, meeting_time_suggestions
-        )
+        self.meetingTimeSuggestions = ClientValueCollection(MeetingTimeSuggestion, meeting_time_suggestions)
         self.emptySuggestionsReason = empty_suggestions_reason

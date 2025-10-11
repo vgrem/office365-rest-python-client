@@ -8,9 +8,7 @@ class GptEmbeddingsResponse(ClientValue):
 
     def __init__(
         self,
-        data: ClientValueCollection[GptEmbeddingsResponseData] = ClientValueCollection(
-            GptEmbeddingsResponseData
-        ),
+        data: ClientValueCollection[GptEmbeddingsResponseData] = ClientValueCollection(GptEmbeddingsResponseData),
         usage: GptResponseUsage = GptResponseUsage(),
     ):
         self.Data = data

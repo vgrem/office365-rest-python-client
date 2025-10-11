@@ -16,9 +16,7 @@ class CallCollection(EntityCollection):
         """
         return super(CallCollection, self).add(callbackUri=callback_uri)
 
-    def log_teleconference_device_quality(
-        self, quality: TeleconferenceDeviceQuality = None
-    ):
+    def log_teleconference_device_quality(self, quality: TeleconferenceDeviceQuality = None):
         """
         Log video teleconferencing device quality data.
         The Cloud Video Interop (CVI) bot represents video teleconferencing (VTC) devices and acts as a back-to-back
@@ -32,8 +30,6 @@ class CallCollection(EntityCollection):
 
         :param TeleconferenceDeviceQuality quality : Quality data of VTC media leg.
         """
-        qry = ServiceOperationQuery(
-            self, "logTeleconferenceDeviceQuality", None, quality
-        )
+        qry = ServiceOperationQuery(self, "logTeleconferenceDeviceQuality", None, quality)
         self.context.add_query(qry)
         return self

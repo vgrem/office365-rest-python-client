@@ -31,34 +31,24 @@ class ODataReader(ABC):
         with open(self._metadata_path, "r", encoding="utf8") as in_file:
             metadata_content = in_file.read()
 
-        formatted_metadata_content = xml.dom.minidom.parseString(
-            metadata_content
-        ).toprettyxml()
+        formatted_metadata_content = xml.dom.minidom.parseString(metadata_content).toprettyxml()
 
         with open(self._metadata_path, "w", encoding="utf8") as out_file:
             out_file.write(formatted_metadata_content)
 
     def process_schema_node(self, model: ODataModel) -> None:
         root = ET.parse(self._metadata_path).getroot()
-        schema_nodes = root.findall(
-            "edmx:DataServices/xmlns:Schema", self.xml_namespaces
-        )
+        schema_nodes = root.findall("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
 
         base_types = ["EnumType", "ComplexType"]
 
         for base_type in base_types:
             for schema_node in schema_nodes:
-                for type_node in schema_node.findall(
-                    f"xmlns:{base_type}", self.xml_namespaces
-                ):
-                    type_schema = self.process_type_node(
-                        type_node, schema_node, base_type
-                    )
+                for type_node in schema_node.findall(f"xmlns:{base_type}", self.xml_namespaces):
+                    type_schema = self.process_type_node(type_node, schema_node, base_type)
                     model.add_type(type_schema)
 
-    def process_type_node(
-        self, type_node: Element, schema_node: Element, base_type: str
-    ) -> TypeInformation:
+    def process_type_node(self, type_node: Element, schema_node: Element, base_type: str) -> TypeInformation:
         type_schema = TypeInformation()
         type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_node.get('Name'))}"
         type_schema.BaseTypeFullName = base_type

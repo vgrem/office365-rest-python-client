@@ -12,9 +12,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 # items = client.me.drive.root.get_files(False).execute_query()
 site = client.sites.get_by_url(test_team_site_url)
 items = site.lists["Documents"].drive.root.get_files(True, 1000).execute_query()

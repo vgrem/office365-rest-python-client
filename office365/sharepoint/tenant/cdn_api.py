@@ -8,9 +8,7 @@ from office365.sharepoint.tenant.cdn_url import TenantCdnUrl
 
 class TenantCdnApi(Entity):
     def __init__(self, context):
-        super().__init__(
-            context, StaticPath("Microsoft.SharePoint.TenantCdn.TenantCdnApi")
-        )
+        super().__init__(context, StaticPath("Microsoft.SharePoint.TenantCdn.TenantCdnApi"))
 
     def get_cdn_urls(self, items=None):
         """
@@ -20,9 +18,7 @@ class TenantCdnApi(Entity):
             "items": items,
         }
         return_type = ClientResult(self.context, ClientValueCollection(TenantCdnUrl))
-        qry = ServiceOperationQuery(
-            self, "GetCdnUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCdnUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

@@ -7,9 +7,7 @@ class ActionSet(ClientValue):
 
     def __init__(
         self,
-        actions: ClientValueCollection[AdaptiveCardAction] = ClientValueCollection(
-            AdaptiveCardAction
-        ),
+        actions: ClientValueCollection[AdaptiveCardAction] = ClientValueCollection(AdaptiveCardAction),
         horizontal_alignment: str = None,
     ):
         self.actions = actions

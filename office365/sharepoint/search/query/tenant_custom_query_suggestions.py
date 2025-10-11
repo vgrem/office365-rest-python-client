@@ -7,12 +7,8 @@ class TenantCustomQuerySuggestions(ClientValue):
 
     def __init__(
         self,
-        always_suggest: ClientValueCollection[
-            CustomQuerySuggestions
-        ] = ClientValueCollection(CustomQuerySuggestions),
-        never_suggest: ClientValueCollection[
-            CustomQuerySuggestions
-        ] = ClientValueCollection(CustomQuerySuggestions),
+        always_suggest: ClientValueCollection[CustomQuerySuggestions] = ClientValueCollection(CustomQuerySuggestions),
+        never_suggest: ClientValueCollection[CustomQuerySuggestions] = ClientValueCollection(CustomQuerySuggestions),
     ):
         self.AlwaysSuggest = always_suggest
         self.NeverSuggest = never_suggest

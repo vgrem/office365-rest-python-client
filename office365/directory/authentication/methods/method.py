@@ -35,8 +35,6 @@ class AuthenticationMethod(Entity):
             "newPassword": new_password,
             "requireChangeOnNextSignIn": require_change_on_next_signin,
         }
-        qry = ServiceOperationQuery(
-            self, "resetPassword", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "resetPassword", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

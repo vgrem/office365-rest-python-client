@@ -14,9 +14,9 @@ class SitePageDependencyMetadata(ClientValue):
         list_id=None,
         related_web_parts=None,
         site_id=None,
-        related_web_parts_details: ClientValueCollection[
+        related_web_parts_details: ClientValueCollection[WebPartDetailsWrapper] = ClientValueCollection(
             WebPartDetailsWrapper
-        ] = ClientValueCollection(WebPartDetailsWrapper),
+        ),
         type_: str = None,
         unique_id: str = None,
         web_id: str = None,

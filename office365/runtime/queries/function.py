@@ -25,9 +25,7 @@ class FunctionQuery(ClientQuery[T]):
             return_type: The expected return type
         """
         super().__init__(binding_type.context, binding_type, None, None, return_type)
-        self._path = ServiceOperationPath(
-            method_name, method_params, binding_type.resource_path
-        )
+        self._path = ServiceOperationPath(method_name, method_params, binding_type.resource_path)
 
     def __repr__(self) -> str:
         return f"FunctionQuery(name={self.path.name})"

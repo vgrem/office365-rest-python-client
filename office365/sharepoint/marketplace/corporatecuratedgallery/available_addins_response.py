@@ -13,9 +13,9 @@ class SPAvailableAddinsResponse(ClientValue):
     def __init__(
         self,
         addins=None,
-        errors_with_server_relative_url: ClientValueCollection[
+        errors_with_server_relative_url: ClientValueCollection[SPErrorWithServerRelativeUrl] = ClientValueCollection(
             SPErrorWithServerRelativeUrl
-        ] = ClientValueCollection(SPErrorWithServerRelativeUrl),
+        ),
     ):
         self.addins = ClientValueCollection(SPAddinInstanceInfo, addins)
         self.errorsWithServerRelativeUrl = errors_with_server_relative_url

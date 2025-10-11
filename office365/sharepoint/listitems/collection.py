@@ -15,9 +15,7 @@ class ListItemCollection(EntityCollection[ListItem]):
 
         :param int item_id: The list item identifier.
         """
-        return ListItem(
-            self.context, ServiceOperationPath("GetById", [item_id], self.resource_path)
-        )
+        return ListItem(self.context, ServiceOperationPath("GetById", [item_id], self.resource_path))
 
     def get_by_string_id(self, s_id: str) -> ListItem:
         """

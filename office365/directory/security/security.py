@@ -34,9 +34,7 @@ class Security(Entity):
         """
         return_type = ClientResult(self.context, HuntingQueryResults())
         payload = {"Query": query}
-        qry = ServiceOperationQuery(
-            self, "runHuntingQuery", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "runHuntingQuery", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -52,26 +50,20 @@ class Security(Entity):
         """A collection of alerts in Microsoft 365 Defender."""
         return self.properties.get(
             "alerts_v2",
-            EntityCollection(
-                self.context, Alert, ResourcePath("alerts_v2", self.resource_path)
-            ),
+            EntityCollection(self.context, Alert, ResourcePath("alerts_v2", self.resource_path)),
         )
 
     @property
     def cases(self) -> CasesRoot:
         """"""
-        return self.properties.get(
-            "cases", CasesRoot(self.context, ResourcePath("cases", self.resource_path))
-        )
+        return self.properties.get("cases", CasesRoot(self.context, ResourcePath("cases", self.resource_path)))
 
     @property
     def attack_simulation(self) -> AttackSimulationRoot:
         """"""
         return self.properties.get(
             "attackSimulation",
-            AttackSimulationRoot(
-                self.context, ResourcePath("attackSimulation", self.resource_path)
-            ),
+            AttackSimulationRoot(self.context, ResourcePath("attackSimulation", self.resource_path)),
         )
 
     @property
@@ -80,9 +72,7 @@ class Security(Entity):
         an attack in a tenant"""
         return self.properties.get(
             "incidents",
-            EntityCollection(
-                self.context, Incident, ResourcePath("incidents", self.resource_path)
-            ),
+            EntityCollection(self.context, Incident, ResourcePath("incidents", self.resource_path)),
         )
 
     @property
@@ -132,9 +122,7 @@ class Security(Entity):
         """"""
         return self.properties.get(
             "triggerTypes",
-            TriggerTypesRoot(
-                self.context, ResourcePath("triggerTypes", self.resource_path)
-            ),
+            TriggerTypesRoot(self.context, ResourcePath("triggerTypes", self.resource_path)),
         )
 
     @property
@@ -142,9 +130,7 @@ class Security(Entity):
         """"""
         return self.properties.get(
             "threatIntelligence",
-            ThreatIntelligence(
-                self.context, ResourcePath("threatIntelligence", self.resource_path)
-            ),
+            ThreatIntelligence(self.context, ResourcePath("threatIntelligence", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

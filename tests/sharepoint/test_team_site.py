@@ -30,16 +30,12 @@ class TestTeamSite(TestCase):
 
     def test2_create_site(self):
         site_name = f"TeamSite{uuid.uuid4().hex}"
-        site = self.client.create_team_site(
-            site_name, "Team Site", True
-        ).execute_query()
+        site = self.client.create_team_site(site_name, "Team Site", True).execute_query()
         self.assertIsNotNone(site.url)
         self.__class__.target_site = site
 
     def test3_get_site_status(self):
-        result = self.client.group_site_manager.get_status(
-            self.target_site
-        ).execute_query()
+        result = self.client.group_site_manager.get_status(self.target_site).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus == SiteStatus.Ready)
 
@@ -57,13 +53,9 @@ class TestTeamSite(TestCase):
         self.__class__.target_site.delete_object().execute_query()
 
     def test7_get_current_user_joined_teams(self):
-        result = (
-            self.client.group_site_manager.get_current_user_joined_teams().execute_query()
-        )
+        result = self.client.group_site_manager.get_current_user_joined_teams().execute_query()
         self.assertIsNotNone(result.value)
 
     def test8_get_group_creation_context(self):
-        result = (
-            self.client.group_site_manager.get_group_creation_context().execute_query()
-        )
+        result = self.client.group_site_manager.get_group_creation_context().execute_query()
         self.assertIsNotNone(result.value)

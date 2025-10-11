@@ -38,16 +38,12 @@ class ListExporter:
         progress = ExportListProgress()
 
         def _append_file(name: str, data):
-            with zipfile.ZipFile(
-                destination_file.name, "a", zipfile.ZIP_DEFLATED
-            ) as zf:
+            with zipfile.ZipFile(destination_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr(name, data)
 
         def _download_content(list_item: ListItem) -> None:
             def _after_downloaded(result: ClientResult[bytes]) -> None:
-                item_path = list_item.properties["FileRef"].replace(
-                    source_list.root_folder.server_relative_url, ""
-                )
+                item_path = list_item.properties["FileRef"].replace(source_list.root_folder.server_relative_url, "")
                 _append_file(item_path, result.value)
 
             list_item.file.get_content().after_execute(_after_downloaded)
@@ -86,8 +82,6 @@ class ListExporter:
                 .paged(page_loaded=_export_items)
             )
 
-        source_list.ensure_properties(
-            ["SchemaXml", "RootFolder", "ItemCount"], _get_items
-        )
+        source_list.ensure_properties(["SchemaXml", "RootFolder", "ItemCount"], _get_items)
 
         return source_list

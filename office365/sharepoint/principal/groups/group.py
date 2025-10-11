@@ -45,9 +45,7 @@ class Group(Principal):
         def _expand_to_principals():
             from office365.sharepoint.utilities.utility import Utility
 
-            Utility.expand_groups_to_principals(
-                self.context, [self.login_name], max_count, return_type
-            )
+            Utility.expand_groups_to_principals(self.context, [self.login_name], max_count, return_type)
 
         self.ensure_property("LoginName", _expand_to_principals)
         return return_type
@@ -59,9 +57,7 @@ class Group(Principal):
         """
 
         def _set_user_as_owner(owner_id: int):
-            qry = ServiceOperationQuery(
-                self, "SetUserAsOwner", None, {"ownerId": owner_id}
-            )
+            qry = ServiceOperationQuery(self, "SetUserAsOwner", None, {"ownerId": owner_id})
             self.context.add_query(qry)
 
         if isinstance(user, Principal):
@@ -128,9 +124,7 @@ class Group(Principal):
     @property
     def owner(self) -> Principal:
         """Specifies the owner of the group."""
-        return self.properties.get(
-            "Owner", Principal(self.context, ResourcePath("Owner", self.resource_path))
-        )
+        return self.properties.get("Owner", Principal(self.context, ResourcePath("Owner", self.resource_path)))
 
     @property
     def users(self):

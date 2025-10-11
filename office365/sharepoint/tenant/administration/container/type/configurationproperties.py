@@ -34,17 +34,13 @@ class SPContainerTypeConfigurationProperties(ClientValue):
         self.IsMoveDisabled = is_move_disabled
         self.IsRenameDisabled = is_rename_disabled
         self.IsSharingRestricted = is_sharing_restricted
-        self.OverrideTenantWhoCanShareAnonymousAllowList = (
-            override_tenant_who_can_share_anonymous_allow_list
-        )
+        self.OverrideTenantWhoCanShareAnonymousAllowList = override_tenant_who_can_share_anonymous_allow_list
         self.OverrideTenantWhoCanShareAuthenticatedGuestAllowList = (
             override_tenant_who_can_share_authenticated_guest_allow_list
         )
         self.OwningAppId = owning_app_id
         self.WhoCanShareAnonymousAllowList = who_can_share_anonymous_allow_list
-        self.WhoCanShareAuthenticatedGuestAllowList = (
-            who_can_share_authenticated_guest_allow_list
-        )
+        self.WhoCanShareAuthenticatedGuestAllowList = who_can_share_authenticated_guest_allow_list
 
     @property
     def entity_type_name(self):

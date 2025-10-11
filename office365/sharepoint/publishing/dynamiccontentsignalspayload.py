@@ -8,15 +8,9 @@ class DynamicContentSignalsPayload(ClientValue):
 
     def __init__(
         self,
-        additional_data: ClientValueCollection[
-            DynamicFaqSingalsData
-        ] = ClientValueCollection(DynamicFaqSingalsData),
-        aggregated_data: ClientValueCollection[
-            DynamicFaqSingalsData
-        ] = ClientValueCollection(DynamicFaqSingalsData),
-        faq_signals: ClientValueCollection[FaqSignalData] = ClientValueCollection(
-            FaqSignalData
-        ),
+        additional_data: ClientValueCollection[DynamicFaqSingalsData] = ClientValueCollection(DynamicFaqSingalsData),
+        aggregated_data: ClientValueCollection[DynamicFaqSingalsData] = ClientValueCollection(DynamicFaqSingalsData),
+        faq_signals: ClientValueCollection[FaqSignalData] = ClientValueCollection(FaqSignalData),
         id_: str = None,
     ):
         self.AdditionalData = additional_data

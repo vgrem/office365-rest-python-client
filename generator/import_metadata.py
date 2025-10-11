@@ -13,9 +13,7 @@ from tests import (
 
 
 def export_to_file(path: str, content: bytes) -> None:
-    metadata_xml = minidom.parseString(content.decode("utf-8")).toprettyxml(
-        indent="   "
-    )
+    metadata_xml = minidom.parseString(content.decode("utf-8")).toprettyxml(indent="   ")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(metadata_xml)
 
@@ -45,8 +43,6 @@ if args.endpoint == "sharepoint":
     export_to_file(args.path, result.value)
 elif args.endpoint == "graph":
     print("Importing Microsoft Graph model metadata...")
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
     result = client.get_metadata().execute_query()
     export_to_file(args.path, result.value)

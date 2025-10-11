@@ -19,9 +19,7 @@ class FollowedContent(Entity):
         """
         return_type = ClientResult(self.context, FollowResult())
         payload = {"item": item}
-        qry = ServiceOperationQuery(
-            self, "FollowItem", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "FollowItem", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -34,9 +32,7 @@ class FollowedContent(Entity):
         """
         return_type = ClientResult(self.context, int())
         payload = {"url": url}
-        qry = ServiceOperationQuery(
-            self, "GetFollowedStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFollowedStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

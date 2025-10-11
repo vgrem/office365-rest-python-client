@@ -19,16 +19,12 @@ class TestExtensions(GraphTestCase):
         cls.target_app.delete_object(True).execute_query()
 
     def test1_create_extension(self):
-        new_extension = self.__class__.target_app.extension_properties.add(
-            name="extensionName"
-        ).execute_query()
+        new_extension = self.__class__.target_app.extension_properties.add(name="extensionName").execute_query()
         self.assertIsNotNone(new_extension.resource_path)
         self.__class__.target_extension = new_extension
 
     def test2_list_extensions(self):
-        result = self.client.directory_objects.get_available_extension_properties(
-            False
-        ).execute_query()
+        result = self.client.directory_objects.get_available_extension_properties(False).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test3_delete_extension(self):

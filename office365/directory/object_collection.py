@@ -14,9 +14,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     """DirectoryObject's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(DirectoryObjectCollection, self).__init__(
-            context, DirectoryObject, resource_path
-        )
+        super(DirectoryObjectCollection, self).__init__(context, DirectoryObject, resource_path)
 
     def get_by_ids(self, ids, types=None):
         """
@@ -59,9 +57,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             self.context.directory_objects.resource_path,
         )
         payload = {"isSyncedFromOnPremises": is_synced_from_on_premises}
-        qry = ServiceOperationQuery(
-            self, "getAvailableExtensionProperties", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getAvailableExtensionProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

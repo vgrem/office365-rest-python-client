@@ -9,9 +9,7 @@ class SyntexPowerAppsEnvironmentsContext(ClientValue):
     """ """
 
     def __init__(self, environments=None, timer_job_sync_disabled=None):
-        self.Environments = ClientValueCollection(
-            PowerAppsEnvironmentContext, environments
-        )
+        self.Environments = ClientValueCollection(PowerAppsEnvironmentContext, environments)
         self.TimerJobSyncDisabled = timer_job_sync_disabled
 
     @property

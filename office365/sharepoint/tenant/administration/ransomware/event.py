@@ -39,15 +39,11 @@ class TenantAdminRansomwareEvent(ClientValue):
         self.severity = severity
         self.status = status
         self.tagId = tag_id
-        self.totalHighVolumeComponentActivityDetectionCount = (
-            total_high_volume_component_activity_detection_count
-        )
+        self.totalHighVolumeComponentActivityDetectionCount = total_high_volume_component_activity_detection_count
         self.updatedBy = updated_by
 
     " "
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRansomwareEvent"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRansomwareEvent"

@@ -22,13 +22,9 @@ class TestPermissions(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestPermissions, cls).setUpClass()
-        client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
+        client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
         folder_name = "New_" + uuid.uuid4().hex
-        cls.target_drive_item = client.sites.root.drive.root.create_folder(
-            folder_name
-        ).execute_query()
+        cls.target_drive_item = client.sites.root.drive.root.create_folder(folder_name).execute_query()
         cls.client = client
 
     @classmethod
@@ -38,40 +34,28 @@ class TestPermissions(TestCase):
 
     @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_anonymous_link(self):
-        permission = self.__class__.target_drive_item.create_link(
-            "view", "anonymous"
-        ).execute_query()
+        permission = self.__class__.target_drive_item.create_link("view", "anonymous").execute_query()
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "read")
 
     @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test2_create_company_link(self):
-        permission = self.__class__.target_drive_item.create_link(
-            "edit", "organization"
-        ).execute_query()
+        permission = self.__class__.target_drive_item.create_link("edit", "organization").execute_query()
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "write")
 
-    @requires_app_permission(
-        "Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"
-    )
+    @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test4_driveitem_list_permissions(self):
         permissions = self.__class__.target_drive_item.permissions.get().execute_query()
         self.assertIsNotNone(permissions.resource_path)
         self.assertGreater(len(permissions), 0)
 
-    @requires_app_permission(
-        "Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"
-    )
+    @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test5_driveitem_get_permission(self):
-        result = (
-            self.__class__.target_drive_item.permissions.get().top(1).execute_query()
-        )
+        result = self.__class__.target_drive_item.permissions.get().top(1).execute_query()
         self.assertEqual(len(result), 1)
         perm_id = result[0].id
-        perm = (
-            self.__class__.target_drive_item.permissions[perm_id].get().execute_query()
-        )
+        perm = self.__class__.target_drive_item.permissions[perm_id].get().execute_query()
         self.assertIsNotNone(perm.resource_path)
         self.__class__.target_permission = result[0]
 
@@ -97,9 +81,7 @@ class TestPermissions(TestCase):
 
     def test9_create_site_permission(self):
         app = self.client.applications.get_by_app_id(test_client_credentials.client_id)
-        new_site_permission = self.client.sites.root.permissions.add(
-            ["write"], app
-        ).execute_query()
+        new_site_permission = self.client.sites.root.permissions.add(["write"], app).execute_query()
         self.assertIsNotNone(new_site_permission.resource_path)
         self.target_permission = new_site_permission
 

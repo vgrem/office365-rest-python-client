@@ -75,9 +75,7 @@ class SharingLinkAbilities(ClientValue):
         self.passwordProtected = password_protected
         self.submitOnlylinkExpiration = submit_onlylink_expiration
         self.supportsRestrictedView = supports_restricted_view
-        self.supportsRestrictToExistingRelationships = (
-            supports_restrict_to_existing_relationships
-        )
+        self.supportsRestrictToExistingRelationships = supports_restrict_to_existing_relationships
         self.trackLinkUsers = track_link_users
 
     @property

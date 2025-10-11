@@ -7,9 +7,7 @@ class Refiner(ClientValue):
 
     def __init__(
         self,
-        entries: ClientValueCollection[RefinerEntry] = ClientValueCollection(
-            RefinerEntry
-        ),
+        entries: ClientValueCollection[RefinerEntry] = ClientValueCollection(RefinerEntry),
         name: str = None,
     ):
         """A refiner contains a list with entries, of the RefinerEntry types"""

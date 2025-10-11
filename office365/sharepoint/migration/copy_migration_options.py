@@ -25,9 +25,7 @@ class CopyMigrationOptions(ClientValue):
         same_web_copy_move_optimization: bool = None,
     ):
         self.AllowSchemaMismatch = allow_schema_mismatch
-        self.AllowSmallerVersionLimitOnDestination = (
-            allow_smaller_version_limit_on_destination
-        )
+        self.AllowSmallerVersionLimitOnDestination = allow_smaller_version_limit_on_destination
         self.BypassSharedLock = bypass_shared_lock
         self.ClientEtags = client_etags
         self.CustomizedItemName = customized_item_name

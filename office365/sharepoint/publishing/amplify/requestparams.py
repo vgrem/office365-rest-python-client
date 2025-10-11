@@ -9,9 +9,7 @@ class AmplifyRequestParams(ClientValue):
 
     def __init__(
         self,
-        endpoints: ClientValueCollection[
-            AmplifyRequestEndpoint
-        ] = ClientValueCollection(AmplifyRequestEndpoint),
+        endpoints: ClientValueCollection[AmplifyRequestEndpoint] = ClientValueCollection(AmplifyRequestEndpoint),
         use_new_publishing_stack: bool = None,
     ):
         self.Endpoints = endpoints

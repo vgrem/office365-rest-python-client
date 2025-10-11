@@ -12,9 +12,7 @@ class TargetApplication(Entity):
     """
 
     @staticmethod
-    def create(
-        context: ClientContext, application_id: str, friendly_name: str
-    ) -> "TargetApplication":
+    def create(context: ClientContext, application_id: str, friendly_name: str) -> "TargetApplication":
         """
         Creates a target application
 
@@ -24,9 +22,7 @@ class TargetApplication(Entity):
         """
         return_type = TargetApplication(context)
         payload = {"applicationId": application_id, "friendlyName": friendly_name}
-        qry = ServiceOperationQuery(
-            return_type, "", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 

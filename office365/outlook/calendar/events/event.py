@@ -328,9 +328,7 @@ class Event(OutlookItem):
         """The collection of fileAttachment and itemAttachment attachments for the event."""
         return self.properties.get(
             "attachments",
-            AttachmentCollection(
-                self.context, ResourcePath("attachments", self.resource_path)
-            ),
+            AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path)),
         )
 
     @property
@@ -338,9 +336,7 @@ class Event(OutlookItem):
         """The collection of open extensions defined for the event. Nullable."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
@@ -352,9 +348,7 @@ class Event(OutlookItem):
 
         return self.properties.get(
             "instances",
-            EventCollection(
-                self.context, ResourcePath("instances", self.resource_path)
-            ),
+            EventCollection(self.context, ResourcePath("instances", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

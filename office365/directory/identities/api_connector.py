@@ -28,9 +28,7 @@ class IdentityApiConnector(Entity):
         """
 
         payload = {"pkcs12Value": pkcs12_value, "password": password}
-        qry = ServiceOperationQuery(
-            self, "uploadClientCertificate", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "uploadClientCertificate", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
@@ -38,6 +36,4 @@ class IdentityApiConnector(Entity):
     def authentication_configuration(self) -> ApiAuthenticationConfigurationBase:
         """The object which describes the authentication configuration details for calling the API.
         Basic and PKCS 12 client certificate are supported."""
-        return self.properties.get(
-            "authenticationConfiguration", ApiAuthenticationConfigurationBase()
-        )
+        return self.properties.get("authenticationConfiguration", ApiAuthenticationConfigurationBase())

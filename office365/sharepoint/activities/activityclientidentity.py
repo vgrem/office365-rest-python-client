@@ -3,9 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class ActivityClientIdentity(ClientValue):
 
-    def __init__(
-        self, email: str = None, name: str = None, id_: str = None, provider: str = None
-    ):
+    def __init__(self, email: str = None, name: str = None, id_: str = None, provider: str = None):
         self.email = email
         self.name = name
         self.id = id_

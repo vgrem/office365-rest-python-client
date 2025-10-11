@@ -10,9 +10,7 @@ class MentionFacet(ClientValue):
     def __init__(
         self,
         comment_content_id: str = None,
-        mentionees: ClientValueCollection[
-            ActivityClientIdentity
-        ] = ClientValueCollection(ActivityClientIdentity),
+        mentionees: ClientValueCollection[ActivityClientIdentity] = ClientValueCollection(ActivityClientIdentity),
     ):
         self.commentContentId = comment_content_id
         self.mentionees = mentionees

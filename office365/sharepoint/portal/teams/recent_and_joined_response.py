@@ -10,9 +10,7 @@ class RecentAndJoinedTeamsResponse(ClientValue):
         joined_teams: str = None,
         joined_teams_error: int = None,
         joined_teams_error_code: int = None,
-        pinned_items: ClientValueCollection[
-            FavoriteListHomeItem
-        ] = ClientValueCollection(FavoriteListHomeItem),
+        pinned_items: ClientValueCollection[FavoriteListHomeItem] = ClientValueCollection(FavoriteListHomeItem),
         pinned_items_error: str = None,
         pinned_items_error_code: int = None,
         quick_access_items: str = None,

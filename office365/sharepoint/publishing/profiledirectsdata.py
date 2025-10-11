@@ -7,9 +7,7 @@ class ProfileDirectsData(ClientValue):
 
     def __init__(
         self,
-        direct_reports: ClientValueCollection[
-            ProfileCoreProperties
-        ] = ClientValueCollection(ProfileCoreProperties),
+        direct_reports: ClientValueCollection[ProfileCoreProperties] = ClientValueCollection(ProfileCoreProperties),
     ):
         self.DirectReports = direct_reports
 

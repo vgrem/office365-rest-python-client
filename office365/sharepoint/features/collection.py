@@ -33,11 +33,7 @@ class FeatureCollection(EntityCollection[Feature]):
 
         def _create_query():
             payload = {
-                "featureId": (
-                    feature_id.value
-                    if isinstance(feature_id, KnownFeaturesList)
-                    else feature_id
-                ),
+                "featureId": (feature_id.value if isinstance(feature_id, KnownFeaturesList) else feature_id),
                 "force": force,
                 "featdefScope": featdef_scope,
             }

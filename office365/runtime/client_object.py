@@ -31,9 +31,7 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[
-    bool, int, float, str, bytes, Enum, Dict[str, Any], List[Any], ClientValue
-]
+PropertyT = Union[bool, int, float, str, bytes, Enum, Dict[str, Any], List[Any], ClientValue]
 
 
 class ClientObject:
@@ -72,14 +70,10 @@ class ClientObject:
             ValueError: If no parent collection exists
         """
         if self._parent_collection is None:
-            raise ValueError(
-                "Cannot add to parent collection: no parent collection exists"
-            )
+            raise ValueError("Cannot add to parent collection: no parent collection exists")
 
         if self._resource_path is None:
-            self._resource_path = ResourcePath(
-                None, self._parent_collection.resource_path
-            )
+            self._resource_path = ResourcePath(None, self._parent_collection.resource_path)
         self._parent_collection.add_child(self)
         return self
 
@@ -94,9 +88,7 @@ class ClientObject:
             ValueError: If no parent collection exists
         """
         if self._parent_collection is None:
-            raise ValueError(
-                "Cannot remove from parent collection: no parent collection exists"
-            )
+            raise ValueError("Cannot remove from parent collection: no parent collection exists")
         self._parent_collection.remove_child(self)
         return self
 
@@ -107,11 +99,7 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self._properties = {
-            k: v
-            for k, v in self._properties.items()
-            if k not in self._properties_to_persist
-        }
+        self._properties = {k: v for k, v in self._properties.items() if k not in self._properties_to_persist}
         self._properties_to_persist = []
         self._query_options = QueryOptions()
         return self
@@ -253,9 +241,7 @@ class ClientObject:
             default_value = getattr(self, normalized_name, None)
         return self._properties.get(name, default_value)
 
-    def set_property(
-        self, name: Union[str, int], value: Any, persist_changes: bool = True
-    ) -> Self:
+    def set_property(self, name: Union[str, int], value: Any, persist_changes: bool = True) -> Self:
         """
         Sets the value of a property.
 
@@ -273,16 +259,10 @@ class ClientObject:
         typed_value = self.get_property(name)
         if isinstance(typed_value, (ClientObject, ClientValue)):
             if isinstance(value, list):
-                [
-                    typed_value.set_property(i, v, persist_changes)
-                    for i, v in enumerate(value)
-                ]
+                [typed_value.set_property(i, v, persist_changes) for i, v in enumerate(value)]
                 self._properties[name] = typed_value
             elif isinstance(value, dict):
-                [
-                    typed_value.set_property(k, v, persist_changes)
-                    for k, v in value.items()
-                ]
+                [typed_value.set_property(k, v, persist_changes) for k, v in value.items()]
                 self._properties[name] = typed_value
             else:
                 self._properties[name] = value
@@ -295,9 +275,7 @@ class ClientObject:
                 self._properties[name] = value
         return self
 
-    def ensure_property(
-        self, name: str, action: Callable[..., None], *args: Any, **kwargs: Any
-    ) -> Self:
+    def ensure_property(self, name: str, action: Callable[..., None], *args: Any, **kwargs: Any) -> Self:
         """
         Ensures a property is loaded before executing an action.
 
@@ -312,9 +290,7 @@ class ClientObject:
         """
         return self.ensure_properties([name], action, *args, **kwargs)
 
-    def ensure_properties(
-        self, names: List[str], action: Callable[..., None], *args: Any, **kwargs: Any
-    ) -> Self:
+    def ensure_properties(self, names: List[str], action: Callable[..., None], *args: Any, **kwargs: Any) -> Self:
         """
         Ensures multiple properties are loaded before executing an action.
 
@@ -415,11 +391,7 @@ class ClientObject:
 
     @property
     def persistable_properties(self):
-        return {
-            k: self.get_property(k)
-            for k in self._properties_to_persist
-            if k in self._properties
-        }
+        return {k: self.get_property(k) for k in self._properties_to_persist if k in self._properties}
 
     @property
     def parent_collection(self) -> Optional[ClientObjectCollection]:
@@ -446,14 +418,9 @@ class ClientObject:
             include_control_info = False
         else:
             ser_prop_names = [n for n in self._properties_to_persist]
-            include_control_info = (
-                self.entity_type_name is not None
-                and json_format.include_control_information
-            )
+            include_control_info = self.entity_type_name is not None and json_format.include_control_information
 
-        json = {
-            k: self.get_property(k) for k in self._properties if k in ser_prop_names
-        }
+        json = {k: self.get_property(k) for k in self._properties if k in ser_prop_names}
         for k, v in json.items():
             if isinstance(v, (ClientObject, ClientValue)):
                 json[k] = v.to_json(json_format)

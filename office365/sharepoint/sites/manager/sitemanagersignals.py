@@ -4,9 +4,7 @@ from office365.sharepoint.sites.manager.smaretirepagesignal import SMARetirePage
 
 class SiteManagerSignals(ClientValue):
 
-    def __init__(
-        self, retire_page_signals: SMARetirePageSignal = SMARetirePageSignal()
-    ):
+    def __init__(self, retire_page_signals: SMARetirePageSignal = SMARetirePageSignal()):
         self.RetirePageSignals = retire_page_signals
 
     @property

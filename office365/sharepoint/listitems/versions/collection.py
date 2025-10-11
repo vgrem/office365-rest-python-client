@@ -18,25 +18,15 @@ class ListItemVersionCollection(EntityCollection[ListItemVersion]):
         Gets an hosted app based on the Id.
         :param int id_:  A 32-bit integer that specifies the ID of the version to return.
         """
-        return ListItemVersion(
-            self.context, ServiceOperationPath("GetById", [id_], self.resource_path)
-        )
+        return ListItemVersion(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
-    def get_versions(
-        self, row_limit: int = None, sort_descending: bool = None
-    ) -> "ListItemVersionCollection":
+    def get_versions(self, row_limit: int = None, sort_descending: bool = None) -> "ListItemVersionCollection":
         """
         :param int row_limit: The number of return results
         :param bool sort_descending:
         """
         return_type = ListItemVersionCollection(self.context)
-        payload = {
-            "getVersionsParams": GetListItemVersionsParameters(
-                row_limit, sort_descending
-            )
-        }
-        qry = ServiceOperationQuery(
-            self, "GetVersions", None, payload, None, return_type
-        )
+        payload = {"getVersionsParams": GetListItemVersionsParameters(row_limit, sort_descending)}
+        qry = ServiceOperationQuery(self, "GetVersions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

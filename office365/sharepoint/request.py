@@ -62,9 +62,7 @@ class SharePointRequest(ODataRequest):
         request_url = f"{self.service_root_url}/{path}"
         return self.execute_request_direct(RequestOptions(request_url))
 
-    def with_credentials(
-        self, credentials: Union[UserCredential, ClientCredential]
-    ) -> Self:
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
         Initialize authentication with user or client credentials
 
@@ -107,9 +105,7 @@ class SharePointRequest(ODataRequest):
         )
         return self
 
-    def with_device_flow(
-        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
-    ) -> Self:
+    def with_device_flow(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """
         Authenticate using device flow
 
@@ -124,9 +120,7 @@ class SharePointRequest(ODataRequest):
         self._auth_context.with_device_flow(tenant, client_id, scopes)
         return self
 
-    def with_interactive(
-        self, tenant: str, client_id: str, scopes: Optional[List[str]] = None
-    ) -> Self:
+    def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """
         Authenticate interactively via browser
 

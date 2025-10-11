@@ -11,9 +11,7 @@ class SPO3rdPartyAADPermissionGrant(Entity):
         return "Microsoft.Online.SharePoint.TenantAdministration.Internal.SPO3rdPartyAADPermissionGrant"
 
 
-class SPO3rdPartyAADPermissionGrantCollection(
-    EntityCollection[SPO3rdPartyAADPermissionGrant]
-):
+class SPO3rdPartyAADPermissionGrantCollection(EntityCollection[SPO3rdPartyAADPermissionGrant]):
 
     def __init__(self, context, resource_path=None):
         super(SPO3rdPartyAADPermissionGrantCollection, self).__init__(

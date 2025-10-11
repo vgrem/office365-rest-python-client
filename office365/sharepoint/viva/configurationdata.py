@@ -21,9 +21,7 @@ class ConfigurationData(ClientValue):
         self.bridge_absolute_path = bridge_absolute_path
         self.is_customized_theme_enabled = is_customized_theme_enabled
         self.is_personalization_enabled = is_personalization_enabled
-        self.is_viva_home_feed_replace_flight_enabled = (
-            is_viva_home_feed_replace_flight_enabled
-        )
+        self.is_viva_home_feed_replace_flight_enabled = is_viva_home_feed_replace_flight_enabled
         self.is_viva_home_opted_out = is_viva_home_opted_out
         self.nav_config = nav_config
         self.site_id = site_id

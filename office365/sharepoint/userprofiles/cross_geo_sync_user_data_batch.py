@@ -11,9 +11,7 @@ class CrossGeoSyncUserDataBatch(ClientValue):
         self,
         last_event_id: int = None,
         last_record_id: int = None,
-        properties: ClientValueCollection[
-            CrossGeoSyncUserProperty
-        ] = ClientValueCollection(CrossGeoSyncUserProperty),
+        properties: ClientValueCollection[CrossGeoSyncUserProperty] = ClientValueCollection(CrossGeoSyncUserProperty),
     ):
         self.LastEventId = last_event_id
         self.LastRecordId = last_record_id

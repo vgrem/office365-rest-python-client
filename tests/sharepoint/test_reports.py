@@ -9,9 +9,7 @@ class TestReports(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        tenant = Tenant.from_url(test_admin_site_url).with_credentials(
-            test_client_credentials
-        )
+        tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_client_credentials)
         cls.tenant = tenant
 
     # def test1_get_top_files_sharing_insights(self):

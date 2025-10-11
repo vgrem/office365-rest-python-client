@@ -28,8 +28,6 @@ class TestSiteDesign(SPTestCase):
         self.__class__.site_design_count = len(result.value)
 
     def test_3_delete(self):
-        SiteScriptUtility.delete_site_design(
-            self.client, self.site_design_metadata.Id
-        ).execute_query()
+        SiteScriptUtility.delete_site_design(self.client, self.site_design_metadata.Id).execute_query()
         result = SiteScriptUtility.get_site_designs(self.client).execute_query()
         self.assertEqual(self.site_design_count - 1, len(result.value))

@@ -17,7 +17,5 @@ class AppConsentApprovalRoute(Entity):
         one or more users."""
         return self.properties.get(
             "appConsentRequests",
-            AppConsentRequestCollection(
-                self.context, ResourcePath("appConsentRequests", self.resource_path)
-            ),
+            AppConsentRequestCollection(self.context, ResourcePath("appConsentRequests", self.resource_path)),
         )

@@ -10,9 +10,7 @@ from office365.sharepoint.tenant.administration.hubsites.permission import (
 class HubSiteProperties(Entity):
     @property
     def permissions(self):
-        return self.properties.get(
-            "Permissions", ClientValueCollection(HubSitePermission)
-        )
+        return self.properties.get("Permissions", ClientValueCollection(HubSitePermission))
 
     @property
     def site_id(self) -> Optional[str]:

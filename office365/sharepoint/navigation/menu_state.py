@@ -41,9 +41,7 @@ class MenuState(ClientValue):
         self.Nodes = ClientValueCollection(MenuNode, nodes)
         self.SimpleUrl = simple_url
         self.SPSitePrefix = site_prefix
-        self.IsAudienceTargetEnabledForGlobalNav = (
-            is_audience_target_enabled_for_global_nav
-        )
+        self.IsAudienceTargetEnabledForGlobalNav = is_audience_target_enabled_for_global_nav
         self.SPSitePrefix = sp_site_prefix
         self.SPWebPrefix = sp_web_prefix
         self.StartingNodeKey = starting_node_key

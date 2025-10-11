@@ -11,9 +11,7 @@ class UpdateTemplateInfoV2(ClientValue):
         deleted_placeholder_column_ids: StringCollection = StringCollection(),
         new_name: str = None,
         operation: int = None,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(
-            PlaceholderV2
-        ),
+        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
         set_template_view_as_default_view: bool = None,
         url: str = None,
     ):

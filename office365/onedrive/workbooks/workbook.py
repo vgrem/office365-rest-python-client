@@ -45,9 +45,7 @@ class Workbook(Entity):
         """
         payload = {"persistChanges": persist_changes}
         return_type = ClientResult(self.context, WorkbookSessionInfo())
-        qry = ServiceOperationQuery(
-            self, "createSession", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "createSession", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -80,9 +78,7 @@ class Workbook(Entity):
         """"""
         return self.properties.get(
             "application",
-            WorkbookApplication(
-                self.context, ResourcePath("application", self.resource_path)
-            ),
+            WorkbookApplication(self.context, ResourcePath("application", self.resource_path)),
         )
 
     @property
@@ -102,9 +98,7 @@ class Workbook(Entity):
         """"""
         return self.properties.get(
             "functions",
-            WorkbookFunctions(
-                self.context, ResourcePath("functions", self.resource_path)
-            ),
+            WorkbookFunctions(self.context, ResourcePath("functions", self.resource_path)),
         )
 
     @property
@@ -112,9 +106,7 @@ class Workbook(Entity):
         """Represents a collection of tables associated with the workbook. Read-only."""
         return self.properties.get(
             "tables",
-            WorkbookTableCollection(
-                self.context, ResourcePath("tables", self.resource_path)
-            ),
+            WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
     @property
@@ -147,7 +139,5 @@ class Workbook(Entity):
         """Represents a collection of worksheets associated with the workbook. Read-only."""
         return self.properties.get(
             "worksheets",
-            WorkbookWorksheetCollection(
-                self.context, ResourcePath("worksheets", self.resource_path)
-            ),
+            WorkbookWorksheetCollection(self.context, ResourcePath("worksheets", self.resource_path)),
         )

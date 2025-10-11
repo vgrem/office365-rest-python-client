@@ -9,9 +9,7 @@ class WopiWebAppProperties(ClientValue):
         self,
         app: str = None,
         bootstrapper_url: str = None,
-        list_by_action: ClientValueCollection[
-            WebAppUrlsByAction
-        ] = ClientValueCollection(WebAppUrlsByAction),
+        list_by_action: ClientValueCollection[WebAppUrlsByAction] = ClientValueCollection(WebAppUrlsByAction),
     ):
         self.App = app
         self.BootstrapperUrl = bootstrapper_url

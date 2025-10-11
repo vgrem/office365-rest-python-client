@@ -18,11 +18,7 @@ class TestSPTaxonomy(SPTestCase):
         self.assertIsNotNone(term_store.name)
 
     def test2_get_term_groups(self):
-        term_group = (
-            self.client.taxonomy.term_store.term_groups.get_by_name("Geography")
-            .get()
-            .execute_query()
-        )
+        term_group = self.client.taxonomy.term_store.term_groups.get_by_name("Geography").get().execute_query()
         self.assertIsNotNone(term_group.resource_path)
         self.assertIsInstance(term_group, TermGroup)
         self.__class__.target_term_group = term_group

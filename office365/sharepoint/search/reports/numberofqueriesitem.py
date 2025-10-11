@@ -10,9 +10,7 @@ class ReportNumberOfQueriesItem(ClientValue):
     def __init__(
         self,
         date: str = None,
-        report: ClientValueCollection[
-            ReportNumberOfQueriesData
-        ] = ClientValueCollection(ReportNumberOfQueriesData),
+        report: ClientValueCollection[ReportNumberOfQueriesData] = ClientValueCollection(ReportNumberOfQueriesData),
     ):
         self.Date = date
         self.Report = report

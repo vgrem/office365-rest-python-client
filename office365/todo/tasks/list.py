@@ -23,9 +23,7 @@ class TodoTaskList(Entity):
         """The collection of open extensions defined for the task list."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
@@ -33,9 +31,7 @@ class TodoTaskList(Entity):
         """The tasks in this task list."""
         return self.properties.get(
             "tasks",
-            EntityCollection(
-                self.context, TodoTask, ResourcePath("tasks", self.resource_path)
-            ),
+            EntityCollection(self.context, TodoTask, ResourcePath("tasks", self.resource_path)),
         )
 
     @property

@@ -31,8 +31,7 @@ class TestView(SPTestCase):
         view_properties.Title = create_unique_name("My Tasks")
         view_properties.PersonalView = True
         view_properties.Query = (
-            "<Where><Eq><FieldRef ID='AssignedTo' /><Value "
-            "Type='Integer'><UserID/></Value></Eq></Where> "
+            "<Where><Eq><FieldRef ID='AssignedTo' /><Value " "Type='Integer'><UserID/></Value></Eq></Where> "
         )
 
         new_view = self.target_list.views.add(view_properties).execute_query()
@@ -64,11 +63,7 @@ class TestView(SPTestCase):
         view_to_update = self.__class__.target_view
         view_to_update.set_property("Title", title_updated).update().execute_query()
 
-        result = (
-            self.target_list.views.filter(f"Title eq '{title_updated}'")
-            .get()
-            .execute_query()
-        )
+        result = self.target_list.views.filter(f"Title eq '{title_updated}'").get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test8_get_view_fields(self):
@@ -83,16 +78,12 @@ class TestView(SPTestCase):
         self.assertEqual(self.view_fields_count + 1, len(after_view_fields))
 
     def test_10_move_view_field_to(self):
-        self.target_view.view_fields.move_view_field_to(
-            self.target_field, 2
-        ).execute_query()
+        self.target_view.view_fields.move_view_field_to(self.target_field, 2).execute_query()
         result = self.__class__.target_view.view_fields.get().execute_query()
         self.assertEqual(result[2], self.target_field.internal_name)
 
     def test_11_remove_view_field(self):
-        self.target_view.view_fields.remove_view_field(
-            self.target_field
-        ).execute_query()
+        self.target_view.view_fields.remove_view_field(self.target_field).execute_query()
         result = self.target_view.view_fields.get().execute_query()
         self.assertEqual(self.view_fields_count, len(result))
 

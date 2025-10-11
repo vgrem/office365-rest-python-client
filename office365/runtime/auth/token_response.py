@@ -10,9 +10,7 @@ class TokenResponse:
     - Additional token metadata
     """
 
-    def __init__(
-        self, access_token: str = None, token_type: str = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, access_token: str = None, token_type: str = None, **kwargs: Any) -> None:
         """Initialize a token response.
 
         Args:

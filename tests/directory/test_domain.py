@@ -12,9 +12,7 @@ class TestDomain(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
+        cls.client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     def test1_list_domains(self):
         domains = self.client.domains.top(1).get().execute_query()

@@ -11,20 +11,14 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 
 
 print("Creating a temporary folders in a Documents library ...")
-folder_from = (
-    ctx.web.default_document_library()
-    .root_folder.add(create_unique_name("in"))
-    .execute_query()
-)
+folder_from = ctx.web.default_document_library().root_folder.add(create_unique_name("in")).execute_query()
 path = "../../data/report.csv"
 folder_from.files.upload(path).execute_query()
 folder_to_url = "Shared Documents/{0}".format(create_unique_name("out"))
 
 print("Moving folder...")
 opt = MoveCopyOptions()
-MoveCopyUtil.move_folder(
-    ctx, folder_from.server_relative_url, folder_to_url, opt
-).execute_query()
+MoveCopyUtil.move_folder(ctx, folder_from.server_relative_url, folder_to_url, opt).execute_query()
 print("Folder has been moved into '{0}'".format(folder_to_url))
 
 print("Cleaning up temporary resources ...")

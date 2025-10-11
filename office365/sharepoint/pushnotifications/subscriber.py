@@ -43,6 +43,4 @@ class PushNotificationSubscriber(Entity):
         """Gets the SharePoint user who created this subscriber."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "User", User(self.context, ResourcePath("user", self.resource_path))
-        )
+        return self.properties.get("User", User(self.context, ResourcePath("user", self.resource_path)))

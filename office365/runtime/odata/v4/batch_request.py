@@ -49,9 +49,7 @@ class ODataV4BatchRequest(ODataRequest):
             super().process_response(sub_resp, sub_qry)
 
     @staticmethod
-    def _extract_response(
-        response: Response, query: BatchQuery
-    ) -> Iterator[Tuple[ClientQuery, Response]]:
+    def _extract_response(response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:
         """Extracts individual responses from the batch response.
 
         Args:
@@ -88,9 +86,7 @@ class ODataV4BatchRequest(ODataRequest):
         return {"requests": requests_json}
 
     @staticmethod
-    def _normalize_request(
-        query: ClientQuery, query_id: str, depends_on: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def _normalize_request(query: ClientQuery, query_id: str, depends_on: Optional[List[str]] = None) -> Dict[str, Any]:
         """Normalizes an individual query into batch request format.
 
         Args:

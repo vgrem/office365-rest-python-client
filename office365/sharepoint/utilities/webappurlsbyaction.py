@@ -8,9 +8,7 @@ class WebAppUrlsByAction(ClientValue):
     def __init__(
         self,
         action: str = None,
-        urls_by_ext: ClientValueCollection[WebAppExtUrlPair] = ClientValueCollection(
-            WebAppExtUrlPair
-        ),
+        urls_by_ext: ClientValueCollection[WebAppExtUrlPair] = ClientValueCollection(WebAppExtUrlPair),
     ):
         self.Action = action
         self.UrlsByExt = urls_by_ext

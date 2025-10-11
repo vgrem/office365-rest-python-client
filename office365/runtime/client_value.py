@@ -6,9 +6,7 @@ from typing_extensions import Self
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
-ClientValueT = TypeVar(
-    "ClientValueT", int, float, str, bytes, bool, dict, "ClientValue"
-)
+ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, "ClientValue")
 
 
 class ClientValue:
@@ -17,16 +15,11 @@ class ClientValue:
     containing entity or as a temporary value
     """
 
-    def set_property(
-        self, k: Union[str, int], v: Any, persist_changes: bool = True
-    ) -> Self:
+    def set_property(self, k: Union[str, int], v: Any, persist_changes: bool = True) -> Self:
         prop_val = getattr(self, k, None)
         if isinstance(prop_val, ClientValue) and v is not None:
             if isinstance(v, list):
-                [
-                    prop_val.set_property(i, p_v, persist_changes)
-                    for i, p_v in enumerate(v)
-                ]
+                [prop_val.set_property(i, p_v, persist_changes) for i, p_v in enumerate(v)]
             else:
                 [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
             setattr(self, k, prop_val)
@@ -77,11 +70,7 @@ class ClientValue:
                 json[n] = v.to_json(json_format)
             elif isinstance(v, Enum):
                 json[n] = v.value
-        if (
-            json_format is not None
-            and json_format.include_control_information
-            and self.entity_type_name is not None
-        ):
+        if json_format is not None and json_format.include_control_information and self.entity_type_name is not None:
             if isinstance(json_format, JsonLightFormat):
                 json[json_format.metadata_type] = {"type": self.entity_type_name}
             elif isinstance(json_format, ODataJsonFormat):

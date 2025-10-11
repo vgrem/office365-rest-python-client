@@ -49,9 +49,7 @@ class Incident(Entity):
         """The list of related alerts. Supports $expand."""
         return self.properties.get(
             "alerts",
-            EntityCollection(
-                self.context, Alert, ResourcePath("alerts", self.resource_path)
-            ),
+            EntityCollection(self.context, Alert, ResourcePath("alerts", self.resource_path)),
         )
 
     @property

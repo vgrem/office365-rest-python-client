@@ -28,9 +28,7 @@ class Group(Entity):
         def _get_members_info():
             from office365.sharepoint.directory.helper import SPHelper
 
-            SPHelper.get_members_info(
-                self.context, self.properties["Id"], row_limit, return_type
-            )
+            SPHelper.get_members_info(self.context, self.properties["Id"], row_limit, return_type)
 
         self.ensure_property("Id", _get_members_info)
         return return_type

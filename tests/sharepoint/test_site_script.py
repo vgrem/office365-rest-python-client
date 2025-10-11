@@ -15,9 +15,7 @@ class TestSiteScript(SPTestCase):
             "version": 1,
         }
 
-        result = SiteScriptUtility.create_site_script(
-            self.client, "Contoso theme script", "", script
-        ).execute_query()
+        result = SiteScriptUtility.create_site_script(self.client, "Contoso theme script", "", script).execute_query()
         self.assertIsNotNone(result.value)
         self.__class__.site_script_meta = result.value
 
@@ -27,8 +25,6 @@ class TestSiteScript(SPTestCase):
         self.__class__.site_script_count = len(result.value)
 
     def test_3_delete_site_script(self):
-        SiteScriptUtility.delete_site_script(
-            self.client, self.site_script_meta.Id
-        ).execute_query()
+        SiteScriptUtility.delete_site_script(self.client, self.site_script_meta.Id).execute_query()
         result_after = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertEqual(self.site_script_count - 1, len(result_after.value))

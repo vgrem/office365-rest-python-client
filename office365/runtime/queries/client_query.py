@@ -21,9 +21,7 @@ class ClientQuery(Generic[T]):
         self,
         context: ClientRuntimeContext,
         binding_type: Optional[ClientObject] = None,
-        parameters_type: Optional[
-            Union[ClientObject, ClientValue, Dict, AnyStr]
-        ] = None,
+        parameters_type: Optional[Union[ClientObject, ClientValue, Dict, AnyStr]] = None,
         parameters_name: Optional[str] = None,
         return_type: Optional[T] = None,
     ) -> None:

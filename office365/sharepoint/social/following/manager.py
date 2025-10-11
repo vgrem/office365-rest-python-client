@@ -27,8 +27,6 @@ class SocialFollowingManager(Entity):
         The GetSuggestions method returns a list of actors that are suggestions for the current user to follow.
         """
         return_type = ClientResult(self.context, ClientValueCollection(SocialActor))
-        qry = ServiceOperationQuery(
-            self, "GetSuggestions", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSuggestions", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

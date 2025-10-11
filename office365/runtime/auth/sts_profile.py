@@ -55,9 +55,7 @@ class STSProfile:
     def signin_page_url(self) -> str:
         """SharePoint sign-in page URL."""
         site_info = urlparse(self._site_url)
-        return (
-            f"{site_info.scheme}://{site_info.netloc}/_forms/default.aspx?wa=wsignin1.0"
-        )
+        return f"{site_info.scheme}://{site_info.netloc}/_forms/default.aspx?wa=wsignin1.0"
 
     @property
     def user_realm_service_url(self) -> str:

@@ -14,9 +14,7 @@ class SharedWithMeDocument(Entity):
     @property
     def authors(self) -> ClientValueCollection[SharedWithMeDocumentUser]:
         """Specifies a list of users that authored the document."""
-        return self.properties.get(
-            "Authors", ClientValueCollection(SharedWithMeDocumentUser)
-        )
+        return self.properties.get("Authors", ClientValueCollection(SharedWithMeDocumentUser))
 
     @property
     def caller_stack(self) -> Optional[str]:
@@ -36,9 +34,7 @@ class SharedWithMeDocument(Entity):
     @property
     def editors(self):
         """Specifies a list of users that can edit the document."""
-        return self.properties.get(
-            "Editors", ClientValueCollection(SharedWithMeDocumentUser)
-        )
+        return self.properties.get("Editors", ClientValueCollection(SharedWithMeDocumentUser))
 
     @property
     def modified(self):

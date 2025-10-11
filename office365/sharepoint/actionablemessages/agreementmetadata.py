@@ -12,9 +12,7 @@ class AgreementMetaData(ClientValue):
         country: str = None,
         created_by: str = None,
         created_time: str = None,
-        documents: ClientValueCollection[AgreementDocument] = ClientValueCollection(
-            AgreementDocument
-        ),
+        documents: ClientValueCollection[AgreementDocument] = ClientValueCollection(AgreementDocument),
         end_date: str = None,
         first_party: str = None,
         language: str = None,

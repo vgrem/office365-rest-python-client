@@ -111,9 +111,7 @@ class RecycleBinItem(Entity):
     @property
     def author(self) -> User:
         """Gets a value that specifies the user who created the Recycle Bin item."""
-        return self.properties.get(
-            "Author", User(self.context, ResourcePath("Author", self.resource_path))
-        )
+        return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
     def deleted_by(self) -> User:

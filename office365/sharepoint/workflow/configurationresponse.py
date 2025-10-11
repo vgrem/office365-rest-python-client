@@ -7,18 +7,14 @@ class WorkflowConfigurationResponse(ClientValue):
 
     def __init__(
         self,
-        approvers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(
-            ConfiguredUserInfo
-        ),
+        approvers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(ConfiguredUserInfo),
         category_id: str = None,
         category_name: str = None,
         configuration_id: int = None,
         country: str = None,
         e_sign_needed: bool = None,
         language: str = None,
-        reviewers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(
-            ConfiguredUserInfo
-        ),
+        reviewers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(ConfiguredUserInfo),
         source: str = None,
         type_: str = None,
     ):

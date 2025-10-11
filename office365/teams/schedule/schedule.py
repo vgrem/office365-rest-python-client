@@ -37,9 +37,7 @@ class Schedule(Entity):
         """The shifts in the shifts."""
         return self.properties.get(
             "shifts",
-            EntityCollection(
-                self.context, Shift, ResourcePath("shifts", self.resource_path)
-            ),
+            EntityCollection(self.context, Shift, ResourcePath("shifts", self.resource_path)),
         )
 
     @property

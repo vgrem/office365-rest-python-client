@@ -96,21 +96,13 @@ class TestSharePointClient(TestCase):
 
     def test_11_execute_get_and_update_batch_request(self):
         page_url = "/sites/team/SitePages/Home.aspx"
-        client = ClientContext(test_team_site_url).with_credentials(
-            test_user_credentials
-        )
-        list_item = client.web.get_file_by_server_relative_url(
-            page_url
-        ).listItemAllFields
+        client = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
+        list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields
         new_title = create_unique_name("Page")
         list_item.set_property("Title", new_title).update()
         client.execute_batch()
 
-        updated_list_item = (
-            client.web.get_file_by_server_relative_url(page_url)
-            .listItemAllFields.get()
-            .execute_query()
-        )
+        updated_list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields.get().execute_query()
         self.assertEqual(updated_list_item.properties["Title"], new_title)
 
     def test_12_create_and_delete_batch_request(self):
@@ -122,9 +114,7 @@ class TestSharePointClient(TestCase):
         list_pages = client.web.lists.get_by_title("Documents")
         files = list_pages.root_folder.files.get().execute_query()
         files_count_before = len(files)
-        new_file = list_pages.root_folder.upload_file(
-            file_name, "-some content goes here-"
-        ).execute_query()
+        new_file = list_pages.root_folder.upload_file(file_name, "-some content goes here-").execute_query()
         self.assertTrue(new_file.name, file_name)
 
         new_file.delete_object()

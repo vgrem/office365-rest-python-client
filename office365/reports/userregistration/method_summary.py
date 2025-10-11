@@ -22,8 +22,6 @@ class UserRegistrationMethodSummary(ClientValue):
         :param str user_types: User type. Possible values are: all, member, guest, unknownFutureValue.
         """
         self.totalUserCount = total_user_count
-        self.userRegistrationMethodCounts = ClientValueCollection(
-            UserRegistrationMethodCount, method_counts
-        )
+        self.userRegistrationMethodCounts = ClientValueCollection(UserRegistrationMethodCount, method_counts)
         self.userRoles = user_roles
         self.userTypes = user_types

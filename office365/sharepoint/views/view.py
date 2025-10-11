@@ -36,15 +36,11 @@ class View(Entity):
 
     def get_items(self) -> ListItemCollection:
         """Get list items per a view"""
-        return_type = ListItemCollection(
-            self.context, self.parent_list.items.resource_path
-        )
+        return_type = ListItemCollection(self.context, self.parent_list.items.resource_path)
 
         def _get_items():
             caml_query = CamlQuery.parse(self.view_query)
-            qry = ServiceOperationQuery(
-                self.parent_list, "GetItems", None, caml_query, "query", return_type
-            )
+            qry = ServiceOperationQuery(self.parent_list, "GetItems", None, caml_query, "query", return_type)
             self.context.add_query(qry)
 
         self.ensure_properties(["ViewQuery", "ViewFields"], _get_items)
@@ -176,9 +172,7 @@ class View(Entity):
         """Gets a value that specifies the collection of fields in the list view."""
         return self.properties.get(
             "ViewFields",
-            ViewFieldCollection(
-                self.context, ResourcePath("ViewFields", self.resource_path)
-            ),
+            ViewFieldCollection(self.context, ResourcePath("ViewFields", self.resource_path)),
         )
 
     @property

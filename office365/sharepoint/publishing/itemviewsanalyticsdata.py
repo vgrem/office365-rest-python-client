@@ -7,12 +7,8 @@ class ItemViewsAnalyticsData(ClientValue):
 
     def __init__(
         self,
-        days: ClientValueCollection[TimeFrameStatistics] = ClientValueCollection(
-            TimeFrameStatistics
-        ),
-        months: ClientValueCollection[TimeFrameStatistics] = ClientValueCollection(
-            TimeFrameStatistics
-        ),
+        days: ClientValueCollection[TimeFrameStatistics] = ClientValueCollection(TimeFrameStatistics),
+        months: ClientValueCollection[TimeFrameStatistics] = ClientValueCollection(TimeFrameStatistics),
     ):
         self.Days = days
         self.Months = months

@@ -25,9 +25,7 @@ class ThemeManager(Entity):
             "name": name,
             "themeJson": theme_json,
         }
-        qry = ServiceOperationQuery(
-            self, "AddTenantTheme", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddTenantTheme", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

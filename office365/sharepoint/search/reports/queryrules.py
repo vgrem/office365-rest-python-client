@@ -7,9 +7,7 @@ class ReportQueryRules(ClientValue):
 
     def __init__(
         self,
-        reports: ClientValueCollection[ReportQueryRulesItem] = ClientValueCollection(
-            ReportQueryRulesItem
-        ),
+        reports: ClientValueCollection[ReportQueryRulesItem] = ClientValueCollection(ReportQueryRulesItem),
     ):
         self.Reports = reports
 

@@ -7,9 +7,7 @@ class TemplateMetaData(ClientValue):
 
     def __init__(
         self,
-        placeholders: ClientValueCollection[Placeholder] = ClientValueCollection(
-            Placeholder
-        ),
+        placeholders: ClientValueCollection[Placeholder] = ClientValueCollection(Placeholder),
         server_redirected_embed_url: str = None,
     ):
         self.placeholders = placeholders

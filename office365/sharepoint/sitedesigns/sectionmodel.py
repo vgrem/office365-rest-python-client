@@ -8,9 +8,7 @@ class SectionModel(ClientValue):
     def __init__(
         self,
         index: int = None,
-        web_parts: ClientValueCollection[WebPartModel] = ClientValueCollection(
-            WebPartModel
-        ),
+        web_parts: ClientValueCollection[WebPartModel] = ClientValueCollection(WebPartModel),
     ):
         self.index = index
         self.webParts = web_parts

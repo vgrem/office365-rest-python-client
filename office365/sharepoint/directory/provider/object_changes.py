@@ -11,12 +11,8 @@ class DirectoryObjectChanges(ClientValue):
         directory_object_sub_type: int = None,
         directory_object_type: int = None,
         id_: str = None,
-        link_changes: ClientValueCollection[LinkChange] = ClientValueCollection(
-            LinkChange
-        ),
-        property_changes: ClientValueCollection[PropertyChange] = ClientValueCollection(
-            PropertyChange
-        ),
+        link_changes: ClientValueCollection[LinkChange] = ClientValueCollection(LinkChange),
+        property_changes: ClientValueCollection[PropertyChange] = ClientValueCollection(PropertyChange),
     ):
         self.DirectoryObjectSubType = directory_object_sub_type
         self.DirectoryObjectType = directory_object_type

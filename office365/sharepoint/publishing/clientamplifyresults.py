@@ -7,15 +7,9 @@ class ClientAmplifyResults(ClientValue):
 
     def __init__(
         self,
-        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
-        messages: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
-        warnings: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(
-            ClientAmplifyResult
-        ),
+        errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
+        messages: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
+        warnings: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
     ):
         self.errors = errors
         self.messages = messages

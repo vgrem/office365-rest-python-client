@@ -39,8 +39,6 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
         }
         return_type = SPAuthEvent(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "RoleAssignmentMSGraphNotify", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RoleAssignmentMSGraphNotify", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

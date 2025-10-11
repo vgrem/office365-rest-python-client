@@ -74,9 +74,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "chatInfo": chat_info,
             "participants": participants,
         }
-        qry = ServiceOperationQuery(
-            self, "createOrGet", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "createOrGet", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -105,8 +103,6 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "startDateTime": start_datetime,
             "endDateTime": end_datetime,
         }
-        qry = ServiceOperationQuery(
-            self, "getAllRecordings", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getAllRecordings", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

@@ -35,9 +35,7 @@ class Entity(ClientObject):
     def execute_batch(
         self,
         items_per_batch: int = 100,
-        success_callback: Optional[
-            Callable[[List[Union[ClientObject, ClientResult]]], None]
-        ] = None,
+        success_callback: Optional[Callable[[List[Union[ClientObject, ClientResult]]], None]] = None,
     ) -> Self:
         """
         Construct and submit a batch request to the server
@@ -51,9 +49,7 @@ class Entity(ClientObject):
         """
         return self.context.execute_batch(items_per_batch, success_callback)
 
-    def with_credentials(
-        self, credentials: Union[UserCredential, ClientCredential]
-    ) -> Self:
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
         Initialize authentication with user or client credentials
 
@@ -87,9 +83,7 @@ class Entity(ClientObject):
         :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
         :param str passphrase: Passphrase if the private_key is encrypted
         """
-        self.context.with_client_certificate(
-            tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase
-        )
+        self.context.with_client_certificate(tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase)
         return self
 
     def delete_object(self) -> Self:
@@ -158,9 +152,7 @@ class Entity(ClientObject):
         if name == self.property_ref_name:
             if self.resource_path is None:
                 if self.parent_collection:
-                    self._resource_path = EntityPath(
-                        value, self.parent_collection.resource_path
-                    )
+                    self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

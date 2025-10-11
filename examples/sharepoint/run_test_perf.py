@@ -24,11 +24,7 @@ def do_work(client: ClientContext):
             print("SPRequestDuration: {0}".format(duration))
 
     def _execute(iteration: int):
-        web = (
-            client.web.get()
-            .after_execute(_after_execute, include_response=True)
-            .execute_query()
-        )
+        web = client.web.get().after_execute(_after_execute, include_response=True).execute_query()
         print("Iteration: {0}, result: {1}".format(iteration, web.title))
 
     for i in range(10):

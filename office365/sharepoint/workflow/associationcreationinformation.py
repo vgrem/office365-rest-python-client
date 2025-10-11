@@ -9,12 +9,8 @@ class WorkflowAssociationCreationInformation(ClientValue):
         content_type_association_task_list_name: str = None,
         name: str = None,
     ):
-        self.ContentTypeAssociationHistoryListName = (
-            content_type_association_history_list_name
-        )
-        self.ContentTypeAssociationTaskListName = (
-            content_type_association_task_list_name
-        )
+        self.ContentTypeAssociationHistoryListName = content_type_association_history_list_name
+        self.ContentTypeAssociationTaskListName = content_type_association_task_list_name
         self.Name = name
 
     @property
