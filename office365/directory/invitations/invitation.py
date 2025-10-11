@@ -57,4 +57,4 @@ class Invitation(Entity):
                 "invitedUser": self.invited_user,
             }
             default_value = property_mapping.get(name, None)
-        return super(Invitation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

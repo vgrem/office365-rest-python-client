@@ -139,4 +139,4 @@ class OnlineMeeting(OnlineMeetingBase):
                 "startDateTime": self.start_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(OnlineMeeting, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

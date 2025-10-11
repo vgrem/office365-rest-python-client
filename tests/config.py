@@ -10,7 +10,7 @@ class SecEnvInterpolation(BasicInterpolation):
     secure_vars = secure_vars_env.split(";")
 
     def before_get(self, parser, section, option, value, defaults):
-        value = super(SecEnvInterpolation, self).before_get(parser, section, option, value, defaults)
+        value = super().before_get(parser, section, option, value, defaults)
         if option == "password":
             return self.secure_vars[1]
         elif option == "client_secret":

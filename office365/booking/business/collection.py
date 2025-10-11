@@ -9,10 +9,11 @@ class BookingBusinessCollection(EntityCollection[BookingBusiness]):
     """"""
 
     def __init__(self, context, resource_path=None):
-        super(BookingBusinessCollection, self).__init__(context, BookingBusiness, resource_path)
+        super().__init__(context, BookingBusiness, resource_path)
 
-    def add(self, display_name, address=None, email=None):
-        # type: (str, Optional[PhysicalAddress], Optional[str]) -> BookingBusiness
+    def add(
+        self, display_name: str, address: Optional[PhysicalAddress] = None, email: Optional[str] = None
+    ) -> BookingBusiness:
         """
         Create a new Microsoft Bookings business in a tenant.
         :param str display_name: The business display name.
@@ -20,4 +21,4 @@ class BookingBusinessCollection(EntityCollection[BookingBusiness]):
         :param str email: The email address for the business.
         """
         props = {"displayName": display_name, "address": address, "email": email}
-        return super(BookingBusinessCollection, self).add(**props)
+        return super().add(**props)

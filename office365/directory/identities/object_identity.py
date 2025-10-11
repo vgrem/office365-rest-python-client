@@ -23,7 +23,7 @@ class ObjectIdentity(ClientValue):
             the sign-in name for the user, when signInType is set to emailAddress or userName
             (also known as local accounts).
         """
-        super(ObjectIdentity, self).__init__()
+        super().__init__()
         self.signInType = sign_in_type
         self.issuer = issuer
         self.issuerAssignedId = issuer_assigned_id

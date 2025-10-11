@@ -18,7 +18,7 @@ class Domain(Entity):
     authentication, etc.
     """
 
-    def verify(self):
+    def verify(self) -> "Domain":
         """Validates the ownership of the domain."""
         return_type = Domain(self.context)
         self.parent_collection.add_child(return_type)
@@ -80,7 +80,7 @@ class Domain(Entity):
         )
 
     @property
-    def state(self):
+    def state(self) -> DomainState:
         """Status of asynchronous operations scheduled for the domain."""
         return self.properties.get("state", DomainState())
 
@@ -92,4 +92,4 @@ class Domain(Entity):
                 "verificationDnsRecords": self.verification_dns_records,
             }
             default_value = property_mapping.get(name, None)
-        return super(Domain, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -14,7 +14,6 @@ disable = [
     "C0111",
     "C0112", # empty-docstring
     "C0114", # missing-module-docstring
-    "C0206", # consider-using-dict-items (Python 2)
     "C0209", # consider-using f-string
     "C0302", # too-many-lines
     "C0303",

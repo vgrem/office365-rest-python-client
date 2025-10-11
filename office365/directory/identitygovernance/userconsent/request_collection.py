@@ -9,9 +9,9 @@ class UserConsentRequestCollection(EntityCollection[UserConsentRequest]):
     """AppConsentRequest's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(UserConsentRequestCollection, self).__init__(context, UserConsentRequest, resource_path)
+        super().__init__(context, UserConsentRequest, resource_path)
 
-    def filter_by_current_user(self, on):
+    def filter_by_current_user(self, on) -> "UserConsentRequestCollection":
         """Retrieve a collection of userConsentRequest objects for accessing a specified app, for which the current
         user is the reviewer."""
         return_type = UserConsentRequestCollection(self.context, self.resource_path)

@@ -13,7 +13,7 @@ class Identity(ClientValue):
 
         :param str _id: Unique identifier for the identity.
         """
-        super(Identity, self).__init__()
+        super().__init__()
         self.displayName = display_name
         self.id = _id
 

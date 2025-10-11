@@ -50,4 +50,4 @@ class AuthenticationMethodsRoot(Entity):
         if default_value is None:
             property_mapping = {"userRegistrationDetails": self.user_registration_details}
             default_value = property_mapping.get(name, None)
-        return super(AuthenticationMethodsRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

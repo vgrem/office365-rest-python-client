@@ -6,4 +6,4 @@ class RetentionEventTypeCollection(EntityCollection[RetentionEventType]):
     """"""
 
     def __init__(self, context, resource_path=None):
-        super(RetentionEventTypeCollection, self).__init__(context, RetentionEventType, resource_path)
+        super().__init__(context, RetentionEventType, resource_path)

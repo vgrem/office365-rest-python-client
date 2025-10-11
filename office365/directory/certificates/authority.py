@@ -20,7 +20,7 @@ class CertificateAuthority(ClientValue):
         :param str issuer: The issuer of the certificate, calculated from the certificate value
         :param str issuer_ski: The subject key identifier of the certificate, calculated from the certificate value.
         """
-        super(CertificateAuthority, self).__init__()
+        super().__init__()
         self.certificate = certificate
         self.certificateRevocationListUrl = certificate_revocation_list_url
         self.isRootAuthority = is_root_authority

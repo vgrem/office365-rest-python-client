@@ -22,7 +22,7 @@ class GroupProfile(ClientValue):
         :param bool security_enabled: Specifies whether the group is a security group. Default: true.
         :param list[str] group_types:
         """
-        super(GroupProfile, self).__init__()
+        super().__init__()
         self.mailNickname = name
         self.displayName = name
         self.description = description

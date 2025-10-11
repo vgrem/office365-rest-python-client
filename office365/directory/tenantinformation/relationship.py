@@ -11,7 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 class TenantRelationship(Entity):
     """Represent the various type of tenant relationships."""
 
-    def find_tenant_information_by_domain_name(self, domain_name):
+    def find_tenant_information_by_domain_name(self, domain_name: str) -> ClientResult[TenantInformation]:
         """Given a domain name, search for a tenant and read its tenantInformation. You can use this API to
         validate tenant information and use their tenantId to configure cross-tenant access settings between you
         and the tenant.
@@ -24,7 +24,7 @@ class TenantRelationship(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def find_tenant_information_by_tenant_id(self, tenant_id):
+    def find_tenant_information_by_tenant_id(self, tenant_id: str) -> ClientResult[TenantInformation]:
         """Given a tenant ID, search for a tenant and read its tenantInformation. You can use this API to validate
         tenant information and use the tenantId to configure cross-tenant cross-tenant access settings between you
         and the tenant.
@@ -38,7 +38,7 @@ class TenantRelationship(Entity):
         return return_type
 
     @property
-    def multi_tenant_organization(self):
+    def multi_tenant_organization(self) -> MultiTenantOrganization:
         """Represents a setting to control people-related admin settings in the tenant."""
         return self.properties.get(
             "multiTenantOrganization",
@@ -54,4 +54,4 @@ class TenantRelationship(Entity):
                 "multiTenantOrganization": self.multi_tenant_organization,
             }
             default_value = property_mapping.get(name, None)
-        return super(TenantRelationship, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

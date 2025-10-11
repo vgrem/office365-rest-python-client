@@ -14,7 +14,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     """DirectoryObject's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(DirectoryObjectCollection, self).__init__(context, DirectoryObject, resource_path)
+        super().__init__(context, DirectoryObject, resource_path)
 
     def get_by_ids(self, ids, types=None):
         """

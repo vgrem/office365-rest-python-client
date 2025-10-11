@@ -8,7 +8,7 @@ class CasesRoot(Entity):
     """"""
 
     @property
-    def ediscovery_cases(self):
+    def ediscovery_cases(self) -> EntityCollection[EdiscoveryCase]:
         return self.properties.get(
             "ediscoveryCases",
             EntityCollection(
@@ -22,4 +22,4 @@ class CasesRoot(Entity):
         if default_value is None:
             property_mapping = {"ediscoveryCases": self.ediscovery_cases}
             default_value = property_mapping.get(name, None)
-        return super(CasesRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

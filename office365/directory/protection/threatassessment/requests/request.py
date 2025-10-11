@@ -8,12 +8,12 @@ class ThreatAssessmentRequest(Entity):
     """An abstract resource type used to represent a threat assessment request item."""
 
     @property
-    def created_by(self):
+    def created_by(self) -> IdentitySet:
         """The threat assessment request creator."""
         return self.properties.get("createdBy", IdentitySet())
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """
         The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
@@ -27,4 +27,4 @@ class ThreatAssessmentRequest(Entity):
                 "createdBy": self.created_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(ThreatAssessmentRequest, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

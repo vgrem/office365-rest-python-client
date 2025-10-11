@@ -46,4 +46,4 @@ class BackupRestoreRoot(Entity):
                 "oneDriveForBusinessProtectionPolicies": self.one_drive_for_business_protection_policies,
             }
             default_value = property_mapping.get(name, None)
-        return super(BackupRestoreRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

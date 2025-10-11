@@ -37,4 +37,4 @@ class Trending(Entity):
                 "resourceReference": self.resource_reference,
             }
             default_value = property_mapping.get(name, None)
-        return super(Trending, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

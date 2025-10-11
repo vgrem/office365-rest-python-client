@@ -62,4 +62,4 @@ class AuditLogRoot(Entity):
         if default_value is None:
             property_mapping = {"directoryAudits": self.directory_audits}
             default_value = property_mapping.get(name, None)
-        return super(AuditLogRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

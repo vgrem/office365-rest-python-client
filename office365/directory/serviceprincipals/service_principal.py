@@ -296,7 +296,7 @@ class ServicePrincipal(DirectoryObject):
         self.ensure_properties(["id", "appId", "appRoles", "appRoleAssignedTo"], _ensure_principal)
         return self
 
-    def remove_password(self, key_id: str):
+    def remove_password(self, key_id: str) -> Self:
         """
         Remove a password from a servicePrincipal object.
         :param str key_id: The unique identifier for the password.
@@ -404,7 +404,7 @@ class ServicePrincipal(DirectoryObject):
         return self.properties.get("logoutUrl", None)
 
     @property
-    def notification_email_addresses(self):
+    def notification_email_addresses(self) -> StringCollection:
         """
         Specifies the list of email addresses where Azure AD sends a notification when the active certificate is near
         the expiration date. This is only for the certificates used to sign the SAML token issued for Azure
@@ -515,9 +515,9 @@ class ServicePrincipal(DirectoryObject):
                 "oauth2PermissionGrants": self.oauth2_permission_grants,
             }
             default_value = property_mapping.get(name, None)
-        return super(ServicePrincipal, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None and name == "appId":
             self._resource_path = AppIdPath(value, self.parent_collection.resource_path)
-        return super(ServicePrincipal, self).set_property(name, value, persist_changes)
+        return super().set_property(name, value, persist_changes)

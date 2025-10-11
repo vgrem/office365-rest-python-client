@@ -62,4 +62,4 @@ class RbacApplication(Entity):
                 "roleDefinitions": self.role_definitions,
             }
             default_value = property_mapping.get(name, None)
-        return super(RbacApplication, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

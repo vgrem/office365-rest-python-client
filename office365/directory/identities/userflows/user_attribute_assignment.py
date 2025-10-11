@@ -10,6 +10,4 @@ class IdentityUserFlowAttributeAssignment(Entity):
 
 class IdentityUserFlowAttributeAssignmentCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
-        super(IdentityUserFlowAttributeAssignmentCollection, self).__init__(
-            context, IdentityUserFlowAttributeAssignment, resource_path
-        )
+        super().__init__(context, IdentityUserFlowAttributeAssignment, resource_path)

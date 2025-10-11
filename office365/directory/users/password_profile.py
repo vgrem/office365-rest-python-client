@@ -24,7 +24,7 @@ class PasswordProfile(ClientValue):
              authentication before password change. After a password change, this property will be automatically
              reset to false. If not set, default is false.
         """
-        super(PasswordProfile, self).__init__()
+        super().__init__()
         self.password = password
         self.forceChangePasswordNextSignIn = force_change_password_next_sign_in
         self.forceChangePasswordNextSignInWithMfa = force_change_password_next_sign_in_with_mfa

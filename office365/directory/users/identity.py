@@ -13,7 +13,7 @@ class UserIdentity(ClientValue):
         :param str ip_address: Indicates the client IP address used by user performing the activity (audit log only).
         :param str user_principal_name: The userPrincipalName attribute of the user.
         """
-        super(UserIdentity, self).__init__()
+        super().__init__()
         self.displayName = display_name
         self.ipAddress = ip_address
         self.userPrincipalName = user_principal_name

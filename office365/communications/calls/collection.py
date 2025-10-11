@@ -6,7 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class CallCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
-        super(CallCollection, self).__init__(context, Call, resource_path)
+        super().__init__(context, Call, resource_path)
 
     def create(self, callback_uri: str) -> Call:
         """
@@ -14,7 +14,7 @@ class CallCollection(EntityCollection):
 
         :param str callback_uri: The callback URL on which callbacks will be delivered. Must be https.
         """
-        return super(CallCollection, self).add(callbackUri=callback_uri)
+        return super().add(callbackUri=callback_uri)
 
     def log_teleconference_device_quality(self, quality: TeleconferenceDeviceQuality = None):
         """

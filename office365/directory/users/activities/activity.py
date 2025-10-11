@@ -82,4 +82,4 @@ class UserActivity(Entity):
                 "historyItems": self.history_items,
             }
             default_value = property_mapping.get(name, None)
-        return super(UserActivity, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

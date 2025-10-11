@@ -115,7 +115,7 @@ class Group(DirectoryObject):
         :type permanent_delete: bool
 
         """
-        super(Group, self).delete_object()
+        super().delete_object()
         deleted_group = DirectoryObject(
             self.context,
             EntityPath(self.id, self.context.directory.deleted_groups.resource_path),
@@ -411,4 +411,4 @@ class Group(DirectoryObject):
                 "transitiveMemberOf": self.transitive_member_of,
             }
             default_value = property_mapping.get(name, None)
-        return super(Group, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

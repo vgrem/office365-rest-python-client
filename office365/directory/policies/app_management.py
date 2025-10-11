@@ -11,7 +11,7 @@ class AppManagementPolicy(PolicyBase):
     """
 
     @property
-    def applies_to(self):
+    def applies_to(self) -> DirectoryObjectCollection:
         """Collection of applications and service principals to which the policy is applied."""
         return self.properties.get(
             "appliesTo",
@@ -24,4 +24,4 @@ class AppManagementPolicy(PolicyBase):
                 "appliesTo": self.applies_to,
             }
             default_value = property_mapping.get(name, None)
-        return super(AppManagementPolicy, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

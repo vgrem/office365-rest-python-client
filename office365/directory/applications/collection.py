@@ -9,7 +9,7 @@ class ApplicationCollection(CountCollection[Application]):
     """DirectoryObject's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(ApplicationCollection, self).__init__(context, Application, resource_path)
+        super().__init__(context, Application, resource_path)
 
     def add(self, display_name: str, **kwargs: Any) -> Application:
         """

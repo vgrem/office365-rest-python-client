@@ -25,7 +25,7 @@ class PasswordCredential(ClientValue):
              For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
         :param str end_datetime:
         """
-        super(PasswordCredential, self).__init__()
+        super().__init__()
         self.displayName = display_name
         self.secretText = secret_text
         self.keyId = key_id

@@ -10,7 +10,7 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
     """Service Principal's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(ServicePrincipalCollection, self).__init__(context, ServicePrincipal, resource_path)
+        super().__init__(context, ServicePrincipal, resource_path)
 
     def add(self, app_id: str) -> ServicePrincipal:
         """

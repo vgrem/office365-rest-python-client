@@ -70,4 +70,4 @@ class AttackSimulationRoot(Entity):
                 "simulationAutomations": self.simulation_automations,
             }
             default_value = property_mapping.get(name, None)
-        return super(AttackSimulationRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

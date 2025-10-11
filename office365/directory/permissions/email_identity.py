@@ -8,5 +8,5 @@ class EmailIdentity(Identity):
         """
         :param str email:
         """
-        super(EmailIdentity, self).__init__(display_name, id_)
+        super().__init__(display_name, id_)
         self.email = email

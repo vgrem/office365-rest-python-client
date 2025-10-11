@@ -11,7 +11,7 @@ class ProvisioningObjectSummary(Entity):
     """Represents an action performed by the Azure AD Provisioning service and its associated properties."""
 
     @property
-    def activity_datetime(self):
+    def activity_datetime(self) -> datetime:
         """Represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("activityDateTime", datetime.min)
 
@@ -42,4 +42,4 @@ class ProvisioningObjectSummary(Entity):
                 "servicePrincipal": self.service_principal,
             }
             default_value = property_mapping.get(name, None)
-        return super(ProvisioningObjectSummary, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

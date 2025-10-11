@@ -60,4 +60,4 @@ class Incident(Entity):
         if default_value is None:
             property_mapping = {"createdDateTime": self.created_datetime}
             default_value = property_mapping.get(name, None)
-        return super(Incident, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -144,7 +144,7 @@ class Security(Entity):
                 "threatIntelligence": self.threat_intelligence,
             }
             default_value = property_mapping.get(name, None)
-        return super(Security, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

@@ -35,4 +35,4 @@ class LicenseDetails(Entity):
         if default_value is None:
             property_mapping = {"servicePlans": self.service_plans}
             default_value = property_mapping.get(name, None)
-        return super(LicenseDetails, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

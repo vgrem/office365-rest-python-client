@@ -46,4 +46,4 @@ class SharedInsight(Entity):
                 "sharingHistory": self.sharing_history,
             }
             default_value = property_mapping.get(name, None)
-        return super(SharedInsight, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

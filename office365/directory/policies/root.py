@@ -26,7 +26,7 @@ class PolicyRoot(Entity):
     """Resource type exposing navigation properties for the policies singleton."""
 
     @property
-    def admin_consent_request_policy(self):
+    def admin_consent_request_policy(self) -> AdminConsentRequestPolicy:
         """
         The policy by which consent requests are created and managed for the entire tenant.
         """
@@ -39,7 +39,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def authentication_methods_policy(self):
+    def authentication_methods_policy(self) -> AuthenticationMethodsPolicy:
         """
         The authentication methods and the users that are allowed to use them to sign in and perform multi-factor
         authentication (MFA) in Azure Active Directory (Azure AD).
@@ -69,7 +69,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def authentication_flows_policy(self):
+    def authentication_flows_policy(self) -> AuthenticationFlowsPolicy:
         """The policy configuration of the self-service sign-up experience of external users."""
         return self.properties.get(
             "authenticationFlowsPolicy",
@@ -80,7 +80,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def authorization_policy(self):
+    def authorization_policy(self) -> AuthorizationPolicy:
         """The policy that controls Azure AD authorization settings."""
         return self.properties.get(
             "authorizationPolicy",
@@ -113,7 +113,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def cross_tenant_access_policy(self):
+    def cross_tenant_access_policy(self) -> CrossTenantAccessPolicy:
         """
         The custom rules that define an access scenario when interacting with external Azure AD tenants.
         """
@@ -126,7 +126,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def device_registration_policy(self):
+    def device_registration_policy(self) -> DeviceRegistrationPolicy:
         """ """
         return self.properties.get(
             "deviceRegistrationPolicy",
@@ -137,7 +137,7 @@ class PolicyRoot(Entity):
         )
 
     @property
-    def default_app_management_policy(self):
+    def default_app_management_policy(self) -> TenantAppManagementPolicy:
         """
         The tenant-wide policy that enforces app management restrictions for all applications and service principals.
         """
@@ -205,4 +205,4 @@ class PolicyRoot(Entity):
                 "roleManagementPolicies": self.role_management_policies,
             }
             default_value = property_mapping.get(name, None)
-        return super(PolicyRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

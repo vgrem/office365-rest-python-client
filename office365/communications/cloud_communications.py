@@ -66,4 +66,4 @@ class CloudCommunications(Entity):
                 "onlineMeetings": self.online_meetings,
             }
             default_value = property_mapping.get(name, None)
-        return super(CloudCommunications, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

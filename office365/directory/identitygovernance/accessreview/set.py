@@ -30,4 +30,4 @@ class AccessReviewSet(Entity):
         if default_value is None:
             property_mapping = {"historyDefinitions": self.history_definitions}
             default_value = property_mapping.get(name, None)
-        return super(AccessReviewSet, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
