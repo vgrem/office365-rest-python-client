@@ -10,8 +10,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from tests import create_unique_name, test_client_credentials, test_team_site_url
 
 
-def print_progress(return_types):
-    # type: (List[ClientObject]) -> None
+def print_progress(return_types: List[ClientObject]) -> None:
     items_count = len([t for t in return_types if isinstance(t, ListItem)])
     print("{0} list items has been created".format(items_count))
 

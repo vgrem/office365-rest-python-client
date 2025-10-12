@@ -9,16 +9,14 @@ from office365.sharepoint.folders.folder import Folder
 from tests import test_client_credentials, test_team_site_url
 
 
-def enum_folder(parent_folder, action):
-    # type: (Folder, Callable[[Folder], None]) -> None
+def enum_folder(parent_folder: Folder, action: Callable[[Folder], None]) -> None:
     parent_folder.expand(["Folders"]).get().execute_query()
     action(parent_folder)
     for folder in parent_folder.folders:
         enum_folder(folder, action)
 
 
-def print_folder_stat(folder):
-    # type: (Folder) -> None
+def print_folder_stat(folder: Folder) -> None:
     print(folder.server_relative_url)
     print(folder.time_created)
 

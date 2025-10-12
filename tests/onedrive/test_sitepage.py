@@ -7,11 +7,11 @@ from tests.graph_case import GraphTestCase
 class TestSitePage(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_page = None  # type: SitePage
+    target_page: SitePage = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestSitePage, cls).setUpClass()
+        super().setUpClass()
         cls.test_site = cls.client.sites.get_by_url(test_team_site_url)
         cls.page_name = create_unique_name("Test Page")
         cls.pages_list = cls.test_site.lists.get_by_name("Site Pages")

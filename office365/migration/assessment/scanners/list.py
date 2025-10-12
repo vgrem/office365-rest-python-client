@@ -31,8 +31,7 @@ class ListScanner(BaseScanner[List]):
     def list_template(self):
         return self.source.base_template
 
-    def build_query(self):
-        # type: () -> Self
+    def build_query(self) -> Self:
         self._query_list_metadata()
 
         self._query_list_items()
@@ -60,8 +59,7 @@ class ListScanner(BaseScanner[List]):
             page_size=1000, page_loaded=self._process_item
         )
 
-    def _process_item(self, items):
-        # type: (ListItemCollection) -> None
+    def _process_item(self, items: ListItemCollection) -> None:
         self._properties.setdefault("FilesCount", 0)
         self._properties.setdefault("FoldersCount", 0)
 

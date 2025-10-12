@@ -10,20 +10,17 @@ from tests.graph_case import GraphTestCase
 
 
 class TestTermStore(GraphTestCase):
-    target_store = None  # type: Store
-    target_group = None  # type: Group
-    target_set = None  # type: Set
-    target_term = None  # type: Term
+    target_store: Store = None
+    target_group: Group = None
+    target_set: Set = None
+    target_term: Term = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestTermStore, cls).setUpClass()
+        super().setUpClass()
         client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
         cls.target_store = client.sites.get_by_url(test_root_site_url).term_store
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     def test1_list_groups(self):
         result = self.target_store.groups.top(1).get().execute_query()

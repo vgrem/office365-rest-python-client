@@ -8,8 +8,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from tests import test_team_site_url, test_user_credentials
 
 
-def print_progress(return_types):
-    # type: (List[ClientObject]) -> None
+def print_progress(return_types: List[ClientObject]) -> None:
     items_count = len([t for t in return_types if isinstance(t, ListItem)])
     print("{0} list items has been created".format(items_count))
 
@@ -35,8 +34,7 @@ def load_data_source(amount=1000):
     return contacts
 
 
-def run(context):
-    # type: (ClientContext) -> None
+def run(context: ClientContext) -> None:
     contacts_data = load_data_source()
     contacts_list = context.web.lists.get_by_title("Contacts_Large")
     for idx, contact in enumerate(contacts_data):

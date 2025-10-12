@@ -7,9 +7,9 @@ from tests.onedrive.test_excel import upload_excel
 
 
 class TestExcelRanges(GraphTestCase):
-    excel_file = None  # type: DriveItem
-    named_item = None  # type: WorkbookNamedItem
-    range = None  # type: WorkbookRange
+    excel_file: DriveItem = None
+    named_item: WorkbookNamedItem = None
+    range: WorkbookRange = None
     sheet_name = create_unique_name("Sheet")
 
     @classmethod

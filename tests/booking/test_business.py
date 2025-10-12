@@ -4,7 +4,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestBusiness(GraphTestCase):
-    business = None  # type: BookingBusiness
+    business: BookingBusiness = None
 
     @requires_delegated_permission(
         "Bookings.Read.All",

@@ -6,7 +6,7 @@ from tests.graph_case import GraphTestCase
 class TestWebPart(GraphTestCase):
     """OneDrive specific test case for web parts"""
 
-    target_page = None  # type: SitePage
+    target_page: SitePage = None
 
     @classmethod
     def setUpClass(cls):

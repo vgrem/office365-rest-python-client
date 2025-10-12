@@ -641,6 +641,10 @@
          </ComplexType>
          <ComplexType Name="NgspRequestParams">
             <Property Name="FollowedSites" Type="SP.FollowedSitesParams"/>
+            <Property Name="RecentFiles" Type="SP.RecentFilesParams"/>
+         </ComplexType>
+         <ComplexType Name="RecentFilesParams">
+            <Property Name="Top" Type="Edm.Int32"/>
          </ComplexType>
          <ComplexType Name="Placeholder">
             <Property Name="DataType" Type="Edm.String"/>
@@ -5507,7 +5511,6 @@
             <EntitySet Name="SitePageMetadatas" EntityType="SP.Publishing.SitePageMetadata"/>
             <EntitySet Name="CanCreatePageResponses" EntityType="SP.Publishing.CanCreatePageResponse"/>
             <EntitySet Name="CommunicationSites" EntityType="SP.Publishing.CommunicationSite"/>
-            <EntitySet Name="DynamicContentSignals" EntityType="SP.Publishing.DynamicContentSignal"/>
             <EntitySet Name="EmbedDataV1s" EntityType="SP.Publishing.EmbedDataV1"/>
             <EntitySet Name="EmbedServices" EntityType="SP.Publishing.EmbedService"/>
             <EntitySet Name="HighlightsInfos" EntityType="SP.Publishing.HighlightsInfo"/>
@@ -6404,6 +6407,7 @@
             <FunctionImport Name="GetAutofillCustomModelDefaultParameters" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
                <Parameter Name="customModelId" Type="Edm.String"/>
+               <Parameter Name="keepTokenCountLimit" Type="Edm.Boolean" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="GetAutofillCustomModelSettings" ReturnType="Collection(SP.SyntexCustomModelSetting)" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
@@ -9441,34 +9445,6 @@
             <FunctionImport Name="Status" ReturnType="SP.Publishing.CommunicationSiteCreationResponse" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.CommunicationSite"/>
                <Parameter Name="url" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="Create" ReturnType="SP.Publishing.DynamicContentSignal" IsBindable="true" EntitySet="DynamicContentSignals">
-               <Parameter Name="this" Type="Collection(SP.Publishing.DynamicContentSignal)"/>
-               <Parameter Name="signals" Type="SP.Publishing.DynamicContentSignalsPayload"/>
-            </FunctionImport>
-            <FunctionImport Name="GetById" ReturnType="SP.Publishing.DynamicContentSignal" IsComposable="true" IsBindable="true" EntitySet="DynamicContentSignals">
-               <Parameter Name="this" Type="Collection(SP.Publishing.DynamicContentSignal)"/>
-               <Parameter Name="id" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="AddQuestion" IsBindable="true">
-               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
-               <Parameter Name="question" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="Delete" IsBindable="true">
-               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
-            </FunctionImport>
-            <FunctionImport Name="RemoveQuestion" IsBindable="true">
-               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
-               <Parameter Name="id" Type="Edm.String"/>
-               <Parameter Name="isAggregated" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SendSignal" IsBindable="true">
-               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
-               <Parameter Name="action" Type="SP.Publishing.FaqSignalActionPayload"/>
-            </FunctionImport>
-            <FunctionImport Name="Update" IsBindable="true">
-               <Parameter Name="this" Type="SP.Publishing.DynamicContentSignal"/>
-               <Parameter Name="payload" Type="SP.Publishing.DynamicContentSignalsPayload"/>
             </FunctionImport>
             <FunctionImport Name="SP_Publishing_EmbedService" ReturnType="SP.Publishing.EmbedService" IsComposable="true" EntitySet="EmbedServices"/>
             <FunctionImport Name="EmbedData" ReturnType="SP.Publishing.EmbedDataV1" IsComposable="true" IsBindable="true" EntitySet="EmbedDataV1s">
@@ -19431,6 +19407,10 @@
                <Parameter Name="updateType" Type="Edm.String"/>
                <Parameter Name="parameters" Type="Microsoft.Online.SharePoint.TenantAdministration.UpdateGroupSitePropertiesParameters"/>
             </FunctionImport>
+            <FunctionImport Name="UpdateJobsWorkItems" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="jobIds" Type="Collection(Edm.Guid)" Nullable="false"/>
+            </FunctionImport>
             <FunctionImport Name="UpdatePolicyDefinition" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="itemId" Type="Edm.Int32" Nullable="false"/>
@@ -26994,12 +26974,6 @@
          <Annotations Target="SP.Publishing.SitePage/CreationMode">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="SP.Publishing.DynamicContentSignal">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.Publishing.SitePage/DynamicContentSignals">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
          <Annotations Target="SP.Publishing.SitePage/IsLikedByCurrentUser">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -28236,7 +28210,7 @@
          <Annotations Target="SP.ApiData/GetAutofillColumnSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="SP.ApiData/GetAutofillCustomModelDefaultParameters(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.String)">
+         <Annotations Target="SP.ApiData/GetAutofillCustomModelDefaultParameters(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.String, Edm.Boolean)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/GetAutofillCustomModelSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub)">
@@ -28693,24 +28667,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Enable(SP.Publishing.CommunicationSite, Edm.Guid)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/Create(Collection(SP.Publishing.DynamicContentSignal), SP.Publishing.DynamicContentSignalsPayload)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/AddQuestion(SP.Publishing.DynamicContentSignal, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/Delete(SP.Publishing.DynamicContentSignal)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/RemoveQuestion(SP.Publishing.DynamicContentSignal, Edm.String, Edm.Boolean)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/SendSignal(SP.Publishing.DynamicContentSignal, SP.Publishing.FaqSignalActionPayload)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/Update(SP.Publishing.DynamicContentSignal, SP.Publishing.DynamicContentSignalsPayload)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_Publishing_EmbedService()">
@@ -35951,11 +35907,6 @@
             <Property Name="Lcid" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Text" Type="Edm.String"/>
          </ComplexType>
-         <ComplexType Name="DynamicFaqSingalsData">
-            <Property Name="Id" Type="Edm.String"/>
-            <Property Name="SubmittedAt" Type="Edm.DateTime" Nullable="false"/>
-            <Property Name="SubmittedQuestion" Type="Edm.String"/>
-         </ComplexType>
          <ComplexType Name="AmplifiedChannels">
             <Property Name="WasAmplifiedToEmail" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="WasAmplifiedToSharePoint" Type="Edm.Boolean" Nullable="false"/>
@@ -36173,29 +36124,8 @@
          <ComplexType Name="DateTimeCustomProperty" BaseType="SP.Publishing.ProfileDateTime">
             <Property Name="CustomPropertyName" Type="Edm.String"/>
          </ComplexType>
-         <ComplexType Name="DynamicContentSignalsPayload">
-            <Property Name="AdditionalData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
-            <Property Name="AggregatedData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
-            <Property Name="FaqSignals" Type="Collection(SP.Publishing.FaqSignalData)"/>
-            <Property Name="Id" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="FaqSignalData">
-            <Property Name="QuestionId" Type="Edm.String"/>
-            <Property Name="SignalType" Type="Edm.Int32" Nullable="false"/>
-            <Property Name="Submits" Type="Collection(SP.Publishing.SubmitInfo)"/>
-            <Property Name="Value" Type="Edm.Int64" Nullable="false"/>
-         </ComplexType>
-         <ComplexType Name="SubmitInfo">
-            <Property Name="SubmittedAt" Type="Edm.DateTime" Nullable="false"/>
-            <Property Name="SubmittedBy" Type="Edm.String"/>
-         </ComplexType>
          <ComplexType Name="Error">
             <Property Name="Details" Type="Collection(Edm.String)"/>
-         </ComplexType>
-         <ComplexType Name="FaqSignalActionPayload">
-            <Property Name="ActionType" Type="Edm.Int32" Nullable="false"/>
-            <Property Name="QuestionId" Type="Edm.String"/>
-            <Property Name="SignalType" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="RepostPageFieldsData" BaseType="SP.Publishing.SitePageFieldsData"/>
          <ComplexType Name="FeedVideoPageFieldsData" BaseType="SP.Publishing.RepostPageFieldsData"/>
@@ -36676,18 +36606,7 @@
             <Property Name="PublicationRecipients" Type="Edm.String"/>
             <Property Name="SitePageFlags" Type="Edm.String"/>
             <Property Name="SourceDynamicSectionId" Type="Edm.String"/>
-            <NavigationProperty Name="DynamicContentSignals" Relationship="SP.Publishing.SP_Publishing_SitePage_DynamicContentSignals_SP_Publishing_DynamicContentSignal_DynamicContentSignalsPartner" ToRole="DynamicContentSignals" FromRole="DynamicContentSignalsPartner"/>
             <NavigationProperty Name="Translations" Relationship="SP.SP_Publishing_SitePage_Translations_SP_TranslationStatusCollection_TranslationsPartner" ToRole="Translations" FromRole="TranslationsPartner"/>
-         </EntityType>
-         <EntityType Name="DynamicContentSignal">
-            <Key>
-               <PropertyRef Name="Id"/>
-            </Key>
-            <Property Name="AdditionalData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
-            <Property Name="AggregatedData" Type="Collection(SP.Publishing.DynamicFaqSingalsData)"/>
-            <Property Name="FaqSignals" Type="Collection(SP.Publishing.FaqSignalData)"/>
-            <Property Name="Id" Type="Edm.String" Nullable="false"/>
-            <Property Name="itemId" Type="Edm.Int32" Nullable="false"/>
          </EntityType>
          <EntityType Name="CampaignPublication" BaseType="SP.Publishing.SitePage">
             <Property Name="EmailEndpoint" Type="Edm.String"/>
@@ -37089,10 +37008,6 @@
          <Association Name="SP_Publishing_SitePageMetadata_LastModifiedBy_SP_Publishing_UserInfo_LastModifiedByPartner">
             <End Type="SP.Publishing.UserInfo" Role="LastModifiedBy" Multiplicity="0..1"/>
             <End Type="SP.Publishing.SitePageMetadata" Role="LastModifiedByPartner" Multiplicity="0..1"/>
-         </Association>
-         <Association Name="SP_Publishing_SitePage_DynamicContentSignals_SP_Publishing_DynamicContentSignal_DynamicContentSignalsPartner">
-            <End Type="SP.Publishing.DynamicContentSignal" Role="DynamicContentSignals" Multiplicity="*"/>
-            <End Type="SP.Publishing.SitePage" Role="DynamicContentSignalsPartner" Multiplicity="0..1"/>
          </Association>
          <Association Name="SP_Publishing_PointPublishingPostServiceManager_contributors_SP_Publishing_PointPublishingUser_contributorsPartner">
             <End Type="SP.Publishing.PointPublishingUser" Role="contributors" Multiplicity="*"/>
@@ -40905,6 +40820,7 @@
             <Property Name="isStubFile" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="itemUniqueId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="itemUrl" Type="Edm.String"/>
+            <Property Name="listId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="microserviceShareUiUrl" Type="Edm.String"/>
             <Property Name="outlookEndpointHostUrl" Type="Edm.String"/>
             <Property Name="permissionsInformation" Type="SP.Sharing.PermissionCollection"/>
@@ -41881,6 +41797,7 @@
             <Property Name="Readers" Type="Collection(Edm.String)"/>
             <Property Name="ReadOnlyForBlockDownloadPolicy" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ReadOnlyForUnmanagedDevices" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="RestrictContentOrgWideSearch" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SensitivityLabel" Type="Edm.String"/>
             <Property Name="SharingAllowedDomainList" Type="Edm.String"/>
             <Property Name="SharingBlockedDomainList" Type="Edm.String"/>
@@ -42277,6 +42194,7 @@
          <ComplexType Name="SyntexFeatureScopeSettingsValues">
             <Property Name="Enabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="FileName" Type="Edm.String"/>
+            <Property Name="SiteScopingMode" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SyntexGetModifiedListResponse">
             <Property Name="IgnoredUrlsList" Type="Collection(Edm.String)"/>
@@ -42822,6 +42740,7 @@
             <Property Name="IsVivaHomeGAFlightEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsWBFluidEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="KnowledgeAgentEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="KnowledgeAgentScopeMode" Type="Edm.Int32" Nullable="false"/>
             <Property Name="KnowledgeAgentSiteInfoList" Type="Collection(Microsoft.Online.SharePoint.TenantAdministration.SiteInfoForSitePicker)"/>
             <Property Name="KnowledgeAgentSiteList" Type="Collection(Edm.Guid)" Nullable="false"/>
             <Property Name="KnowledgeAgentSiteListFileName" Type="Edm.String"/>

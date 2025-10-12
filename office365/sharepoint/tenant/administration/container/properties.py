@@ -46,6 +46,7 @@ class SPContainerProperties(ClientValue):
         storage_used: int = None,
         transfer_from_principal_owner_identifier: str = None,
         writers: StringCollection = StringCollection(),
+        restrict_content_org_wide_search: bool = None,
     ):
         self.AllowEditing = allow_editing
         self.ArchivedBy = archived_by
@@ -83,6 +84,7 @@ class SPContainerProperties(ClientValue):
         self.StorageUsed = storage_used
         self.TransferFromPrincipalOwnerIdentifier = transfer_from_principal_owner_identifier
         self.Writers = writers
+        self.RestrictContentOrgWideSearch = restrict_content_org_wide_search
 
     @property
     def entity_type_name(self):

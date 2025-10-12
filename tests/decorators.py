@@ -20,13 +20,10 @@ def _get_cached_permissions(client: GraphClient, client_id: str) -> AppRoleColle
     return result.value
 
 
-def requires_app_permission(*app_roles):
-    # type: (*str) -> Callable[[T], T]
-    def decorator(test_method):
-        # type: (T) -> T
+def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
+    def decorator(test_method: T) -> T:
         @wraps(test_method)
-        def wrapper(self, *args, **kwargs):
-            # type: (TestCase, *Any, **Any) -> Any
+        def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
             client = getattr(self, "client", None)
             if not client:
                 self.skipTest("No client available for permission check")
@@ -45,23 +42,19 @@ def requires_app_permission(*app_roles):
 
 
 @lru_cache(maxsize=1)
-def _get_cached_delegated_permissions(client, client_id):
-    # type: (GraphClient, str) -> StringCollection
+def _get_cached_delegated_permissions(client: GraphClient, client_id: str) -> StringCollection:
     """Get and cache delegated permissions for a client"""
     resource = client.service_principals.get_by_name("Microsoft Graph")
     result = resource.get_delegated_permissions(client_id).execute_query()
     return result.value
 
 
-def requires_delegated_permission(*scopes):
-    # type: (*str) -> Callable[[T], T]
+def requires_delegated_permission(*scopes: str) -> Callable[[T], T]:
     """Decorator to verify delegated permissions before test execution"""
 
-    def decorator(test_method):
-        # type: (T) -> T
+    def decorator(test_method: T) -> T:
         @wraps(test_method)
-        def wrapper(self, *args, **kwargs):
-            # type: (TestCase, *Any, **Any) -> Any
+        def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
             client = getattr(self, "client", None)
             if not client:
                 self.skipTest("No client available for permission check")
@@ -74,7 +67,7 @@ def requires_delegated_permission(*scopes):
 
             return test_method(self, *args, **kwargs)
 
-        return wrapper  # type: ignore[return-value]
+        return wrapper
 
     return decorator
 

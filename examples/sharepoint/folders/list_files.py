@@ -8,8 +8,7 @@ from office365.sharepoint.files.file import File
 from tests import test_team_site_url, test_user_credentials
 
 
-def print_file(f):
-    # type: (File) -> None
+def print_file(f: File) -> None:
     print(f.server_relative_url)
 
 

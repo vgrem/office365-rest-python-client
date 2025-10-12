@@ -2,11 +2,10 @@ import datetime
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from office365.sharepoint.listitems.listitem import ListItem
 from tests import test_client_credentials, test_team_site_url
 
 
-def build_custom_query(page_size: int = 100):
+def build_custom_query(page_size: int = 100) -> CamlQuery:
     """ "
     :type page_size: int
     """
@@ -32,6 +31,6 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 list_title = "Site Pages"
 site_pages = ctx.web.lists.get_by_title(list_title)
 items = site_pages.get_items(build_custom_query(5)).execute_query()
-print("Total items count: {0}".format(len(items)))
-for index, item in enumerate(items):  # type: int, ListItem
-    print("{0}: {1}".format(index, item.properties["Created"]))
+print(f"Total items count: {len(items)}")
+for index, item in enumerate(items):
+    print(f"{index}: {item.properties['Created']}")

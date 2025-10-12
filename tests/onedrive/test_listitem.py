@@ -9,12 +9,12 @@ from tests.graph_case import GraphTestCase
 class TestListItem(GraphTestCase):
     """"""
 
-    target_list = None  # type: List
-    target_item = None  # type: ListItem
+    target_list: List = None
+    target_item: ListItem = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestListItem, cls).setUpClass()
+        super().setUpClass()
         site = cls.client.sites.get_by_url(test_team_site_url)
         cls.target_list = site.lists.add(create_unique_name("Orders"), ListTemplateType.genericList).execute_query()
 

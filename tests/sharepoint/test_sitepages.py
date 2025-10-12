@@ -6,15 +6,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 class TestSitePages(SPTestCase):
 
-    target_page = None  # type: SitePage
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSitePages, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_page: SitePage = None
 
     def test1_create_draft_page(self):
         page_title = create_unique_name("Site Page ")

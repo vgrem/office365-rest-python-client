@@ -7,13 +7,13 @@ from tests.graph_case import GraphTestCase
 
 
 class TestServicePrincipal(GraphTestCase):
-    target_object = None  # type: ServicePrincipal
-    target_app = None  # type: Application
-    password_creds = None  # type: PasswordCredential
+    target_object: ServicePrincipal = None
+    target_app: Application = None
+    password_creds: PasswordCredential = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestServicePrincipal, cls).setUpClass()
+        super().setUpClass()
         app_name = create_unique_name("App")
         cls.target_app = cls.client.applications.add(app_name).execute_query()
 

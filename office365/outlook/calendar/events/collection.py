@@ -1,5 +1,7 @@
-import datetime
-from typing import List
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, List
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
@@ -14,8 +16,15 @@ class EventCollection(DeltaCollection[Event]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Event, resource_path)
 
-    def add(self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs):
-        # type: (str, str|ItemBody, datetime.datetime, datetime.datetime, List[str], ...) -> Event
+    def add(
+        self,
+        subject: str = None,
+        body: str | ItemBody = None,
+        start: datetime = None,
+        end=datetime,
+        attendees=List[str],
+        **kwargs: Any,
+    ) -> Event:
         """
         Create an event in the user's default calendar or specified calendar.
 

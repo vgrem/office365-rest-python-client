@@ -12,7 +12,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, FileVersion, resource_path)
 
-    def get_by_id(self, version_id: str) -> FileVersion:
+    def get_by_id(self, version_id: int) -> FileVersion:
         """Gets the file version with the specified ID."""
         return FileVersion(
             self.context,

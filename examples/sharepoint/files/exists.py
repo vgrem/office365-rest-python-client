@@ -7,8 +7,7 @@ from office365.sharepoint.webs.web import Web
 from tests import test_client_credentials, test_team_site_url
 
 
-def try_get_file(web, url):
-    # type: (Web, str) -> Optional[File]
+def try_get_file(web: Web, url: str) -> Optional[File]:
     try:
         return web.get_file_by_server_relative_url(url).select(["Exists"]).get().execute_query()
     except ClientRequestException as e:

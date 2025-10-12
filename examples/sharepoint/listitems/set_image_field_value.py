@@ -36,7 +36,7 @@ if len(items) == 0:
 
 
 # 2.Set image field value
-first_item = items[0]  # type: ListItem
+first_item: ListItem = items[0]
 # field_value = ImageFieldValue(image_url)
 field_value_raw = json.dumps({"serverRelativeUrl": image_url})
 first_item.set_property(field_name, field_value_raw).update().execute_query()

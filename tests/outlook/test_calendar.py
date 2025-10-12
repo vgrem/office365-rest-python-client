@@ -12,7 +12,7 @@ class TestCalendar(GraphTestCase):
     """Tests for Calendar"""
 
     cal_name = create_unique_name("Volunteer")
-    target_cal = None  # type: Optional[Calendar]
+    target_cal: Optional[Calendar] = None
 
     @requires_delegated_permission("Calendars.Read.Shared", "Calendars.ReadWrite.Shared")
     def test1_find_my_meeting_times(self):

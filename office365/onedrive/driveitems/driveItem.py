@@ -542,7 +542,7 @@ class DriveItem(BaseItem):
 
             def _construct_request(request: RequestOptions) -> None:
                 request.method = HttpMethod.Patch
-                request.url += "?@microsoft.graph.conflictBehavior={0}".format(conflict_behavior.value)
+                request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 
             qry = ServiceOperationQuery(self, "", None, payload, None, return_type)
             self.context.add_query(qry).before_execute(_construct_request)

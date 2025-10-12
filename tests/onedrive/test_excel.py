@@ -6,8 +6,7 @@ from office365.onedrive.workbooks.tables.table import WorkbookTable
 from tests.graph_case import GraphTestCase
 
 
-def upload_excel(target_drive):
-    # type: (Drive) -> DriveItem
+def upload_excel(target_drive: Drive) -> DriveItem:
     path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
     return target_drive.root.upload_file(path).execute_query()
 

@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
 from functools import wraps
-from typing import Any, Dict, Generic
+from typing import Any, Callable, Dict, Generic
 
 from typing_extensions import Self
 
 from office365.runtime.client_object import T
 
 
-def mapped_property(name):
-    # type: (str) -> callable
+def mapped_property(name: str) -> Callable:
     """
     Decorator that maps a property to a specific key in _properties
 
@@ -16,11 +15,9 @@ def mapped_property(name):
         name: The key to use when storing in _properties dictionary
     """
 
-    def decorator(func):
-        # type: (callable) -> property
+    def decorator(func: Callable) -> property:
         @wraps(func)
-        def wrapper(self):
-            # type: (Any) -> Any
+        def wrapper(self: Any) -> Any:
             value = func(self)
             if hasattr(self, "_properties"):
                 self._properties[name] = value
@@ -34,25 +31,21 @@ def mapped_property(name):
 
 class BaseScanner(ABC, Generic[T]):
 
-    def __init__(self, source):
-        # type: (T) -> None
+    def __init__(self, source: T) -> None:
         self.source = source
-        self._properties = {}  # type: Dict[str, Any]
+        self._properties: Dict[str, Any] = {}
 
     @abstractmethod
-    def build_query(self):
-        # type: () -> Self
+    def build_query(self) -> Self:
         pass
 
-    def scan(self):
-        # type: () -> Self
+    def scan(self) -> Self:
         self.build_query()
         self.source.execute_query()
         self.process()
         return self
 
-    def process(self):
-        # type: () -> None
+    def process(self) -> None:
         for name, attr in self.__class__.__dict__.items():
             if isinstance(attr, property) and hasattr(attr.fget, "_serialized"):
                 getattr(self, name)

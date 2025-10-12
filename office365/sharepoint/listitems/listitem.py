@@ -657,10 +657,10 @@ class ListItem(SecurableObject):
                 super().set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, FieldMultiLookupValue):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super().set_property("{name}Id".format(name=name), collection)
+                super().set_property(f"{name}Id", collection)
                 super().set_property(name, value, False)
             elif isinstance(value, FieldLookupValue):
-                super().set_property("{name}Id".format(name=name), value.LookupId)
+                super().set_property(f"{name}Id", value.LookupId)
                 super().set_property(name, value, False)
             else:
                 super().set_property(name, value, persist_changes)

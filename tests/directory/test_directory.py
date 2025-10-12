@@ -5,7 +5,7 @@ from tests.graph_case import GraphTestCase
 
 
 class TestDirectory(GraphTestCase):
-    administrative_unit = None  # type: AdministrativeUnit
+    administrative_unit: AdministrativeUnit = None
 
     def test2_get_deleted_groups(self):
         result = self.client.directory.deleted_groups.get().execute_query()

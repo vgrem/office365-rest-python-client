@@ -16,12 +16,12 @@ from tests.decorators import requires_app_permission
 
 
 class TestPermissions(TestCase):
-    target_drive_item = None  # type: DriveItem
-    target_permission = None  # type: Permission
+    target_drive_item: DriveItem = None
+    target_permission: Permission = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestPermissions, cls).setUpClass()
+        super().setUpClass()
         client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
         folder_name = "New_" + uuid.uuid4().hex
         cls.target_drive_item = client.sites.root.drive.root.create_folder(folder_name).execute_query()

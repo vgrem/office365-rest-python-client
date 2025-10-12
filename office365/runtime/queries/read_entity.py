@@ -8,8 +8,6 @@ if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
 
 
-
-
 class ReadEntityQuery(ClientQuery[T]):
     def __init__(self, return_type: ClientObject, properties_to_include: List[str] = None) -> None:
         """

@@ -10,20 +10,16 @@ from office365.sharepoint.lists.list import List
 from tests import test_team_site_url, test_user_credentials
 
 
-def run_files_import(target_folder, files_amount=None):
-    # type: (Folder, int) -> None
+def import_files(target_folder: Folder, files_amount: int = None) -> None:
     fake = Faker()
     path = "../../../tests/data/SharePoint User Guide.docx"
     for file_index in range(0, files_amount):
         file_name = fake.file_name(extension="docx")
         target_file = target_folder.files.upload(path, file_name).execute_query()
-        print(
-            "({0} of {1}) File '{2}' has been uploaded".format(file_index, files_amount, target_file.server_relative_url)
-        )
+        print(f"({file_index} of {files_amount}) File '{target_file.server_relative_url}' has been uploaded")
 
 
-def run_folders_import(target_lib, folders_amount, include_files=False, files_amount=None):
-    # type: (List, int, bool, int) -> None
+def import_folders(target_lib: List, folders_amount: int, include_files: bool = False, files_amount: int = None) -> None:
     fake = Faker()
     for folder_index in range(0, folders_amount):
         # 1. Create a folder
@@ -33,11 +29,11 @@ def run_folders_import(target_lib, folders_amount, include_files=False, files_am
 
         if include_files:
             # 2. Upload a file into a folder
-            run_files_import(target_folder, randrange(0, files_amount))
+            import_files(target_folder, randrange(0, files_amount))
 
 
 if __name__ == "__main__":
     ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
     lib = ctx.web.lists.get_by_title("Documents_Archive")
     # run_folders_import(lib, 1, True, 1000)
-    run_files_import(lib.root_folder, 500)
+    import_files(lib.root_folder, 500)
