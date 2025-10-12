@@ -21,7 +21,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
 
     def get_by_label(self, label: str) -> FileVersion:
         """Gets the file version with the specified Label."""
-        return self.single("VersionLabel eq '{0}'".format(label))
+        return self.single(f"VersionLabel eq '{label}'")
 
     def delete_all(self) -> Self:
         """Deletes all the file version objects in the collection."""

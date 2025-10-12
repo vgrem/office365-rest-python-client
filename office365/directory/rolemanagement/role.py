@@ -13,7 +13,7 @@ class DirectoryRole(DirectoryObject):
         return self.id or self.entity_type_name
 
     def __str__(self):
-        return "Name: {0}".format(self.display_name)
+        return f"Name: {self.display_name}"
 
     @property
     def description(self) -> Optional[str]:

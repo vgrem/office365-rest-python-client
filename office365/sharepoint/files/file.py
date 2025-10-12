@@ -582,22 +582,18 @@ class File(AbstractFile):
 
     @staticmethod
     def save_binary(context: ClientContext, server_relative_url: str, content: bytes):
-        """Uploads a file
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type server_relative_url: str
-        :type content: str
-        """
+        """Uploads a file"""
         try:
             decoded_server_relative_url = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
+
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath"
+            rf"(DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
+
         request = RequestOptions(url)
         request.method = HttpMethod.Post
         request.set_header("X-HTTP-Method", "PUT")
@@ -609,21 +605,18 @@ class File(AbstractFile):
     def open_binary(context: ClientContext, server_relative_url: str) -> Response:
         """
         Returns the file object located at the specified server-relative URL.
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type server_relative_url: str
-        :return Response
         """
         try:
             decoded_server_relative_url = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
+
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath("
+            rf"DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
+
         request = RequestOptions(url)
         request.method = HttpMethod.Get
         response = context.pending_request().execute_request_direct(request)

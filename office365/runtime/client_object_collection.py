@@ -335,7 +335,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             if len(col) == 0:
                 raise NotFoundException(return_type, expression)
             elif len(col) > 1:
-                message = "Ambiguous match found for filter: {0}".format(expression)
+                message = f"Ambiguous match found for filter: {expression}"
                 raise ValueError(message)
             [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 

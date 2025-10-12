@@ -159,7 +159,7 @@ class AuthenticationContext:
 
             flow = app.initiate_device_flow(scopes=scopes)
             if "user_code" not in flow:
-                raise ValueError("Failed to create device flow: %s" % json.dumps(flow, indent=4))
+                raise ValueError(f"Failed to create device flow: {json.dumps(flow, indent=4)}")
 
             print(flow["message"])
             sys.stdout.flush()

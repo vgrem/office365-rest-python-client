@@ -31,7 +31,7 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
 
     @property
     def schema_xml(self):
-        list_attr = 'List="{{{list_id}}}"'.format(list_id=self.ListId) if self.ListId is not None else ""
+        list_attr = f'List="{{{self.ListId}}}"' if self.ListId is not None else ""
 
         return """
             <Field Type="{type_name}" DisplayName="{name}" {list_attr}

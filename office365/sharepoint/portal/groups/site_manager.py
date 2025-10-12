@@ -111,7 +111,7 @@ class GroupSiteManager(ClientObject):
 
             def _construct_request(request: RequestOptions) -> None:
                 request.method = HttpMethod.Get
-                request.url += "?groupId='{0}'".format(group_id)
+                request.url += f"?groupId='{group_id}'"
 
             self.context.add_query(qry).before_query_execute(_construct_request)
 

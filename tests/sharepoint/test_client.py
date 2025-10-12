@@ -64,7 +64,9 @@ class TestSharePointClient(TestCase):
         pass
 
     def test8_execute_multiple_queries_sequentially(self):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         current_user = client.web.current_user
         client.load(current_user)
         current_web = client.web

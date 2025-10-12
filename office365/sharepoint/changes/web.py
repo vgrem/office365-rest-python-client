@@ -7,7 +7,7 @@ class ChangeWeb(Change):
     """Specifies a change on a site"""
 
     def __repr__(self):
-        return "Web: {0}, Action: {1}".format(self.web_id, self.change_type_name)
+        return f"Web: {self.web_id}, Action: {self.change_type_name}"
 
     @property
     def web_id(self) -> Optional[str]:

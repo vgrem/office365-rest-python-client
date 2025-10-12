@@ -39,7 +39,7 @@ class UserCollection(EntityCollection[User]):
 
     def get_by_principal_name(self, value: str) -> User:
         """Returns the user with the specified principal name."""
-        return self.single("UserPrincipalName eq '{0}'".format(value))
+        return self.single(f"UserPrincipalName eq '{value}'")
 
     def get_by_email(self, email: str) -> User:
         """

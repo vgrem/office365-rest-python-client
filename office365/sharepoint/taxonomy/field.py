@@ -86,7 +86,7 @@ class TaxonomyField(FieldLookup):
 
     def _create_text_field(self, name: str):
         """Creates hidden text field"""
-        text_field_name = "{name}".format(name=uuid.uuid4().hex)
+        text_field_name = f"{uuid.uuid4().hex}"
         text_field_schema = """
                     <Field Type="Note" DisplayName="{name}_0" Hidden="TRUE" CanBeDeleted="TRUE" ShowInViewForms="FALSE"
                            CanToggleHidden="TRUE" StaticName="{text_field_name}" Name="{text_field_name}">

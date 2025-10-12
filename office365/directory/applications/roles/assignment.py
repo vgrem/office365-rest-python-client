@@ -13,7 +13,7 @@ class AppRoleAssignment(DirectoryObject):
     """
 
     def __str__(self):
-        return "Principal: {0}, AppRole: {1}".format(self.principal_display_name, self.app_role_id)
+        return f"Principal: {self.principal_display_name}, AppRole: {self.app_role_id}"
 
     @property
     def app_role_id(self) -> Optional[str]:

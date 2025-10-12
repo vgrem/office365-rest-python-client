@@ -19,7 +19,7 @@ class ResourceAccess(ClientValue):
         self.type = type_
 
     def __repr__(self):
-        return "ResourceAccess(id={!r}, type={!r})".format(self.id, self.type)
+        return f"ResourceAccess(id={self.id!r}, type={self.type!r})"
 
     @property
     def type_name(self):

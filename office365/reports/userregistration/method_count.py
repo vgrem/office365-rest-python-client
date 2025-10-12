@@ -13,4 +13,4 @@ class UserRegistrationMethodCount(ClientValue):
         self.userCount = user_count
 
     def __repr__(self):
-        return "{0}: {1}".format(self.authenticationMethod, self.userCount)
+        return f"{self.authenticationMethod}: {self.userCount}"

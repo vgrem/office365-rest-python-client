@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -19,7 +21,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
             resource_path = ResourcePath("SP.Publishing.SitePageCollection")
         super().__init__(context, SitePage, resource_path)
 
-    def add(self):
+    def add(self) -> SitePage:
         """Adds Site Page"""
         return_type = SitePage(self.context)
         return_type.set_property("Title", "", True)
@@ -28,7 +30,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.add_child(return_type)
         return return_type
 
-    def create_app_page(self, web_part_data=None):
+    def create_app_page(self, web_part_data: str = None) -> ClientResult[str]:
         """
         :param str web_part_data:
         """
@@ -47,7 +49,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
-    def is_site_page(self, url):
+    def is_site_page(self, url: str) -> ClientResult[bool]:
         """
         Indicates whether a specific item is a modern site page.
         :param str url: URL of the SitePage to be checked.
@@ -57,7 +59,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
-    def get_page_column_state(self, url):
+    def get_page_column_state(self, url: str) -> ClientResult[int]:
         """
         Determines whether a specific SitePage is a single or multicolumn page.
 
@@ -68,18 +70,18 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_url(self, url):
+    def get_by_url(self, url: str) -> SitePage:
         """Gets the site page with the specified server relative url.
 
         :param str url: Specifies the server relative url of the site page.
         """
         return SitePage(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> SitePage:
         """Gets the site page with the specified file name.
         :param str name: Specifies the name of the site page.
         """
-        return self.single("FileName eq '{0}'".format(name))
+        return self.single(f"FileName eq '{name}'")
 
     def templates(self):
         """"""
@@ -89,7 +91,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
             ServiceOperationPath("Templates", None, self.resource_path),
         )
 
-    def update_full_page_app(self, server_relative_url, web_part_data_as_json):
+    def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
         """
         :param str server_relative_url:
         :param str web_part_data_as_json:

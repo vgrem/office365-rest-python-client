@@ -45,8 +45,10 @@ class V4JsonFormat(ODataJsonFormat):
 
     @property
     def media_type(self):
-        return "application/json;odata.metadata={0};odata.streaming={1};IEEE754Compatible={2}".format(
-            self.metadata_level, self.streaming, self.IEEE754Compatible
+        return (
+            f"application/json;odata.metadata={self.metadata_level};"
+            f"odata.streaming={self.streaming};"
+            f"IEEE754Compatible={self.IEEE754Compatible}"
         )
 
     @property

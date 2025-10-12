@@ -190,7 +190,7 @@ class User(DirectoryObject):
             request.data = json.dumps(request.data)
 
         def _assign_manager(user_id: str) -> None:
-            payload = {"@odata.id": "https://graph.microsoft.com/v1.0/users/{0}".format(user_id)}
+            payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
             self.context.add_query(qry).before_query_execute(_construct_request)
 
@@ -404,7 +404,7 @@ class User(DirectoryObject):
 
     def find_meeting_times(
         self,
-        attendees=None,
+        attendees: List[AttendeeBase] = None,
         location_constraint=None,
         time_constraint=None,
         meeting_duration=None,
@@ -478,7 +478,7 @@ class User(DirectoryObject):
 
         def _construct_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Get
-            request.url += "?startDateTime={0}&endDateTime={1}".format(start_dt.isoformat(), end_dt.isoformat())
+            request.url += f"?startDateTime={start_dt.isoformat()}&endDateTime={end_dt.isoformat()}"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type

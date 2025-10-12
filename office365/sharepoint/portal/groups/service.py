@@ -23,7 +23,7 @@ class GroupService(Entity):
         qry = ServiceOperationQuery(self, "GetGroupImage", None, None, None, return_type)
 
         def _create_request(request: RequestOptions) -> None:
-            request.url += "?id='{0}'&hash={1}".format(group_id, image_hash)
+            request.url += f"?id='{group_id}'&hash={image_hash}"
             request.method = HttpMethod.Get
 
         self.context.add_query(qry).before_query_execute(_create_request)

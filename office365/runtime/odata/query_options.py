@@ -54,7 +54,7 @@ class QueryOptions:
         Returns:
             URL-encoded query string (without leading ?)
         """
-        return "&".join(["$%s=%s" % (key, value) for (key, value) in self])
+        return "&".join([f"${key}={value}" for (key, value) in self])
 
     def __iter__(self) -> Iterator[Tuple[str, str]]:
         """Yields non-empty query options as key-value pairs."""

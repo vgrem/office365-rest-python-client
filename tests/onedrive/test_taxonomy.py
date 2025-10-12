@@ -21,7 +21,6 @@ class TestTermStore(GraphTestCase):
         client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
         cls.target_store = client.sites.get_by_url(test_root_site_url).term_store
 
-
     def test1_list_groups(self):
         result = self.target_store.groups.top(1).get().execute_query()
         self.assertLessEqual(len(result), 1)

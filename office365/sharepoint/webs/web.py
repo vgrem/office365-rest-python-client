@@ -192,18 +192,18 @@ class Web(SecurableObject):
         qry = ClientQuery(self.context, return_type=return_type)
 
         def _construct_request(request: RequestOptions):
-            request.url = "{0}/_layouts/15/DocIdRedir.aspx?ID={1}".format(self.context.base_url, doc_id)
+            request.url = f"{self.context.base_url}/_layouts/15/DocIdRedir.aspx?ID={doc_id}"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
 
     def get_site_script(
         self,
-        include_branding=True,
-        included_lists=None,
-        include_links_to_exported_items=True,
-        include_regional_settings=True,
-    ):
+        include_branding: bool = True,
+        included_lists: List[str] = None,
+        include_links_to_exported_items: bool = True,
+        include_regional_settings: bool = True,
+    ) -> ClientResult[SiteScriptSerializationResult]:
         """
         Creates site script syntax from current SharePoint site.
 
@@ -276,7 +276,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_push_notification_subscriber(self, device_app_instance_id: str):
+    def get_push_notification_subscriber(self, device_app_instance_id: str) -> PushNotificationSubscriber:
         """
         Specifies the push notification subscriber over the site for the specified device app instance identifier.
 
@@ -1303,8 +1303,8 @@ class Web(SecurableObject):
                 ExternalSharingSiteOption.Owner: self.associated_owner_group,
             }
 
-            picker_input = "[{0}]".format(picker_result.value)
-            role_value = "group:{groupId}".format(groupId=groups[share_option].id)
+            picker_input = f"[{picker_result.value}]"
+            role_value = f"group:{groups[share_option].id}"
             Web.share_object(
                 self.context,
                 self.url,

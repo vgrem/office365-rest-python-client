@@ -9,8 +9,8 @@ class EntityPath(ResourcePath):
         if self._key is None:
             return "(<key>)"
         elif isinstance(self._key, int):
-            return "({0})".format(self._key)
-        return "('{0}')".format(self._key)
+            return f"({self._key})"
+        return f"('{self._key}')"
 
     @property
     def delimiter(self):

@@ -34,7 +34,7 @@ class ODataBatchV3Request(ODataRequest):
         request = RequestOptions(url=query.url)
         request.method = HttpMethod.Post
         media_type = "multipart/mixed"
-        content_type = "; ".join([media_type, "boundary={0}".format(query.current_boundary)])
+        content_type = "; ".join([media_type, f"boundary={query.current_boundary}"])
         request.ensure_header("Content-Type", content_type)
         request.data = self._prepare_payload(query)
         return request

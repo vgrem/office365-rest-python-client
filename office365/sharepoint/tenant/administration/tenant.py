@@ -510,7 +510,7 @@ class Tenant(Entity):
         return return_type
 
     def get_site(self, site_url: str) -> ListItem:
-        return self._aggregated_site_collections_list.items.single("SiteUrl eq '{0}'".format(site_url.rstrip("/"))).get()
+        return self._aggregated_site_collections_list.items.single(f"SiteUrl eq '{site_url.rstrip('/')}'").get()
 
     def get_sites_by_state(self, states: List[int] = None):
         """

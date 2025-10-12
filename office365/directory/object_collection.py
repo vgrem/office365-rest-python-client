@@ -67,7 +67,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         """
 
         def _remove(id_):
-            qry = ServiceOperationQuery(self, "{0}/$ref".format(id_))
+            qry = ServiceOperationQuery(self, f"{id_}/$ref")
 
             def _construct_request(request: RequestOptions) -> None:
                 request.method = HttpMethod.Delete

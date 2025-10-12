@@ -39,7 +39,7 @@ class TokenResponse:
         Returns:
             Formatted "Bearer {token}" string
         """
-        return "Bearer {0}".format(self.accessToken)
+        return f"Bearer {self.accessToken}"
 
     @staticmethod
     def from_json(value: Dict[str, Any]) -> "TokenResponse":

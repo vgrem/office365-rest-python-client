@@ -200,12 +200,12 @@ class ServicePrincipal(DirectoryObject):
                     return_type[0].delete_object()
 
             if principal:
-                query_text = "clientId eq '{0}' and principalId eq '{1}' and resourceId eq '{2}'".format(
-                    client_id, principal_id, self.id
+                query_text = (
+                    f"clientId eq '{client_id}' and principalId eq '{principal_id}' and resourceId eq '{self.id}'"
                 )
             else:
-                query_text = "clientId eq '{0}' and consentType eq 'AllPrincipals' and resourceId eq '{1}'".format(
-                    client_id, self.id
+                query_text = (
+                    f"clientId eq '{client_id}' and consentType eq 'AllPrincipals' and resourceId eq '{self.id}'"
                 )
 
             self.context.oauth2_permission_grants.filter(query_text).get().after_execute(_after)

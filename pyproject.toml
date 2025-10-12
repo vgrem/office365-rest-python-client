@@ -14,7 +14,6 @@ disable = [
     "C0111",
     "C0112", # empty-docstring
     "C0114", # missing-module-docstring
-    "C0209", # consider-using f-string
     "C0302", # too-many-lines
     "C0303",
     "C0415", # import-outside-toplevel
@@ -25,7 +24,6 @@ disable = [
     "R0401", # cyclic-import (!)
     "R0801", # duplicate-code
     "R0902", # too-many-instance-attributes
-    "R0903", # too-few-public-methods
     "R0903", # too-few-public-methods
     "R0904", # too-many-public-methods
     "R0912", # too-many-branches

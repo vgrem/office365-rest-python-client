@@ -23,7 +23,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
         :param str name: Content type name
         """
-        return self.single("Name eq '{0}'".format(name))
+        return self.single(f"Name eq '{name}'")
 
     def get_by_id(self, content_type_id: str) -> ContentType:
         """

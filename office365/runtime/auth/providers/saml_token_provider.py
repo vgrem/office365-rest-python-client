@@ -1,7 +1,7 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Dict, Optional
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -21,7 +21,7 @@ from office365.runtime.http.request_options import RequestOptions
 office365.logger.ensure_debug_secrets()
 
 
-def string_escape(value):
+def string_escape(value: str) -> str:
     value = value.replace("&", "&amp;")
     value = value.replace("<", "&lt;")
     value = value.replace(">", "&gt;")
@@ -30,7 +30,7 @@ def string_escape(value):
     return value
 
 
-def datetime_escape(value):
+def datetime_escape(value: datetime) -> str:
     return value.isoformat("T")[:-9] + "Z"
 
 
@@ -89,7 +89,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         logger.debug_secrets(self._cached_auth_cookies)
         request.set_header("Cookie", self._cached_auth_cookies.cookie_header)
 
-    def get_authentication_cookie(self):
+    def get_authentication_cookie(self) -> AuthCookies:
         """Acquire authentication cookie"""
         logger = self.logger(self.get_authentication_cookie.__name__)
         logger.debug("get_authentication_cookie called")
@@ -107,7 +107,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             self.error = f"Error: {e}"
             raise ValueError(e.response.text)
 
-    def _get_user_realm(self):
+    def _get_user_realm(self) -> Optional[UserRealmInfo]:
         """Get User Realm"""
         resp = requests.post(
             self._sts_profile.user_realm_service_url,
@@ -124,7 +124,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             return info
         return None
 
-    def _acquire_service_token_from_adfs(self, adfs_url):
+    def _acquire_service_token_from_adfs(self, adfs_url: str) -> Optional[str]:
         logger = self.logger(self._acquire_service_token_from_adfs.__name__)
 
         payload = self._prepare_request_from_template(
@@ -172,7 +172,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             logger.error(self.error)
             return None
 
-    def _acquire_service_token(self):
+    def _acquire_service_token(self) -> Optional[str]:
         """Retrieve service token"""
         logger = self.logger(self._acquire_service_token.__name__)
 
@@ -205,17 +205,21 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         try:
             xml = ElementTree.fromstring(response.content)
         except ElementTree.ParseError as e:
-            self.error = "An error occurred while parsing the server response: {}".format(e)
+            self.error = f"An error occurred while parsing the server response: {e}"
             logger.error(self.error)
             return None
 
         # check for errors
-        if xml.find("{0}Body/{0}Fault".format(self.__ns_prefixes["s"])) is not None:
+        if xml.find(f"{self.__ns_prefixes['s']}Body/{self.__ns_prefixes['s']}Fault") is not None:
             error = xml.find(
-                "{0}Body/{0}Fault/{0}Detail/{1}error/{1}internalerror/{1}text".format(
-                    self.__ns_prefixes["s"], self.__ns_prefixes["psf"]
-                )
+                f"{self.__ns_prefixes['s']}Body/"
+                f"{self.__ns_prefixes['s']}Fault/"
+                f"{self.__ns_prefixes['s']}Detail/"
+                f"{self.__ns_prefixes['psf']}error/"
+                f"{self.__ns_prefixes['psf']}internalerror/"
+                f"{self.__ns_prefixes['psf']}text"
             )
+
             if error is None:
                 self.error = "An error occurred while retrieving token from XML response."
             else:
@@ -225,22 +229,20 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
 
         # extract token
         token = xml.find(
-            "{0}Body/{1}RequestSecurityTokenResponse/{1}RequestedSecurityToken/{2}BinarySecurityToken".format(
-                self.__ns_prefixes["s"],
-                self.__ns_prefixes["wst"],
-                self.__ns_prefixes["wsse"],
-            )
+            f"{self.__ns_prefixes['s']}Body/"
+            f"{self.__ns_prefixes['wst']}RequestSecurityTokenResponse/"
+            f"{self.__ns_prefixes['wst']}RequestedSecurityToken/"
+            f"{self.__ns_prefixes['wsse']}BinarySecurityToken"
         )
+
         if token is None:
-            self.error = "Cannot get binary security token for from {0}".format(
-                self._sts_profile.security_token_service_url
-            )
+            self.error = f"Cannot get binary security token for from {self._sts_profile.security_token_service_url}"
             logger.error(self.error)
             raise ValueError(self.error)
         logger.debug_secrets("token: %s", token)
         return token.text
 
-    def _get_authentication_cookie(self, security_token, federated=False):
+    def _get_authentication_cookie(self, security_token: str, federated: bool = False) -> AuthCookies:
         """Retrieve auth cookie from STS
 
         :type federated: bool
@@ -261,13 +263,13 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
                 headers["User-Agent"] = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
             session.post(self._sts_profile.signin_page_url, data=security_token, headers=headers)
         else:
-            idcrl_endpoint = "https://{}/_vti_bin/idcrl.svc/".format(self._sts_profile.tenant)
+            idcrl_endpoint = f"https://{self._sts_profile.tenant}/_vti_bin/idcrl.svc/"
             session.get(
                 idcrl_endpoint,
                 headers={
                     "User-Agent": "Office365 Python Client",
                     "X-IDCRL_ACCEPTED": "t",
-                    "Authorization": "BPOSIDCRL {0}".format(security_token),
+                    "Authorization": f"BPOSIDCRL {security_token}",
                 },
             )
         logger.debug_secrets("session.cookies: %s", session.cookies)
@@ -279,7 +281,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             raise ValueError(self.error)
         return cookies
 
-    def _prepare_request_from_template(self, template_name, params):
+    def _prepare_request_from_template(self, template_name: str, params: Dict[str, str]) -> str:
         """Construct the request body to acquire security token from STS endpoint"""
         logger = self.logger(self._prepare_request_from_template.__name__)
         logger.debug_secrets("params: %s", params)
