@@ -139,7 +139,7 @@ class Web(SecurableObject):
         """ """
         if resource_path is None:
             resource_path = WebPath("Web")
-        super(Web, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
         self._web_url = None
 
     def __str__(self):
@@ -2453,10 +2453,10 @@ class Web(SecurableObject):
                 "ThemeInfo": self.theme_info,
             }
             default_value = property_mapping.get(name, None)
-        return super(Web, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(Web, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         if name == "Url":
             self._web_url = value
             self._resource_path.patch(value)
@@ -2465,7 +2465,7 @@ class Web(SecurableObject):
     @property
     def resource_url(self) -> str:
         """Returns Web url"""
-        orig_resource_url = super(Web, self).resource_url
+        orig_resource_url = super().resource_url
         if self._web_url is not None:
             orig_resource_url = orig_resource_url.replace(self.context.service_root_url, self._web_url + "/_api")
         return orig_resource_url

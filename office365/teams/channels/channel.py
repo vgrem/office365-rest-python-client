@@ -187,10 +187,10 @@ class Channel(Entity):
                 "sharedWithTeams": self.shared_with_teams,
             }
             default_value = property_mapping.get(name, None)
-        return super(Channel, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(Channel, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: fix resource path
         if name == "id":
             self._resource_path = ResourcePath(quote(value), self.resource_path.parent)

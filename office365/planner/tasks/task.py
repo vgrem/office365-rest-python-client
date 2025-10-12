@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -15,24 +16,24 @@ class PlannerTask(Entity):
     """
 
     @property
-    def created_by(self):
+    def created_by(self) -> IdentitySet:
         """Identity of the user that created the task."""
         return self.properties.get("createdBy", IdentitySet())
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """
         Date and time at which the task is created.
         """
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def title(self):
+    def title(self) -> Optional[str]:
         """Required. Title of the task."""
         return self.properties.get("title", None)
 
     @property
-    def details(self):
+    def details(self) -> PlannerTaskDetails:
         """Additional details about the task."""
         return self.properties.get(
             "details",
@@ -46,4 +47,4 @@ class PlannerTask(Entity):
                 "createdDateTime": self.created_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(PlannerTask, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -11,7 +11,7 @@ class SocialRestFeed(Entity):
     """
 
     def __init__(self, context):
-        super(SocialRestFeed, self).__init__(context, ResourcePath("SP.Social.SocialRestFeed"))
+        super().__init__(context, ResourcePath("SP.Social.SocialRestFeed"))
 
     @property
     def social_feed(self):

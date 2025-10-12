@@ -947,10 +947,10 @@ class File(AbstractFile):
                 "VersionExpirationReport": self.version_expiration_report,
             }
             default_value = property_mapping.get(name, None)
-        return super(File, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(File, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
 
         # fallback: prioritize using UniqueId
         if name == "UniqueId":

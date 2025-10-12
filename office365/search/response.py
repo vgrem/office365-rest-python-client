@@ -13,6 +13,6 @@ class SearchResponse(ClientValue):
         :param list[SearchHitsContainer] hits_containers: A collection of search results.
 
         """
-        super(SearchResponse, self).__init__()
+        super().__init__()
         self.searchTerms = StringCollection(search_terms)
         self.hitsContainers = ClientValueCollection(SearchHitsContainer, hits_containers)

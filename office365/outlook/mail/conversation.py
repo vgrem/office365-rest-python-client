@@ -64,4 +64,4 @@ class Conversation(Entity):
         if default_value is None:
             property_mapping = {"lastDeliveredDateTime": self.last_delivered_datetime}
             default_value = property_mapping.get(name, None)
-        return super(Conversation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

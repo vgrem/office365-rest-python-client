@@ -6,7 +6,7 @@ from office365.sharepoint.publishing.pages.reposts.repost import RepostPage
 
 class RepostPageCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
-        super(RepostPageCollection, self).__init__(context, RepostPage, resource_path)
+        super().__init__(context, RepostPage, resource_path)
 
     def is_content_type_available(self):
         return_type = ClientResult(self.context, bool())

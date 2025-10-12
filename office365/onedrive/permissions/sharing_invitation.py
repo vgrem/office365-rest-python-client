@@ -20,7 +20,7 @@ class SharingInvitation(ClientValue):
         :param bool signin_required: If true the recipient of the invitation needs to sign in in order
             to access the shared item. Read-only.
         """
-        super(SharingInvitation, self).__init__()
+        super().__init__()
         self.email = email
         self.invitedBy = invited_by
         self.redeemedBy = redeemed_by

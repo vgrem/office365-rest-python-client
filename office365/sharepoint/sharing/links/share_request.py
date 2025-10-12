@@ -35,12 +35,12 @@ class ShareLinkRequest(ClientValue):
             requested settings. If false, the operation will attempt to retrieve an existing tokenized sharing link
             that matches the requested settings and failing that will terminate the operation.
         """
+        super().__init__()
         self.linkKind = link_kind
         self.expiration = expiration
         self.peoplePickerInput = people_picker_input
         self.settings = settings
         self.createLink = create_link
-        super(ShareLinkRequest, self).__init__()
         self.emailData = email_data
 
     @property

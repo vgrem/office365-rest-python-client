@@ -22,22 +22,15 @@ class SitePageCollection(EntityCollection[SitePage]):
         resource_path: ResourcePath = None,
         parent_list: List = None,
     ) -> None:
-        super(SitePageCollection, self).__init__(context, SitePage, resource_path, parent_list)
-
-    def get(self):
-        def _construct_request(request: RequestOptions) -> None:
-            # request.url += "/microsoft.graph.sitePage"
-            pass
-
-        return super(SitePageCollection, self).get().before_execute(_construct_request)
+        super().__init__(context, SitePage, resource_path, parent_list)
 
     def get_by_name(self, name: str) -> SitePage:
         """Get a sitePage by name."""
-        return self.single("name eq '{0}'".format(name))
+        return self.single(f"name eq '{name}'")
 
     def get_by_title(self, title: str) -> SitePage:
         """Get a sitePage by title."""
-        return self.single("title eq '{0}'".format(title))
+        return self.single(f"title eq '{title}'")
 
     def add(self, title: str, page_layout: str = "article"):
         """
@@ -51,10 +44,10 @@ class SitePageCollection(EntityCollection[SitePage]):
             request.set_header("Content-Type", "application/json")
 
         return (
-            super(SitePageCollection, self)
+            super()
             .add(
                 title=title,
-                name="{0}.aspx".format(title),
+                name=f"{title}.aspx",
                 pageLayout=page_layout,
                 titleArea=TitleArea(),
             )

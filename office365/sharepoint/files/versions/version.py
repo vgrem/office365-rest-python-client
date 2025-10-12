@@ -91,10 +91,10 @@ class FileVersion(Entity):
                 "CreatedBy": self.created_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(FileVersion, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, key, value, persist_changes=True):
-        super(FileVersion, self).set_property(key, value, persist_changes)
+        super().set_property(key, value, persist_changes)
         if key.lower() == self.property_ref_name.lower():
             if self._resource_path is None:
                 self._resource_path = EntityPath(value, self.parent_collection.resource_path)

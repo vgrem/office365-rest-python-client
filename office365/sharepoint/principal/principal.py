@@ -66,7 +66,7 @@ class Principal(Entity):
         return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(Principal, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "LoginName":

@@ -23,7 +23,7 @@ class ViewCollection(EntityCollection):
         resource_path: Optional[ResourcePath] = None,
         parent_list: Optional[List] = None,
     ) -> None:
-        super(ViewCollection, self).__init__(context, View, resource_path, parent_list)
+        super().__init__(context, View, resource_path, parent_list)
 
     def add(self, information: ViewCreationInformation) -> View:
         """

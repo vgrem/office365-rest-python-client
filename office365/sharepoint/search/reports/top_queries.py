@@ -6,7 +6,7 @@ from office365.sharepoint.search.reports.topqueries.item import ReportTopQueries
 class ReportTopQueries(ReportBase):
 
     def __init__(self, reports=None):
-        super(ReportTopQueries, self).__init__()
+        super().__init__()
         self.Reports = ClientValueCollection(ReportTopQueriesItem, reports)
 
     @property

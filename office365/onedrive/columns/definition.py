@@ -197,4 +197,4 @@ class ColumnDefinition(BaseItem):
                 "sourceContentType": self.source_content_type,
             }
             default_value = property_mapping.get(name, None)
-        return super(ColumnDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

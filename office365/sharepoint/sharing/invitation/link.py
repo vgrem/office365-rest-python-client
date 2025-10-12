@@ -13,7 +13,7 @@ class LinkInvitation(ClientValue):
              invited to the tokenized sharing link.
         :param Principal invitee: Indicates a principal who is invited to the tokenized sharing link.
         """
-        super(LinkInvitation, self).__init__()
+        super().__init__()
         self.invitedBy = invited_by
         self.invitedOn = invited_on
         self.invitee = invitee

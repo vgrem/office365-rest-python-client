@@ -36,4 +36,4 @@ class LikedByInformation(Entity):
                 "likedBy": self.liked_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(LikedByInformation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

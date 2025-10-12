@@ -59,10 +59,10 @@ class RoleDefinition(Entity):
                 "BasePermissions": self.base_permissions,
             }
             default_value = property_mapping.get(name, None)
-        return super(RoleDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if self.resource_path is None:
             if name == "Id":
                 self._resource_path = ServiceOperationPath("GetById", [value], self.parent_collection.resource_path)
-        return super(RoleDefinition, self).set_property(name, value, persist_changes)
+        return super().set_property(name, value, persist_changes)

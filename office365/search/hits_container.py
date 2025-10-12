@@ -24,7 +24,7 @@ class SearchHitsContainer(ClientValue):
             Based on this information, you can adjust the from and size properties of the searchRequest accordingly.
         :param list[SearchAggregation] aggregations:
         """
-        super(SearchHitsContainer, self).__init__()
+        super().__init__()
         self.hits = ClientValueCollection(SearchHit, hits)
         self.moreResultsAvailable = more_results_available
         self.total = total

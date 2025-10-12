@@ -13,7 +13,7 @@ class ListItemCreationInformation(ClientValue):
             URL, or an absolute URL. If the value is a server-relative URL or an absolute URL, it MUST be under the root
             folder of the list.
         """
-        super(ListItemCreationInformation, self).__init__()
+        super().__init__()
         self.FolderUrl = folder_url
         self.LeafName = leaf_name
         self.UnderlyingObjectType = underlying_object_type

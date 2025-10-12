@@ -11,7 +11,7 @@ class TimeSlot(ClientValue):
         :param dateTimeTimeZone start: The date, time, and time zone that a period begins.
         :param dateTimeTimeZone end: The date, time, and time zone that a period ends.
         """
-        super(TimeSlot, self).__init__()
+        super().__init__()
         self.start = start
         self.end = end
 

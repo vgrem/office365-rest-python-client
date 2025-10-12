@@ -8,6 +8,4 @@ class SiteCollectionAppCatalogAllowedItems(EntityCollection[SiteCollectionAppCat
     """An entry in the site collection app catalog allow list."""
 
     def __init__(self, context, resource_path=None):
-        super(SiteCollectionAppCatalogAllowedItems, self).__init__(
-            context, SiteCollectionAppCatalogAllowedItem, resource_path
-        )
+        super().__init__(context, SiteCollectionAppCatalogAllowedItem, resource_path)

@@ -34,4 +34,4 @@ class BaseSitePage(BaseItem):
                 "publishingState": self.publishing_state,
             }
             default_value = property_mapping.get(name, None)
-        return super(BaseSitePage, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

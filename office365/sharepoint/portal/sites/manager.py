@@ -27,7 +27,7 @@ class SPSiteManager(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("SPSiteManager")
-        super(SPSiteManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def create(self, title: str, site_url: str, owner: Union[User, str] = None) -> ClientResult[SPSiteCreationResponse]:
         """

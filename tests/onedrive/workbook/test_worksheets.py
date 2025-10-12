@@ -9,9 +9,9 @@ from tests.onedrive.test_excel import upload_excel
 
 
 class TestExcelWorksheets(GraphTestCase):
-    excel_file = None  # type: DriveItem
+    excel_file: DriveItem = None
     sheet_name = create_unique_name("Sheet")
-    worksheet = None  # type: WorkbookWorksheet
+    worksheet: WorkbookWorksheet = None
 
     @classmethod
     def setUpClass(cls):

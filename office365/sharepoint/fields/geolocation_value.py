@@ -18,7 +18,7 @@ class FieldGeolocationValue(ClientValue):
         :param float altitude: Specifies the altitude value for Geolocation field. It is a user defined value
 
         """
-        super(FieldGeolocationValue, self).__init__()
+        super().__init__()
         self.Latitude = latitude
         self.Longitude = longitude
         self.Altitude = altitude

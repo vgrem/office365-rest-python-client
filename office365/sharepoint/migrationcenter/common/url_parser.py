@@ -33,7 +33,7 @@ class MigrationUrlParser(Entity):
                 "currentContextSiteSubscriptionId": current_context_site_subscription_id,
             },
         )
-        super(MigrationUrlParser, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
     def entity_type_name(self):

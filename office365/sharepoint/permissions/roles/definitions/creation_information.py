@@ -6,9 +6,9 @@ class RoleDefinitionCreationInformation(ClientValue):
     def __init__(
         self,
         base_permissions=BasePermissions(),
-        name=None,
-        description=None,
-        order=None,
+        name: str = None,
+        description: str = None,
+        order: int = None,
     ):
         """Contains properties that are used as parameters to initialize a role definition.
 
@@ -16,7 +16,7 @@ class RoleDefinitionCreationInformation(ClientValue):
         :param str description: Specifies the description of the role definition.
         :param int order: Specifies the order in which roles MUST be displayed in the WFE.
         """
-        super(RoleDefinitionCreationInformation, self).__init__()
+        super().__init__()
         self.Name = name
         self.Description = description
         self.BasePermissions = base_permissions

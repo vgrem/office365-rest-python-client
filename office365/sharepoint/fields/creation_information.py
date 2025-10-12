@@ -35,7 +35,7 @@ class FieldCreationInformation(ClientValue):
         :param str formula:
         :param list[str] or None choices:
         """
-        super(FieldCreationInformation, self).__init__()
+        super().__init__()
         self.Title = title
         self.FieldTypeKind = field_type_kind
         self.Description = description

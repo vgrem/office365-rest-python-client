@@ -16,11 +16,11 @@ class TermSet(TaxonomyItem):
             return self.entity_type_name
 
     @property
-    def localized_names(self):
+    def localized_names(self) -> ClientValueCollection[LocalizedName]:
         return self.properties.get("localizedNames", ClientValueCollection(LocalizedName))
 
     @property
-    def terms(self):
+    def terms(self) -> TaxonomyItemCollection:
         """Gets a collection of the child Term objects"""
         return self.properties.get(
             "terms",
@@ -33,4 +33,4 @@ class TermSet(TaxonomyItem):
                 "localizedNames": self.localized_names,
             }
             default_value = property_mapping.get(name, None)
-        return super(TermSet, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

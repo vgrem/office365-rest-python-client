@@ -13,7 +13,7 @@ class EmployeeEngagement(Entity):
     """ """
 
     def __init__(self, context):
-        super(EmployeeEngagement, self).__init__(context, ResourcePath("SP.EmployeeEngagement"))
+        super().__init__(context, ResourcePath("SP.EmployeeEngagement"))
 
     def dashboard_content(self, override_language_code: str = None) -> ClientResult[str]:
         """
@@ -74,4 +74,4 @@ class EmployeeEngagement(Entity):
                 "VivaConnectionsPage": self.viva_connections_page,
             }
             default_value = property_mapping.get(name, None)
-        return super(EmployeeEngagement, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

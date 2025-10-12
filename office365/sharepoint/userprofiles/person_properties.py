@@ -85,7 +85,7 @@ class PersonProperties(Entity):
     def set_property(self, k, v, persist_changes=True):
         if k == "UserProfileProperties":
             v = parse_key_value_collection(v)
-        super(PersonProperties, self).set_property(k, v)
+        super().set_property(k, v)
         return self
 
     def get_property(self, name, default_value=None):
@@ -95,4 +95,4 @@ class PersonProperties(Entity):
                 "ExtendedReports": self.extended_reports,
             }
             default_value = property_mapping.get(name, None)
-        return super(PersonProperties, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -7,9 +7,9 @@ class WebPartDefinitionCollection(EntityCollection[WebPartDefinition]):
     """Implements a collection of Web Part definition objects"""
 
     def __init__(self, context, resource_path=None):
-        super(WebPartDefinitionCollection, self).__init__(context, WebPartDefinition, resource_path)
+        super().__init__(context, WebPartDefinition, resource_path)
 
-    def get_by_id(self, def_id):
+    def get_by_id(self, def_id: str) -> WebPartDefinition:
         """
         Returns the Web Part definition object (1) in the collection with a Web Part identifier
         equal to the id parameter.

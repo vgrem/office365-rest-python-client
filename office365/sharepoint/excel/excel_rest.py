@@ -16,7 +16,7 @@ class ExcelService(ClientRuntimeContext):
         Excel Services REST API client
         https://docs.microsoft.com/en-us/sharepoint/dev/general-development/excel-services-rest-api
         """
-        super(ExcelService, self).__init__()
+        super().__init__()
 
     def authenticate_request(self, request):
         pass

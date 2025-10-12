@@ -19,7 +19,7 @@ class TeamMessagingSettings(ClientValue):
         :param bool allow_team_mentions: If set to true, owners can delete their messages.
         :param bool allow_channel_mentions: If set to true, owners can delete their messages.
         """
-        super(TeamMessagingSettings, self).__init__()
+        super().__init__()
         self.allowUserEditMessages = allow_user_edit_messages
         self.allowUserDeleteMessages = allow_user_delete_messages
         self.allowOwnerDeleteMessages = allow_owner_delete_messages

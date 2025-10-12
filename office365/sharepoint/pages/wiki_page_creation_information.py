@@ -10,7 +10,7 @@ class WikiPageCreationInformation(ClientValue):
         :param str server_relative_url: The server-relative URL of the wiki page to be created.
         :param str content: The HTML content of the wiki page.
         """
-        super(WikiPageCreationInformation, self).__init__()
+        super().__init__()
         self.ServerRelativeUrl = server_relative_url
         self.WikiHtmlContent = content
         self.WikiHtmlContent = wiki_html_content

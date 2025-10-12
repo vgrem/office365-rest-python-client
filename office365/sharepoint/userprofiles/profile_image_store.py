@@ -9,7 +9,7 @@ class ProfileImageStore(Entity):
     """The ProfileImageStore class specifies the user profile and service context."""
 
     def __init__(self, context):
-        super(ProfileImageStore, self).__init__(context, ResourcePath("SP.UserProfiles.ProfileImageStore"))
+        super().__init__(context, ResourcePath("SP.UserProfiles.ProfileImageStore"))
 
     def save_uploaded_file(
         self,

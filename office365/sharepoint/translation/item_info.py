@@ -24,7 +24,7 @@ class TranslationItemInfo(ClientValue):
             this property MUST be ignored. Otherwise, this property contains an identifier uniquely identifying
             this translation item.
         """
-        super(TranslationItemInfo, self).__init__()
+        super().__init__()
         self.TranslationId = translation_id
         self.Canceled = canceled
         self.ErrorMessage = error_message

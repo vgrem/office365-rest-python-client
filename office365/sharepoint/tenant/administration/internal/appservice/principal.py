@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Any, Optional
 
+from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -19,9 +20,9 @@ from office365.sharepoint.tenant.administration.internal.appservice.permission_r
 class SPOWebAppServicePrincipal(Entity):
     def __init__(self, context):
         stat_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal")
-        super(SPOWebAppServicePrincipal, self).__init__(context, stat_path)
+        super().__init__(context, stat_path)
 
-    def update_spfx_client_secret(self, secret_value):
+    def update_spfx_client_secret(self, secret_value: str):
         """
         :param str secret_value:
         """
@@ -52,7 +53,7 @@ class SPOWebAppServicePrincipal(Entity):
         return self.properties.get("ReplyUrls", StringCollection())
 
     @property
-    def grant_manager(self):
+    def grant_manager(self) -> SPO3rdPartyAADPermissionGrantCollection:
         return self.properties.get(
             "GrantManager",
             SPO3rdPartyAADPermissionGrantCollection(
@@ -62,7 +63,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def permission_grants(self):
+    def permission_grants(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionGrant]:
         return self.properties.get(
             "PermissionGrants",
             EntityCollection(
@@ -73,7 +74,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def permission_requests(self):
+    def permission_requests(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionRequest]:
         return self.properties.get(
             "PermissionRequests",
             EntityCollection(
@@ -96,4 +97,4 @@ class SPOWebAppServicePrincipal(Entity):
                 "ReplyUrls": self.reply_urls,
             }
             default_value = property_mapping.get(name, None)
-        return super(SPOWebAppServicePrincipal, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

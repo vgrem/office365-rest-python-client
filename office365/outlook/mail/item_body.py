@@ -10,7 +10,7 @@ class ItemBody(ClientValue):
         :param str content: The content of the item.
         :param BodyType content_type: The type of the content. Possible values are text and html.
         """
-        super(ItemBody, self).__init__()
+        super().__init__()
         self.content = content
         self.contentType = content_type
 

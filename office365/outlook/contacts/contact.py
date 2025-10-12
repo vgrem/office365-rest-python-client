@@ -131,4 +131,4 @@ class Contact(OutlookItem):
                 "singleValueExtendedProperties": self.single_value_extended_properties,
             }
             default_value = property_mapping.get(name, None)
-        return super(Contact, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

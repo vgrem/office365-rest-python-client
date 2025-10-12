@@ -16,7 +16,7 @@ class SharingLinkAccessRequest(ClientValue):
         :param bool ensure_access: Indicates if the request to the tokenized sharing link grants perpetual access to
             the calling user.
         """
-        super(SharingLinkAccessRequest, self).__init__()
+        super().__init__()
         self.ensureAccess = ensure_access
         self.password = password
 

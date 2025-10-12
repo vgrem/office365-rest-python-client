@@ -10,7 +10,7 @@ class SiteLinkingManager(Entity):
     """"""
 
     def __init__(self, context, resource_path=None):
-        super(SiteLinkingManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def get_site_links(self):
         """ """

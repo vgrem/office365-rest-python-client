@@ -28,10 +28,10 @@ class PlannerPlan(Entity):
         def _construct_request(request: RequestOptions) -> None:
             request.set_header("If-Match", self.properties.get("__etag"))
 
-        return super(PlannerPlan, self).delete_object().before_execute(_construct_request)
+        return super().delete_object().before_execute(_construct_request)
 
     @property
-    def container(self):
+    def container(self) -> PlannerPlanContainer:
         """Identity of the user, device, or application which created the plan."""
         return self.properties.get("container", PlannerPlanContainer())
 
@@ -75,4 +75,4 @@ class PlannerPlan(Entity):
                 "createdBy": self.created_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(PlannerPlan, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

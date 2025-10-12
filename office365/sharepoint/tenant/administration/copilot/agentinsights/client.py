@@ -29,7 +29,7 @@ class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
                 "userAgent": user_agent,
             },
         )
-        super(SPOCopilotAgentInsightsRestApiClient, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def get_all_copilot_agent_insights_reports_metadata(self):
         """ """

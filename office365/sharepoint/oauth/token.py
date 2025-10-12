@@ -8,7 +8,7 @@ class Token(Entity):
     """"""
 
     def __init__(self, context):
-        super(Token, self).__init__(context, ResourcePath("SP.OAuth.Token"))
+        super().__init__(context, ResourcePath("SP.OAuth.Token"))
 
     def acquire(self):
         """ """

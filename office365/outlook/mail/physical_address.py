@@ -21,7 +21,7 @@ class PhysicalAddress(ClientValue):
         :param state:
         :param street:
         """
-        super(PhysicalAddress, self).__init__()
+        super().__init__()
         self.city = city
         self.countryOrRegion = country_or_region
         self.postalCode = postal_code

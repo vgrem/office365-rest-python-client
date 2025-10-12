@@ -10,7 +10,7 @@ class ServerSettings(Entity):
     """Provides methods for obtaining server properties."""
 
     def __init__(self, context):
-        super(ServerSettings, self).__init__(context, ResourcePath("SP.ServerSettings"))
+        super().__init__(context, ResourcePath("SP.ServerSettings"))
 
     @staticmethod
     def is_sharepoint_online(context):

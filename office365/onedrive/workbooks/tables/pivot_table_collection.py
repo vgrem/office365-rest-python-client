@@ -5,7 +5,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class WorkbookPivotTableCollection(EntityCollection[WorkbookPivotTable]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookPivotTableCollection, self).__init__(context, WorkbookPivotTable, resource_path)
+        super().__init__(context, WorkbookPivotTable, resource_path)
 
     def refresh_all(self):
         """Refreshes the PivotTable."""

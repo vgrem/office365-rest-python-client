@@ -13,5 +13,5 @@ class AttendeeBase(Recipient):
         :param str attendee_type: The type of attendees. The possible values are: required, optional, resource.
             Currently if the attendees is a person, findMeetingTimes always considers the person is of the Required type.
         """
-        super(AttendeeBase, self).__init__(email_address)
+        super().__init__(email_address)
         self.type = attendee_type

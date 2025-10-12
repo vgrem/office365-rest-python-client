@@ -8,5 +8,5 @@ class Report(ClientValue):
 
         :param str content: Report content; details vary by report type.
         """
-        super(Report, self).__init__()
+        super().__init__()
         self.content = content

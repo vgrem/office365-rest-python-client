@@ -20,7 +20,7 @@ class TenantAdminSettingsService(Entity):
 
     def __init__(self, context):
         static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.TenantAdminSettingsService")
-        super(TenantAdminSettingsService, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def get_tenant_sharing_status(self):
         """Retrieves the current state of sharing settings for a tenant"""
@@ -89,4 +89,4 @@ class TenantAdminSettingsService(Entity):
                 "TenantDefaultTimeZoneId": self.tenant_default_time_zone_id,
             }
             default_value = property_mapping.get(name, None)
-        return super(TenantAdminSettingsService, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

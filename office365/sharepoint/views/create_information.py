@@ -38,7 +38,7 @@ class ViewCreationInformation(ClientValue):
             If the value is "false", the new list view is a public view.
         :param bool paged: Specifies whether the new list view is a paged view.
         """
-        super(ViewCreationInformation, self).__init__()
+        super().__init__()
         self.Title = title
         self.ViewTypeKind = view_type_kind
         self.ViewFields = StringCollection(view_fields)

@@ -13,7 +13,7 @@ class LocalizedLabel(ClientValue):
         :param str language_tag: The language tag for the label.
         :param bool is_default: Indicates whether the label is the default label.
         """
-        super(LocalizedLabel, self).__init__()
+        super().__init__()
         self.name = name
         self.languageTag = language_tag
         self.isDefault = is_default

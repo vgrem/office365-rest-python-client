@@ -42,4 +42,4 @@ class Relation(Entity):
         if default_value is None:
             property_mapping = {"fromTerm": self.from_term, "toTerm": self.to_term}
             default_value = property_mapping.get(name, None)
-        return super(Relation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

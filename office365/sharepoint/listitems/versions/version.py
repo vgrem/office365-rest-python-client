@@ -99,10 +99,10 @@ class ListItemVersion(Entity):
                 "FileVersion": self.file_version,
             }
             default_value = property_mapping.get(name, None)
-        return super(ListItemVersion, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None:
             if name == "VersionId":
                 self._resource_path = self.parent_collection.get_by_id(value).resource_path
-        return super(ListItemVersion, self).set_property(name, value, persist_changes)
+        return super().set_property(name, value, persist_changes)

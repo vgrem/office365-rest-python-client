@@ -11,9 +11,9 @@ class SPTenantIBInsightsReportManager(Entity):
 
     def __init__(self, context):
         static_path = StaticPath("Microsoft.SharePoint.Insights.SPTenantIBInsightsReportManager")
-        super(SPTenantIBInsightsReportManager, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
-    def create_report(self):
+    def create_report(self) -> SPTenantIBInsightsReportMetadata:
         """"""
         return_type = SPTenantIBInsightsReportMetadata(self.context)
         qry = ServiceOperationQuery(

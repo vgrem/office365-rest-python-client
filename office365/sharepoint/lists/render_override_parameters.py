@@ -136,7 +136,7 @@ class RenderListDataOverrideParameters(ClientValue):
         view_path: str = None,
         web_part_id: str = None,
     ):
-        super(RenderListDataOverrideParameters, self).__init__()
+        super().__init__()
         self.CascDelWarnMessage = casc_del_warn_message
         self.CustomAction = custom_action
         self.DrillDown = drill_down

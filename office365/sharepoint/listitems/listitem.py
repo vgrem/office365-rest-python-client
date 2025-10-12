@@ -61,7 +61,7 @@ class ListItem(SecurableObject):
         :type resource_path: office365.runtime.paths.resource_path.ResourcePath or None
         :type parent_list: office365.sharepoint.lists.list.List or None
         """
-        super(ListItem, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
         if parent_list is not None:
             self.set_property("ParentList", parent_list, False)
 
@@ -339,7 +339,7 @@ class ListItem(SecurableObject):
 
         """
         self.ensure_type_name(self.parent_list)
-        super(ListItem, self).update()
+        super().update()
         return self
 
     def update_ex(self, bypass_quota_check: bool = None, bypass_shared_lock: bool = None):
@@ -640,9 +640,9 @@ class ListItem(SecurableObject):
             }
             default_value = property_mapping.get(name, None)
 
-        value = super(ListItem, self).get_property(name, default_value)
+        value = super().get_property(name, default_value)
         if self.is_property_available(name[:-2]):
-            lookup_value = super(ListItem, self).get_property(name[:-2], default_value)
+            lookup_value = super().get_property(name[:-2], default_value)
             if isinstance(lookup_value, FieldMultiLookupValue):
                 return ClientValueCollection(int, [v.LookupId for v in lookup_value])
             elif isinstance(lookup_value, FieldLookupValue):
@@ -654,18 +654,18 @@ class ListItem(SecurableObject):
             if isinstance(value, TaxonomyFieldValueCollection):
                 self._set_taxonomy_field_value(name, value)
             elif isinstance(value, ImageFieldValue):
-                super(ListItem, self).set_property(name, json.dumps(value.to_json()), persist_changes)
+                super().set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, FieldMultiLookupValue):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super(ListItem, self).set_property("{name}Id".format(name=name), collection)
-                super(ListItem, self).set_property(name, value, False)
+                super().set_property("{name}Id".format(name=name), collection)
+                super().set_property(name, value, False)
             elif isinstance(value, FieldLookupValue):
-                super(ListItem, self).set_property("{name}Id".format(name=name), value.LookupId)
-                super(ListItem, self).set_property(name, value, False)
+                super().set_property("{name}Id".format(name=name), value.LookupId)
+                super().set_property(name, value, False)
             else:
-                super(ListItem, self).set_property(name, value, persist_changes)
+                super().set_property(name, value, persist_changes)
         else:
-            super(ListItem, self).set_property(name, value, persist_changes)
+            super().set_property(name, value, persist_changes)
 
         # fallback: create a new resource path
         if name == "Id":

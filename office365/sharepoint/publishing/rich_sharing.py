@@ -8,7 +8,7 @@ class RichSharing(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("SP.Publishing.RichSharing")
-        super(RichSharing, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def share_page_by_email(self, url, message, recipient_emails, page_content, subject):
         """

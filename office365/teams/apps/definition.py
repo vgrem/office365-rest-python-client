@@ -41,4 +41,4 @@ class TeamsAppDefinition(Entity):
                 "lastModifiedDateTime": self.last_modified_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(TeamsAppDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

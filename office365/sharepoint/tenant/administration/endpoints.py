@@ -13,7 +13,7 @@ class TenantAdminEndpoints(Entity):
 
     def __init__(self, context: ClientContext) -> None:
         static_path = StaticPath("Microsoft.Online.SharePoint.TenantAdministration.TenantAdminEndpoints")
-        super(TenantAdminEndpoints, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
     def aad_admin_center_endpoint(self) -> Optional[str]:

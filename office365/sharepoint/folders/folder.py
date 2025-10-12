@@ -537,10 +537,10 @@ class Folder(Entity):
                 "TimeLastModified": self.time_last_modified,
             }
             default_value = property_mapping.get(name, None)
-        return super(Folder, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(Folder, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "UniqueId":
             self._resource_path = self.context.web.get_folder_by_id(value).resource_path

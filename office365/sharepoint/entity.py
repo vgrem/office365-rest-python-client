@@ -148,7 +148,7 @@ class Entity(ClientObject):
         Returns:
             self: Supports method chaining
         """
-        super(Entity, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self.resource_path is None:
                 if self.parent_collection:

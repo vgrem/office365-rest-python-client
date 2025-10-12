@@ -15,7 +15,7 @@ class TextColumn(ClientValue):
         :param bool allow_multiple_lines: Whether to allow multiple lines of text.
         :param str text_type: The type of text being stored. Must be one of plain or richText
         """
-        super(TextColumn, self).__init__()
+        super().__init__()
         self.maxLength = max_length
         self.allowMultipleLines = allow_multiple_lines
         self.textType = text_type

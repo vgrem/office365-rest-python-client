@@ -10,7 +10,7 @@ class AttachmentCreationInformation(ClientValue):
         :param str filename: Specifies the file name of the list item attachment.
         :param str or bytes content: The contents of the file as a stream.
         """
-        super(AttachmentCreationInformation, self).__init__()
+        super().__init__()
         self.filename = filename
         self.content = content
         self.FileName = file_name

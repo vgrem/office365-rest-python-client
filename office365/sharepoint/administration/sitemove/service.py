@@ -35,7 +35,7 @@ class SiteMoveService(Entity):
                 "targetDatabaseId": target_database_id,
             },
         )
-        super(SiteMoveService, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def acquire_system_site_lock(
         self, lock_requestor: str, lock_type: int, lease_duration_in_minutes: int

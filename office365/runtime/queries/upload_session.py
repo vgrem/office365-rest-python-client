@@ -10,15 +10,14 @@ class UploadSessionQuery(ServiceOperationQuery):
     """
 
     def __init__(self, binding_type, parameters_type):
-        super(UploadSessionQuery, self).__init__(binding_type, "createUploadSession", None, parameters_type)
+        super().__init__(binding_type, "createUploadSession", None, parameters_type)
 
     @property
     def upload_session_url(self):
         return self.return_type.value.uploadUrl
 
     @property
-    def return_type(self):
-        # type: () -> ClientResult[UploadSession]
+    def return_type(self) -> ClientResult[UploadSession]:
         if self._return_type is None:
             self._return_type = ClientResult(self.context, UploadSession())
         return self._return_type

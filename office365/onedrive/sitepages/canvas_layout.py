@@ -10,7 +10,7 @@ class CanvasLayout(Entity):
 
     @property
     def horizontal_sections(self) -> EntityCollection[HorizontalSection]:
-        """Collection of horizontal sections on the SharePoint page.."""
+        """Collection of horizontal sections on the SharePoint page."""
         return self.properties.get(
             "horizontalSections",
             EntityCollection(
@@ -38,4 +38,4 @@ class CanvasLayout(Entity):
                 "verticalSection": self.vertical_section,
             }
             default_value = property_mapping.get(name, None)
-        return super(CanvasLayout, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

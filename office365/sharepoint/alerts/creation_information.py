@@ -26,7 +26,7 @@ class AlertCreationInformation(ClientValue):
         :param int alert_frequency: Gets or sets the time interval for sending the alert.
         :param int alert_type: Gets or sets the alert type.
         """
-        super(AlertCreationInformation, self).__init__()
+        super().__init__()
         self.AlertFrequency = alert_frequency
         self.AlertTemplateName = template_name
         self.AlertType = alert_type

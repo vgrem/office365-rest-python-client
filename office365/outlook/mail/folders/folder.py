@@ -173,4 +173,4 @@ class MailFolder(Entity):
                 "singleValueExtendedProperties": self.single_value_extended_properties,
             }
             default_value = property_mapping.get(name, None)
-        return super(MailFolder, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

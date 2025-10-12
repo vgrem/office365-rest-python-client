@@ -1,13 +1,21 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List
+
 from office365.runtime.queries.client_query import ClientQuery, T
+
+if TYPE_CHECKING:
+    from office365.runtime.client_object import ClientObject
+
+
 
 
 class ReadEntityQuery(ClientQuery[T]):
-    def __init__(self, return_type, properties_to_include=None):
-        # type: (T, list[str]) -> None
+    def __init__(self, return_type: ClientObject, properties_to_include: List[str] = None) -> None:
         """
         Read client object query
         """
-        super(ReadEntityQuery, self).__init__(return_type.context, return_type, None, None, return_type)
+        super().__init__(return_type.context, return_type, None, None, return_type)
         self._query_options = None
         self._properties_to_include = properties_to_include
 

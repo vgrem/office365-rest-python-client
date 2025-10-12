@@ -68,7 +68,7 @@ class SharingLinkInfo(ClientValue):
         :param bool track_link_users:
         :param str share_token_string:
         """
-        super(SharingLinkInfo, self).__init__()
+        super().__init__()
         self.AllowsAnonymousAccess = allows_anonymous_access
         self.ApplicationId = application_id
         self.Created = created

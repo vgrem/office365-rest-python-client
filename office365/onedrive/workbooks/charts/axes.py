@@ -7,7 +7,7 @@ class WorkbookChartAxes(Entity):
     """Represents the chart axes."""
 
     @property
-    def category_axis(self):
+    def category_axis(self) -> WorkbookChartAxis:
         """Represents the category axis in a chart."""
         return self.properties.get(
             "categoryAxis",
@@ -15,7 +15,7 @@ class WorkbookChartAxes(Entity):
         )
 
     @property
-    def series_axis(self):
+    def series_axis(self) -> WorkbookChartAxis:
         """Represents the series axis of a 3-dimensional chart."""
         return self.properties.get(
             "seriesAxis",
@@ -23,7 +23,7 @@ class WorkbookChartAxes(Entity):
         )
 
     @property
-    def value_axis(self):
+    def value_axis(self) -> WorkbookChartAxis:
         """Represents the value axis in an axis."""
         return self.properties.get(
             "valueAxis",
@@ -38,4 +38,4 @@ class WorkbookChartAxes(Entity):
                 "valueAxis": self.value_axis,
             }
             default_value = property_mapping.get(name, None)
-        return super(WorkbookChartAxes, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

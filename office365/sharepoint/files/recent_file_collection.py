@@ -7,7 +7,7 @@ from office365.sharepoint.entity import Entity
 
 class RecentFileCollection(Entity):
     def __init__(self, context):
-        super(RecentFileCollection, self).__init__(context, ResourcePath("SP.RecentFileCollection"))
+        super().__init__(context, ResourcePath("SP.RecentFileCollection"))
 
     @staticmethod
     def get_recent_files(context: ClientContext, top: int):

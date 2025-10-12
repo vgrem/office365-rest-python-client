@@ -13,4 +13,4 @@ class QueryPersonalizationData(Entity):
             "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData",
             {"guidUserIdString": user_id},
         )
-        super(QueryPersonalizationData, self).__init__(context, static_path)
+        super().__init__(context, static_path)

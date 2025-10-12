@@ -12,7 +12,7 @@ from office365.sharepoint.principal.users.user import User
 class UserCollection(EntityCollection[User]):
     def __init__(self, context, resource_path=None):
         """Represents a collection of User resources."""
-        super(UserCollection, self).__init__(context, User, resource_path)
+        super().__init__(context, User, resource_path)
 
     def add_user(self, user: Union[str, User]):
         """

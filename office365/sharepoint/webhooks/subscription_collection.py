@@ -11,7 +11,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
     """Represents a collection of Subscription (WebHook) resources."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(SubscriptionCollection, self).__init__(context, Subscription, resource_path, parent)
+        super().__init__(context, Subscription, resource_path, parent)
 
     def get_by_id(self, _id):
         """Gets the subscription with the specified ID."""

@@ -9,7 +9,7 @@ class EmailAddress(ClientValue):
         :param str address: The email address of the person or entity.
         :param str name: The display name of the person or entity.
         """
-        super(EmailAddress, self).__init__()
+        super().__init__()
         self.address = address
         self.name = name
 

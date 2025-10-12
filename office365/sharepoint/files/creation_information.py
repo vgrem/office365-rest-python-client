@@ -18,7 +18,7 @@ class FileCreationInformation(ClientValue):
             location as the one being added.
         :param str or bytes content: Specifies the binary content of the file to be added.
         """
-        super(FileCreationInformation, self).__init__()
+        super().__init__()
         self.Url = url
         self.Overwrite = overwrite
         self.Content = content

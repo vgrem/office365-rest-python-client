@@ -22,7 +22,7 @@ class RecycleBinQueryInformation(ClientValue):
         :param int item_state: Gets or sets the Recycle Bin state of items to return in the query.
         :param bool is_ascending: Gets or sets a Boolean value that specifies whether to sort in ascending order.
         """
-        super(RecycleBinQueryInformation, self).__init__()
+        super().__init__()
         self.IsAscending = is_ascending
         self.ItemState = item_state
         self.OrderBy = order_by

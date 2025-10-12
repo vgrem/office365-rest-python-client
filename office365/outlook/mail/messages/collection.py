@@ -44,7 +44,7 @@ class MessageCollection(DeltaCollection["Message"]):
         if subject is not None:
             kwargs["subject"] = subject
 
-        return super(MessageCollection, self).add(**kwargs)
+        return super().add(**kwargs)
 
     def search(self, query_text: str) -> MessageCollection:
         """

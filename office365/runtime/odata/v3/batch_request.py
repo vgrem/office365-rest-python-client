@@ -48,7 +48,7 @@ class ODataBatchV3Request(ODataRequest):
         """
         for sub_qry, sub_resp in self._extract_response(response, query):
             sub_resp.raise_for_status()
-            super(ODataBatchV3Request, self).process_response(sub_resp, sub_qry)
+            super().process_response(sub_resp, sub_qry)
 
     def _extract_response(self, response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:
         """Extract individual responses from a multipart batch response.

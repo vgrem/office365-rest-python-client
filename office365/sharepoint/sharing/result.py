@@ -98,10 +98,10 @@ class SharingResult(Entity):
                 "UsersWithAccessRequests": self.users_with_access_requests,
             }
             default_value = property_mapping.get(name, None)
-        return super(SharingResult, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(SharingResult, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "Name":

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
     def __init__(self, context, resource_path, parent):
-        super(ColumnDefinitionCollection, self).__init__(context, ColumnDefinition, resource_path, parent)
+        super().__init__(context, ColumnDefinition, resource_path, parent)
 
     def add_number(self, name, minimum=None, maximum=None):
         """
@@ -27,7 +27,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, number=NumberColumn(minimum, maximum))
 
-    def add_text(self, name, max_length=None, text_type=None):
+    def add_text(self, name: str, max_length: int = None, text_type: str = None):
         """
         Creates a text column
 
@@ -39,7 +39,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, text=TextColumn(max_length=max_length, text_type=text_type))
 
-    def add_hyperlink_or_picture(self, name, is_picture=None):
+    def add_hyperlink_or_picture(self, name: str, is_picture: bool = None):
         """
         Creates a hyperlink or picture column
 

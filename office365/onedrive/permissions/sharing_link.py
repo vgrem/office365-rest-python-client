@@ -25,7 +25,7 @@ class SharingLink(ClientValue):
               and cannot use it to download the contents of the item. Only for OneDrive for Business and SharePoint.
          :param Identity application: The app the link is associated with.
         """
-        super(SharingLink, self).__init__()
+        super().__init__()
         self.type = _type
         self.scope = scope
         self.webHtml = web_html

@@ -46,7 +46,7 @@ class WebCollection(EntityCollection["Web"]):
 
     @property
     def resource_url(self) -> str:
-        val = super(WebCollection, self).resource_url
+        val = super().resource_url
         parent_web_url = self._parent.get_property("Url")
         if parent_web_url is not None:
             val = val.replace(self.context.service_root_url, parent_web_url + "/_api")

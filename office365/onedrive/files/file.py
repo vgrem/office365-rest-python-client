@@ -15,7 +15,7 @@ class File(ClientValue):
             the value provided when the file was uploaded. Read-only.
         :param str hashes: Hashes of the file's binary content, if available. Read-only.
         """
-        super(File, self).__init__()
+        super().__init__()
         self.hashes = hashes
         self.mimeType = mime_type
         self.processingMetadata = None

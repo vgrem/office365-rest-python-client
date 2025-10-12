@@ -14,7 +14,7 @@ class DriveRecipient(ClientValue):
         :param str email: The email address for the recipient, if the recipient has an associated email address.
         :param str object_id: The unique identifier for the recipient in the directory.
         """
-        super(DriveRecipient, self).__init__()
+        super().__init__()
         self.alias = alias
         self.email = email
         self.objectId = object_id

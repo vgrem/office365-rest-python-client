@@ -6,7 +6,7 @@ class V4JsonFormat(ODataJsonFormat):
     """JSON format (V4)"""
 
     def __init__(self, metadata_level=ODataV4MetadataLevel.Minimal):
-        super(V4JsonFormat, self).__init__(metadata_level)
+        super().__init__(metadata_level)
         """The IEEE754Compatible format parameter indicates that the service MUST serialize Edm.Int64 and
         Edm.Decimal numbers as strings."""
         self.IEEE754Compatible = False

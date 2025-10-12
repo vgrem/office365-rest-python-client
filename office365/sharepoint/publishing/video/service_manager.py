@@ -8,9 +8,9 @@ from office365.sharepoint.publishing.video.channel_collection import (
 
 class VideoServiceManager(Entity):
     def __init__(self, context):
-        super(VideoServiceManager, self).__init__(context, ResourcePath("SP.Publishing.VideoServiceManager"))
+        super().__init__(context, ResourcePath("SP.Publishing.VideoServiceManager"))
 
-    def get_channels(self, start_index=0, limit=None):
+    def get_channels(self, start_index=0, limit=None) -> VideoChannelCollection:
         return_type = VideoChannelCollection(self.context)
         params = {"startIndex": start_index, "limit": limit}
         qry = ServiceOperationQuery(self, "GetChannels", params, None, None, return_type)

@@ -10,7 +10,7 @@ class SharingRestrictions(Entity):
 
     def __init__(self, context):
         static_path = ResourcePath("Microsoft.SharePoint.Sharing.Internal.SharingRestrictions")
-        super(SharingRestrictions, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
     def anonymous_link_use_limit(self):

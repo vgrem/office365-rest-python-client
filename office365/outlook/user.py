@@ -57,4 +57,4 @@ class OutlookUser(Entity):
         if default_value is None:
             property_mapping = {"masterCategories": self.master_categories}
             default_value = property_mapping.get(name, None)
-        return super(OutlookUser, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

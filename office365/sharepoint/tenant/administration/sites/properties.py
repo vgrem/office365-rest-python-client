@@ -42,7 +42,7 @@ class SiteProperties(Entity):
         """Updates the site collection properties with the new properties specified in the SiteProperties object."""
 
         def _update():
-            super(SiteProperties, self).update()
+            super().update()
 
         self._ensure_site_path(_update)
         return self
@@ -219,10 +219,10 @@ class SiteProperties(Entity):
                 "SharingCapability": self.sharing_capability,
             }
             default_value = property_mapping.get(name, None)
-        return super(SiteProperties, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(SiteProperties, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "Url" and self._resource_path is None:
             self._resource_path = StaticOperationPath(self.entity_type_name, {"Url": value})

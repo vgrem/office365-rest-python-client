@@ -7,7 +7,7 @@ class ClientWebPartCollection(EntityCollection[ClientWebPart]):
     """Collection of ClientWebPart representations. It includes all ClientWebParts installed in the SP.Web."""
 
     def __init__(self, context, resource_path=None):
-        super(ClientWebPartCollection, self).__init__(context, ClientWebPart, resource_path)
+        super().__init__(context, ClientWebPart, resource_path)
 
     def get_by_id(self, wp_id):
         """Gets the Client web part with the specified ID."""

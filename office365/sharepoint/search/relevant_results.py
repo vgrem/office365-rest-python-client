@@ -54,7 +54,7 @@ class RelevantResults(ClientValue):
     def set_property(self, k, v, persist_changes=True):
         if k == "Properties":
             v = parse_key_value_collection(v)
-        super(RelevantResults, self).set_property(k, v, persist_changes)
+        super().set_property(k, v, persist_changes)
         return self
 
     @property

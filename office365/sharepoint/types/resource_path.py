@@ -10,7 +10,7 @@ class ResourcePath(ClientValue):
 
         :param str decoded_url: Gets the path in the decoded form.
         """
-        super(ResourcePath, self).__init__()
+        super().__init__()
         self.DecodedUrl = decoded_url
 
     @staticmethod

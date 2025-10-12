@@ -47,7 +47,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
             item_type: The type of items in this collection
             initial_values: Optional initial values (list or dict for complex types)
         """
-        super(ClientValueCollection, self).__init__()
+        super().__init__()
         if initial_values is None:
             initial_values = []
         self._data = initial_values  # type: list[T]

@@ -45,4 +45,4 @@ class DocumentSetVersion(ListItemVersion):
                 "createdDateTime": self.created_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(DocumentSetVersion, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

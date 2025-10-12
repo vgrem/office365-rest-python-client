@@ -11,7 +11,7 @@ class Recipient(ClientValue):
         """
         if email_address is None:
             email_address = EmailAddress()
-        super(Recipient, self).__init__()
+        super().__init__()
         self.emailAddress = email_address
 
     def __repr__(self):

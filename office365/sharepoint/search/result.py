@@ -38,7 +38,7 @@ class SearchResult(ClientValue):
         :param list[str] triggered_rules: This element contains the list of unique identifiers of the query rules
             that were executed for the search query.
         """
-        super(SearchResult, self).__init__()
+        super().__init__()
         self.PrimaryQueryResult = primary_query_result
         self.ElapsedTime = elapsed_time
         self.Properties = properties
@@ -49,7 +49,7 @@ class SearchResult(ClientValue):
     def set_property(self, k, v, persist_changes=True):
         if k == "Properties":
             v = parse_key_value_collection(v)
-        super(SearchResult, self).set_property(k, v, persist_changes)
+        super().set_property(k, v, persist_changes)
         return self
 
     @property

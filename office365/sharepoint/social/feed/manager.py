@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -5,6 +7,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.actor import SocialActor
 from office365.sharepoint.social.attachment import SocialAttachment
 from office365.sharepoint.social.feed.feed import SocialFeed
+from office365.sharepoint.social.posts.creation_data import SocialPostCreationData
 from office365.sharepoint.social.thread import SocialThread
 
 
@@ -15,9 +18,9 @@ class SocialFeedManager(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("SP.Social.SocialFeedManager")
-        super(SocialFeedManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def create_post(self, target_id=None, creation_data=None):
+    def create_post(self, target_id: str = None, creation_data: SocialPostCreationData = None):
         """
         The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
         the specified thread. This method returns a new or a modified thread.
@@ -35,7 +38,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def delete_post(self, post_id):
+    def delete_post(self, post_id: str) -> ClientResult[SocialThread]:
         """
         The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
         If the entire thread is deleted, this method returns null.
@@ -85,11 +88,11 @@ class SocialFeedManager(Entity):
         return return_type
 
     @property
-    def owner(self):
+    def owner(self) -> SocialActor:
         """The Owner property returns the current user."""
         return self.properties.get("Owner", SocialActor())
 
     @property
-    def personal_site_portal_uri(self):
+    def personal_site_portal_uri(self) -> Optional[str]:
         """The PersonalSitePortalUri property specifies the URI of the personal site portal."""
         return self.properties.get("PersonalSitePortalUri", None)

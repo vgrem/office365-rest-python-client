@@ -483,4 +483,4 @@ class Message(OutlookItem):
             }
             default_value = property_type_mapping.get(name, None)
 
-        return super(Message, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

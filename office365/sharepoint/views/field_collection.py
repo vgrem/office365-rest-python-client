@@ -37,7 +37,7 @@ class ViewFieldCollection(Entity):
     def set_property(self, name, value, persist_changes=False):
         if name == "Items":
             value = list(value.values())
-        super(ViewFieldCollection, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         return self
 
     def add_view_field(self, field: Union[str, Field]) -> Self:

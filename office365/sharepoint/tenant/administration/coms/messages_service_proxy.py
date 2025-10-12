@@ -7,7 +7,7 @@ class Office365CommsMessagesServiceProxy(Entity):
 
     def __init__(self, context):
         static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.Office365CommsMessagesServiceProxy")
-        super(Office365CommsMessagesServiceProxy, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
     def entity_type_name(self):

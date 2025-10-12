@@ -11,7 +11,7 @@ class ReportAbandonedQueries(ReportBase):
     """
 
     def __init__(self, reports=None):
-        super(ReportAbandonedQueries, self).__init__()
+        super().__init__()
         self.Reports = ClientValueCollection(ReportAbandonedQueriesItem, reports)
 
     @property

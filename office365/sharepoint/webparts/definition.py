@@ -59,7 +59,7 @@ class WebPartDefinition(Entity):
         return self.properties.get("Id", None)
 
     @property
-    def web_part(self):
+    def web_part(self) -> WebPart:
         """The WebPart object, as specified in section 3.2.5.148, associated with this WebPartDefinition.
         The WebPart object (1) contains additional properties relating to the Web Part represented by this
         WebPartDefinition object"""
@@ -72,4 +72,4 @@ class WebPartDefinition(Entity):
         if default_value is None:
             property_mapping = {"WebPart": self.web_part}
             default_value = property_mapping.get(name, None)
-        return super(WebPartDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

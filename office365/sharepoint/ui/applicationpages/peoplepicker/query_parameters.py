@@ -53,7 +53,7 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         :param bool allow_emai_addresses: Specifies whether the principal query can return a resolved principal
         matching an unverified e-mail address when unable to resolve to a known principal.
         """
-        super(ClientPeoplePickerQueryParameters, self).__init__()
+        super().__init__()
         self.QueryString = query_string
         self.AllowEmailAddresses = allow_emai_addresses
         self.AllowMultipleEntities = allow_multiple_entities

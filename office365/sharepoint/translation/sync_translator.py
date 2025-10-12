@@ -19,7 +19,7 @@ class SyncTranslator(Entity):
         """
         :param str target_language:
         """
-        super(SyncTranslator, self).__init__(
+        super().__init__(
             context,
             ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language}),
         )

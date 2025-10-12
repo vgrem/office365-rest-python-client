@@ -12,7 +12,7 @@ class UserCustomAction(Entity):
             default_value = self.description_resource
         elif name == "TitleResource":
             default_value = self.title_resource
-        return super(UserCustomAction, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
     def rights(self) -> BasePermissions:

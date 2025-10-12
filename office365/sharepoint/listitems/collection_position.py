@@ -5,7 +5,7 @@ class ListItemCollectionPosition(ClientValue):
     """Specifies a collection of list items."""
 
     def __init__(self, paging_info=None):
-        super(ListItemCollectionPosition, self).__init__()
+        super().__init__()
         self.PagingInfo = paging_info
 
     @property

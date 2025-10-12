@@ -16,7 +16,7 @@ class ChangeCollection(EntityCollection[Change]):
 
     def set_property(self, key: str, value: Dict, persist_changes: bool = False) -> Self:
         self._resolve_change_type(value)
-        super(ChangeCollection, self).set_property(key, value)
+        super().set_property(key, value)
 
     def _resolve_change_type(self, properties: Dict) -> None:
         """Dynamically resolves the appropriate Change type based on properties.

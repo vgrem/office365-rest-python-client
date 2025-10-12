@@ -37,7 +37,6 @@ disable = [
     "R1714", # consider-using-in
     "R1720", # no-else-raise
     "R1721", # unnecessary-comprehension
-    "R1725", # super-with-arguments
     "R1732", #consider-using-with
     "W0105", # pointless-string-statement
     "W0106", # expression-not-assigned

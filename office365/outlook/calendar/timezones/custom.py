@@ -12,5 +12,5 @@ class CustomTimeZone(TimeZoneBase):
             minutes. Time zones that are ahead of UTC have a positive offset; time zones that are behind UTC have
             a negative offset.
         """
-        super(CustomTimeZone, self).__init__()
+        super().__init__()
         self.bias = bias

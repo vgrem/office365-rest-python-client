@@ -241,4 +241,4 @@ class SitePageService(Entity):
                 "CommunicationSite": self.communication_site,
             }
             default_value = property_mapping.get(name, None)
-        return super(SitePageService, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

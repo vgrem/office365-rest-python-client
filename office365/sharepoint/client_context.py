@@ -66,7 +66,7 @@ class ClientContext(ClientRuntimeContext):
         :param str base_url: Absolute Web or Site Url
         :param AuthenticationContext or None auth_context: Authentication context
         """
-        super(ClientContext, self).__init__()
+        super().__init__()
         if auth_context is None:
             auth_context = AuthenticationContext(
                 url=base_url,

@@ -29,7 +29,7 @@ class ODataRequest(ClientRequest):
         Args:
             json_format: The JSON format handler for OData serialization/deserialization
         """
-        super(ODataRequest, self).__init__()
+        super().__init__()
         self._default_json_format = json_format
         self.beforeExecute += self._ensure_http_headers
 

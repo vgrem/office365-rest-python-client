@@ -44,7 +44,7 @@ class EntityCollection(ClientObjectCollection[T]):
         :type key: int or str
         """
         if isinstance(key, int):
-            return super(EntityCollection, self).__getitem__(key)
+            return super().__getitem__(key)
         elif isinstance(key, str):
             return self.create_typed_object(resource_path=EntityPath(key, self.resource_path))
         else:

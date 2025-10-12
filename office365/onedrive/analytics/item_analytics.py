@@ -44,4 +44,4 @@ class ItemAnalytics(Entity):
                 "lastSevenDays": self.last_seven_days,
             }
             default_value = property_mapping.get(name, None)
-        return super(ItemAnalytics, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -874,12 +874,12 @@ class Site(Entity):
                 "VersionPolicyForNewLibrariesTemplate": self.version_policy_for_new_libraries_template,
             }
             default_value = property_mapping.get(name, None)
-        return super(Site, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if name == "__siteUrl":
-            super(Site, self).set_property("Url", value, False)
+            super().set_property("Url", value, False)
             self._context = self.context.clone(value)
         else:
-            super(Site, self).set_property(name, value, persist_changes)
+            super().set_property(name, value, persist_changes)
         return self

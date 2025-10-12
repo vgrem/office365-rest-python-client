@@ -17,7 +17,7 @@ class GroupCollection(EntityCollection[Group]):
     """Represents a collection of Group resources."""
 
     def __init__(self, context, resource_path=None):
-        super(GroupCollection, self).__init__(context, Group, resource_path)
+        super().__init__(context, Group, resource_path)
 
     def expand_to_principals(self, max_count: int) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
         """

@@ -21,4 +21,4 @@ class VerticalSection(Entity):
                 "webParts": self.web_parts,
             }
             default_value = property_mapping.get(name, None)
-        return super(VerticalSection, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

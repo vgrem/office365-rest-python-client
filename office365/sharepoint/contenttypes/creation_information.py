@@ -18,7 +18,7 @@ class ContentTypeCreationInformation(ClientValue):
         :param str description: Specifies the description of the content type to be constructed.
         :param str group: Specifies the group of the content type to be constructed.
         """
-        super(ContentTypeCreationInformation, self).__init__()
+        super().__init__()
         self.Name = name
         self.Description = description
         self.group = group

@@ -17,7 +17,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         """Specifies a collection of site pages."""
         if resource_path is None:
             resource_path = ResourcePath("SP.Publishing.SitePageCollection")
-        super(SitePageCollection, self).__init__(context, SitePage, resource_path)
+        super().__init__(context, SitePage, resource_path)
 
     def add(self):
         """Adds Site Page"""

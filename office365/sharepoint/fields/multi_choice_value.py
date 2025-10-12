@@ -6,5 +6,5 @@ class FieldMultiChoiceValue(ClientValueCollection):
         """
         :param list[str] choices: Choice values
         """
-        super(FieldMultiChoiceValue, self).__init__(str)
+        super().__init__(str)
         [self.add(choice) for choice in choices]

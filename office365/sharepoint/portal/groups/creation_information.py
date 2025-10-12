@@ -13,7 +13,7 @@ class GroupCreationInformation(ClientValue):
         description: str = None,
         title: str = None,
     ):
-        super(GroupCreationInformation, self).__init__()
+        super().__init__()
         if optional_params is None:
             optional_params = GroupCreationParams()
         self.displayName = display_name

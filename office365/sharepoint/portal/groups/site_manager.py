@@ -31,7 +31,7 @@ class GroupSiteManager(ClientObject):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("GroupSiteManager")
-        super(GroupSiteManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def can_user_create_group(self):
         """Determines if the current user can create group site"""

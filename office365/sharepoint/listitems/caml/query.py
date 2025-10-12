@@ -30,7 +30,7 @@ class CamlQuery(ClientValue):
             results are to be returned.
         :param bool dates_in_utc: Specifies whether the query returns dates in Coordinated Universal Time (UTC) format.
         """
-        super(CamlQuery, self).__init__()
+        super().__init__()
         self.DatesInUtc = dates_in_utc
         self.FolderServerRelativeUrl = folder_server_relative_url
         self.AllowIncrementalResults = allow_incremental_results

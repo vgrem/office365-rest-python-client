@@ -10,7 +10,7 @@ from office365.sharepoint.tenant.administration.sites.creation_source import (
 class SiteCollectionManagementService(ClientObject):
     def __init__(self, context):
         path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.SiteCollectionManagementService")
-        super(SiteCollectionManagementService, self).__init__(context, path)
+        super().__init__(context, path)
 
     def export_csv_file(self, view_xml):
         return_type = ClientResult(self.context, str())

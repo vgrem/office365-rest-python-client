@@ -34,7 +34,7 @@ class ListTemplate(Entity):
         return self.properties.get("InternalName", None)
 
     def set_property(self, name, value, persist_changes=True):
-        super(ListTemplate, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         if self._resource_path is None:
             if name == "Name":
                 self._resource_path = ServiceOperationPath("GetByName", [value], self._parent_collection.resource_path)

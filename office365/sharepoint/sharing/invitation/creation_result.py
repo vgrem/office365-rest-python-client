@@ -11,8 +11,7 @@ class SPInvitationCreationResult(ClientValue):
         invitation_link: str = None,
         succeeded: bool = None,
     ):
-        super(SPInvitationCreationResult, self).__init__()
-        "\n        "
+        super().__init__()
         self.Email = None
         self.InvitationLink = None
         self.Succeeded = None

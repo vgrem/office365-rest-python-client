@@ -136,4 +136,4 @@ class Subscription(Entity):
                 "expirationDateTime": self.expiration_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(Subscription, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -17,4 +17,4 @@ class CalendarPermissionCollection(EntityCollection[CalendarPermission]):
         if not isinstance(email_address, EmailAddress):
             email_address = EmailAddress(email_address)
         props = {"emailAddress": email_address, "role": str(role)}
-        return super(CalendarPermissionCollection, self).add(**props)
+        return super().add(**props)

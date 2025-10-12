@@ -21,6 +21,6 @@ class Attendee(AttendeeBase):
         :param str status: The attendees's response (none, accepted, declined, etc.) for the event and date-time
             that the response was sent.
         """
-        super(Attendee, self).__init__(email_address, attendee_type)
+        super().__init__(email_address, attendee_type)
         self.proposedNewTime = proposed_new_time
         self.status = status

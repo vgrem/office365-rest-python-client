@@ -38,7 +38,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             resource_path: Relative API path for this collection
             parent: Parent object that owns this collection
         """
-        super(ClientObjectCollection, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
         self._data: list[T] = []
         self._item_type: Type[T] = item_type
         self._page_loaded = EventHandler(False)

@@ -11,7 +11,7 @@ class FieldLookupValue(ClientValue):
         of the lookup fields is referring to.
 
         """
-        super(FieldLookupValue, self).__init__()
+        super().__init__()
         self.LookupId = lookup_id
         self.LookupValue = lookup_value
 

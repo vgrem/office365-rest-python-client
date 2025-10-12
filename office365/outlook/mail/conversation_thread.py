@@ -55,4 +55,4 @@ class ConversationThread(Entity):
                 "toRecipients": self.to_recipients,
             }
             default_value = property_mapping.get(name, None)
-        return super(ConversationThread, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

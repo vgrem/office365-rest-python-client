@@ -28,7 +28,7 @@ class MailboxSettings(ClientValue):
             and country/region.
         :param WorkingHours working_hours: The days of the week and hours in a specific time zone that the user works.
         """
-        super(MailboxSettings, self).__init__()
+        super().__init__()
         self.timeFormat = time_format
         self.timeZone = time_zone
         self.automaticRepliesSetting = automatic_replies_setting

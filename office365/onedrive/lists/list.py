@@ -93,4 +93,4 @@ class List(BaseItem):
         if default_value is None:
             property_mapping = {"contentTypes": self.content_types}
             default_value = property_mapping.get(name, None)
-        return super(List, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

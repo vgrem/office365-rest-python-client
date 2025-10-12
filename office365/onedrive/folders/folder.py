@@ -13,6 +13,6 @@ class Folder(ClientValue):
         :param int child_count: Number of children contained immediately within this container.
         :param FolderView view: A collection of properties defining the recommended view for the folder.
         """
-        super(Folder, self).__init__()
+        super().__init__()
         self.childCount = child_count
         self.view = view

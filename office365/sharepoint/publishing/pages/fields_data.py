@@ -49,7 +49,7 @@ class SitePageFieldsData(ClientValue):
         :param str topic_header: TopicHeader of the current Site Page
         :param datetime.datetime publish_start_date:
         """
-        super(SitePageFieldsData, self).__init__()
+        super().__init__()
         self.BannerImageUrl = banner_image_url
         self.CanvasContent1 = canvas_content
         self.CanvasJson1 = None

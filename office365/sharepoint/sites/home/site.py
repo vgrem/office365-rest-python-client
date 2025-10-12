@@ -15,9 +15,9 @@ class SPHSite(Entity):
         """
         if resource_path is None:
             resource_path = ResourcePath("SP.SPHSite")
-        super(SPHSite, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def details(self):
+    def details(self) -> ClientResult[SPHSiteReference]:
         return_type = ClientResult(self.context, SPHSiteReference())
         qry = ServiceOperationQuery(self, "Details", None, None, None, return_type)
         self.context.add_query(qry)

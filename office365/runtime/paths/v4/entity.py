@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 class EntityPath(ResourcePath):
     def __init__(self, key=None, parent=None, collection=None):
         # type: (Optional[str], Optional[ResourcePath], Optional[ResourcePath]) -> None
-        super(EntityPath, self).__init__(key, parent)
+        super().__init__(key, parent)
         self._collection = collection
 
     @property

@@ -70,7 +70,7 @@ class ChangeQuery(ClientValue):
         :param bool web: Gets or sets a value that specifies whether changes to Web sites are included in the query.
         :param bool list_: Gets or sets a value that specifies whether changes to lists are included in the query.
         """
-        super(ChangeQuery, self).__init__()
+        super().__init__()
         self.Item = item
         self.Alert = alert
         self.ContentType = content_type

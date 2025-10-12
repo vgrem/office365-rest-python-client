@@ -32,7 +32,7 @@ class ListCreationInformation(ClientValue):
             a feature.
         :param int template_type: Specifies the list server template of the new list.
         """
-        super(ListCreationInformation, self).__init__()
+        super().__init__()
         self.Title = title
         self.Description = description
         self.BaseTemplate = base_template

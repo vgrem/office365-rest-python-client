@@ -11,7 +11,7 @@ class FeatureCollection(EntityCollection[Feature]):
     """Represents a collection of Feature resources."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(FeatureCollection, self).__init__(context, Feature, resource_path, parent)
+        super().__init__(context, Feature, resource_path, parent)
 
     def add(
         self,

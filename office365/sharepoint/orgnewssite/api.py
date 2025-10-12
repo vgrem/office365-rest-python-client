@@ -9,9 +9,9 @@ class OrgNewsSiteApi(Entity):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("Microsoft.SharePoint.OrgNewsSite.OrgNewsSiteApi")
-        super(OrgNewsSiteApi, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def details(self):
+    def details(self) -> ClientResult[OrgNewsSiteInfo]:
         return_type = ClientResult(self.context, OrgNewsSiteInfo())
         qry = ServiceOperationQuery(self, "Details", None, None, None, return_type)
         self.context.add_query(qry)

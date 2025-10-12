@@ -9,6 +9,6 @@ class TermColumn(ClientValue):
         :param bool allow_multiple_values: Specifies whether the column will allow more than one value.
         :param bool show_fully_qualified_name: Specifies whether to display the entire term path or only the term label.
         """
-        super(TermColumn, self).__init__()
+        super().__init__()
         self.allowMultipleValues = allow_multiple_values
         self.showFullyQualifiedName = show_fully_qualified_name

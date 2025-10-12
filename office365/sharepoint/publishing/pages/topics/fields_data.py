@@ -10,7 +10,7 @@ class TopicPageFieldsData(SitePageFieldsData):
         entity_type: str = None,
         verified_topic_allowed_editors: str = None,
     ):
-        super(TopicPageFieldsData, self).__init__()
+        super().__init__()
         self.EntityId = entity_id
         self.EntityRelations = entity_relations
         self.EntityType = entity_type

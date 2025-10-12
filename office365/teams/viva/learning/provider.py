@@ -8,7 +8,7 @@ class LearningProvider(Entity):
     """Represents an entity that holds the details about a learning provider in Viva learning."""
 
     @property
-    def learning_contents(self):
+    def learning_contents(self) -> EntityCollection[LearningContent]:
         """Learning catalog items for the provider."""
         return self.properties.get(
             "learningContents",
@@ -25,4 +25,4 @@ class LearningProvider(Entity):
                 "learningContents": self.learning_contents,
             }
             default_value = property_mapping.get(name, None)
-        return super(LearningProvider, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

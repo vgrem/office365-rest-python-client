@@ -12,7 +12,7 @@ class GroupCollection(EntityCollection[Group]):
         :param str display_name: Name of the group to be created.
         """
         props = {"displayName": display_name}
-        return super(GroupCollection, self).add(**props)
+        return super().add(**props)
 
     def get_by_name(self, name: str) -> Group:
         """Returns the group with the specified name."""

@@ -9,7 +9,7 @@ class XmlSchemaFieldCreationInformation(ClientValue):
         :param str schema_xml: Specifies the schema that defines the field
         :param int or None options: Specifies the control settings that are used while adding a field
         """
-        super(XmlSchemaFieldCreationInformation, self).__init__()
+        super().__init__()
         self.SchemaXml = schema_xml
         self.Options = options
 

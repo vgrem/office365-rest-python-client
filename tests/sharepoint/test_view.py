@@ -30,9 +30,27 @@ class TestView(SPTestCase):
         view_properties = ViewCreationInformation()
         view_properties.Title = create_unique_name("My Tasks")
         view_properties.PersonalView = True
-        view_properties.Query = (
-            "<Where><Eq><FieldRef ID='AssignedTo' /><Value " "Type='Integer'><UserID/></Value></Eq></Where> "
-        )
+        view_properties.Query = """
+<View>
+  <Query>
+    <Where>
+      <Eq>
+        <FieldRef Name="AssignedTo" />
+        <Value Type="Integer">
+          <UserID />
+        </Value>
+      </Eq>
+    </Where>
+  </Query>
+  <ViewFields>
+    <FieldRef Name="Title" />
+    <FieldRef Name="Status" />
+    <FieldRef Name="DueDate" />
+    <FieldRef Name="Priority" />
+  </ViewFields>
+  <RowLimit>100</RowLimit>
+</View>
+        """
 
         new_view = self.target_list.views.add(view_properties).execute_query()
         self.assertEqual(view_properties.Title, new_view.properties["Title"])

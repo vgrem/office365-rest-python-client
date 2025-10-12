@@ -8,6 +8,6 @@ class UserIdInfo(ClientValue):
         :param str name_id: Specifies the identity provider's unique identifier.
         :param str name_id_issuer: Specifies the identity provider's display name as registered in a farm.
         """
-        super(UserIdInfo, self).__init__()
+        super().__init__()
         self.NameId = name_id
         self.NameIdIssuer = name_id_issuer

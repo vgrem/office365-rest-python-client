@@ -251,10 +251,10 @@ class ObjectSharingInformation(Entity):
             default_value = self.shared_with_users_collection
         elif name == "SharingLinks":
             default_value = self.sharing_links
-        return super(ObjectSharingInformation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(ObjectSharingInformation, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "AnonymousEditLink" and self._resource_path is None:
             self._resource_path = None

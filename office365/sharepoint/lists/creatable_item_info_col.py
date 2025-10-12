@@ -10,5 +10,5 @@ class CreatableItemInfoCollection(ClientValue):
         """
         :param list[CreatableItemInfo] items:
         """
-        super(CreatableItemInfoCollection, self).__init__()
+        super().__init__()
         self.Items = ClientValueCollection(CreatableItemInfo, items)

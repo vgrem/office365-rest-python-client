@@ -70,7 +70,7 @@ class SPMachineLearningHub(Entity):
                 "MachineLearningEnabled": self.machine_learning_enabled,
             }
             default_value = property_mapping.get(name, None)
-        return super(SPMachineLearningHub, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
     def is_default_content_center(self) -> Optional[bool]:

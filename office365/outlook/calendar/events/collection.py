@@ -12,7 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 class EventCollection(DeltaCollection[Event]):
     def __init__(self, context, resource_path=None):
-        super(EventCollection, self).__init__(context, Event, resource_path)
+        super().__init__(context, Event, resource_path)
 
     def add(self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs):
         # type: (str, str|ItemBody, datetime.datetime, datetime.datetime, List[str], ...) -> Event
@@ -47,4 +47,4 @@ class EventCollection(DeltaCollection[Event]):
                 [Attendee(EmailAddress(v), attendee_type="required") for v in attendees],
             )
 
-        return super(EventCollection, self).add(**kwargs)
+        return super().add(**kwargs)

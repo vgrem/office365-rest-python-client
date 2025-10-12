@@ -9,7 +9,7 @@ class HubSiteCollection(EntityCollection[HubSite]):
     """Represents a collection of HubSite resources."""
 
     def __init__(self, context, resource_path=None):
-        super(HubSiteCollection, self).__init__(context, HubSite, resource_path)
+        super().__init__(context, HubSite, resource_path)
 
     def get_by_id(self, _id):
         """Retrieve Hub site by id

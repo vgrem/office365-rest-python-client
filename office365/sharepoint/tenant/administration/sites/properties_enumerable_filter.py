@@ -22,7 +22,7 @@ class SitePropertiesEnumerableFilter(ClientValue):
         :param int group_id_defined:
         :param str template:
         """
-        super(SitePropertiesEnumerableFilter, self).__init__()
+        super().__init__()
         self.ArchivedBy = archived_by
         self.Filter = _filter
         self.GroupIdDefined = group_id_defined

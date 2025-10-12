@@ -37,7 +37,7 @@ class Location(ClientValue):
         :param str unique_id: For internal use only.
         :param str unique_id_type: For internal use only.
         """
-        super(Location, self).__init__()
+        super().__init__()
         self.address = address
         self.coordinates = ClientValueCollection(OutlookGeoCoordinates, coordinates)
         self.displayName = display_name

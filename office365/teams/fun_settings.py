@@ -17,7 +17,7 @@ class TeamFunSettings(ClientValue):
         :param bool allow_stickers_and_memes: 	If set to true, enables users to include stickers and memes.
         :param str giphy_content_rating: Giphy content rating. Possible values are: moderate, strict.
         """
-        super(TeamFunSettings, self).__init__()
+        super().__init__()
         self.allowCustomMemes = allow_custom_memes
         self.allowGiphy = allow_giphy
         self.allowStickersAndMemes = allow_stickers_and_memes

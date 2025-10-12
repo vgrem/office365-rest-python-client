@@ -301,10 +301,10 @@ class Team(Entity):
                 "primaryChannel": self.primary_channel,
             }
             default_value = property_mapping.get(name, None)
-        return super(Team, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(Team, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: determine whether resource path is resolved
         if name == "id" and self._resource_path.segment == "team":
             self._resource_path = ResourcePath(value, ResourcePath("teams"))

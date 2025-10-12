@@ -9,6 +9,6 @@ class LocalizedDescription(ClientValue):
         :param str language_tag: The language tag for the label.
         :param str description: The description in the localized language.
         """
-        super(LocalizedDescription, self).__init__()
+        super().__init__()
         self.languageTag = language_tag
         self.description = description
