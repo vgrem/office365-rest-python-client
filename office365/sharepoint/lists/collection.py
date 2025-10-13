@@ -9,7 +9,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.list import List
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext

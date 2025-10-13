@@ -57,8 +57,8 @@ from office365.sharepoint.lists.document_library_information import (
 from office365.sharepoint.lists.get_parameters import GetListsParameters
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
-from office365.sharepoint.lists.template_collection import ListTemplateCollection
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.collection import ListTemplateCollection
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.marketplace.corporatecuratedgallery.addins.principals_response import (
     SPGetAddinPrincipalsResponse,
 )
@@ -200,7 +200,7 @@ class Web(SecurableObject):
     def get_site_script(
         self,
         include_branding: bool = True,
-        included_lists: List[str] = None,
+        included_lists: list[str] = None,
         include_links_to_exported_items: bool = True,
         include_regional_settings: bool = True,
     ) -> ClientResult[SiteScriptSerializationResult]:
@@ -294,7 +294,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_client_side_components(self, components):
+    def get_client_side_components(
+        self, components: ClientValueCollection[SPClientSideComponentIdentifier]
+    ) -> ClientResult[ClientValueCollection[SPClientSideComponentIdentifier]]:
         """
         Returns the client side components for the requested components.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
@@ -324,7 +326,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_push_notification_subscribers_by_user(self, user):
+    def get_push_notification_subscribers_by_user(self, user: Union[str, User]) -> PushNotificationSubscriberCollection:
         """
         Queries for the push notification subscribers for the site  for the specified user.
 
@@ -434,7 +436,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
-    def create_default_associated_groups(self, user_login, user_login2, group_name_seed):
+    def create_default_associated_groups(self, user_login: str, user_login2: str, group_name_seed: str):
         """
         Creates the default Owners, Members and Visitors SPGroups on the web.
 
@@ -505,7 +507,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_addin_principals_having_permissions_in_sites(self, server_relative_urls=None, urls=None):
+    def get_addin_principals_having_permissions_in_sites(
+        self, server_relative_urls: list[str] = None, urls: list[str] = None
+    ) -> ClientResult[SPGetAddinPrincipalsResponse]:
         """
         :param list[str] server_relative_urls:
         :param list[str] urls:
@@ -568,7 +572,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_sub_webs_filtered_for_current_user(self, query: SubwebQuery):
+    def get_sub_webs_filtered_for_current_user(self, query: SubwebQuery) -> WebInformationCollection:
         """Returns a collection of objects that contain metadata about subsites of the current site (2) in which the
         current user is a member.
 
@@ -620,13 +624,13 @@ class Web(SecurableObject):
 
     def get_recycle_bin_items_by_query_info(
         self,
-        is_ascending=True,
-        item_state=None,
-        order_by=None,
-        paging_info=None,
-        row_limit=100,
-        show_only_my_items=False,
-    ):
+        is_ascending: bool = True,
+        item_state: int = None,
+        order_by: int = None,
+        paging_info: str = None,
+        row_limit: int = 100,
+        show_only_my_items: bool = False,
+    ) -> RecycleBinItemCollection:
         """
         Gets the recycle bin items that are based on the specified query.
 
@@ -833,7 +837,7 @@ class Web(SecurableObject):
         group_id: str = None,
         use_simplified_roles: bool = None,
         return_type=None,
-    ):
+    ) -> ObjectSharingSettings:
         """Given a path to an object in SharePoint, this will generate a sharing settings object which contains
         necessary information for rendering sharing information
 

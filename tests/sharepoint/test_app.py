@@ -7,7 +7,6 @@ from office365.sharepoint.marketplace.tenant.appcatalog.accessor import (
     TenantCorporateCatalogAccessor,
 )
 from tests import (
-    test_admin_credentials,
     test_admin_site_url,
     test_client_id,
     test_password,
@@ -79,3 +78,9 @@ class TestApp(TestCase):
     # def test8_list_app_requests(self):
     #    result = self.__class__.app_catalog.app_requests().execute_query()
     #    self.assertIsNotNone(result.value)
+
+    def test9_get_addin_principals_having_permissions_in_sites(self):
+        result = self.admin_client.web.get_addin_principals_having_permissions_in_sites(
+            urls=[test_team_site_url]
+        ).execute_query()
+        self.assertIsNotNone(result.value)

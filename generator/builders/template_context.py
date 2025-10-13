@@ -60,13 +60,30 @@ class TemplateContext:
             value=ast.Constant(value=builder.value),
         )
 
+    def get_existing_members(self, class_node: ast.ClassDef) -> set:
+        """Get set of existing member names in the class"""
+        existing_members = set()
+
+        for node in class_node.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        existing_members.add(target.id)
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                existing_members.add(node.target.id)
+
+        return existing_members
+
     def build_get_property(self, builder: PropertyBuilder) -> ast.FunctionDef:
         """Build the getter property method"""
         docstring = f"Gets the {builder.schema.Name} property"
         method_name = builder.name
         prop_name = builder.schema.Name
         prop_type_name = builder.client_type_name
-        type_annotation = f"Optional[{prop_type_name}]"
+        if prop_type_name in ["str", "int", "bool", "float", "UUID", "bytes"]:
+            type_annotation = f"Optional[{prop_type_name}]"
+        else:
+            type_annotation = prop_type_name
 
         property_code = f'''
 @property

@@ -1,7 +1,7 @@
 from datetime import datetime
 from random import randint
 
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.kind import PermissionKind
 from office365.sharepoint.principal.users.user import User

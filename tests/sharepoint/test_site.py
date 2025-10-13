@@ -1,6 +1,6 @@
 import uuid
 
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site

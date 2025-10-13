@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.recentfilesparams import RecentFilesParams
 from office365.sharepoint.sites.followedsitesparams import FollowedSitesParams
+from office365.sharepoint.sites.recentfilesparams import RecentFilesParams
 
 
 class NgspRequestParams(ClientValue):

@@ -1,6 +1,6 @@
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.lists.template import ListTemplate
+from office365.sharepoint.lists.templates.template import ListTemplate
 
 
 class ListTemplateCollection(EntityCollection[ListTemplate]):

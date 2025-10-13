@@ -21,7 +21,7 @@ from office365.sharepoint.eventreceivers.definition_collection import (
 )
 from office365.sharepoint.features.collection import FeatureCollection
 from office365.sharepoint.lists.list import List
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
 from office365.sharepoint.principal.users.user import User

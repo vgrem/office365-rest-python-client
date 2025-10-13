@@ -40,7 +40,11 @@ class TypeBuilder(ast.NodeTransformer):
         if self._schema:
             node.name = self.client_type_name
 
-        [self._properties.append(PropertyBuilder(prop_schema)) for _, prop_schema in self._schema.Properties.items()]
+        [
+            self._properties.append(PropertyBuilder(prop_schema))
+            for name, prop_schema in self._schema.Properties.items()
+            if name not in self._options.get("ignoredproperties", [])
+        ]
 
         [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
 
@@ -50,11 +54,11 @@ class TypeBuilder(ast.NodeTransformer):
         self.generic_visit(node)
 
         if self._schema.BaseTypeFullName == "ComplexType":
-            self._build_properties(node)
+            self._build_value_properties(node)
         elif self._schema.BaseTypeFullName == "EnumType":
             self._build_members(node)
         else:
-            self._build_navigation_properties(node)
+            self._build_object_properties(node)
 
         self._build_post(node)
 
@@ -132,7 +136,7 @@ class TypeBuilder(ast.NodeTransformer):
         if not self._members:
             return
 
-        existing_members = self._get_existing_members(class_node)
+        existing_members = self._template.get_existing_members(class_node)
 
         # Add missing members
         for member_builder in self._members:
@@ -142,21 +146,7 @@ class TypeBuilder(ast.NodeTransformer):
                 self._changes.append(f"member: {member_builder.name}")
                 existing_members.add(member_builder.name)
 
-    def _get_existing_members(self, class_node: ast.ClassDef) -> set:
-        """Get set of existing member names in the class"""
-        existing_members = set()
-
-        for node in class_node.body:
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        existing_members.add(target.id)
-            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-                existing_members.add(node.target.id)
-
-        return existing_members
-
-    def _build_properties(self, class_node: ast.ClassDef):
+    def _build_value_properties(self, class_node: ast.ClassDef):
         if not self._properties:
             return
 
@@ -216,7 +206,7 @@ class TypeBuilder(ast.NodeTransformer):
                 init_method.body.append(prop.build_assign())
                 self._changes.append(f"__init__ param: {prop.name}")
 
-    def _build_navigation_properties(self, class_node: ast.ClassDef):
+    def _build_object_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
         for prop in self._properties:
             if prop.status == "detached":

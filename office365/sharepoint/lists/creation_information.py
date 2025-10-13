@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 
 
 class ListCreationInformation(ClientValue):
