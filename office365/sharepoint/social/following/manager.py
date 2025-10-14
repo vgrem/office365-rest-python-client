@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -30,3 +32,17 @@ class SocialFollowingManager(Entity):
         qry = ServiceOperationQuery(self, "GetSuggestions", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @property
+    def followed_documents_uri(self) -> Optional[str]:
+        """Gets the FollowedDocumentsUri property"""
+        return self.properties.get("FollowedDocumentsUri", None)
+
+    @property
+    def followed_sites_uri(self) -> Optional[str]:
+        """Gets the FollowedSitesUri property"""
+        return self.properties.get("FollowedSitesUri", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialFollowingManager"

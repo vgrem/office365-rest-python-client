@@ -1,7 +1,7 @@
 import ast
 import os
 from os.path import abspath
-from typing import cast
+from typing import Set, cast
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
@@ -12,9 +12,21 @@ from office365.runtime.odata.type_information import TypeInformation
 class TemplateContext:
     """Template context"""
 
+    TYPE_DEPENDENCIES = {
+        "UUID": "uuid",
+        "datetime": "datetime",
+        "date": "datetime",
+        "StringCollection": "office365.runtime.types.collections",
+        "GuidCollection": "office365.runtime.types.collections",
+        "Optional": "typing",
+    }
+
+    OPTIONAL_TYPES = {"str", "int", "bool", "float", "UUID", "bytes"}
+
     def __init__(self, template_path: str, schema: TypeInformation) -> None:
         self._template_path = template_path
         self._schema = schema
+        self._required_imports: Set[str] = set()
 
     def load(self) -> ast.Module:
         file_mapping = {
@@ -28,29 +40,32 @@ class TemplateContext:
 
     def build_imports(self, builder: TypeBuilder):
         """Add import statements for dependent types."""
-        type_to_module = {
-            "UUID": "uuid",
-            "datetime": "datetime",
-            "date": "datetime",
-            "StringCollection": "office365.runtime.types.collections",
-            "GuidCollection": "office365.runtime.types.collections",
-        }
-
         imports = []
-        added_types = set()
+        added_modules = set()
 
         for prop in builder.properties:
             prop_type = prop.client_type_name
-            if prop_type in type_to_module and prop_type not in added_types:
 
+            # Track basic type dependencies
+            if prop_type in self.TYPE_DEPENDENCIES:
+                self._ensure_type_dependency(prop_type)
+
+            # Track Optional dependency if needed
+            if prop_type in self.OPTIONAL_TYPES:
+                self._ensure_type_dependency("Optional")
+
+        # Build import statements
+        for type_name in self._required_imports:
+            module = self.TYPE_DEPENDENCIES[type_name]
+            if module not in added_modules:
                 imports.append(
                     ast.ImportFrom(
-                        module=type_to_module[prop_type],
-                        names=[ast.alias(name=prop_type, asname=None)],
+                        module=module,
+                        names=[ast.alias(name=type_name, asname=None)],
                         level=0,
                     )
                 )
-                added_types.add(prop_type)
+                added_modules.add(module)
 
         return imports
 
@@ -80,7 +95,7 @@ class TemplateContext:
         method_name = builder.name
         prop_name = builder.schema.Name
         prop_type_name = builder.client_type_name
-        if prop_type_name in ["str", "int", "bool", "float", "UUID", "bytes"]:
+        if prop_type_name in self.OPTIONAL_TYPES:
             type_annotation = f"Optional[{prop_type_name}]"
         else:
             type_annotation = prop_type_name
@@ -114,3 +129,8 @@ def {method_name}(self) -> {type_annotation}:
         )
 
         return node
+
+    def _ensure_type_dependency(self, type_name: str) -> None:
+        """Track that a type dependency is needed"""
+        if type_name in self.TYPE_DEPENDENCIES:
+            self._required_imports.add(type_name)

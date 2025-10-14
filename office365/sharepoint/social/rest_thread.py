@@ -1,3 +1,7 @@
+from typing import Optional
+
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -14,7 +18,7 @@ class SocialRestThread(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Social.SocialRestThread"))
 
-    def like(self, post_id):
+    def like(self, post_id: str) -> Self:
         """
         The Like method makes the current user a liker of the specified post.
 
@@ -38,7 +42,7 @@ class SocialRestThread(Entity):
         return self
 
     @property
-    def social_thread(self):
+    def social_thread(self) -> SocialThread:
         """The SocialThread property provides the object that contains the thread"""
         return self.properties.get("SocialThread", SocialThread())
 
@@ -47,3 +51,12 @@ class SocialRestThread(Entity):
             property_mapping = {"SocialThread": self.social_thread}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def id_(self) -> Optional[str]:
+        """Gets the ID property"""
+        return self.properties.get("ID", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialRestThread"

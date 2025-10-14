@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.entity import Entity
 from office365.sharepoint.userprofiles.user_profile import UserProfile
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
 
 
-class ProfileLoader(ClientObject):
+class ProfileLoader(Entity):
     """The ProfileLoader class provides access to the current user's profile."""
 
     def __init__(self, context):

@@ -16,3 +16,7 @@ class SocialRestFeed(Entity):
     @property
     def social_feed(self):
         return self.properties.get("SocialFeed", SocialFeed())
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialRestFeed"

@@ -24,7 +24,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
-    def get_blocked_file_extensions(context):
+    def get_blocked_file_extensions(context) -> ClientResult[StringCollection]:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         """
@@ -43,7 +43,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
-    def get_global_installed_languages(context, compatibility_level):
+    def get_global_installed_languages(context, compatibility_level: int) -> LanguageCollection:
         """
         Gets a list of installed languages that are compatible with a given version of SharePoint.
 

@@ -4,12 +4,13 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.userprofiles.follow_result import FollowResult
+from office365.sharepoint.userprofiles.followed_item import FollowedItem
 
 
 class FollowedContent(Entity):
     """The FollowedContent class provides access to followed content items."""
 
-    def follow_item(self, item):
+    def follow_item(self, item: FollowedItem) -> ClientResult[FollowResult]:
         """
         The FollowItem method is reserved for server-to-server use only.
         The server sets the specified item to be followed by the current user. This method cannot be called
@@ -23,7 +24,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_followed_status(self, url):
+    def get_followed_status(self, url: str) -> ClientResult[int]:
         """
         The GetFollowedStatus method retrieves the followed status of the specified document or site.
         An item can be followed if the url parameter identifies a document or site that the current user has access to.

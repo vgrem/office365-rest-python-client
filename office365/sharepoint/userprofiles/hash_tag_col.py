@@ -10,3 +10,7 @@ class HashTagCollection(Entity):
     @property
     def items(self):
         return self.properties.get("Items", ClientValueCollection(HashTag))
+
+    @property
+    def entity_type_name(self):
+        return "SP.UserProfiles.HashTagCollection"

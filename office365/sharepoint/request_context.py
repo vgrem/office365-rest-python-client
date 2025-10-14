@@ -10,7 +10,7 @@ class RequestContext(ClientObject):
         site, list, or list item.
     """
 
-    def get_remote_context(self):
+    def get_remote_context(self) -> "RequestContext":
         """
         Returns the SP.RequestContext for the mounted folder.
         Returns null if this is not an attempt to render or act upon a mounted folder.

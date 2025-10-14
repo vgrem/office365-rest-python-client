@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 from typing_extensions import Self
 
@@ -16,19 +16,11 @@ from office365.sharepoint.userprofiles.personal_site_creation_priority import (
 )
 
 
-def _ensure_user(user_or_name, action):
-    """
-    :param str or User user_or_name: User or Login name of the specified user.
-    :param (str) -> None action: Callback
-    """
-    if isinstance(user_or_name, User):
-
-        def _user_loaded():
-            action(user_or_name.login_name)
-
-        user_or_name.ensure_property("LoginName", _user_loaded)
+def _ensure_user(user: Union[str, User], action: Callable[[str], None] = None) -> None:
+    if isinstance(user, User):
+        user.ensure_property("LoginName", lambda: action(user.login_name))
     else:
-        action(user_or_name)
+        action(user)
 
 
 class PeopleManager(Entity):
@@ -38,7 +30,7 @@ class PeopleManager(Entity):
         super().__init__(context, StaticPath("SP.UserProfiles.PeopleManager"))
 
     @staticmethod
-    def get_trending_tags(context):
+    def get_trending_tags(context) -> HashTagCollection:
         """Gets a collection of the 20 (or fewer) most popular hash tags over the past week.
         The returned collection is sorted in descending order of frequency of use.
 
@@ -50,7 +42,7 @@ class PeopleManager(Entity):
         context.add_query(qry)
         return return_type
 
-    def get_user_onedrive_quota_max(self, account_name: str):
+    def get_user_onedrive_quota_max(self, account_name: str) -> ClientResult[int]:
         """
         :param str account_name: Account name of the specified user.
         """
@@ -81,7 +73,7 @@ class PeopleManager(Entity):
         """
         return_type = EntityCollection(self.context, PersonProperties)
 
-        def _get_followers_for(account_name):
+        def _get_followers_for(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(self, "GetFollowersFor", params, None, None, return_type)
             self.context.add_query(qry)
@@ -140,20 +132,20 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_user_profile_properties(self, user_or_name: Union[str, User]) -> ClientResult[dict]:
+    def get_user_profile_properties(self, user: Union[str, User]) -> ClientResult[dict]:
         """
         Gets the specified user profile properties for the specified user.
 
-        :param str or User user_or_name: User or Login name of the specified user.
+        :param str or User user: User or Login name of the specified user.
         """
         return_type = ClientResult(self.context, {})
 
-        def _user_resolved(account_name: str) -> None:
+        def _get_user_profile_properties(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(self, "GetUserProfileProperties", params, None, None, return_type)
             self.context.add_query(qry)
 
-        _ensure_user(user_or_name, _user_resolved)
+        _ensure_user(user, _get_user_profile_properties)
         return return_type
 
     def get_properties_for(self, account: Union[str, User]) -> PersonProperties:
@@ -163,24 +155,24 @@ class PeopleManager(Entity):
         """
         return_type = PersonProperties(self.context)
 
-        def _get_properties_for_inner(account_name: str) -> None:
+        def _get_properties_for(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(self, "GetPropertiesFor", params, None, None, return_type)
             self.context.add_query(qry)
 
-        _ensure_user(account, _get_properties_for_inner)
+        _ensure_user(account, _get_properties_for)
         return return_type
 
     def get_default_document_library(
         self,
-        user_or_name: Union[str, User],
+        user: Union[str, User],
         create_site_if_not_exists=False,
         site_creation_priority=PersonalSiteCreationPriority.Low,
     ) -> ClientResult[str]:
         """
         Gets the OneDrive Document library path for a given user.
 
-        :param str or User user_or_name user_or_name: The login name of the user whose OneDrive URL is required.
+        :param str or User user_or_name user: The login name of the user whose OneDrive URL is required.
              For example, "i:0#.f|membership|admin@contoso.sharepoint.com”.
         :param bool create_site_if_not_exists: If this value is set to true and the site doesn't exist, the site will
             get created.
@@ -188,7 +180,7 @@ class PeopleManager(Entity):
         """
         return_type = ClientResult(self.context)
 
-        def _get_default_document_library(account_name):
+        def _get_default_document_library(account_name: str) -> None:
             params = {
                 "accountName": account_name,
                 "createSiteIfNotExists": create_site_if_not_exists,
@@ -197,7 +189,7 @@ class PeopleManager(Entity):
             qry = ServiceOperationQuery(self, "GetDefaultDocumentLibrary", params, None, None, return_type)
             self.context.add_query(qry)
 
-        _ensure_user(user_or_name, _get_default_document_library)
+        _ensure_user(user, _get_default_document_library)
         return return_type
 
     def get_people_followed_by(self, account_name: str) -> EntityCollection[PersonProperties]:

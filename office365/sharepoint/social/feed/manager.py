@@ -96,3 +96,7 @@ class SocialFeedManager(Entity):
     def personal_site_portal_uri(self) -> Optional[str]:
         """The PersonalSitePortalUri property specifies the URI of the personal site portal."""
         return self.properties.get("PersonalSitePortalUri", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialFeedManager"
