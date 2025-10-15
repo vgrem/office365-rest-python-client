@@ -63,13 +63,19 @@ class WebPartDefinition(Entity):
         """The WebPart object, as specified in section 3.2.5.148, associated with this WebPartDefinition.
         The WebPart object (1) contains additional properties relating to the Web Part represented by this
         WebPartDefinition object"""
-        return self.properties.get(
-            "WebPart",
-            WebPart(self.context, ResourcePath("WebPart", self.resource_path)),
-        )
+        return self.properties.get("WebPart", WebPart(self.context, ResourcePath("WebPart", self.resource_path)))
 
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {"WebPart": self.web_part}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def zone_id(self) -> Optional[str]:
+        """Gets the ZoneId property"""
+        return self.properties.get("ZoneId", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.WebParts.WebPartDefinition"

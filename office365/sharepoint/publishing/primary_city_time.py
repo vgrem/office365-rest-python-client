@@ -20,3 +20,7 @@ class PrimaryCityTime(Entity):
     def utc_offset(self) -> Optional[str]:
         """"""
         return self.properties.get("UtcOffset", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.PrimaryCityTime"

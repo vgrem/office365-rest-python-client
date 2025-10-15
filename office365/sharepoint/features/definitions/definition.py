@@ -12,3 +12,7 @@ class FeatureDefinition(Entity):
     @property
     def display_name(self) -> Optional[str]:
         return self.properties.get("DisplayName", None)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Administration.FeatureDefinition"

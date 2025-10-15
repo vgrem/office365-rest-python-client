@@ -24,3 +24,12 @@ class SpoOperation(ClientObject):
         if self.is_property_available("PollingInterval"):
             return int(self.properties["PollingInterval"]) / 1000
         return None
+
+    @property
+    def polling_interval(self) -> Optional[int]:
+        """Gets the PollingInterval property"""
+        return self.properties.get("PollingInterval", None)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Online.SharePoint.TenantAdministration.SpoOperation"
