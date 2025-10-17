@@ -1,4 +1,4 @@
-from office365.directory.authentication.strength_usage import (
+from office365.directory.authentication.strength.usage import (
     AuthenticationStrengthUsage,
 )
 from office365.directory.policies.update_allowed_combinations_result import (

@@ -1,4 +1,4 @@
-from office365.directory.authentication.strength_root import AuthenticationStrengthRoot
+from office365.directory.authentication.strength.root import AuthenticationStrengthRoot
 from office365.directory.policies.conditional_access import ConditionalAccessPolicy
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection

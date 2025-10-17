@@ -1,5 +1,6 @@
+from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.collections import StringCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class RecurrencePattern(ClientValue):
@@ -8,18 +9,18 @@ class RecurrencePattern(ClientValue):
     def __init__(
         self,
         day_of_month=None,
-        days_of_week=None,
+        days_of_week: DayOfWeek = None,
         first_day_of_week=None,
-        index=None,
-        interval=None,
-        month=None,
-        pattern_type=None,
+        index: int = None,
+        interval: int = None,
+        month: int = None,
+        pattern_type: str = None,
     ):
         """
         :param int day_of_month: The day of the month on which the event occurs. Required if type is absoluteMonthly
             or absoluteYearly.
-        :param list[str] days_of_week: A collection of the days of the week on which the event occurs
-        :param str first_day_of_week: The first day of the week
+        :param list[DayOfWeek] days_of_week: A collection of the days of the week on which the event occurs
+        :param DayOfWeek first_day_of_week: The first day of the week
         :param str index: Specifies on which instance of the allowed days specified in daysOfWeek the event occurs,
              counted from the first instance in the month.
         :param int interval: The number of units between occurrences, where units can be in days, weeks, months,
@@ -29,7 +30,7 @@ class RecurrencePattern(ClientValue):
              absoluteYearly, relativeYearly
         """
         self.dayOfMonth = day_of_month
-        self.daysOfWeek = StringCollection(days_of_week)
+        self.daysOfWeek = ClientValueCollection(DayOfWeek, days_of_week)
         self.firstDayOfWeek = first_day_of_week
         self.index = index
         self.interval = interval

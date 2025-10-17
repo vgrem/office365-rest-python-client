@@ -1,6 +1,6 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.managed_app_registration import ManagedAppRegistration
+from office365.intune.devices.managed.app.registration import ManagedAppRegistration
 from office365.runtime.paths.resource_path import ResourcePath
 
 

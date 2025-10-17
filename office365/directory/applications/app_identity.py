@@ -8,10 +8,10 @@ class AppIdentity(ClientValue):
 
     def __init__(
         self,
-        app_id=None,
-        display_name=None,
-        service_principal_id=None,
-        service_principal_name=None,
+        app_id: str = None,
+        display_name: str = None,
+        service_principal_id: str = None,
+        service_principal_name: str = None,
     ):
         """
         :param str app_id: Refers to the Unique GUID representing Application Id in the Azure Active Directory.

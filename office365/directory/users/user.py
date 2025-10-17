@@ -35,10 +35,10 @@ from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.settings import UserSettings
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.data import DeviceAndAppManagementData
-from office365.intune.devices.managed import ManagedDevice
-from office365.intune.devices.managed_app_diagnostic_status import (
+from office365.intune.devices.managed.app.diagnostic_status import (
     ManagedAppDiagnosticStatus,
 )
+from office365.intune.devices.managed.managed import ManagedDevice
 from office365.intune.organizations.contact import OrgContact
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.onedrive.drives.drive import Drive

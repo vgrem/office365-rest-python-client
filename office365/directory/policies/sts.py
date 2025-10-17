@@ -7,7 +7,7 @@ class StsPolicy(PolicyBase):
     """Represents an abstract base type for policy types that control Microsoft identity platform behavior."""
 
     @property
-    def applies_to(self):
+    def applies_to(self) -> DirectoryObjectCollection:
         """"""
         return self.properties.get(
             "appliesTo",

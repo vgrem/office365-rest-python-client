@@ -12,3 +12,7 @@ class ChannelMembershipType(Enum):
     shared = "shared"
     "Members can be directly added to the channel without adding them to the team."
     unknownFutureValue = "2"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.ChannelMembershipType"

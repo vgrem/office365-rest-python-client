@@ -11,7 +11,7 @@ from office365.delta_collection import DeltaCollection
 from office365.directory.applications.collection import ApplicationCollection
 from office365.directory.applications.template import ApplicationTemplate
 from office365.directory.audit.log_root import AuditLogRoot
-from office365.directory.authentication.method_configuration import (
+from office365.directory.authentication.methods.configuration import (
     AuthenticationMethodConfiguration,
 )
 from office365.directory.certificates.auth_configuration import (

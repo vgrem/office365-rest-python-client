@@ -25,3 +25,7 @@ class ColumnTypes(Enum):
     thumbnail = "16"
     approvalStatus = "17"
     unknownFutureValue = "18"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.ColumnTypes"

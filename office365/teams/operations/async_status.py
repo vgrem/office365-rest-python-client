@@ -15,3 +15,7 @@ class TeamsAsyncOperationStatus(Enum):
     failed = 4
     "The operation failed."
     unknownFutureValue = "5"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.TeamsAsyncOperationStatus"

@@ -23,7 +23,7 @@ class Trending(Entity):
         return self.properties.get("resourceReference", ResourceReference())
 
     @property
-    def resource(self):
+    def resource(self) -> Entity:
         """Used for navigating to the trending document."""
         return self.properties.get(
             "resource",
