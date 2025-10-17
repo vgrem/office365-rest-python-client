@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T", bound="ClientObject")
-PropertyT = Union[bool, int, float, str, bytes, Enum, Dict[str, Any], List[Any], ClientValue]
 
 
 class ClientObject:
@@ -225,7 +224,7 @@ class ClientObject:
         self.query_options.select = names
         return self
 
-    def get_property(self, name: str, default_value: PropertyT = None) -> PropertyT:
+    def get_property(self, name: str, default_value: Any = None) -> Any:
         """
         Gets the value of a property.
 
@@ -425,7 +424,7 @@ class ClientObject:
             if isinstance(v, (ClientObject, ClientValue)):
                 json[k] = v.to_json(json_format)
             elif isinstance(v, Enum):
-                json[k] = v.value  # type: ignore[assignment]
+                json[k] = v.value
 
         if json and include_control_info:
             if isinstance(json_format, JsonLightFormat):

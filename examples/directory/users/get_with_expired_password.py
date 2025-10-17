@@ -2,7 +2,7 @@
 Print users with expired passwords based on password policy
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant

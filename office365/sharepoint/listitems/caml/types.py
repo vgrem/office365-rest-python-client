@@ -40,7 +40,7 @@ class QueryElement:
         return f"<Query>{str(self.Where)}</Query>"
 
 
-class RowLimitElement(object):
+class RowLimitElement:
     """Sets the row limit for the number of items to display in a view."""
 
     def __init__(self, top=None):

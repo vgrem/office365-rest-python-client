@@ -4,6 +4,7 @@ target-version = ['py36']
 
 [tool.ruff]
 line-length = 121
+# target-version = "py36"
 # pyflakes, pycodestyle, isort
 lint.select = ["F", "E", "W", "I001"]
 
@@ -20,7 +21,6 @@ disable = [
     "E0307", # invalid-str-returned
     "E0611", # no-name-in-module (!)
     "E1102", # not-callable
-    "R0205", # useless-object-inheritance (Python 2)
     "R0401", # cyclic-import (!)
     "R0801", # duplicate-code
     "R0902", # too-many-instance-attributes
@@ -56,11 +56,3 @@ disable = [
 [tool.pylint.FORMAT]
 max-line-length = 121
 ignore-long-lines = '^\s*# (<?https?://\S+>?|type: .+)$'
-
-[tool.pylint.MASTER]
-ignore-patterns = 'office365\todo\tasks\**'
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["F401"]
-"examples/**/*.py" = ["F401"]
-"office365/**/*.py" = ["F401"]

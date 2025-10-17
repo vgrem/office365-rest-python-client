@@ -4,7 +4,6 @@ from office365.runtime.queries.client_query import ClientQuery
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
-    from office365.sharepoint.client_context import ClientContext
 
 
 class DeleteEntityQuery(ClientQuery):

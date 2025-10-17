@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject, PropertyT
+from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
@@ -87,7 +87,7 @@ class Entity(ClientObject):
         """
         return "id"
 
-    def set_property(self, name: str, value: PropertyT, persist_changes: bool = True) -> Self:
+    def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """Sets a property value and updates the resource path if needed.
 
         Args:

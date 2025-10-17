@@ -1,6 +1,5 @@
-from typing import Any, Optional
+from typing import Optional
 
-from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection

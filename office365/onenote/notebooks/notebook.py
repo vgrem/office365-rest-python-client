@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.sections.section import OnenoteSection

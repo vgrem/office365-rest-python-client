@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from office365.runtime.paths.service_operation import ServiceOperationPath
 
 
-class ODataPathBuilder(object):
+class ODataPathBuilder:
     """A builder for constructing OData paths with proper encoding and URL handling."""
 
     # Characters that need special handling in OData URLs

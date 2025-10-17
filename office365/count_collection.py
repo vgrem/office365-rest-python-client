@@ -9,7 +9,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.function import FunctionQuery
 
 if TYPE_CHECKING:
-    from office365.graph_client import GraphClient
+    pass
 
 
 class CountCollection(DeltaCollection[T]):

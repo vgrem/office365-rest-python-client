@@ -1,6 +1,5 @@
 from typing import Optional
 
-from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection

@@ -3,11 +3,7 @@ Demonstrates how to create a taxonomy field on a list
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.taxonomy.field_value import (
-    TaxonomyFieldValue,
-)
-from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
-from tests import create_unique_name, test_client_credentials, test_team_site_url
+from tests import test_client_credentials, test_team_site_url
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 custom_list = ctx.web.lists.get_by_title("Requests").get().execute_query()

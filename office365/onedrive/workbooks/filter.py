@@ -10,10 +10,10 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WorkbookFilter(Entity):
     """Manages the filtering of a table's column."""
 
-    def apply_bottom_items_filter(self, count=None) -> Self:
+    def apply_bottom_items_filter(self, count: int = None) -> Self:
         """Perform a sort operation.
 
-        :param str count: The number of items to apply the filter to.
+        :param int count: The number of items to apply the filter to.
         """
         payload = {"count": count}
         qry = ServiceOperationQuery(self, "applyBottomItemsFilter", None, payload)

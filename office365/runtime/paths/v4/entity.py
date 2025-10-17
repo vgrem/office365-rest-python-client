@@ -1,7 +1,3 @@
-from typing import Optional
-
-from typing_extensions import Self
-
 from office365.runtime.paths.resource_path import ResourcePath
 
 

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from office365.runtime.client_value import ClientValue
 
 

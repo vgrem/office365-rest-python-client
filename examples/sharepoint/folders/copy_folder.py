@@ -3,7 +3,7 @@ Demonstrates how to copy a folder within a site
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import create_unique_name, test_team_site_url, test_user_credentials
+from tests import test_team_site_url, test_user_credentials
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
 

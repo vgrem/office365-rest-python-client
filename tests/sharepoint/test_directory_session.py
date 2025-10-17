@@ -7,7 +7,6 @@ from tests import (
     test_password,
     test_site_url,
     test_tenant,
-    test_user_credentials,
     test_username,
 )
 

@@ -1,5 +1,7 @@
 from typing import List
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -14,7 +16,7 @@ class WorkbookTableSort(Entity):
         fields: List[WorkbookSortField],
         match_case: bool = None,
         method: str = None,
-    ):
+    ) -> Self:
         """Perform a sort operation.
 
         :param list[WorkbookSortField] fields: The list of conditions to sort on.

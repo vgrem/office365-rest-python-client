@@ -1,5 +1,3 @@
-from office365.sharepoint.features.definitions.scope import FeatureDefinitionScope
-from office365.sharepoint.features.known_list import KnownFeaturesList
 from office365.sharepoint.lists.list import List
 from tests.sharepoint.sharepoint_case import SPTestCase
 

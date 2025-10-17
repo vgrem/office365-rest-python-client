@@ -5,7 +5,6 @@ from tests import (
     test_password,
     test_team_site_url,
     test_tenant,
-    test_user_credentials,
     test_username,
 )
 from tests.sharepoint.sharepoint_case import SPTestCase

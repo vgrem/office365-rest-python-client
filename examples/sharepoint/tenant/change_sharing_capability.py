@@ -11,10 +11,7 @@ from office365.sharepoint.tenant.administration.sharing_capabilities import (
 from tests import (
     test_admin_credentials,
     test_admin_site_url,
-    test_cert_thumbprint,
-    test_client_id,
     test_team_site_url,
-    test_tenant,
 )
 
 # admin_client = ClientContext(test_admin_site_url).with_client_certificate(

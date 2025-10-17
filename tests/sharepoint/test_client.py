@@ -16,9 +16,9 @@ from office365.sharepoint.webs.web import Web
 from tests import (
     create_unique_file_name,
     create_unique_name,
-    settings,
     test_client_credentials,
     test_client_id,
+    test_client_secret,
     test_password,
     test_site_url,
     test_team_site_url,
@@ -37,15 +37,17 @@ class TestSharePointClient(TestCase):
     def test2_connect_with_app_principal_alt(self):
         context_auth = AuthenticationContext(url=test_site_url)
         context_auth.acquire_token_for_app(
-            client_id=settings.get("client_credentials", "client_id"),
-            client_secret=settings.get("client_credentials", "client_secret"),
+            client_id=test_client_id,
+            client_secret=test_client_secret,
         )
         ctx = ClientContext(test_site_url, context_auth)
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
     def test4_connect_with_user_credentials(self):
-        ctx = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        ctx = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
@@ -158,7 +160,9 @@ class TestSharePointClient(TestCase):
         self.assertEqual(str(options), "$select=Author,Comments&$expand=Author")
 
     def test_16_ensure_property(self):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         me = client.web.current_user.get()
         site = client.site
 

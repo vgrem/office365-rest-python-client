@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
@@ -163,8 +165,7 @@ class ODataRequest(ClientRequest):
             Normalized payload dictionary or list
         """
 
-        def _normalize_payload(payload):
-            # type: (ClientObject|ClientValue|Dict|List) -> Dict|List
+        def _normalize_payload(payload: ClientObject | ClientValue | Dict | List) -> Dict | List:
             if isinstance(payload, (ClientObject, ClientValue)):
                 return payload.to_json(self._default_json_format)
             elif isinstance(payload, dict):
