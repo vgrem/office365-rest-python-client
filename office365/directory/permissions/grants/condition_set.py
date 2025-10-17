@@ -14,7 +14,7 @@ class PermissionGrantConditionSet(Entity):
     """
 
     @property
-    def client_application_ids(self):
+    def client_application_ids(self) -> StringCollection:
         """
         A list of appId values for the client applications to match with, or a list with the single value all to
         match any client application. Default is the single value all.
@@ -22,7 +22,7 @@ class PermissionGrantConditionSet(Entity):
         return self.properties.get("clientApplicationIds", StringCollection())
 
     @property
-    def client_application_publisher_ids(self):
+    def client_application_publisher_ids(self) -> StringCollection:
         """
         A list of Microsoft Partner Network (MPN) IDs for verified publishers of the client application,  or a list
         with the single value all to match with client apps from any publisher. Default is the single value all.
@@ -38,7 +38,7 @@ class PermissionGrantConditionSet(Entity):
         return self.properties.get("clientApplicationsFromVerifiedPublisherOnly", None)
 
     @property
-    def permissions(self):
+    def permissions(self) -> StringCollection:
         """
         The list of id values for the specific permissions to match with, or a list with the single value all to
         match with any permission. The id of delegated permissions can be found in the oauth2PermissionScopes property

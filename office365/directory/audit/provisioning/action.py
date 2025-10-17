@@ -1,4 +1,7 @@
-class ProvisioningAction:
+from enum import Enum
+
+
+class ProvisioningAction(Enum):
     """"""
 
     other = "0"

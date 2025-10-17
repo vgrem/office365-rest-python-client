@@ -72,7 +72,7 @@ class Folder(Entity):
         Retrieves folders
         :param bool recursive: Determines whether to enumerate folders recursively
         """
-        from office365.sharepoint.folders.collection import FolderCollection  # noqa
+        from office365.sharepoint.folders.collection import FolderCollection
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
@@ -90,7 +90,7 @@ class Folder(Entity):
         Retrieves files
         :param bool recursive: Determines whether to enumerate folders recursively
         """
-        from office365.sharepoint.files.collection import FileCollection  # noqa
+        from office365.sharepoint.files.collection import FileCollection
 
         return_type = FileCollection(self.context, self.files.resource_path, self)
 
@@ -174,12 +174,7 @@ class Folder(Entity):
 
         def _move_folder():
             opt = MoveCopyOptions(retain_editor_and_modified_on_move=retain_editor_and_modified)
-            MoveCopyUtil.move_folder_by_path(
-                self.context,
-                self.server_relative_path.DecodedUrl,
-                new_relative_path,
-                opt,
-            )
+            MoveCopyUtil.move_folder_by_path(self.context, self.server_relative_path.DecodedUrl, new_relative_path, opt)
 
         self.ensure_property("ServerRelativePath", _move_folder)
         return return_type
@@ -221,7 +216,6 @@ class Folder(Entity):
 
     def recycle(self) -> ClientResult[str]:
         """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
-
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
@@ -326,7 +320,6 @@ class Folder(Entity):
             an anonymous access link in the email notification, and if the value is "false", no link will be included.
         :param bool propagate_acl: A flag to determine if permissions SHOULD be pushed to items with unique permission.
         """
-
         return_type = ClientResult(self.context, ClientValueCollection(UserSharingResult))
 
         def _update_document_sharing_info():
@@ -348,10 +341,7 @@ class Folder(Entity):
         return return_type
 
     def copy_to(
-        self,
-        destination: Union[str, Folder],
-        keep_both: bool = False,
-        reset_author_and_created: bool = False,
+        self, destination: Union[str, Folder], keep_both: bool = False, reset_author_and_created: bool = False
     ) -> Folder:
         """Copies the folder with files to the destination URL.
 
@@ -365,10 +355,7 @@ class Folder(Entity):
         def _copy_to(destination_folder: Folder) -> None:
             destination_url = "/".join([destination_folder.server_relative_url, self.name])
             return_type.set_property("ServerRelativeUrl", destination_url)
-            opts = MoveCopyOptions(
-                keep_both=keep_both,
-                reset_author_and_created_on_copy=reset_author_and_created,
-            )
+            opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
             MoveCopyUtil.copy_folder(self.context, self.server_relative_url, destination_url, opts)
 
         def _source_folder_resolved():
@@ -381,10 +368,7 @@ class Folder(Entity):
         return return_type
 
     def copy_to_using_path(
-        self,
-        destination: Union[str, "Folder"],
-        keep_both: bool = False,
-        reset_author_and_created: bool = False,
+        self, destination: Union[str, "Folder"], keep_both: bool = False, reset_author_and_created: bool = False
     ) -> "Folder":
         """Copies the folder with files to the destination Path.
 
@@ -392,17 +376,13 @@ class Folder(Entity):
         :type keep_both: bool
         :type reset_author_and_created: bool
         """
-
         return_type = Folder(self.context)
         self.parent_collection.add_child(return_type)
 
         def _copy_folder_by_path(destination_folder: Folder) -> None:
             destination_url = "/".join([str(destination_folder.server_relative_path), self.name])
             return_type.set_property("ServerRelativePath", destination_url)
-            opts = MoveCopyOptions(
-                keep_both=keep_both,
-                reset_author_and_created_on_copy=reset_author_and_created,
-            )
+            opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
             MoveCopyUtil.copy_folder_by_path(self.context, str(self.server_relative_path), destination_url, opts)
 
         def _source_folder_resolved():
@@ -420,44 +400,39 @@ class Folder(Entity):
     def storage_metrics(self) -> StorageMetrics:
         """Specifies the storage-related metrics for list folders in the site"""
         return self.properties.get(
-            "StorageMetrics",
-            StorageMetrics(self.context, ResourcePath("StorageMetrics", self.resource_path)),
+            "StorageMetrics", StorageMetrics(self.context, ResourcePath("StorageMetrics", self.resource_path))
         )
 
     @property
     def list_item_all_fields(self) -> ListItem:
         """Specifies the list item fields values for the list item corresponding to the folder."""
         return self.properties.get(
-            "ListItemAllFields",
-            ListItem(self.context, ResourcePath("ListItemAllFields", self.resource_path)),
+            "ListItemAllFields", ListItem(self.context, ResourcePath("ListItemAllFields", self.resource_path))
         )
 
     @property
     def files(self) -> FileCollection:
         """Specifies the collection of files contained in the list folder."""
-        from office365.sharepoint.files.collection import FileCollection  # noqa
+        from office365.sharepoint.files.collection import FileCollection
 
         return self.properties.get(
-            "Files",
-            FileCollection(self.context, ResourcePath("Files", self.resource_path), self),
+            "Files", FileCollection(self.context, ResourcePath("Files", self.resource_path), self)
         )
 
     @property
     def folders(self) -> FolderCollection:
         """Specifies the collection of list folders contained within the list folder."""
-        from office365.sharepoint.folders.collection import FolderCollection  # noqa
+        from office365.sharepoint.folders.collection import FolderCollection
 
         return self.properties.get(
-            "Folders",
-            FolderCollection(self.context, ResourcePath("Folders", self.resource_path), self),
+            "Folders", FolderCollection(self.context, ResourcePath("Folders", self.resource_path), self)
         )
 
     @property
     def parent_folder(self) -> Folder:
         """Specifies the list folder."""
         return self.properties.get(
-            "ParentFolder",
-            Folder(self.context, ResourcePath("ParentFolder", self.resource_path)),
+            "ParentFolder", Folder(self.context, ResourcePath("ParentFolder", self.resource_path))
         )
 
     @property
@@ -541,7 +516,6 @@ class Folder(Entity):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        # fallback: create a new resource path
         if name == "UniqueId":
             self._resource_path = self.context.web.get_folder_by_id(value).resource_path
         if self._resource_path is None:
@@ -550,3 +524,12 @@ class Folder(Entity):
             elif name == "ServerRelativePath":
                 self._resource_path = self.context.web.get_folder_by_server_relative_path(value).resource_path
         return self
+
+    @property
+    def children_count(self) -> Optional[int]:
+        """Gets the ChildrenCount property"""
+        return self.properties.get("ChildrenCount", None)
+
+    @property
+    def entity_type_name(self):
+        return "MS.FileServices.Folder"

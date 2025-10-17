@@ -21,3 +21,7 @@ class AuthenticationMethodModes(Enum):
     federatedSingleFactor = "16384"
     federatedMultiFactor = "32768"
     unknownFutureValue = "65536"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AuthenticationMethodModes"

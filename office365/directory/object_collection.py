@@ -1,4 +1,6 @@
-from typing import Union
+from __future__ import annotations
+
+from typing import List, Union
 
 from typing_extensions import Self
 
@@ -16,7 +18,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, DirectoryObject, resource_path)
 
-    def get_by_ids(self, ids, types=None):
+    def get_by_ids(self, ids: List[str], types: List[str] = None) -> DirectoryObjectCollection:
         """
         Returns the directory objects specified in a list of IDs.
         :param list[str] ids: A collection of IDs for which to return objects. The IDs are GUIDs, represented as
@@ -87,11 +89,11 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
     def validate_properties(
         self,
-        entity_type=None,
-        display_name=None,
-        mail_nickname=None,
-        on_behalf_of_userid=None,
-    ):
+        entity_type: str = None,
+        display_name: str = None,
+        mail_nickname: str = None,
+        on_behalf_of_userid: str = None,
+    ) -> Self:
         """
         Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.
         Clients can use this API to determine whether a display name or mail nickname is valid before trying to

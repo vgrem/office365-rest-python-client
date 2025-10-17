@@ -26,7 +26,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_member_objects(self, security_enabled_only=True):
+    def get_member_objects(self, security_enabled_only: bool = True) -> ClientResult[StringCollection]:
         """Returns all the groups and directory roles that a user, group, or directory object is a member of.
         This function is transitive.
 
@@ -37,7 +37,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_member_groups(self, security_enabled_only=True):
+    def get_member_groups(self, security_enabled_only: bool = True) -> ClientResult[StringCollection]:
         """Return all the groups that the specified user, group, or directory object is a member of. This function is
         transitive.
 
@@ -52,7 +52,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def check_member_groups(self, group_ids=None):
+    def check_member_groups(self, group_ids: List[str] = None) -> ClientResult[StringCollection]:
         """Check for membership in the specified list of groups. Returns from the list those groups of which
         the specified group has a direct or transitive membership.
 

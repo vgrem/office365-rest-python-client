@@ -1,9 +1,9 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.publishing.clientamplifyendpointinfo import (
+from office365.sharepoint.publishing.amplify.clientamplifyendpointinfo import (
     ClientAmplifyEndpointInfo,
 )
-from office365.sharepoint.publishing.clientamplifyextraproperty import (
+from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
     ClientAmplifyExtraProperty,
 )
 

@@ -13,10 +13,10 @@ class PermissionScope(ClientValue):
 
     def __init__(
         self,
-        admin_consent_display_name=None,
-        admin_consent_description=None,
-        id_=None,
-        is_enabled=None,
+        admin_consent_display_name: str = None,
+        admin_consent_description: str = None,
+        id_: str = None,
+        is_enabled: bool = None,
         origin=None,
         type_=None,
         user_consent_description=None,

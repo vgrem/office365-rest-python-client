@@ -10,6 +10,6 @@ class ConditionalAccessPolicy(Entity):
     """
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Date and time (UTC) the sign-in was initiated."""
         return self.properties.get("createdDateTime", datetime.min)

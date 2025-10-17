@@ -26,14 +26,15 @@ class LikedByInformation(Entity):
         for the same user in the set.
         """
         return self.properties.get(
-            "likedBy",
-            EntityCollection(self.context, UserEntity, ResourcePath("likedBy", self.resource_path)),
+            "likedBy", EntityCollection(self.context, UserEntity, ResourcePath("likedBy", self.resource_path))
         )
 
     def get_property(self, name, default_value=None):
         if default_value is None:
-            property_mapping = {
-                "likedBy": self.liked_by,
-            }
+            property_mapping = {"likedBy": self.liked_by}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Likes.LikedByInformation"

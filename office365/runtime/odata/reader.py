@@ -41,7 +41,8 @@ class ODataReader(ABC):
         schema_nodes = root.findall("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
 
         # base_types = ["EnumType", "ComplexType"]
-        base_types = ["EntityType"]
+        # base_types = ["EntityType"]
+        base_types = ["EnumType"]
 
         for base_type in base_types:
             for schema_node in schema_nodes:

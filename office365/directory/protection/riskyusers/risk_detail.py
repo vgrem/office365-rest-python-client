@@ -1,7 +1,7 @@
-from office365.runtime.client_value import ClientValue
+from enum import Enum
 
 
-class RiskDetail(ClientValue):
+class RiskDetail(Enum):
     """ """
 
     none = "0"
@@ -22,3 +22,7 @@ class RiskDetail(ClientValue):
     userChangedPasswordOnPremises = "15"
     adminDismissedRiskForSignIn = "16"
     adminConfirmedAccountSafe = "17"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.riskDetail"

@@ -9,7 +9,7 @@ class RiskyUserHistoryItem(RiskyUser):
     by Azure AD Identity Protection."""
 
     @property
-    def activity(self):
+    def activity(self) -> RiskUserActivity:
         """The activity related to user risk level change."""
         return self.properties.get("activity", RiskUserActivity())
 

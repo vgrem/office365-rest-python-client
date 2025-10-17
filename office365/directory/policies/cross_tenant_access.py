@@ -8,7 +8,7 @@ class CrossTenantAccessPolicy(PolicyBase):
     """Represents the base policy in the directory for cross-tenant access settings."""
 
     @property
-    def allowed_cloud_endpoints(self):
+    def allowed_cloud_endpoints(self) -> StringCollection:
         """
         Used to specify which Microsoft clouds an organization would like to collaborate with. By default, this value
         is empty. Supported values for this field are: microsoftonline.com, microsoftonline.us,
