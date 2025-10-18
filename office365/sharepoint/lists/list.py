@@ -72,6 +72,7 @@ from office365.sharepoint.webhooks.subscription_collection import SubscriptionCo
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
+    from office365.sharepoint.documentmanagement.document_set import DocumentSet
 
 
 class List(SecurableObject):
@@ -117,6 +118,15 @@ class List(SecurableObject):
 
         self.items.get().after_execute(_clear, execute_first=True)
         return self
+
+    def create_document_set(self, name: str) -> DocumentSet:
+        """
+        Creates a DocumentSet (section 3.1.5.3) object on the server.
+        """
+        from office365.sharepoint.documentmanagement.document_set import DocumentSet
+
+        result = DocumentSet.create(self.context, self.root_folder, name)
+        return result
 
     def create_document_and_get_edit_link(
         self,
@@ -197,7 +207,7 @@ class List(SecurableObject):
         block_edit: bool = None,
         sync_to_items: bool = None,
     ):
-        """ """
+        """Apply a retention label ("compliance tag") to a list."""
         list_folder = self.root_folder
 
         def _set_compliance_tag():

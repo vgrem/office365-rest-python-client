@@ -15,7 +15,7 @@ class Device(Entity):
     @property
     def assigned_time_utc(self) -> datetime:
         """Gets the AssignedTimeUTC property"""
-        return self.properties.get("AssignedTimeUTC", None)
+        return self.properties.get("AssignedTimeUTC", datetime.min)
 
     @property
     def assignment_id(self) -> Optional[str]:
@@ -30,7 +30,7 @@ class Device(Entity):
     @property
     def device_added_time_utc(self) -> datetime:
         """Gets the DeviceAddedTimeUTC property"""
-        return self.properties.get("DeviceAddedTimeUTC", None)
+        return self.properties.get("DeviceAddedTimeUTC", datetime.min)
 
     @property
     def disconnected(self) -> Optional[bool]:
@@ -55,17 +55,17 @@ class Device(Entity):
     @property
     def last_activity_time_utc(self) -> datetime:
         """Gets the LastActivityTimeUtc property"""
-        return self.properties.get("LastActivityTimeUtc", None)
+        return self.properties.get("LastActivityTimeUtc", datetime.min)
 
     @property
     def last_heartbeat_time_utc(self) -> datetime:
         """Gets the LastHeartbeatTimeUtc property"""
-        return self.properties.get("LastHeartbeatTimeUtc", None)
+        return self.properties.get("LastHeartbeatTimeUtc", datetime.min)
 
     @property
     def last_modified_time_utc(self) -> datetime:
         """Gets the LastModifiedTimeUtc property"""
-        return self.properties.get("LastModifiedTimeUtc", None)
+        return self.properties.get("LastModifiedTimeUtc", datetime.min)
 
     @property
     def linked_task_id(self) -> Optional[UUID]:

@@ -1,5 +1,5 @@
 from office365.outlook.calendar.email_address import EmailAddress
-from office365.outlook.mail.automatic_replies_mailtips import AutomaticRepliesMailTips
+from office365.outlook.mail.automaticreplies.mailtips import AutomaticRepliesMailTips
 from office365.outlook.mail.tips.error import MailTipsError
 from office365.runtime.client_value import ClientValue
 

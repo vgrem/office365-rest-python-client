@@ -1,4 +1,4 @@
-from office365.search.answer import SearchAnswer
+from office365.search.answers.answer import SearchAnswer
 
 
 class Bookmark(SearchAnswer):

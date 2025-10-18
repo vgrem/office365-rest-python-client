@@ -8,9 +8,9 @@ class UsageInfo(ClientValue):
 
     def __init__(
         self,
-        bandwidth=None,
-        discussion_storage=None,
-        visits=None,
+        bandwidth: int = None,
+        discussion_storage: int = None,
+        visits: int = None,
         hits: int = None,
         storage: int = None,
         storage_percentage_used: float = None,

@@ -2,8 +2,8 @@ from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.migrationcenter.migrationtasksettings import MigrationTaskSettings
 from office365.sharepoint.migrationcenter.taskschedulerinformation import TaskSchedulerInformation
+from office365.sharepoint.migrationcenter.tasksettings import MigrationTaskSettings
 
 
 class MigrationCenterStorage(Entity):

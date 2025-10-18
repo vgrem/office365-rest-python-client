@@ -1,6 +1,6 @@
 import os
 
-from office365.outlook.mail.attachments.attachment_type import AttachmentType
+from office365.outlook.mail.attachments.type import AttachmentType
 from office365.runtime.client_value import ClientValue
 
 
@@ -22,6 +22,6 @@ class AttachmentItem(ClientValue):
     def create_file(path: str) -> "AttachmentItem":
         file_name = os.path.basename(path)
         file_size = os.stat(path).st_size
-        from office365.outlook.mail.attachments.attachment_type import AttachmentType
+        from office365.outlook.mail.attachments.type import AttachmentType
 
         return AttachmentItem(attachment_type=AttachmentType.file, name=file_name, size=file_size)

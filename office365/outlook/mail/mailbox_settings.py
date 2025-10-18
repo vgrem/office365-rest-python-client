@@ -1,6 +1,6 @@
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
-from office365.outlook.mail.automatic_replies_setting import AutomaticRepliesSetting
+from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
 from office365.runtime.client_value import ClientValue
 
 

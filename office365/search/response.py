@@ -1,7 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.search.hits_container import SearchHitsContainer
+from office365.search.hits.container import SearchHitsContainer
 
 
 class SearchResponse(ClientValue):

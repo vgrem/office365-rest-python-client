@@ -41,6 +41,7 @@ from office365.sharepoint.tenant.administration.insights.onedrive_site_sharing i
 from office365.sharepoint.tenant.administration.insights.top_files_sharing import (
     TopFilesSharingInsights,
 )
+from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
 from office365.sharepoint.tenant.administration.policies.app_billing_properties import (
     SPOAppBillingProperties,
 )
@@ -62,10 +63,10 @@ from office365.sharepoint.tenant.administration.policies.fileversionsettings imp
 from office365.sharepoint.tenant.administration.powerapps.environment import (
     PowerAppsEnvironment,
 )
-from office365.sharepoint.tenant.administration.recent_admin_action_report import (
+from office365.sharepoint.tenant.administration.reports.recent_admin_action import (
     RecentAdminActionReport,
 )
-from office365.sharepoint.tenant.administration.recent_admin_action_report_payload import (
+from office365.sharepoint.tenant.administration.reports.recent_admin_action_payload import (
     RecentAdminActionReportPayload,
 )
 from office365.sharepoint.tenant.administration.secondary_administrators_fields_data import (
@@ -90,7 +91,6 @@ from office365.sharepoint.tenant.administration.sites.properties_collection impo
 from office365.sharepoint.tenant.administration.sites.properties_enumerable_filter import (
     SitePropertiesEnumerableFilter,
 )
-from office365.sharepoint.tenant.administration.spo_operation import SpoOperation
 from office365.sharepoint.tenant.administration.syntex.billing_context import (
     SyntexBillingContext,
 )
@@ -882,7 +882,7 @@ class Tenant(Entity):
     @property
     def admin_settings(self):
         """Manage various tenant-level settings related to SharePoint administration"""
-        from office365.sharepoint.tenant.administration.settings_service import (
+        from office365.sharepoint.tenant.administration.settings.service import (
             TenantAdminSettingsService,
         )
 

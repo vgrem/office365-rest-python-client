@@ -10,7 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.search.acronyms.acronym import Acronym
 from office365.search.bookmarks.bookmark import Bookmark
 from office365.search.entity_type import EntityType
-from office365.search.hit import SearchHit
+from office365.search.hits.hit import SearchHit
 from office365.search.qnas.qna import Qna
 from office365.search.query import SearchQuery
 from office365.search.request import SearchRequest

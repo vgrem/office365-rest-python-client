@@ -17,8 +17,10 @@ from office365.sharepoint.tenant.settings import TenantSettings
 from tests import (
     test_admin_credentials,
     test_admin_site_url,
+    test_client_id,
     test_site_url,
     test_team_site_url,
+    test_tenant,
 )
 
 
@@ -28,7 +30,9 @@ class TestTenant(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
+        client = ClientContext(test_admin_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_admin_credentials.userName, test_admin_credentials.password
+        )
         cls.tenant = Tenant(client)
         cls.client = client
 

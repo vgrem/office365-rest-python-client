@@ -2,7 +2,7 @@ from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.migrationcenter.spfolderinformation import SPFolderInformation
+from office365.sharepoint.migrationcenter.folderinformation import SPFolderInformation
 
 
 class ChannelResource(Entity):

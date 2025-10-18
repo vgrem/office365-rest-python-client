@@ -50,12 +50,15 @@ from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.calendar.events.reminder import Reminder
 from office365.outlook.calendar.group import CalendarGroup
+from office365.outlook.calendar.location_constraint import LocationConstraint
 from office365.outlook.calendar.meetingtimes.suggestions_result import (
     MeetingTimeSuggestionsResult,
 )
+from office365.outlook.calendar.meetingtimes.time_constraint import TimeConstraint
 from office365.outlook.contacts.collection import ContactCollection
 from office365.outlook.contacts.folder import ContactFolder
 from office365.outlook.convert_id_result import ConvertIdResult
+from office365.outlook.exchangeidformat import ExchangeIdFormat
 from office365.outlook.mail.folders.collection import MailFolderCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.mailbox_settings import MailboxSettings
@@ -103,7 +106,7 @@ class User(DirectoryObject):
         Enable, configure, automatic replies (notify people automatically upon receipt of their email)
 
         """
-        from office365.outlook.mail.automatic_replies_setting import (
+        from office365.outlook.mail.automaticreplies.setting import (
             AutomaticRepliesSetting,
         )
 
@@ -128,7 +131,7 @@ class User(DirectoryObject):
         Disable automatic replies (notify people automatically upon receipt of their email)
         :param bool clear_all: If true, clear all automatic replies settings
         """
-        from office365.outlook.mail.automatic_replies_setting import (
+        from office365.outlook.mail.automaticreplies.setting import (
             AutomaticRepliesSetting,
         )
 
@@ -307,7 +310,9 @@ class User(DirectoryObject):
 
         return return_type
 
-    def get_mail_tips(self, email_addresses, mail_tips_options=None) -> ClientResult[ClientValueCollection[MailTips]]:
+    def get_mail_tips(
+        self, email_addresses: List[str], mail_tips_options: str = None
+    ) -> ClientResult[ClientValueCollection[MailTips]]:
         """Get the MailTips of one or more recipients as available to the signed-in user.
         :param list[str] email_addresses: A collection of SMTP addresses of recipients to get MailTips for.
         :param str mail_tips_options: A enumeration of flags that represents the requested mailtips.
@@ -405,10 +410,10 @@ class User(DirectoryObject):
     def find_meeting_times(
         self,
         attendees: List[AttendeeBase] = None,
-        location_constraint=None,
-        time_constraint=None,
-        meeting_duration=None,
-        max_candidates=None,
+        location_constraint: LocationConstraint = None,
+        time_constraint: TimeConstraint = None,
+        meeting_duration: str = None,
+        max_candidates: int = None,
         is_organizer_optional=None,
         return_suggestion_reasons=None,
         minimum_attendee_percentage=None,
@@ -574,9 +579,9 @@ class User(DirectoryObject):
     def translate_exchange_ids(
         self,
         input_ids: List[str],
-        source_id_type: str = None,
-        target_id_type: str = None,
-    ):
+        source_id_type: ExchangeIdFormat = None,
+        target_id_type: ExchangeIdFormat = None,
+    ) -> ClientResult[ConvertIdResult]:
         """
         Translate identifiers of Outlook-related resources between formats.
 
@@ -589,8 +594,8 @@ class User(DirectoryObject):
         return_type = ClientResult(self.context, ConvertIdResult())
         payload = {
             "InputIds": StringCollection(input_ids),
-            "TargetIdType": target_id_type,
-            "SourceIdType": source_id_type,
+            "TargetIdType": target_id_type.name if target_id_type else None,
+            "SourceIdType": source_id_type.name if source_id_type else None,
         }
         qry = ServiceOperationQuery(self, "translateExchangeIds", None, payload, None, return_type)
         self.context.add_query(qry)

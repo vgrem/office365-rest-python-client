@@ -17,10 +17,10 @@ from office365.sharepoint.internal.paths.static_operation import StaticOperation
 from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_status import (
     DenyAddAndCustomizePagesStatus,
 )
+from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
 from office365.sharepoint.tenant.administration.sharing_capabilities import (
     SharingCapabilities,
 )
-from office365.sharepoint.tenant.administration.spo_operation import SpoOperation
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
 

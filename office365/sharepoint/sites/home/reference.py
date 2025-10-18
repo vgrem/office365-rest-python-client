@@ -1,14 +1,17 @@
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import GuidCollection
 
 
-class SPHSiteReference(ClientValue):
-    """"""
+class HomeSiteReference(ClientValue):
 
-    def __init__(self, logo_url=None, title=None, url=None):
-        self.LogoUrl = logo_url
-        self.Title = title
-        self.Url = url
-
-    @property
-    def entity_type_name(self):
-        return "SP.SPHSiteReference"
+    def __init__(
+        self,
+        audiences: GuidCollection = GuidCollection(),
+        site_flags: int = None,
+        site_id: str = None,
+        web_id: str = None,
+    ):
+        self.audiences = audiences
+        self.site_flags = site_flags
+        self.site_id = site_id
+        self.web_id = web_id

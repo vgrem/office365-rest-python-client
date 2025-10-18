@@ -39,7 +39,7 @@ class DeviceEntityData(Entity):
     @property
     def status_queue_expires_on_time_utc(self) -> datetime:
         """Gets the StatusQueueExpiresOnTimeUtc property"""
-        return self.properties.get("StatusQueueExpiresOnTimeUtc", None)
+        return self.properties.get("StatusQueueExpiresOnTimeUtc", datetime.min)
 
     @property
     def status_queue_url(self) -> Optional[str]:
@@ -54,7 +54,7 @@ class DeviceEntityData(Entity):
     @property
     def task_queue_expires_on_time_utc(self) -> datetime:
         """Gets the TaskQueueExpiresOnTimeUtc property"""
-        return self.properties.get("TaskQueueExpiresOnTimeUtc", None)
+        return self.properties.get("TaskQueueExpiresOnTimeUtc", datetime.min)
 
     @property
     def task_queue_url(self) -> Optional[str]:

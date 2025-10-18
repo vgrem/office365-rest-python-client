@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import IO, TYPE_CHECKING, Callable, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -20,6 +20,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
+from office365.sharepoint.sharing.object_sharing_information import ObjectSharingInformation
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
@@ -54,7 +55,9 @@ class Folder(Entity):
         relative_url = abs_url.replace(ctx.base_url, "")
         return ctx.web.get_folder_by_server_relative_url(relative_url)
 
-    def download_folder(self, download_file, after_file_downloaded=None, recursive=True):
+    def download_folder(
+        self, download_file: IO, after_file_downloaded: Callable[[File], None] = None, recursive: bool = True
+    ):
         """
         Downloads a folder into a zip file
         :param typing.IO download_file: A download zip file object
@@ -67,7 +70,7 @@ class Folder(Entity):
         """Returns the user permissions for a folder"""
         return self.list_item_all_fields.get_user_effective_permissions(user)
 
-    def get_folders(self, recursive=False):
+    def get_folders(self, recursive: bool = False) -> FolderCollection:
         """
         Retrieves folders
         :param bool recursive: Determines whether to enumerate folders recursively
@@ -76,7 +79,7 @@ class Folder(Entity):
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
-        def _get_folders(parent: "Folder") -> None:
+        def _get_folders(parent: Folder) -> None:
             [return_type.add_child(f) for f in parent.folders]
             if recursive:
                 for folder in parent.folders:
@@ -85,7 +88,7 @@ class Folder(Entity):
         self.ensure_properties(["Folders"], _get_folders, parent=self)
         return return_type
 
-    def get_files(self, recursive=False):
+    def get_files(self, recursive: bool = False) -> FileCollection:
         """
         Retrieves files
         :param bool recursive: Determines whether to enumerate folders recursively
@@ -94,7 +97,7 @@ class Folder(Entity):
 
         return_type = FileCollection(self.context, self.files.resource_path, self)
 
-        def _get_files(parent: "Folder") -> None:
+        def _get_files(parent: Folder) -> None:
             [return_type.add_child(f) for f in parent.files]
             if recursive:
                 for folder in parent.folders:
@@ -103,11 +106,11 @@ class Folder(Entity):
         self.ensure_properties(["Files", "Folders"], _get_files, parent=self)
         return return_type
 
-    def get_sharing_information(self):
+    def get_sharing_information(self) -> ObjectSharingInformation:
         """Gets the sharing information for a folder."""
         return self.list_item_all_fields.get_sharing_information()
 
-    def move_to(self, destination):
+    def move_to(self, destination: Union[str, Folder]) -> Self:
         """
         Moves the folder and its contents under a new folder at the specified destination.
         This method applies only to the context of a single site.
@@ -136,7 +139,7 @@ class Folder(Entity):
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_folder_resolved)
         return self
 
-    def move_to_using_path(self, destination):
+    def move_to_using_path(self, destination: Union[str, Folder]) -> Self:
         """
         Moves the folder and its contents to a new folder at the specified path.
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
@@ -163,7 +166,9 @@ class Folder(Entity):
         self.ensure_properties(["ServerRelativePath", "Name"], _source_folder_resolved)
         return self
 
-    def move_to_using_path_with_parameters(self, new_relative_path, retain_editor_and_modified=False):
+    def move_to_using_path_with_parameters(
+        self, new_relative_path: str, retain_editor_and_modified: bool = False
+    ) -> Folder:
         """Moves the folder with files to the destination Path.
 
         :param str new_relative_path: A full URL path that represents the destination folder.
@@ -204,7 +209,7 @@ class Folder(Entity):
             link_kind=link_kind, expiration=expiration, role=role, password=password
         )
 
-    def unshare_link(self, link_kind, share_id=None):
+    def unshare_link(self, link_kind: int, share_id: str = None) -> Self:
         """
         Removes the specified tokenized sharing link of the folder.
 
@@ -368,8 +373,8 @@ class Folder(Entity):
         return return_type
 
     def copy_to_using_path(
-        self, destination: Union[str, "Folder"], keep_both: bool = False, reset_author_and_created: bool = False
-    ) -> "Folder":
+        self, destination: Union[str, Folder], keep_both: bool = False, reset_author_and_created: bool = False
+    ) -> Folder:
         """Copies the folder with files to the destination Path.
 
         :param str or Folder destination: Parent folder object or server relative folder url
@@ -524,12 +529,3 @@ class Folder(Entity):
             elif name == "ServerRelativePath":
                 self._resource_path = self.context.web.get_folder_by_server_relative_path(value).resource_path
         return self
-
-    @property
-    def children_count(self) -> Optional[int]:
-        """Gets the ChildrenCount property"""
-        return self.properties.get("ChildrenCount", None)
-
-    @property
-    def entity_type_name(self):
-        return "MS.FileServices.Folder"

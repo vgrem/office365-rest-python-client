@@ -1,5 +1,5 @@
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
@@ -10,10 +10,10 @@ class ServerSettings(Entity):
     """Provides methods for obtaining server properties."""
 
     def __init__(self, context):
-        super().__init__(context, ResourcePath("SP.ServerSettings"))
+        super().__init__(context, StaticPath("SP.ServerSettings"))
 
     @staticmethod
-    def is_sharepoint_online(context):
+    def is_sharepoint_online(context) -> ClientResult[bool]:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         """

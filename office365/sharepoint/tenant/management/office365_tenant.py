@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Union
 
 from typing_extensions import Self
 
-from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.v3.static import StaticPath
@@ -12,6 +11,7 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 from office365.sharepoint.authpolicy.spjitdlppolicydata import SPJitDlpPolicyData
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import SiteInfoForSitePicker
 from office365.sharepoint.tenant.administration.syntex.billing_context import SyntexBillingContext
@@ -48,7 +48,7 @@ class Office365Tenant(Entity):
     def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
-    def add_tenant_cdn_origin(self, cdn_type: int, origin_url: str):
+    def add_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
         """
         Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
         Effectively, a tenant admin points out to a document library, or a folder in the document library
@@ -76,7 +76,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_tenant_cdn_enabled(self, cdn_type: int):
+    def get_tenant_cdn_enabled(self, cdn_type: int) -> ClientResult[bool]:
         """
         Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
 
@@ -122,7 +122,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def remove_tenant_cdn_origin(self, cdn_type, origin_url):
+    def remove_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
         """
         Removes a new origin from the Public or Private content delivery network (CDN).
 
@@ -138,7 +138,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def get_tenant_cdn_policies(self, cdn_type):
+    def get_tenant_cdn_policies(self, cdn_type: int) -> ClientResult[ClientValueCollection[str]]:
         """
         Get the public or private Policies applied on your SharePoint Online Tenant.
 
@@ -172,7 +172,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def revoke_all_user_sessions(self, user):
+    def revoke_all_user_sessions(self, user: Union[str, User]) -> SPOUserSessionRevocationResult:
         """
         Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
 
@@ -181,7 +181,7 @@ class Office365Tenant(Entity):
         """
         return_type = SPOUserSessionRevocationResult(self.context)
 
-        def _revoke_all_user_sessions(login_name):
+        def _revoke_all_user_sessions(login_name: str) -> None:
             """
             Logouts a user's sessions across all their devices
 
@@ -219,7 +219,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def remove_external_users(self, unique_ids=None):
+    def remove_external_users(self, unique_ids: List[str] = None) -> RemoveExternalUsersResults:
         """
         Removes a collection of external users from the tenancy's folder.
 
@@ -232,11 +232,11 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_all_tenant_themes(self):
+    def get_all_tenant_themes(self) -> EntityCollection[ThemeProperties]:
         """
         Get all themes from tenant
         """
-        return_type = ClientObjectCollection(self.context, ThemeProperties)
+        return_type = EntityCollection(self.context, ThemeProperties)
         qry = ServiceOperationQuery(self, "GetAllTenantThemes", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -264,7 +264,9 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def queue_import_profile_properties(self, id_type, source_data_id_property, property_map, source_uri):
+    def queue_import_profile_properties(
+        self, id_type: int, source_data_id_property: str, property_map: str, source_uri: str
+    ) -> ClientResult[str]:
         """Bulk import custom user profile properties
 
         :param int id_type: The type of id to use when looking up the user profile.

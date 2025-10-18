@@ -2,8 +2,8 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.microfeed.datalink import MicrofeedDataLink
 from office365.sharepoint.microfeed.entity import MicroBlogEntity
-from office365.sharepoint.microfeed.post import MicrofeedPost
-from office365.sharepoint.microfeed.postcollection import MicrofeedPostCollection
+from office365.sharepoint.microfeed.posts.collection import MicrofeedPostCollection
+from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 
 
 class MicrofeedThread(ClientValue):

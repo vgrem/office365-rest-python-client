@@ -22,20 +22,20 @@ from office365.sharepoint.eventreceivers.definition_collection import (
 from office365.sharepoint.features.collection import FeatureCollection
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
-from office365.sharepoint.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.recyclebin.item_collection import RecycleBinItemCollection
-from office365.sharepoint.sitehealth.summary import SiteHealthSummary
 from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
 from office365.sharepoint.sites.copy_job_progress import CopyJobProgress
 from office365.sharepoint.sites.copy_migration_iInfo import CopyMigrationInfo
+from office365.sharepoint.sites.health.summary import SiteHealthSummary
 from office365.sharepoint.sites.home.site import SPHSite
 from office365.sharepoint.sites.html_field_security_setting import (
     HTMLFieldSecuritySetting,
 )
+from office365.sharepoint.sites.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.sites.upgrade_info import UpgradeInfo
 from office365.sharepoint.sites.usage_info import UsageInfo
 from office365.sharepoint.sites.version_policy_manager import SiteVersionPolicyManager
