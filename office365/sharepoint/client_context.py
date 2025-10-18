@@ -45,8 +45,11 @@ from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
     from office365.sharepoint.portal.theme_manager import ThemeManager
+    from office365.sharepoint.search.service import SearchService
     from office365.sharepoint.server_settings import ServerSettings
     from office365.sharepoint.tenant.administration.tenant import Tenant
+    from office365.sharepoint.tenant.settings import TenantSettings
+    from office365.sharepoint.viva.site_manager import VivaSiteManager
 
 
 class ClientContext(ClientRuntimeContext):
@@ -538,7 +541,7 @@ class ClientContext(ClientRuntimeContext):
     @property
     def navigation_service(self):
         """Alias to NavigationService"""
-        from office365.sharepoint.navigation.navigation_service import NavigationService
+        from office365.sharepoint.navigation.service import NavigationService
 
         return NavigationService(self)
 
@@ -726,21 +729,21 @@ class ClientContext(ClientRuntimeContext):
         return TaxonomyService(self)
 
     @property
-    def search(self):
+    def search(self) -> SearchService:
         """Alias to SearchService"""
         from office365.sharepoint.search.service import SearchService
 
         return SearchService(self)
 
     @property
-    def tenant_settings(self):
+    def tenant_settings(self) -> TenantSettings:
         """Alias to TenantSettings"""
         from office365.sharepoint.tenant.settings import TenantSettings
 
         return TenantSettings.current(self)
 
     @property
-    def viva_site_manager(self):
+    def viva_site_manager(self) -> VivaSiteManager:
         """"""
         from office365.sharepoint.viva.site_manager import VivaSiteManager
 
@@ -749,7 +752,7 @@ class ClientContext(ClientRuntimeContext):
     @property
     def workflow_services_manager(self):
         """Alias to WorkflowServicesManager"""
-        from office365.sharepoint.workflowservices.manager import (
+        from office365.sharepoint.workflow.servicesmanager import (
             WorkflowServicesManager,
         )
 
@@ -759,7 +762,7 @@ class ClientContext(ClientRuntimeContext):
     def workflow_deployment_service(self):
         """Alias to WorkflowServicesManager"""
 
-        from office365.sharepoint.workflowservices.deployment_service import (
+        from office365.sharepoint.workflow.deployment_service import (
             WorkflowDeploymentService,
         )
 

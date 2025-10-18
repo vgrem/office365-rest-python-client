@@ -1,6 +1,6 @@
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.sharing.entityresult import SharingEntityResult
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
-from office365.sharepoint.sharing.sharingentityresult import SharingEntityResult
 
 
 class ShareLinkPartialSuccessResponse(ShareLinkResponse):

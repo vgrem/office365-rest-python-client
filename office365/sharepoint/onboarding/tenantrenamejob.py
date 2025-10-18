@@ -45,12 +45,12 @@ class TenantRenameJob(Entity):
     @property
     def requested_at(self) -> datetime:
         """Gets the RequestedAt property"""
-        return self.properties.get("RequestedAt", None)
+        return self.properties.get("RequestedAt", datetime.min)
 
     @property
     def response_messages(self) -> StringCollection:
         """Gets the ResponseMessages property"""
-        return self.properties.get("ResponseMessages", None)
+        return self.properties.get("ResponseMessages", StringCollection())
 
     @property
     def success_sites_count(self) -> Optional[int]:

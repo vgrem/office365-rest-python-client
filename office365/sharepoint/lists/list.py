@@ -15,7 +15,7 @@ from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.log_item_query import ChangeLogItemQuery
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.changes.token import ChangeToken
-from office365.sharepoint.compliance.tag import ComplianceTag
+from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.contenttypes.collection import ContentTypeCollection
 from office365.sharepoint.customactions.element_collection import (
     CustomActionElementCollection,

@@ -2,7 +2,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.thread import SocialThread
@@ -16,7 +16,7 @@ class SocialRestThread(Entity):
     """
 
     def __init__(self, context):
-        super().__init__(context, ResourcePath("SP.Social.SocialRestThread"))
+        super().__init__(context, StaticPath("SP.Social.SocialRestThread"))
 
     def like(self, post_id: str) -> Self:
         """
@@ -29,7 +29,7 @@ class SocialRestThread(Entity):
         self.context.add_query(qry)
         return self
 
-    def unlike(self, post_id):
+    def unlike(self, post_id: str) -> Self:
         """
         The Unlike method removes the current user from the list of likers for the specified post.
         If the current is not a liker of the post, this method has no effect.

@@ -1,23 +1,24 @@
+from typing import Union
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.webparts.definition import WebPartDefinition
-from office365.sharepoint.webparts.definition_collection import (
+from office365.sharepoint.webparts.definitions.collection import (
     WebPartDefinitionCollection,
 )
+from office365.sharepoint.webparts.definitions.definition import WebPartDefinition
 
 
 class LimitedWebPartManager(Entity):
     """Provides operations to access and modify the existing Web Parts on a Web Part Page, and add new ones
     to the Web Part Page."""
 
-    def export_web_part(self, web_part: str or WebPartDefinition) -> ClientResult[str]:
+    def export_web_part(self, web_part: Union[str, WebPartDefinition]) -> ClientResult[str]:
         """Exports the specified Web Part, given its ID.
         :param str or WebPartDefinition web_part: The WebPartDefinition or  Id of the Web Part to export.
         """
         return_type = ClientResult(self.context, str())
-        self.web_parts.add_child(return_type)
 
         def _export_web_part(web_part_id: str) -> None:
             params = {"webPartId": web_part_id}
@@ -35,7 +36,7 @@ class LimitedWebPartManager(Entity):
 
         return return_type
 
-    def import_web_part(self, web_part_xml):
+    def import_web_part(self, web_part_xml: str) -> WebPartDefinition:
         """
         Imports a Web Part from a string in the .dwp format as specified in [MS-WPPS] section 2.2.4.2,
         or the .webpart format as specified in [MS-WPPS] section 2.2.3.1.
@@ -56,7 +57,7 @@ class LimitedWebPartManager(Entity):
         return return_type
 
     @property
-    def web_parts(self):
+    def web_parts(self) -> WebPartDefinitionCollection:
         """A collection of the Web Parts on the Web Part Page available to the current user based
         on the current user’s permissions."""
         return self.properties.get(

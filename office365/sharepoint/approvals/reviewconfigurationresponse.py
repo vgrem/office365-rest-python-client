@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.actionablemessages.user import UserDTO
+from office365.sharepoint.approvals.user import UserDTO
 
 
 class ReviewConfigurationResponse(ClientValue):

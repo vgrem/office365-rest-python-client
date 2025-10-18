@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Generic, Optional
 
 from typing_extensions import Self
@@ -10,8 +11,7 @@ from office365.runtime.client_value import ClientValueT
 from office365.runtime.http.request_options import RequestOptions
 
 if TYPE_CHECKING:
-    from office365.runtime.client_runtime_context import ClientRuntimeContext  # noqa
-    from office365.runtime.client_value import ClientValue  # noqa
+    from office365.runtime.client_runtime_context import ClientRuntimeContext
 
 
 class ClientResult(Generic[ClientValueT]):
@@ -48,6 +48,12 @@ class ClientResult(Generic[ClientValueT]):
             self._value.set_property(key, value, persist_changes)
         elif isinstance(self._value, dict):
             self._value[key] = value
+        elif isinstance(self._value, Enum):
+            enum_type = type(self._value)
+            try:
+                self._value = enum_type(value)
+            except ValueError:
+                pass
         else:
             self._value = value
         return self

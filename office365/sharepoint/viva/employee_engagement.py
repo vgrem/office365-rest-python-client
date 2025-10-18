@@ -5,7 +5,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.viva.app_configuration import AppConfiguration
 from office365.sharepoint.viva.connections_page import VivaConnectionsPage
-from office365.sharepoint.viva.dashboard_configuration import DashboardConfiguration
+from office365.sharepoint.viva.dashboard.configuration import DashboardConfiguration
 from office365.sharepoint.viva.home import VivaHome
 
 

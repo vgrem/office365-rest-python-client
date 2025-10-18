@@ -1,8 +1,9 @@
-from office365.sharepoint.navigation.node import NavigationNode
-from office365.sharepoint.navigation.node_collection import NavigationNodeCollection
-from office365.sharepoint.navigation.node_creation_information import (
+from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
+from office365.sharepoint.navigation.nodes.creationinformation import (
     NavigationNodeCreationInformation,
 )
+from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.navigation.publishing_navigation_provider_type import PublishingNavigationProviderType
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -43,4 +44,4 @@ class TestNavigation(SPTestCase):
 
     def test8_get_publishing_navigation_provider_type(self):
         result = self.client.navigation_service.get_publishing_navigation_provider_type().execute_query()
-        self.assertIsInstance(result.value, int)
+        self.assertIsInstance(result.value, PublishingNavigationProviderType)

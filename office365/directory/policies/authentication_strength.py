@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.directory.authentication.strength.usage import (
     AuthenticationStrengthUsage,
 )
@@ -18,7 +20,7 @@ class AuthenticationStrengthPolicy(Entity):
     may be built-in or custom (defined by the tenant) and may or may not fulfill the requirements to grant an MFA claim.
     """
 
-    def usage(self):
+    def usage(self) -> ClientResult[AuthenticationStrengthUsage]:
         """
         Allows the caller to see which Conditional Access policies reference a specified authentication strength policy.
         The policies are returned in two collections, one containing Conditional Access policies that require an
@@ -31,7 +33,9 @@ class AuthenticationStrengthPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def update_allowed_combinations(self, allowed_combinations=None):
+    def update_allowed_combinations(
+        self, allowed_combinations: List[str] = None
+    ) -> ClientResult[UpdateAllowedCombinationsResult]:
         """
         Update the allowedCombinations property of an authenticationStrengthPolicy object.
         To update other properties of an authenticationStrengthPolicy object,

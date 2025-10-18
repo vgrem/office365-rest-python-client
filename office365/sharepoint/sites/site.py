@@ -13,7 +13,7 @@ from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.changes.token import ChangeToken
 from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
-from office365.sharepoint.compliance.tag import ComplianceTag
+from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import (

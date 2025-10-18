@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.compliance.retentionlabelconfig import SPRetentionLabelConfig
-from office365.sharepoint.compliance.sensitivitylabelconfig import (
+from office365.sharepoint.compliance.sensitivitylabels.config import (
     SPSensitivityLabelConfig,
 )
 

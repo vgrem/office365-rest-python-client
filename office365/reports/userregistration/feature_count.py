@@ -1,4 +1,4 @@
-from office365.reports.types import AuthenticationMethodFeature
+from office365.directory.authentication.methods.feature import AuthenticationMethodFeature
 from office365.runtime.client_value import ClientValue
 
 

@@ -33,6 +33,8 @@ class MemberBuilder:
 
     @property
     def name(self):
+        if self.schema.Name in ["import"]:
+            return f"{self.schema.Name}_"
         return self.schema.Name
 
     @property

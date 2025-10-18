@@ -15,7 +15,7 @@ class Campaign(Entity):
     @property
     def creation_date(self) -> datetime:
         """Gets the creationDate property"""
-        return self.properties.get("creationDate", None)
+        return self.properties.get("creationDate", datetime.min)
 
     @property
     def description(self) -> Optional[str]:

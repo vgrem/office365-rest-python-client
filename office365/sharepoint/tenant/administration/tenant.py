@@ -20,7 +20,7 @@ from office365.sharepoint.lists.render_data_parameters import RenderListDataPara
 from office365.sharepoint.lists.render_override_parameters import (
     RenderListDataOverrideParameters,
 )
-from office365.sharepoint.publishing.portal_health_status import PortalHealthStatus
+from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus
 from office365.sharepoint.sites.home.details import HomeSitesDetails
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.collaboration.insights_data import (

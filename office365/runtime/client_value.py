@@ -6,7 +6,7 @@ from typing_extensions import Self
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
-ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, "ClientValue")
+ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, "ClientValue")
 
 
 class ClientValue:

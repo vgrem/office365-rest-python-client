@@ -1,9 +1,9 @@
 from typing import List
 
-from office365.reports.types import IncludedUserRoles
 from office365.reports.userregistration.feature_count import (
     UserRegistrationFeatureCount,
 )
+from office365.reports.userregistration.includeduserroles import IncludedUserRoles
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 

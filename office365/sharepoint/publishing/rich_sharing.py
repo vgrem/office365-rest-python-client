@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -10,7 +12,7 @@ class RichSharing(Entity):
             resource_path = ResourcePath("SP.Publishing.RichSharing")
         super().__init__(context, resource_path)
 
-    def share_page_by_email(self, url, message, recipient_emails, page_content, subject):
+    def share_page_by_email(self, url: str, message: str, recipient_emails: List[str], page_content: str, subject: str):
         """
         :param str url:
         :param str message:

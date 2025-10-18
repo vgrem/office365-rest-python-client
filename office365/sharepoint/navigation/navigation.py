@@ -2,7 +2,7 @@ from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.navigation.node_collection import NavigationNodeCollection
+from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 
 
 class Navigation(Entity):

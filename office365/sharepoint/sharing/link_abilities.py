@@ -1,9 +1,9 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
-from office365.sharepoint.sharing.sharinglinkexpirationabilitystatus import (
+from office365.sharepoint.sharing.linkexpirationabilitystatus import (
     SharingLinkExpirationAbilityStatus,
 )
-from office365.sharepoint.sharing.sharinglinkpasswordabilitystatus import (
+from office365.sharepoint.sharing.linkpasswordabilitystatus import (
     SharingLinkPasswordAbilityStatus,
 )
 

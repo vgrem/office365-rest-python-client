@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.publishing.portal_health_status import PortalHealthStatus
+from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.sharing_capabilities import (
     SharingCapabilities,
