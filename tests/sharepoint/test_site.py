@@ -44,8 +44,8 @@ class TestSite(SPTestCase):
 
     def test_10_open_web_by_id(self):
         web = self.client.web.get().execute_query()
-        sub_site = self.client.site.open_web_by_id(web.id).execute_query()
-        self.assertIsNotNone(sub_site.id)
+        child_web = self.client.site.open_web_by_id(web.id).execute_query()
+        self.assertIsNotNone(child_web.id)
 
     # def test_10_get_site_links(self):
     #    result = self.client.site_linking_manager.get_site_links().execute_query()

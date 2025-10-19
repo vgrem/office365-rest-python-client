@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
+from uuid import UUID
 
 from typing_extensions import Self
 
@@ -50,6 +53,9 @@ from office365.sharepoint.usercustomactions.collection import UserCustomActionCo
 from office365.sharepoint.webs.templates.collection import WebTemplateCollection
 from office365.sharepoint.webs.web import Web
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class Site(Entity):
     """
@@ -68,7 +74,11 @@ class Site(Entity):
         return self.url or self.entity_type_name
 
     def cancel_delete_file_versions(self) -> Self:
-        """ """
+        """Cancels the pending deletion of file versions in the site collection.
+
+        Returns:
+            Self: The site instance
+        """
         qry = ServiceOperationQuery(self, "CancelDeleteFileVersions")
         self.context.add_query(qry)
         return self
@@ -93,13 +103,24 @@ class Site(Entity):
 
     def create_migration_ingestion_job(
         self,
-        g_web_id,
-        azure_container_source_uri,
-        azure_container_manifest_uri,
-        azure_queue_report_uri,
-        ingestion_task_key,
+        g_web_id: Union[str, UUID],
+        azure_container_source_uri: str,
+        azure_container_manifest_uri: str,
+        azure_queue_report_uri: str,
+        ingestion_task_key: str,
     ) -> ClientResult[str]:
-        """ """
+        """Creates a migration ingestion job for content migration via Azure storage.
+
+        Args:
+            g_web_id: Web identifier.
+            azure_container_source_uri: Azure container source URI.
+            azure_container_manifest_uri: Azure container manifest URI.
+            azure_queue_report_uri: Azure queue report URI.
+            ingestion_task_key: Ingestion task key.
+
+        Returns:
+            ClientResult[str]: Migration job ID.
+        """
         return_type = ClientResult(self.context, str())
         payload = {
             "gWebId": g_web_id,
@@ -118,7 +139,7 @@ class Site(Entity):
         azure_container_source_uri=None,
         azure_container_manifest_uri=None,
         azure_queue_report_uri=None,
-    ):
+    ) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
         payload = {
@@ -404,7 +425,7 @@ class Site(Entity):
         return self
 
     @staticmethod
-    def get_url_by_id(context, site_id, stop_redirect=False):
+    def get_url_by_id(context: ClientContext, site_id: str, stop_redirect: bool = False) -> ClientResult[str]:
         """Gets Site Url By Id
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -418,7 +439,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    def get_url_by_id_for_web(context, site_id, stop_redirect, web_id):
+    def get_url_by_id_for_web(context, site_id: str, stop_redirect: bool, web_id: str) -> ClientResult[str]:
         """Gets Site Url By Id
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -447,7 +468,7 @@ class Site(Entity):
         return return_type
 
     def is_deletable(self) -> ClientResult[bool]:
-        """"""
+        """Determines if a site can be deleted based on compliance policies"""
         return_type = ClientResult(self.context, bool())
 
         def _is_site_deletable():
@@ -499,7 +520,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def register_hub_site(self, create_info: HubSiteCreationInformation = None):
+    def register_hub_site(self, create_info: HubSiteCreationInformation = None) -> Self:
         """Registers an existing site as a hub site.
 
         :type create_info: HubSiteCreationInformation
@@ -531,7 +552,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def update_client_object_model_use_remote_apis_permission_setting(self, require_use_remote_apis):
+    def update_client_object_model_use_remote_apis_permission_setting(self, require_use_remote_apis: bool) -> Self:
         """
         Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
         the site collection require UseRemoteAPIs permission.

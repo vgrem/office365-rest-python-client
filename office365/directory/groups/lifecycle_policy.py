@@ -16,14 +16,14 @@ class GroupLifecyclePolicy(Entity):
     The group can be restored within a period of 30 days from deletion.
     """
 
-    def add_group(self, group_id):
+    def add_group(self, group_id: str) -> ClientResult[bool]:
         """
         Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
         only if the managedGroupTypes property of groupLifecyclePolicy is set to Selected.
 
         :param str group_id: The identifier of the group to remove from the policy.
         """
-        return_type = ClientResult[bool](self.context)
+        return_type = ClientResult(self.context)
         payload = {"groupId": group_id}
         qry = ServiceOperationQuery(self, "addGroup", None, payload, None, return_type)
         self.context.add_query(qry)

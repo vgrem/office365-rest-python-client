@@ -1,4 +1,5 @@
 from office365.runtime.client_runtime_context import ClientRuntimeContext
+from office365.runtime.http.request_options import RequestOptions
 
 
 class ExcelService(ClientRuntimeContext):
@@ -18,7 +19,7 @@ class ExcelService(ClientRuntimeContext):
         """
         super().__init__()
 
-    def authenticate_request(self, request):
+    def authenticate_request(self, request: RequestOptions) -> None:
         pass
 
     @property
@@ -28,5 +29,5 @@ class ExcelService(ClientRuntimeContext):
     def pending_request(self):
         pass
 
-    def get_workbook(self, list_name, file_name):
+    def get_workbook(self, list_name: str, file_name: str):
         raise NotImplementedError("get_workbook")

@@ -13,7 +13,7 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
-from office365.sharepoint.directory.user import User
+from office365.sharepoint.directory.users.user import User
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
 from office365.sharepoint.listitems.listitem import ListItem

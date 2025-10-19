@@ -9,7 +9,7 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.directory.members_info import MembersInfo
 from office365.sharepoint.directory.membership_result import MembershipResult
 from office365.sharepoint.directory.my_groups_result import MyGroupsResult
-from office365.sharepoint.directory.user import User
+from office365.sharepoint.directory.users.user import User
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 

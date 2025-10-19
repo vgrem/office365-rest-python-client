@@ -1,4 +1,4 @@
-from office365.directory.policies.conditional_access import ConditionalAccessPolicy
+from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 

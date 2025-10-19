@@ -4,7 +4,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.category import OutlookCategory
 from office365.outlook.locale_info import LocaleInfo
-from office365.outlook.timezone_information import TimeZoneInformation
+from office365.outlook.timezones.information import TimeZoneInformation
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

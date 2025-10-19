@@ -90,7 +90,9 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def get_available_tags_for_site(context: ClientContext, site_url: str, return_type=None):
+    def get_available_tags_for_site(
+        context: ClientContext, site_url: str, return_type: ClientResult[ClientValueCollection[ComplianceTag]] = None
+    ) -> ClientResult[ClientValueCollection[ComplianceTag]]:
         """
         Retrieves all available compliance tags that can be applied to a site.
 
@@ -121,7 +123,7 @@ class SPPolicyStoreProxy(Entity):
         context.add_query(qry)
         return return_type
 
-    def get_dynamic_scope_binding_by_site_id(self, site_id):
+    def get_dynamic_scope_binding_by_site_id(self, site_id: str) -> ClientResult[StringCollection]:
         """
         Gets dynamic scope bindings for a specific site by its ID.
 
@@ -174,7 +176,9 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
-    def register_site_hold_event_receiver(context: ClientContext, site_url: str = None, site_id: str = None):
+    def register_site_hold_event_receiver(
+        context: ClientContext, site_url: str = None, site_id: str = None
+    ) -> SPPolicyStoreProxy:
         """
         Registers an event receiver for site hold operations.
 
@@ -212,7 +216,7 @@ class SPPolicyStoreProxy(Entity):
         block_delete: bool = None,
         block_edit: bool = None,
         sync_to_items: bool = None,
-    ):
+    ) -> SPPolicyStoreProxy:
         """Apply a retention label ("compliance tag") to a list or document library."""
         payload = {
             "listUrl": list_url,
@@ -238,10 +242,10 @@ class SPPolicyStoreProxy(Entity):
     def lock_record_item(
         context: ClientContext,
         list_url: str,
-        item_id,
-        refresh_labeled_time=None,
-        return_type=None,
-    ):
+        item_id: int,
+        refresh_labeled_time: bool = None,
+        return_type: ClientResult[int] = None,
+    ) -> ClientResult[int]:
         """
         Locks a record item to prevent modifications.
 

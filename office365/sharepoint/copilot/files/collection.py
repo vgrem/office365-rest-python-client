@@ -10,7 +10,9 @@ class CopilotFileCollection(Entity):
     """ """
 
     @staticmethod
-    def get_working_set_files(context, top=None, order_by=None, skip_token=None):
+    def get_working_set_files(
+        context, top: int = None, order_by: str = None, skip_token: str = None
+    ) -> ClientResult[CopilotFileCollectionQueryResult]:
         """ """
         payload = {"top": top, "orderBy": order_by, "skipToken": skip_token}
         return_type = ClientResult(context, CopilotFileCollectionQueryResult())

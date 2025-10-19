@@ -8,8 +8,8 @@ from office365.directory.policies.authentication_strength import (
     AuthenticationStrengthPolicy,
 )
 from office365.directory.policies.authorization import AuthorizationPolicy
-from office365.directory.policies.conditional_access import ConditionalAccessPolicy
-from office365.directory.policies.cross_tenant_access import CrossTenantAccessPolicy
+from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
+from office365.directory.policies.crosstenant.access import CrossTenantAccessPolicy
 from office365.directory.policies.device_registration import DeviceRegistrationPolicy
 from office365.directory.policies.feature_rollout import FeatureRolloutPolicy
 from office365.directory.policies.permission_grant import PermissionGrantPolicy

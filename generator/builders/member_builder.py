@@ -33,7 +33,7 @@ class MemberBuilder:
 
     @property
     def name(self):
-        if self.schema.Name in ["import"]:
+        if self.schema.Name in ["import", "None"]:
             return f"{self.schema.Name}_"
         return self.schema.Name
 

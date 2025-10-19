@@ -19,7 +19,7 @@ from office365.onedrive.operations.rich_long_running import RichLongRunningOpera
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.onedrive.sitepages.collection import SitePageCollection
-from office365.onedrive.sites.site_collection import SiteCollection
+from office365.onedrive.sites.collection import SiteCollection
 from office365.onedrive.termstore.store import Store
 from office365.onenote.onenote import Onenote
 from office365.runtime.paths.resource_path import ResourcePath

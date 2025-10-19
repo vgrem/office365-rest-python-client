@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,7 +7,7 @@ from office365.runtime.types.collections import StringCollection
 class WebApplication(ClientValue):
     """Specifies settings for a web application."""
 
-    def __init__(self, home_page_url=None, logout_url=None, redirect_uris=None):
+    def __init__(self, home_page_url: str = None, logout_url: str = None, redirect_uris: List[str] = None):
         """
         :param str home_page_url: Home page or landing page of the application.
         :param str logout_url: Specifies the URL that will be used by Microsoft's authorization service to logout an

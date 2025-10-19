@@ -21,7 +21,7 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.app_response_infor
 from office365.sharepoint.marketplace.corporatecuratedgallery.app_upgrade_availability import (
     AppUpgradeAvailability,
 )
-from office365.sharepoint.marketplace.corporatecuratedgallery.card_designs import (
+from office365.sharepoint.marketplace.corporatecuratedgallery.carddesigns.card_designs import (
     CardDesigns,
 )
 from office365.sharepoint.marketplace.corporatecuratedgallery.teams_package_download import (

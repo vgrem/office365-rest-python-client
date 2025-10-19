@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.sharepoint.directory.userinformation import UserInformation
+from office365.sharepoint.directory.users.information import UserInformation
 from office365.sharepoint.entity import Entity
 
 
