@@ -22,3 +22,7 @@ class TopTasksInsightsSummary(ClientValue):
         self.taskDefinitionId = task_definition_id
         self.totalTasks = total_tasks
         self.totalUsers = total_users
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.identityGovernance.TopTasksInsightsSummary"

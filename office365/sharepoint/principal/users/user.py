@@ -424,7 +424,3 @@ class User(Principal):
     def user_type(self) -> Optional[str]:
         """Gets the userType property"""
         return self.properties.get("userType", None)
-
-    @property
-    def entity_type_name(self):
-        return "SP.Directory.User"

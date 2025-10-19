@@ -63,7 +63,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_email_activity_user_counts(self, period):
+    def get_email_activity_user_counts(self, period: str):
         """
         Enables you to understand trends on the number of unique users who are performing email activities
         like send, read, and receive.
@@ -168,7 +168,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_activity_file_counts(self, period: str):
+    def get_onedrive_activity_file_counts(self, period: str) -> ClientResult[Report]:
         """
         Get the number of unique, licensed users that performed file interactions against any OneDrive account.
 
@@ -180,7 +180,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_activity_user_counts(self, period: str):
+    def get_onedrive_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """
         Get the trend in the number of active OneDrive users.
 
@@ -204,7 +204,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_onedrive_usage_file_counts(self, period):
+    def get_onedrive_usage_file_counts(self, period: str) -> ClientResult[Report]:
         """
         Get the total number of files across all sites and how many are active files. A file is considered active
         if it has been saved, synced, modified, or shared within the specified time period.
@@ -241,7 +241,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_mailbox_usage_mailbox_counts(self, period):
+    def get_mailbox_usage_mailbox_counts(self, period: str) -> ClientResult[bytes]:
         """
         Get the total number of user mailboxes in your organization and how many are active each day of the reporting
         period. A mailbox is considered active if the user sent or read any email.
@@ -250,7 +250,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getMailboxUsageMailboxCounts", period)
+        qry = create_report_query(self, "getMailboxUsageMailboxCounts", period, True)
         self.context.add_query(qry)
         return qry.return_type
 

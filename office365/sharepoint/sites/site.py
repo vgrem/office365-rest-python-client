@@ -520,6 +520,12 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def process_storage_metrics_changes(self) -> Self:
+        """"""
+        qry = ServiceOperationQuery(self, "ProcessStorageMetricsChanges")
+        self.context.add_query(qry)
+        return self
+
     def register_hub_site(self, create_info: HubSiteCreationInformation = None) -> Self:
         """Registers an existing site as a hub site.
 
@@ -529,7 +535,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def run_health_check(self, rule_id=None, repair=None, run_always=None):
+    def run_health_check(self, rule_id: str = None, repair: bool = None, run_always: bool = None) -> SiteHealthSummary:
         """
         Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
         on the health of a site collection.)

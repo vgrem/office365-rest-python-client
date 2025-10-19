@@ -10,14 +10,26 @@ from office365.sharepoint.principal.users.user import User
 
 
 class UserCollection(EntityCollection[User]):
+    """Represents a collection of User resources in a SharePoint site."""
+
     def __init__(self, context, resource_path=None):
-        """Represents a collection of User resources."""
+        """Initializes a new instance of the UserCollection class.
+
+        Args:
+            context: The client context.
+            resource_path: The resource path for this collection.
+        """
         super().__init__(context, User, resource_path)
 
-    def add_user(self, user: Union[str, User]):
-        """
-        Creates the user
-        :param str or User user: Specifies the user login name or User object.
+    def add_user(self, user: Union[str, User]) -> User:
+        """Creates a new user in the collection.
+
+        Args:
+            user: The user login name as string or User object.
+
+        Returns:
+            User: The newly created user object.
+
         """
         return_type = User(self.context)
         self.add_child(return_type)
@@ -38,13 +50,24 @@ class UserCollection(EntityCollection[User]):
         return return_type
 
     def get_by_principal_name(self, value: str) -> User:
-        """Returns the user with the specified principal name."""
+        """Returns the user with the specified principal name.
+
+        Args:
+            value: The user principal name (e.g., user@domain.com).
+
+        Returns:
+            User: The user with the specified principal name.
+        """
         return self.single(f"UserPrincipalName eq '{value}'")
 
     def get_by_email(self, email: str) -> User:
-        """
-        Returns the user with the specified e-mail address.
-        :param str email: A string that contains the e-mail address of the user.
+        """Returns the user with the specified email address.
+
+        Args:
+            email: The email address of the user.
+
+        Returns:
+            User: The user with the specified email address.
         """
         return User(
             self.context,

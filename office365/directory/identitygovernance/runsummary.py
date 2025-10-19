@@ -18,3 +18,7 @@ class RunSummary(ClientValue):
         self.totalRuns = total_runs
         self.totalTasks = total_tasks
         self.totalUsers = total_users
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.identityGovernance.RunSummary"

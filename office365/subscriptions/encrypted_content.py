@@ -6,11 +6,11 @@ class ChangeNotificationEncryptedContent(ClientValue):
 
     def __init__(
         self,
-        data=None,
-        data_key=None,
-        data_signature=None,
-        encryption_certificate_id=None,
-        encryption_certificate_thumbprint=None,
+        data: str = None,
+        data_key: str = None,
+        data_signature: str = None,
+        encryption_certificate_id: str = None,
+        encryption_certificate_thumbprint: str = None,
     ):
         """
         :param str data: Base64-encoded encrypted data that produces a full resource represented as JSON.

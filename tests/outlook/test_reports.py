@@ -22,3 +22,8 @@ class TestOutlookReports(GraphTestCase):
     def test4_get_mailbox_usage_storage(self):
         result = self.client.reports.get_mailbox_usage_storage("D30").execute_query()
         self.assertIsNotNone(result.value)
+
+    @requires_delegated_permission("Reports.Read.All")
+    def test5_get_mailbox_usage_mailbox_counts(self):
+        result = self.client.reports.get_mailbox_usage_mailbox_counts("D90").execute_query()
+        self.assertIsNotNone(result.value)

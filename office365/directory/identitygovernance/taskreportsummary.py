@@ -14,3 +14,7 @@ class TaskReportSummary(ClientValue):
         self.successfulTasks = successful_tasks
         self.totalTasks = total_tasks
         self.unprocessedTasks = unprocessed_tasks
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.identityGovernance.TaskReportSummary"

@@ -1,6 +1,4 @@
-from office365.directory.identitygovernance.lifecycleworkflows.category import (
-    LifecycleWorkflowCategory,
-)
+from office365.directory.identitygovernance.lifecycleworkflows.category import LifecycleWorkflowCategory
 from office365.runtime.client_value import ClientValue
 
 
@@ -29,3 +27,7 @@ class TopWorkflowsInsightsSummary(ClientValue):
         self.workflowDisplayName = workflow_display_name
         self.workflowId = workflow_id
         self.workflowVersion = workflow_version
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.identityGovernance.TopWorkflowsInsightsSummary"
