@@ -1,7 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.comments.client.identity import Identity
-from office365.sharepoint.containers.contentanchor import ContentAnchor
+from office365.sharepoint.comments.contentanchor import ContentAnchor
 
 
 class CommentInformation(ClientValue):

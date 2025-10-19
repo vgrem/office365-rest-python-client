@@ -20,19 +20,19 @@ class Organization(DirectoryObject):
     """
 
     @property
-    def assigned_plans(self):
+    def assigned_plans(self) -> ClientValueCollection[AssignedPlan]:
         """The plans that are assigned to the organization."""
         return self.properties.get("assignedPlans", ClientValueCollection(AssignedPlan))
 
     @property
-    def branding(self):
+    def branding(self) -> OrganizationalBranding:
         return self.properties.get(
             "branding",
             OrganizationalBranding(self.context, ResourcePath("branding", self.resource_path)),
         )
 
     @property
-    def business_phones(self):
+    def business_phones(self) -> StringCollection:
         """
         Telephone number for the organization. Although this is a string collection,
         only one number can be set for this property.
@@ -48,7 +48,7 @@ class Organization(DirectoryObject):
         )
 
     @property
-    def certificate_based_auth_configuration(self):
+    def certificate_based_auth_configuration(self) -> EntityCollection[CertificateBasedAuthConfiguration]:
         """Navigation property to manage certificate-based authentication configuration.
         Only a single instance of certificateBasedAuthConfiguration can be created in the collection..
         """
@@ -62,11 +62,11 @@ class Organization(DirectoryObject):
         )
 
     @property
-    def provisioned_plans(self):
+    def provisioned_plans(self) -> ClientValueCollection[ProvisionedPlan]:
         return self.properties.get("provisionedPlans", ClientValueCollection(ProvisionedPlan))
 
     @property
-    def verified_domains(self):
+    def verified_domains(self) -> ClientValueCollection[VerifiedDomain]:
         """The collection of domains associated with this tenant."""
         return self.properties.get("verifiedDomains", ClientValueCollection(VerifiedDomain))
 

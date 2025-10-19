@@ -42,9 +42,9 @@ class ODataReader(ABC):
 
         # base_types = ["EnumType", "ComplexType"]
         # base_types = ["EntityType"]
-        # base_types = ["EnumType"]
+        base_types = ["EnumType"]
         # base_types = ["ComplexType"]
-        base_types = ["ComplexType"]
+        # base_types = ["ComplexType"]
 
         for base_type in base_types:
             for schema_node in schema_nodes:

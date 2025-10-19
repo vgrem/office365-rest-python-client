@@ -7,10 +7,10 @@ from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
-from office365.intune.devices.managed.managed import ManagedDevice
+from office365.intune.devices.management.managed import ManagedDevice
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
-from office365.intune.devices.management.virtual_endpoint import VirtualEndpoint
+from office365.intune.devices.management.virtualendpoint.virtual_endpoint import VirtualEndpoint
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

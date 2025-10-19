@@ -1,6 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.containers.active_properties import (
+from office365.sharepoint.containers.active.properties import (
     SPActiveContainerProperties,
 )
 

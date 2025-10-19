@@ -1,5 +1,5 @@
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.sharepoint.directory.group import Group
+from office365.sharepoint.directory.groups.group import Group
 from office365.sharepoint.entity import Entity
 
 

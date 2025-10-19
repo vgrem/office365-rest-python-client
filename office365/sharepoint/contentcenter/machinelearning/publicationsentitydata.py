@@ -1,7 +1,7 @@
 from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.contentcenter.machinelearning.machinelearningpublicationentitydata import (
+from office365.sharepoint.contentcenter.machinelearning.publicationentitydata import (
     SPMachineLearningPublicationEntityData,
 )
 from office365.sharepoint.entity import Entity

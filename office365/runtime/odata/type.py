@@ -29,6 +29,7 @@ _PRIMITIVE_TYPES = {
     "Collection(Edm.String)": StringCollection,
     "Collection(Edm.Int32)": ClientValueCollection[int],
     "Edm.DateTime": datetime.datetime,
+    "Edm.Duration": datetime.timedelta,
 }
 
 

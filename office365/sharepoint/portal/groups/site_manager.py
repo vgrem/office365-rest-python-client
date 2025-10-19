@@ -126,7 +126,9 @@ class GroupSiteManager(ClientObject):
 
         return return_type
 
-    def get_current_user_joined_teams(self, get_logo_data=False, force_cache_update=False):
+    def get_current_user_joined_teams(
+        self, get_logo_data: bool = False, force_cache_update: bool = False
+    ) -> ClientResult[str]:
         """
         Get the teams in Microsoft Teams that the current user is a direct member of.
         :type get_logo_data: bool
@@ -202,10 +204,10 @@ class GroupSiteManager(ClientObject):
 
     def recent_and_joined_teams(
         self,
-        include_recent=None,
-        include_teams=None,
-        include_pinned=None,
-        existing_joined_teams_data=None,
+        include_recent: bool = None,
+        include_teams: bool = None,
+        include_pinned: bool = None,
+        existing_joined_teams_data: str = None,
     ) -> ClientResult[RecentAndJoinedTeamsResponse]:
         """
         Retrieves a list of teams that a user has recently accessed or joined

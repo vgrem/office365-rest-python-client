@@ -1,5 +1,5 @@
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.contentcenter.machinelearning.machinelearningpublicationentitydata import (
+from office365.sharepoint.contentcenter.machinelearning.publicationentitydata import (
     SPMachineLearningPublicationEntityData,
 )
 
