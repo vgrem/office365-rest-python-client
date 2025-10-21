@@ -4,7 +4,7 @@ from office365.directory.certificates.auth_configuration import (
 from office365.directory.domains.verified import VerifiedDomain
 from office365.directory.extensions.extension import Extension
 from office365.directory.licenses.assigned_plan import AssignedPlan
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.intune.organizations.branding import OrganizationalBranding
 from office365.intune.provisioned_plan import ProvisionedPlan

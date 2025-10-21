@@ -6,6 +6,8 @@ class Fido2RestrictionEnforcementType(Enum):
     block = "1"
     unknownFutureValue = "2"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.Fido2RestrictionEnforcementType"

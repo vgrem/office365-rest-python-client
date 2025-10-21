@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -17,6 +19,9 @@ class KeyCredential(ClientValue):
         start_datetime=None,
         key_type=None,
         usage=None,
+        end_date_time: datetime = None,
+        start_date_time: datetime = None,
+        type_: str = None,
     ):
         """
         :param str custom_key_identifier: A 40-character binary type that can be used to identify the credential.
@@ -44,6 +49,13 @@ class KeyCredential(ClientValue):
         self.startDateTime = start_datetime
         self.type = key_type
         self.usage = usage
+        self.endDateTime = end_date_time
+        self.startDateTime = start_date_time
+        self.type = type_
 
     def __str__(self):
         return self.displayName or self.entity_type_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.KeyCredential"

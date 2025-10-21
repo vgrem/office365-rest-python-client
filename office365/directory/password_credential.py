@@ -15,6 +15,10 @@ class PasswordCredential(ClientValue):
         key_id: str = None,
         start_datetime: datetime = None,
         end_datetime: datetime = None,
+        custom_key_identifier: bytes = None,
+        end_date_time: datetime = None,
+        hint: str = None,
+        start_date_time: datetime = None,
     ):
         """
         :param str display_name: Friendly name for the password. Optional.
@@ -33,6 +37,14 @@ class PasswordCredential(ClientValue):
         self.keyId = key_id
         self.startDateTime = start_datetime
         self.endDateTime = end_datetime
+        self.customKeyIdentifier = custom_key_identifier
+        self.endDateTime = end_date_time
+        self.hint = hint
+        self.startDateTime = start_date_time
 
     def __str__(self):
         return self.displayName or self.entity_type_name
+
+    @property
+    def entity_type_name(self):
+        return None

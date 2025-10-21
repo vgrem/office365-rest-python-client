@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -12,6 +14,7 @@ class AssignedPlan(ClientValue):
         capability_status=None,
         service=None,
         service_plan_id=None,
+        assigned_date_time: datetime = None,
     ):
         """
         :param datetime.datetime assigned_datetime: The date and time at which the plan was assigned.
@@ -26,6 +29,11 @@ class AssignedPlan(ClientValue):
         self.capabilityStatus = capability_status
         self.service = service
         self.servicePlanId = service_plan_id
+        self.assignedDateTime = assigned_date_time
 
     def __repr__(self):
         return self.service
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AssignedPlan"

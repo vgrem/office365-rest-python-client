@@ -27,3 +27,7 @@ class ObjectIdentity(ClientValue):
         self.signInType = sign_in_type
         self.issuer = issuer
         self.issuerAssignedId = issuer_assigned_id
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.ObjectIdentity"

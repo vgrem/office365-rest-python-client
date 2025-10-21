@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
 
@@ -29,7 +29,7 @@ from office365.directory.identitygovernance.governance import IdentityGovernance
 from office365.directory.internal.paths.me import MePath
 from office365.directory.invitations.collection import InvitationCollection
 from office365.directory.licenses.subscribed_sku import SubscribedSku
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
@@ -79,6 +79,9 @@ from office365.teams.collection import TeamCollection
 from office365.teams.template import TeamsTemplate
 from office365.teams.viva.employee_experience import EmployeeExperience
 from office365.teams.work import Teamwork
+
+if TYPE_CHECKING:
+    from office365.directory.groups.setting import GroupSetting
 
 
 class GraphClient(ClientRuntimeContext):
@@ -388,7 +391,7 @@ class GraphClient(ClientRuntimeContext):
         return EntityCollection(self, GroupLifecyclePolicy, ResourcePath("groupLifecyclePolicies"))
 
     @property
-    def group_settings(self):
+    def group_settings(self) -> GroupSetting:
         """Represents a directory roles in the directory"""
         from office365.directory.groups.setting import GroupSetting
 

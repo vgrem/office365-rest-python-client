@@ -21,3 +21,7 @@ class AssignedLicense(ClientValue):
 
     def __repr__(self):
         return self.skuId
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AssignedLicense"

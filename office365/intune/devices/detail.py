@@ -28,3 +28,7 @@ class DeviceDetail(ClientValue):
         self.isManaged = is_managed
         self.operatingSystem = operating_system
         self.trustType = trust_type
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.DeviceDetail"

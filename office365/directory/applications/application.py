@@ -15,8 +15,8 @@ from office365.directory.applications.spa import SpaApplication
 from office365.directory.certificates.certification import Certification
 from office365.directory.extensions.extension_property import ExtensionProperty
 from office365.directory.key_credential import KeyCredential
-from office365.directory.object import DirectoryObject
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.entity_collection import EntityCollection

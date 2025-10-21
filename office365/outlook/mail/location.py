@@ -46,3 +46,7 @@ class Location(ClientValue):
         self.locationUri = location_uri
         self.uniqueId = unique_id
         self.uniqueIdType = unique_id_type
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.Location"

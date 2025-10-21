@@ -24,3 +24,7 @@ class AppIdentity(ClientValue):
         self.displayName = display_name
         self.servicePrincipalId = service_principal_id
         self.servicePrincipalName = service_principal_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AppIdentity"

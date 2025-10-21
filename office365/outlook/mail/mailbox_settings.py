@@ -1,6 +1,8 @@
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
 from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
+from office365.outlook.mail.delegatemeetingmessagedeliveryoptions import DelegateMeetingMessageDeliveryOptions
+from office365.outlook.mail.userpurpose import UserPurpose
 from office365.runtime.client_value import ClientValue
 
 
@@ -16,6 +18,8 @@ class MailboxSettings(ClientValue):
         date_format: str = None,
         language: LocaleInfo = LocaleInfo(),
         working_hours: WorkingHours = WorkingHours(),
+        delegate_meeting_message_delivery_options: DelegateMeetingMessageDeliveryOptions = None,
+        user_purpose: UserPurpose = None,
     ):
         """
         :param str time_format: The time format for the user's mailbox.
@@ -36,3 +40,9 @@ class MailboxSettings(ClientValue):
         self.dateFormat = date_format
         self.language = language
         self.workingHours = working_hours
+        self.delegateMeetingMessageDeliveryOptions = delegate_meeting_message_delivery_options
+        self.userPurpose = user_purpose
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.MailboxSettings"

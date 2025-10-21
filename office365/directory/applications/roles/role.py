@@ -39,3 +39,7 @@ class AppRole(ClientValue):
 
     def __repr__(self):
         return self.value or self.id or self.entity_type_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AppRole"

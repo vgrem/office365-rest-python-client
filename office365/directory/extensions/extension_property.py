@@ -1,7 +1,7 @@
 # coding=utf-8
 from typing import Optional
 
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.collections import StringCollection
 
 

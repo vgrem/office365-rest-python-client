@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 
 
 class AppRoleAssignment(DirectoryObject):

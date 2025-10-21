@@ -19,3 +19,7 @@ class InvitedUserMessageInfo(ClientValue):
         self.ccRecipients = ClientValueCollection(Recipient, cc_recipients)
         self.customizedMessageBody = customized_message_body
         self.messageLanguage = message_language
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.InvitedUserMessageInfo"

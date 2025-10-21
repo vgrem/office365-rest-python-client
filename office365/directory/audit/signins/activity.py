@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -12,6 +14,10 @@ class SignInActivity(ClientValue):
         last_non_interactive_sign_in_request_id=None,
         last_sign_in_datetime=None,
         last_sign_in_request_id=None,
+        last_non_interactive_sign_in_date_time: datetime = None,
+        last_sign_in_date_time: datetime = None,
+        last_successful_sign_in_date_time: datetime = None,
+        last_successful_sign_in_request_id: str = None,
     ):
         """
         :param datetime.datetime last_non_interactive_sign_in_datetime: The last non-interactive sign-in date for a
@@ -34,3 +40,11 @@ class SignInActivity(ClientValue):
         self.lastNonInteractiveSignInRequestId = last_non_interactive_sign_in_request_id
         self.lastSignInDateTime = last_sign_in_datetime
         self.lastSignInRequestId = last_sign_in_request_id
+        self.lastNonInteractiveSignInDateTime = last_non_interactive_sign_in_date_time
+        self.lastSignInDateTime = last_sign_in_date_time
+        self.lastSuccessfulSignInDateTime = last_successful_sign_in_date_time
+        self.lastSuccessfulSignInRequestId = last_successful_sign_in_request_id
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.SignInActivity"

@@ -6,7 +6,7 @@ from office365.directory.custom_security_attribute_definition import (
     CustomSecurityAttributeDefinition,
 )
 from office365.directory.device_local_credential_info import DeviceLocalCredentialInfo
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.subscriptions.company import CompanySubscription
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection

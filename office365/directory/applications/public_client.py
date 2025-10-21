@@ -16,3 +16,7 @@ class PublicClientApplication(ClientValue):
             URIs where OAuth 2.0 authorization codes and access tokens are sent.
         """
         self.redirectUris = StringCollection(redirect_uris)
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PublicClientApplication"

@@ -26,3 +26,7 @@ class Recipient(ClientValue):
             return Recipient(value)
         else:
             return Recipient(EmailAddress(value))
+
+    @property
+    def entity_type_name(self):
+        return None

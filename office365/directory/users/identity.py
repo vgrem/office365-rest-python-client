@@ -17,3 +17,7 @@ class UserIdentity(ClientValue):
         self.displayName = display_name
         self.ipAddress = ip_address
         self.userPrincipalName = user_principal_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.UserIdentity"

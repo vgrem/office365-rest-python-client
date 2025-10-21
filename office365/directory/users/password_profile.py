@@ -28,3 +28,7 @@ class PasswordProfile(ClientValue):
         self.password = password
         self.forceChangePasswordNextSignIn = force_change_password_next_sign_in
         self.forceChangePasswordNextSignInWithMfa = force_change_password_next_sign_in_with_mfa
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PasswordProfile"

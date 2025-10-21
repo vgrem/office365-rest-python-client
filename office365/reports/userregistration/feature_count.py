@@ -9,3 +9,7 @@ class UserRegistrationFeatureCount(ClientValue):
     def __init__(self, feature: AuthenticationMethodFeature = None, user_count: int = None):
         self.feature = feature
         self.userCount = user_count
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.UserRegistrationFeatureCount"

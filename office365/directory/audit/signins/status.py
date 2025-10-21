@@ -15,3 +15,7 @@ class SignInStatus(ClientValue):
         self.additionalDetails = additional_details
         self.errorCode = error_code
         self.failureReason = failure_reason
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.SignInStatus"

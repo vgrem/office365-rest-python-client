@@ -18,3 +18,7 @@ class EmailAddress(ClientValue):
 
     def __repr__(self):
         return f"{self.name} <{self.address}>"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.EmailAddress"

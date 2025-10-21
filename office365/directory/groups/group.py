@@ -11,8 +11,8 @@ from office365.directory.extensions.extension import Extension
 from office365.directory.groups.assigned_label import AssignedLabel
 from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.directory.licenses.processing_state import LicenseProcessingState
-from office365.directory.object import DirectoryObject
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )

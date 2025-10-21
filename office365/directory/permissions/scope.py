@@ -46,3 +46,7 @@ class PermissionScope(ClientValue):
         self.userConsentDescription = user_consent_description
         self.userConsentDisplayName = user_consent_display_name
         self.value = value
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PermissionScope"

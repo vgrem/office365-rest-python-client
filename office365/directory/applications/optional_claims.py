@@ -14,3 +14,7 @@ class OptionalClaims(ClientValue):
         self.accessToken = ClientValueCollection(OptionalClaim, access_token)
         self.idToken = ClientValueCollection(OptionalClaim, id_token)
         self.saml2Token = ClientValueCollection(OptionalClaim, saml2_token)
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.OptionalClaims"

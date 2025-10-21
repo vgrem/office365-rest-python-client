@@ -1,3 +1,4 @@
+from office365.directory.applications.preauthorized import PreAuthorizedApplication
 from office365.directory.permissions.scope import PermissionScope
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -12,6 +13,10 @@ class ApiApplication(ClientValue):
         accept_mapped_claims=None,
         known_client_applications=None,
         oauth2_permission_scopes=None,
+        pre_authorized_applications: ClientValueCollection[PreAuthorizedApplication] = ClientValueCollection(
+            PreAuthorizedApplication
+        ),
+        requested_access_token_version: int = None,
     ):
         """
         :param str accept_mapped_claims: When true, allows an application to use claims mapping without specifying
@@ -29,3 +34,9 @@ class ApiApplication(ClientValue):
         self.acceptMappedClaims = accept_mapped_claims
         self.knownClientApplications = StringCollection(known_client_applications)
         self.oauth2PermissionScopes = ClientValueCollection(PermissionScope, oauth2_permission_scopes)
+        self.preAuthorizedApplications = pre_authorized_applications
+        self.requestedAccessTokenVersion = requested_access_token_version
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.ApiApplication"

@@ -13,3 +13,7 @@ class AssignedLabel(ClientValue):
     def __init__(self, display_name: str = None, label_id: str = None):
         self.displayName = display_name
         self.labelId = label_id
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AssignedLabel"

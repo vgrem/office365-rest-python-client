@@ -7,6 +7,8 @@ class X509CertificateRuleType(Enum):
     unknownFutureValue = "2"
     issuerSubjectAndPolicyOID = "3"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.X509CertificateRuleType"

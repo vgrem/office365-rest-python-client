@@ -1,6 +1,6 @@
 from typing import Optional
 
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.scoped_role_membership import ScopedRoleMembership
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -28,7 +28,7 @@ class DirectoryRole(DirectoryObject):
     @property
     def members(self):
         """Users that are members of this directory role."""
-        from office365.directory.object_collection import DirectoryObjectCollection
+        from office365.directory.objects.collection import DirectoryObjectCollection
 
         return self.properties.get(
             "members",

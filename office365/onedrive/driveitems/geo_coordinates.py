@@ -8,7 +8,7 @@ class GeoCoordinates(ClientValue):
     a known location associated with it.
     """
 
-    def __init__(self, altitude=None, latitude=None, longitude=None):
+    def __init__(self, altitude: float = None, latitude: float = None, longitude: float = None):
         """
         :param float altitude: The altitude (height), in feet, above sea level for the item.
         :param float latitude: The latitude, in decimal, for the item
@@ -17,3 +17,7 @@ class GeoCoordinates(ClientValue):
         self.altitude = altitude
         self.latitude = latitude
         self.longitude = longitude
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.GeoCoordinates"

@@ -23,3 +23,7 @@ class RequiredResourceAccess(ClientValue):
 
     def __repr__(self):
         return self.resourceAppId or self.entity_type_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.RequiredResourceAccess"

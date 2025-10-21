@@ -17,3 +17,7 @@ class AuditActivityInitiator(ClientValue):
         """
         self.app = app
         self.user = user
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AuditActivityInitiator"

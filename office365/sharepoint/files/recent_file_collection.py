@@ -10,7 +10,7 @@ class RecentFileCollection(Entity):
         super().__init__(context, ResourcePath("SP.RecentFileCollection"))
 
     @staticmethod
-    def get_recent_files(context: ClientContext, top: int):
+    def get_recent_files(context: ClientContext, top: int) -> ClientResult[str]:
         return_type = ClientResult(context, str())
         payload = {"top": top}
         binding_type = RecentFileCollection(context)

@@ -1,4 +1,4 @@
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 
 
 class GroupSettingTemplate(DirectoryObject):
