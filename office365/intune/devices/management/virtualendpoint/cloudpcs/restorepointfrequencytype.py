@@ -10,6 +10,8 @@ class CloudPcRestorePointFrequencyType(Enum):
     twentyFourHours = "5"
     unknownFutureValue = "6"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.CloudPcRestorePointFrequencyType"

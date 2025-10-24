@@ -11,3 +11,7 @@ class BookingWorkTimeSlot(ClientValue):
         """
         self.endTime = end_time
         self.startTime = start_time
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.BookingWorkTimeSlot"

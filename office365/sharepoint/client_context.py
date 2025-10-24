@@ -44,6 +44,7 @@ from office365.sharepoint.webs.context_web_information import ContextWebInformat
 from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
+    from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.portal.theme_manager import ThemeManager
     from office365.sharepoint.search.service import SearchService
     from office365.sharepoint.server_settings import ServerSettings
@@ -404,7 +405,7 @@ class ClientContext(ClientRuntimeContext):
         return AnnouncementsController(self, ResourcePath("Announcements"))
 
     @property
-    def brand_center(self):
+    def brand_center(self) -> BrandCenter:
         """Alias to BrandCenter"""
 
         from office365.sharepoint.brandcenter.brand_center import BrandCenter

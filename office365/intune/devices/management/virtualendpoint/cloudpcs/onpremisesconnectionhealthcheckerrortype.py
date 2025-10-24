@@ -71,6 +71,8 @@ class CloudPcOnPremisesConnectionHealthCheckErrorType(Enum):
     internalServerUnknownError = "999"
     unknownFutureValue = "1000"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.CloudPcOnPremisesConnectionHealthCheckErrorType"

@@ -27,3 +27,7 @@ class PhysicalAddress(ClientValue):
         self.postalCode = postal_code
         self.state = state
         self.street = street
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PhysicalAddress"

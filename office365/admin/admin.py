@@ -1,4 +1,4 @@
-from office365.admin.microsoft365_apps import AdminMicrosoft365Apps
+from office365.admin.microsoft365.apps import AdminMicrosoft365Apps
 from office365.admin.people.settings import PeopleAdminSettings
 from office365.admin.report_settings import AdminReportSettings
 from office365.admin.sharepoint.sharepoint import Sharepoint

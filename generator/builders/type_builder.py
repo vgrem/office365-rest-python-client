@@ -1,13 +1,15 @@
 import ast
 import inspect
 import os
+from _ast import Module
 from os.path import abspath
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from typing_extensions import Self
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
+from generator.builders.template_context import TemplateContext
 from generator.documentation.baseservice import BaseDocumentationService
 from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
@@ -22,18 +24,18 @@ class TypeBuilder(ast.NodeTransformer):
         options: Dict[str, str] = None,
         docs_service: BaseDocumentationService = None,
     ):
-        self._template = None
         self._schema = type_schema
         self._options = options
-        self._type_info = None
-        self._source_tree = None
-        self._status = None
-        self._properties = []
-        self._members = []
-        self._changes = []
-        self._docstring = None
-        self._entity_type_name_exists = False
         self._docs_service = docs_service
+        self._template: Optional[TemplateContext] = None
+        self._type_info: Optional[Dict] = None
+        self._source_tree: Optional[Module] = None
+        self._status: Optional[str] = None
+        self._properties: List[PropertyBuilder] = []
+        self._members: List[MemberBuilder] = []
+        self._changes: List[str] = []
+        self._docstring: Optional[str] = None
+        self._entity_type_name_exists: bool = False
 
     def visit_ClassDef(self, node: ast.ClassDef):
 
@@ -104,8 +106,6 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def build(self) -> Self:
-        from generator.builders.template_context import TemplateContext
-
         self._template = TemplateContext(self._options.get("templatepath"), self._schema)
 
         if self.state == "attached":

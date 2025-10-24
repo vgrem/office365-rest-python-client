@@ -13,6 +13,8 @@ class PhoneType(Enum):
     pager = "8"
     radio = "9"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.PhoneType"

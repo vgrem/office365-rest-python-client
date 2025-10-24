@@ -17,3 +17,7 @@ class BookingWorkHours(ClientValue):
         """
         self.day = day
         self.timeSlots = ClientValueCollection(BookingWorkTimeSlot, time_slots)
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.BookingWorkHours"

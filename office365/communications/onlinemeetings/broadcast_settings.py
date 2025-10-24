@@ -1,4 +1,4 @@
-from office365.communications.types import BroadcastMeetingAudience
+from office365.communications.broadcastmeetingaudience import BroadcastMeetingAudience
 from office365.runtime.client_value import ClientValue
 
 

@@ -2,7 +2,7 @@ from office365.directory.security.attacksimulations.automation import (
     SimulationAutomation,
 )
 from office365.directory.security.attacksimulations.landing_page import LandingPage
-from office365.directory.security.attacksimulations.operation import (
+from office365.directory.security.attacksimulations.operations.operation import (
     AttackSimulationOperation,
 )
 from office365.directory.security.attacksimulations.simulation import Simulation

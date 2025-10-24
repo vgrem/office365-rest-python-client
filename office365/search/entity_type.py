@@ -32,28 +32,24 @@ class EntityType:
         pass
 
     @staticmethod
-    def resolve(
-        name: str,
-    ) -> Type[Union[Event, List, Site, ListItem, Message, Drive, DriveItem]]:
+    def resolve(name: str) -> Type[Union[Event, List, Site, ListItem, Message, Drive, DriveItem]]:
         class_name = name.split(".")[-1]
         return EntityType._types.get(class_name, None)
 
     event = "event"
-
     list = "list"
-
     site = "site"
-
     listItem = "listItem"
-
     message = "message"
-
     drive = "drive"
-
     driveItem = "driveItem"
-
     externalItem = "externalItem"
-
     person = "person"
-
     chatMessage = "chatMessage"
+    unknownFutureValue = "9"
+    acronym = "12"
+    bookmark = "13"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.EntityType"

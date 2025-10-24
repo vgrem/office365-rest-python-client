@@ -17,3 +17,7 @@ class TimeSlot(ClientValue):
 
     def __repr__(self):
         return f"({self.start} - {self.end})"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.TimeSlot"

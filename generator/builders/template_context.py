@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 import ast
 import os
 from os.path import abspath
-from typing import Set, cast
+from typing import TYPE_CHECKING, Set, cast
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
-from generator.builders.type_builder import TypeBuilder
 from office365.runtime.odata.type_information import TypeInformation
+
+if TYPE_CHECKING:
+    from generator.builders.type_builder import TypeBuilder
 
 
 class TemplateContext:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
@@ -52,7 +54,7 @@ from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.management.management import DeviceManagement
 from office365.intune.organizations.contact import OrgContact
 from office365.intune.organizations.organization import Organization
-from office365.intune.printing.print import Print
+from office365.intune.print.print import Print
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.shares.collection import SharesCollection
 from office365.onedrive.sites.sites_with_root import SitesWithRoot

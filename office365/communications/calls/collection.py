@@ -1,7 +1,7 @@
 from typing_extensions import Self
 
 from office365.communications.calls.call import Call
-from office365.communications.types import TeleconferenceDeviceQuality
+from office365.communications.teleconferencedevicequality import TeleconferenceDeviceQuality
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 

@@ -24,6 +24,8 @@ class CloudPcRegionGroup(Enum):
     switzerland = "18"
     southKorea = "19"
 
+    none = "-1"
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.CloudPcRegionGroup"

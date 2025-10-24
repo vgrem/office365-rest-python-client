@@ -25,3 +25,7 @@ class OutlookGeoCoordinates(ClientValue):
         self.altitudeAccuracy = altitude_accuracy
         self.latitude = latitude
         self.longitude = longitude
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.OutlookGeoCoordinates"
