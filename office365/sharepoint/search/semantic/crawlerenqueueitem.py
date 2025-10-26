@@ -14,6 +14,7 @@ class SemanticSearchCrawlerEnqueueItem(ClientValue):
         item_id: int = None,
         item_url: str = None,
         list_id: str = None,
+        vroom_id: str = None,
     ):
         self.associate_site_id = associate_site_id
         self.item_unique_id = item_unique_id
@@ -24,3 +25,4 @@ class SemanticSearchCrawlerEnqueueItem(ClientValue):
         self.ItemId = item_id
         self.ItemUrl = item_url
         self.ListId = list_id
+        self.VroomId = vroom_id

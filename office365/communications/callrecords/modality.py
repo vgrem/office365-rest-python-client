@@ -11,3 +11,5 @@ class Modality(Enum):
     @property
     def entity_type_name(self):
         return "microsoft.graph.Modality"
+
+    screenSharing = "4"

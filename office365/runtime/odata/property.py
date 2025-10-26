@@ -14,3 +14,6 @@ class PropertyInformation:
     Name: Optional[str] = None
     TypeName: Optional[str] = None
     ReadOnly: Optional[bool] = None
+    IsBeta: Optional[bool] = None
+    ExcludeFromDefaultRetrieval: Optional[bool] = None
+    IsNavigation: Optional[bool] = False

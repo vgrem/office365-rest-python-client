@@ -179,6 +179,7 @@
             <Property Name="SecondsInDB" Type="Edm.Int32" Nullable="false"/>
             <Property Name="SemanticSearchServiceEndPointJson" Type="Edm.String"/>
             <Property Name="SourceAction" Type="Edm.Int32"/>
+            <Property Name="VroomId" Type="Edm.String"/>
             <Property Name="WorkItemId" Type="Edm.Guid" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="ContentTypeId">
@@ -706,6 +707,7 @@
             <Property Name="WebRelativePath" Type="SP.ResourcePath"/>
          </ComplexType>
          <ComplexType Name="RestrictAccessControlUpdate">
+            <Property Name="AllowSharingOutsideRAC" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsPolicyEnabledAtSite" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsPolicyEnabledAtTenant" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="Justification" Type="Edm.String"/>
@@ -12118,6 +12120,9 @@
             <FunctionImport Name="Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_DeleteSiteScript">
                <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
             </FunctionImport>
+            <FunctionImport Name="Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_ExecuteAdminTemplateScript" ReturnType="Collection(Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptActionResult)">
+               <Parameter Name="contentStream" Type="Edm.Stream"/>
+            </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_ExecuteSiteScriptAction" ReturnType="Collection(Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptActionResult)">
                <Parameter Name="actionDefinition" Type="Edm.String"/>
             </FunctionImport>
@@ -18225,6 +18230,12 @@
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="creationInformation" Type="SP.FontPackageCreationParameters"/>
             </FunctionImport>
+            <FunctionImport Name="AddCompanyHomeSite" ReturnType="SP.TargetedSiteDetails" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="homeSiteUrl" Type="Edm.String"/>
+               <Parameter Name="order" Type="Edm.Int32"/>
+               <Parameter Name="audiences" Type="Collection(Edm.Guid)" Nullable="false"/>
+            </FunctionImport>
             <FunctionImport Name="AddHomeSite" ReturnType="SP.TargetedSiteDetails" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="homeSiteUrl" Type="Edm.String"/>
@@ -24128,6 +24139,9 @@
          <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/SourceAction">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/VroomId">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.SemanticSearchCrawlerEnqueueItem/WorkItemId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29896,6 +29910,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_DeleteSiteScript(Edm.Guid)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_ExecuteAdminTemplateScript(Edm.Stream)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_Utilities_WebTemplateExtensions_SiteScriptUtility_ExecuteSiteScriptAction(Edm.String)">
@@ -35987,6 +36004,7 @@
          </ComplexType>
          <ComplexType Name="PublishingStatusResponse">
             <Property Name="EmailPublishingStatus" Type="SP.Publishing.EmailPublishingStatus"/>
+            <Property Name="Errors" Type="Collection(Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResult)"/>
             <Property Name="LastTriedAt" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="PrePublishValidationErrorCode" Type="Edm.Int32" Nullable="false"/>
             <Property Name="PublishingStatus" Type="Edm.Int32" Nullable="false"/>

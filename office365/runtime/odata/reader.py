@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Optional
 from xml.etree import ElementTree as ET
 from xml.etree.ElementTree import Element
 
@@ -18,6 +18,7 @@ class ODataReader(ABC):
 
     def __init__(self, metadata_path: str):
         self._metadata_path = metadata_path
+        self._root: Optional[Element] = None
 
     @property
     @abstractmethod
@@ -37,12 +38,13 @@ class ODataReader(ABC):
             out_file.write(formatted_metadata_content)
 
     def process_schema_node(self, model: ODataModel) -> None:
-        root = ET.parse(self._metadata_path).getroot()
-        schema_nodes = root.findall("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
+        self._root = ET.parse(self._metadata_path).getroot()
+        schema_nodes = self._root.findall("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
 
         # base_types = ["EnumType", "ComplexType"]
+        base_types = ["ComplexType", "EntityType"]
         # base_types = ["EntityType"]
-        base_types = ["EnumType"]
+        # base_types = ["EnumType"]
         # base_types = ["ComplexType"]
 
         for base_type in base_types:
@@ -55,6 +57,7 @@ class ODataReader(ABC):
         type_schema = TypeInformation()
         type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_node.get('Name'))}"
         type_schema.BaseTypeFullName = base_type
+        type_schema.IsValueObject = True
 
         if base_type == "EnumType":
             for member_node in type_node.findall("xmlns:Member", self.xml_namespaces):
@@ -65,10 +68,43 @@ class ODataReader(ABC):
                 schema = self.process_property_node(prop_node)
                 type_schema.add_property(schema)
 
+            for prop_node in type_node.findall("xmlns:NavigationProperty", self.xml_namespaces):
+                schema = self.process_navigation_property_node(prop_node)
+                # if schema:
+                #    type_schema.add_property(schema)
+
         return type_schema
 
     def process_method_node(self):
         pass
+
+    def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
+        schema = PropertyInformation()
+        schema.Name = node.get("Name")
+        schema.IsNavigation = True
+
+        relationship = node.get("Relationship")
+        to_role = node.get("ToRole")
+        # from_role = node.get("FromRole")
+
+        association_name = relationship.split(".")[-1] if "." in relationship else relationship
+
+        association_node = self._root.find(f".//xmlns:Association[@Name='{association_name}']", self.xml_namespaces)
+        if association_node is None:
+            return None
+
+        end_node = association_node.find(f".//xmlns:End[@Role='{to_role}']", self.xml_namespaces)
+        if end_node is None:
+            return None
+
+        multiplicity = end_node.get("Multiplicity")
+
+        if multiplicity == "*":
+            schema.TypeName = f"Collection({end_node.get('Type')})"
+        else:
+            schema.TypeName = end_node.get("Type")
+
+        return schema
 
     def process_property_node(self, node: Element) -> PropertyInformation:
         schema = PropertyInformation()
