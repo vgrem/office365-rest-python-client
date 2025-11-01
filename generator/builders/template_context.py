@@ -103,12 +103,24 @@ class TemplateContext:
             type_annotation = f"Optional[{prop_type_name}]"
         else:
             type_annotation = prop_type_name
+        default_value = "None"
+        if builder.is_object_type:
+            if builder.is_collection_type:
+                default_value = (
+                    f"{prop_type_name}("
+                    f"self.context, "
+                    f"{builder.client_item_type_name}, "
+                    f"ResourcePath('{prop_name}', self.resource_path)"
+                    f")"
+                )
+            else:
+                default_value = f"{prop_type_name}(self.context, ResourcePath('{prop_name}', self.resource_path))"
 
         property_code = f'''
 @property
 def {method_name}(self) -> {type_annotation}:
     """{docstring}"""
-    return self.properties.get("{prop_name}", None)
+    return self.properties.get("{prop_name}", {default_value})
 '''
 
         parsed = ast.parse(property_code.strip())

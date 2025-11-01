@@ -36,6 +36,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._changes: List[str] = []
         self._docstring: Optional[str] = None
         self._entity_type_name_exists: bool = False
+        self._client_type: ODataType = ODataType(self._schema.FullName, self._schema.IsValueObject)
 
     def visit_ClassDef(self, node: ast.ClassDef):
 
@@ -253,7 +254,7 @@ class TypeBuilder(ast.NodeTransformer):
     def _resolve_type(self) -> Dict[str, str]:
         type_info = {}
 
-        cls = ODataType.find_client_type(self.client_type_name, tuple(self._options["modules"].split(",")))
+        cls = self._client_type.resolve_client_type(tuple(self._options["modules"].split(",")))
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls)
@@ -283,7 +284,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     @property
     def client_type_name(self):
-        return ODataType.resolve_client_type_name(self._schema.FullName)
+        return str(self._client_type)
 
     @property
     def properties(self) -> List[PropertyBuilder]:

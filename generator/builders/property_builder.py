@@ -5,7 +5,7 @@ import builtins
 import keyword
 import re
 from _ast import Assign, Call, Constant
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from office365.runtime.odata.type import ODataType
 
@@ -19,7 +19,8 @@ class PropertyBuilder:
     def __init__(self, schema: PropertyInformation, status="detached"):
         self.schema = schema
         self.status = status
-        self.docstring = None
+        self.docstring: Optional[str] = None
+        self._client_type: ODataType = ODataType(self.schema.TypeName, self.schema.IsNavigation)
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
 
@@ -43,7 +44,7 @@ class PropertyBuilder:
 
     def build_default_value(self) -> Constant | Call:
         """Build default value"""
-        if ODataType.is_primitive_type(self.schema.TypeName):
+        if self._client_type.is_primitive_type:
             return ast.Constant(value=None)
         else:
             return ast.Call(
@@ -77,7 +78,16 @@ class PropertyBuilder:
 
     @property
     def client_type_name(self) -> str:
-        from office365.runtime.odata.type import ODataType
+        return str(self._client_type)
 
-        type_name = ODataType.resolve_client_type_name(self.schema.TypeName)
-        return type_name or self.schema.TypeName
+    @property
+    def client_item_type_name(self) -> str:
+        return str(self._client_type.item_client_type)
+
+    @property
+    def is_collection_type(self) -> bool:
+        return self._client_type.is_collection
+
+    @property
+    def is_object_type(self) -> bool:
+        return self.schema.IsNavigation

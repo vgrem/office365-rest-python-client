@@ -131,13 +131,13 @@ class TestSharePointClient(TestCase):
         guid_coll = GuidCollection()
         self.assertEqual(guid_coll.entity_type_name, "Collection(Edm.Guid)")
 
-        custom_type_name = ODataType.resolve_type(SecondaryAdministratorsFieldsData)
+        custom_type_name = ODataType.resolve_type_name(SecondaryAdministratorsFieldsData)
         self.assertEqual(
             custom_type_name,
             "Microsoft.Online.SharePoint.TenantAdministration.SecondaryAdministratorsFieldsData",
         )
 
-        str_type_name = ODataType.resolve_type(StringCollection)
+        str_type_name = ODataType.resolve_type_name(StringCollection)
         self.assertEqual(str_type_name, "Collection(Edm.String)")
 
         str_col = StringCollection()

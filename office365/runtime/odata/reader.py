@@ -70,8 +70,8 @@ class ODataReader(ABC):
 
             for prop_node in type_node.findall("xmlns:NavigationProperty", self.xml_namespaces):
                 schema = self.process_navigation_property_node(prop_node)
-                # if schema:
-                #    type_schema.add_property(schema)
+                if schema:
+                    type_schema.add_property(schema)
 
         return type_schema
 

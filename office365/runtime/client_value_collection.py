@@ -50,7 +50,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
         super().__init__()
         if initial_values is None:
             initial_values = []
-        self._data = initial_values  # type: list[T]
+        self._data: list[T] = initial_values
         self._item_type = item_type
 
     def add(self, value: T) -> Self:
@@ -185,4 +185,4 @@ class ClientValueCollection(ClientValue, Generic[T]):
         Returns:
             str: The collection type name (e.g., "Collection(Edm.String)")
         """
-        return f"Collection({ODataType.resolve_type(self._item_type)})"
+        return f"Collection({ODataType.resolve_type_name(self._item_type)})"
