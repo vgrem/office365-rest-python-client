@@ -1,8 +1,6 @@
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.marketplace.app_metadata_collection import (
-    CorporateCatalogAppMetadataCollection,
-)
+from office365.sharepoint.marketplace.app_metadata_collection import CorporateCatalogAppMetadataCollection
 
 
 class SiteCollectionCorporateCatalogAccessor(Entity):
@@ -21,3 +19,7 @@ class SiteCollectionCorporateCatalogAccessor(Entity):
             property_mapping = {"AvailableApps": self.available_apps}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.SiteCollectionCorporateCatalogAccessor"

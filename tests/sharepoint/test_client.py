@@ -78,7 +78,9 @@ class TestSharePointClient(TestCase):
         self.assertIsNotNone(current_user.user_id)
 
     def test9_execute_get_batch_request(self):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         current_user = client.web.current_user
         client.load(current_user)
         current_web = client.web

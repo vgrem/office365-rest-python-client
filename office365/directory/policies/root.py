@@ -14,7 +14,7 @@ from office365.directory.policies.device_registration import DeviceRegistrationP
 from office365.directory.policies.feature_rollout import FeatureRolloutPolicy
 from office365.directory.policies.permission_grant import PermissionGrantPolicy
 from office365.directory.policies.tenant_app_management import TenantAppManagementPolicy
-from office365.directory.policies.unified_role_management import (
+from office365.directory.policies.unifiedrolemanagement.policy import (
     UnifiedRoleManagementPolicy,
 )
 from office365.entity import Entity

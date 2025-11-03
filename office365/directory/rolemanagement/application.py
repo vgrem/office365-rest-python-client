@@ -1,4 +1,4 @@
-from office365.directory.identitygovernance.privilegedaccess.unified_role_assignment_schedule_request import (
+from office365.directory.policies.unifiedrolemanagement.unified_role_assignment_schedule_request import (
     UnifiedRoleAssignmentScheduleRequest,
 )
 from office365.directory.rolemanagement.unifiedrole.assignment import (

@@ -11,6 +11,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.utilities import get_absolute_url
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -84,6 +85,19 @@ class Entity(ClientObject):
         :param str passphrase: Passphrase if the private_key is encrypted
         """
         self.context.with_client_certificate(tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase)
+        return self
+
+    def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
+        """
+        Initializes a client to acquire a token via Username and password authentication flow.
+        :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
+        :param str client_id: The OAuth client id of the calling application.
+        :param str username: Typically, a UPN in the form of an email address
+        :param str password: The password
+        """
+        resource = get_absolute_url(self.context.base_url)
+        scopes = [f"{resource}/.default"]
+        self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
     def delete_object(self) -> Self:

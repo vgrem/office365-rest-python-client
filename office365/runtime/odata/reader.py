@@ -42,10 +42,10 @@ class ODataReader(ABC):
         schema_nodes = self._root.findall("edmx:DataServices/xmlns:Schema", self.xml_namespaces)
 
         # base_types = ["EnumType", "ComplexType"]
-        base_types = ["ComplexType", "EntityType"]
+        # base_types = ["ComplexType", "EntityType"]
         # base_types = ["EntityType"]
         # base_types = ["EnumType"]
-        # base_types = ["ComplexType"]
+        base_types = ["ComplexType"]
 
         for base_type in base_types:
             for schema_node in schema_nodes:
@@ -57,7 +57,7 @@ class ODataReader(ABC):
         type_schema = TypeInformation()
         type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_node.get('Name'))}"
         type_schema.BaseTypeFullName = base_type
-        type_schema.IsValueObject = True
+        type_schema.IsValueObject = base_type == "EntityType"
 
         if base_type == "EnumType":
             for member_node in type_node.findall("xmlns:Member", self.xml_namespaces):
@@ -78,33 +78,9 @@ class ODataReader(ABC):
     def process_method_node(self):
         pass
 
+    @abstractmethod
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
-        schema = PropertyInformation()
-        schema.Name = node.get("Name")
-        schema.IsNavigation = True
-
-        relationship = node.get("Relationship")
-        to_role = node.get("ToRole")
-        # from_role = node.get("FromRole")
-
-        association_name = relationship.split(".")[-1] if "." in relationship else relationship
-
-        association_node = self._root.find(f".//xmlns:Association[@Name='{association_name}']", self.xml_namespaces)
-        if association_node is None:
-            return None
-
-        end_node = association_node.find(f".//xmlns:End[@Role='{to_role}']", self.xml_namespaces)
-        if end_node is None:
-            return None
-
-        multiplicity = end_node.get("Multiplicity")
-
-        if multiplicity == "*":
-            schema.TypeName = f"Collection({end_node.get('Type')})"
-        else:
-            schema.TypeName = end_node.get("Type")
-
-        return schema
+        pass
 
     def process_property_node(self, node: Element) -> PropertyInformation:
         schema = PropertyInformation()

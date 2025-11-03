@@ -43,4 +43,4 @@ class TestBusiness(GraphTestCase):
 
     @requires_delegated_permission("Bookings.Manage.All")
     def test6_delete_booking_business(self):
-        self.__class__.business.delete_object().execute_query()
+        self.__class__.business.delete_object().execute_query_retry()
