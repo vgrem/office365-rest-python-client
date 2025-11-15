@@ -53,7 +53,7 @@ class ACSTokenProvider(AuthenticationProvider):
             return self._get_app_only_access_token(url_info.hostname, realm)
         except requests.exceptions.RequestException as e:
             self._last_error = e.response.text if e.response is not None else "Acquire app-only access token failed."
-            raise ValueError(self._last_error)
+            raise ValueError(self._last_error) from e
 
     def _get_app_only_access_token(self, target_host: str, target_realm: str) -> TokenResponse:
         """Retrieve app-only access token for target principal.

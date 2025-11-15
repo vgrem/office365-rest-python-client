@@ -29,8 +29,8 @@ disable = [
     "R0912", # too-many-branches
     "R0913", # too-many-arguments
     "R0914", # too-many-locals
+    "R0917", # too-many-positional-arguments
     "R1705", # no-else-return
-    "R1710", # inconsistent-return-statements (!)
     "R1711", # useless-return
     "R1714", # consider-using-in
     "R1720", # no-else-raise
@@ -48,7 +48,6 @@ disable = [
     "W0611", # unused-imports # typing
     "W0613", # unused-argument
     "W0621", # redefine-outer-name
-    "W0707", # raise-missing-from
     "W1113", # keyword-arg-before-vararg
     "W3101", # missing-timeout
 ] # all codes: http://pylint-messages.wikidot.com/all-codes

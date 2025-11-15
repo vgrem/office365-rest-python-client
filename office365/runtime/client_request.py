@@ -46,7 +46,7 @@ class ClientRequest(ABC):
             self.process_response(response, query)
             self.afterExecute(response)
         except HTTPError as e:
-            raise ClientRequestException(*e.args, response=e.response)
+            raise ClientRequestException(*e.args, response=e.response) from e
 
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""

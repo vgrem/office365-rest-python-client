@@ -1,5 +1,7 @@
-from typing import Optional
+from typing import AnyStr, Dict, List, Optional, Union
 
+from office365.runtime.client_object import ClientObject
+from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery, T
 
@@ -12,13 +14,13 @@ class ServiceOperationQuery(ClientQuery[T]):
 
     def __init__(
         self,
-        binding_type,
-        method_name=None,
-        method_params=None,
-        parameters_type=None,
-        parameters_name=None,
-        return_type=None,
-        is_static=False,
+        binding_type: ClientObject,
+        method_name: str = None,
+        method_params: Optional[Union[List, Dict, ClientValue]] = None,
+        parameters_type: Optional[Union[ClientObject, ClientValue, Dict, AnyStr]] = None,
+        parameters_name: Optional[str] = None,
+        return_type: Optional[T] = None,
+        is_static: bool = False,
     ):
         super().__init__(
             binding_type.context,
