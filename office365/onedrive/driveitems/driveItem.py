@@ -545,7 +545,7 @@ class DriveItem(BaseItem):
                 request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 
             qry = ServiceOperationQuery(self, "", None, payload, None, return_type)
-            self.context.add_query(qry).before_execute(_construct_request)
+            self.context.add_query(qry).before_query_execute(_construct_request)
 
         if isinstance(parent, DriveItem):
 

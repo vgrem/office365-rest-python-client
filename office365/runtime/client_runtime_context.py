@@ -258,7 +258,7 @@ class ClientRuntimeContext(ABC):
             return_type.set_property("__value", response.content)
 
         qry = ClientQuery(self)
-        (self.add_query(qry).before_execute(_construct_request).after_execute(_process_response))
+        (self.add_query(qry).before_query_execute(_construct_request).after_execute(_process_response))
         return return_type
 
     def _get_next_query(self, count: int = 1) -> ClientQuery:

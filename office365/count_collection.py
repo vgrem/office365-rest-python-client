@@ -48,10 +48,13 @@ class CountCollection(DeltaCollection[T]):
             request.ensure_header("ConsistencyLevel", "eventual")
 
         def _process_response(response: Response) -> None:
-            response.raise_for_status()
             value = int(response.content.decode("utf-8"))
             return_type.set_property("__value", value)
 
         qry = FunctionQuery(self, "$count")
-        (self.context.add_query(qry).before_execute(_construct_request).after_execute(_process_response))
+        (
+            self.context.add_query(qry)
+            .before_query_execute(_construct_request)
+            .after_query_execute(_process_response, include_response=True)
+        )
         return return_type
