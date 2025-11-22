@@ -497,7 +497,6 @@ class DriveItem(BaseItem):
                 request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 
             def _process_response(resp: requests.Response) -> None:
-                resp.raise_for_status()
                 location = resp.headers.get("Location", None)
                 if location is None:
                     return
@@ -505,7 +504,9 @@ class DriveItem(BaseItem):
 
             payload = {"name": name, "parentReference": parent_reference}
             qry = ServiceOperationQuery(self, "copy", None, payload, None, return_type)
-            self.context.add_query(qry).before_query_execute(_create_request).after_execute(_process_response)
+            self.context.add_query(qry).before_query_execute(_create_request).after_query_execute(
+                _process_response, include_response=True
+            )
 
         if isinstance(parent, DriveItem):
 

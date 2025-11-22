@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import copy
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union
 
+from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
@@ -33,7 +34,7 @@ class ClientResult(Generic[ClientValueT]):
 
     def after_execute(
         self,
-        action: Callable[[Self], None],
+        action: Callable[[Union[Self, Response]], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:

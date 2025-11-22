@@ -254,11 +254,14 @@ class ClientRuntimeContext(ABC):
             request.method = HttpMethod.Get
 
         def _process_response(response: Response) -> None:
-            response.raise_for_status()
             return_type.set_property("__value", response.content)
 
         qry = ClientQuery(self)
-        (self.add_query(qry).before_query_execute(_construct_request).after_execute(_process_response))
+        (
+            self.add_query(qry)
+            .before_query_execute(_construct_request)
+            .after_query_execute(_process_response, include_response=True)
+        )
         return return_type
 
     def _get_next_query(self, count: int = 1) -> ClientQuery:
