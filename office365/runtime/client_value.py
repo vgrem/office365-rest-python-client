@@ -5,6 +5,7 @@ from typing_extensions import Self
 
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+from office365.runtime.utilities import parse_enum
 
 ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, "ClientValue")
 
@@ -24,7 +25,10 @@ class ClientValue:
                 [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
             setattr(self, k, prop_val)
         else:
-            setattr(self, k, v)
+            if isinstance(prop_val, Enum):
+                setattr(self, k, parse_enum(type(prop_val), v))
+            else:
+                setattr(self, k, v)
         return self
 
     def get_property(self, name: str) -> ClientValueT:

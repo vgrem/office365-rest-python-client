@@ -109,7 +109,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry).before_query_execute(_construct_request, once=False)
         return self.team
 
-    def delete_object(self, permanent_delete=False) -> Self:
+    def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the group from directory
         :type permanent_delete: bool

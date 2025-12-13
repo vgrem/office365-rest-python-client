@@ -115,32 +115,7 @@ class ClientRuntimeContext(ABC):
             return self
         query = self._queries[-1]
 
-        def _prepare_request(request: RequestOptions) -> None:
-            if self.current_query.id == query.id:
-                if once:
-                    self.pending_request().beforeExecute -= _prepare_request
-                action(request)
-
-        self.pending_request().beforeExecute += _prepare_request
-        return self
-
-    def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
-        """Attaches pre-query execution handler.
-
-        Args:
-            action: Callback to execute before query
-            once: Whether to execute only once
-
-        Returns:
-            Self for method chaining
-        """
-
-        def _process_request(request: RequestOptions):
-            if once:
-                self.pending_request().beforeExecute -= _process_request
-            action(request)
-
-        self.pending_request().beforeExecute += _process_request
+        self.pending_request().before_execute(action, once=once, condition=lambda: self.current_query.id == query.id)
         return self
 
     def after_query_execute(

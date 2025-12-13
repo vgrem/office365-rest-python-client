@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Union
 
+from typing_extensions import Self
+
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -33,14 +35,16 @@ class GroupSiteManager(ClientObject):
             resource_path = ResourcePath("GroupSiteManager")
         super().__init__(context, resource_path)
 
-    def can_user_create_group(self):
+    def can_user_create_group(self) -> ClientResult[bool]:
         """Determines if the current user can create group site"""
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "CanUserCreateGroup", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_group_for_site(self, display_name, alias, is_public=None, optional_params=None):
+    def create_group_for_site(
+        self, display_name: str, alias: str, is_public: bool = None, optional_params: GroupCreationParams = None
+    ):
         """
         Create a modern site
 
@@ -76,7 +80,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def delete(self, site_url: str):
+    def delete(self, site_url: str) -> Self:
         """
         Deletes a SharePoint Team site
 
@@ -103,6 +107,7 @@ class GroupSiteManager(ClientObject):
 
     def get_status(self, group: Union[str, Site]) -> ClientResult[GroupSiteInfo]:
         """Get the status of a SharePoint site"""
+        from office365.sharepoint.sites.site import Site
 
         return_type = ClientResult(self.context, GroupSiteInfo())
 

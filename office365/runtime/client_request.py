@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import Callable, Optional
 
 import requests
 from requests import HTTPError, Response
+from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
@@ -47,6 +51,32 @@ class ClientRequest(ABC):
             self.afterExecute(response)
         except HTTPError as e:
             raise ClientRequestException(*e.args, response=e.response) from e
+
+    def before_execute(
+        self,
+        action: Callable[[RequestOptions], None],
+        once: bool = True,
+        condition: Optional[Callable[[], bool]] = None,
+    ) -> Self:
+        """Attaches pre-query execution handler.
+
+        Args:
+            action: Callback to execute before query
+            once: Whether to execute only once
+            condition: Optional condition to check before executing action
+
+        Returns:
+            Self for method chaining
+        """
+
+        def _process_request(request: RequestOptions):
+            if condition is None or condition():
+                if once:
+                    self.beforeExecute -= _process_request
+                action(request)
+
+        self.beforeExecute += _process_request
+        return self
 
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""

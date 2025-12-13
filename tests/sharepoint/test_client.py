@@ -91,7 +91,9 @@ class TestSharePointClient(TestCase):
         self.assertIsInstance(current_user.user_id, UserIdInfo)
 
     def test_10_execute_update_batch_request(self):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         web = client.web
         new_web_title = create_unique_name("Site")
         web.set_property("Title", new_web_title).update()

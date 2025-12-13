@@ -7,7 +7,7 @@ class GroupSiteInfo(ClientValue):
     def __init__(
         self,
         site_url=None,
-        site_status: SiteStatus = None,
+        site_status: SiteStatus = SiteStatus.None_,
         documents_url: str = None,
         error_message: str = None,
         group_id: str = None,
