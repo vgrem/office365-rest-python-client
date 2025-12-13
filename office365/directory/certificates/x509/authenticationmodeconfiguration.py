@@ -12,10 +12,18 @@ class X509CertificateAuthenticationModeConfiguration(ClientValue):
         rules: ClientValueCollection[X509CertificateRule] = ClientValueCollection(X509CertificateRule),
         authentication_default_mode: X509CertificateAuthenticationMode = X509CertificateAuthenticationMode.none,
         default_required_affinity_level: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none,
+        x509_certificate_authentication_default_mode: X509CertificateAuthenticationMode = (
+            X509CertificateAuthenticationMode.none
+        ),
+        x509_certificate_default_required_affinity_level: X509CertificateAffinityLevel = (
+            X509CertificateAffinityLevel.none,
+        ),
     ):
         self.rules = rules
         self.x509CertificateAuthenticationDefaultMode = authentication_default_mode
         self.x509CertificateDefaultRequiredAffinityLevel = default_required_affinity_level
+        self.x509CertificateAuthenticationDefaultMode = x509_certificate_authentication_default_mode
+        self.x509CertificateDefaultRequiredAffinityLevel = x509_certificate_default_required_affinity_level
 
     @property
     def entity_type_name(self):

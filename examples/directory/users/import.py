@@ -21,7 +21,7 @@ def generate_user_profile():
         "office_location": fake.street_address(),
         "city": fake.city(),
         "country": fake.country(),
-        "principal_name": "{0}@{1}".format(fake.user_name(), test_tenant),
+        "principal_name": f"{fake.user_name()}@{test_tenant}",
         "password": create_unique_name("P@ssw0rd"),
         "account_enabled": True,
     }
