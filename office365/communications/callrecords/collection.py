@@ -41,5 +41,5 @@ class CallRecordCollection(EntityCollection[CallRecord]):
         def _patch_request(request: RequestOptions):
             request.url = request.url.replace("'", "")
 
-        self.context.add_query(qry).before_query_execute(_patch_request)
+        self.context.add_query(qry).before_execute(_patch_request)
         return return_type

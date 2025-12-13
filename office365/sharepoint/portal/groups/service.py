@@ -26,7 +26,7 @@ class GroupService(Entity):
             request.url += f"?id='{group_id}'&hash={image_hash}"
             request.method = HttpMethod.Get
 
-        self.context.add_query(qry).before_query_execute(_create_request)
+        self.context.add_query(qry).before_execute(_create_request)
         return return_type
 
     def sync_group_properties(self):

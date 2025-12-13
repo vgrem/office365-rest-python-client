@@ -54,7 +54,7 @@ class CountCollection(DeltaCollection[T]):
         qry = FunctionQuery(self, "$count")
         (
             self.context.add_query(qry)
-            .before_query_execute(_construct_request)
-            .after_query_execute(_process_response, include_response=True)
+            .before_execute(_construct_request)
+            .after_execute(_process_response, include_response=True)
         )
         return return_type

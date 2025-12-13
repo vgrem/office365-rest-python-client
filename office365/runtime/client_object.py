@@ -151,7 +151,7 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.context.before_query_execute(action)
+        self.context.before_execute(action)
         return self
 
     def after_execute(
@@ -171,7 +171,7 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.context.after_query_execute(action, execute_first, include_response)
+        self.context.after_execute(action, execute_first, include_response)
         return self
 
     def get(self) -> Self:
@@ -314,7 +314,7 @@ class ClientObject:
             def _after_loaded(return_type):
                 action(*args, **kwargs)
 
-            self.context.add_query(qry).after_query_execute(_after_loaded)
+            self.context.add_query(qry).after_execute(_after_loaded)
         else:
             action(*args, **kwargs)
         return self

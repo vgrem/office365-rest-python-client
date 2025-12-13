@@ -283,7 +283,7 @@ class DriveItem(BaseItem):
         return_type = DriveItem(self.context, UrlPath(file_name, self.resource_path))
 
         qry = UploadSessionQuery(return_type, {"item": DriveItemUploadableProperties(name=file_name)})
-        self.context.add_query(qry).after_query_execute(_start_upload)
+        self.context.add_query(qry).after_execute(_start_upload)
         return return_type
 
     def create_upload_session(self, item: DriveItemUploadableProperties) -> ClientResult[UploadSession]:
@@ -312,7 +312,7 @@ class DriveItem(BaseItem):
         def _modify_query(request: RequestOptions) -> None:
             request.method = HttpMethod.Put
 
-        self.context.add_query(qry).before_query_execute(_modify_query)
+        self.context.add_query(qry).before_execute(_modify_query)
         return return_type
 
     def upload_file(self, path_or_file: str | IO) -> "DriveItem":
@@ -504,7 +504,7 @@ class DriveItem(BaseItem):
 
             payload = {"name": name, "parentReference": parent_reference}
             qry = ServiceOperationQuery(self, "copy", None, payload, None, return_type)
-            self.context.add_query(qry).before_query_execute(_create_request).after_query_execute(
+            self.context.add_query(qry).before_execute(_create_request).after_execute(
                 _process_response, include_response=True
             )
 
@@ -546,7 +546,7 @@ class DriveItem(BaseItem):
                 request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 
             qry = ServiceOperationQuery(self, "", None, payload, None, return_type)
-            self.context.add_query(qry).before_query_execute(_construct_request)
+            self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(parent, DriveItem):
 

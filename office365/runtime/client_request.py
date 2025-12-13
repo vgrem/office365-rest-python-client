@@ -78,6 +78,32 @@ class ClientRequest(ABC):
         self.beforeExecute += _process_request
         return self
 
+    def after_execute(
+        self,
+        action: Callable[[Response], None],
+        once: bool = True,
+        condition: Optional[Callable[[], bool]] = None,
+    ) -> Self:
+        """Attaches post-execution handler for all requests.
+
+        Args:
+            action: Callback to execute after request
+            once: Whether to execute only once
+            condition: Optional condition to check before executing action
+
+        Returns:
+            Self for method chaining
+        """
+
+        def _process_response(response: Response) -> None:
+            if condition is None or condition():
+                if once:
+                    self.afterExecute -= _process_response
+                action(response)
+
+        self.afterExecute += _process_response
+        return self
+
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
         self.beforeExecute(request)

@@ -58,5 +58,5 @@ class TeamCollection(EntityCollection[Team]):
             "template@odata.bind": "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
         }
         qry = CreateEntityQuery(self, payload, return_type)
-        self.context.add_query(qry).after_query_execute(_process_response, include_response=True)
+        self.context.add_query(qry).after_execute(_process_response, include_response=True)
         return return_type

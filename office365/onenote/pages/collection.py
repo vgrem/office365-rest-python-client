@@ -61,5 +61,5 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
 
             request.data = _message_to_payload(main_message)
 
-        self.context.add_query(qry).before_query_execute(_construct_multipart_request)
+        self.context.add_query(qry).before_execute(_construct_multipart_request)
         return return_type

@@ -107,7 +107,7 @@ class ClientRuntimeContext(ABC):
         self.add_query(qry)
         return self
 
-    def before_query_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
+    def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
         """
         Attach an event handler which is triggered before query is submitted to server
         """
@@ -118,7 +118,7 @@ class ClientRuntimeContext(ABC):
         self.pending_request().before_execute(action, once=once, condition=lambda: self.current_query.id == query.id)
         return self
 
-    def after_query_execute(
+    def after_execute(
         self,
         action: Callable[[Union[T, Response]], None],
         execute_first: bool = False,
@@ -140,34 +140,15 @@ class ClientRuntimeContext(ABC):
 
         def _process_response(resp: Response) -> None:
             resp.raise_for_status()
-            if self.current_query.id == query.id:
-                self.pending_request().afterExecute -= _process_response
-                action(resp if include_response else query.return_type)
+            action(resp if include_response else query.return_type)
 
-        self.pending_request().afterExecute += _process_response
+        self.pending_request().after_execute(
+            _process_response, once=True, condition=lambda: self.current_query.id == query.id
+        )
 
         if execute_first and len(self._queries) > 1:
             self._queries.insert(0, self._queries.pop())
 
-        return self
-
-    def after_execute(self, action: Callable[[Response], None], once: bool = True) -> Self:
-        """Attaches post-execution handler for all requests.
-
-        Args:
-            action: Callback to execute after request
-            once: Whether to execute only once
-
-        Returns:
-            Self for method chaining
-        """
-
-        def _process_response(response: Response) -> None:
-            if once:
-                self.pending_request().afterExecute -= _process_response
-            action(response)
-
-        self.pending_request().afterExecute += _process_response
         return self
 
     def execute_request_direct(self, path: str) -> Response:
@@ -232,11 +213,7 @@ class ClientRuntimeContext(ABC):
             return_type.set_property("__value", response.content)
 
         qry = ClientQuery(self)
-        (
-            self.add_query(qry)
-            .before_query_execute(_construct_request)
-            .after_query_execute(_process_response, include_response=True)
-        )
+        (self.add_query(qry).before_execute(_construct_request).after_execute(_process_response, include_response=True))
         return return_type
 
     def _get_next_query(self, count: int = 1) -> ClientQuery:

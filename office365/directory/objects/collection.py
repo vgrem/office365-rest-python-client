@@ -74,7 +74,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             def _construct_request(request: RequestOptions) -> None:
                 request.method = HttpMethod.Delete
 
-            self.context.add_query(qry).before_query_execute(_construct_request)
+            self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(directory_object, DirectoryObject):
 

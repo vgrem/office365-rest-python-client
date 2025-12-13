@@ -58,7 +58,7 @@ class Workbook(Entity):
             request.set_header("workbook-session-id", session_id)
 
         qry = ServiceOperationQuery(self, "refreshSession")
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return self
 
     def close_session(self, session_id: str) -> Self:
@@ -70,7 +70,7 @@ class Workbook(Entity):
         def _construct_request(request: RequestOptions) -> None:
             request.set_header("workbook-session-id", session_id)
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return self
 
     @property

@@ -290,7 +290,7 @@ class FieldCollection(EntityCollection[Field]):
             else:
                 _create_taxonomy_field(term_store.id, term_set)
 
-        self.context.load(self.context.taxonomy.term_store).after_query_execute(_term_store_loaded)
+        self.context.load(self.context.taxonomy.term_store).after_execute(_term_store_loaded)
 
         return return_type
 

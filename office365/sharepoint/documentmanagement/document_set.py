@@ -46,7 +46,7 @@ class DocumentSet(Folder):
                 request.set_header("Slug", f"{folder_url}|{ct_id}")
                 request.method = HttpMethod.Post
 
-            context.add_query(qry).before_query_execute(_construct_request)
+            context.add_query(qry).before_execute(_construct_request)
 
         def _parent_folder_loaded():
             custom_props = parent_folder.get_property("Properties")

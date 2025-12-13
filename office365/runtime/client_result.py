@@ -29,7 +29,7 @@ class ClientResult(Generic[ClientValueT]):
 
     def before_execute(self, action: Callable[[RequestOptions], None]) -> Self:
         """Attach an event handler which is triggered before query is submitted to server"""
-        self._context.before_query_execute(action)
+        self._context.before_execute(action)
         return self
 
     def after_execute(
@@ -39,7 +39,7 @@ class ClientResult(Generic[ClientValueT]):
         include_response: bool = False,
     ) -> Self:
         """Attach an event handler which is triggered after query is submitted to server"""
-        self._context.after_query_execute(action, execute_first, include_response)
+        self._context.after_execute(action, execute_first, include_response)
         return self
 
     def set_property(self, key: str, value: Any, persist_changes: bool = False) -> Self:

@@ -195,7 +195,7 @@ class User(DirectoryObject):
         def _assign_manager(user_id: str) -> None:
             payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
-            self.context.add_query(qry).before_query_execute(_construct_request)
+            self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(user, User):
 
@@ -214,7 +214,7 @@ class User(DirectoryObject):
         def _construct_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Delete
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return self
 
     def change_password(self, current_password: str, new_password: str) -> Self:
@@ -485,7 +485,7 @@ class User(DirectoryObject):
             request.method = HttpMethod.Get
             request.url += f"?startDateTime={start_dt.isoformat()}&endDateTime={end_dt.isoformat()}"
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return return_type
 
     def get_reminder_view(self, start_dt: datetime, end_dt: datetime) -> ClientResult[ClientValueCollection[Reminder]]:

@@ -84,7 +84,7 @@ class SPSiteManager(Entity):
             request.method = HttpMethod.Get
             request.url += f"?url='{site_url}'"
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return response
 
     def get_site_url(self, site_id: str) -> ClientResult[str]:

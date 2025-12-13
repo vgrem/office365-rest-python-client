@@ -118,7 +118,7 @@ class GroupSiteManager(ClientObject):
                 request.method = HttpMethod.Get
                 request.url += f"?groupId='{group_id}'"
 
-            self.context.add_query(qry).before_query_execute(_construct_request)
+            self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(group, Site):
 

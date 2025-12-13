@@ -85,12 +85,12 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             raise AttributeError("Cannot create object - no type specified for collection")
         if resource_path is None:
             resource_path = ResourcePath(None, self.resource_path)
-        client_object = self._item_type(context=self.context, resource_path=resource_path)  # type: T
+        client_object = self._item_type(context=self.context, resource_path=resource_path)
         if initial_properties is not None:
             [client_object.set_property(k, v) for k, v in initial_properties.items() if v is not None]
         return client_object
 
-    def set_property(self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False):
+    def set_property(self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False) -> Self:
         """
         Set a property on the collection or handle special properties.
 
@@ -259,7 +259,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         def _loaded(col: Self) -> None:
             self._page_loaded(self)
 
-        self.context.load(self).after_query_execute(_loaded)
+        self.context.load(self).after_execute(_loaded)
         return self
 
     def get_all(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:

@@ -128,7 +128,7 @@ class Folder(Entity):
             def _update_folder(return_type):
                 self.set_property("ServerRelativeUrl", destination_url)
 
-            self.context.add_query(qry).after_query_execute(_update_folder)
+            self.context.add_query(qry).after_execute(_update_folder)
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):
@@ -155,7 +155,7 @@ class Folder(Entity):
             def _update_folder(url):
                 self.set_property("ServerRelativePath", destination_path)
 
-            self.context.add_query(qry).after_query_execute(_update_folder)
+            self.context.add_query(qry).after_execute(_update_folder)
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):

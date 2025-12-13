@@ -20,5 +20,5 @@ def create_upload_file_query(file: File | Attachment, file_object: IO) -> Servic
         request.method = HttpMethod.Post
         request.set_header("X-HTTP-Method", "PUT")
 
-    file.context.before_query_execute(_construct_request)
+    file.context.before_execute(_construct_request)
     return qry

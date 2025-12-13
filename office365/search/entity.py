@@ -70,7 +70,7 @@ class SearchEntity(Entity):
         payload = {"requests": ClientValueCollection(SearchRequest, [search_request])}
         return_type = ClientResult(self.context, ClientValueCollection(SearchResponse))
         qry = ServiceOperationQuery(self, "query", None, payload, None, return_type)
-        self.context.add_query(qry).after_query_execute(_process_response)
+        self.context.add_query(qry).after_execute(_process_response)
         return return_type
 
     def query_messages(

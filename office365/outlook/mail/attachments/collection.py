@@ -93,7 +93,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
                 session_request.afterExecute += _process_response
                 session_request.execute_query(qry)
 
-        self.context.add_query(qry).after_query_execute(_start_upload, execute_first=True)
+        self.context.add_query(qry).after_execute(_start_upload, execute_first=True)
         return self
 
     def create_upload_session(self, attachment_item: AttachmentItem) -> ClientResult[UploadSession]:

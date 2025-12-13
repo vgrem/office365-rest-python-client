@@ -355,7 +355,7 @@ class File(AbstractFile):
             def _update_file(return_type):
                 self.set_property("ServerRelativeUrl", file_url)
 
-            self.context.after_query_execute(_update_file)
+            self.context.after_execute(_update_file)
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
@@ -383,7 +383,7 @@ class File(AbstractFile):
             def _update_file(return_type: File) -> None:
                 self.set_property("ServerRelativePath", file_path)
 
-            self.context.add_query(qry).after_query_execute(_update_file)
+            self.context.add_query(qry).after_execute(_update_file)
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
@@ -666,7 +666,7 @@ class File(AbstractFile):
                         chunk_downloaded(bytes_read)
                     file_object.write(chunk)
 
-            self.context.add_query(qry).before_query_execute(_construct_request).after_query_execute(
+            self.context.add_query(qry).before_execute(_construct_request).after_execute(
                 _process_response, include_response=True
             )
 

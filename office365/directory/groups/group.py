@@ -106,7 +106,7 @@ class Group(DirectoryObject):
             request.set_header("Content-Type", "application/json")
             request.data = json.dumps(request.data)
 
-        self.context.add_query(qry).before_query_execute(_construct_request, once=False)
+        self.context.add_query(qry).before_execute(_construct_request, once=False)
         return self.team
 
     def delete_object(self, permanent_delete: bool = False) -> Self:
