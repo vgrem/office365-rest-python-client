@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Union
 from requests import RequestException
 from typing_extensions import Self
 
+from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
@@ -60,7 +61,7 @@ class ClientContext(ClientRuntimeContext):
         self,
         base_url: str,
         auth_context: Optional[AuthenticationContext] = None,
-        environment: str = None,
+        environment: AzureEnvironment = None,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ) -> None:

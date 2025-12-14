@@ -91,9 +91,7 @@ class TestSharePointClient(TestCase):
         self.assertIsInstance(current_user.user_id, UserIdInfo)
 
     def test_10_execute_update_batch_request(self):
-        client = ClientContext(test_site_url).with_username_and_password(
-            test_tenant, test_client_id, test_username, test_password
-        )
+        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         web = client.web
         new_web_title = create_unique_name("Site")
         web.set_property("Title", new_web_title).update()
@@ -104,7 +102,7 @@ class TestSharePointClient(TestCase):
 
     def test_11_execute_get_and_update_batch_request(self):
         page_url = "/sites/team/SitePages/Home.aspx"
-        client = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
         list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields
         new_title = create_unique_name("Page")
         list_item.set_property("Title", new_title).update()
@@ -118,7 +116,7 @@ class TestSharePointClient(TestCase):
 
     def test_13_get_and_delete_batch_request(self):
         file_name = create_unique_file_name("TestFile", "txt")
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         list_pages = client.web.lists.get_by_title("Documents")
         files = list_pages.root_folder.files.get().execute_query()
         files_count_before = len(files)
@@ -164,9 +162,7 @@ class TestSharePointClient(TestCase):
         self.assertEqual(str(options), "$select=Author,Comments&$expand=Author")
 
     def test_16_ensure_property(self):
-        client = ClientContext(test_site_url).with_username_and_password(
-            test_tenant, test_client_id, test_username, test_password
-        )
+        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         me = client.web.current_user.get()
         site = client.site
 

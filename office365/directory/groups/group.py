@@ -316,7 +316,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "drives",
-            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path)),
+            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path), self),
         )
 
     @property
