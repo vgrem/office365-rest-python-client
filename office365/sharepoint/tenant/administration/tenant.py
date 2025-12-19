@@ -1,5 +1,5 @@
 import time
-from typing import AnyStr, List, Optional
+from typing import AnyStr, Callable, List, Optional
 
 from typing_extensions import Self
 
@@ -32,6 +32,7 @@ from office365.sharepoint.tenant.administration.collaboration.insights_overview 
 from office365.sharepoint.tenant.administration.copilot.promousage import (
     SPOCopilotPromoUsage,
 )
+from office365.sharepoint.tenant.administration.deletedsiteproperties import DeletedSiteProperties
 from office365.sharepoint.tenant.administration.hubsites.properties import (
     HubSiteProperties,
 )
@@ -96,6 +97,9 @@ from office365.sharepoint.tenant.administration.syntex.billing_context import (
 )
 from office365.sharepoint.tenant.administration.syntex.power_apps import (
     SyntexPowerAppsEnvironmentsContext,
+)
+from office365.sharepoint.tenant.administration.updategroupsitepropertiesparameters import (
+    UpdateGroupSitePropertiesParameters,
 )
 from office365.sharepoint.tenant.administration.webs.templates.collection import (
     SPOTenantWebTemplateCollection,
@@ -661,9 +665,24 @@ class Tenant(Entity):
         :param str site_url: A string representing the URL of the site.
         """
         result = SpoOperation(self.context)
-        qry = ServiceOperationQuery(self, "RemoveDeletedSite", [site_url], None, None, result)
+        payload = {"siteUrl": site_url}
+        qry = ServiceOperationQuery(self, "RemoveDeletedSite", None, payload, None, result)
         self.context.add_query(qry)
         return result
+
+    def remove_deleted_sites(
+        self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
+    ) -> Self:
+
+        def _remove_next_deleted_site(op: SpoOperation = None):
+            if site_urls:
+                site_url = site_urls.pop(0)
+                if op and success_callback:
+                    success_callback(op, site_url)
+                self.remove_deleted_site(site_url).after_execute(_remove_next_deleted_site)
+
+        _remove_next_deleted_site()
+        return self
 
     def reorder_home_sites(
         self, home_sites_site_ids: List[str]
@@ -772,6 +791,21 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def get_deleted_site_properties(self, start_index: int = None) -> EntityCollection[DeletedSiteProperties]:
+        """ """
+        return_type = EntityCollection(self.context, DeletedSiteProperties)
+        payload = {"startIndex": start_index}
+        qry = ServiceOperationQuery(
+            self,
+            "GetDeletedSiteProperties",
+            None,
+            payload,
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
     def get_billing_policy_id_for_app(self, application_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
@@ -867,6 +901,17 @@ class Tenant(Entity):
     def update_site_activity_data(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "UpdateSiteActivityData")
+        self.context.add_query(qry)
+        return self
+
+    def update_group_site_properties(
+        self, group_id: str, site_id: str, update_type: str, parameters: UpdateGroupSitePropertiesParameters = None
+    ):
+        """ """
+        return_type = ClientResult(self.context, str())
+        payload = {"groupId": group_id, "siteId": site_id, "updateType": update_type, "parameters": parameters}
+
+        qry = ServiceOperationQuery(self, "UpdateGroupSiteProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return self
 
