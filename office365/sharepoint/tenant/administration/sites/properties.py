@@ -3,17 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from typing_extensions import Self
-
-from office365.onedrive.listitems.list_item import ListItem
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.paths.service_operation import ServiceOperationPath
-from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.internal.paths.static_operation import StaticOperationPath
 from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_status import (
     DenyAddAndCustomizePagesStatus,
 )
@@ -38,24 +32,11 @@ class SiteProperties(Entity):
         context.add_query(qry)
         return binding_type
 
-    def update(self) -> Self:
-        """Updates the site collection properties with the new properties specified in the SiteProperties object."""
-
-        def _update():
-            super().update()
-
-        self._ensure_site_path(_update)
-        return self
-
     def update_ex(self) -> SpoOperation:
         """Updates the site collection properties with the new properties specified in the SiteProperties object."""
         return_type = SpoOperation(self.context)
-
-        def _update_ex():
-            qry = ServiceOperationQuery(self, "Update", parameters_type=self, return_type=return_type)
-            self.context.add_query(qry)
-
-        self._ensure_site_path(_update_ex)
+        qry = ServiceOperationQuery(self, "Update", parameters_type=self, return_type=return_type)
+        self.context.add_query(qry)
         return return_type
 
     @property
@@ -209,6 +190,10 @@ class SiteProperties(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteProperties"
 
+    @property
+    def property_ref_name(self) -> str:
+        return "SiteId"
+
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
@@ -220,22 +205,3 @@ class SiteProperties(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
-
-    def set_property(self, name, value, persist_changes=True):
-        super().set_property(name, value, persist_changes)
-        # fallback: create a new resource path
-        if name == "Url" and self._resource_path is None:
-            self._resource_path = StaticOperationPath(self.entity_type_name, {"Url": value})
-        return self
-
-    def _ensure_site_path(self, action):
-        if isinstance(self.resource_path, ServiceOperationPath):
-
-            def _loaded(return_type: ListItem) -> None:
-                site_id = return_type.properties.get("SiteId")
-                self._resource_path = EntityPath(site_id, self.parent_collection.resource_path)
-                action()
-
-            self.context.tenant.get_site(self.url).after_execute(_loaded)
-        else:
-            action()

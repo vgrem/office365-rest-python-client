@@ -9,17 +9,14 @@ from office365.sharepoint.tenant.administration.sharing_capabilities import (
     SharingCapabilities,
 )
 from tests import (
-    test_admin_credentials,
     test_admin_site_url,
+    test_client_credentials,
     test_team_site_url,
 )
 
-# admin_client = ClientContext(test_admin_site_url).with_client_certificate(
-#    test_tenant, test_client_id, test_cert_thumbprint, "../../selfsignkey.pem"
-# )
-
-admin_client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
+admin_client = ClientContext(test_admin_site_url).with_credentials(test_client_credentials)
 
 site_props = admin_client.tenant.get_site_properties_by_url(test_team_site_url).execute_query()
+
 site_props.sharing_capability = SharingCapabilities.ExternalUserAndGuestSharing
 site_props.update().execute_query()

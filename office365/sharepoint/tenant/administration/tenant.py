@@ -659,6 +659,20 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def remove_sites(
+        self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
+    ) -> Self:
+
+        def _remove_next_site(op: SpoOperation = None):
+            if site_urls:
+                site_url = site_urls.pop(0)
+                if op and success_callback:
+                    success_callback(op, site_url)
+                self.remove_site(site_url).after_execute(_remove_next_site)
+
+        _remove_next_site()
+        return self
+
     def remove_deleted_site(self, site_url: str) -> SpoOperation:
         """Permanently removes the specified deleted site from the recycle bin.
 
@@ -775,11 +789,14 @@ class Tenant(Entity):
         return return_type
 
     def get_site_properties_from_sharepoint_by_filters(
-        self, _filter: str = None, start_index: str = None, include_detail: bool = False
+        self,
+        filter_text: str = None,
+        start_index: str = None,
+        include_detail: bool = False,
     ) -> SitePropertiesCollection:
         """ """
-        return_type = SitePropertiesCollection(self.context)
-        payload = {"speFilter": SitePropertiesEnumerableFilter(_filter, start_index, include_detail)}
+        return_type = SitePropertiesCollection(self.context, self.sites.resource_path)
+        payload = {"speFilter": SitePropertiesEnumerableFilter(filter_text, start_index, include_detail)}
         qry = ServiceOperationQuery(
             self,
             "getSitePropertiesFromSharePointByFilters",
