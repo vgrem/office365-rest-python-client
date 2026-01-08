@@ -14,6 +14,9 @@ class SiteAdministratorsInfo(ClientValue):
         self.name = name
         self.userPrincipalName = user_principal_name
 
+    def __str__(self):
+        return self.name or self.entity_type_name
+
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteAdministratorsInfo"

@@ -569,17 +569,45 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def get_site_administrators_by_site_url(self, site_url: str):
+        """
+        Gets site collection administrators
+
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
+
+        def _get_site_administrators_by_site_url(site_props: SiteProperties) -> None:
+            self.get_site_administrators(site_props.get_property("SiteId"), return_type)
+
+        self.get_site_properties_by_url(site_url).after_execute(_get_site_administrators_by_site_url)
+
+        return return_type
+
     def get_site_secondary_administrators(
-        self, site_id: str
+        self, site_id: str, return_type: ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]] = None
     ) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]:
         """
         Gets site collection administrators
-        :param str site_id: Site object or identifier
         """
-        return_type = ClientResult(self.context, ClientValueCollection(SecondaryAdministratorsInfo))
+        if return_type is None:
+            return_type = ClientResult(self.context, ClientValueCollection(SecondaryAdministratorsInfo))
         payload = {"secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(site_id)}
         qry = ServiceOperationQuery(self, "GetSiteSecondaryAdministrators", None, payload, None, return_type)
         self.context.add_query(qry)
+        return return_type
+
+    def get_site_secondary_administrators_by_site_url(
+        self, site_url: str
+    ) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]:
+        """
+        Gets site collection administrators
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(SecondaryAdministratorsInfo))
+
+        def _get_site_secondary_administrators_by_site_url(site_props: SiteProperties) -> None:
+            self.get_site_secondary_administrators(site_props.get_property("SiteId"), return_type)
+
+        self.get_site_properties_by_url(site_url).after_execute(_get_site_secondary_administrators_by_site_url)
         return return_type
 
     def set_site_secondary_administrators(self, site_id: str, emails: List[str] = None, names: List[str] = None) -> Self:
