@@ -2,7 +2,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPLibrary(SPTestCase):
-
     @classmethod
     def setUpClass(cls):
         super(TestSPLibrary, cls).setUpClass()

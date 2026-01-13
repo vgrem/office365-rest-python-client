@@ -101,7 +101,7 @@ class SearchService(Entity):
         trim_duplicates=None,
         enable_query_rules=None,
         enable_sorting=None,
-        **kwargs
+        **kwargs,
     ):
         """The operation is used to retrieve search results by using the HTTP protocol with the GET method.
 
@@ -162,7 +162,7 @@ class SearchService(Entity):
         select_properties=None,
         trim_duplicates=None,
         row_limit=None,
-        **kwargs
+        **kwargs,
     ):
         # type: (str, List[str], bool, int, Any) -> ClientResult[SearchResult]
         """The operation is used to retrieve search results through the use of the HTTP protocol
@@ -181,7 +181,7 @@ class SearchService(Entity):
             select_properties=select_properties,
             trim_duplicates=trim_duplicates,
             row_limit=row_limit,
-            **kwargs
+            **kwargs,
         )
         payload = {"request": request}
         qry = ServiceOperationQuery(self, "postquery", None, payload, None, return_type)

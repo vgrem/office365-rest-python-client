@@ -1,12 +1,41 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.292
+
+  - repo: local
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-  - repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
+      - id: pyproject-fmt
+        name: pyproject-fmt
+        entry: uv run pyproject-fmt pyproject.toml
+        language: system
+        pass_filenames: false
+
+      - id: uv-lock
+        name: uv lock
+        entry: uv lock
+        language: system
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff-check
+        entry: uv run ruff check --fix --exit-non-zero-on-fix
+        language: system
+        pass_filenames: false
+
+      # A proposal to replace black & pylint
+      # - id: ruff-format
+      #   name: ruff-format
+      #   entry: uv run ruff format --exit-non-zero-on-fix
+      #   language: system
+      #   pass_filenames: false
+
       - id: black
-        args:
-          - --quiet
+        name: black
+        entry: uv run black .
+        language: system
+        pass_filenames: false
+
+      - id: pylint
+        name: pylint
+        entry: uv run pylint office365
+        language: system
+        pass_filenames: false
+

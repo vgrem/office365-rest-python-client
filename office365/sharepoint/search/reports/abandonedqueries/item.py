@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReportAbandonedQueriesItem(ClientValue):
-
     def __init__(self, date=None):
         self.Date = date
 

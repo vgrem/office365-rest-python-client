@@ -37,7 +37,7 @@ class SearchRequest(ClientValue):
         ui_language=None,
         hit_highlighted_properties=None,
         hit_highlighted_multivalue_property_limit=None,
-        **kwargs
+        **kwargs,
     ):
         """
         :param str query_text: The query text of the search query. If this element is not present or a value is not

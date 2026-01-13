@@ -6,7 +6,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookUser(GraphTestCase):
-
     @requires_delegated_permission(
         "User.Read", "User.Read.All", "User.ReadBasic.All", "User.ReadWrite.All"
     )

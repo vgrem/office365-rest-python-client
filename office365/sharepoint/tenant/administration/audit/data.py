@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.modified_property import (
 
 
 class AuditData(ClientValue):
-
     def __init__(
         self,
         client_ip=None,

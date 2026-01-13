@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PowerAppsEnvironmentContext(ClientValue):
-
     def __init__(
         self,
         dataverse_instance_url=None,

@@ -1,57 +1,137 @@
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9,<0.10" ]
+
+[project]
+name = "office365-rest-python-client"
+version = "2.6.2"
+description = "Microsoft 365 & Microsoft Graph Library for Python"
+readme = "README.md"
+license = { file = "LICENSE" }
+maintainers = [
+  { name = "Domenico Di Nicola", email = "dom.dinicola@gmail.com" },
+]
+authors = [
+  { name = "Vladimir Kovalenko", email = "vvgrem@gmail.com" },
+]
+requires-python = ">=3.8.0"
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries",
+]
+
+dependencies = [
+  "msal>=1.28",
+  "pytz>=2021.1",
+  "requests>=2.32.4",
+  "typing-extensions>=4",
+  # The codebase uses "Self" and "Required" available in the typing module
+  # since Python 3.11. Therefore, typing_extensions is required as long
+  # as office365-rest-python-client supports Python versions < 3.11.
+  # On Python versions >= 3.11, typing_extensions re-exports these names
+  # from the standard library typing module.
+]
+optional-dependencies.examples = [
+  "faker",
+]
+optional-dependencies.ntlm = [
+  "requests-ntlm",
+]
+urls.repository = "https://github.com/vgrem/office365-rest-python-client"
+
+[dependency-groups]
+dev = [
+  "adal~=1.2.4",
+  "astunparse~=1.6.3",
+  "black==24.4.2",
+  "configparser~=5.0.2",
+  "faker~=4.1.2",
+  "flake8",
+  "isort",
+  "pylint",
+  "pyproject-fmt",
+  "pytest",
+  "ruff",
+]
+
+[tool.uv.build-backend]
+module-name = "office365"
+module-root = ""
+
 [tool.ruff]
 line-length = 121
+format.line-ending = "lf"
 # pyflakes, pycodestyle, isort
-lint.select = ["F", "E", "W", "I001"]
+lint.select = [ "E", "F", "I001", "W" ]
+
+lint.per-file-ignores."examples/**/*.py" = [ "F401" ]
+lint.per-file-ignores."office365/**/*.py" = [ "F401" ]
+lint.per-file-ignores."tests/**/*.py" = [ "F401" ]
 
 [tool.pylint]
 max-line-length = 121
 disable = [
-    "C0103",
-    "C0111",
-    "C0112", # empty-docstring
-    "C0114", # missing-module-docstring
-    "C0201", # consider-iterating-dictionary (Python 2)
-    "C0206", # consider-using-dict-items (Python 2)
-    "C0209", # consider-using f-string
-    "C0302", # too-many-lines
-    "C0303",
-    "C0415", # import-outside-toplevel
-    "E0307", # invalid-str-returned
-    "E0611", # no-name-in-module (!)
-    "E1102", # not-callable
-    "R0205", # useless-object-inheritance (Python 2)
-    "R0401", # cyclic-import (!)
-    "R0801", # duplicate-code
-    "R0902", # too-many-instance-attributes
-    "R0903", # too-few-public-methods
-    "R0903", # too-few-public-methods
-    "R0904", # too-many-public-methods
-    "R0912", # too-many-branches
-    "R0913", # too-many-arguments
-    "R0914", # too-many-locals
-    "R1705", # no-else-return
-    "R1710", # inconsistent-return-statements (!)
-    "R1711", # useless-return
-    "R1714", # consider-using-in
-    "R1720", # no-else-raise
-    "R1721", # unnecessary-comprehension
-    "R1725", # super-with-arguments
-    "R1732", #consider-using-with
-    "W0105", # pointless-string-statement
-    "W0106", # expression-not-assigned
-    "W0107", # unnecessary-pass
-    "W0201", # attribute-defined-outside-init
-    "W0212", # protected-access
-    "W0221", # arguments-differ
-    "W0237", # arguments-renamed
-    "W0246", # useless-parent-delegation
-    "W0404", # reimported
-    "W0611", # unused-imports # typing
-    "W0613", # unused-argument
-    "W0621", # redefine-outer-name
-    "W0707", # raise-missing-from
-    "W1113", # keyword-arg-before-vararg
-    "W3101", # missing-timeout
+  "C0103",
+  "C0111",
+  "C0112", # empty-docstring
+  "C0114", # missing-module-docstring
+  "C0201", # consider-iterating-dictionary (Python 2)
+  "C0206", # consider-using-dict-items (Python 2)
+  "C0209", # consider-using f-string
+  "C0302", # too-many-lines
+  "C0303",
+  "C0415", # import-outside-toplevel
+  "E0307", # invalid-str-returned
+  "E0611", # no-name-in-module (!)
+  "E1102", # not-callable
+  "R0205", # useless-object-inheritance (Python 2)
+  "R0401", # cyclic-import (!)
+  "R0801", # duplicate-code
+  "R0902", # too-many-instance-attributes
+  "R0903", # too-few-public-methods
+  "R0903", # too-few-public-methods
+  "R0904", # too-many-public-methods
+  "R0912", # too-many-branches
+  "R0913", # too-many-arguments
+  "R0914", # too-many-locals
+  "R1705", # no-else-return
+  "R1710", # inconsistent-return-statements (!)
+  "R1711", # useless-return
+  "R1714", # consider-using-in
+  "R1720", # no-else-raise
+  "R1721", # unnecessary-comprehension
+  "R1725", # super-with-arguments
+  "R1732", #consider-using-with
+  "W0105", # pointless-string-statement
+  "W0106", # expression-not-assigned
+  "W0107", # unnecessary-pass
+  "W0201", # attribute-defined-outside-init
+  "W0212", # protected-access
+  "W0221", # arguments-differ
+  "W0237", # arguments-renamed
+  "W0246", # useless-parent-delegation
+  "W0404", # reimported
+  "W0611", # unused-imports # typing
+  "W0613", # unused-argument
+  "W0621", # redefine-outer-name
+  "W0707", # raise-missing-from
+  "W1113", # keyword-arg-before-vararg
+  "W3101", # missing-timeout
+  "R0917", # too-many-positional-arguments
 ] # all codes: http://pylint-messages.wikidot.com/all-codes
 
 [tool.pylint.FORMAT]
@@ -60,8 +140,3 @@ ignore-long-lines = '^\s*# (<?https?://\S+>?|type: .+)$'
 
 [tool.pylint.MASTER]
 ignore-patterns = 'office365\todo\tasks\**'
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["F401"]
-"examples/**/*.py" = ["F401"]
-"office365/**/*.py" = ["F401"]

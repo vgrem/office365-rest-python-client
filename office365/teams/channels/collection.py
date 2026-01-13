@@ -21,7 +21,7 @@ class ChannelCollection(EntityCollection[Channel]):
             displayName=display_name,
             description=description,
             membershipType=membership_type,
-            **kwargs
+            **kwargs,
         )
 
     def get_all_messages(self):

@@ -4,7 +4,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestCompliance(SPTestCase):
-
     target_list = None  # type: List
     list_item = None  # type: ListItem
 

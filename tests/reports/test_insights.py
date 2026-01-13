@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestInsights(GraphTestCase):
-
     @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
     def test1_list_trending(self):
         result = self.client.me.insights.trending.get().execute_query()

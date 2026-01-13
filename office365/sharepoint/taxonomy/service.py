@@ -22,6 +22,7 @@ class TaxonomyService(ClientRuntimeContext):
     def pending_request(self):
         return self._pending_request
 
+    @property
     def service_root_url(self):
         return self._service_root_url
 

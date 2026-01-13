@@ -6,7 +6,6 @@ from tests import test_admin_credentials, test_admin_site_url
 
 
 class TestHomeSites(TestCase):
-
     @classmethod
     def setUpClass(cls):
         client = ClientContext(test_admin_site_url).with_credentials(

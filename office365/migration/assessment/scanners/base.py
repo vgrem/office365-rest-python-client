@@ -33,7 +33,6 @@ def mapped_property(name):
 
 
 class BaseScanner(ABC, Generic[T]):
-
     def __init__(self, source):
         # type: (T) -> None
         self.source = source

@@ -14,7 +14,7 @@ class DeviceDetail(ClientValue):
         is_compliant=None,
         is_managed=None,
         operating_system=None,
-        trust_type=None
+        trust_type=None,
     ):
         """
         :param str browser: Indicates the browser information of the used for signing in.

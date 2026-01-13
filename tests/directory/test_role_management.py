@@ -4,7 +4,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestRoleManagement(GraphTestCase):
-
     @requires_delegated_permission(
         "EntitlementManagement.Read.All", "EntitlementManagement.ReadWrite.All"
     )

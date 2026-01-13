@@ -1,5 +1,4 @@
 class AzureEnvironment(object):
-
     Global = "Global"
     """Referred to as Azure or Azure Global."""
 
