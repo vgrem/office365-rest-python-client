@@ -14,7 +14,7 @@ maintainers = [
 authors = [
   { name = "Vladimir Kovalenko", email = "vvgrem@gmail.com" },
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.8.0"
 
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -57,7 +57,7 @@ urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 dev = [
   "adal~=1.2.4",
   "astunparse~=1.6.3",
-  "black",
+  "black==24.4.2",
   "configparser~=5.0.2",
   "faker~=4.1.2",
   "flake8",
