@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class GroupCreationContext(ClientValue):
-
     def __init__(
         self,
         preferred_language=None,

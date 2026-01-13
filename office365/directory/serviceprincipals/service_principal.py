@@ -259,7 +259,6 @@ class ServicePrincipal(DirectoryObject):
                     return_type.value.add(app_role)
 
         def _resolve_app():
-
             def _after(service_principal):
                 _get_application_permissions(service_principal.id)
 

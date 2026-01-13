@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestSearchOneDrive(GraphTestCase):
-
     def test1_search_files(self):
         result = self.client.search.query_drive_items("Guide.docx").execute_query()
         self.assertIsNotNone(result.value)

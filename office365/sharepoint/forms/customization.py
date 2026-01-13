@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 
 class FormsCustomization(Entity):
-
     @staticmethod
     def can_customize_forms(context, list_name, return_type=None):
         # type: (ClientContext, str, Optional[ConnectorResult]) -> ConnectorResult

@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 
 class TenantAdminEndpoints(Entity):
-
     def __init__(self, context):
         # type: (ClientContext) -> None
         static_path = ResourcePath(

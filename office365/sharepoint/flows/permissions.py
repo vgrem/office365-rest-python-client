@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 
 class FlowPermissions(Entity):
-
     @staticmethod
     def get_flow_permission_level_on_list(context, list_name, return_type=None):
         # type: (ClientContext, str, Optional[ConnectorResult]) -> ConnectorResult

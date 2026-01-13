@@ -27,15 +27,15 @@ repos:
       #   language: system
       #   pass_filenames: false
 
+      - id: black
+        name: black
+        entry: uv run black .
+        language: system
+        pass_filenames: false
+
       - id: pylint
         name: pylint
         entry: uv run pylint office365
         language: system
         pass_filenames: false
 
-  - repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
-      - id: black
-        args:
-          - --quiet

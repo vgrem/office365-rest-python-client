@@ -1,4 +1,4 @@
-## Welcome Contributors! 🎉
+# Welcome Contributors! 🎉
 
 Thank you for your interest in contributing to the Office365-REST-Python-Client library. This project provides a comprehensive Python client for Microsoft 365 and Microsoft Graph APIs.
 
@@ -34,26 +34,17 @@ cd Office365-REST-Python-Client
 
 ## Development Environment Setup
 
-### Virtual Environment
+Activate the Virtual Environment and install dependencies:
 
 ```bash
-python3 -m venv venv
-. venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+uv sync --all-extras
 ```
 
 ### Pre-commit hooks (recommended)
 
 ```bash
-pip install pre-commit
-pre-commit install
-pre-commit run -a
+uv tool install prek
+prek run --all-files
 ```
 
 ## Code Style and Quality Standards
@@ -69,9 +60,7 @@ Line length: 121 characters (configured in `pyproject.toml`).
 Run locally before pushing:
 
 ```bash
-black .
-ruff check .
-pylint office365
+prek
 ```
 
 ## Testing Guidelines
@@ -82,15 +71,15 @@ Most tests are end-to-end and require actual Microsoft 365 credentials.
 
 1. Create a `.env` file in the project root:
 
-```bash
-export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
-```
+   ```bash
+   export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
+   ```
 
 2. Source the environment file:
 
-```bash
-. .env
-```
+   ```bash
+   . .env
+   ```
 
 Note: The order of values is significant because tests parse by index.
 
@@ -128,9 +117,9 @@ CI note: Full E2E tests in CI rely on repository secrets and may not run on fork
 
 1. Create a feature branch from `master`:
 
-```bash
-git checkout -b feature/your-feature-name
-```
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
 2. Make your changes with clear, focused commits
 3. Ensure all tests pass and quality checks are satisfied
@@ -180,5 +169,3 @@ This project is maintained by the community. Be respectful and constructive in a
 ### License
 
 MIT License. By contributing, you agree that your contributions are licensed under these terms.
-
-

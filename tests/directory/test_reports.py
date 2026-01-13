@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestReports(GraphTestCase):
-
     @requires_delegated_permission("Reports.Read.All")
     def test1_get_office365_activations_user_counts(self):
         result = (
