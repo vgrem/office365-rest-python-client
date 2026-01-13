@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional, Type
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.runtime.client_object import T
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.compat import is_string_type
 from office365.runtime.paths.resource_path import ResourcePath
@@ -11,8 +12,6 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
-
-from office365.runtime.client_object import T
 
 
 class EntityCollection(ClientObjectCollection[T]):
