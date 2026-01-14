@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.header import Header
 
 
 class AutoInvokeAction(ClientValue):
-
     def __init__(
         self,
         body: str = None,

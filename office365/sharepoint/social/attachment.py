@@ -3,7 +3,6 @@ from office365.sharepoint.social.attachment_action import SocialAttachmentAction
 
 
 class SocialAttachment(ClientValue):
-
     def __init__(
         self,
         attachment_kind: int = None,

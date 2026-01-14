@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AllowanceCheckResult(Entity):
-
     @property
     def allowed(self) -> Optional[bool]:
         """Gets the Allowed property"""

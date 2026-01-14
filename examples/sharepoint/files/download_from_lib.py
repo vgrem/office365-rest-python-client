@@ -22,7 +22,6 @@ items = (
 download_root_path = Path(tempfile.mkdtemp())
 
 for item in items:
-
     download_path = download_root_path / item.properties.get("FileDirRef").lstrip("/")
     download_path.mkdir(parents=True, exist_ok=True)
 

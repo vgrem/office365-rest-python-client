@@ -4,7 +4,6 @@ from office365.sharepoint.sites.manager.topsitefile import TopSiteFile
 
 
 class TopSiteFilesResult(ClientValue):
-
     def __init__(
         self,
         files: ClientValueCollection[TopSiteFile] = ClientValueCollection(TopSiteFile),

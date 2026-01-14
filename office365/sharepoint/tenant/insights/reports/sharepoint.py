@@ -3,7 +3,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPTenantIBInsightsReportSharePoint(Entity):
-
     @property
     def implicit(self) -> StringCollection:
         """Gets the Implicit property"""

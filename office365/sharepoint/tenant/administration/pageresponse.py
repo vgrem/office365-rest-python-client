@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.audit.search_request_status impo
 
 
 class PageResponse(ClientValue):
-
     def __init__(
         self,
         continuation_token: str = None,

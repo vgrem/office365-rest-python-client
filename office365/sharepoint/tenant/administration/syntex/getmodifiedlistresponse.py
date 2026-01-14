@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 class SyntexGetModifiedListResponse(ClientValue):
-
     def __init__(
         self,
         ignored_urls_list: StringCollection = StringCollection(),

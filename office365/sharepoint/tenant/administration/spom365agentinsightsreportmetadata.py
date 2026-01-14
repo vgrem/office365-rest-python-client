@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOM365AgentInsightsReportMetadata(ClientValue):
-
     def __init__(
         self,
         created_date_time_in_utc: str = None,

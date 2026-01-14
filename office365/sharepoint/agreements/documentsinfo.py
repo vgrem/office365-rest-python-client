@@ -4,6 +4,5 @@ from office365.sharepoint.agreements.document import AgreementDocument
 
 
 class AgreementDocumentsInfo(ClientValue):
-
     def __init__(self, documents: ClientValueCollection[AgreementDocument] = None):
         self.documents = documents

@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 
 
 class SharingSettingsAbilities(ClientValue):
-
     def __init__(
         self,
         can_get_block_sharing_push_down: SharingAbilityStatus = SharingAbilityStatus(),

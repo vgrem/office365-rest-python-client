@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class LogFileInfo(Entity):
-
     @property
     def alternate_url(self) -> Optional[str]:
         """Gets the AlternateUrl property"""

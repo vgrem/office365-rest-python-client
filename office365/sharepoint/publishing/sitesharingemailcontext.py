@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteSharingEmailContext(ClientValue):
-
     def __init__(
         self,
         custom_description: str = None,

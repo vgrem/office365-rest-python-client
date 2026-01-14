@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
 
 
 class SharePointPublishingStatus(ClientValue):
-
     def __init__(
         self,
         destination_page_id: str = None,

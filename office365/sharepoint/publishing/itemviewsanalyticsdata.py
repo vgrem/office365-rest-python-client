@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.timeframestatistics import TimeFrameStatist
 
 
 class ItemViewsAnalyticsData(ClientValue):
-
     def __init__(
         self,
         days: ClientValueCollection[TimeFrameStatistics] = ClientValueCollection(TimeFrameStatistics),

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class NewsItemMetaData(ClientValue):
-
     def __init__(
         self,
         file_extension: str = None,

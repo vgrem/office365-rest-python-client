@@ -3,7 +3,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SupportedGeoLocationsForTenant(Entity):
-
     @property
     def items(self) -> StringCollection:
         """Gets the Items property"""

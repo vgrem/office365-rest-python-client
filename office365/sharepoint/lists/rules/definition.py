@@ -5,7 +5,6 @@ from office365.sharepoint.lists.rules.reviewinfo import ReviewerInfo
 
 
 class RulesDefinition(ClientValue):
-
     def __init__(
         self,
         action_for_invalid_rules: str = None,

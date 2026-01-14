@@ -4,7 +4,6 @@ from office365.sharepoint.utilities.webappurlsbyaction import WebAppUrlsByAction
 
 
 class WopiWebAppProperties(ClientValue):
-
     def __init__(
         self,
         app: str = None,

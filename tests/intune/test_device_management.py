@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestDeviceManagement(GraphTestCase):
-
     @requires_delegated_permission(
         "DeviceManagementServiceConfig.Read.All",
         "DeviceManagementServiceConfig.ReadWrite.All",

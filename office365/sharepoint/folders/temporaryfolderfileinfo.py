@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TemporaryFolderFileInfo(ClientValue):
-
     def __init__(
         self,
         dummy_file_url: str = None,

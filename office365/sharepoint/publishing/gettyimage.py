@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class GettyImage(ClientValue):
-
     def __init__(
         self,
         image_id: str = None,

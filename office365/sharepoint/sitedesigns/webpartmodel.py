@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class WebPartModel(ClientValue):
-
     def __init__(
         self,
         content: str = None,

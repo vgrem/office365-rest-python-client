@@ -5,7 +5,6 @@ from office365.sharepoint.viva.syntexcustommodeldeploymentmodelinfo import (
 
 
 class SyntexCustomModelDeploymentProperties(ClientValue):
-
     def __init__(
         self,
         capabilities: dict = None,

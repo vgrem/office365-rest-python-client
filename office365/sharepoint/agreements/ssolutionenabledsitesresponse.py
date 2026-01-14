@@ -4,7 +4,6 @@ from office365.sharepoint.agreements.site import SPAgreementsSite
 
 
 class AgreementsSolutionEnabledSitesResponse(ClientValue):
-
     def __init__(
         self,
         sites: ClientValueCollection[SPAgreementsSite] = None,

@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class WorkflowSubscription(Entity):
-
     @property
     def definition_id(self) -> Optional[UUID]:
         """Gets the DefinitionId property"""

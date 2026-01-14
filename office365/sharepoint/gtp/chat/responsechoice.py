@@ -3,7 +3,6 @@ from office365.sharepoint.gtp.message_entry import MessageEntry
 
 
 class ChatGptResponseChoice(ClientValue):
-
     def __init__(
         self,
         finish_reason: str = None,

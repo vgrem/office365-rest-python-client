@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPSiteCollectionScopedPermissionInfo(ClientValue):
-
     def __init__(
         self,
         list_id: str = None,

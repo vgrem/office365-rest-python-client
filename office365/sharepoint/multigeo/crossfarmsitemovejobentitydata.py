@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CrossFarmSiteMoveJobEntityData(Entity):
-
     @property
     def text_payload(self) -> Optional[str]:
         """Gets the TextPayload property"""

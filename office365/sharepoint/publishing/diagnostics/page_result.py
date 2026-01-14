@@ -8,7 +8,6 @@ from office365.sharepoint.publishing.tooldetails import ToolDetails
 
 
 class PageDiagnosticsResult(ClientValue):
-
     def __init__(
         self,
         created_date: datetime = None,

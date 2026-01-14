@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOSitePropertiesEnumerableFilter(ClientValue):
-
     def __init__(
         self,
         archived_by: str = None,

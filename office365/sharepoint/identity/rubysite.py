@@ -7,7 +7,6 @@ from office365.sharepoint.identity.defaultdocumentlibrary import (
 
 
 class SPRubySite(ClientValue):
-
     def __init__(
         self,
         channel_group_id: str = None,

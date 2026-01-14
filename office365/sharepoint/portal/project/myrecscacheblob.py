@@ -5,7 +5,6 @@ from office365.sharepoint.portal.project.myrecsqueryinfo import MyRecsQueryInfo
 
 
 class MyRecsCacheBlob(ClientValue):
-
     def __init__(
         self,
         date_cached: datetime = None,

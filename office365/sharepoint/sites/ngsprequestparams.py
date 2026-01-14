@@ -5,7 +5,6 @@ from office365.sharepoint.sites.recentfilesparams import RecentFilesParams
 
 
 class NgspRequestParams(ClientValue):
-
     def __init__(
         self,
         followed_sites: FollowedSitesParams = FollowedSitesParams(),

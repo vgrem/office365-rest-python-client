@@ -4,7 +4,6 @@ from office365.sharepoint.tenant.administration.monthlyusage import MonthlyUsage
 
 
 class SPOCopilotPromoUsage(ClientValue):
-
     def __init__(
         self,
         is_copilot_promo_eligible: bool = None,

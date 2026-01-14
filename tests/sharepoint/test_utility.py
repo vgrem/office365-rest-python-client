@@ -5,7 +5,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestUtility(SPTestCase):
-
     def test1_get_current_user_email_addresses(self):
         result = Utility.get_current_user_email_addresses(self.client).execute_query()
         self.assertIsNotNone(result.value)

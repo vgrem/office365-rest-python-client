@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReportTopQueriesData(ClientValue):
-
     def __init__(
         self,
         query_percentage: float = None,

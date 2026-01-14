@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 
 
 class ClientAmplifyEndpointInfo(ClientValue):
-
     def __init__(
         self,
         endpoint_sub_type: str = None,

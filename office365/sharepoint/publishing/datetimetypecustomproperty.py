@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DateTimeTypeCustomProperty(Entity):
-
     @property
     def value(self) -> datetime:
         """Gets the Value property"""

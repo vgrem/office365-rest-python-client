@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SpotlightResult(Entity):
-
     @property
     def order(self) -> ClientValueCollection[int]:
         """Gets the Order property"""

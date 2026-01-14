@@ -2,7 +2,6 @@ from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 
 
 class TopicPageFieldsData(SitePageFieldsData):
-
     def __init__(
         self,
         entity_id=None,

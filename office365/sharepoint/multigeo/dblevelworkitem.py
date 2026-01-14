@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DBLevelWorkItem(Entity):
-
     @property
     def work_item_id(self) -> Optional[UUID]:
         """Gets the WorkItemId property"""

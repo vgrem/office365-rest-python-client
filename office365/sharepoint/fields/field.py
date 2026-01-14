@@ -57,15 +57,14 @@ class Field(Entity):
         if isinstance(type_id_or_name, int):
             type_enum = parse_enum(FieldType, type_id_or_name)
             return field_known_types.get(type_enum, Field)
-        else:
-            if type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
-                return TaxonomyField
-            elif type_id_or_name == "Thumbnail":
-                from office365.sharepoint.fields.thumbnail import FieldThumbnail
+        elif type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
+            return TaxonomyField
+        elif type_id_or_name == "Thumbnail":
+            from office365.sharepoint.fields.thumbnail import FieldThumbnail
 
-                return FieldThumbnail
-            else:
-                return Field
+            return FieldThumbnail
+        else:
+            return Field
 
     def enable_index(self) -> ClientResult[bool]:
         """

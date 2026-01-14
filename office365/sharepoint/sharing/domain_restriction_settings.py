@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class DomainRestrictionSettings(ClientValue):
-
     def __init__(
         self,
         domain_restriction_mode: int = None,

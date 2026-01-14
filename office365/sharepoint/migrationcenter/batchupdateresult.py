@@ -4,7 +4,6 @@ from office365.sharepoint.migrationcenter.taskupdateresult import TaskUpdateResu
 
 
 class BatchUpdateResult(ClientValue):
-
     def __init__(
         self,
         error_code: str = None,

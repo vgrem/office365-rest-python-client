@@ -24,7 +24,6 @@ class ODataReader(ABC):
     @abstractmethod
     def xml_namespaces(self) -> Dict[str, str]:
         """XML namespaces for the specific OData version"""
-        pass
 
     def format_file(self):
         import xml.dom.minidom
@@ -75,6 +74,7 @@ class ODataReader(ABC):
 
         return type_schema
 
+    @abstractmethod
     def process_method_node(self):
         pass
 

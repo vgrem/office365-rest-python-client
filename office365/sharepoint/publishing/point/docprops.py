@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class PointPublishingDocProps(Entity):
-
     @property
     def author(self) -> Optional[str]:
         """Gets the Author property"""

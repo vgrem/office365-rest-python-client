@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ListHomeItem2(Entity):
-
     @property
     def color(self) -> Optional[str]:
         """Gets the color property"""

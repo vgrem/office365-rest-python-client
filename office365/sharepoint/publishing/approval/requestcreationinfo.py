@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class ApprovalRequestCreationInfo(ClientValue):
-
     def __init__(
         self,
         approvers: StringCollection = StringCollection(),

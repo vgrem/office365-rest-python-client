@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class PropertyBuilder:
-
     def __init__(self, schema: PropertyInformation, status="detached"):
         self.schema = schema
         self.status = status
@@ -23,7 +22,6 @@ class PropertyBuilder:
         self._client_type: ODataType = ODataType(self.schema.TypeName, self.schema.IsNavigation)
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
-
         getter_node = template.build_get_property(self)
 
         # Add docstring if available

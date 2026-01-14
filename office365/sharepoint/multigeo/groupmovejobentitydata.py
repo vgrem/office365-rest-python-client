@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class GroupMoveJobEntityData(Entity):
-
     @property
     def group_name(self) -> Optional[str]:
         """Gets the GroupName property"""

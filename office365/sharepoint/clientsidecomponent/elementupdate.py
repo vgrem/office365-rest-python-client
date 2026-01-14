@@ -3,7 +3,6 @@ from office365.sharepoint.clientsidecomponent.updatecardelement import UpdateCar
 
 
 class ElementUpdate(ClientValue):
-
     def __init__(
         self,
         action: str = None,

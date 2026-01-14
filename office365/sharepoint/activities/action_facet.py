@@ -24,7 +24,6 @@ from office365.sharepoint.sharing.restoreversionfacet import RestoreVersionFacet
 
 
 class ActionFacet(ClientValue):
-
     def __init__(
         self,
         add_to_one_drive=AddToOneDriveFacet(),

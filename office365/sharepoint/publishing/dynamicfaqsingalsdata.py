@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class DynamicFaqSingalsData(ClientValue):
-
     def __init__(
         self,
         id_: str = None,

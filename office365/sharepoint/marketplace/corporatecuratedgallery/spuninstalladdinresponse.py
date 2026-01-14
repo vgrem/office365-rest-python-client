@@ -9,7 +9,6 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sptriggereduninsta
 
 
 class SPUninstallAddinResponse(ClientValue):
-
     def __init__(
         self,
         executing: ClientValueCollection[SPTriggeredUninstallAddinJobResponse] = ClientValueCollection(

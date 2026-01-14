@@ -3,7 +3,6 @@ from office365.sharepoint.sharepointids import SharePointIds
 
 
 class InheritedFrom(ClientValue):
-
     def __init__(
         self,
         direct_url: str = None,

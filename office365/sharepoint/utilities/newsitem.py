@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class NewsItem(ClientValue):
-
     def __init__(
         self,
         backup_picture_url: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.header import Header
 
 
 class MessageCardActionButton(ClientValue):
-
     def __init__(
         self,
         body: str = None,

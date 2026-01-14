@@ -16,7 +16,6 @@ def print_progress(file: File) -> None:
 
 
 def download_files(source_folder: Folder, download_path: str) -> None:
-
     # 1. retrieve files collection (metadata) from library root folder
     files = source_folder.files.get().execute_query()
 

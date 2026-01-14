@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPCorporateCuratedGallerySettingsBase(Entity):
-
     @property
     def host_site_full_url(self) -> Optional[str]:
         """Gets the HostSiteFullUrl property"""

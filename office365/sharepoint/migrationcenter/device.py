@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class Device(Entity):
-
     @property
     def action_id(self) -> Optional[int]:
         """Gets the ActionId property"""

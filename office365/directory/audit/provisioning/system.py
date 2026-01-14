@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisioningSystem(ClientValue):
-
     def __init__(self, details: DetailsInfo = DetailsInfo()):
         self.details = details
 

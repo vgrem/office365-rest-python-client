@@ -5,7 +5,6 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 
 class TranslationStatus(ClientValue):
-
     def __init__(
         self,
         culture: str = None,

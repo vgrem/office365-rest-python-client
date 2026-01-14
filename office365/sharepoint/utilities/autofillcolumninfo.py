@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AutofillColumnInfo(ClientValue):
-
     def __init__(
         self,
         column_data_type: str = None,

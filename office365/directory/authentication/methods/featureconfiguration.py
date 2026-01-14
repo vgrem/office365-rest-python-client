@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AuthenticationMethodFeatureConfiguration(ClientValue):
-
     def __init__(
         self,
         exclude_target: FeatureTarget = FeatureTarget(),

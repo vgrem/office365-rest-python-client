@@ -3,7 +3,6 @@ from office365.sharepoint.gtp.chat.response import ChatGptResponse
 
 
 class GptAsyncExecuteResponse(ClientValue):
-
     def __init__(
         self,
         request_metadata: str = None,

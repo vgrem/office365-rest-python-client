@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ListDataSource(ClientValue):
-
     def __init__(self, properties: dict = None):
         self.Properties = properties
 

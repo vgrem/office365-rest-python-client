@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UnlicensedOdbLicenseEnforcementWarningContext(ClientValue):
-
     def __init__(
         self,
         generated_on: datetime = None,

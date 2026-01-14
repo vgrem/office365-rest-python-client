@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AuthenticationBehaviors(ClientValue):
-
     def __init__(
         self,
         block_azure_ad_graph_access: bool = None,

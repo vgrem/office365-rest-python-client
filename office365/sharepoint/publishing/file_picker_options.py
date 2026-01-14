@@ -3,7 +3,6 @@ from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 
 
 class FilePickerOptions(ClientValue):
-
     def __init__(
         self,
         search_enabled=None,

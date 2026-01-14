@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PortalHealthStatusDetails(ClientValue):
-
     def __init__(
         self,
         error_reason: str = None,

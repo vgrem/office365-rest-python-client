@@ -2,9 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class RenderListDataOverrideParameters(ClientValue):
-
-    # pylint: disable=too-many-statements
-    def __init__(
+    def __init__(  # noqa: PLR0915,PLR0913
         self,
         casc_del_warn_message: str = None,
         custom_action: str = None,

@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.pages.stream_content import SitePageStreamC
 
 
 class SitePagStreamData(ClientValue):
-
     def __init__(
         self,
         co_auth_state: SitePageCoAuthState = SitePageCoAuthState(),

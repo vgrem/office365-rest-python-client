@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CrossGeoTenantProperty(Entity):
-
     @property
     def last_modified_time_in_utc(self) -> datetime:
         """Gets the LastModifiedTimeInUtc property"""

@@ -6,7 +6,6 @@ from office365.sharepoint.activities.clientidentity import (
 
 
 class CommentFacet(ClientValue):
-
     def __init__(
         self,
         comment_text: str = None,

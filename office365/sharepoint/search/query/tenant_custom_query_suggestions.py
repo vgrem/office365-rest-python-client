@@ -4,7 +4,6 @@ from office365.sharepoint.search.query.customsuggestions import CustomQuerySugge
 
 
 class TenantCustomQuerySuggestions(ClientValue):
-
     def __init__(
         self,
         always_suggest: ClientValueCollection[CustomQuerySuggestions] = ClientValueCollection(CustomQuerySuggestions),

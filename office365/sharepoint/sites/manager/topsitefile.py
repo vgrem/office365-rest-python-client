@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TopSiteFile(ClientValue):
-
     def __init__(
         self,
         content_type_id: str = None,

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ThroughputData(ClientValue):
-
     def __init__(
         self,
         bytes_: int = None,

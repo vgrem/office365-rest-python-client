@@ -31,7 +31,6 @@ class ClientRequest(ABC):
 
         Returns:
             Configured RequestOptions object"""
-        pass
 
     @abstractmethod
     def process_response(self, response: requests.Response, query: ClientQuery) -> None:
@@ -40,7 +39,6 @@ class ClientRequest(ABC):
         Args:
             response: Raw HTTP response
             query: Original query that generated this response"""
-        pass
 
     def execute_query(self, query: ClientQuery) -> None:
         """Submits a pending request to the server"""

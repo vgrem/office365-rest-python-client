@@ -5,7 +5,6 @@ from office365.sharepoint.portal.home.datacachecontext import (
 
 
 class SharePointHomeDataCacheEntry(ClientValue):
-
     def __init__(
         self,
         cache_context: SharePointHomeDataCacheContext = SharePointHomeDataCacheContext(),

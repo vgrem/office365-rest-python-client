@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPDataGovernanceInsightExportedReport(ClientValue):
-
     def __init__(
         self,
         created_date_time: str = None,

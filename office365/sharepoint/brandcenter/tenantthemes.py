@@ -4,7 +4,6 @@ from office365.sharepoint.brandcenter.theme_data import ThemeData
 
 
 class TenantThemes(ClientValue):
-
     def __init__(
         self,
         hide_default_themes: bool = None,

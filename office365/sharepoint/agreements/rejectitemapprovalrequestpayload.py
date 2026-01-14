@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RejectItemApprovalRequestPayload(ClientValue):
-
     def __init__(
         self,
         approval_id: str = None,

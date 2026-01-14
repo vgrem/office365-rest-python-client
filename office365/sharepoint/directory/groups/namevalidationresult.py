@@ -5,7 +5,6 @@ from office365.sharepoint.directory.groups.namevalidationresulterrorparams impor
 
 
 class GroupNameValidationResult(ClientValue):
-
     def __init__(
         self,
         alias_error_details: GroupNameValidationResultErrorParams = GroupNameValidationResultErrorParams(),

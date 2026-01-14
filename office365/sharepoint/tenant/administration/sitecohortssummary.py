@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteCohortsSummary(ClientValue):
-
     def __init__(
         self,
         externally_shared_sites_count: int = None,

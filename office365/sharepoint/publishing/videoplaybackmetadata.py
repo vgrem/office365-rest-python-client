@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class VideoPlaybackMetadata(Entity):
-
     @property
     def hls_url(self) -> Optional[str]:
         """Gets the HLSUrl property"""

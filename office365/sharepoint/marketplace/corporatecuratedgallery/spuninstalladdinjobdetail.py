@@ -8,7 +8,6 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.spuninstalladdiner
 
 
 class SPUninstallAddinJobDetail(ClientValue):
-
     def __init__(
         self,
         absolute_url: str = None,

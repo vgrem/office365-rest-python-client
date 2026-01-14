@@ -5,7 +5,6 @@ from office365.sharepoint.documents.snippet import Snippet
 
 
 class PublishTemplateV2Payload(ClientValue):
-
     def __init__(
         self,
         destination_list_content_type_id: str = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReportQueryRulesData(ClientValue):
-
     def __init__(
         self,
         dictionary_terms: str = None,

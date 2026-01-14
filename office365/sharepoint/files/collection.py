@@ -100,7 +100,6 @@ class FileCollection(EntityCollection[File]):
         upload_id = str(uuid.uuid4())
 
         def _upload(return_type: File) -> None:
-
             def _after_uploaded(result: ClientResult) -> None:
                 _upload(return_type)
 

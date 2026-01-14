@@ -45,7 +45,6 @@ sitesPropsCol = admin_client.tenant.get_site_properties_from_sharepoint_by_filte
 # Example 4: Sequential deletion with Microsoft 365 group clearing
 # This approach is necessary when sites are associated with Microsoft 365 groups
 for sitesProps in sitesPropsCol:
-
     if sitesProps.get_property("GroupId") != "00000000-0000-0000-0000-000000000000":
         # Clear the Microsoft 365 group association before deleting
         sitesProps.set_property("ClearGroupId", True).update().execute_query()

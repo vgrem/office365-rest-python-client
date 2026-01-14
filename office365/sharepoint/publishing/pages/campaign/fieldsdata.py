@@ -2,7 +2,6 @@ from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 
 
 class CampaignPublicationFieldsData(SitePageFieldsData):
-
     def __init__(
         self,
         endpoint_email: str = None,

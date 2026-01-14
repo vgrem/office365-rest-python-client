@@ -265,13 +265,12 @@ class ClientObject:
                 self._properties[name] = typed_value
             else:
                 self._properties[name] = value
+        elif isinstance(typed_value, datetime.datetime):
+            self._properties[name] = parse_datetime(value)
+        elif isinstance(typed_value, Enum):
+            self._properties[name] = parse_enum(type(typed_value), value)
         else:
-            if isinstance(typed_value, datetime.datetime):
-                self._properties[name] = parse_datetime(value)
-            elif isinstance(typed_value, Enum):
-                self._properties[name] = parse_enum(type(typed_value), value)
-            else:
-                self._properties[name] = value
+            self._properties[name] = value
         return self
 
     def ensure_property(self, name: str, action: Callable[..., None], *args: Any, **kwargs: Any) -> Self:

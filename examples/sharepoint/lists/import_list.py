@@ -16,7 +16,7 @@ def print_progress(return_types: List[ClientObject]) -> None:
 def load_data_source(amount=1000):
     fake = Faker()
     contacts = []
-    for idx in range(0, amount):
+    for idx in range(amount):
         contact = {
             "Title": fake.name(),
             "FullName": fake.name(),

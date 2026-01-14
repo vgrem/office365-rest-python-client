@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SignAgreementModel(ClientValue):
-
     def __init__(
         self,
         agreements: str = None,

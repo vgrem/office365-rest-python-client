@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPTenantIBPolicyComplianceReport(Entity):
-
     @property
     def complete_time_in_utc(self) -> datetime:
         """Gets the CompleteTimeInUtc property"""

@@ -30,7 +30,6 @@ def mapped_property(name: str) -> Callable:
 
 
 class BaseScanner(ABC, Generic[T]):
-
     def __init__(self, source: T) -> None:
         self.source = source
         self._properties: Dict[str, Any] = {}

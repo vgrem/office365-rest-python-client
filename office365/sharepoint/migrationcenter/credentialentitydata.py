@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class MigrationCredentialEntityData(Entity):
-
     @property
     def account_name(self) -> Optional[str]:
         """Gets the AccountName property"""

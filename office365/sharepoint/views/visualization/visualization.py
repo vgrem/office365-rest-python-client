@@ -4,7 +4,6 @@ from office365.sharepoint.viva.visualizationappinfo import VisualizationAppInfo
 
 
 class Visualization(ClientValue):
-
     def __init__(
         self,
         default_screen: VisualizationStyleSet = VisualizationStyleSet(),

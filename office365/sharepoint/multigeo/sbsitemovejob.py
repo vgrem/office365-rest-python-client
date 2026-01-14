@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SBSiteMoveJob(Entity):
-
     @property
     def is_site_in_read_only(self) -> Optional[bool]:
         """Gets the IsSiteInReadOnly property"""

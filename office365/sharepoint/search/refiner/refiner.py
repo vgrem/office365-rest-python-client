@@ -4,7 +4,6 @@ from office365.sharepoint.search.refiner.entry import RefinerEntry
 
 
 class Refiner(ClientValue):
-
     def __init__(
         self,
         entries: ClientValueCollection[RefinerEntry] = ClientValueCollection(RefinerEntry),

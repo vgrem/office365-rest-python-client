@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class CalendarRoleType(Enum):
-
     none = 0
     "Calendar is not shared with the user."
     freeBusyRead = 1

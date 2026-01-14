@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ApprovalsProperties(ClientValue):
-
     def __init__(
         self,
         approvers_await_all: bool = None,

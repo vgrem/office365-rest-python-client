@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPFarm(Entity):
-
     @property
     def local(self) -> SPFarm:
         """Gets the Local property"""

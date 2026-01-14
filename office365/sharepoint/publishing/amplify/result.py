@@ -9,7 +9,6 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 
 
 class ClientAmplifyResult(ClientValue):
-
     def __init__(
         self,
         canvas_element: str = None,

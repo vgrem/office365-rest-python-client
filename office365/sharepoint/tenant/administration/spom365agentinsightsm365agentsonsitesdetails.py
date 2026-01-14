@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOM365AgentInsightsM365AgentsOnSitesDetails(ClientValue):
-
     def __init__(
         self,
         agent_id: str = None,

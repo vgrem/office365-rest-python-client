@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class GroupMoveJob(Entity):
-
     @property
     def is_content_moved(self) -> Optional[bool]:
         """Gets the IsContentMoved property"""

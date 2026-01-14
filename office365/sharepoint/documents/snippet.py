@@ -4,7 +4,6 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class Snippet(ClientValue):
-
     def __init__(
         self,
         id_: str = None,

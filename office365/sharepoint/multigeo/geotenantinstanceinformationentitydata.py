@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class GeoTenantInstanceInformationEntityData(Entity):
-
     @property
     def geo_location(self) -> Optional[str]:
         """Gets the GeoLocation property"""

@@ -9,7 +9,6 @@ from office365.sharepoint.documents.librarydetails import LibraryDetails
 
 
 class AgreementsSolutionFileContext(ClientValue):
-
     def __init__(
         self,
         category_id: str = None,

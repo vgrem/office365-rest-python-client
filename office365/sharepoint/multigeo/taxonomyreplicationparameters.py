@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class TaxonomyReplicationParameters(Entity):
-
     @property
     def is_replicate_all_content_types(self) -> Optional[bool]:
         """Gets the IsReplicateAllContentTypes property"""

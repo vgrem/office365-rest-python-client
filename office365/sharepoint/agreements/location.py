@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AgreementLocation(ClientValue):
-
     def __init__(
         self,
         category_label: str = None,

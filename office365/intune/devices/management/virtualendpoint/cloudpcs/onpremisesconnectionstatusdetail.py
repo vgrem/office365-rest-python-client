@@ -8,7 +8,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class CloudPcOnPremisesConnectionStatusDetail(ClientValue):
-
     def __init__(
         self,
         end_date_time: datetime = None,

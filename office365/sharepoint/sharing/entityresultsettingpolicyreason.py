@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharingEntityResultSettingPolicyReason(ClientValue):
-
     def __init__(
         self,
         setting_policy_result: int = None,

@@ -2,7 +2,6 @@ from office365.directory.extensions.customextensionendpointconfiguration import 
 
 
 class LogicAppTriggerEndpointConfiguration(CustomExtensionEndpointConfiguration):
-
     def __init__(
         self,
         logic_app_workflow_name: str = None,

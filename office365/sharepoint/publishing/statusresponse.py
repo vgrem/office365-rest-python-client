@@ -10,7 +10,6 @@ from office365.sharepoint.viva.engagepublishingstatus import VivaEngagePublishin
 
 
 class PublishingStatusResponse(ClientValue):
-
     def __init__(
         self,
         email_publishing_status: EmailPublishingStatus = EmailPublishingStatus(),

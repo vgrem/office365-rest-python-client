@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FileRequestBrandingProfile(ClientValue):
-
     def __init__(
         self,
         background_file_id: UUID = None,

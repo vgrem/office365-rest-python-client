@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MonthlyUsage(ClientValue):
-
     def __init__(
         self,
         created_date: str = None,

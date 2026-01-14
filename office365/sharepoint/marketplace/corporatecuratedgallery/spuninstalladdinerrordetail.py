@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPUninstallAddinErrorDetail(ClientValue):
-
     def __init__(
         self,
         correlation_id: str = None,

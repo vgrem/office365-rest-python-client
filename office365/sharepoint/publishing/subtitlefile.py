@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SubtitleFile(Entity):
-
     @property
     def language(self) -> Optional[str]:
         """Gets the Language property"""

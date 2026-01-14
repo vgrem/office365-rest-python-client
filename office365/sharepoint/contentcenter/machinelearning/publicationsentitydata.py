@@ -8,7 +8,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPMachineLearningPublicationsEntityData(Entity):
-
     @property
     def comment(self) -> Optional[str]:
         """Gets the Comment property"""

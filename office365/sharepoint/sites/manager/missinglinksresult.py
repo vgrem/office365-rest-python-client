@@ -4,7 +4,6 @@ from office365.sharepoint.sites.manager.missinglink import MissingLink
 
 
 class MissingLinksResult(ClientValue):
-
     def __init__(
         self,
         missing_links: ClientValueCollection[MissingLink] = ClientValueCollection(MissingLink),

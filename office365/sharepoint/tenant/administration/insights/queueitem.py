@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class InsightsQueueItem(ClientValue):
-
     def __init__(
         self,
         insights_completion_time: datetime = None,

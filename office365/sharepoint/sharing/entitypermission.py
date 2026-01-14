@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class EntityPermission(ClientValue):
-
     def __init__(
         self,
         can_have_access: bool = None,

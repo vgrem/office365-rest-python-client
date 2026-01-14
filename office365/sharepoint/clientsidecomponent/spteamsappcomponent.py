@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPTeamsAppComponent(ClientValue):
-
     def __init__(
         self,
         app_description: str = None,

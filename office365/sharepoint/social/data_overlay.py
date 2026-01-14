@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class SocialDataOverlay(ClientValue):
-
     def __init__(
         self,
         actor_indexes: ClientValueCollection[int] = ClientValueCollection(int),

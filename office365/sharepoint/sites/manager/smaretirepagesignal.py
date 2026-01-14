@@ -5,7 +5,6 @@ from office365.sharepoint.sites.manager.smaretirepageminimumagefeedbacksignal im
 
 
 class SMARetirePageSignal(ClientValue):
-
     def __init__(
         self,
         minimum_age: SMARetirePageMinimumAgeFeedbackSignal = SMARetirePageMinimumAgeFeedbackSignal(),

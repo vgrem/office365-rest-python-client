@@ -5,7 +5,6 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 class SPContainerTypeConfigurationProperties(ClientValue):
-
     def __init__(
         self,
         anonymous_link_expiration_in_days: int = None,

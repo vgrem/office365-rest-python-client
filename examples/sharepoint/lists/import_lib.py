@@ -13,7 +13,7 @@ from tests import test_team_site_url, test_user_credentials
 def import_files(target_folder: Folder, files_amount: int = None) -> None:
     fake = Faker()
     path = "../../../tests/data/SharePoint User Guide.docx"
-    for file_index in range(0, files_amount):
+    for file_index in range(files_amount):
         file_name = fake.file_name(extension="docx")
         target_file = target_folder.files.upload(path, file_name).execute_query()
         print(f"({file_index} of {files_amount}) File '{target_file.server_relative_url}' has been uploaded")
@@ -21,7 +21,7 @@ def import_files(target_folder: Folder, files_amount: int = None) -> None:
 
 def import_folders(target_lib: List, folders_amount: int, include_files: bool = False, files_amount: int = None) -> None:
     fake = Faker()
-    for folder_index in range(0, folders_amount):
+    for folder_index in range(folders_amount):
         # 1. Create a folder
         folder_name = fake.date()
         target_folder = target_lib.root_folder.add(folder_name).execute_query()

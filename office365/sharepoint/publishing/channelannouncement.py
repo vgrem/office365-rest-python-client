@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.icon import Icon
 
 
 class ChannelAnnouncement(ClientValue):
-
     def __init__(
         self,
         author: AnnouncementAuthor = AnnouncementAuthor(),

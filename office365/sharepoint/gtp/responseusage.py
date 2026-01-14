@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class GptResponseUsage(ClientValue):
-
     def __init__(
         self,
         completion_tokens: int = None,

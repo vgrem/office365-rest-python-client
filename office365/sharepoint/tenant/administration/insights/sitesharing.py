@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SharePointSiteSharingInsights(Entity):
-
     @property
     def anyone(self) -> Optional[int]:
         """Gets the Anyone property"""

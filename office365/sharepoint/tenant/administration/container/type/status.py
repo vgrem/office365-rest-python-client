@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPContainerTypeStatus(ClientValue):
-
     def __init__(
         self,
         container_type_id: UUID = None,

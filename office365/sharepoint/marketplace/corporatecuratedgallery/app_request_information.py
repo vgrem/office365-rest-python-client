@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPStoreAppRequestInformation(ClientValue):
-
     def __init__(
         self,
         asset_id: str = None,

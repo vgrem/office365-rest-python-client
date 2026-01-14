@@ -6,7 +6,6 @@ from office365.sharepoint.sharepointids import SharePointIds
 
 
 class Campaign(Entity):
-
     @property
     def color(self) -> Optional[str]:
         """Gets the color property"""

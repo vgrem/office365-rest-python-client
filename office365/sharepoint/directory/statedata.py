@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class StateData(ClientValue):
-
     def __init__(
         self,
         adapter_name: str = None,

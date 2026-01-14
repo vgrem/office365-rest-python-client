@@ -3,7 +3,6 @@ from office365.sharepoint.tenant.administration.audit.data import AuditData
 
 
 class UnifiedAuditRecord(ClientValue):
-
     def __init__(
         self,
         audit_data=AuditData(),

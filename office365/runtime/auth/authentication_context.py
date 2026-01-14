@@ -182,7 +182,6 @@ class AuthenticationContext:
         """
 
         def _authenticate(request: RequestOptions) -> Self:
-
             request_time = datetime.now(timezone.utc)
 
             if self._cached_token is None or request_time > self._token_expires:
@@ -259,7 +258,6 @@ class AuthenticationContext:
 
                 provider = NtlmProvider(credentials)
             else:
-
                 import warnings
 
                 warnings.warn(

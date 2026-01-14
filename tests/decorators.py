@@ -108,8 +108,7 @@ def requires_directory_role(*required_roles: str) -> Callable[[T], T]:
                 required_roles_str = ", ".join(required_roles)
                 user_roles_str = ", ".join(user_roles) if user_roles else "None"
                 raise PermissionError(
-                    f"Access denied. Requires one of these roles: {required_roles_str}. "
-                    f"User has roles: {user_roles_str}"
+                    f"Access denied. Requires one of these roles: {required_roles_str}. User has roles: {user_roles_str}"
                 )
 
             return func(self, *args, **kwargs)

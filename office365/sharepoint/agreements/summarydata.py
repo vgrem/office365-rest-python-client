@@ -4,7 +4,6 @@ from office365.sharepoint.agreements.datapair import AgreementDataPair
 
 
 class AgreementSummaryData(ClientValue):
-
     def __init__(
         self,
         by_category: ClientValueCollection[AgreementDataPair] = None,

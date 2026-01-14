@@ -7,7 +7,6 @@ from office365.sharepoint.viva.resourcevisualization import ResourceVisualizatio
 
 
 class SPAgreementsSite(ClientValue):
-
     def __init__(
         self,
         created_date_time: datetime = datetime.min,

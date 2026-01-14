@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestOutlookReports(GraphTestCase):
-
     @requires_delegated_permission("Reports.Read.All")
     def test1_get_email_activity_counts(self):
         result = self.client.reports.get_email_activity_counts("D90").execute_query()

@@ -5,7 +5,6 @@ from office365.sharepoint.entity_collection import EntityCollection
 
 
 class MethodExecutionResult(Entity):
-
     @property
     def return_parameter_collection(self) -> EntityCollection[EntityFieldValueDictionary]:
         """Gets the ReturnParameterCollection property"""

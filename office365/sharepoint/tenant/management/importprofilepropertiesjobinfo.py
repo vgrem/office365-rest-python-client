@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ImportProfilePropertiesJobInfo(Entity):
-
     @property
     def error(self) -> Optional[int]:
         """Gets the Error property"""

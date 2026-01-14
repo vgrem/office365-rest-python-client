@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PortalAndOrgNewsSiteReference(ClientValue):
-
     def __init__(
         self,
         is_in_draft_mode: bool = None,

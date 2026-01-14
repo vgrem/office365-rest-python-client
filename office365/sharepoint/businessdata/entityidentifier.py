@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class EntityIdentifier(Entity):
-
     @property
     def identifier_type(self) -> Optional[str]:
         """Gets the IdentifierType property"""

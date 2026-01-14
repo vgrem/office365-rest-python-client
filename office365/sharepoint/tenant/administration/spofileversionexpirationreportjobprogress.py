@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOFileVersionExpirationReportJobProgress(ClientValue):
-
     def __init__(
         self,
         error_message: str = None,

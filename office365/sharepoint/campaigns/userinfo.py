@@ -3,7 +3,6 @@ from office365.sharepoint.principal.users.id_info import UserIdInfo
 
 
 class CampaignUserInfo(ClientValue):
-
     def __init__(
         self,
         email: str = None,

@@ -7,7 +7,6 @@ from office365.sharepoint.tenant.administration.container.type.billingproperties
 
 
 class SPContainerTypeProperties(ClientValue):
-
     def __init__(
         self,
         application_redirect_url: str = None,

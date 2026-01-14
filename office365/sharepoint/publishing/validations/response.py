@@ -15,7 +15,6 @@ from office365.sharepoint.publishing.validations.prepublishvalidationserrorcodes
 
 
 class PrePublishValidationsResponse(ClientValue):
-
     def __init__(
         self,
         error_codes: ClientValueCollection[int] = ClientValueCollection(int),

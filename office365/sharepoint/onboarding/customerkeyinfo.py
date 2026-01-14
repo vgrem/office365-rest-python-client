@@ -3,7 +3,6 @@ from office365.sharepoint.onboarding.customerkeyvaultinfo import CustomerKeyVaul
 
 
 class CustomerKeyInfo(ClientValue):
-
     def __init__(
         self,
         availability_key_vault: CustomerKeyVaultInfo = CustomerKeyVaultInfo(),

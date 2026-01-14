@@ -16,4 +16,3 @@ class BaseDocumentationService(ABC):
     @abstractmethod
     def build_documentation(self, type_builder: TypeBuilder):
         """Build documentation for the given type builder"""
-        pass

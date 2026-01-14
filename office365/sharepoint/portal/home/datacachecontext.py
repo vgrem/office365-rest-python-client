@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharePointHomeDataCacheContext(ClientValue):
-
     def __init__(
         self,
         cache_key: str = None,

@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class SPMoveAndShareFileInfo(ClientValue):
-
     def __init__(
         self,
         item_permissionable_user_ids: ClientValueCollection[int] = ClientValueCollection(int),

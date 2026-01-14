@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DBLevelWorkItemEntityData(Entity):
-
     @property
     def item_guid(self) -> Optional[UUID]:
         """Gets the ItemGuid property"""

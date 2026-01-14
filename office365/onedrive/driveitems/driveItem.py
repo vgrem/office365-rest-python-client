@@ -133,7 +133,6 @@ class DriveItem(BaseItem):
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
         def _get_folders(parent: DriveItem) -> None:
-
             def _after_loaded(col: EntityCollection[DriveItem]) -> None:
                 if col.has_next:
                     return
@@ -328,7 +327,6 @@ class DriveItem(BaseItem):
             return self.upload(name, content)
 
     def upload_folder(self, path: str, file_uploaded: Callable[["DriveItem"], None] = None) -> DriveItem:
-
         def _after_file_upload(return_type: DriveItem) -> None:
             if callable(file_uploaded):
                 file_uploaded(return_type)
@@ -395,13 +393,12 @@ class DriveItem(BaseItem):
             for drive_item in parent_item.children:
                 if drive_item.is_file:
                     drive_item.get_content().after_execute(partial(_after_file_downloaded, drive_item, base_path))
-                else:
-                    if recursive:
-                        if base_path is None:
-                            next_base_path = str(drive_item.name)
-                        else:
-                            next_base_path = "/".join([base_path, drive_item.name])
-                        _download_folder(drive_item, next_base_path)
+                elif recursive:
+                    if base_path is None:
+                        next_base_path = str(drive_item.name)
+                    else:
+                        next_base_path = "/".join([base_path, drive_item.name])
+                    _download_folder(drive_item, next_base_path)
 
         def _download_folder(drive_item: "DriveItem", prev_result: str = None) -> None:
             drive_item.ensure_properties(
@@ -492,7 +489,6 @@ class DriveItem(BaseItem):
         return_type = ClientResult(self.context, str())
 
         def _copy(parent_reference: ItemReference) -> None:
-
             def _create_request(request: RequestOptions) -> None:
                 request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 

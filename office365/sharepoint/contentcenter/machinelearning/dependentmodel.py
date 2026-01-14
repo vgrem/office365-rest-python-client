@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPDependentModel(ClientValue):
-
     def __init__(
         self,
         last_refereshed_time_utc: datetime = None,

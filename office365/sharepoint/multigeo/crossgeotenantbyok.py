@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CrossGeoTenantBYOK(Entity):
-
     @property
     def byok_enabled(self) -> Optional[bool]:
         """Gets the BYOKEnabled property"""

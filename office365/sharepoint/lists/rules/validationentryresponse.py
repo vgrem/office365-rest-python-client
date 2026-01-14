@@ -6,7 +6,6 @@ from office365.sharepoint.lists.rules.reviewinfo import ReviewerInfo
 
 
 class RulesValidationEntryResponse(ClientValue):
-
     def __init__(
         self,
         action: int = None,

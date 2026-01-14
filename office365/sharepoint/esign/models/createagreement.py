@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CreateAgreementModel(ClientValue):
-
     def __init__(
         self,
         agreement_id: str = None,

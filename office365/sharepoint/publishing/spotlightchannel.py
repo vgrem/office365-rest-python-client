@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SpotlightChannel(Entity):
-
     @property
     def channel_id(self) -> Optional[UUID]:
         """Gets the ChannelId property"""

@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class LobSystem(Entity):
-
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""

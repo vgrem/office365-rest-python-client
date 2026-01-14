@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class InformationalUrl(ClientValue):
-
     def __init__(
         self,
         logo_url: str = None,

@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class AuthorizationInfo(ClientValue):
-
     def __init__(self, certificate_user_ids: StringCollection = StringCollection()):
         self.certificateUserIds = certificate_user_ids
 

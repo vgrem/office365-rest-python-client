@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class UpdateAllowedCombinationsResult(ClientValue):
-
     def __init__(
         self,
         additional_information: str = None,

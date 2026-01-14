@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.errorfacet import ErrorFacet
 
 
 class SPDataGovernanceSARStartSiteReviewResponse(ClientValue):
-
     def __init__(
         self,
         admin_comment: str = None,

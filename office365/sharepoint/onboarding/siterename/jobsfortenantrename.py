@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SiteRenameJobsForTenantRename(Entity):
-
     @property
     def next_link(self) -> Optional[str]:
         """Gets the NextLink property"""

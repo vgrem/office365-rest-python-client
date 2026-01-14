@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SPContainerFilterOrder(ClientValue):
-
     def __init__(
         self,
         archive_status: int = None,

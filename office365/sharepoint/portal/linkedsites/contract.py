@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class LinkedSiteContract(ClientValue):
-
     def __init__(
         self,
         display_name: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 
 
 class ProfileFullProperties(ClientValue):
-
     def __init__(
         self,
         about_me: str = None,

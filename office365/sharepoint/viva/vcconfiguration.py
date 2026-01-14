@@ -6,7 +6,6 @@ from office365.sharepoint.viva.spotlightconfiguration import SpotlightConfigurat
 
 
 class VCConfiguration(ClientValue):
-
     def __init__(
         self,
         company_links: ClientValueCollection[VivaResourceLink] = ClientValueCollection(VivaResourceLink),

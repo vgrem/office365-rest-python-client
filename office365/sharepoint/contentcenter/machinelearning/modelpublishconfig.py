@@ -9,7 +9,6 @@ from office365.sharepoint.contentcenter.machinelearning.extractorpublishconfig i
 
 
 class SPModelPublishConfig(ClientValue):
-
     def __init__(
         self,
         classification_publish_configs: ClientValueCollection[SPClassificationPublishConfig] = ClientValueCollection(

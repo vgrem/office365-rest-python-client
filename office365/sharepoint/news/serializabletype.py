@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SerializableType(ClientValue):
-
     def __init__(self, type_: str = None):
         self.type = type_
 

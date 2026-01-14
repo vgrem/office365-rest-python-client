@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPWorkflow(Entity):
-
     @property
     def association_id(self) -> Optional[UUID]:
         """Gets the AssociationId property"""

@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class MoveSiteROStateEntity(Entity):
-
     @property
     def is_original_read_only(self) -> Optional[bool]:
         """Gets the IsOriginalReadOnly property"""

@@ -128,7 +128,7 @@ class TestSharePointListItem(SPTestCase):
         self.assertEqual(0, len(result))
 
     def test_18_create_multiple_items(self):
-        for i in range(0, self.batch_items_count):
+        for i in range(self.batch_items_count):
             item_properties = {"Title": f"Task {i}"}
             self.target_list.add_item(item_properties)
         self.client.execute_batch()

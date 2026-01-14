@@ -4,7 +4,6 @@ from office365.directory.subjectset import SubjectSet
 
 
 class TriggerAndScopeBasedConditions(WorkflowExecutionConditions):
-
     def __init__(self, scope=SubjectSet(), trigger=WorkflowExecutionTrigger()):
         self.scope = scope
         self.trigger = trigger

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SocialPostDefinitionDataItem(ClientValue):
-
     def __init__(
         self,
         account_name: str = None,

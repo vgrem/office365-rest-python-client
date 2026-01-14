@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FieldCreationParameters(ClientValue):
-
     def __init__(
         self,
         data_source: str = None,

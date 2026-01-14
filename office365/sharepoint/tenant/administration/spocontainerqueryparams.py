@@ -9,7 +9,6 @@ from office365.sharepoint.tenant.administration.container.sortorder import (
 
 
 class SPOContainerQueryParams(ClientValue):
-
     def __init__(
         self,
         filter_by_columns_list: ClientValueCollection[SPContainerFilterOrder] = ClientValueCollection(

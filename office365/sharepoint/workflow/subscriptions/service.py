@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class WorkflowSubscriptionService(Entity):
-
     @property
     def current(self) -> WorkflowSubscriptionService:
         """Gets the Current property"""

@@ -4,7 +4,6 @@ from office365.sharepoint.agreements.document import AgreementDocument
 
 
 class AgreementMetaData(ClientValue):
-
     def __init__(
         self,
         agreement_number: str = None,

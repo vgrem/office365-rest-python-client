@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class EntityIdentity(Entity):
-
     @property
     def identifier_count(self) -> Optional[int]:
         """Gets the IdentifierCount property"""

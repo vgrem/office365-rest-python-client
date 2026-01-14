@@ -6,7 +6,6 @@ from office365.sharepoint.containers.active.memberproperties import (
 
 
 class SPActiveContainerProperties(ClientValue):
-
     def __init__(
         self,
         application_name: str = None,

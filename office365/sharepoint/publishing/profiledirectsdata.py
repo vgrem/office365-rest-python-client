@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.profilecoreproperties import ProfileCorePro
 
 
 class ProfileDirectsData(ClientValue):
-
     def __init__(
         self,
         direct_reports: ClientValueCollection[ProfileCoreProperties] = ClientValueCollection(ProfileCoreProperties),

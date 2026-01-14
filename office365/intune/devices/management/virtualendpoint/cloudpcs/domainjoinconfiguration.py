@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CloudPcDomainJoinConfiguration(ClientValue):
-
     def __init__(
         self,
         domain_join_type: CloudPcDomainJoinType = CloudPcDomainJoinType.none,

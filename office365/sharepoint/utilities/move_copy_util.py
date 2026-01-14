@@ -161,7 +161,6 @@ class MoveCopyUtil(Entity):
             )
 
         def _download_file(file: File) -> None:
-
             def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
@@ -172,7 +171,6 @@ class MoveCopyUtil(Entity):
             file.get_content().after_execute(_after_downloaded)
 
         def _download_folder(folder: Folder) -> None:
-
             def _download_files(rt):
                 [_download_file(file) for file in folder.files]
                 if recursive:

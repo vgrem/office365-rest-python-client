@@ -3,7 +3,6 @@ from typing import Dict, Final, TypedDict
 
 
 class AzureEnvironment(Enum):
-
     Global = "Global"
     """Referred to as Azure or Azure Global."""
 

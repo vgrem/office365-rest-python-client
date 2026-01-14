@@ -4,7 +4,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class BookingQuestionAnswer(ClientValue):
-
     def __init__(
         self,
         answer: str = None,

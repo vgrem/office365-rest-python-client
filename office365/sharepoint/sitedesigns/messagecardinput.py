@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.choice import Choice
 
 
 class MessageCardInput(ClientValue):
-
     def __init__(
         self,
         choices: ClientValueCollection[Choice] = ClientValueCollection(Choice),

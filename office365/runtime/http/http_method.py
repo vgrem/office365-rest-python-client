@@ -9,7 +9,7 @@ class HttpMethod(Enum):
         <HttpMethod.GET: 'GET'>
         >>> HttpMethod.Get.value
         'GET'
-        >>> HttpMethod('GET')
+        >>> HttpMethod("GET")
         <HttpMethod.GET: 'GET'>
     """
 

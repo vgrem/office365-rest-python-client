@@ -2,7 +2,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestThreatAssessment(GraphTestCase):
-
     threat_assessment_request = None
 
     def test1_create_url_assessment(self):

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TextBlock(ClientValue):
-
     def __init__(
         self,
         color: str = None,

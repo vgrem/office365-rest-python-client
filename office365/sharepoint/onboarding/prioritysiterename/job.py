@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class PrioritySiteRenameJob(Entity):
-
     @property
     def job_id(self) -> Optional[UUID]:
         """Gets the JobId property"""

@@ -5,7 +5,6 @@ from office365.sharepoint.approvals.user import UserDTO
 
 
 class AgreementAttributeDTO(ClientValue):
-
     def __init__(
         self,
         review_complete_date: datetime = None,

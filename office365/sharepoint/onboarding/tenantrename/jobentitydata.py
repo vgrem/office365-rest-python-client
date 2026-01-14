@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class TenantRenameJobEntityData(Entity):
-
     @property
     def include_gestures(self) -> Optional[str]:
         """Gets the IncludeGestures property"""

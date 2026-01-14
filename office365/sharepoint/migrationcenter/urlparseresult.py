@@ -7,7 +7,6 @@ from office365.sharepoint.migrationcenter.listinformation import SPListInformati
 
 
 class UrlParseResult(Entity):
-
     @property
     def display_url(self) -> Optional[str]:
         """Gets the DisplayUrl property"""

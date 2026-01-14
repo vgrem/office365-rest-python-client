@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.adaptivecardaction import AdaptiveCardActi
 
 
 class ActionSet(ClientValue):
-
     def __init__(
         self,
         actions: ClientValueCollection[AdaptiveCardAction] = ClientValueCollection(AdaptiveCardAction),

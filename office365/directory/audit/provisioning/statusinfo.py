@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisioningStatusInfo(ClientValue):
-
     def __init__(
         self,
         error_information: ProvisioningErrorInfo = ProvisioningErrorInfo(),

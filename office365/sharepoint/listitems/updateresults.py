@@ -4,7 +4,6 @@ from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateV
 
 
 class ListItemUpdateResults(ClientValue):
-
     def __init__(
         self,
         updated_data: str = None,

@@ -5,7 +5,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class BookingCustomerInformation(ClientValue):
-
     def __init__(
         self,
         customer_id: str = None,

@@ -85,13 +85,11 @@ class ClientRuntimeContext(ABC):
     @abstractmethod
     def pending_request(self) -> ClientRequest:
         """Gets the pending client request."""
-        pass
 
     @property
     @abstractmethod
     def service_root_url(self) -> str:
         """Gets the service root URL."""
-        pass
 
     def load(self, client_object: T, properties_to_retrieve: List[str] = None) -> Self:
         """Prepares retrieval query for the specified client object.

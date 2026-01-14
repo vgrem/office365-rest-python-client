@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPFlight(Entity):
-
     @property
     def configuration(self) -> Optional[str]:
         """Gets the Configuration property"""

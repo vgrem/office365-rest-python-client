@@ -5,7 +5,6 @@ from office365.sharepoint.viva.spotlightnews import SpotlightNews
 
 
 class SpotlightConfiguration(ClientValue):
-
     def __init__(
         self,
         is_hidden: bool = None,

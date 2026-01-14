@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ShortcutTargetInfo(Entity):
-
     @property
     def site_id(self) -> Optional[UUID]:
         """Gets the siteId property"""

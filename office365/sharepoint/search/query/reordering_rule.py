@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReorderingRule(ClientValue):
-
     def __init__(self, boost: int = None, match_type: int = None, match_value: str = None):
         """The ReorderingRule type contains information about how search results SHOULD be reordered if they met the
         condition."""

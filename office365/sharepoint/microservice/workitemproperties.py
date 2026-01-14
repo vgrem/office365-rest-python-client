@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MicroServiceWorkItemProperties(ClientValue):
-
     def __init__(
         self,
         api_path: str = None,

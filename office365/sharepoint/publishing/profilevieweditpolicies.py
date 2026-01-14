@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.profilepropertyvieweditpolicy import (
 
 
 class ProfileViewEditPolicies(ClientValue):
-
     def __init__(
         self,
         about_me: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),

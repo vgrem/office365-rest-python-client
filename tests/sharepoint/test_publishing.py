@@ -6,7 +6,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestPublishing(SPTestCase):
-
     def test1_init_site_page_service(self):
         svc = self.client.site_pages.get().execute_query()
         self.assertIsNotNone(svc.resource_path)

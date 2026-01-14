@@ -4,7 +4,6 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class ContentAssemblyModernTemplateColumnsMappingInfo(ClientValue):
-
     def __init__(
         self,
         destination_list_content_type_id: str = None,

@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisioningStep(ClientValue):
-
     def __init__(
         self,
         description: str = None,

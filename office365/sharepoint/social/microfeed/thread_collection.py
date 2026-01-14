@@ -6,7 +6,6 @@ from office365.sharepoint.social.microfeed.thread import MicrofeedThread
 
 
 class MicrofeedThreadCollection(ClientValue):
-
     def __init__(
         self,
         current_user_unread_mention_count: int = None,

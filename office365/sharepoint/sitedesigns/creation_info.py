@@ -8,7 +8,6 @@ from office365.sharepoint.webs.teamappinfo import TeamAppInfo
 
 
 class SiteDesignCreationInfo(ClientValue):
-
     def __init__(
         self,
         _id=None,

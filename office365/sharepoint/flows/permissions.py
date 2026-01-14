@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class FlowPermissions(Entity):
-
     @staticmethod
     def get_flow_permission_level_on_list(
         context: ClientContext,

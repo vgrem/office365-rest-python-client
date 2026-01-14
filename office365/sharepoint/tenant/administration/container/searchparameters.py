@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPContainerSearchParameters(ClientValue):
-
     def __init__(self, search_text: str = None):
         self.SearchText = search_text
 

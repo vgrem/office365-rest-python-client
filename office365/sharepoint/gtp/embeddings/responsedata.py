@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class GptEmbeddingsResponseData(ClientValue):
-
     def __init__(
         self,
         embedding: ClientValueCollection[float] = ClientValueCollection(float),

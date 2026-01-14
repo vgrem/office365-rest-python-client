@@ -4,7 +4,6 @@ from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
 
 
 class ShareLinkPartialSuccessResponse(ShareLinkResponse):
-
     def __init__(
         self,
         entity_results: ClientValueCollection[SharingEntityResult] = ClientValueCollection(SharingEntityResult),

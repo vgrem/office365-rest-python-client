@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class BaseGptRequestOptions(ClientValue):
-
     def __init__(
         self,
         frequency_penalty: float = None,

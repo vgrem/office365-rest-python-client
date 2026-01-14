@@ -4,7 +4,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPListPermissions(SPTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisionedMigrationContainersInfo(ClientValue):
-
     def __init__(
         self,
         data_container_uri: str = None,

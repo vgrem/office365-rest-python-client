@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CrossGeoTenantCompatibility(Entity):
-
     @property
     def abs_credentials_count(self) -> Optional[int]:
         """Gets the AbsCredentialsCount property"""

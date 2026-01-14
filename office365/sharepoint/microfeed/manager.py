@@ -6,7 +6,6 @@ from office365.sharepoint.microfeed.entity import MicroBlogEntity
 
 
 class MicrofeedManager(Entity):
-
     def __init__(self, context):
         super().__init__(context, StaticPath("SP.Microfeed.MicrofeedManager"))
 

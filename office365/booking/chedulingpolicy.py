@@ -7,7 +7,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class BookingSchedulingPolicy(ClientValue):
-
     def __init__(
         self,
         allow_staff_selection: bool = None,

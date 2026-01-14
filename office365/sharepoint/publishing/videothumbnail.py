@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class VideoThumbnail(Entity):
-
     @property
     def choice(self) -> Optional[int]:
         """Gets the Choice property"""

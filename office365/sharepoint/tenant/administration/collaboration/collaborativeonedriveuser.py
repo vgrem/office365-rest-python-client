@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CollaborativeOneDriveUser(ClientValue):
-
     def __init__(
         self,
         anonymous_link_count: int = None,

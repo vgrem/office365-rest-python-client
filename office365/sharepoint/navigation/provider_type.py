@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class NavigationProviderType(Enum):
-
     SPNavigationProvider = "SPNavigationProvider"
 
     AdministrationQuickLaunchProvider = "AdministrationQuickLaunchProvider"

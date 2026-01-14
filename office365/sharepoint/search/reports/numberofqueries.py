@@ -6,7 +6,6 @@ from office365.sharepoint.search.reports.numberofqueriesitem import (
 
 
 class ReportNumberOfQueries(ClientValue):
-
     def __init__(
         self,
         reports: ClientValueCollection[ReportNumberOfQueriesItem] = ClientValueCollection(ReportNumberOfQueriesItem),

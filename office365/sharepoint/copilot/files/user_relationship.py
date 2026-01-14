@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CopilotFileUserRelationship(ClientValue):
-
     def __init__(self, last_access_date_time: datetime = None):
         self.LastAccessDateTime = last_access_date_time
 

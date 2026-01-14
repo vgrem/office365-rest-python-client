@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class SyntexPremiumFeatureSettings(ClientValue):
-
     def __init__(
         self,
         site_list: GuidCollection = GuidCollection(),

@@ -7,7 +7,6 @@ from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 
 
 class MicrofeedThread(ClientValue):
-
     def __init__(
         self,
         can_follow_up: bool = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.propertyvalue import PropertyValue
 
 
 class TaxonomicProperties(ClientValue):
-
     def __init__(
         self,
         interest: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class LogActivityExtraProperties(ClientValue):
-
     def __init__(
         self,
         campaign_metadata: str = None,

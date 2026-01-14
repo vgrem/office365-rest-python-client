@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class RestrictAccessControlUpdate(ClientValue):
-
     def __init__(
         self,
         enable_restricted_access_policy: bool = None,

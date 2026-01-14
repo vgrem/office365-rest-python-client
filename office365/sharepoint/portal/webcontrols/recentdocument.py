@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class RecentDocument(Entity):
-
     @property
     def application(self) -> Optional[str]:
         """Gets the Application property"""

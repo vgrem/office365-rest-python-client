@@ -4,7 +4,6 @@ from office365.sharepoint.documents.cafieldvalue import CAFieldValue
 
 
 class FieldValuesWithUrl(ClientValue):
-
     def __init__(
         self,
         field_values: ClientValueCollection[CAFieldValue] = ClientValueCollection(CAFieldValue),

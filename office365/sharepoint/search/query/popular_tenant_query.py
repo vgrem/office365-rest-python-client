@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PopularTenantQuery(ClientValue):
-
     def __init__(
         self,
         always_suggest: bool = None,

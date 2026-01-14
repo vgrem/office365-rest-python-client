@@ -4,7 +4,6 @@ from office365.sharepoint.documents.placeholder import Placeholder
 
 
 class UpdateTemplateInfo(ClientValue):
-
     def __init__(
         self,
         new_name: str = None,

@@ -1,57 +1,117 @@
-[tool.black]
-line-length = 121
-target-version = ['py36']
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9,<0.10" ]
+
+[project]
+name = "office365-rest-python-client"
+version = "2.6.2"
+description = "Microsoft 365 & Microsoft Graph Library for Python"
+readme = "README.md"
+license = { file = "LICENSE" }
+maintainers = [
+  { name = "Domenico Di Nicola", email = "dom.dinicola@gmail.com" },
+]
+authors = [
+  { name = "Vladimir Kovalenko", email = "vvgrem@gmail.com" },
+]
+requires-python = ">=3.8.0"
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries",
+]
+
+dependencies = [
+  "msal>=1.28,<2",
+  "pytz>=2021.1",
+  "requests>=2.32.4,<3",
+  "typing-extensions>=4.5",
+  # The codebase uses "Self" and "Required" available in the typing module
+  # since Python 3.11. Therefore, typing_extensions is required as long
+  # as office365-rest-python-client supports Python versions < 3.11.
+  # On Python versions >= 3.11, typing_extensions re-exports these names
+  # from the standard library typing module.
+]
+optional-dependencies.examples = [
+  "faker",
+]
+optional-dependencies.ntlm = [
+  "requests-ntlm",
+]
+urls.repository = "https://github.com/vgrem/office365-rest-python-client"
+
+[dependency-groups]
+dev = [
+  "adal~=1.2.4",
+  "astunparse~=1.6.3",
+  "configparser~=5.0.2",
+  "faker~=4.1.2",
+  "pyproject-fmt",
+  "pytest",
+  "ruff",
+]
+
+[tool.uv.build-backend]
+module-name = "office365"
+module-root = ""
 
 [tool.ruff]
 line-length = 121
-# target-version = "py36"
-# pyflakes, pycodestyle, isort
-lint.select = ["F", "E", "W", "I001"]
+format.line-ending = "lf"
+format.docstring-code-format = true
 
-[tool.pylint]
-max-line-length = 121
-disable = [
-    "C0103",
-    "C0111",
-    "C0112", # empty-docstring
-    "C0114", # missing-module-docstring
-    "C0302", # too-many-lines
-    "C0303",
-    "C0415", # import-outside-toplevel
-    "E0307", # invalid-str-returned
-    "E0611", # no-name-in-module (!)
-    "E1102", # not-callable
-    "R0401", # cyclic-import (!)
-    "R0801", # duplicate-code
-    "R0902", # too-many-instance-attributes
-    "R0903", # too-few-public-methods
-    "R0904", # too-many-public-methods
-    "R0912", # too-many-branches
-    "R0913", # too-many-arguments
-    "R0914", # too-many-locals
-    "R0917", # too-many-positional-arguments
-    "R1705", # no-else-return
-    "R1711", # useless-return
-    "R1714", # consider-using-in
-    "R1720", # no-else-raise
-    "R1721", # unnecessary-comprehension
-    "R1732", #consider-using-with
-    "W0105", # pointless-string-statement
-    "W0106", # expression-not-assigned
-    "W0107", # unnecessary-pass
-    "W0201", # attribute-defined-outside-init
-    "W0212", # protected-access
-    "W0221", # arguments-differ
-    "W0237", # arguments-renamed
-    "W0246", # useless-parent-delegation
-    "W0404", # reimported
-    "W0611", # unused-imports # typing
-    "W0613", # unused-argument
-    "W0621", # redefine-outer-name
-    "W1113", # keyword-arg-before-vararg
-    "W3101", # missing-timeout
-] # all codes: http://pylint-messages.wikidot.com/all-codes
+lint.select = [
+  "A",     # flake8-builtins
+  "ASYNC", # flake8-async
+  "B",     # bugbear
+  #"D",     # pydocstyle
+  "E", # pycodestyle
+  "F", # pyflakes
+  "I", # isort
+  #"PGH", # pygrep-hooks
+  "PIE", # flake8-pie
+  "PL",  # pylint
+  #"PTH", # flake8-pathlib
+  "PYI", # flake8-pyi
+  #"RUF", # ruff
+  #"UP",  # pyupgrade
+  "W", # pycodestyle
+]
+# Comments next to codes explain why they are ignored
+# All these are subject to review and possible removal in the future
+lint.ignore = [
+  "B007",    # Loop control var not used in the loop body
+  "B008",    # Do not perform function call in argument defaults; instead, perform the call within the function
+  "B020",    # Loop control variable `self` overrides iterable it iterates
+  "B904",    # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
+  "D203",
+  "D213",
+  "E203",
+  "E501",
+  "PLC0415", # `import` should be at the top-level of a file
+  "PLE0307", # `__str__` does not return `str`
+  "PLR1714", # merge multiple comparisons
+  "PLR2004", # Magic value used in comparison, consider replacing `2` with a constant variable
+  "PLW1641", # Object does not implement `__hash__` method
+  "PLW2901", # `for` loop variable `value` overwritten by assignment target
+]
+lint.per-file-ignores."examples/**/*.py" = [ "F401" ]
+lint.per-file-ignores."office365/**/*.py" = [ "F401" ]
+lint.per-file-ignores."tests/**/*.py" = [ "F401" ]
 
-[tool.pylint.FORMAT]
-max-line-length = 121
-ignore-long-lines = '^\s*# (<?https?://\S+>?|type: .+)$'
+lint.pylint.max-args = 50
+lint.pylint.max-branches = 16
+lint.pylint.max-statements = 60

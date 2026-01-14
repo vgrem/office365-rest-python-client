@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class TeamAppInfo(ClientValue):
-
     def __init__(self, children: StringCollection = StringCollection(), name: str = None):
         self.Children = children
         self.Name = name

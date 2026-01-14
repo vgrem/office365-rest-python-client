@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPAuditDataCollectionResponse(ClientValue):
-
     def __init__(
         self,
         data_collection_status: int = None,

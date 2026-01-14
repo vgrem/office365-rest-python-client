@@ -6,7 +6,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class AddIn(ClientValue):
-
     def __init__(
         self,
         id_: UUID = None,

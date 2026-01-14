@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.portallaunch.wavegroup import PortalLaunchW
 
 
 class PortalLaunchWave(ClientValue):
-
     def __init__(
         self,
         groups: ClientValueCollection[PortalLaunchWaveGroup] = ClientValueCollection(PortalLaunchWaveGroup),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ItemOrderUpdateValue(ClientValue):
-
     def __init__(
         self,
         has_exception: bool = None,

@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class NotifyChangeToMountPointsRequest(ClientValue):
-
     def __init__(self, mount_point_unique_ids: GuidCollection = GuidCollection()):
         self.MountPointUniqueIds = mount_point_unique_ids
 

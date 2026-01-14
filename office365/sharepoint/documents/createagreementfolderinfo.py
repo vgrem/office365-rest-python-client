@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CreateAgreementFolderInfo(ClientValue):
-
     def __init__(
         self,
         agreement_folder_server_relative_url: str = None,

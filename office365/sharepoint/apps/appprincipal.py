@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AppPrincipal(Entity):
-
     @property
     def display_name(self) -> Optional[str]:
         """Gets the DisplayName property"""

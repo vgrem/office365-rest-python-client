@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FileCollectionAddParameters(ClientValue):
-
     def __init__(
         self,
         auto_checkout_on_invalid_data: bool = None,

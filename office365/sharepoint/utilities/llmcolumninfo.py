@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class LLMColumnInfo(ClientValue):
-
     def __init__(
         self,
         analyze_image_detail_level: str = None,

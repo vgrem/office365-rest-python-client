@@ -3,7 +3,6 @@ from office365.sharepoint.news.itemreference import ItemReference
 
 
 class NewsSite(ClientValue):
-
     def __init__(
         self,
         acronym: str = None,

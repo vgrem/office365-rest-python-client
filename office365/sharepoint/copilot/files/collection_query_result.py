@@ -4,7 +4,6 @@ from office365.sharepoint.copilot.files.metadata import CopilotFileMetadata
 
 
 class CopilotFileCollectionQueryResult(ClientValue):
-
     def __init__(
         self,
         files: ClientValueCollection[CopilotFileMetadata] = ClientValueCollection(CopilotFileMetadata),

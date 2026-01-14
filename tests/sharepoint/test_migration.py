@@ -5,7 +5,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestMigration(SPTestCase):
-
     azure_container_info: ProvisionedTemporaryAzureContainerInfo = None
 
     def test1_provision_temporary_azure_container(self):

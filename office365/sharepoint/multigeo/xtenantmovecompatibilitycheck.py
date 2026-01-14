@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class XTenantMoveCompatibilityCheck(Entity):
-
     @property
     def source_tenant_host_url(self) -> Optional[str]:
         """Gets the SourceTenantHostUrl property"""

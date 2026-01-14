@@ -4,7 +4,6 @@ from office365.sharepoint.directory.linktarget import LinkTarget
 
 
 class LinkChange(ClientValue):
-
     def __init__(
         self,
         added: ClientValueCollection[LinkTarget] = ClientValueCollection(LinkTarget),

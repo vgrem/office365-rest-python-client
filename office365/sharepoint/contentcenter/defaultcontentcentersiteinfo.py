@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DefaultContentCenterSiteInfo(Entity):
-
     @property
     def site_id(self) -> Optional[UUID]:
         """Gets the SiteId property"""

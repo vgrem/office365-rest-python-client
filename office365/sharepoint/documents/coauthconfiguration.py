@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CoAuthConfiguration(ClientValue):
-
     def __init__(
         self,
         source_session_id: str = None,

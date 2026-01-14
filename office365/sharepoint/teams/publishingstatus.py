@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
 
 
 class TeamsPublishingStatus(ClientValue):
-
     def __init__(
         self,
         audience_id: str = None,

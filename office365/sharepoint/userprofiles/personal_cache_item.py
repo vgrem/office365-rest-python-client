@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PersonalCacheItem(ClientValue):
-
     def __init__(
         self,
         alt_title: str = None,

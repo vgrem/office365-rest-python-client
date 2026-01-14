@@ -3,7 +3,6 @@ from office365.sharepoint.publishing.statusresponse import PublishingStatusRespo
 
 
 class ClientAmplifyAnywhereResults(ClientValue):
-
     def __init__(
         self,
         publishing_status_response: PublishingStatusResponse = PublishingStatusResponse(),

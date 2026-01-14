@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class TypeDescriptor(Entity):
-
     @property
     def contains_read_only(self) -> Optional[bool]:
         """Gets the ContainsReadOnly property"""

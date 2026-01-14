@@ -6,7 +6,6 @@ from office365.sharepoint.multigeo.geomovetenantpropertycompatibilitycheck impor
 
 
 class GeoMoveTenantCompatibilityCheck(Entity):
-
     @property
     def destination_data_location(self) -> Optional[str]:
         """Gets the DestinationDataLocation property"""

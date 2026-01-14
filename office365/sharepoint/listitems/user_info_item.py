@@ -7,7 +7,6 @@ from office365.sharepoint.listitems.listitem import ListItem
 
 
 class UserInfoItem(ListItem):
-
     @property
     def content_type_id(self) -> Optional[str]:
         """Gets the ContentTypeId property"""

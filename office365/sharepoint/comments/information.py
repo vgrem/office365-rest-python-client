@@ -5,7 +5,6 @@ from office365.sharepoint.comments.contentanchor import ContentAnchor
 
 
 class CommentInformation(ClientValue):
-
     def __init__(
         self,
         text: str = None,

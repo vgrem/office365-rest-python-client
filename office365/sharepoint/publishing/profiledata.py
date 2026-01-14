@@ -7,7 +7,6 @@ from office365.sharepoint.publishing.profilecoreproperties import ProfileCorePro
 
 
 class ProfileData(ClientValue):
-
     def __init__(
         self,
         manager_chain: ClientValueCollection[ProfileCoreProperties] = ClientValueCollection(ProfileCoreProperties),

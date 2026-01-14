@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class CloudPcAuditActor(ClientValue):
-
     def __init__(
         self,
         application_display_name: str = None,

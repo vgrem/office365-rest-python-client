@@ -4,7 +4,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestCallRecord(GraphTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

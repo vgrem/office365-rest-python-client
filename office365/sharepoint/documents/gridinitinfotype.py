@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class GridInitInfoType(ClientValue):
-
     def __init__(
         self,
         controller_id: str = None,

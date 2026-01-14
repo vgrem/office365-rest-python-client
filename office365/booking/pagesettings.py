@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class BookingPageSettings(ClientValue):
-
     def __init__(
         self,
         access_control: BookingPageAccessControl = BookingPageAccessControl.none,

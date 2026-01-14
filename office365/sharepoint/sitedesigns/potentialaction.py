@@ -7,7 +7,6 @@ from office365.sharepoint.sitedesigns.messagecardinput import MessageCardInput
 
 
 class PotentialAction(ClientValue):
-
     def __init__(
         self,
         actions: ClientValueCollection[MessageCardActionButton] = ClientValueCollection(MessageCardActionButton),

@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AuthenticationMethodsRegistrationCampaignIncludeTarget(ClientValue):
-
     def __init__(
         self,
         id_: str = None,

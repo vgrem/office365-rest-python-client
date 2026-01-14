@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TenantAdminRansomwareActivitiesOverview(ClientValue):
-
     def __init__(
         self,
         category_threshold_limit: int = None,

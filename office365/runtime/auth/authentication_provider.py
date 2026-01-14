@@ -16,4 +16,3 @@ class AuthenticationProvider(ABC):
         Raises:
             AuthenticationError: If authentication fails
         """
-        pass

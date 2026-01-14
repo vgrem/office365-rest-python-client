@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class ContentTypeSyndicationResult(ClientValue):
-
     def __init__(
         self,
         failed_content_type_errors: StringCollection = StringCollection(),

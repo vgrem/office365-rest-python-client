@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomTaskExtensionCallbackData(ClientValue):
-
     def __init__(self, operation_status: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.none_):
         self.operationStatus = operation_status
 

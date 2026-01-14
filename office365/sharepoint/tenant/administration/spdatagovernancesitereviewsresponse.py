@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPDataGovernanceSiteReviewsResponse(ClientValue):
-
     def __init__(
         self,
         admin_comment: str = None,

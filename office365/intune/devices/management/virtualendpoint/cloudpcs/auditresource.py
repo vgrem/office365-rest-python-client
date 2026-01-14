@@ -4,7 +4,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class CloudPcAuditResource(ClientValue):
-
     def __init__(
         self,
         display_name: str = None,

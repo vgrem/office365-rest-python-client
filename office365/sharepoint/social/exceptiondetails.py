@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SocialExceptionDetails(ClientValue):
-
     def __init__(
         self,
         internal_error_code: int = None,

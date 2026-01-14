@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ChannelInfo(ClientValue):
-
     def __init__(
         self,
         description: str = None,

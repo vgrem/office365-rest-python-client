@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class HubSiteCreationInformation(ClientValue):
-
     def __init__(
         self,
         description: str = None,

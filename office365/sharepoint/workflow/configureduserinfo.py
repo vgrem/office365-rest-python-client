@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ConfiguredUserInfo(ClientValue):
-
     def __init__(
         self,
         email: str = None,

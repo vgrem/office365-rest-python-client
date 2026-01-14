@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.authoringschemafeatureversion import (
 
 
 class StartCoAuthMetaData(ClientValue):
-
     def __init__(
         self,
         authoring_schema_feature_versions: ClientValueCollection[AuthoringSchemaFeatureVersion] = ClientValueCollection(

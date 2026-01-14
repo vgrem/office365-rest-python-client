@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.portallaunch.wave import PortalLaunchWave
 
 
 class PortalLaunchWaveSetup(ClientValue):
-
     def __init__(
         self,
         alternative_urls_of_new_site: str = None,

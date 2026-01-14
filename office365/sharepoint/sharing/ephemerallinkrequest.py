@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.links.share_settings import ShareLinkSettings
 
 
 class EphemeralLinkRequest(ClientValue):
-
     def __init__(
         self,
         meeting_id: str = None,

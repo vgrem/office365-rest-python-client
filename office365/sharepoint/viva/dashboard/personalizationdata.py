@@ -3,7 +3,6 @@ from office365.sharepoint.viva.dashboard.content import DashboardContent
 
 
 class DashboardPersonalizationData(ClientValue):
-
     def __init__(
         self,
         personalized_order: DashboardContent = DashboardContent(),

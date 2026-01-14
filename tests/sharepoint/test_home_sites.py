@@ -12,7 +12,6 @@ from tests import (
 
 
 class TestHomeSites(TestCase):
-
     @classmethod
     def setUpClass(cls):
         client = ClientContext(test_admin_site_url).with_username_and_password(

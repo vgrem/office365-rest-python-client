@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class SocialPostActorInfo(ClientValue):
-
     def __init__(
         self,
         includes_current_user: bool = None,

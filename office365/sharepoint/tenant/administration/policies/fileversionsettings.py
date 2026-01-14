@@ -7,7 +7,6 @@ from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysett
 
 
 class SPOFileVersionPolicySettings(ClientValue):
-
     def __init__(
         self,
         enable_auto_expiration_version_trim: bool = None,

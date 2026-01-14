@@ -4,7 +4,6 @@ from office365.sharepoint.listhome.favorite_item import FavoriteListHomeItem
 
 
 class RecentAndJoinedTeamsResponse(ClientValue):
-
     def __init__(
         self,
         joined_teams: str = None,

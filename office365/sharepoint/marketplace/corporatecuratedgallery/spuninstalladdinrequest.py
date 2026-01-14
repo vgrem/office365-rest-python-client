@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class SPUninstallAddinRequest(ClientValue):
-
     def __init__(
         self,
         app_instance_ids: GuidCollection = GuidCollection(),

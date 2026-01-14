@@ -7,7 +7,6 @@ from office365.sharepoint.contentcenter.machinelearning.samples.meta import (
 
 
 class MediaServiceUpdateParameters(ClientValue):
-
     def __init__(
         self,
         agreement_clauses: str = None,

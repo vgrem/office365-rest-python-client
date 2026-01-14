@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TaskReportSummary(ClientValue):
-
     def __init__(
         self,
         failed_tasks: int = None,

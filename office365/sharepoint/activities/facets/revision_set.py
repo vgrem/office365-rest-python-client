@@ -7,7 +7,6 @@ from office365.sharepoint.activities.revision_info import RevisionInfo
 
 
 class RevisionSetFacet(ClientValue):
-
     def __init__(
         self,
         author: ActivityClientIdentity = ActivityClientIdentity(),

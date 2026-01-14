@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AccessTokenOptionalClaim(Entity):
-
     @property
     def acrs(self) -> Optional[str]:
         """Gets the Acrs property"""

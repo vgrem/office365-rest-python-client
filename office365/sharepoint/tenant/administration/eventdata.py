@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class EventData(ClientValue):
-
     def __init__(
         self,
         archive_url: str = None,

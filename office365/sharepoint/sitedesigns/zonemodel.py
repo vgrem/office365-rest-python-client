@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.sectionmodel import SectionModel
 
 
 class ZoneModel(ClientValue):
-
     def __init__(
         self,
         index: int = None,

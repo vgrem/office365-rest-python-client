@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AppIconInfo(Entity):
-
     @property
     def content(self) -> Optional[bytes]:
         """Gets the Content property"""

@@ -59,7 +59,6 @@ class SitePageService(Entity):
         """
 
         def _page_created(return_type: SitePage) -> None:
-
             def _draft_saved(result: ClientResult[bool]) -> None:
                 return_type.get()
 
@@ -74,7 +73,6 @@ class SitePageService(Entity):
         """
 
         def _page_created(return_type: SitePage) -> None:
-
             def _page_published(result: ClientResult[bool]) -> None:
                 pass
 

@@ -3,7 +3,6 @@ from office365.sharepoint.social.posts.creation_data import SocialPostCreationDa
 
 
 class SocialRestPostCreationData(ClientValue):
-
     def __init__(
         self,
         id_: str = None,

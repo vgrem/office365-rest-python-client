@@ -2,7 +2,6 @@ from office365.sharepoint.listhome.item import ListHomeItem
 
 
 class FavoriteListHomeItem(ListHomeItem):
-
     def __init__(
         self,
         favorites_order: float = None,

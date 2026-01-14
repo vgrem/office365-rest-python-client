@@ -5,7 +5,6 @@ from office365.sharepoint.fields.lookup_value import FieldLookupValue
 
 
 class InactiveSitePolicyResourceStorage(ClientValue):
-
     def __init__(
         self,
         created_on: datetime = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class WorkflowAssociationCreationInformation(ClientValue):
-
     def __init__(
         self,
         content_type_association_history_list_name: str = None,

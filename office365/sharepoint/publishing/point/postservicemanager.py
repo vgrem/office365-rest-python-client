@@ -7,7 +7,6 @@ from office365.sharepoint.publishing.point.user import PointPublishingUser
 
 
 class PointPublishingPostServiceManager(Entity):
-
     @property
     def contributors(self) -> EntityCollection[PointPublishingUser]:
         """Gets the contributors property"""

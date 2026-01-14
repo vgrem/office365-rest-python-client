@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AvailabilityItem(ClientValue):
-
     def __init__(
         self,
         end_date_time: DateTimeTimeZone = DateTimeTimeZone(),

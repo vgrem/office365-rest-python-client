@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class BookingReminder(ClientValue):
-
     def __init__(
         self,
         message: str = None,

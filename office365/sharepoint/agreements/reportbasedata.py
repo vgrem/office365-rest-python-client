@@ -4,7 +4,6 @@ from office365.sharepoint.agreements.datapair import AgreementDataPair
 
 
 class AgreementReportBaseData(ClientValue):
-
     def __init__(
         self,
         by_expiration_status: ClientValueCollection[AgreementDataPair] = ClientValueCollection(AgreementDataPair),

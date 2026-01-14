@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SiteScriptSerializationInfo(ClientValue):
-
     def __init__(
         self,
         include_branding=None,

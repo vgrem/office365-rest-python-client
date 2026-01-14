@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DBSchemaCompatibilityCheck(Entity):
-
     @property
     def compatibility_result(self) -> Optional[str]:
         """Gets the CompatibilityResult property"""

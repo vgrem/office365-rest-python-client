@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MicrofeedLinkAction(ClientValue):
-
     def __init__(
         self,
         action_uri: str = None,

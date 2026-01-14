@@ -5,7 +5,6 @@ from office365.sharepoint.sharing.principal import Principal
 
 
 class SharingLinkInfo(ClientValue):
-
     def __init__(
         self,
         allows_anonymous_access=None,

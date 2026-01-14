@@ -7,7 +7,6 @@ from tests import test_client_credentials, test_site_url
 
 
 class TestWebPart(TestCase):
-
     client: ClientContext = None
     target_web_part: WebPartDefinition = None
 
