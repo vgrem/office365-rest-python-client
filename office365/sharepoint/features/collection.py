@@ -12,8 +12,7 @@ class FeatureCollection(EntityCollection[Feature]):
 
     def add(self, feature_id, force, featdef_scope, verify_if_activated=False):
         # type: (str, bool, int, bool) -> Feature
-        """
-        Adds the feature to the collection of activated features and returns the added feature.
+        """Adds the feature to the collection of activated features and returns the added feature.
 
         :param str feature_id: The feature identifier of the feature to be added.
         :param bool force: Specifies whether to continue with the operation even if there are errors.

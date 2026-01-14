@@ -12,9 +12,9 @@ from office365.sharepoint.sharing.object_sharing_information_user import (
 )
 
 if TYPE_CHECKING:
-    from typing import Optional  # noqa
+    from typing import Optional
 
-    from office365.sharepoint.client_context import ClientContext  # noqa
+    from office365.sharepoint.client_context import ClientContext
 
 
 class ObjectSharingInformation(Entity):
@@ -29,7 +29,7 @@ class ObjectSharingInformation(Entity):
         """
         binding_type = ObjectSharingInformation(context)
         payload = {"docId": doc_id}
-        return_type = ClientResult(context, int())
+        return_type = ClientResult(context, 0)
         qry = ServiceOperationQuery(binding_type, "CanCurrentUserShare", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
@@ -66,8 +66,7 @@ class ObjectSharingInformation(Entity):
         retrieve_user_info_details=None,
         check_for_access_requests=None,
     ):
-        """
-        Retrieves information about the sharing state for the current site. The current site is the site
+        """Retrieves information about the sharing state for the current site. The current site is the site
         in the context of which this method is invoked.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -127,8 +126,7 @@ class ObjectSharingInformation(Entity):
         return_type=None,
     ):
         # type: (ClientContext, str, int, Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[ObjectSharingInformation]) -> ObjectSharingInformation
-        """
-        Retrieves information about the sharing state for a given list.
+        """Retrieves information about the sharing state for a given list.
 
         :param check_for_access_requests: Specifies whether the returned sharing state information will contain a URL
         to a location which describes any access requests present in the site (2), if such a URL is available.
@@ -176,8 +174,7 @@ class ObjectSharingInformation(Entity):
     @property
     def anonymous_edit_link(self):
         # type: () -> Optional[str]
-        """
-        Provides the URL that allows an anonymous user to edit the securable object.
+        """Provides the URL that allows an anonymous user to edit the securable object.
         If such a URL is not available, this property will provide an empty string.
         """
         return self.properties.get("AnonymousEditLink", None)
@@ -185,8 +182,7 @@ class ObjectSharingInformation(Entity):
     @property
     def anonymous_view_link(self):
         # type: () -> Optional[str]
-        """
-        Provides the URL that allows an anonymous user to view the securable object.
+        """Provides the URL that allows an anonymous user to view the securable object.
         If such a URL is not available, this property will provide an empty string.
         """
         return self.properties.get("AnonymousViewLink", None)
@@ -194,32 +190,25 @@ class ObjectSharingInformation(Entity):
     @property
     def can_be_shared(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the current securable object can be shared.
-        """
+        """Indicates whether the current securable object can be shared."""
         return self.properties.get("CanBeShared", None)
 
     @property
     def can_be_unshared(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the current securable object can be unshared.
-        """
+        """Indicates whether the current securable object can be unshared."""
         return self.properties.get("CanBeUnshared", None)
 
     @property
     def can_manage_permissions(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the current user is allowed to change the permissions of the securable object.
-        """
+        """Specifies whether the current user is allowed to change the permissions of the securable object."""
         return self.properties.get("CanManagePermissions", None)
 
     @property
     def has_pending_access_requests(self):
         # type: () -> Optional[bool]
-        """
-        Provides information about whether there are any pending access requests for the securable object.
+        """Provides information about whether there are any pending access requests for the securable object.
 
         This information is only provided if the current user has sufficient permissions to view any pending
         access requests. If the current user does not have such permissions, this property will return false.
@@ -229,8 +218,7 @@ class ObjectSharingInformation(Entity):
     @property
     def has_permission_levels(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the object sharing information contains permissions information in addition to the identities
+        """Indicates whether the object sharing information contains permissions information in addition to the identities
         of the users who have access to the securable object.
         """
         return self.properties.get("HasPermissionLevels", None)

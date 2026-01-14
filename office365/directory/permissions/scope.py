@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class PermissionScope(ClientValue):
-    """
-    Represents the definition of a delegated permission.
+    """Represents the definition of a delegated permission.
 
     Delegated permissions can be requested by client applications needing an access token to the API which defined the
     permissions. Delegated permissions can be requested dynamically, using the scopes parameter in an authorization
@@ -23,8 +22,7 @@ class PermissionScope(ClientValue):
         user_consent_display_name=None,
         value=None,
     ):
-        """
-        :param str admin_consent_display_name: The permission's title, intended to be read by an administrator granting
+        """:param str admin_consent_display_name: The permission's title, intended to be read by an administrator granting
             the permission on behalf of all users.
         :param str admin_consent_description: A description of the delegated permissions, intended to be read
             by an administrator granting the permission on behalf of all users. This text appears in tenant-wide

@@ -5,7 +5,8 @@ from office365.sharepoint.publishing.pages.page import SitePage
 
 class RepostPage(SitePage):
     """Represents a re-posting of existing content where existing content can be a link to a resource on the
-    internet or other page in your SharePoint environment"""
+    internet or other page in your SharePoint environment
+    """
 
     @property
     def is_banner_image_url_external(self):

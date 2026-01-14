@@ -18,8 +18,7 @@ class WorkbookWorksheetProtectionOptions(ClientValue):
         allow_pivot_tables=None,
         allow_sort=None,
     ):
-        """
-        :param bool allow_auto_filter: Represents the worksheet protection option of allowing using auto filter feature.
+        """:param bool allow_auto_filter: Represents the worksheet protection option of allowing using auto filter feature.
         :param bool allow_delete_columns: Represents the worksheet protection option of allowing deleting columns.
         :param bool allow_delete_rows: Represents the worksheet protection option of allowing deleting rows.
         :param bool allow_format_cells: Represents the worksheet protection option of allowing formatting cells.

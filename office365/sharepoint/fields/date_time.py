@@ -5,7 +5,8 @@ from office365.sharepoint.fields.field import Field
 
 class FieldDateTime(Field):
     """Specifies a field that contains date and time values. To set properties, call the Update method
-    (section 3.2.5.44.2.1.5)."""
+    (section 3.2.5.44.2.1.5).
+    """
 
     @property
     def datetime_calendar_type(self):

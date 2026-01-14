@@ -8,8 +8,7 @@ class WorkbookNamedItemCollection(EntityCollection[WorkbookNamedItem]):
         super(WorkbookNamedItemCollection, self).__init__(context, WorkbookNamedItem, resource_path)
 
     def add(self, name, reference, comment=None):
-        """
-        Adds a new name to the collection of the given scope using the user's locale for the formula.
+        """Adds a new name to the collection of the given scope using the user's locale for the formula.
 
         :param str name: The name of the object.
         :param str reference: Represents the formula that the name is defined to refer to.

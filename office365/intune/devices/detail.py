@@ -16,8 +16,7 @@ class DeviceDetail(ClientValue):
         operating_system=None,
         trust_type=None,
     ):
-        """
-        :param str browser: Indicates the browser information of the used for signing in.
+        """:param str browser: Indicates the browser information of the used for signing in.
         :param str device_id: Refers to the UniqueID of the device used for signing in.
         :param str display_name: Refers to the name of the device used for signing in.
         """

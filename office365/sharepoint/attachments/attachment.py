@@ -57,8 +57,7 @@ class Attachment(Entity):
 
     def upload(self, file_object, use_path=True):
         # type: (IO, bool) -> Self
-        """
-        Upload attachment into list item
+        """Upload attachment into list item
 
         :type file_object: typing.IO
         :param bool use_path: Use Path instead of Url for addressing attachments

@@ -1,5 +1,4 @@
-"""
-Demonstrates how to perform list/library assessment if taxonomy field value association is broken
+"""Demonstrates how to perform list/library assessment if taxonomy field value association is broken
 to term set or not.
 
 To prevent this exception to occur:
@@ -22,4 +21,4 @@ for field in fields:
         print(field.internal_name)
     except ClientRequestException:
         print(field.is_term_set_valid)
-        print("Error: {0}".format(field.internal_name))
+        print(f"Error: {field.internal_name}")

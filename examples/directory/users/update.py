@@ -1,5 +1,4 @@
-"""
-Update users
+"""Update users
 
 https://learn.microsoft.com/en-us/graph/api/user-update
 """

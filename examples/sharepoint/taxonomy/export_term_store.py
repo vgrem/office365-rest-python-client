@@ -1,6 +1,4 @@
-"""
-Export Term Store
-"""
+"""Export Term Store"""
 
 import json
 

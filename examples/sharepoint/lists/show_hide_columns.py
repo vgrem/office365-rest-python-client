@@ -3,8 +3,7 @@ from tests import test_client_credentials, test_team_site_url
 
 
 def hide_column(t_list, field_name):
-    """
-    :type t_list: office365.sharepoint.lists.list.List
+    """:type t_list: office365.sharepoint.lists.list.List
     :type field_name: str
     """
     field = t_list.fields.get_by_internal_name_or_title(field_name)
@@ -16,8 +15,7 @@ def hide_column(t_list, field_name):
 
 
 def show_column(t_list, field_name):
-    """
-    :type t_list: office365.sharepoint.lists.list.List
+    """:type t_list: office365.sharepoint.lists.list.List
     :type field_name: str
     """
     field = t_list.fields.get_by_internal_name_or_title(field_name)
@@ -26,16 +24,14 @@ def show_column(t_list, field_name):
 
 
 def add_column_to_view(view, field_name):
-    """
-    :type view: office365.sharepoint.views.view.View
+    """:type view: office365.sharepoint.views.view.View
     :type field_name: str
     """
     view.view_fields.add_view_field(field_name).execute_query()
 
 
 def remove_column_from_view(view, field_name):
-    """
-    :type view: office365.sharepoint.views.view.View
+    """:type view: office365.sharepoint.views.view.View
     :type field_name: str
     """
     view.view_fields.remove_view_field(field_name).execute_query()

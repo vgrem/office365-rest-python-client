@@ -48,8 +48,7 @@ class ClientRuntimeContext(ABC):
         failure_callback=None,
         exceptions=(ClientRequestException,),
     ):
-        """
-        Executes the current set of data retrieval queries and method invocations and retries it if needed.
+        """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
         :param int max_retry: Number of times to retry the request
         :param int timeout_secs: Seconds to wait before retrying the request.
@@ -57,7 +56,6 @@ class ClientRuntimeContext(ABC):
         :param (int, requests.exceptions.RequestException)-> None failure_callback:
         :param exceptions: tuple of exceptions that we retry
         """
-
         for retry in range(1, max_retry + 1):
             try:
                 self.execute_query()
@@ -90,8 +88,7 @@ class ClientRuntimeContext(ABC):
 
     def before_query_execute(self, action, once=True):
         # type: (Callable[[RequestOptions], None], bool) -> Self
-        """
-        Attach an event handler which is triggered before query is submitted to server
+        """Attach an event handler which is triggered before query is submitted to server
 
         :type action: (office365.runtime.http.request_options.RequestOptions, *args, **kwargs) -> None
         :param bool once: Flag which determines whether action is executed once or multiple times
@@ -112,8 +109,7 @@ class ClientRuntimeContext(ABC):
 
     def before_execute(self, action, once=True):
         # type: (Callable[[RequestOptions], None], bool) -> Self
-        """
-        Attach an event handler which is triggered before request is submitted to server
+        """Attach an event handler which is triggered before request is submitted to server
         :param (office365.runtime.http.request_options.RequestOptions, any) -> None action:
         :param bool once: Flag which determines whether action is executed once or multiple times
         """

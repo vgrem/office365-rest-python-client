@@ -15,8 +15,7 @@ class GetCommentFacet(ClientValue):
         parent_comment_id=None,
         participants=None,
     ):
-        """
-        :param list[ActivityIdentity] assignees:
+        """:param list[ActivityIdentity] assignees:
         :param str comment_id:
         :param bool is_reply:
         :param ActivityIdentity parent_author: Gets or sets the parent author.

@@ -9,16 +9,14 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Conversation(Entity):
-    """
-    A conversation is a collection of threads, and a thread contains posts to that thread.
+    """A conversation is a collection of threads, and a thread contains posts to that thread.
     All threads and posts in a conversation share the same subject.
     """
 
     @property
     def has_attachments(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether any of the posts within this Conversation has at least one attachment.
+        """Indicates whether any of the posts within this Conversation has at least one attachment.
         Supports $filter (eq, ne) and $search.
         """
         return self.properties.get("hasAttachments", None)
@@ -32,8 +30,7 @@ class Conversation(Entity):
     @property
     def preview(self):
         # type: () -> Optional[str]
-        """
-        A short summary from the body of the latest post in this conversation.
+        """A short summary from the body of the latest post in this conversation.
         Supports $filter (eq, ne, le, ge).
         """
         return self.properties.get("preview", None)
@@ -41,8 +38,7 @@ class Conversation(Entity):
     @property
     def topic(self):
         # type: () -> Optional[str]
-        """
-        The topic of the conversation. This property can be set when the conversation is created, but it cannot be
+        """The topic of the conversation. This property can be set when the conversation is created, but it cannot be
         updated.
         """
         return self.properties.get("topic", None)

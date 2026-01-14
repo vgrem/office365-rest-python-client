@@ -5,14 +5,10 @@ from office365.sharepoint.entity import Entity
 
 
 class TranslationJob(Entity):
-    """
-    The TranslationJob type is used to create new translation jobs.
-    """
+    """The TranslationJob type is used to create new translation jobs."""
 
     def __init__(self, context, target_language):
-        """
-        :param str target_language: This value MUST be a valid language tag to test as specified in RFC1766
-        """
+        """:param str target_language: This value MUST be a valid language tag to test as specified in RFC1766"""
         super().__init__(
             context,
             ServiceOperationPath("SP.Translation.TranslationJob", {"targetLanguage": target_language}),
@@ -27,8 +23,7 @@ class TranslationJob(Entity):
         :type context: office365.sharepoint.client_context.ClientContext
         :param str target_language: This value MUST be a valid language tag to test as specified in RFC1766
         """
-
-        return_type = ClientResult(context, bool())
+        return_type = ClientResult(context, False)
         binding_type = TranslationJob(context, target_language)
         qry = ServiceOperationQuery(binding_type, "IsServiceEnabled", None, None, None, return_type)
         context.add_query(qry)

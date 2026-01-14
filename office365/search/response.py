@@ -8,8 +8,7 @@ class SearchResponse(ClientValue):
     """Represents results from a search query, and the terms used for the query."""
 
     def __init__(self, search_terms=None, hits_containers=None):
-        """
-        :param list[str] search_terms: Contains the search terms sent in the initial search query.
+        """:param list[str] search_terms: Contains the search terms sent in the initial search query.
         :param list[SearchHitsContainer] hits_containers: A collection of search results.
 
         """

@@ -9,8 +9,7 @@ class ChatMessageInfo(Entity):
 
     @property
     def body(self):
-        """
-        Body of the chatMessage. This will still contain markers for @mentions and attachments even though the
+        """Body of the chatMessage. This will still contain markers for @mentions and attachments even though the
         object does not return @mentions and attachments.
         """
         return self.properties.get("body", ItemBody())

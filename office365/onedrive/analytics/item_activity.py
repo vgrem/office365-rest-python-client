@@ -4,8 +4,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class ItemActivity(Entity):
-    """
-    The itemActivity resource provides information about activities that took place on an item or within a container.
+    """The itemActivity resource provides information about activities that took place on an item or within a container.
     Currently only available on SharePoint and OneDrive for Business.
     """
 

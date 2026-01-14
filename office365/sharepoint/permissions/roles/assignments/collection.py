@@ -12,9 +12,9 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         super(RoleAssignmentCollection, self).__init__(context, RoleAssignment, resource_path)
 
     def __getitem__(self, key):
+        """:param int or str key: key is used to address a RoleAssignment resource by either an index
+        in collection or by resource id
         """
-        :param int or str key: key is used to address a RoleAssignment resource by either an index
-        in collection or by resource id"""
         if isinstance(key, int):
             return super(RoleAssignmentCollection, self).__getitem__(key)
         else:

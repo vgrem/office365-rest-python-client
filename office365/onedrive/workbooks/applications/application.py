@@ -19,5 +19,6 @@ class WorkbookApplication(Entity):
     @property
     def calculation_mode(self):
         """Returns the calculation mode used in the workbook. Possible values are:
-        Automatic, AutomaticExceptTables, Manual."""
+        Automatic, AutomaticExceptTables, Manual.
+        """
         return self.properties.get("calculationMode", None)

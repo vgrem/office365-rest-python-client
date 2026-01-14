@@ -9,7 +9,5 @@ if TYPE_CHECKING:
 class DeleteEntityQuery(ClientQuery):
     def __init__(self, delete_type):
         # type: (ClientObject) -> None
-        """
-        Delete entity query
-        """
+        """Delete entity query"""
         super(DeleteEntityQuery, self).__init__(delete_type.context, delete_type)

@@ -17,8 +17,7 @@ class ResourceFacet(ClientValue):
         title=None,
         web_id=None,
     ):
-        """
-        :param str content_type_id: The ID of the content type
+        """:param str content_type_id: The ID of the content type
         :param int file_system_object_type: List item’s object type in file system.
         :param int file_type: The list item’s file type
         :param str item_id: Identifies the changed item.

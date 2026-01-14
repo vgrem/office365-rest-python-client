@@ -1,5 +1,4 @@
-"""
-Gets the files from the folder.
+"""Gets the files from the folder.
 If 'recursive' flag set to True, it traverses all sub folders
 """
 

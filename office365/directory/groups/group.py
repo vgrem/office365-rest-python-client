@@ -38,8 +38,7 @@ class Group(DirectoryObject):
         return self.display_name or self.id or self.entity_type_name
 
     def renew(self):
-        """
-        Renews a group's expiration. When a group is renewed, the group expiration is extended by the number
+        """Renews a group's expiration. When a group is renewed, the group expiration is extended by the number
         of days defined in the policy.
         """
         qry = ServiceOperationQuery(self, "renew")
@@ -60,16 +59,13 @@ class Group(DirectoryObject):
         return return_type
 
     def remove_favorite(self):
-        """
-        Remove the group from the list of the current user's favorite groups. Supported for Microsoft 365 groups only.
-        """
+        """Remove the group from the list of the current user's favorite groups. Supported for Microsoft 365 groups only."""
         qry = ServiceOperationQuery(self, "removeFavorite")
         self.context.add_query(qry)
         return self
 
     def reset_unseen_count(self):
-        """
-        Reset the unseenCount of all the posts that the current user has not seen since their last visit.
+        """Reset the unseenCount of all the posts that the current user has not seen since their last visit.
         Supported for Microsoft 365 groups only.
         """
         qry = ServiceOperationQuery(self, "resetUnseenCount")
@@ -106,8 +102,7 @@ class Group(DirectoryObject):
         return self.team
 
     def delete_object(self, permanent_delete=False):
-        """
-        :param permanent_delete: Permanently deletes the group from directory
+        """:param permanent_delete: Permanently deletes the group from directory
         :type permanent_delete: bool
 
         """
@@ -134,8 +129,7 @@ class Group(DirectoryObject):
     @property
     def display_name(self):
         # type: () -> Optional[str]
-        """
-        The display name for the group. This property is required when a group is created and cannot be cleared during
+        """The display name for the group. This property is required when a group is created and cannot be cleared during
         updates. Maximum length is 256 characters.
 
         Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search,
@@ -145,8 +139,7 @@ class Group(DirectoryObject):
 
     @property
     def group_types(self):
-        """
-        Specifies the group type and its membership.
+        """Specifies the group type and its membership.
 
         If the collection contains Unified, the group is a Microsoft 365 group; otherwise, it's either a security group
         or distribution group. For details, see groups overview.
@@ -160,8 +153,7 @@ class Group(DirectoryObject):
     @property
     def has_members_with_license_errors(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether there are members in this group that have license errors from its group-based license
+        """Indicates whether there are members in this group that have license errors from its group-based license
         assignment.
 
         This property is never returned on a GET operation. You can use it as a $filter argument to get groups that
@@ -172,8 +164,7 @@ class Group(DirectoryObject):
     @property
     def is_assignable_to_role(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether this group can be assigned to an Azure Active Directory role or not. Optional.
+        """Indicates whether this group can be assigned to an Azure Active Directory role or not. Optional.
 
         This property can only be set while creating the group and is immutable. If set to true, the securityEnabled
         property must also be set to true, visibility must be Hidden, and the group cannot be a dynamic group
@@ -195,24 +186,19 @@ class Group(DirectoryObject):
     @property
     def mail(self):
         # type: () -> Optional[str]
-        """
-        The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
-        """
+        """The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com"."""
         return self.properties.get("mail", None)
 
     @property
     def mail_enabled(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the group is mail-enabled. Required.
-        """
+        """Specifies whether the group is mail-enabled. Required."""
         return self.properties.get("mailEnabled", None)
 
     @property
     def mail_nickname(self):
         # type: () -> Optional[str]
-        """
-        The mail alias for the group, unique for Microsoft 365 groups in the organization. Maximum length is 64
+        """The mail alias for the group, unique for Microsoft 365 groups in the organization. Maximum length is 64
         characters.
         """
         return self.properties.get("mailNickname", None)
@@ -243,9 +229,7 @@ class Group(DirectoryObject):
     @property
     def extensions(self):
         # type: () -> EntityCollection[Extension]
-        """
-        The collection of open extensions defined for the group
-        """
+        """The collection of open extensions defined for the group"""
         return self.properties.get(
             "extensions",
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
@@ -261,9 +245,7 @@ class Group(DirectoryObject):
 
     @property
     def rejected_senders(self):
-        """
-        The list of users or groups not allowed to create posts or calendar events in this group. Nullable
-        """
+        """The list of users or groups not allowed to create posts or calendar events in this group. Nullable"""
         return self.properties.get(
             "rejectedSenders",
             DirectoryObjectCollection(self.context, ResourcePath("rejectedSenders", self.resource_path)),
@@ -271,8 +253,7 @@ class Group(DirectoryObject):
 
     @property
     def transitive_members(self):
-        """
-        Get a list of the group's members. A group can have members, devices, organizational contacts,
+        """Get a list of the group's members. A group can have members, devices, organizational contacts,
         and other groups as members. This operation is transitive and returns a flat list of all nested members.
         """
         return self.properties.get(
@@ -282,8 +263,7 @@ class Group(DirectoryObject):
 
     @property
     def transitive_member_of(self):
-        """
-        Get groups that the group is a member of. This operation is transitive and will also include all groups that
+        """Get groups that the group is a member of. This operation is transitive and will also include all groups that
         this groups is a nested member of. Unlike getting a user's Microsoft 365 groups, this returns all
         types of groups, not just Microsoft 365 groups.
         """
@@ -316,9 +296,7 @@ class Group(DirectoryObject):
     @property
     def drives(self):
         # type: () -> EntityCollection[Drive]
-        """
-        The group's drives. Read-only.
-        """
+        """The group's drives. Read-only."""
         return self.properties.get(
             "drives",
             EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path)),
@@ -326,9 +304,7 @@ class Group(DirectoryObject):
 
     @property
     def sites(self):
-        """
-        The list of SharePoint sites in this group. Access the default site with /sites/root.
-        """
+        """The list of SharePoint sites in this group. Access the default site with /sites/root."""
         from office365.onedrive.sites.sites_with_root import SitesWithRoot
 
         return self.properties.get(
@@ -397,8 +373,7 @@ class Group(DirectoryObject):
 
     @property
     def assigned_licenses(self):
-        """
-        The licenses that are assigned to the group.
+        """The licenses that are assigned to the group.
         Returned only on $select. Supports $filter (eq).Read-only.
         """
         return self.properties.get("assignedLicenses", ClientValueCollection(AssignedLicense))

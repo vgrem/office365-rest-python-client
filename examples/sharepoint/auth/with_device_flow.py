@@ -1,5 +1,4 @@
-"""
-Demonstrates how to authenticate users on devices or operating systems that don't provide a web browser.
+"""Demonstrates how to authenticate users on devices or operating systems that don't provide a web browser.
 Device code flow lets the user use another device such as a computer or a mobile phone to sign in interactively.
 
 https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code

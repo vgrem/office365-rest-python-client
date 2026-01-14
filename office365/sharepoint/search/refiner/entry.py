@@ -3,8 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class RefinerEntry(ClientValue):
     def __init__(self, refinement_count=None, refinement_name=None):
-        """
-        :param int refinement_count:
+        """:param int refinement_count:
         :param str refinement_name:
         """
         self.RefinementCount = refinement_count

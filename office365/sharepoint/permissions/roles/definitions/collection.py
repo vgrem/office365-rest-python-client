@@ -15,8 +15,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         super(RoleDefinitionCollection, self).__init__(context, RoleDefinition, resource_path)
 
     def add(self, base_permissions, name, description=None, order=None):
-        """
-        Adds a new role definition to the collection, based on the passed parameter.
+        """Adds a new role definition to the collection, based on the passed parameter.
 
         :param BasePermissions base_permissions: Specifies the base permissions for the role definition.
         :param str name: Specifies the role definition name.
@@ -32,8 +31,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         return return_type
 
     def recreate_missing_default_role_definitions(self):
-        """
-        Recreates missing default role definitions. Requires that Microsoft.SharePoint.SPWeb has unique
+        """Recreates missing default role definitions. Requires that Microsoft.SharePoint.SPWeb has unique
         role definitions.
         """
         qry = ServiceOperationQuery(self, "RecreateMissingDefaultRoleDefinitions")
@@ -41,9 +39,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         return self
 
     def remove_all(self):
-        """
-        Removes all role definitions.
-        """
+        """Removes all role definitions."""
         qry = ServiceOperationQuery(self, "RemoveAll")
         self.context.add_query(qry)
         return self
@@ -56,8 +52,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         return RoleDefinition(self.context, ServiceOperationPath("GetByName", [name], self.resource_path))
 
     def get_by_id(self, _id):
-        """
-        Retrieves the role definition with the specified Id property from the collection.
+        """Retrieves the role definition with the specified Id property from the collection.
 
         :param str _id: Specifies the unique identifier of the role definition searched. The value of id does not
            correspond to the index of the role definition within the collection, but refers to the value of the

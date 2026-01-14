@@ -11,13 +11,13 @@ from tests import test_team_site_url, test_user_credentials
 def print_progress(return_types):
     # type: (List[ClientObject]) -> None
     items_count = len([t for t in return_types if isinstance(t, ListItem)])
-    print("{0} list items has been created".format(items_count))
+    print(f"{items_count} list items has been created")
 
 
 def load_data_source(amount=1000):
     fake = Faker()
     contacts = []
-    for idx in range(0, amount):
+    for idx in range(amount):
         contact = {
             "Title": fake.name(),
             "FullName": fake.name(),

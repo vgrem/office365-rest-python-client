@@ -6,7 +6,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class EdiscoveryCase(Entity):
     """In the context of eDiscovery, contains custodians, searches, review sets. For details, see Overview of
-    Microsoft Purview eDiscovery (Premium)."""
+    Microsoft Purview eDiscovery (Premium).
+    """
 
     @property
     def operations(self):

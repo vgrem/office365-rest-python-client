@@ -13,8 +13,7 @@ class WorkbookSortField(ClientValue):
         icon=WorkbookIcon(),
         key=None,
     ):
-        """
-        :param bool ascending: Represents whether the sorting is done in an ascending fashion.
+        """:param bool ascending: Represents whether the sorting is done in an ascending fashion.
         :param str color: Represents the color that is the target of the condition if the sorting is on font
              or cell color.
         :param str data_option: Represents additional sorting options for this field.

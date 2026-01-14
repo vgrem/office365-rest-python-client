@@ -13,8 +13,7 @@ class OutlookUser(Entity):
     """Represents the Outlook services available to a user."""
 
     def supported_languages(self):
-        """
-        Get the list of locales and languages that are supported for the user, as configured on the user's
+        """Get the list of locales and languages that are supported for the user, as configured on the user's
         mailbox server. When setting up an Outlook client, the user selects the preferred language from this supported
         list. You can subsequently get the preferred language by getting the user's mailbox settings.
         """
@@ -24,8 +23,7 @@ class OutlookUser(Entity):
         return return_type
 
     def supported_time_zones(self):
-        """
-        Get the list of time zones that are supported for the user, as configured on the user's mailbox server.
+        """Get the list of time zones that are supported for the user, as configured on the user's mailbox server.
         You can explicitly specify to have time zones returned in the Windows time zone format or
         Internet Assigned Numbers Authority (IANA) time zone (also known as Olson time zone) format.
         The Windows format is the default.

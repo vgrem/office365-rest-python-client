@@ -1,6 +1,4 @@
-"""
-Enumerate across all lists in a site
-"""
+"""Enumerate across all lists in a site"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_site_url

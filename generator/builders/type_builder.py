@@ -8,8 +8,7 @@ import astunparse
 
 class TypeBuilder(ast.NodeTransformer):
     def __init__(self, type_schema, options):
-        """
-        :type type_schema: office365.runtime.odata.type.ODataType
+        """:type type_schema: office365.runtime.odata.type.ODataType
         :type options: dict
         """
         self._schema = type_schema
@@ -50,12 +49,10 @@ class TypeBuilder(ast.NodeTransformer):
         return path
 
     def _resolve_type(self, type_name):
-        """
-        :type type_name: str
-        """
+        """:type type_name: str"""
         type_info = {}
         namespaces = ["directory", "onedrive", "mail", "teams"]
-        types = [locate("office365.{0}.{1}".format(ns, type_name)) for ns in namespaces]
+        types = [locate(f"office365.{ns}.{type_name}") for ns in namespaces]
         found_modules = [t for t in types if t is not None]
         if any(found_modules):
             type_info["state"] = "attached"

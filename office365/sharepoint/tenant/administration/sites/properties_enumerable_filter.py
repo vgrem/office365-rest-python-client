@@ -14,8 +14,7 @@ class SitePropertiesEnumerableFilter(ClientValue):
         archived_time=None,
         archive_status=None,
     ):
-        """
-        :param str _filter:
+        """:param str _filter:
         :param str start_index:
         :param bool include_detail:
         :param int include_personal_site:

@@ -8,9 +8,7 @@ class WorkflowInstanceService(Entity):
     """Manages and reads workflow instances from the workflow host."""
 
     def enumerate_instances_for_site(self):
-        """
-        Returns the site workflow instances for the current site.
-        """
+        """Returns the site workflow instances for the current site."""
         return_type = EntityCollection(self.context, WorkflowInstance)
         qry = ServiceOperationQuery(self, "EnumerateInstancesForSite", None, None, None, return_type)
         self.context.add_query(qry)

@@ -16,8 +16,7 @@ class FolderColoring(Entity):
         coloring_information=FolderColoringInformation(color_hex="1"),
         return_type=None,
     ):
-        """
-        :param str decoded_url:
+        """:param str decoded_url:
         :param FolderColoringInformation coloring_information:
         :param Folder return_type: Return type
         """
@@ -34,8 +33,7 @@ class FolderColoring(Entity):
 
     def stamp_color(self, decoded_url, coloring_information):
         # type: (str, FolderColoringInformation) -> Self
-        """
-        :param str decoded_url:
+        """:param str decoded_url:
         :param FolderColoringInformation coloring_information:
         """
         payload = {

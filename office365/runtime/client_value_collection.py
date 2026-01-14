@@ -77,4 +77,4 @@ class ClientValueCollection(ClientValue, Generic[T]):
     @property
     def entity_type_name(self):
         """Returns server type name of value's collection"""
-        return "Collection({0})".format(ODataType.resolve_type(self._item_type))
+        return f"Collection({ODataType.resolve_type(self._item_type)})"

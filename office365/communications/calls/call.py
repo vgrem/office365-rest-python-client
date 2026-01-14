@@ -19,14 +19,12 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class Call(Entity):
-    """
-    The call resource is created when there is an incoming call for the application or the application creates a
+    """The call resource is created when there is an incoming call for the application or the application creates a
     new outgoing call via a POST on app/calls.
     """
 
     def cancel_media_processing(self, client_context=None):
-        """
-        Cancels processing for any in-progress media operations.
+        """Cancels processing for any in-progress media operations.
 
         Media operations refer to the IVR operations playPrompt and recordResponse, which are by default queued
         to process in order. The cancelMediaProcessing method cancels any operation that is in-process as well as
@@ -46,8 +44,7 @@ class Call(Entity):
         return return_type
 
     def reject(self, reason=None, callback_uri=None):
-        """
-        Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
+        """Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
         a group call or a peer-to-peer call. If an invite to a group call is received, the notification will contain
         the chatInfo and meetingInfo parameters.
 
@@ -67,14 +64,13 @@ class Call(Entity):
         return self
 
     def delete(self):
+        """Delete or hang up an active call. For group calls, this will only delete your call leg and the underlying
+        group call will still continue.
         """
-        Delete or hang up an active call. For group calls, this will only delete your call leg and the underlying
-        group call will still continue."""
         return super(Call, self).delete_object()
 
     def update_recording_status(self, status, client_context):
-        """
-        Update the application's recording status associated with a call.
+        """Update the application's recording status associated with a call.
         This requires the use of the Teams policy-based recording solution.
 
         :param str status: The recording status. Possible values are: notRecording, recording, or failed.
@@ -87,8 +83,7 @@ class Call(Entity):
         return return_type
 
     def unmute(self, client_context):
-        """
-        Allow the application to unmute itself.
+        """Allow the application to unmute itself.
 
         This is a server unmute, meaning that the server will start sending audio packets for this participant
         to other participants again.
@@ -118,9 +113,7 @@ class Call(Entity):
 
     @property
     def participants(self):
-        """
-        Participant collection
-        """
+        """Participant collection"""
         return self.properties.get(
             "participants",
             EntityCollection(
@@ -132,9 +125,7 @@ class Call(Entity):
 
     @property
     def operations(self):
-        """
-        CommsOperation collection
-        """
+        """CommsOperation collection"""
         return self.properties.get(
             "operations",
             EntityCollection(

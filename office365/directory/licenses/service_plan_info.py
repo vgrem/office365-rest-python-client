@@ -3,12 +3,11 @@ from office365.runtime.client_value import ClientValue
 
 class ServicePlanInfo(ClientValue):
     """Contains information about a service plan associated with a subscribed SKU. The servicePlans property of
-    the subscribedSku entity is a collection of servicePlanInfo."""
+    the subscribedSku entity is a collection of servicePlanInfo.
+    """
 
     def __init__(self, _id=None, name=None, provisioning_status=None, applies_to=None):
-        """
-
-        :param str applies_to: The object the service plan can be assigned to. Possible values:
+        """:param str applies_to: The object the service plan can be assigned to. Possible values:
                "User" - service plan can be assigned to individual users.
                "Company" - service plan can be assigned to the entire tenant.
         :param str provisioning_status: The provisioning status of the service plan. Possible values:

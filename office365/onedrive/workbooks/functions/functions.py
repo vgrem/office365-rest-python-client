@@ -7,8 +7,7 @@ class WorkbookFunctions(Entity):
     """Used as a container for Microsoft Excel worksheet function"""
 
     def abs(self, number):
-        """
-        Returns the absolute value of a number. The absolute value of a number is the number without its sign
+        """Returns the absolute value of a number. The absolute value of a number is the number without its sign
         :param float number: The real number of which you want the absolute value.
         """
         return_type = WorkbookFunctionResult(self.context)
@@ -20,8 +19,7 @@ class WorkbookFunctions(Entity):
         return return_type
 
     def accr_int(self, issue, first_interest, settlement, rate, par, frequency):
-        """
-        Returns the accrued interest for a security that pays periodic interest.
+        """Returns the accrued interest for a security that pays periodic interest.
 
         :param any issue: The real number of which you want the absolute value.
         :param any first_interest: The security's first interest date.
@@ -46,8 +44,7 @@ class WorkbookFunctions(Entity):
         return return_type
 
     def accr_int_m(self, issue, settlement, rate, par, basis):
-        """
-        Returns the accrued interest for a security that pays periodic interest.
+        """Returns the accrued interest for a security that pays periodic interest.
 
         :param any issue: The real number of which you want the absolute value.
         :param any settlement: The security's settlement date. The security settlement date is the date after
@@ -84,8 +81,7 @@ class WorkbookFunctions(Entity):
         return return_type
 
     def power(self, number, power):
-        """
-        Returns the result of a number raised to a power.
+        """Returns the result of a number raised to a power.
 
         :param int number: The base number.
         :param int power: The exponent to which the base number is raised.

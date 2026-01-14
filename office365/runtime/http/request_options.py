@@ -3,12 +3,11 @@ from typing import Any
 from office365.runtime.http.http_method import HttpMethod
 
 
-class RequestOptions(object):
+class RequestOptions:
     """Request options"""
 
     def __init__(self, url, method=HttpMethod.Get, data=None):
-        """
-        Request options
+        """Request options
 
         :param str url: URL for the new :class:`requests.Request` object
         """

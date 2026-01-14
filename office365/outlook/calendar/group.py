@@ -7,9 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class CalendarGroup(Entity):
-    """
-    A group of user calendars.
-    """
+    """A group of user calendars."""
 
     @property
     def name(self):

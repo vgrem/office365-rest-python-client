@@ -19,7 +19,8 @@ class Teamwork(Entity):
     def region(self):
         # type: () -> Optional[str]
         """Represents the region of the organization or the tenant.
-        The region value can be any region supported by the Teams payload"""
+        The region value can be any region supported by the Teams payload
+        """
         return self.properties.get("region", None)
 
     @property

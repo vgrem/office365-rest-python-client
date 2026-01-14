@@ -12,8 +12,7 @@ class RankingLabeling(Entity):
         super(RankingLabeling, self).__init__(context, static_path)
 
     def add_judgment(self, user_query, url, label_id):
-        """
-        Adds a single relevance judgment for the specified query and URL pair.
+        """Adds a single relevance judgment for the specified query and URL pair.
 
         :param str user_query: User query for which the relevance judgment is added.
         :param str url: URL for which the relevance judgment is added.
@@ -27,8 +26,7 @@ class RankingLabeling(Entity):
 
     def normalize_result_url(self, url):
         # type: (str) -> ClientResult[str]
-        """
-        A URL string after normalization. The input and output URL strings MUST resolve to the same document.
+        """A URL string after normalization. The input and output URL strings MUST resolve to the same document.
 
         :param str url: The URL for which the relevance judgment is added.
         """

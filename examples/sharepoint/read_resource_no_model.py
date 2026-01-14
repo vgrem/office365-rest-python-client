@@ -1,6 +1,4 @@
-"""
-Demonstrates how to construct and submit requests without model involved
-"""
+"""Demonstrates how to construct and submit requests without model involved"""
 
 import json
 
@@ -13,6 +11,6 @@ try:
     response = request.execute_request("web/currentUser")
     json = json.loads(response.content)
     prop_val = json["d"]["UserPrincipalName"]
-    print("UserPrincipalName: {0}".format(prop_val))
+    print(f"UserPrincipalName: {prop_val}")
 except Exception as e:
-    print("An error occurred: {0}".format(e))
+    print(f"An error occurred: {e}")

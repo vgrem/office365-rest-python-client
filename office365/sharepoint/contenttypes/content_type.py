@@ -11,8 +11,7 @@ from office365.sharepoint.translation.user_resource import UserResource
 
 
 class ContentType(Entity):
-    """
-    Specifies a content type.
+    """Specifies a content type.
 
     A named and uniquely identifiable collection of settings and fields that store metadata for individual items
     in a SharePoint list. One or more content types can be associated with a list, which restricts the contents
@@ -26,8 +25,7 @@ class ContentType(Entity):
         return self.string_id or str(self.id) or self.entity_type_name
 
     def reorder_fields(self, field_names):
-        """
-        The ReorderFields method is called to change the order in which fields appear in a content type.
+        """The ReorderFields method is called to change the order in which fields appear in a content type.
         :param list[str] field_names: Rearranges the collection of fields in the order in which field internal
              names are specified.
         """
@@ -37,8 +35,7 @@ class ContentType(Entity):
         return self
 
     def update(self, update_children):
-        """
-        Updates the content type, and any child objects  of the content type if specified,
+        """Updates the content type, and any child objects  of the content type if specified,
         with any changes made to the content type.
         :param bool update_children: Specifies whether changes propagate to child objects of the content type.
         """
@@ -57,24 +54,19 @@ class ContentType(Entity):
     @property
     def display_form_client_side_component_id(self):
         # type: () -> Optional[str]
-        """
-        The component ID of an SPFx Form Customizer to connect to this content type for usage with display forms.
-        """
+        """The component ID of an SPFx Form Customizer to connect to this content type for usage with display forms."""
         return self.properties.get("DisplayFormClientSideComponentId", None)
 
     @property
     def display_form_client_side_component_properties(self):
         # type: () -> Optional[str]
-        """
-        The component properties of an SPFx Form Customizer to connect to this content type for usage with display forms
-        """
+        """The component properties of an SPFx Form Customizer to connect to this content type for usage with display forms"""
         return self.properties.get("DisplayFormClientSideComponentProperties", None)
 
     @property
     def display_form_template_name(self):
         # type: () -> Optional[str]
-        """
-        Specifies the name of a custom display form template to use for list items that have been assigned
+        """Specifies the name of a custom display form template to use for list items that have been assigned
         the content type.
         """
         return self.properties.get("DisplayFormTemplateName", None)
@@ -82,33 +74,26 @@ class ContentType(Entity):
     @property
     def display_form_url(self):
         # type: () -> Optional[str]
-        """
-        Specifies the URL of a custom display form to use for list items that have been assigned the content type.
-        """
+        """Specifies the URL of a custom display form to use for list items that have been assigned the content type."""
         return self.properties.get("DisplayFormUrl", None)
 
     @property
     def edit_form_client_side_component_id(self):
         # type: () -> Optional[str]
-        """
-        The component properties of an SPFx Form Customizer to connect to this content type for usage with edit item
-            forms
+        """The component properties of an SPFx Form Customizer to connect to this content type for usage with edit item
+        forms
         """
         return self.properties.get("EditFormClientSideComponentId", None)
 
     @property
     def edit_form_client_side_component_properties(self):
         # type: () -> Optional[str]
-        """
-        The component ID of an SPFx Form Customizer to connect to this content type for usage with edit item forms
-        """
+        """The component ID of an SPFx Form Customizer to connect to this content type for usage with edit item forms"""
         return self.properties.get("EditFormClientSideComponentProperties", None)
 
     @property
     def id(self):
-        """
-        Specifies an identifier for the content type as specified in [MS-WSSTS] section 2.1.2.8.1.
-        """
+        """Specifies an identifier for the content type as specified in [MS-WSSTS] section 2.1.2.8.1."""
         return self.properties.get("Id", ContentTypeId())
 
     @property
@@ -145,7 +130,8 @@ class ContentType(Entity):
     def new_form_client_side_component_properties(self):
         # type: () -> Optional[str]
         """The component properties of an SPFx Form Customizer to connect to this content type for usage with new
-        item forms"""
+        item forms
+        """
         return self.properties.get("NewFormClientSideComponentProperties", None)
 
     @property
@@ -191,9 +177,7 @@ class ContentType(Entity):
     @property
     def edit_form_url(self):
         # type: () -> Optional[str]
-        """
-        Specifies the URL of a custom edit form to use for list items that have been assigned the content type.
-        """
+        """Specifies the URL of a custom edit form to use for list items that have been assigned the content type."""
         return self.properties.get("EditFormUrl", None)
 
     @property

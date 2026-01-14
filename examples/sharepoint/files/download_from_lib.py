@@ -1,6 +1,4 @@
-"""
-Demonstrates how to download a files from SharePoint library
-"""
+"""Demonstrates how to download a files from SharePoint library"""
 
 import tempfile
 from pathlib import Path

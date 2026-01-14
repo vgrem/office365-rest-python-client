@@ -46,8 +46,7 @@ from office365.sharepoint.webs.web import Web
 
 
 class Site(Entity):
-    """
-    Represents a collection of sites in a Web application, including a top-level website and all its sub sites.
+    """Represents a collection of sites in a Web application, including a top-level website and all its sub sites.
 
     A set of websites that are in the same content database, have the same owner, and share administration settings.
     A site collection can be identified by a GUID or the URL of the top-level site for the site collection.
@@ -94,7 +93,7 @@ class Site(Entity):
         ingestion_task_key,
     ):
         """ """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {
             "gWebId": g_web_id,
             "azureContainerSourceUri": azure_container_source_uri,
@@ -114,7 +113,7 @@ class Site(Entity):
         azure_queue_report_uri=None,
     ):
         """ """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {
             "gWebId": g_web_id,
             "azureContainerSourceUri": azure_container_source_uri,
@@ -126,8 +125,7 @@ class Site(Entity):
         return return_type
 
     def create_preview_site(self, upgrade=None, sendemail=None):
-        """
-        Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
+        """Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
         of the site collection to a newer version
 
         :param bool upgrade: If "true", the evaluation site collection MUST be upgraded when it is created.
@@ -162,7 +160,7 @@ class Site(Entity):
 
     def check_is_deletable(self):
         """Check Site Is Deletable"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
 
         def _check_is_deletable():
             SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)
@@ -171,8 +169,7 @@ class Site(Entity):
         return return_type
 
     def extend_upgrade_reminder_date(self):
-        """
-        Extend the upgrade reminder date for this site collection, so that site collection administrators will
+        """Extend the upgrade reminder date for this site collection, so that site collection administrators will
         not be reminded to run a site collection upgrade before the new date
         """
         qry = ServiceOperationQuery(self, "ExtendUpgradeReminderDate")
@@ -181,8 +178,7 @@ class Site(Entity):
 
     @staticmethod
     def from_url(url):
-        """
-        Initiates and returns a site instance
+        """Initiates and returns a site instance
 
         :type url: str
         """
@@ -202,7 +198,7 @@ class Site(Entity):
 
     def get_block_download_policy_for_files_data(self):
         """ """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "GetBlockDownloadPolicyForFilesData", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -215,9 +211,7 @@ class Site(Entity):
         return return_type
 
     def get_copy_job_progress(self, copy_job_info=None):
-        """
-        :param copy_job_info: Optional copyJobInfo object.
-        """
+        """:param copy_job_info: Optional copyJobInfo object."""
         payload = {"copyJobInfo": copy_job_info}
         return_type = ClientResult(self.context, CopyJobProgress())
         qry = ServiceOperationQuery(self, "GetCopyJobProgress", None, payload, None, return_type)
@@ -298,8 +292,7 @@ class Site(Entity):
         return return_type
 
     def get_recycle_bin_items(self, row_limit=100, is_ascending=True):
-        """
-        Returns a collection of recycle bin items based on the specified query.
+        """Returns a collection of recycle bin items based on the specified query.
 
         :param int row_limit: The maximum number of Recycle Bin items to retrieve.
         :param bool is_ascending: Specifies whether the Recycle Bin items are sorted in ascending order by the column
@@ -323,8 +316,7 @@ class Site(Entity):
         return return_type
 
     def get_web_path(self, site_id, web_id):
-        """
-        :param int site_id: The site identifier
+        """:param int site_id: The site identifier
         :param int web_id: The web identifier
         """
         params = {"siteId": site_id, "webId": web_id}
@@ -335,8 +327,7 @@ class Site(Entity):
         return return_type
 
     def get_web_templates(self, lcid=1033, override_compat_level=0):
-        """
-        Returns the collection of site definitions that are available for creating
+        """Returns the collection of site definitions that are available for creating
             Web sites within the site collection.
 
         :param int lcid: A 32-bit unsigned integer that specifies the language of the site definitions that are
@@ -356,8 +347,7 @@ class Site(Entity):
         return return_type
 
     def invalidate(self):
-        """
-        Invalidates cached upgrade information about the site collection so that this information will be
+        """Invalidates cached upgrade information about the site collection so that this information will be
         recomputed the next time it is needed
         """
         qry = ServiceOperationQuery(self, "Invalidate")
@@ -365,8 +355,7 @@ class Site(Entity):
         return self
 
     def needs_upgrade_by_type(self, version_upgrade, recursive):
-        """
-        Returns "true" if this site collection requires site collection upgrade of the specified type;
+        """Returns "true" if this site collection requires site collection upgrade of the specified type;
         otherwise, "false"
 
         :param bool version_upgrade: If "true", version-to-version site collection upgrade is requested;
@@ -383,8 +372,7 @@ class Site(Entity):
         return return_type
 
     def join_hub_site(self, hub_site_id, approval_token=None, approval_correlation_id=None):
-        """
-        Associates a site with an existing hub site.
+        """Associates a site with an existing hub site.
 
         :param str hub_site_id: ID of the hub site to join.
         :param str approval_token:
@@ -407,7 +395,7 @@ class Site(Entity):
         :type site_id: str
         :type stop_redirect: bool
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         payload = {"id": site_id, "stopRedirect": stop_redirect}
         qry = ServiceOperationQuery(context.site, "GetUrlById", None, payload, None, return_type)
         qry.static = True
@@ -445,7 +433,7 @@ class Site(Entity):
 
     def is_deletable(self):
         """"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
 
         def _is_site_deletable():
             SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)
@@ -454,8 +442,7 @@ class Site(Entity):
         return return_type
 
     def get_catalog(self, type_catalog):
-        """
-        Specifies the list template gallery, site template gallery, Web Part gallery, master page gallery,
+        """Specifies the list template gallery, site template gallery, Web Part gallery, master page gallery,
         or other galleries from the site collection, including custom galleries that are defined by users.
 
         :type type_catalog: int
@@ -504,8 +491,7 @@ class Site(Entity):
         return self
 
     def run_health_check(self, rule_id=None, repair=None, run_always=None):
-        """
-        Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
+        """Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
         on the health of a site collection.)
 
         :param str rule_id: Specifies the rule or rules to be run. If the value is an empty GUID, all rules are run,
@@ -527,8 +513,7 @@ class Site(Entity):
         return self
 
     def update_client_object_model_use_remote_apis_permission_setting(self, require_use_remote_apis):
-        """
-        Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
+        """Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
         the site collection require UseRemoteAPIs permission.
 
         :param bool require_use_remote_apis: Specifies whether the client-side object model (CSOM) requests that are
@@ -548,8 +533,7 @@ class Site(Entity):
     @property
     def allow_designer(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether a designer can be used on this site collection.
+        """Specifies whether a designer can be used on this site collection.
         See Microsoft.SharePoint.Client.Web.AllowDesignerForCurrentUser, which is the scalar property used
         to determine the behavior for the current user. The default, if not disabled on the Web application, is "true".
         """
@@ -563,8 +547,7 @@ class Site(Entity):
     @property
     def allow_master_page_editing(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether master page editing is allowed on this site collection.
+        """Specifies whether master page editing is allowed on this site collection.
         See Web.AllowMasterPageEditingForCurrentUser, which is the scalar property used to
         determine the behavior for the current user. The default, if not disabled on the Web application, is "false".
         """
@@ -573,8 +556,7 @@ class Site(Entity):
     @property
     def allow_revert_from_template(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether this site collection can be reverted to its base template.
+        """Specifies whether this site collection can be reverted to its base template.
         See Web.AllowRevertFromTemplateForCurrentUser, which is the scalar property used to determine the behavior
         for the current user. The default, if not disabled on the Web application, is "false".
         """
@@ -588,9 +570,8 @@ class Site(Entity):
     @property
     def can_upgrade(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether this site collection is in an implementation-specific valid state for site collection upgrade,
-         "true" if it is; otherwise, "false".
+        """Specifies whether this site collection is in an implementation-specific valid state for site collection upgrade,
+        "true" if it is; otherwise, "false".
         """
         return self.properties.get("CanUpgrade", None)
 
@@ -609,8 +590,7 @@ class Site(Entity):
     @property
     def compatibility_level(self):
         # type: () -> Optional[str]
-        """
-        Specifies the compatibility level of the site collection for the purpose of major version level compatibility
+        """Specifies the compatibility level of the site collection for the purpose of major version level compatibility
         checks
         """
         return self.properties.get("CompatibilityLevel", None)
@@ -637,7 +617,8 @@ class Site(Entity):
         # type: () -> Optional[bool]
         """Gets a Boolean value that specifies whether users will be greeted with a notification bar telling them that
         the site can be shared with external users. The value is true if the notification bar is enabled; otherwise,
-        it is false."""
+        it is false.
+        """
         return self.properties.get("ExternalSharingTipsEnabled", None)
 
     @property
@@ -679,8 +660,7 @@ class Site(Entity):
     @property
     def read_only(self):
         # type: () -> Optional[bool]
-        """
-        Gets a Boolean value that specifies whether the site collection is read-only,
+        """Gets a Boolean value that specifies whether the site collection is read-only,
         locked, and unavailable for write access.
         """
         return self.properties.get("ReadOnly", None)
@@ -688,8 +668,7 @@ class Site(Entity):
     @property
     def required_designer_version(self):
         # type: () -> Optional[str]
-        """
-        Specifies the required minimum version of the designer that can be used on this site collection.
+        """Specifies the required minimum version of the designer that can be used on this site collection.
         The default, if not disabled on the Web application, is "15.0.0.0".
         """
         return self.properties.get("RequiredDesignerVersion", None)
@@ -709,9 +688,7 @@ class Site(Entity):
     @property
     def share_by_email_enabled(self):
         # type: () -> Optional[bool]
-        """
-        When true, users will be able to grant permissions to guests for resources within the site collection.
-        """
+        """When true, users will be able to grant permissions to guests for resources within the site collection."""
         return self.properties.get("ShareByEmailEnabled", None)
 
     @property
@@ -790,8 +767,7 @@ class Site(Entity):
     @property
     def max_items_per_throttled_operation(self):
         # type: () -> Optional[int]
-        """
-        Specifies the maximum number of list items allowed to be returned for each retrieve request before throttling
+        """Specifies the maximum number of list items allowed to be returned for each retrieve request before throttling
         occurs. If throttling occurs, list items MUST NOT be returned.
         """
         return self.properties.get("MaxItemsPerThrottledOperation", None)
@@ -804,9 +780,7 @@ class Site(Entity):
 
     @property
     def event_receivers(self):
-        """
-        Provides event receivers for events that occur at the scope of the site collection.
-        """
+        """Provides event receivers for events that occur at the scope of the site collection."""
         return self.properties.get(
             "EventReceivers",
             EventReceiverDefinitionCollection(self.context, ResourcePath("eventReceivers", self.resource_path), self),
@@ -815,8 +789,7 @@ class Site(Entity):
     @property
     def show_url_structure(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the URL structure of this site collection is viewable.
+        """Specifies whether the URL structure of this site collection is viewable.
         See Web.ShowURLStructureForCurrentUser, which is the scalar property used to determine the behavior for the
         current user. The default, if not disabled on the Web application, is "false".
         """
@@ -825,9 +798,7 @@ class Site(Entity):
     @property
     def ui_version_configuration_enabled(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the visual upgrade UI for this site collection is displayed.
-        """
+        """Specifies whether the visual upgrade UI for this site collection is displayed."""
         return self.properties.get("UIVersionConfigurationEnabled", None)
 
     @property
@@ -842,16 +813,13 @@ class Site(Entity):
 
     @property
     def upgrade_reminder_date(self):
-        """
-        Specifies a date, after which site collection administrators will be reminded to upgrade the site collection.
-        """
+        """Specifies a date, after which site collection administrators will be reminded to upgrade the site collection."""
         return self.properties.get("UpgradeReminderDate", datetime.datetime.min)
 
     @property
     def upgrade_scheduled(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the upgrade has been scheduled. It can only be set to false by a farm administrator.
+        """Specifies whether the upgrade has been scheduled. It can only be set to false by a farm administrator.
         To set it to true, set the UpgradeScheduledDate to a future time.
         """
         return self.properties.get("UpgradeScheduled", None)
@@ -859,8 +827,7 @@ class Site(Entity):
     @property
     def upgrade_scheduled_date(self):
         # type: () -> Optional[datetime.datetime]
-        """
-        Specifies the upgrade scheduled date in UTC (Coordinated Universal Time). Only the Date part is used.
+        """Specifies the upgrade scheduled date in UTC (Coordinated Universal Time). Only the Date part is used.
         If UpgradeScheduled is false, returns SqlDateTime.MinValue.
         """
         return self.properties.get("UpgradeScheduledDate", datetime.datetime.min)
@@ -868,9 +835,7 @@ class Site(Entity):
     @property
     def upgrading(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the user will be able to share links to the documents that can be accessed without signing in.
-        """
+        """Specifies whether the user will be able to share links to the documents that can be accessed without signing in."""
         return self.properties.get("Upgrading", None)
 
     @property

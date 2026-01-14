@@ -7,16 +7,13 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class AccessReviewSet(Entity):
-    """
-    Container for the base resources that expose the access reviews API and features. Currently exposes only the
+    """Container for the base resources that expose the access reviews API and features. Currently exposes only the
     accessReviewScheduleDefinition relationship.
     """
 
     @property
     def history_definitions(self):
-        """
-        Represents a collection of access review history data and the scopes used to collect that data
-        """
+        """Represents a collection of access review history data and the scopes used to collect that data"""
         return self.properties.get(
             "historyDefinitions",
             EntityCollection(

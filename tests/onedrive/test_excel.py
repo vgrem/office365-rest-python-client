@@ -8,7 +8,7 @@ from tests.graph_case import GraphTestCase
 
 def upload_excel(target_drive):
     # type: (Drive) -> DriveItem
-    path = "{0}/../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+    path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
     return target_drive.root.upload_file(path).execute_query()
 
 

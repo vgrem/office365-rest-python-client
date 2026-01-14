@@ -4,8 +4,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class FeatureRolloutPolicy(Entity):
-    """
-    Represents a feature rollout policy associated with a directory object. Creating a feature rollout policy
+    """Represents a feature rollout policy associated with a directory object. Creating a feature rollout policy
     helps tenant administrators to pilot features of Microsoft Entra ID with a specific group before enabling
     features for entire organization. This minimizes the impact and helps administrators to test and rollout
     authentication related features gradually.
@@ -20,9 +19,7 @@ class FeatureRolloutPolicy(Entity):
     @property
     def applies_to(self):
         # type: () -> DirectoryObjectCollection
-        """
-        Specifies a list of directoryObject resources that feature is enabled for.
-        """
+        """Specifies a list of directoryObject resources that feature is enabled for."""
         return self.properties.get(
             "appliesTo",
             DirectoryObjectCollection(

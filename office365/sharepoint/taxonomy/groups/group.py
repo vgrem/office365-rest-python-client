@@ -14,8 +14,7 @@ class TermGroup(TaxonomyItem):
         return self.display_name or self.entity_type_name
 
     def get_term_sets_by_name(self, label, lcid=None):
-        """
-        Search term set by name
+        """Search term set by name
 
         :param str label: The name of the TermSet object.
         :param int lcid: LCID of the language.
@@ -35,9 +34,7 @@ class TermGroup(TaxonomyItem):
     @property
     def term_sets(self):
         # type: () -> TaxonomyItemCollection[TermSet]
-        """
-        Gets a collection of the child TermSet instances of this TermGroup object.
-        """
+        """Gets a collection of the child TermSet instances of this TermGroup object."""
         return self.properties.get(
             "termSets",
             TaxonomyItemCollection(self.context, TermSet, ResourcePath("termSets", self.resource_path)),

@@ -22,7 +22,7 @@ https://docs.microsoft.com/en-us/answers/questions/131535/azure-app-cannot-acces
 
 
 def acquire_token():
-    authority = "https://login.microsoftonline.com/{0}".format(test_tenant)
+    authority = f"https://login.microsoftonline.com/{test_tenant}"
     import msal
 
     app = msal.ConfidentialClientApplication(

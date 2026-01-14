@@ -36,7 +36,8 @@ class SearchAnswer(Entity):
     def web_url(self):
         # type: () -> Optional[str]
         """The URL link for the search answer. When users select this search answer from the search results,
-        they are directed to the specified URL."""
+        they are directed to the specified URL.
+        """
         return self.properties.get("webUrl", None)
 
     @property

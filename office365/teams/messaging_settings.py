@@ -12,8 +12,7 @@ class TeamMessagingSettings(ClientValue):
         allow_team_mentions=True,
         allow_channel_mentions=True,
     ):
-        """
-        :param bool allow_user_edit_messages: If set to true, users can edit their messages.
+        """:param bool allow_user_edit_messages: If set to true, users can edit their messages.
         :param bool allow_user_delete_messages: If set to true, users can delete their messages.
         :param bool allow_owner_delete_messages: If set to true, owners can delete their messages.
         :param bool allow_team_mentions: If set to true, owners can delete their messages.

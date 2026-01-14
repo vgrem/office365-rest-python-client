@@ -13,8 +13,7 @@ class UserRegistrationMethodSummary(ClientValue):
         user_roles=None,
         user_types=None,
     ):
-        """
-        :param int total_user_count: Total number of users in the tenant.
+        """:param int total_user_count: Total number of users in the tenant.
         :param list[UserRegistrationMethodCount] method_counts: Number of users registered for each authentication
            method.
         :param str user_roles: The role type of the user.

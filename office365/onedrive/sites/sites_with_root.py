@@ -27,7 +27,7 @@ class SitesWithRoot(EntityCollection[Site]):
         :param str path: Server relative path
         """
         tenant_part = self.context.tenant_name.split(".")[0]
-        host_name = "{0}.sharepoint.com".format(tenant_part)
+        host_name = f"{tenant_part}.sharepoint.com"
         return_type = Site(self.context, SitePath(host_name, path, self.resource_path))
         qry = ReadEntityQuery(return_type)
         self.context.add_query(qry)
@@ -44,9 +44,7 @@ class SitesWithRoot(EntityCollection[Site]):
         return return_type
 
     def remove(self, sites):
-        """
-        :type sites: SitesWithRoot
-        """
+        """:type sites: SitesWithRoot"""
         return_type = SitesWithRoot(self.context, self.resource_path)
         payload = {
             "value": sites,
@@ -57,8 +55,7 @@ class SitesWithRoot(EntityCollection[Site]):
 
     def search(self, query_text):
         # type: (str) -> "SitesWithRoot"
-        """
-        Search across a SharePoint tenant for sites that match keywords provided.
+        """Search across a SharePoint tenant for sites that match keywords provided.
 
         The only property that works for sorting is createdDateTime. The search filter is a free text search that uses
         multiple properties when retrieving the search results.

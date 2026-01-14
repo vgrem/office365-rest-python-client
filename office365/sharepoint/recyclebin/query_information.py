@@ -11,8 +11,7 @@ class RecycleBinQueryInformation(ClientValue):
         row_limit,
         show_only_my_items,
     ):
-        """
-        Represents information for the recycle bin query.
+        """Represents information for the recycle bin query.
 
         :param bool show_only_my_items: Gets or sets a Boolean value that specifies whether to get items deleted by
             other users.

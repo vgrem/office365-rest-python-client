@@ -4,8 +4,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class CertificateBasedAuthConfiguration(Entity):
-    """
-    Certificate-based authentication enables you to be authenticated by Azure Active Directory with a client certificate
+    """Certificate-based authentication enables you to be authenticated by Azure Active Directory with a client certificate
     on a Windows, Android, or iOS device when connecting your Exchange Online account to:
 
        - Microsoft mobile applications such as Outlook and Word

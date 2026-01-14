@@ -6,7 +6,8 @@ from office365.entity import Entity
 
 class AttachmentBase(Entity):
     """Represents an abstract base type for an attachment. You can add related content to a todoTask in the form
-    of an attachment."""
+    of an attachment.
+    """
 
     @property
     def content_type(self):
@@ -17,17 +18,13 @@ class AttachmentBase(Entity):
     @property
     def last_modified_datetime(self):
         # type: () -> Optional[datetime.datetime]
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
-        """
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("lastModifiedDateTime", datetime.datetime.min)
 
     @property
     def name(self):
         # type: () -> Optional[str]
-        """
-        The display name of the attachment. This does not need to be the actual file name.
-        """
+        """The display name of the attachment. This does not need to be the actual file name."""
         return self.properties.get("name", None)
 
     @property

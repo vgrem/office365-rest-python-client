@@ -1,5 +1,4 @@
-"""
-Demonstrates how to upload a large file
+"""Demonstrates how to upload a large file
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession?view=graph-rest-1.0
 """
@@ -10,7 +9,7 @@ from tests import test_client_id, test_password, test_tenant, test_username
 
 def print_progress(range_pos):
     # type: (int) -> None
-    print("{0} bytes uploaded".format(range_pos))
+    print(f"{range_pos} bytes uploaded")
 
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
@@ -22,4 +21,4 @@ remote_file = (
     .get()
     .execute_query()
 )
-print("File {0} has been uploaded".format(remote_file.web_url))
+print(f"File {remote_file.web_url} has been uploaded")

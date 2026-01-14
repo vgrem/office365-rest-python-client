@@ -1,6 +1,4 @@
-"""
-Demonstrates how to create a site field of type Taxonomy
-"""
+"""Demonstrates how to create a site field of type Taxonomy"""
 
 import sys
 
@@ -16,6 +14,6 @@ term_set_id = "3b712032-95c4-4bb5-952d-f85ae9288f99"
 
 field_name = create_unique_name(create_unique_name("Country"))
 field = client.web.fields.create_taxonomy_field(field_name, term_set_id).execute_query()
-print("Field  {0} has been created".format(field.internal_name))
+print(f"Field  {field.internal_name} has been created")
 
 field.delete_object().execute_query()  # clean up

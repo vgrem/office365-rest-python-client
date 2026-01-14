@@ -7,8 +7,7 @@ class ColumnValidation(ClientValue):
     """Represents properties that validates column values."""
 
     def __init__(self, formula=None, descriptions=None, default_language=None):
-        """
-        :param str formula: The formula to validate column value.
+        """:param str formula: The formula to validate column value.
         :param list[DisplayNameLocalization] descriptions: The formula to validate column value.
         :param str default_language: The formula to validate column value.
         """

@@ -30,8 +30,7 @@ class SiteDesignCreationInfo(ClientValue):
         requires_yammer_connected=None,
         supported_web_templates=None,
     ):
-        """
-        :param str or None _id: The ID of the site design to apply.
+        """:param str or None _id: The ID of the site design to apply.
         :param str or None title: The display name of the site design.
         :param str or None description: The display description of site design.
         :param str or None web_template: Identifies which base template to add the design to. Use the value 64 for the

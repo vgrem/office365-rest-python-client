@@ -16,8 +16,7 @@ class PrincipalInfo(ClientValue):
         job_title=None,
         principal_type=None,
     ):
-        """
-        :param str principal_id: Specifies an identifier for the principal. It MUST be -1 if the principal
+        """:param str principal_id: Specifies an identifier for the principal. It MUST be -1 if the principal
             does not belong to the current site.
         :param str display_name: Specifies the display name of the principal.
         :param str email: Specifies the e-mail address of the principal.
@@ -43,4 +42,4 @@ class PrincipalInfo(ClientValue):
         return ODataType.resolve_enum_key(PrincipalType, self.PrincipalType)
 
     def __str__(self):
-        return "{0}: {1}".format(self.principal_type_name, self.DisplayName)
+        return f"{self.principal_type_name}: {self.DisplayName}"

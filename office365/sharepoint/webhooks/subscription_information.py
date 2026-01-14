@@ -7,8 +7,7 @@ class SubscriptionInformation(ClientValue):
     """Parameter class for webhook Update and Create REST operations."""
 
     def __init__(self, notification_url, resource, expiration_datetime=None):
-        """
-        :param str notification_url:  Endpoint that will be called when an event occurs. It MUST NOT be empty.
+        """:param str notification_url:  Endpoint that will be called when an event occurs. It MUST NOT be empty.
             Its length MUST be equal to or less than 1024.
         :param str resource: The resource path to watch. It MUST NOT be empty.
         :param str expiration_datetime: Expiration time of the subscription.

@@ -21,7 +21,7 @@ def generate_user_profile():
         "office_location": fake.street_address(),
         "city": fake.city(),
         "country": fake.country(),
-        "principal_name": "{0}@{1}".format(fake.user_name(), test_tenant),
+        "principal_name": f"{fake.user_name()}@{test_tenant}",
         "password": create_unique_name("P@ssw0rd"),
         "account_enabled": True,
     }
@@ -30,7 +30,7 @@ def generate_user_profile():
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
-for idx in range(0, 1):
+for idx in range(1):
     user_profile = generate_user_profile()
     user = client.users.add(user_profile).execute_query()
-    print("'{0}' user has been created".format(user.user_principal_name))
+    print(f"'{user.user_principal_name}' user has been created")

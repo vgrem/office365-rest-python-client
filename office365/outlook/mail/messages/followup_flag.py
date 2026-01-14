@@ -12,8 +12,7 @@ class FollowupFlag(ClientValue):
         flag_status=None,
         start_datetime=DateTimeTimeZone(),
     ):
-        """
-        :param DateTimeTimeZone completed_datetime: The date and time that the follow-up was finished.
+        """:param DateTimeTimeZone completed_datetime: The date and time that the follow-up was finished.
         :param DateTimeTimeZone due_datetime: The date and time that the follow up is to be finished.
              Note: To set the due date, you must also specify the startDateTime; otherwise, you will
              get a 400 Bad Request response.

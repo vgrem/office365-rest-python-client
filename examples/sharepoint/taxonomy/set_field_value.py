@@ -1,6 +1,4 @@
-"""
-Demonstrates how to set taxonomy field value
-"""
+"""Demonstrates how to set taxonomy field value"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.taxonomy.field_value import (

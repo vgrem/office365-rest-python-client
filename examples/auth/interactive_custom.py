@@ -1,5 +1,4 @@
-"""
-Demonstrates how to login when the user may be prompted for input by the authorization server.
+"""Demonstrates how to login when the user may be prompted for input by the authorization server.
 For example, to sign in, perform multi-factor authentication (MFA), or to grant consent
 to more resource access permissions.
 
@@ -9,6 +8,7 @@ Note:
 
 https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows
 #interactive-and-non-interactive-authentication
+
 """
 
 import msal
@@ -20,7 +20,7 @@ from tests import test_client_id, test_tenant
 def acquire_token():
     app = msal.PublicClientApplication(
         test_client_id,
-        authority="https://login.microsoftonline.com/{0}".format(test_tenant),
+        authority=f"https://login.microsoftonline.com/{test_tenant}",
         client_credential=None,
     )
     scopes = ["https://graph.microsoft.com/.default"]

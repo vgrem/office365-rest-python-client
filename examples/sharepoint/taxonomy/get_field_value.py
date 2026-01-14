@@ -1,6 +1,4 @@
-"""
-Demonstrates how to get taxonomy field value
-"""
+"""Demonstrates how to get taxonomy field value"""
 
 import sys
 

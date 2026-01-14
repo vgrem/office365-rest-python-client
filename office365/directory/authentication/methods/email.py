@@ -4,8 +4,7 @@ from office365.directory.authentication.methods.method import AuthenticationMeth
 
 
 class EmailAuthenticationMethod(AuthenticationMethod):
-    """
-    Represents an email address registered to a user. Email as an authentication method is available only for
+    """Represents an email address registered to a user. Email as an authentication method is available only for
     self-service password reset (SSPR). Users may only have one email authentication method.
     """
 

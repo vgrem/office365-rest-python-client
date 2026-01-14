@@ -9,11 +9,13 @@ from office365.runtime.queries.function import FunctionQuery
 class WorkbookNamedItem(Entity):
     """Represents a defined name for a range of cells or value. Names can be primitive named objects
     (as seen in the type below), range object, reference to a range. This object can be used to obtain range
-    object associated with names."""
+    object associated with names.
+    """
 
     def range(self):
         """Returns the range object that is associated with the name. Throws an exception if the named item's type
-        isn't a range."""
+        isn't a range.
+        """
         return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         qry = FunctionQuery(self, "range", return_type=return_type)
         self.context.add_query(qry)
@@ -40,7 +42,8 @@ class WorkbookNamedItem(Entity):
     @property
     def worksheet(self):
         """Returns the worksheet on which the named item is scoped to. Available only if the item is scoped
-        to the worksheet. Read-only."""
+        to the worksheet. Read-only.
+        """
         from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
 
         return self.properties.get(

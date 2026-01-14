@@ -1,5 +1,4 @@
-"""
-Get a set of messages that have been added in a specified folder.
+"""Get a set of messages that have been added in a specified folder.
 
 The example is adapted from https://learn.microsoft.com/en-us/graph/api/message-delta?view=graph-rest-1.0
 """

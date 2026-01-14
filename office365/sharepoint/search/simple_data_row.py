@@ -6,9 +6,7 @@ class SimpleDataRow(ClientValue):
     """Represents a row in a data table"""
 
     def __init__(self, cells=None):
-        """
-        :param dict cells: The cells in the data table row.
-        """
+        """:param dict cells: The cells in the data table row."""
         self.Cells = cells
 
     def set_property(self, k, v, persist_changes=True):

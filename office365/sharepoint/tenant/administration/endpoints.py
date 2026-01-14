@@ -35,7 +35,8 @@ class TenantAdminEndpoints(Entity):
     def cfrms_graph_endpoint(self):
         # type: () -> Optional[str]
         """The URL of the Microsoft Graph API specifically for managing Conditional Access policies and Rights
-        Management Services (RMS) settings within a tenant."""
+        Management Services (RMS) settings within a tenant.
+        """
         return self.properties.get("CFRMSGraphEndpoint", None)
 
     @property
@@ -48,14 +49,16 @@ class TenantAdminEndpoints(Entity):
     def mini_maven_endpoint(self):
         # type: () -> Optional[str]
         """URL used internally by SharePoint or Microsoft 365 services. It may be part of Microsoft's orchestration
-        or lightweight service framework for tenant or feature management."""
+        or lightweight service framework for tenant or feature management.
+        """
         return self.properties.get("MiniMavenEndpoint", None)
 
     @property
     def sp_migration_tool_url(self):
         # type: () -> Optional[str]
         """URL to access the SharePoint Migration Tool, enabling users to download the software
-        for performing migrations"""
+        for performing migrations
+        """
         return self.properties.get("SPMigrationToolUrl", None)
 
     @property

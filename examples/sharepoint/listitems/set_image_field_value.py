@@ -8,8 +8,7 @@ from tests import test_client_credentials, test_team_site_url
 
 
 def upload_image(web, file_path):
-    """
-    :type web: office365.sharepoint.webs.web.Web
+    """:type web: office365.sharepoint.webs.web.Web
     :type file_path: str
     """
     with open(file_path, "rb") as content_file:

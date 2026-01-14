@@ -4,8 +4,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class WorkingHours(ClientValue):
-    """
-    Represents the days of the week and hours in a specific time zone that the user works.
+    """Represents the days of the week and hours in a specific time zone that the user works.
 
     Having access to a user's working hours is useful in scenarios that handle activity or resource planning.
     You can get and set the working hours of a user as part of the user's mailbox settings.
@@ -18,8 +17,7 @@ class WorkingHours(ClientValue):
     """
 
     def __init__(self, days_of_week=None, end_time=None, start_time=None, timezone=TimeZoneBase()):
-        """
-        :param list[str] days_of_week: The days of the week on which the user works.
+        """:param list[str] days_of_week: The days of the week on which the user works.
         :param TimeZoneBase timezone: The time zone to which the working hours apply.
         :param str end_time: The time of the day that the user stops working.
         :param str start_time: The time of the day that the user starts working.

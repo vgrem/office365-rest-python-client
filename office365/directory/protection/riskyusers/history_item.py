@@ -6,7 +6,8 @@ from office365.directory.protection.riskyusers.risky_user import RiskyUser
 
 class RiskyUserHistoryItem(RiskyUser):
     """Represents the risk history of an Azure Active Directory (Azure AD) user as determined
-    by Azure AD Identity Protection."""
+    by Azure AD Identity Protection.
+    """
 
     @property
     def activity(self):

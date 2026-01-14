@@ -18,8 +18,7 @@ from office365.search.response import SearchResponse
 
 
 class SearchEntity(Entity):
-    """
-    A top level object representing the Microsoft Search API endpoint. It does not behave as any other resource
+    """A top level object representing the Microsoft Search API endpoint. It does not behave as any other resource
     in Graph, but serves as an anchor to the query action.
     """
 
@@ -33,8 +32,7 @@ class SearchEntity(Entity):
         region=None,
     ):
         # type: (str, Optional[List[str]], Optional[int], Optional[int], Optional[bool], Optional[str]) -> ClientResult[ClientValueCollection[SearchResponse]]
-        """
-        Runs the query specified in the request body. Search results are provided in the response.
+        """Runs the query specified in the request body. Search results are provided in the response.
 
         :param str query_string: Contains the query terms.
         :param list[str] entity_types: One or more types of resources expected in the response.
@@ -199,7 +197,8 @@ class SearchEntity(Entity):
     @property
     def qnas(self):
         """Administrative answer in Microsoft Search results that provide answers for specific search keywords in
-        an organization."""
+        an organization.
+        """
         return self.properties.get(
             "qnas",
             EntityCollection(

@@ -8,8 +8,7 @@ class TeamsTabConfiguration(ClientValue):
     """
 
     def __init__(self, content_url=None, entity_id=None, remove_url=None, website_url=None):
-        """
-        :param str content_url: Url used for rendering tab contents in Teams.
+        """:param str content_url: Url used for rendering tab contents in Teams.
         :param str entity_id: Identifier for the entity hosted by the tab provider.
         :param str remove_url: Url called by Teams client when a Tab is removed using the Teams Client.
         :param str website_url: Url for showing tab contents outside of Teams.

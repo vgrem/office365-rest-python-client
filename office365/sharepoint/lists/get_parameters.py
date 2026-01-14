@@ -4,9 +4,7 @@ from office365.sharepoint.lists.collection_position import ListCollectionPositio
 
 class GetListsParameters(ClientValue):
     def __init__(self, position=ListCollectionPosition(), row_limit=100):
-        """
-        :param ListCollectionPosition position:
-        """
+        """:param ListCollectionPosition position:"""
         self.ListCollectionPosition = position
         self.RowLimit = row_limit
 

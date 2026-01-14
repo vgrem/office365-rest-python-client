@@ -19,8 +19,7 @@ class WorkbookRange(Entity):
         return self.address or self.entity_type_name
 
     def cell(self, row, column):
-        """
-        Gets the range object containing the single cell based on row and column numbers. The cell can be outside
+        """Gets the range object containing the single cell based on row and column numbers. The cell can be outside
         the bounds of its parent range, so long as it's stays within the worksheet grid.
         :param int row: Row number of the cell to be retrieved. Zero-indexed.
         :param int column: Column number of the cell to be retrieved. Zero-indexed.
@@ -41,8 +40,7 @@ class WorkbookRange(Entity):
         return self
 
     def insert(self, shift):
-        """
-        Inserts a cell or a range of cells into the worksheet in place of this range, and shifts the other cells to
+        """Inserts a cell or a range of cells into the worksheet in place of this range, and shifts the other cells to
         make space. Returns a new Range object at the now blank space.
         :param str shift: Specifies which way to shift the cells. The possible values are: Down, Right.
         """
@@ -53,9 +51,7 @@ class WorkbookRange(Entity):
         return return_type
 
     def last_row(self):
-        """
-        Get the last row within the range. For example, the last row of B2:D5 is B5:D5.
-        """
+        """Get the last row within the range. For example, the last row of B2:D5 is B5:D5."""
         return_type = WorkbookRange(self.context)
         qry = FunctionQuery(self, "lastRow", return_type=return_type)
         self.context.add_query(qry)
@@ -82,8 +78,7 @@ class WorkbookRange(Entity):
     @property
     def address(self):
         # type: () -> Optional[str]
-        """
-        Represents the range reference in A1-style. Address value will contain the Sheet reference
+        """Represents the range reference in A1-style. Address value will contain the Sheet reference
         (e.g. Sheet1!A1:B4)
         """
         return self.properties.get("address", None)
@@ -144,14 +139,16 @@ class WorkbookRange(Entity):
     def values(self):
         # type: () -> List
         """Represents the raw values of the specified range. The data returned could be of type string, number,
-        or a boolean. Cell that contains an error returns the error string."""
+        or a boolean. Cell that contains an error returns the error string.
+        """
         return self.properties.get("values", None)
 
     @property
     def value_types(self):
         # type: () -> List
         """Represents the type of data of each cell. The possible values are:
-        Unknown, Empty, String, Integer, Double, Boolean, Error."""
+        Unknown, Empty, String, Integer, Double, Boolean, Error.
+        """
         return self.properties.get("valueTypes", None)
 
     @property

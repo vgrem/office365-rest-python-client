@@ -71,8 +71,7 @@ class SitePageService(Entity):
         return self.pages.add().after_execute(_page_created)
 
     def create_and_publish_page(self, title):
-        """
-        Create and publish a new sitePage in the site pages list in a site.
+        """Create and publish a new sitePage in the site pages list in a site.
         :param str title: The title of Site Page
         """
 
@@ -88,21 +87,19 @@ class SitePageService(Entity):
         return self.create_page(title).after_execute(_page_created)
 
     def can_create_page(self):
-        """
-        Checks if the current user has permission to create a site page on the site pages document library.
+        """Checks if the current user has permission to create a site page on the site pages document library.
         MUST return true if the user has permission to create a site page, otherwise MUST return false.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "CanCreatePage", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def can_create_promoted_page(self):
-        """
-        Checks if the current user has permission to create a site page on the site pages document library.
+        """Checks if the current user has permission to create a site page on the site pages document library.
         MUST return true if the user has permission to create a site page, otherwise MUST return false.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "CanCreatePromotedPage", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -119,8 +116,7 @@ class SitePageService(Entity):
     @staticmethod
     def get_time_zone(context, city_name):
         # type: (ClientContext, str) -> PrimaryCityTime
-        """
-        Gets time zone data for specified city.
+        """Gets time zone data for specified city.
         :param office365.sharepoint.client_context.ClientContext context:
         :param str city_name: The name of the city.
         """
@@ -134,8 +130,7 @@ class SitePageService(Entity):
     @staticmethod
     def compute_file_name(context, title):
         # type: (ClientContext, str) -> ClientResult[str]
-        """
-        :param office365.sharepoint.client_context.ClientContext context: Client context
+        """:param office365.sharepoint.client_context.ClientContext context: Client context
         :param str title: The title of the page.
         """
         return_type = ClientResult(context)
@@ -197,8 +192,7 @@ class SitePageService(Entity):
         return return_type
 
     def add_image(self, page_name, image_file_name, image_stream):
-        """
-        Adds an image to the site assets library of the current web.
+        """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
 
         :param str image_stream: The image stream.
@@ -217,8 +211,7 @@ class SitePageService(Entity):
         return return_type
 
     def add_image_from_external_url(self, page_name, image_file_name, external_url, sub_folder_name, page_id):
-        """
-        Adds an image to the site assets library of the current web.
+        """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
 
         :param str image_file_name: Indicates the file name of the image to be added.

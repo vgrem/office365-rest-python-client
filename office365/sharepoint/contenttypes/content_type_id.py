@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class ContentTypeId(ClientValue):
-    """
-    The ContentTypeId type is the identifier for the specified content type. The identifier is a string of
+    """The ContentTypeId type is the identifier for the specified content type. The identifier is a string of
     hexadecimal characters. The identifier MUST be unique relative to the current site collection and site and MUST
     follow the pattern of prefixing a ContentTypeId with its parent ContentTypeId.
 
@@ -11,8 +10,7 @@ class ContentTypeId(ClientValue):
     """
 
     def __init__(self, string_value=None):
-        """
-        Represents the content type identifier (ID) of a content type.
+        """Represents the content type identifier (ID) of a content type.
 
         :param str string_value: Hexadecimal string value of content type identifier. String value MUST start with "0x".
         """

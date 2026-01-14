@@ -1,5 +1,4 @@
-"""
-Get free/busy schedule of Outlook calendar users and resources
+"""Get free/busy schedule of Outlook calendar users and resources
 
 https://learn.microsoft.com/en-us/graph/outlook-get-free-busy-schedule
 

@@ -1,5 +1,4 @@
-"""
-Create a Text column in a list
+"""Create a Text column in a list
 
 https://learn.microsoft.com/en-us/graph/api/list-post-columns?view=graph-rest-1.0
 """

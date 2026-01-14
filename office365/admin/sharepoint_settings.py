@@ -38,17 +38,13 @@ class SharepointSettings(Entity):
     @property
     def sharing_allowed_domain_list(self):
         # type: () -> StringCollection
-        """
-        Collection of email domains that are allowed for sharing outside the organization.
-        """
+        """Collection of email domains that are allowed for sharing outside the organization."""
         return self.properties.get("sharingAllowedDomainList", StringCollection())
 
     @property
     def sharing_blocked_domain_list(self):
         # type: () -> StringCollection
-        """
-        Collection of email domains that are blocked for sharing outside the organization.
-        """
+        """Collection of email domains that are blocked for sharing outside the organization."""
         return self.properties.get("sharingBlockedDomainList", StringCollection())
 
     @sharing_blocked_domain_list.setter
@@ -60,8 +56,7 @@ class SharepointSettings(Entity):
     @property
     def sharing_capability(self):
         # type: () -> Optional[str]
-        """
-        Sharing capability for the tenant.
+        """Sharing capability for the tenant.
         Possible values are:
             disabled,
             externalUserSharingOnly,
@@ -73,17 +68,13 @@ class SharepointSettings(Entity):
     @property
     def sharing_domain_restriction_mode(self):
         # type: () -> Optional[str]
-        """
-        Specifies the external sharing mode for domains. Possible values are: none, allowList, blockList.
-        """
+        """Specifies the external sharing mode for domains. Possible values are: none, allowList, blockList."""
         return self.properties.get("sharingDomainRestrictionMode", None)
 
     @property
     def site_creation_default_managed_path(self):
         # type: () -> Optional[str]
-        """
-        The value of the team site managed path. This is the path under which new team sites will be created.
-        """
+        """The value of the team site managed path. This is the path under which new team sites will be created."""
         return self.properties.get("siteCreationDefaultManagedPath", None)
 
     @property
@@ -95,8 +86,7 @@ class SharepointSettings(Entity):
     @property
     def tenant_default_timezone(self):
         # type: () -> Optional[str]
-        """
-        The default timezone of a tenant for newly created sites. For a list of possible values,
+        """The default timezone of a tenant for newly created sites. For a list of possible values,
         see SPRegionalSettings.TimeZones property.
         """
         return self.properties.get("tenantDefaultTimezone", None)

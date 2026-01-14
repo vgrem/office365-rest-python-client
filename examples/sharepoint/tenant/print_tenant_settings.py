@@ -1,6 +1,4 @@
-"""
-Prints tenant settings
-"""
+"""Prints tenant settings"""
 
 from pprint import pprint
 

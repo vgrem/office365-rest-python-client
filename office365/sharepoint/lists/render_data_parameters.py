@@ -40,8 +40,7 @@ class RenderListDataParameters(ClientValue):
         show_stub_file=None,
         view_xml=None,
     ):
-        """
-        :param bool add_all_fields:
+        """:param bool add_all_fields:
         :param bool add_all_view_fields:
         :param bool add_regional_settings:
         :param bool add_required_fields: This parameter indicates if we return required fields.

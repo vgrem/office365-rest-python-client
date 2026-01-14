@@ -13,7 +13,7 @@ class CountCollection(DeltaCollection[T]):
     def count(self):
         # type: () -> ClientResult[int]
         """Executes a $count query to get the number of items in the collection"""
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
 
         def _construct_request(request):
             # type: (RequestOptions) -> None

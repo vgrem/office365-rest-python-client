@@ -20,8 +20,7 @@ class BasePermissions(ClientValue):
                 yield k
 
     def set(self, perm):
-        """
-        Assigns the permission
+        """Assigns the permission
         :type perm: int
         """
         if perm == PermissionKind.FullMask:

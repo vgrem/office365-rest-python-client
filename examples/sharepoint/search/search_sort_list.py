@@ -1,5 +1,4 @@
-"""
-Demonstrates how to use the Search REST service in SharePoint
+"""Demonstrates how to use the Search REST service in SharePoint
 
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """

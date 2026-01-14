@@ -8,7 +8,5 @@ class Operation(Entity):
 
     @property
     def created_datetime(self):
-        """
-        The start time of the operation.
-        """
+        """The start time of the operation."""
         return self.properties("createdDateTime", datetime.min)

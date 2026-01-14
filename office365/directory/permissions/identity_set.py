@@ -8,8 +8,7 @@ class IdentitySet(ClientValue):
     """
 
     def __init__(self, application=Identity(), device=Identity(), user=Identity()):
-        """
-        :param Identity application: The application associated with this action.
+        """:param Identity application: The application associated with this action.
         :param Identity device: The device associated with this action.
         :param Identity user: The user associated with this action.
         """

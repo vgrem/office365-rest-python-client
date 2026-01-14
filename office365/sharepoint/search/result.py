@@ -6,8 +6,7 @@ from office365.sharepoint.search.query_result import QueryResult
 
 
 class SearchResult(ClientValue):
-    """
-    The SearchResult structure resembles the ResultTableCollection structure
+    """The SearchResult structure resembles the ResultTableCollection structure
     (specified in [MS-QSSWS] section 3.1.4.1.3.1). However, the individual result tables that share the same
     QueryId are grouped together in a QueryResult structure (specified in section 3.1.5.2).
     The search result tables that have exactly the same QueryId value as specified by the protocol client are grouped
@@ -24,8 +23,7 @@ class SearchResult(ClientValue):
         spelling_suggestion=None,
         triggered_rules=None,
     ):
-        """
-        :param str elapsed_time:  The time it took to execute the search query, in milliseconds.
+        """:param str elapsed_time:  The time it took to execute the search query, in milliseconds.
             This element MUST contain a non-negative number.
         :param QueryResult primary_query_result: A grouping of result tables, where each contained result table is a
             ResultTable as specified in [MS-QSSWS] section 3.1.4.1.3.6.

@@ -15,8 +15,7 @@ class MessageCollection(DeltaCollection[Message]):
 
     def add(self, subject=None, body=None, to_recipients=None, **kwargs):
         # type: (str, str|ItemBody, List[str], ...) -> Message
-        """
-        Create a draft of a new message in either JSON or MIME format.
+        """Create a draft of a new message in either JSON or MIME format.
 
         :param str subject: The subject of the message.
         :param str or ItemBody body: The body of the message. It can be in HTML or text format
@@ -34,12 +33,10 @@ class MessageCollection(DeltaCollection[Message]):
         return super(MessageCollection, self).add(**kwargs)
 
     def search(self, query_text):
-        """
-        search messages based on a value in specific message properties.
+        """Search messages based on a value in specific message properties.
         The results of the search are sorted by the date and time that the message was sent.
         A $search request returns up to 1,000 results
         """
-
         return_type = MessageCollection(self.context, self.resource_path)
         return_type.query_options.custom["search"] = query_text
         return_type.get()

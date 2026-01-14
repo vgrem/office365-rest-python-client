@@ -70,7 +70,8 @@ class WorkbookTable(Entity):
         # type: () -> Optional[str]
         """Legacy Id used in older Excel clients. The value of the identifier remains the same even when the table
         is renamed. This property should be interpreted as an opaque string value and shouldn't be parsed to any
-        other type."""
+        other type.
+        """
         return self.properties.get("legacyId", None)
 
     @property
@@ -83,21 +84,24 @@ class WorkbookTable(Entity):
     def show_banded_columns(self):
         # type: () -> Optional[bool]
         """Indicates whether the columns show banded formatting in which odd columns are highlighted differently
-        from even ones to make reading the table easier."""
+        from even ones to make reading the table easier.
+        """
         return self.properties.get("showBandedColumns", None)
 
     @property
     def show_banded_rows(self):
         # type: () -> Optional[bool]
         """Indicates whether the rows show banded formatting in which odd rows are highlighted differently from even
-        ones to make reading the table easier."""
+        ones to make reading the table easier.
+        """
         return self.properties.get("showBandedRows", None)
 
     @property
     def show_filter_button(self):
         # type: () -> Optional[bool]
         """Indicates whether the filter buttons are visible at the top of each column header. Setting this is only
-        allowed if the table contains a header row."""
+        allowed if the table contains a header row.
+        """
         return self.properties.get("showFilterButton", None)
 
     @property

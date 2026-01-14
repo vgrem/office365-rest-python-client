@@ -11,8 +11,7 @@ class RichSharing(Entity):
         super(RichSharing, self).__init__(context, resource_path)
 
     def share_page_by_email(self, url, message, recipient_emails, page_content, subject):
-        """
-        :param str url:
+        """:param str url:
         :param str message:
         :param list[str] recipient_emails:
         :param str page_content:
@@ -30,8 +29,7 @@ class RichSharing(Entity):
         return self
 
     def share_site_by_email(self, custom_description, custom_title, message, url, recipient_emails):
-        """
-        :param str url:
+        """:param str url:
         :param str message:
         :param list[str] recipient_emails:
         :param str custom_description:

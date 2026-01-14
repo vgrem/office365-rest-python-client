@@ -7,8 +7,7 @@ from office365.sharepoint.search.query.sort.sort import Sort
 
 
 class SearchRequest(ClientValue):
-    """
-    The SearchRequest structure defines the HTTP BODY of the HTTP POST postquery operation as specified
+    """The SearchRequest structure defines the HTTP BODY of the HTTP POST postquery operation as specified
     in section 3.1.5.7.2.1.3. The postquery operation together with the SearchRequest structure is similar
     to the query operation as specified in section 3.1.5.7.2.1.4, and is provided as a means to overcome
     Uniform Resource Locator (URL) length limitations that some clients experience with HTTP GET operations.
@@ -39,8 +38,7 @@ class SearchRequest(ClientValue):
         hit_highlighted_multivalue_property_limit=None,
         **kwargs,
     ):
-        """
-        :param str query_text: The query text of the search query. If this element is not present or a value is not
+        """:param str query_text: The query text of the search query. If this element is not present or a value is not
             specified, a default value of an empty string MUST be used, and the server MUST return a
             FaultException<ExceptionDetail> message.
         :param list[str] or None select_properties: As specified in [MS-QSSWS] section 2.2.4.11.

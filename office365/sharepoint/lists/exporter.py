@@ -10,7 +10,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 
 
-class ListExporter(object):
+class ListExporter:
     """ """
 
     @staticmethod

@@ -10,9 +10,7 @@ class ExternalUserCollection(EntityCollection):
         super(ExternalUserCollection, self).__init__(context, ExternalUser, resource_path)
 
     def get_by_id(self, unique_id):
-        """
-        :param str unique_id: The Id of the external user.
-        """
+        """:param str unique_id: The Id of the external user."""
         return ExternalUser(
             self.context,
             ServiceOperationPath("GetById", [unique_id], self.resource_path),

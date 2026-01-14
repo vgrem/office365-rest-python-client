@@ -9,8 +9,7 @@ class RemoteWeb(ClientObject):
     """Specifies a remote web that might be on a different domain."""
 
     def get_list_by_server_relative_url(self, server_relative_url):
-        """
-        Returns the list that is associated with the specified server-relative URL.
+        """Returns the list that is associated with the specified server-relative URL.
 
         :param str server_relative_url: A string that contains the site-relative URL for a list.
         """
@@ -28,8 +27,7 @@ class RemoteWeb(ClientObject):
 
     @staticmethod
     def create(context, request_url):
-        """
-        :type context: ClientContext
+        """:type context: ClientContext
         :type request_url: str
         """
         remote_web = RemoteWeb(context)

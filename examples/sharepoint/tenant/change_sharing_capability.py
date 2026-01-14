@@ -1,5 +1,4 @@
-"""
-Set external sharing on site collections in Office 365
+"""Set external sharing on site collections in Office 365
 
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/set-external-sharing-on-site-collections-in-office-365
 """

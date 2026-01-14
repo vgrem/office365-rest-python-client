@@ -28,8 +28,7 @@ class ChangeQuery(ClientValue):
         change_token_end=None,
         fetch_limit=None,
     ):
-        """
-        :param int fetch_limit:
+        """:param int fetch_limit:
         :param role_assignment_delete: Specifies whether deleting role assignments is included in the query.
         :param role_assignment_add: Specifies whether adding role assignments is included in the query.
         :param bool item: Gets or sets a value that specifies whether general changes to list items are included

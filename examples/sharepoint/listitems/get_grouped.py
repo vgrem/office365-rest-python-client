@@ -1,6 +1,5 @@
-"""
-Demonstrates how to return distinct values from a List for the specific column, where:
- - render_list_data is used to returns the data for the specified query view
+"""Demonstrates how to return distinct values from a List for the specific column, where:
+- render_list_data is used to returns the data for the specified query view
 
 """
 

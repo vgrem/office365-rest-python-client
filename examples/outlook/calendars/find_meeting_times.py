@@ -1,5 +1,4 @@
-"""
-Find possible meeting times on the Outlook calendar
+"""Find possible meeting times on the Outlook calendar
 
 https://learn.microsoft.com/en-us/graph/findmeetingtimes-example
 """

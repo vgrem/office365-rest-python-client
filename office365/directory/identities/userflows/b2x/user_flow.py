@@ -13,8 +13,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class B2XIdentityUserFlow(IdentityUserFlow):
-    """
-    Represents a self-service sign up user flow within an Azure Active Directory tenant.
+    """Represents a self-service sign up user flow within an Azure Active Directory tenant.
 
     User flows are used to enable a self-service sign up experience for guest users on an application.
     User flows define the experience the end user sees while signing up, including which identity providers they can
@@ -64,8 +63,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
     @property
     def user_flow_type(self):
         # type: () -> Optional[str]
-        """
-        The type of user flow. For self-service sign-up user flows,
+        """The type of user flow. For self-service sign-up user flows,
         the value can only be signUpOrSignIn and cannot be modified after creation.
         """
         return self.properties.get("userFlowType", None)

@@ -16,8 +16,7 @@ class ItemReference(ClientValue):
         sharepoint_ids=SharePointIds(),
         share_id=None,
     ):
-        """
-        :param str _id: Unique identifier of the driveItem in the drive or a listItem in a list. Read-only.
+        """:param str _id: Unique identifier of the driveItem in the drive or a listItem in a list. Read-only.
         :param str name: The name of the item being referenced. Read-only.
         :param str path: Path that can be used to navigate to the item. Read-only.
         :param str drive_id: Unique identifier of the drive instance that contains the driveItem.

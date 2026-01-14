@@ -132,11 +132,10 @@ class ODataRequest(ClientRequest):
 
     def _ensure_http_headers(self, request):
         # type: (RequestOptions) -> None
-        """
-        Ensures that HTTP Header Fields are specified in the OData request, namely:
-           - The Content-Type header
-           - Accept request-header field
-           - The If-Match request-header field (optional)
+        """Ensures that HTTP Header Fields are specified in the OData request, namely:
+        - The Content-Type header
+        - Accept request-header field
+        - The If-Match request-header field (optional)
         """
         media_type = self.json_format.media_type
         request.ensure_header("Content-Type", media_type)

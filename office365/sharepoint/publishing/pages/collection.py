@@ -29,9 +29,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def create_app_page(self, web_part_data=None):
-        """
-        :param str web_part_data:
-        """
+        """:param str web_part_data:"""
         return_type = ClientResult(self.context)
         payload = {"webPartDataAsJson": web_part_data}
         qry = ServiceOperationQuery(self, "CreateAppPage", None, payload, None, return_type)
@@ -39,31 +37,27 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def get_translations(self, source_item_id=None):
-        """
-        :param str source_item_id:
-        """
+        """:param str source_item_id:"""
         return_type = TranslationStatusCollection(self.context)
         qry = ServiceOperationQuery(self, "GetTranslations", [source_item_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_site_page(self, url):
-        """
-        Indicates whether a specific item is a modern site page.
+        """Indicates whether a specific item is a modern site page.
         :param str url: URL of the SitePage to be checked.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "IsSitePage", [url], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_page_column_state(self, url):
-        """
-        Determines whether a specific SitePage is a single or multicolumn page.
+        """Determines whether a specific SitePage is a single or multicolumn page.
 
         :param str url: URL of the SitePage for which to return state.
         """
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         qry = ServiceOperationQuery(self, "GetPageColumnState", [url], None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -79,7 +73,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         """Gets the site page with the specified file name.
         :param str name: Specifies the name of the site page.
         """
-        return self.single("FileName eq '{0}'".format(name))
+        return self.single(f"FileName eq '{name}'")
 
     def templates(self):
         """"""
@@ -90,8 +84,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         )
 
     def update_full_page_app(self, server_relative_url, web_part_data_as_json):
-        """
-        :param str server_relative_url:
+        """:param str server_relative_url:
         :param str web_part_data_as_json:
         """
         payload = {

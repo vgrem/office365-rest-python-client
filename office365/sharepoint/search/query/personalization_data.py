@@ -6,9 +6,7 @@ class QueryPersonalizationData(Entity):
     """Contains a unique identifier for the current user who is executing a search query"""
 
     def __init__(self, context, user_id):
-        """
-        :param str user_id:
-        """
+        """:param str user_id:"""
         static_path = ServiceOperationPath(
             "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData",
             {"guidUserIdString": user_id},

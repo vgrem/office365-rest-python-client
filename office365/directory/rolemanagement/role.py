@@ -13,7 +13,7 @@ class DirectoryRole(DirectoryObject):
         return self.id or self.entity_type_name
 
     def __str__(self):
-        return "Name: {0}".format(self.display_name)
+        return f"Name: {self.display_name}"
 
     @property
     def description(self):
@@ -40,7 +40,6 @@ class DirectoryRole(DirectoryObject):
     @property
     def scoped_members(self):
         """Members of this directory role that are scoped to administrative units."""
-
         return self.properties.get(
             "scopedMembers",
             EntityCollection(

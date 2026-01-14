@@ -15,26 +15,22 @@ from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.compat import get_absolute_url
 from office365.runtime.http.request_options import RequestOptions
 
-JSONToken = TypedDict(
-    "JSONToken",
-    {
-        "tokenType": Required[str],
-        "accessToken": Required[str],
-    },
-)
+
+class JSONToken(TypedDict):
+    tokenType: Required[str]
+    accessToken: Required[str]
 
 
 def _get_authorization_header(token):
     # type: (Any) -> str
-    return "{token_type} {access_token}".format(token_type=token.tokenType, access_token=token.accessToken)
+    return f"{token.tokenType} {token.accessToken}"
 
 
-class AuthenticationContext(object):
+class AuthenticationContext:
     """Authentication context for SharePoint Online/OneDrive For Business"""
 
     def __init__(self, url, environment=None, allow_ntlm=False, browser_mode=False):
-        """
-        :param str url: SharePoint absolute web or site Url
+        """:param str url: SharePoint absolute web or site Url
         :param str environment: The Office 365 Cloud Environment endpoint used for authentication
             defaults to 'Azure Global'.
         :param bool allow_ntlm: Flag indicates whether NTLM scheme is enabled. Disabled by default
@@ -70,15 +66,15 @@ class AuthenticationContext(object):
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
         if cert_path is None and private_key is None:
             raise ValueError("Private key is missing. Use either 'cert_path' or 'private_key' to pass the value")
         elif cert_path is not None:
-            with open(cert_path, "r", encoding="utf8") as f:
+            with open(cert_path, encoding="utf8") as f:
                 private_key = f.read()
 
         def _acquire_token():
-            authority_url = "{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant)
+            authority_url = f"{AzureEnvironment.get_login_authority(self._environment)}/{tenant}"
             credentials = {
                 "thumbprint": thumbprint,
                 "private_key": private_key,
@@ -98,8 +94,7 @@ class AuthenticationContext(object):
         return self
 
     def with_interactive(self, tenant, client_id, scopes=None):
-        """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        """Initializes a client to acquire a token interactively i.e. via a local browser.
 
         Prerequisite: In Azure Portal, configure the Redirect URI of your
         "Mobile and Desktop application" as ``http://localhost``.
@@ -110,14 +105,14 @@ class AuthenticationContext(object):
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
 
         def _acquire_token():
             import msal
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant),
+                authority=f"{AzureEnvironment.get_login_authority(self._environment)}/{tenant}",
                 client_credential=None,
             )
             result = app.acquire_token_interactive(scopes=scopes)
@@ -127,8 +122,7 @@ class AuthenticationContext(object):
         return self
 
     def with_device_flow(self, tenant, client_id, scopes=None):
-        """
-        Obtain token by a device flow object, with customizable polling effect.
+        """Obtain token by a device flow object, with customizable polling effect.
 
         :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
         :param str client_id: The OAuth client id of the calling application.
@@ -136,14 +130,14 @@ class AuthenticationContext(object):
         """
         if scopes is None:
             resource = get_absolute_url(self.url)
-            scopes = ["{url}/.default".format(url=resource)]
+            scopes = [f"{resource}/.default"]
 
         def _acquire_token():
             import msal
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant),
+                authority=f"{AzureEnvironment.get_login_authority(self._environment)}/{tenant}",
                 client_credential=None,
             )
 
@@ -162,8 +156,7 @@ class AuthenticationContext(object):
 
     def with_access_token(self, token_func):
         # type: (Callable[[], JSONToken]) -> None
-        """
-        Initializes a client to acquire a token from a callback
+        """Initializes a client to acquire a token from a callback
 
         :param () -> dict token_func: A token callback
         """
@@ -182,8 +175,7 @@ class AuthenticationContext(object):
 
     def with_cookies(self, cookie_source, ttl_seconds=None):
         # type: (Any, Any) -> "AuthenticationContext"
-        """
-        Initializes authentication using browser-session cookies.
+        """Initializes authentication using browser-session cookies.
 
         :param Any cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
         :param Any ttl_seconds: Optional max age for cached cookies before reloading from source.
@@ -199,9 +191,7 @@ class AuthenticationContext(object):
 
     def with_credentials(self, credentials):
         # type: (UserCredential | ClientCredential) -> "AuthenticationContext"
-        """
-        Initializes a client to acquire a token via user or client credentials
-        """
+        """Initializes a client to acquire a token via user or client credentials"""
         if isinstance(credentials, ClientCredential):
             provider = ACSTokenProvider(
                 self.url,
@@ -234,8 +224,7 @@ class AuthenticationContext(object):
 
     def acquire_token_for_user(self, username, password):
         # type: (str, str) -> Self
-        """
-        Initializes a client to acquire a token via user credentials
+        """Initializes a client to acquire a token via user credentials
         Status: deprecated!
 
         :param str password: The user password
@@ -251,8 +240,7 @@ class AuthenticationContext(object):
         return self
 
     def acquire_token_for_app(self, client_id, client_secret):
-        """
-        Initializes a client to acquire a token via client credentials (SharePoint App-Only)
+        """Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
         Status: deprecated!
 

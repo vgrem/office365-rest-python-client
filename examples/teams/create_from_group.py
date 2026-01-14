@@ -1,5 +1,4 @@
-"""
-Create team from group
+"""Create team from group
 
 https://learn.microsoft.com/en-us/graph/api/team-put-teams?view=graph-rest-1.0
 """
@@ -22,7 +21,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 group_name = create_unique_name("Flight")
 group = client.groups.create_m365(group_name)
 team = group.add_team().execute_query_retry(max_retry=10, failure_callback=print_failure)
-print("Team has been created:  {0}".format(team.web_url))
+print(f"Team has been created:  {team.web_url}")
 
 # clean up resources
 print("Deleting a group...")

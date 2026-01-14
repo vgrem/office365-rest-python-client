@@ -88,8 +88,7 @@ class GraphClient(ClientRuntimeContext):
         environment=AzureEnvironment.Global,
     ):
         # type: (Callable[[], dict], str, list[str], Any, str) -> None
-        """
-        :param list[str] or None scopes: Scopes requested to access an API
+        """:param list[str] or None scopes: Scopes requested to access an API
         :param Any token_cache: Default cache is in memory only,
              Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
         """
@@ -102,8 +101,7 @@ class GraphClient(ClientRuntimeContext):
         self._scopes = scopes
 
     def with_certificate(self, client_id, thumbprint, private_key):
-        """
-        Initializes the confidential client with client certificate
+        """Initializes the confidential client with client certificate
 
         :param str client_id: The OAuth client id of the calling application.
         :param str thumbprint: Thumbprint
@@ -114,8 +112,7 @@ class GraphClient(ClientRuntimeContext):
 
     def with_client_secret(self, client_id, client_secret):
         # type: (str, str) -> "GraphClient"
-        """
-        Initializes the confidential client with client secret
+        """Initializes the confidential client with client secret
 
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Client secret
@@ -125,8 +122,7 @@ class GraphClient(ClientRuntimeContext):
 
     def with_token_interactive(self, client_id, username=None):
         # type: (str, Optional[str]) -> "GraphClient"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
 
         :param str client_id: The OAuth client id of the calling application.
@@ -137,8 +133,7 @@ class GraphClient(ClientRuntimeContext):
 
     def with_username_and_password(self, client_id, username, password):
         # type: (str, str, str) -> "GraphClient"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
 
         :param str client_id: The OAuth client id of the calling application.
         :param str username: Typically a UPN in the form of an email address.
@@ -379,22 +374,17 @@ class GraphClient(ClientRuntimeContext):
 
     @property
     def information_protection(self):
-        """
-        Exposes methods that you can use to get Microsoft Purview Information Protection labels and label policies.
-        """
+        """Exposes methods that you can use to get Microsoft Purview Information Protection labels and label policies."""
         return InformationProtection(self, ResourcePath("informationProtection"))
 
     @property
     def storage(self):
-        """
-        Facilitates the structures of fileStorageContainers.
-        """
+        """Facilitates the structures of fileStorageContainers."""
         return Storage(self, ResourcePath("storage"))
 
     @property
     def subscriptions(self):
-        """
-        Retrieve the properties and relationships of webhook subscriptions,
+        """Retrieve the properties and relationships of webhook subscriptions,
         based on the app ID, the user, and the user's role with a tenant.
         """
         return SubscriptionCollection(self, ResourcePath("subscriptions"))
@@ -456,8 +446,7 @@ class GraphClient(ClientRuntimeContext):
 
     @property
     def planner(self):
-        """
-        The planner resource is the entry point for the Planner object model.
+        """The planner resource is the entry point for the Planner object model.
         It returns a singleton planner resource. It doesn't contain any usable properties.
         """
         return Planner(self, ResourcePath("planner"))
@@ -486,9 +475,7 @@ class GraphClient(ClientRuntimeContext):
 
     @property
     def education(self):
-        """
-        The /education namespace exposes functionality that is specific to the education sector.
-        """
+        """The /education namespace exposes functionality that is specific to the education sector."""
         return EducationRoot(self, ResourcePath("education"))
 
     @property

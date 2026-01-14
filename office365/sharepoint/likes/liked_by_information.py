@@ -24,8 +24,7 @@ class LikedByInformation(Entity):
     @property
     def liked_by(self):
         # type: () -> EntityCollection[UserEntity]
-        """
-        List of like entries corresponding to individual likes. MUST NOT contain more than one entry
+        """List of like entries corresponding to individual likes. MUST NOT contain more than one entry
         for the same user in the set.
         """
         return self.properties.get(

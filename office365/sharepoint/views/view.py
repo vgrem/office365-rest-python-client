@@ -19,9 +19,7 @@ class View(Entity):
     """Specifies a List View."""
 
     def __init__(self, context, resource_path=None, parent_list=None):
-        """
-        :type parent_list: office365.sharepoint.lists.list.List or None
-        """
+        """:type parent_list: office365.sharepoint.lists.list.List or None"""
         super(View, self).__init__(context, resource_path)
         self._parent_list = parent_list
 
@@ -45,8 +43,7 @@ class View(Entity):
         return return_type
 
     def set_view_xml(self, view_xml):
-        """
-        Sets the view schema.
+        """Sets the view schema.
         :param str view_xml: The view XML to set.
         """
         qry = ServiceOperationQuery(self, "SetViewXml", None, {"viewXml": view_xml})
@@ -62,8 +59,7 @@ class View(Entity):
     @property
     def aggregations_status(self):
         # type: () -> Optional[str]
-        """
-        Specifies whether totals are shown in the list view.
+        """Specifies whether totals are shown in the list view.
         It MUST be NULL If Aggregations is NULL; otherwise it MUST be "On" or "Off".
         """
         return self.properties.get("AggregationsStatus", None)

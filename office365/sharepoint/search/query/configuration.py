@@ -9,7 +9,8 @@ from office365.sharepoint.search.query.routing_info import QueryRoutingInfo
 
 class QueryConfiguration(ClientValue):
     """This object contains the query configuration for the local farm and is the response
-    to the REST call get query configuration (section 3.1.5.18.2.1.6)."""
+    to the REST call get query configuration (section 3.1.5.18.2.1.6).
+    """
 
     def __init__(
         self,
@@ -18,8 +19,7 @@ class QueryConfiguration(ClientValue):
         query_routing_info=QueryRoutingInfo(),
         search_endpoints=SearchEndpoints(),
     ):
-        """
-        :param QueryContext query_context: This property contains the query context.
+        """:param QueryContext query_context: This property contains the query context.
         :param ExpandedQueryParameters query_parameters: This property contains the expanded query parameters.
         :param QueryRoutingInfo query_routing_info: This property contains the query routing info.
         :param SearchEndpoints search_endpoints: This property contains the search endpoints.

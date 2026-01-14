@@ -4,8 +4,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class AppManagementPolicy(PolicyBase):
-    """
-    Restrictions on app management operations for specific applications and service principals.
+    """Restrictions on app management operations for specific applications and service principals.
     If this resource is not configured for an application or service principal, the restrictions default
     to the settings in the tenantAppManagementPolicy object.
     """

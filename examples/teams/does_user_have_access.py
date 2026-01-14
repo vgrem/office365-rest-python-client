@@ -1,5 +1,4 @@
-"""
-Determine whether a user has access to a shared channel.
+"""Determine whether a user has access to a shared channel.
 
 https://learn.microsoft.com/en-us/graph/api/channel-doesuserhaveaccess?view=graph-rest-1.0
 """

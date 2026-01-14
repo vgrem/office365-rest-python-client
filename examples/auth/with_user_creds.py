@@ -1,5 +1,4 @@
-"""
-Username Password Authentication flow
+"""Username Password Authentication flow
 
 https://github.com/AzureAD/microsoft-authentication-library-for-python/wiki/Username-Password-Authentication
 """

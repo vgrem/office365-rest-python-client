@@ -4,8 +4,7 @@ from office365.runtime.queries.function import FunctionQuery
 
 
 def build_get_activities_by_interval_query(binding_type, start_dt=None, end_dt=None, interval=None):
-    """
-    :param office365.entity.Entity binding_type: Binding type
+    """:param office365.entity.Entity binding_type: Binding type
     :param datetime.datetime start_dt: The start time over which to aggregate activities.
     :param datetime.datetime end_dt: The end time over which to aggregate activities.
     :param str interval: The aggregation interval.

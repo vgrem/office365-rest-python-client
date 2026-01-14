@@ -9,12 +9,12 @@ if TYPE_CHECKING:
 
 class UsageDetails(ClientValue):
     """Complex type containing properties of Used items. Information on when the resource was last accessed (viewed)
-    or modified (edited) by the user."""
+    or modified (edited) by the user.
+    """
 
     def __init__(self, last_accessed_datetime=None, last_modified_datetime=None):
         # type: (Optional[datetime], Optional[datetime]) -> None
-        """
-        :param last_accessed_datetime: The date and time the resource was last accessed by the user.
+        """:param last_accessed_datetime: The date and time the resource was last accessed by the user.
         :param last_modified_datetime: The date and time the resource was last modified by the user.
         """
         self.lastAccessedDateTime = last_accessed_datetime

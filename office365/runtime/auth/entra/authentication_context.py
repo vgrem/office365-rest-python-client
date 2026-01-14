@@ -4,7 +4,7 @@ from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.token_response import TokenResponse
 
 
-class AuthenticationContext(object):
+class AuthenticationContext:
     """Provides authentication context for Microsoft Graph client"""
 
     def __init__(
@@ -14,15 +14,14 @@ class AuthenticationContext(object):
         token_cache=None,
         environment=AzureEnvironment.Global,
     ):
-        """
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
+        """:param str tenant: Tenant name, for example: contoso.onmicrosoft.com
         :param list[str] or None scopes: Scopes requested to access an API
         :param Any token_cache: Default cache is in memory only,
             Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
         """
         self._tenant = tenant
         if scopes is None:
-            scopes = ["{0}/.default".format(AzureEnvironment.get_graph_authority(environment))]
+            scopes = [f"{AzureEnvironment.get_graph_authority(environment)}/.default"]
         self._scopes = scopes
         self._token_cache = token_cache
         self._token_callback = None
@@ -43,8 +42,7 @@ class AuthenticationContext(object):
         return self
 
     def with_certificate(self, client_id, thumbprint, private_key):
-        """
-        Initializes the confidential client with client certificate
+        """Initializes the confidential client with client certificate
 
         :param str client_id: The OAuth client id of the calling application.
         :param str thumbprint: Thumbprint
@@ -71,8 +69,7 @@ class AuthenticationContext(object):
 
     def with_client_secret(self, client_id, client_secret):
         # type: (str, str) -> "AuthenticationContext"
-        """
-        Initializes the confidential client with client secret
+        """Initializes the confidential client with client secret
 
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Client secret
@@ -93,8 +90,7 @@ class AuthenticationContext(object):
 
     def with_token_interactive(self, client_id, username=None):
         # type: (str, Optional[str]) -> "AuthenticationContext"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
 
         :param str client_id: The OAuth client id of the calling application.
@@ -126,8 +122,7 @@ class AuthenticationContext(object):
 
     def with_username_and_password(self, client_id, username, password):
         # type: (str, str, str) -> "AuthenticationContext"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
 
         :param str client_id: The OAuth client id of the calling application.
         :param str username: Typically a UPN in the form of an email address.
@@ -158,4 +153,4 @@ class AuthenticationContext(object):
 
     @property
     def authority_url(self):
-        return "{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), self._tenant)
+        return f"{AzureEnvironment.get_login_authority(self._environment)}/{self._tenant}"

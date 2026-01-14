@@ -14,8 +14,7 @@ class TermStore(TaxonomyItem):
     """Represents a hierarchical or flat set of Term objects known as a 'TermSet'."""
 
     def get_term_sets_by_name(self, label, lcid=1033):
-        """
-        This method retrieves a collection of all TermSet objects in this TermStore
+        """This method retrieves a collection of all TermSet objects in this TermStore
         that the current user has permissions to read that have a matching TermSet name in the provided LCID.
         """
         return_type = TermSetCollection(self.context)
@@ -32,8 +31,7 @@ class TermStore(TaxonomyItem):
         return return_type
 
     def search_term(self, label, set_id=None, parent_term_id=None, language_tag=None):
-        """
-        Search term by name
+        """Search term by name
 
         :param str label:
         :param str set_id:

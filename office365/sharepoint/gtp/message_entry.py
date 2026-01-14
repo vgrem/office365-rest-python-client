@@ -5,9 +5,7 @@ class MessageEntry(ClientValue):
     """"""
 
     def __init__(self, content=None):
-        """
-        :param str content:
-        """
+        """:param str content:"""
         self.content = content
 
     @property

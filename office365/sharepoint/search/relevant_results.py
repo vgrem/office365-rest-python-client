@@ -4,8 +4,7 @@ from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 
 class RelevantResults(ClientValue):
-    """
-    The RelevantResults table contains the actual query results. It MUST only be present if the ResultTypes element
+    """The RelevantResults table contains the actual query results. It MUST only be present if the ResultTypes element
     in the properties element of the Execute message contains ResultType.RelevantResults,
     as specified in section 2.2.5.5
     """
@@ -22,8 +21,7 @@ class RelevantResults(ClientValue):
         total_rows=None,
         total_rows_including_duplicates=None,
     ):
-        """
-        :param str item_template_id: Specifies the identifier of the layout template that specifies how the result
+        """:param str item_template_id: Specifies the identifier of the layout template that specifies how the result
             item will be displayed.
         :param str group_template_id: Specifies the identifier of the layout template that specifies how the results
             returned will be arranged.

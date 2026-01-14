@@ -5,7 +5,7 @@ from configparser import BasicInterpolation, ConfigParser
 class SecEnvInterpolation(BasicInterpolation):
     secure_vars_env = os.environ.get("office365_python_sdk_securevars", None)
     if not secure_vars_env:
-        raise EnvironmentError("The environment variable 'office365_python_sdk_securevars' is not set.")
+        raise OSError("The environment variable 'office365_python_sdk_securevars' is not set.")
 
     secure_vars = secure_vars_env.split(";")
 

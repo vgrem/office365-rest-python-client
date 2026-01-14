@@ -1,5 +1,4 @@
-"""
-Grant or revoke API permissions
+"""Grant or revoke API permissions
 
 Steps:
 

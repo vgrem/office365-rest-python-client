@@ -1,5 +1,4 @@
-"""
-Move a message to another folder within the specified user's mailbox.
+"""Move a message to another folder within the specified user's mailbox.
 This creates a new copy of the message in the destination folder and removes the original message.
 
 https://learn.microsoft.com/en-us/graph/api/message-move?view=graph-rest-1.0
@@ -18,4 +17,4 @@ message = client.me.messages.add(
     to_recipients=["fannyd@contoso.onmicrosoft.com"],
 )
 message.move(to_folder).execute_query()
-print("Draft message is created && moved into {0} folder".format(folder_name))
+print(f"Draft message is created && moved into {folder_name} folder")

@@ -4,8 +4,7 @@ from office365.sharepoint.social.thread import SocialThread
 
 
 class SocialFeed(ClientValue):
-    """
-    The SocialFeed class specifies a feed, which contains an array of SocialThread (section 3.1.5.42), each of which
+    """The SocialFeed class specifies a feed, which contains an array of SocialThread (section 3.1.5.42), each of which
     specifies a root SocialPost object (section 3.1.5.26) and an array of response SocialPost objects.
     """
 
@@ -17,8 +16,7 @@ class SocialFeed(ClientValue):
         threads=None,
         unread_mention_count=None,
     ):
-        """
-        :param in attributes: The Attributes property specifies attributes of the returned feed.
+        """:param in attributes: The Attributes property specifies attributes of the returned feed.
             The attributes specify if the requested feed has additional threads that were not included in the returned
             thread. See section 3.1.5.18 for details on the SocialFeedAttributes type.
         :param str newest_processed: The NewestProcessed property returns the date-time of the most recent post that

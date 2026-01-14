@@ -7,8 +7,7 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         super(ConversationMemberCollection, self).__init__(context, ConversationMember, resource_path)
 
     def add(self, user, roles, visible_history_start_datetime=None):
-        """
-        Add a conversationMember.
+        """Add a conversationMember.
 
         :param str or office365.directory.users.user.User user: The conversation members that should be added.
             Every user who will participate in the chat, including the user who initiates the create request,

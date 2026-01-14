@@ -13,8 +13,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         super(NotebookCollection, self).__init__(context, Notebook, resource_path)
 
     def add(self, display_name):
-        """
-        Create a new OneNote notebook.
+        """Create a new OneNote notebook.
 
         :param str display_name: Name for the notebook. Notebook names must be unique. The name cannot contain more
             than 128 characters or contain the following characters: ?*/:<>|'"
@@ -22,8 +21,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         return super(NotebookCollection, self).add(displayName=display_name)
 
     def get_notebook_from_web_url(self, web_url):
-        """
-        Retrieve the properties and relationships of a notebook object by using its URL path.
+        """Retrieve the properties and relationships of a notebook object by using its URL path.
         The location can be user notebooks on Microsoft 365, group notebooks,
         or SharePoint site-hosted team notebooks on Microsoft 365.
 
@@ -42,7 +40,6 @@ class NotebookCollection(EntityCollection[Notebook]):
             owned by the user; otherwise, set to false. If you don't include the includePersonalNotebooks parameter,
             your request will return a 400 error response.
         """
-
         return_type = ClientResult(self.context, ClientValueCollection(RecentNotebook))
         params = {"includePersonalNotebooks": include_personal_notebooks}
         qry = FunctionQuery(self, "getRecentNotebooks", params, return_type)

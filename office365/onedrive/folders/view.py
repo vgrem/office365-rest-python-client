@@ -5,8 +5,7 @@ class FolderView(ClientValue):
     """The FolderView resource provides or sets recommendations on the user-experience of a folder."""
 
     def __init__(self, sort_by=None, sort_order=None, view_type=None):
-        """
-        :param str sort_by: The method by which the folder should be sorted.
+        """:param str sort_by: The method by which the folder should be sorted.
         :param str sort_order: If true, indicates that items should be sorted in descending order. Otherwise,
             items should be sorted ascending.
         :param str view_type: The type of view that should be used to represent the folder.

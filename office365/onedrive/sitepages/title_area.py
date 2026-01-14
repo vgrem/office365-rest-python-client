@@ -11,8 +11,7 @@ class TitleArea(ClientValue):
         image_web_url=None,
         show_author=None,
     ):
-        """
-        :param str alternative_text: Alternative text on the title area.
+        """:param str alternative_text: Alternative text on the title area.
         :param bool enable_gradient_effect: Indicates whether the title area has a gradient effect enabled.
         :param str image_web_url:
         :param bool show_author:

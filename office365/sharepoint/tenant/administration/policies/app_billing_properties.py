@@ -5,8 +5,7 @@ class SPOAppBillingProperties(ClientValue):
     """ """
 
     def __init__(self, application_id=None, azure_region=None, is_activated=None):
-        """
-        :param str application_id: The application ID.
+        """:param str application_id: The application ID.
         :param str azure_region: The Azure region.
         :param bool is_activated:
         """

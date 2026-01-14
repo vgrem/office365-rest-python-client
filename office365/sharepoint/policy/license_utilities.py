@@ -16,7 +16,7 @@ class PolicyLicenseUtilities(Entity):
         # type: (ClientContext, ClientResult[bool]) -> ClientResult[bool]
         """"""
         if return_type is None:
-            return_type = ClientResult(context, bool())
+            return_type = ClientResult(context, False)
         qry = ServiceOperationQuery(
             PolicyLicenseUtilities(context),
             "CheckTenantM365CopilotBusinessChatLicense",

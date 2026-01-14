@@ -5,7 +5,5 @@ class WorkbookRangeReference(ClientValue):
     """"""
 
     def __init__(self, address=None):
-        """
-        :param str address:
-        """
+        """:param str address:"""
         self.address = address

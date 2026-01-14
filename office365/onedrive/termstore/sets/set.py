@@ -9,8 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Set(Entity):
-    """
-    Represents the set used in a term store. The set represents a unit which contains a collection of hierarchical
+    """Represents the set used in a term store. The set represents a unit which contains a collection of hierarchical
     terms. A group can contain multiple sets.
     """
 

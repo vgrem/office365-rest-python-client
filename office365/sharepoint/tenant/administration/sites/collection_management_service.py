@@ -13,7 +13,7 @@ class SiteCollectionManagementService(ClientObject):
         super(SiteCollectionManagementService, self).__init__(context, path)
 
     def export_csv_file(self, view_xml):
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {"viewXml": view_xml}
         qry = ServiceOperationQuery(self, "ExportCSVFile", None, payload, None, return_type)
         self.context.add_query(qry)

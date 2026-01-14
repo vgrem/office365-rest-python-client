@@ -1,6 +1,4 @@
-"""
-Demonstrates how to upload files from a local folder into OneDrive drive
-"""
+"""Demonstrates how to upload files from a local folder into OneDrive drive"""
 
 import os
 from os.path import isfile, join
@@ -19,6 +17,6 @@ for name in os.listdir(local_path):
         try:
             with open(path, "rb") as local_file:
                 uploaded_file = remote_drive.root.upload_file(local_file).execute_query()
-            print("File '{0}' uploaded into '{1}'".format(path, uploaded_file.web_url))
+            print(f"File '{path}' uploaded into '{uploaded_file.web_url}'")
         except ClientRequestException as e:
-            print("An error occured while uploading a file {0}: {1}".format(path, e.message))
+            print(f"An error occured while uploading a file {path}: {e.message}")

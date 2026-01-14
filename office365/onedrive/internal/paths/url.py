@@ -14,8 +14,7 @@ class UrlPath(EntityPath):
 
     def __init__(self, url, parent, collection=None):
         # type: (str, ResourcePath, ResourcePath) -> None
-        """
-        :param str url: File or Folder server relative url
+        """:param str url: File or Folder server relative url
         :type parent: office365.runtime.paths.resource_path.ResourcePath
         """
         if isinstance(parent, UrlPath):
@@ -34,7 +33,7 @@ class UrlPath(EntityPath):
 
     @property
     def segment(self):
-        return ":/{0}:/".format(self._key)
+        return f":/{self._key}:/"
 
     @property
     def delimiter(self):

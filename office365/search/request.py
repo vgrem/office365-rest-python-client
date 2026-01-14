@@ -27,8 +27,7 @@ class SearchRequest(ClientValue):
         content_sources=None,
         sharepoint_onedrive_options=SharePointOneDriveOptions(),
     ):
-        """
-        :param office365.search.query.SearchQuery query: Contains the query terms.
+        """:param office365.search.query.SearchQuery query: Contains the query terms.
         :param list[str] aggregation_filters: Contains one or more filters to obtain search results aggregated and
             filtered to a specific value of a field
         :param list[str] aggregations: Specifies aggregations (also known as refiners) to be returned

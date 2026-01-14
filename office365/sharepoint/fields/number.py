@@ -5,7 +5,8 @@ from office365.sharepoint.fields.field import Field
 
 class FieldNumber(Field):
     """Specifies a field that contains number values. To set properties, call the Update method
-    (section 3.2.5.53.2.1.5)."""
+    (section 3.2.5.53.2.1.5).
+    """
 
     @property
     def display_format(self):

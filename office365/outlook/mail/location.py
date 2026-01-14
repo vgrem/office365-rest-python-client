@@ -5,8 +5,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class Location(ClientValue):
-    """
-    Represents location information of an event.
+    """Represents location information of an event.
 
     There are multiple ways to create events in a calendar, for example, through an app using the create event REST API,
     or manually using the Outlook user interface. When you create an event using the user interface, you can specify
@@ -25,8 +24,7 @@ class Location(ClientValue):
         unique_id=None,
         unique_id_type=None,
     ):
-        """
-        :param PhysicalAddress address: The street address of the location.
+        """:param PhysicalAddress address: The street address of the location.
         :param list[OutlookGeoCoordinates] coordinates:
         :param str display_name: The name associated with the location.
         :param str location_email_address: Optional email address of the location.

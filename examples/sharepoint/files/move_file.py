@@ -1,6 +1,4 @@
-"""
-Demonstrates how to move a folder within a site
-"""
+"""Demonstrates how to move a folder within a site"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.move_operations import MoveOperations
@@ -15,4 +13,4 @@ file_from = ctx.web.get_file_by_server_relative_path("Shared Documents/Financial
 folder_to = "Shared Documents/Archive"
 
 file_to = file_from.move_to_using_path(folder_to, MoveOperations.overwrite).execute_query()
-print("'{0}' moved into '{1}'".format(file_from, file_to.server_relative_path))
+print(f"'{file_from}' moved into '{file_to.server_relative_path}'")

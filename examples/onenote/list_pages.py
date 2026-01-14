@@ -1,5 +1,4 @@
-"""
-Retrieve a list of page objects
+"""Retrieve a list of page objects
 
 https://learn.microsoft.com/en-us/graph/api/onenote-list-pages?view=graph-rest-1.0
 """

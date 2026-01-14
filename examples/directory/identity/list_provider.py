@@ -1,5 +1,4 @@
-"""
-Get a collection of identity provider resources that are configured for a tenant
+"""Get a collection of identity provider resources that are configured for a tenant
 
 https://learn.microsoft.com/en-us/graph/api/identitycontainer-list-identityproviders?view=graph-rest-1.0&tabs=http
 """

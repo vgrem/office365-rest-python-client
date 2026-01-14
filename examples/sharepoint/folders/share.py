@@ -1,6 +1,4 @@
-"""
-Shares a folder
-"""
+"""Shares a folder"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.external_site_option import ExternalSharingSiteOption

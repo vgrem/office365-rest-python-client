@@ -10,8 +10,7 @@ class RequiredResourceAccess(ClientValue):
     """
 
     def __init__(self, resource_access=None, resource_app_id=None):
-        """
-        :param list[ResourceAccess] resource_access: The list of OAuth2.0 permission scopes and app roles that
+        """:param list[ResourceAccess] resource_access: The list of OAuth2.0 permission scopes and app roles that
              the application requires from the specified resource.
         :param str resource_app_id: The unique identifier for the resource that the application requires access to.
              This should be equal to the appId declared on the target resource application.

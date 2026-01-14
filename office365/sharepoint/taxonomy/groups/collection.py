@@ -9,8 +9,7 @@ class TermGroupCollection(TaxonomyItemCollection[TermGroup]):
         super(TermGroupCollection, self).__init__(context, TermGroup, resource_path)
 
     def get_by_name(self, name):
-        """
-        Returns the term group with the specified name.
+        """Returns the term group with the specified name.
         :param str name: The name of the TermGroup.
         """
-        return self.single("name eq '{0}'".format(name))
+        return self.single(f"name eq '{name}'")

@@ -18,8 +18,7 @@ class SynchronizationStatus(ClientValue):
         last_successful_execution=SynchronizationTaskExecution(),
         last_successful_execution_with_exports=SynchronizationTaskExecution(),
     ):
-        """
-        :param list[SynchronizationProgress] progress: Details of the progress of a job toward completion.
+        """:param list[SynchronizationProgress] progress: Details of the progress of a job toward completion.
         :param SynchronizationQuarantine quarantine:
         """
         self.progress = ClientValueCollection(SynchronizationProgress, progress)

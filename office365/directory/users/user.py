@@ -94,10 +94,7 @@ class User(DirectoryObject):
         external_reply_message=None,
     ):
         # type: (str, datetime, datetime, str, str) -> Self
-        """
-        Enable, configure, automatic replies (notify people automatically upon receipt of their email)
-
-        """
+        """Enable, configure, automatic replies (notify people automatically upon receipt of their email)"""
         from office365.outlook.mail.automatic_replies_setting import (
             AutomaticRepliesSetting,
         )
@@ -119,8 +116,7 @@ class User(DirectoryObject):
         return self
 
     def disable_automatic_replies_setting(self, clear_all=False):
-        """
-        Disable automatic replies (notify people automatically upon receipt of their email)
+        """Disable automatic replies (notify people automatically upon receipt of their email)
         :param bool clear_all: If true, clear all automatic replies settings
         """
         from office365.outlook.mail.automatic_replies_setting import (
@@ -140,8 +136,7 @@ class User(DirectoryObject):
         return self
 
     def add_extension(self, name):
-        """
-        Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
+        """Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
         of a User resource.
         :param str name:
         """
@@ -155,8 +150,7 @@ class User(DirectoryObject):
         return return_type
 
     def assign_license(self, add_licenses, remove_licenses):
-        """
-        Add or remove licenses on the user.
+        """Add or remove licenses on the user.
 
         :param list[str] remove_licenses: A collection of skuIds that identify the licenses to remove.
         :param list[AssignedLicense] add_licenses: A collection of assignedLicense objects that specify
@@ -171,8 +165,7 @@ class User(DirectoryObject):
         return self
 
     def assign_manager(self, user):
-        """
-        Assign a user's manager.
+        """Assign a user's manager.
 
         :param str or User or OrgContact user: User or office365.intune.organizations.contact.OrgContact
             or identifier
@@ -187,7 +180,7 @@ class User(DirectoryObject):
 
         def _assign_manager(user_id):
             # type: (str) -> None
-            payload = {"@odata.id": "https://graph.microsoft.com/v1.0/users/{0}".format(user_id)}
+            payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
             self.context.add_query(qry).before_query_execute(_construct_request)
 
@@ -213,8 +206,7 @@ class User(DirectoryObject):
         return self
 
     def change_password(self, current_password, new_password):
-        """
-        Enable the user to update their password. Any user can update their password without belonging
+        """Enable the user to update their password. Any user can update their password without belonging
         to any administrator role.
 
         :param str current_password: Your current password.
@@ -231,7 +223,7 @@ class User(DirectoryObject):
 
     def follow_site(self, site):
         # type: (str|Site) -> None
-        """follow a site"""
+        """Follow a site"""
 
         def _follow_site(site_id):
             # type: (str) -> None
@@ -355,8 +347,7 @@ class User(DirectoryObject):
         return return_type
 
     def export_personal_data(self, storage_location):
-        """
-        Submit a data policy operation request from a company administrator or an application to
+        """Submit a data policy operation request from a company administrator or an application to
         export an organizational user's data.
 
         If successful, this method returns a 202 Accepted response code.
@@ -387,8 +378,7 @@ class User(DirectoryObject):
         return_suggestion_reasons=None,
         minimum_attendee_percentage=None,
     ):
-        """
-        Suggest meeting times and locations based on organizer and attendees availability, and time or location
+        """Suggest meeting times and locations based on organizer and attendees availability, and time or location
         constraints specified as parameters.
 
         If findMeetingTimes cannot return any meeting suggestions, the response would indicate a reason in the
@@ -453,7 +443,7 @@ class User(DirectoryObject):
         def _construct_request(request):
             # type: (RequestOptions) -> None
             request.method = HttpMethod.Get
-            request.url += "?startDateTime={0}&endDateTime={1}".format(start_dt.isoformat(), end_dt.isoformat())
+            request.url += f"?startDateTime={start_dt.isoformat()}&endDateTime={end_dt.isoformat()}"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
@@ -491,8 +481,7 @@ class User(DirectoryObject):
         return return_type
 
     def delete_object(self, permanent_delete=False):
-        """
-        :param permanent_delete: Permanently deletes the user from directory
+        """:param permanent_delete: Permanently deletes the user from directory
         :type permanent_delete: bool
         """
         super(User, self).delete_object()
@@ -503,8 +492,7 @@ class User(DirectoryObject):
 
     def revoke_signin_sessions(self):
         # type: () -> ClientResult[bool]
-        """
-        Invalidates all the refresh tokens issued to applications for a user
+        """Invalidates all the refresh tokens issued to applications for a user
         (as well as session cookies in a user's browser), by resetting the signInSessionsValidFromDateTime user
         property to the current date-time. Typically, this operation is performed (by the user or an administrator)
         if the user has a lost or stolen device. This operation prevents access to the organization's data through
@@ -517,8 +505,7 @@ class User(DirectoryObject):
         return result
 
     def reprocess_license_assignment(self):
-        """
-        Reprocess all group-based license assignments for the user. To learn more about group-based licensing,
+        """Reprocess all group-based license assignments for the user. To learn more about group-based licensing,
         see What is group-based licensing in Azure Active Directory. Also see Identify and resolve license assignment
         problems for a group in Azure Active Directory for more details.
         """
@@ -528,16 +515,13 @@ class User(DirectoryObject):
         return return_type
 
     def remove_all_devices_from_management(self):
-        """
-        Retire all devices from management for this user
-        """
+        """Retire all devices from management for this user"""
         qry = ServiceOperationQuery(self, "removeAllDevicesFromManagement")
         self.context.add_query(qry)
         return self
 
     def wipe_managed_app_registrations_by_device_tag(self, device_tag):
-        """
-        Issues a wipe operation on an app registration with specified device tag.
+        """Issues a wipe operation on an app registration with specified device tag.
         :param str device_tag: device tag
         """
         payload = {"deviceTag": device_tag}
@@ -546,8 +530,7 @@ class User(DirectoryObject):
         return self
 
     def translate_exchange_ids(self, input_ids, source_id_type=None, target_id_type=None):
-        """
-        Translate identifiers of Outlook-related resources between formats.
+        """Translate identifiers of Outlook-related resources between formats.
 
         :param list[str] input_ids: A collection of identifiers to convert. All identifiers in the collection MUST
             have the same source ID type, and MUST be for items in the same mailbox. Maximum size of this collection
@@ -568,8 +551,7 @@ class User(DirectoryObject):
     @property
     def created_datetime(self):
         # type: () -> Optional[datetime]
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
         """
         return self.properties.get("createdDateTime", datetime.min)
@@ -645,8 +627,7 @@ class User(DirectoryObject):
     @property
     def user_principal_name(self):
         # type: () -> Optional[str]
-        """
-        The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the
+        """The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the
         Internet standard RFC 822. By convention, this should map to the user's email name.
         The general format is alias@domain, where domain must be present in the tenant's collection of verified domains.
         This property is required when a user is created. The verified domains for the tenant can be accessed from
@@ -664,9 +645,7 @@ class User(DirectoryObject):
 
     @property
     def authentication(self):
-        """
-        The authentication methods that are supported for the user.
-        """
+        """The authentication methods that are supported for the user."""
         return self.properties.get(
             "authentication",
             Authentication(self.context, ResourcePath("authentication", self.resource_path)),
@@ -690,8 +669,7 @@ class User(DirectoryObject):
 
     @property
     def license_assignment_states(self):
-        """
-        State of license assignments for this user. Also indicates licenses that are directly-assigned and those
+        """State of license assignments for this user. Also indicates licenses that are directly-assigned and those
         that the user has inherited through group memberships.
         """
         return self.properties.get("licenseAssignmentStates", ClientValueCollection(LicenseAssignmentState))
@@ -785,9 +763,7 @@ class User(DirectoryObject):
     @property
     def preferred_language(self):
         # type: () -> Optional[str]
-        """
-        The preferred language for the user. Should follow ISO 639-1 Code; for example en-US.
-        """
+        """The preferred language for the user. Should follow ISO 639-1 Code; for example en-US."""
         return self.properties.get("preferredLanguage", None)
 
     @property
@@ -859,7 +835,8 @@ class User(DirectoryObject):
     def contacts(self):
         # type: () -> ContactCollection
         """Get a contact collection from the default Contacts folder of the signed-in user (.../me/contacts),
-        or from the specified contact folder."""
+        or from the specified contact folder.
+        """
         return self.properties.get(
             "contacts",
             ContactCollection(self.context, ResourcePath("contacts", self.resource_path)),
@@ -943,8 +920,7 @@ class User(DirectoryObject):
     @property
     def on_premises_distinguished_name(self):
         # type: () -> Optional[str]
-        """
-        Contains the on-premises Active Directory distinguished name or DN. The property is only populated for
+        """Contains the on-premises Active Directory distinguished name or DN. The property is only populated for
         customers who are synchronizing their on-premises directory to Azure Active Directory via Azure AD Connect
         """
         return self.properties.get("onPremisesDistinguishedName", None)
@@ -952,8 +928,7 @@ class User(DirectoryObject):
     @property
     def on_premises_domain_name(self):
         # type: () -> Optional[str]
-        """
-        Contains the on-premises domainFQDN, also called dnsDomainName synchronized from the on-premises directory.
+        """Contains the on-premises domainFQDN, also called dnsDomainName synchronized from the on-premises directory.
         The property is only populated for customers who are synchronizing their on-premises directory to
         Azure Active Directory via Azure AD Connect.
         """
@@ -979,8 +954,7 @@ class User(DirectoryObject):
 
     @property
     def proxy_addresses(self):
-        """
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"]. Changes to the mail property will
+        """For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"]. Changes to the mail property will
         also update this collection to include the value as an SMTP address. For more information, see mail and
         proxyAddresses properties. The proxy address prefixed with SMTP (capitalized) is the primary proxy address
         while those prefixed with smtp are the secondary proxy addresses. For Azure AD B2C accounts, this
@@ -992,7 +966,8 @@ class User(DirectoryObject):
     @property
     def transitive_member_of(self):
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
-        return all groups the user is a nested member of."""
+        return all groups the user is a nested member of.
+        """
         return self.properties.get(
             "transitiveMemberOf",
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
@@ -1052,9 +1027,7 @@ class User(DirectoryObject):
 
     @property
     def agreement_acceptances(self):
-        """
-        The user's terms of use acceptance statuses
-        """
+        """The user's terms of use acceptance statuses"""
         return self.properties.get(
             "agreementAcceptances",
             EntityCollection(
@@ -1092,8 +1065,7 @@ class User(DirectoryObject):
     @property
     def password_policies(self):
         # type: () -> Optional[str]
-        """
-        Specifies password policies for the user. This value is an enumeration with one possible value being
+        """Specifies password policies for the user. This value is an enumeration with one possible value being
         DisableStrongPassword, which allows weaker passwords than the default policy to be specified.
         DisablePasswordExpiration can also be specified. The two may be specified together; for example:
         DisablePasswordExpiration, DisableStrongPassword.
@@ -1102,8 +1074,7 @@ class User(DirectoryObject):
 
     @property
     def password_profile(self):
-        """
-        Specifies the password profile for the user. The profile contains the user's password.
+        """Specifies the password profile for the user. The profile contains the user's password.
         This property is required when a user is created. The password in the profile must satisfy minimum
         requirements as specified by the passwordPolicies property. By default, a strong password is required.
         """
@@ -1172,8 +1143,7 @@ class User(DirectoryObject):
     @property
     def usage_location(self):
         # type: () -> Optional[str]
-        """
-        A two letter country code (ISO standard 3166). Required for users that will be assigned licenses due to
+        """A two letter country code (ISO standard 3166). Required for users that will be assigned licenses due to
         legal requirement to check for availability of services in countries. Examples include: US, JP, and GB.
         """
         return self.properties.get("usageLocation", None)

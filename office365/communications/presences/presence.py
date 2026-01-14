@@ -11,8 +11,7 @@ class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
     def clear_presence(self, session_id=None):
-        """
-        Clear the application's presence session for a user. If it is the user's only presence session,
+        """Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
 
         :param str session_id: The ID of the application's presence session.
@@ -23,16 +22,13 @@ class Presence(Entity):
         return self
 
     def clear_user_preferred_presence(self):
-        """
-        Clear the preferred availability and activity status for a user.
-        """
+        """Clear the preferred availability and activity status for a user."""
         qry = ServiceOperationQuery(self, "clearUserPreferredPresence")
         self.context.add_query(qry)
         return self
 
     def set_presence(self, session_id, availability=None, activity=None, expiration_duration=None):
-        """
-        Set the state of a user's presence session as an application.
+        """Set the state of a user's presence session as an application.
 
         :param str session_id: The ID of the application's presence session.
         :param str availability: The base presence information.
@@ -52,8 +48,7 @@ class Presence(Entity):
         return self
 
     def set_status_message(self, message, expiry=None):
-        """
-        Set a presence status message for a user. An optional expiration date and time can be supplied.
+        """Set a presence status message for a user. An optional expiration date and time can be supplied.
         :param str or ItemBody message: Status message item.
         :param datetime.datetime expiry: Time in which the status message expires. If not provided, the status message
             doesn't expire.
@@ -68,8 +63,7 @@ class Presence(Entity):
         return self
 
     def set_user_preferred_presence(self, availability="Available", activity="Available", expiration_duration=None):
-        """
-        Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
+        """Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
         the user's presence shows as the preferred status.
         Preferred presence takes effect only when at least one presence session exists for the user. Otherwise,
         the user's presence shows as Offline.
@@ -94,8 +88,7 @@ class Presence(Entity):
     @property
     def activity(self):
         # type: () -> Optional[str]
-        """
-        The supplemental information to a user's availability.
+        """The supplemental information to a user's availability.
         Possible values are Available, Away, BeRightBack, Busy, DoNotDisturb, InACall, InAConferenceCall, Inactive,
         InAMeeting, Offline, OffWork, OutOfOffice, PresenceUnknown, Presenting, UrgentInterruptionsOnly.
         """
@@ -104,8 +97,7 @@ class Presence(Entity):
     @property
     def availability(self):
         # type: () -> Optional[str]
-        """
-        The base presence information for a user.
+        """The base presence information for a user.
         Possible values are Available, AvailableIdle, Away, BeRightBack, Busy, BusyIdle, DoNotDisturb, Offline,
            PresenceUnknown
         """

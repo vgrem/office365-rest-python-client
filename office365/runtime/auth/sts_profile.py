@@ -4,7 +4,7 @@ from office365.azure_env import AzureEnvironment
 from office365.runtime.compat import timezone, urlparse
 
 
-class STSProfile(object):
+class STSProfile:
     def __init__(self, site_url, environment=None):
         # type: (str, str) -> None
         self._site_url = site_url
@@ -23,20 +23,16 @@ class STSProfile(object):
 
     @property
     def security_token_service_url(self):
-        return "{0}/extSTS.srf".format(
-            AzureEnvironment.get_login_authority(self._environment),
-        )
+        return f"{AzureEnvironment.get_login_authority(self._environment)}/extSTS.srf"
 
     @property
     def signin_page_url(self):
         site_info = urlparse(self._site_url)
-        return "{0}://{1}/_forms/default.aspx?wa=wsignin1.0".format(site_info.scheme, site_info.netloc)
+        return f"{site_info.scheme}://{site_info.netloc}/_forms/default.aspx?wa=wsignin1.0"
 
     @property
     def user_realm_service_url(self):
-        return "{0}/GetUserRealm.srf".format(
-            AzureEnvironment.get_login_authority(self._environment),
-        )
+        return f"{AzureEnvironment.get_login_authority(self._environment)}/GetUserRealm.srf"
 
     @property
     def token_issuer(self):

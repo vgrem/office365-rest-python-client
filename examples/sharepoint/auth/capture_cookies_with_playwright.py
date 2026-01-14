@@ -1,5 +1,4 @@
-"""
-Acquire SharePoint Online browser-session cookies using Playwright and save them into
+"""Acquire SharePoint Online browser-session cookies using Playwright and save them into
 storage_state.json (or a custom path), which can be consumed by examples/sharepoint/auth_cookies.py.
 
 Requirements (not installed by the library):
@@ -16,6 +15,7 @@ Notes:
 - The script opens a browser window. Complete the Microsoft login (including MFA) manually.
 - After login, return to the terminal and press Enter to persist cookies.
 - The resulting storage_state.json can be used by auth_cookies.py.
+
 """
 
 import os

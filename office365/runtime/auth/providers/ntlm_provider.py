@@ -8,8 +8,7 @@ except ImportError:
 
 class NtlmProvider(AuthenticationProvider):
     def __init__(self, username, password):
-        """
-        Provides NTLM authentication (intended for SharePoint On-Premises)
+        """Provides NTLM authentication (intended for SharePoint On-Premises)
 
         Note: due to Outlook REST API v1.0 BasicAuth Deprecation
         (refer https://developer.microsoft.com/en-us/office/blogs/outlook-rest-api-v1-0-basicauth-deprecation/)

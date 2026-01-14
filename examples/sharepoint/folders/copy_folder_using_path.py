@@ -1,6 +1,4 @@
-"""
-Demonstrates how to copy a folder using path
-"""
+"""Demonstrates how to copy a folder using path"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import create_unique_name, test_team_site_url, test_user_credentials
@@ -16,9 +14,7 @@ folder_to_url = "Shared Documents/Archive/2001/01"
 
 # copies the folder with a new name
 folder = folder_from.copy_to_using_path(folder_to_url).execute_query()
-print(
-    "Folder has been copied from '{0}' into '{1}'".format(folder_from.server_relative_path, folder.server_relative_path)
-)
+print(f"Folder has been copied from '{folder_from.server_relative_path}' into '{folder.server_relative_path}'")
 
 # clean up
 folder_from.delete_object().execute_query()

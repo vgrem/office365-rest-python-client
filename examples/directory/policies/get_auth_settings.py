@@ -1,5 +1,4 @@
-"""
-Retrieves authorization related settings across the company
+"""Retrieves authorization related settings across the company
 
 https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0
 

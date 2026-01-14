@@ -1,5 +1,4 @@
-"""
-Retrieve the properties of a message.
+"""Retrieve the properties of a message.
 
 Requires Mail.Read permission at least
 

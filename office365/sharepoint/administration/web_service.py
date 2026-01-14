@@ -8,9 +8,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 class SPWebService(Entity):
     @staticmethod
     def content_service(context):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        """
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint context"""
         return_type = SPWebService(context)
         qry = ServiceOperationQuery(return_type, "ContentService", None, None, None, return_type)
         qry.static = True

@@ -14,14 +14,14 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class MailFolder(Entity):
     """A mail folder in a user's mailbox, such as Inbox and Drafts. Mail folders can contain messages,
-    other Outlook items, and child mail folders."""
+    other Outlook items, and child mail folders.
+    """
 
     def __str__(self):
         return self.display_name or self.entity_type_name
 
     def copy(self, destination_id):
-        """
-        Copy a mailfolder and its contents to another mailfolder.
+        """Copy a mailfolder and its contents to another mailfolder.
         :param str destination_id: The folder ID, or a well-known folder name. For a list of supported well-known folder
             names, see mailFolder resource type.
         """
@@ -32,8 +32,7 @@ class MailFolder(Entity):
         return return_type
 
     def empty(self, delete_sub_folders=False):
-        """
-        Empties the folder
+        """Empties the folder
         :param bool delete_sub_folders: true to indicate that subfolders should also be deleted; otherwise, false.
         """
 
@@ -86,8 +85,7 @@ class MailFolder(Entity):
     @property
     def is_hidden(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the mailFolder is hidden. This property can be set only when creating the folder.
+        """Indicates whether the mailFolder is hidden. This property can be set only when creating the folder.
         Find more information in Hidden mail folders.
         """
         return self.properties.get("isHidden", None)

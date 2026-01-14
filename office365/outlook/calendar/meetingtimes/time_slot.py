@@ -6,9 +6,7 @@ class TimeSlot(ClientValue):
     """Represents a time slot for a meeting."""
 
     def __init__(self, start=DateTimeTimeZone(), end=DateTimeTimeZone()):
-        """
-
-        :param dateTimeTimeZone start: The date, time, and time zone that a period begins.
+        """:param dateTimeTimeZone start: The date, time, and time zone that a period begins.
         :param dateTimeTimeZone end: The date, time, and time zone that a period ends.
         """
         super(TimeSlot, self).__init__()
@@ -16,4 +14,4 @@ class TimeSlot(ClientValue):
         self.end = end
 
     def __repr__(self):
-        return "({0} - {1})".format(self.start, self.end)
+        return f"({self.start} - {self.end})"

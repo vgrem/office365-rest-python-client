@@ -1,5 +1,4 @@
-"""
-Revoke delegated permissions granted to a service principal on behalf of a user
+"""Revoke delegated permissions granted to a service principal on behalf of a user
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions#step-3-revoke-delegated-permissions-granted-to-a-service-principal-on-behalf-of-a-user-optional
 """

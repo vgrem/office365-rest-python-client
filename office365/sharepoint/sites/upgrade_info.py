@@ -19,8 +19,7 @@ class UpgradeInfo(ClientValue):
         upgrade_type=None,
         warnings=None,
     ):
-        """
-        :param str error_file: Specifies the location of the file that contains upgrade errors.
+        """:param str error_file: Specifies the location of the file that contains upgrade errors.
         :param int errors: Specifies the number of errors encountered during the site collection upgrade.
         :param datetime.datetime last_updated: Specifies the DateTime of the latest upgrade progress update.
         :param str log_file: Specifies the location of the file that contains upgrade log.

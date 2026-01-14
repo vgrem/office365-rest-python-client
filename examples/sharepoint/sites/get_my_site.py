@@ -1,6 +1,4 @@
-"""
-Get personal site for current user
-"""
+"""Get personal site for current user"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_team_site_url, test_user_credentials

@@ -11,8 +11,7 @@ class UserCollection(CountCollection[User]):
         super(UserCollection, self).__init__(context, User, resource_path)
 
     def get_by_principal_name(self, name):
-        """
-        Retrieves User by principal name
+        """Retrieves User by principal name
         :param str name: User principal name
         """
         return User(self.context, ResourcePath(name, self.resource_path))

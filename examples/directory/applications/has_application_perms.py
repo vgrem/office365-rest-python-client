@@ -1,5 +1,4 @@
-"""
-How to grant and revoke delegated permissions for an app using Microsoft Graph.
+"""How to grant and revoke delegated permissions for an app using Microsoft Graph.
 Delegated permissions, also called scopes or OAuth2 permissions, allow an app to call an API
 on behalf of a signed-in user.
 
@@ -22,6 +21,6 @@ app_role = "Place.Read.All"  # "Bookings.Read.All"
 result = resource.get_application_permissions(test_client_id).execute_query()
 # if app_role not in result.value:
 if not any(role.value == app_role for role in result.value):
-    print("Application permission '{0}' is not granted".format(app_role))
+    print(f"Application permission '{app_role}' is not granted")
 else:
     print(result.value)

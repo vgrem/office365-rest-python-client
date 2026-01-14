@@ -10,22 +10,16 @@ class Form(Entity):
     @property
     def form_type(self):
         # type: () -> Optional[str]
-        """
-        Gets the type of the form.
-        """
+        """Gets the type of the form."""
         return self.properties.get("FormType", None)
 
     @property
     def server_relative_url(self):
         # type: () -> Optional[str]
-        """
-        Gets the server-relative URL of the form.
-        """
+        """Gets the server-relative URL of the form."""
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
     def resource_path(self):
-        """
-        Gets the Web site–relative Path of the form
-        """
+        """Gets the Web site–relative Path of the form"""
         return self.properties.get("ResourcePath", SPResPath())

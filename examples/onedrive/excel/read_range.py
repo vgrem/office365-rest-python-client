@@ -1,5 +1,4 @@
-"""
-Gets the range object specified by the address or name.
+"""Gets the range object specified by the address or name.
 
 https://learn.microsoft.com/en-us/graph/api/worksheet-range?view=graph-rest-1.0
 """

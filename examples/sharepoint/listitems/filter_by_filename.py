@@ -1,5 +1,4 @@
-"""
-Demonstrates how to apply filtering to list collection
+"""Demonstrates how to apply filtering to list collection
 
 In the provided example only the user defined lists are getting returned
 """

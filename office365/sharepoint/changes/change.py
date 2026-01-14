@@ -21,8 +21,7 @@ class Change(Entity):
 
     @property
     def change_type(self):
-        """
-        Returns an SPChangeType that indicates the type of change, including adding, updating, deleting, or renaming
+        """Returns an SPChangeType that indicates the type of change, including adding, updating, deleting, or renaming
         changes, but also moving items away from or into lists and folders.
         """
         return self.properties.get("ChangeType", None)
@@ -30,17 +29,13 @@ class Change(Entity):
     @property
     def site_id(self):
         # type: () -> Optional[str]
-        """
-        Returns the Id of the site of the changed item
-        """
+        """Returns the Id of the site of the changed item"""
         return self.properties.get("SiteId", None)
 
     @property
     def time(self):
         # type: () -> datetime.datetime
-        """
-        Gets a value that specifies the time that the object was modified.
-        """
+        """Gets a value that specifies the time that the object was modified."""
         return self.properties.get("Time", datetime.datetime.min)
 
     def get_property(self, name, default_value=None):

@@ -1,5 +1,4 @@
-"""
-This common way of retrieving List Items from a List, only the default properties are getting returned
+"""This common way of retrieving List Items from a List, only the default properties are getting returned
 
 Official documentation:
 https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest#working-with-list-items-by-using-rest

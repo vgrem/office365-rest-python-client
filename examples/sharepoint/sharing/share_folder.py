@@ -1,6 +1,4 @@
-"""
-Demonstrates how to create and get a tokenized sharing link for a Folder
-"""
+"""Demonstrates how to create and get a tokenized sharing link for a Folder"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.links.kind import SharingLinkKind

@@ -1,6 +1,4 @@
-"""
-Gets site changes
-"""
+"""Gets site changes"""
 
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.client_context import ClientContext

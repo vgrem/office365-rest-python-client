@@ -16,8 +16,7 @@ class FormCollection(EntityCollection[Form]):
         return Form(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def get_by_page_type(self, form_type):
-        """
-        Returns the list form with the specified page type. If there is more than one list form with
+        """Returns the list form with the specified page type. If there is more than one list form with
         the specified page type, the protocol server MUST return one list form as determined by the protocol server.
         If there is no list form with the specified page type, the server MUST return NULL.
 

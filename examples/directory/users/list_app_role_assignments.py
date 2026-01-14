@@ -1,6 +1,4 @@
-"""
-Example shows a request to retrieve all app role assignments granted to the user
-"""
+"""Example shows a request to retrieve all app role assignments granted to the user"""
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username

@@ -12,8 +12,7 @@ class AlertCollection(EntityCollection[Alert]):
         super(AlertCollection, self).__init__(context, Alert, resource_path)
 
     def add(self, parameters):
-        """
-        Add an SP.Alert to SP.AlertCollection based on the given alertCreationInformation
+        """Add an SP.Alert to SP.AlertCollection based on the given alertCreationInformation
 
         :type parameters: office365.sharepoint.alerts.creation_information.AlertCreationInformation
         """
@@ -25,8 +24,7 @@ class AlertCollection(EntityCollection[Alert]):
 
     def contains(self, id_alert):
         # type: (str) -> ClientResult[bool]
-        """
-        Returns true if the given alert exists in the alert collection. False otherwise.
+        """Returns true if the given alert exists in the alert collection. False otherwise.
 
         :param str id_alert: The Id of the alert to search.
         """
@@ -46,8 +44,7 @@ class AlertCollection(EntityCollection[Alert]):
         return self
 
     def get_by_id(self, id_alert):
-        """
-        Gets an alert based on the Id.
+        """Gets an alert based on the Id.
 
         :param str id_alert: The Id of the alert to get.
         """

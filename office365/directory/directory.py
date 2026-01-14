@@ -16,7 +16,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 class Directory(Entity):
     """Represents a deleted item in the directory. When an item is deleted, it is added to the deleted items
     "container". Deleted items will remain available to restore for up to 30 days. After 30 days, the items are
-    permanently deleted."""
+    permanently deleted.
+    """
 
     @property
     def device_local_credentials(self):

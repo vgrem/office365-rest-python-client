@@ -19,8 +19,7 @@ class SPHelper(Entity):
     @staticmethod
     def is_member_of(context, principal_name, group_id, result=None):
         # type: (ClientContext, str, str, Optional[ClientResult[bool]]) -> ClientResult[bool]
-        """
-        :param str principal_name: User principal name
+        """:param str principal_name: User principal name
         :param str group_id: Group id
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param ClientResult or None result: Client result
@@ -51,8 +50,7 @@ class SPHelper(Entity):
 
     @staticmethod
     def get_membership(context, user_id):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str user_id: User's identifier
         """
         payload = {"userId": user_id}
@@ -63,8 +61,7 @@ class SPHelper(Entity):
 
     @staticmethod
     def get_members_info(context, group_id, row_limit, return_type=None):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str group_id: User's login
         :param int row_limit: Result offset
         :param MembersInfo return_type: Result
@@ -81,8 +78,7 @@ class SPHelper(Entity):
 
     @staticmethod
     def get_my_groups(context, logon_name, offset, length, return_type=None):
-        """
-        Retrieves information about groups that a user belongs to.
+        """Retrieves information about groups that a user belongs to.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str logon_name: User's login
@@ -99,8 +95,7 @@ class SPHelper(Entity):
 
     @staticmethod
     def get_members(context, group_id, return_type=None):
-        """
-        :param str group_id: Group identifier
+        """:param str group_id: Group identifier
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param EntityCollection or None return_type: Returns members
         """
@@ -114,8 +109,7 @@ class SPHelper(Entity):
     @staticmethod
     def get_owners(context, group_id, return_type=None):
         # type: (ClientContext, str, Optional[EntityCollection[User]]) -> SPHelper
-        """
-        :param str group_id: Group identifier
+        """:param str group_id: Group identifier
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param EntityCollection or None return_type: Returns members
         """
@@ -129,8 +123,7 @@ class SPHelper(Entity):
     @staticmethod
     def remove_external_members(context, group_id):
         # type: (ClientContext, str) -> SPHelper
-        """
-        :param str group_id: Group identifier
+        """:param str group_id: Group identifier
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         """
         binding_type = SPHelper(context)

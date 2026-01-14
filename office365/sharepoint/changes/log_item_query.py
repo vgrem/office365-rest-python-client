@@ -10,8 +10,7 @@ class ChangeLogItemQuery(ClientValue):
         contains=None,
         row_limit=None,
     ):
-        """
-        Specifies an object that is used as the input parameter of
+        """Specifies an object that is used as the input parameter of
         GetListItemChangesSinceToken (section 3.2.5.79.2.1.7) method.
 
         :param str change_token: Specifies a string that contains the change token for the request.

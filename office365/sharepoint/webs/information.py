@@ -44,7 +44,8 @@ class WebInformation(Entity):
     def last_item_modified_date(self):
         # type: () -> Optional[datetime]
         """Gets the date and time that an item was last modified in the site by a non-system update.
-        A non-system update is a change to a list item that is visible to end users."""
+        A non-system update is a change to a list item that is visible to end users.
+        """
         return self.properties.get("LastItemModifiedDate", datetime.min)
 
     @property

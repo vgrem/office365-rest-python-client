@@ -20,8 +20,7 @@ class SecurableObject(Entity):
     """An object that can be assigned security permissions."""
 
     def get_role_assignment(self, principal):
-        """
-        Retrieves the role assignment object (1) based on the specified user or group
+        """Retrieves the role assignment object (1) based on the specified user or group
 
         :param office365.sharepoint.principal.principal.Principal principal: Specifies the user or group of the
             role assignment.
@@ -42,7 +41,6 @@ class SecurableObject(Entity):
         :param RoleDefinition or int principal: Specifies the role definition or role type.
         :param Principal or str role: Specifies the user or group of the role assignment.
         """
-
         if not isinstance(principal, Principal):
             principal = self.context.web.site_users.get_by_principal_name(principal)
 
@@ -111,15 +109,15 @@ class SecurableObject(Entity):
 
     def reset_role_inheritance(self):
         """Resets the role inheritance for the securable object and inherits role assignments from
-        the parent securable object."""
+        the parent securable object.
+        """
         qry = ServiceOperationQuery(self, "ResetRoleInheritance", None, None, None, None)
         self.context.add_query(qry)
         return self
 
     def get_user_effective_permissions(self, user):
         # type: (str|User) -> ClientResult[BasePermissions]
-        """
-        Returns the user permissions for secured object.
+        """Returns the user permissions for secured object.
 
         :param str or User user: Specifies the user login name or User object.
         """

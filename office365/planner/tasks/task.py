@@ -7,8 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class PlannerTask(Entity):
-    """
-    The plannerTask resource represents a Planner task in Microsoft 365.
+    """The plannerTask resource represents a Planner task in Microsoft 365.
     A Planner task is contained in a plan and can be assigned to a bucket in a plan.
     Each task object has a details object which can contain more information about the task.
     See overview for more information regarding relationships between group, plan and task.
@@ -21,9 +20,7 @@ class PlannerTask(Entity):
 
     @property
     def created_datetime(self):
-        """
-        Date and time at which the task is created.
-        """
+        """Date and time at which the task is created."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property

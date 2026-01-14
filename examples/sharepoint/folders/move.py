@@ -1,6 +1,4 @@
-"""
-Demonstrates how to move a folder within a site
-"""
+"""Demonstrates how to move a folder within a site"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import create_unique_name, test_client_credentials, test_team_site_url
@@ -16,7 +14,7 @@ folder_to_parent = ctx.web.default_document_library().root_folder.add(create_uni
 print("Moving folder...")
 # folder_to = folder_from.move_to_using_path(folder_to_parent).execute_query()
 folder_to = folder_from.move_to(folder_to_parent).execute_query()
-print("Folder has been moved into '{0}'".format(folder_to.serverRelativeUrl))
+print(f"Folder has been moved into '{folder_to.serverRelativeUrl}'")
 
 print("Cleaning up temporary folders ...")
 folder_to_parent.delete_object().execute_query()

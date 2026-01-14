@@ -1,6 +1,4 @@
-"""
-Demonstrates how to copy a folder within a site
-"""
+"""Demonstrates how to copy a folder within a site"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import create_unique_name, test_team_site_url, test_user_credentials
@@ -19,7 +17,7 @@ folder_to = ctx.web.get_folder_by_server_relative_url("Shared Documents/Archive/
 
 # copies the folder with a new name
 folder = folder_from.copy_to(folder_to).execute_query()
-print("Folder has been copied from '{0}' into '{1}'".format(folder_from.serverRelativeUrl, folder.serverRelativeUrl))
+print(f"Folder has been copied from '{folder_from.serverRelativeUrl}' into '{folder.serverRelativeUrl}'")
 
 # clean up
 # folder_from.delete_object().execute_query()

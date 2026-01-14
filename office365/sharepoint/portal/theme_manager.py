@@ -5,15 +5,15 @@ from office365.sharepoint.entity import Entity
 
 class ThemeManager(Entity):
     """SharePoint site theming REST interface to perform basic create, read, update, and delete (CRUD)
-    operations on site themes."""
+    operations on site themes.
+    """
 
     @property
     def entity_type_name(self):
         return "SP.Utilities.ThemeManager"
 
     def add_tenant_theme(self, name, theme_json):
-        """
-        Adds a new theme to a tenant.
+        """Adds a new theme to a tenant.
 
         :param str name:
         :param str theme_json:
@@ -28,9 +28,7 @@ class ThemeManager(Entity):
         return return_type
 
     def delete_tenant_theme(self, name):
-        """
-        Removes a theme.
-        """
+        """Removes a theme."""
         payload = {
             "name": name,
         }

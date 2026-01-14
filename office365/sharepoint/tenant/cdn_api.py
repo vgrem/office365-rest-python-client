@@ -11,9 +11,7 @@ class TenantCdnApi(Entity):
         super(TenantCdnApi, self).__init__(context, ResourcePath("Microsoft.SharePoint.TenantCdn.TenantCdnApi"))
 
     def get_cdn_urls(self, items=None):
-        """
-        :param list[str] items:
-        """
+        """:param list[str] items:"""
         payload = {
             "items": items,
         }

@@ -19,8 +19,7 @@ class AlertCollection(EntityCollection[Alert]):
         source=None,
         vendor_information=None,
     ):
-        """
-        Creates an alert object.
+        """Creates an alert object.
         :param str title:
         :param str description:
         :param str severity:

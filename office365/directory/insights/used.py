@@ -5,8 +5,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class UsedInsight(Entity):
-    """
-    An insight representing documents used by a specific user. The insights returns the most relevant documents
+    """An insight representing documents used by a specific user. The insights returns the most relevant documents
     that a user viewed or modified. This includes documents in:
       OneDrive for Business
       SharePoint
@@ -25,7 +24,8 @@ class UsedInsight(Entity):
     @property
     def resource(self):
         """Used for navigating to the item that was used. For file attachments, the type is fileAttachment.
-        For linked attachments, the type is driveItem."""
+        For linked attachments, the type is driveItem.
+        """
         return self.properties.get(
             "resource",
             Entity(self.context, ResourcePath("resource", self.resource_path)),

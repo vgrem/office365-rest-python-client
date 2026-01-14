@@ -12,9 +12,7 @@ class Notebook(OnenoteEntityHierarchyModel):
     @property
     def sections(self):
         # type: () -> EntityCollection[OnenoteSection]
-        """
-        Retrieve a list of onenoteSection objects from the specified notebook.
-        """
+        """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
             "sections",
             EntityCollection(
@@ -26,10 +24,7 @@ class Notebook(OnenoteEntityHierarchyModel):
 
     @property
     def section_groups(self):
-        """
-        Retrieve a list of onenoteSection objects from the specified notebook.
-        """
-
+        """Retrieve a list of onenoteSection objects from the specified notebook."""
         from office365.onenote.sectiongroups.section_group import SectionGroup
 
         return self.properties.get(

@@ -14,7 +14,7 @@ class TestExcelCharts(GraphTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestExcelCharts, cls).setUpClass()
-        path = "{0}/../../../examples/data/templates/Weight loss tracker.xlsx".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../../../examples/data/templates/Weight loss tracker.xlsx"
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.excel_file.resource_path is not None
         cls.worksheet = cls.excel_file.workbook.worksheets["Weight loss tracker"].get().execute_query()

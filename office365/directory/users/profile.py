@@ -17,8 +17,7 @@ class UserProfile(ClientValue):
         country=None,
         account_enabled=False,
     ):
-        """
-        User profile
+        """User profile
 
         :type principal_name: str
         :type password: str

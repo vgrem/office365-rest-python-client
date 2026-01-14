@@ -13,8 +13,7 @@ class EmailProperties(ClientValue):
         bcc=None,
         additional_headers=None,
     ):
-        """
-        Specifies the definition of the email to send which includes both the message fields and body
+        """Specifies the definition of the email to send which includes both the message fields and body
 
         :param str body: Specifies the message body to send.
         :param str subject: Specifies the Subject field of the e-mail.

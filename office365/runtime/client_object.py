@@ -32,7 +32,7 @@ T = TypeVar("T", bound="ClientObject")
 PropertyT = Union[bool, int, float, str, bytes, dict | ClientValue]
 
 
-class ClientObject(object):
+class ClientObject:
     def __init__(self, context, resource_path=None, parent_collection=None):
         # type: (ClientRuntimeContext, Optional[ResourcePath], Optional[ClientObjectCollection]) -> None
         """Base client object which define named properties and relationships of an entity."""
@@ -66,8 +66,7 @@ class ClientObject(object):
         failure_callback=None,
         exceptions=(ClientRequestException,),
     ):
-        """
-        Executes the current set of data retrieval queries and method invocations and retries it if needed.
+        """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
         :param int max_retry: Number of times to retry the request
         :param int timeout_secs: Seconds to wait before retrying the request.
@@ -121,8 +120,7 @@ class ClientObject(object):
 
     def select(self, names):
         # type: (list[str]) -> Self
-        """
-        Allows to request a limited set of properties
+        """Allows to request a limited set of properties
 
         :type self: T
         :param list[str] names: the list of property names
@@ -138,8 +136,7 @@ class ClientObject(object):
 
     def _persist_changes(self, name):
         # type: (str) -> Self
-        """
-        Marks a property as a serializable
+        """Marks a property as a serializable
         :param str name: A property name
         """
         if name not in self._properties_to_persist:
@@ -170,11 +167,10 @@ class ClientObject(object):
                 self._properties[name] = typed_value
             else:
                 self._properties[name] = value
+        elif isinstance(typed_value, datetime.datetime):
+            self._properties[name] = ODataType.try_parse_datetime(value)
         else:
-            if isinstance(typed_value, datetime.datetime):
-                self._properties[name] = ODataType.try_parse_datetime(value)
-            else:
-                self._properties[name] = value
+            self._properties[name] = value
         return self
 
     def ensure_property(self, name, action, *args, **kwargs):

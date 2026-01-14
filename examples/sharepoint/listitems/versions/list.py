@@ -1,6 +1,4 @@
-"""
-Demonstrates how to retain the history for list items.
-"""
+"""Demonstrates how to retain the history for list items."""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url

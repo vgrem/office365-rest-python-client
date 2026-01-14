@@ -1,5 +1,4 @@
-"""
-Retrieve a list of worksheet objects.
+"""Retrieve a list of worksheet objects.
 
 https://learn.microsoft.com/en-us/graph/api/workbook-list-worksheets?view=graph-rest-1.0
 """
@@ -16,4 +15,4 @@ if len(worksheets) == 0:
     sys.exit("No worksheets found")
 
 for worksheet in worksheets:
-    print("Worksheet name: {0}".format(worksheet))
+    print(f"Worksheet name: {worksheet}")

@@ -1,6 +1,4 @@
-"""
-Demonstrates how to delete multiple list items
-"""
+"""Demonstrates how to delete multiple list items"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url
@@ -15,4 +13,4 @@ items = tasks_list.items.get().top(items_count).execute_query()
 # 2. Delete list items (via batch mode)
 [item.delete_object() for item in items]
 ctx.execute_batch()
-print("{0} items have been deleted".format(items_count))
+print(f"{items_count} items have been deleted")

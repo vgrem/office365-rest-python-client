@@ -5,8 +5,7 @@ class FileCreationInformation(ClientValue):
     """Represents properties that can be set when creating a file by using the FileCollection.Add method."""
 
     def __init__(self, url=None, overwrite=False, content=None):
-        """
-        :param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative
+        """:param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative
             or absolute form. Its length MUST be equal to or greater than 1.
         :param bool overwrite: Specifies whether to overwrite an existing file with the same name and in the same
             location as the one being added.

@@ -29,8 +29,7 @@ class Workbook(Entity):
         return return_type
 
     def create_session(self, persist_changes=None):
-        """
-        Create a new workbook session.
+        """Create a new workbook session.
 
         Excel APIs can be called in one of two modes:
             Persistent session - All changes made to the workbook are persisted (saved). This is the usual mode of

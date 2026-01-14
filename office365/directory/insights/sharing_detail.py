@@ -14,8 +14,7 @@ class SharingDetail(ClientValue):
         sharing_subject=None,
         sharing_type=None,
     ):
-        """
-        :param datetime.datetime shared_datetime: The date and time the file was last shared.
+        """:param datetime.datetime shared_datetime: The date and time the file was last shared.
         :param ResourceReference sharing_reference:
         :param str sharing_subject: The subject with which the document was shared.
         :param str sharing_type: Determines the way the document was shared,

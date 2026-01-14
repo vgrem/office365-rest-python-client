@@ -33,8 +33,7 @@ class ServicePrincipal(DirectoryObject):
         return self.display_name
 
     def add_key(self, key_credential, password_credential, proof):
-        """
-        Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a servicePrincipal
+        """Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a servicePrincipal
         to automate rolling its expiring keys.
 
         :param KeyCredential key_credential: The new application key credential to add.
@@ -68,8 +67,7 @@ class ServicePrincipal(DirectoryObject):
         return return_type
 
     def add_token_signing_certificate(self, display_name, end_datetime=None):
-        """
-        Create a self-signed signing certificate and return a selfSignedCertificate object, which is the public part
+        """Create a self-signed signing certificate and return a selfSignedCertificate object, which is the public part
         of the generated certificate.
 
         The self-signed signing certificate is composed of the following objects,
@@ -101,7 +99,6 @@ class ServicePrincipal(DirectoryObject):
     def get_delegated_permissions(self, app, principal=None):
         # type: (Application|str, User|str) -> ClientResult[StringCollection]
         """Gets a delegated API permission"""
-
         consent_type = "Principal" if principal else "AllPrincipals"
 
         return_type = ClientResult(self.context, StringCollection())
@@ -110,9 +107,9 @@ class ServicePrincipal(DirectoryObject):
             # type: (str, str) -> None
 
             if principal_id is None:
-                query_text = "clientId eq '{0}'  and consentType eq '{1}'".format(client_id, consent_type)
+                query_text = f"clientId eq '{client_id}'  and consentType eq '{consent_type}'"
             else:
-                query_text = "principalId eq '{0}' and clientId eq '{1}'".format(principal_id, client_id)
+                query_text = f"principalId eq '{principal_id}' and clientId eq '{client_id}'"
 
             def _loaded(col):
                 scope_val = next(iter([g.scope for g in col if g.resource_id == self.id]), None)
@@ -147,7 +144,6 @@ class ServicePrincipal(DirectoryObject):
     def grant_delegated_permissions(self, app, principal, scope):
         # type: (Application|str, User|str|None, AppRole|str) -> Self
         """Grants a delegated permission to the client service principal on behalf of a user"""
-
         consent_type = "Principal" if principal else "AllPrincipals"
 
         def _grant_delegated(principal_id, client_id):
@@ -192,12 +188,12 @@ class ServicePrincipal(DirectoryObject):
                     return_type[0].delete_object()
 
             if principal:
-                query_text = "clientId eq '{0}' and principalId eq '{1}' and resourceId eq '{2}'".format(
-                    client_id, principal_id, self.id
+                query_text = (
+                    f"clientId eq '{client_id}' and principalId eq '{principal_id}' and resourceId eq '{self.id}'"
                 )
             else:
-                query_text = "clientId eq '{0}' and consentType eq 'AllPrincipals' and resourceId eq '{1}'".format(
-                    client_id, self.id
+                query_text = (
+                    f"clientId eq '{client_id}' and consentType eq 'AllPrincipals' and resourceId eq '{self.id}'"
                 )
 
             self.context.oauth2_permission_grants.filter(query_text).get().after_execute(_after)
@@ -247,8 +243,7 @@ class ServicePrincipal(DirectoryObject):
 
     def grant_application_permissions(self, app, app_role):
         # type: (Application|str, AppRole|str) -> Self
-        """
-        Grants an app role assignment to a client service principal
+        """Grants an app role assignment to a client service principal
         :param Application or str app: Application object or app identifier
         :param AppRole or str app_role: AppRole object or name
         """
@@ -298,8 +293,7 @@ class ServicePrincipal(DirectoryObject):
         return self
 
     def remove_password(self, key_id):
-        """
-        Remove a password from a servicePrincipal object.
+        """Remove a password from a servicePrincipal object.
         :param str key_id: The unique identifier for the password.
         """
         qry = ServiceOperationQuery(self, "removePassword", None, {"keyId": key_id})
@@ -309,16 +303,14 @@ class ServicePrincipal(DirectoryObject):
     @property
     def account_enabled(self):
         # type: () -> Optional[bool]
-        """
-        true if the service principal account is enabled; otherwise, false. If set to false, then no users will be
+        """True if the service principal account is enabled; otherwise, false. If set to false, then no users will be
         able to sign in to this app, even if they are assigned to it. Supports $filter (eq, ne, not, in).
         """
         return self.properties.get("accountEnabled", None)
 
     @property
     def alternative_names(self):
-        """
-        Used to retrieve service principals by subscription, identify resource group and full resource ids for
+        """Used to retrieve service principals by subscription, identify resource group and full resource ids for
         managed identities. Supports $filter (eq, not, ge, le, startsWith).
         """
         return self.properties.get("alternativeNames", StringCollection())
@@ -326,9 +318,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def app_description(self):
         # type: () -> Optional[str]
-        """
-        The description exposed by the associated application.
-        """
+        """The description exposed by the associated application."""
         return self.properties.get("appDescription", None)
 
     @property
@@ -347,14 +337,15 @@ class ServicePrincipal(DirectoryObject):
         # type: () -> Optional[bool]
         """Specifies whether users or other service principals need to be granted an app role assignment for
         this service principal before users can sign in or apps can get tokens. The default value is false.
-        Not nullable."""
+        Not nullable.
+        """
         return self.properties.get("appRoleAssignmentRequired", None)
 
     @property
     def app_role_assigned_to(self):
+        """App role assignments for this app or service, granted to users, groups, and other service principals.
+        Supports $expand.
         """
-        App role assignments for this app or service, granted to users, groups, and other service principals.
-        Supports $expand."""
         return self.properties.get(
             "appRoleAssignedTo",
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignedTo", self.resource_path)),
@@ -387,8 +378,7 @@ class ServicePrincipal(DirectoryObject):
 
     @property
     def key_credentials(self):
-        """
-        The collection of key credentials associated with the service principal. Not nullable.
+        """The collection of key credentials associated with the service principal. Not nullable.
         Supports $filter (eq, not, ge, le).
         """
         return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
@@ -396,8 +386,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def login_url(self):
         # type: () -> Optional[str]
-        """
-        Specifies the URL where the service provider redirects the user to Azure AD to authenticate.
+        """Specifies the URL where the service provider redirects the user to Azure AD to authenticate.
         Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps. When blank,
         Azure AD performs IdP-initiated sign-on for applications configured with SAML-based single sign-on.
         The user launches the application from Microsoft 365, the Azure AD My Apps, or the Azure AD SSO URL.
@@ -407,16 +396,14 @@ class ServicePrincipal(DirectoryObject):
     @property
     def logout_url(self):
         # type: () -> Optional[str]
-        """
-        Specifies the URL that will be used by Microsoft's authorization service to logout an user using
+        """Specifies the URL that will be used by Microsoft's authorization service to logout an user using
         OpenId Connect front-channel, back-channel or SAML logout protocols.
         """
         return self.properties.get("logoutUrl", None)
 
     @property
     def notification_email_addresses(self):
-        """
-        Specifies the list of email addresses where Azure AD sends a notification when the active certificate is near
+        """Specifies the list of email addresses where Azure AD sends a notification when the active certificate is near
         the expiration date. This is only for the certificates used to sign the SAML token issued for Azure
         AD Gallery applications.
         """
@@ -425,8 +412,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def service_principal_type(self):
         # type: () -> Optional[str]
-        """
-        Identifies whether the service principal represents an application, a managed identity, or a legacy application.
+        """Identifies whether the service principal represents an application, a managed identity, or a legacy application.
         This is set by Azure AD internally. The servicePrincipalType property can be set to three different values:
             Application - A service principal that represents an application or service.
             The appId property identifies the associated app registration, and matches the appId of an application,
@@ -459,8 +445,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def oauth2_permission_scopes(self):
         # type: () -> ClientValueCollection[PermissionScope]
-        """
-        The delegated permissions exposed by the application. For more information see the oauth2PermissionScopes
+        """The delegated permissions exposed by the application. For more information see the oauth2PermissionScopes
         property on the application entity's api property.
         """
         return self.properties.get("oauth2PermissionScopes", ClientValueCollection(PermissionScope))
@@ -496,8 +481,7 @@ class ServicePrincipal(DirectoryObject):
 
     @property
     def synchronization(self):
-        """
-        Represents the capability for Azure Active Directory (Azure AD) identity synchronization through
+        """Represents the capability for Azure Active Directory (Azure AD) identity synchronization through
         the Microsoft Graph API.
         """
         return self.properties.get(
@@ -508,8 +492,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def token_encryption_key_id(self):
         # type: () -> Optional[str]
-        """
-        Specifies the keyId of a public key from the keyCredentials collection. When configured, Azure AD issues tokens
+        """Specifies the keyId of a public key from the keyCredentials collection. When configured, Azure AD issues tokens
         for this application encrypted using the key specified by this property. The application code that receives
         the encrypted token must use the matching private key to decrypt the token before it can be used
         for the signed-in user.

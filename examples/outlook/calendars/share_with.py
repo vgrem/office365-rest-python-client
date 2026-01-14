@@ -1,5 +1,4 @@
-"""
-Create calendar permission
+"""Create calendar permission
 
 Demonstrates how to share my calendar with another user
 

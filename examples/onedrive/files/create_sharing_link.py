@@ -1,5 +1,4 @@
-"""
-Create a sharing link for a DriveItem
+"""Create a sharing link for a DriveItem
 
 The following example requests a sharing link to be created for the DriveItem in the user's OneDrive.
 The sharing link is configured to be read-only and usable by anyone with the link.

@@ -9,8 +9,7 @@ class TranslationNotificationRecipient(ClientValue):
 
 class TranslationNotificationRecipientCollection(ClientValue):
     def __init__(self, language_code=None, recipients=None):
-        """
-        :param str language_code:
+        """:param str language_code:
         :param list[str] recipients:
         """
         self.LanguageCode = language_code

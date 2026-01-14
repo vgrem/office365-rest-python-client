@@ -1,5 +1,4 @@
-"""
-Enumerate lists in a site
+"""Enumerate lists in a site
 
 https://learn.microsoft.com/en-us/graph/api/list-list?view=graph-rest-1.0
 """

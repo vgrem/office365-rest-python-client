@@ -19,7 +19,7 @@ class SPPolicyStoreProxy(Entity):
         # type: (ClientContext, str, Optional[ClientResult[bool]]) -> ClientResult[bool]
         """ """
         if return_type is None:
-            return_type = ClientResult(context, bool())
+            return_type = ClientResult(context, False)
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(
             SPPolicyStoreProxy(context),
@@ -38,7 +38,7 @@ class SPPolicyStoreProxy(Entity):
         # type: (ClientContext, str, Optional[ClientResult[bool]]) -> ClientResult[bool]
         """ """
         if return_type is None:
-            return_type = ClientResult(context, bool())
+            return_type = ClientResult(context, False)
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(
             SPPolicyStoreProxy(context),
@@ -54,8 +54,7 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def get_available_tags_for_site(context, site_url, return_type=None):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str site_url:
         :param ClientResult return_type:
         """
@@ -75,9 +74,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     def get_dynamic_scope_binding_by_site_id(self, site_id):
-        """
-        :param str site_id:
-        """
+        """:param str site_id:"""
         return_type = ClientResult(self.context, StringCollection())
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(self, "GetDynamicScopeBindingBySiteId", None, payload, None, return_type)
@@ -153,7 +150,7 @@ class SPPolicyStoreProxy(Entity):
     def lock_record_item(context, list_url, item_id, refresh_labeled_time=None, return_type=None):
         """ """
         if return_type is None:
-            return_type = ClientResult(context, int())
+            return_type = ClientResult(context, 0)
         payload = {
             "listUrl": list_url,
             "itemId": item_id,

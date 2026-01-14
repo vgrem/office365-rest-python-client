@@ -8,11 +8,11 @@ from office365.runtime.types.collections import StringCollection
 
 class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
-    directory entity types."""
+    directory entity types.
+    """
 
     def check_member_objects(self, ids=None):
-        """
-        Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
+        """Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
         the specified user, group, service principal, organizational contact, device, or directory object.
 
         :param list[str] ids: The unique identifiers for the objects
@@ -27,7 +27,8 @@ class DirectoryObject(Entity):
         """Returns all the groups and directory roles that a user, group, or directory object is a member of.
         This function is transitive.
 
-        :type security_enabled_only: bool"""
+        :type security_enabled_only: bool
+        """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
         qry = ServiceOperationQuery(self, "getMemberObjects", None, payload, None, return_type)
@@ -67,8 +68,7 @@ class DirectoryObject(Entity):
         return return_type
 
     def restore(self):
-        """
-        Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from
+        """Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from
         deleted items. If an item was accidentally deleted, you can fully restore the item. This is not applicable
         to security groups, which are deleted permanently.
 

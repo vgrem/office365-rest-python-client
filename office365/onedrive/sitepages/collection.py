@@ -28,15 +28,14 @@ class SitePageCollection(EntityCollection[SitePage]):
 
     def get_by_name(self, name):
         """Get a sitePage by name."""
-        return self.single("name eq '{0}'".format(name))
+        return self.single(f"name eq '{name}'")
 
     def get_by_title(self, title):
         """Get a sitePage by title."""
-        return self.single("title eq '{0}'".format(title))
+        return self.single(f"title eq '{title}'")
 
     def add(self, title, page_layout="article"):
-        """
-        Create a new sitePage in the site pages list in a site.
+        """Create a new sitePage in the site pages list in a site.
 
         :param str title:
         :param str page_layout:
@@ -50,7 +49,7 @@ class SitePageCollection(EntityCollection[SitePage]):
             super(SitePageCollection, self)
             .add(
                 title=title,
-                name="{0}.aspx".format(title),
+                name=f"{title}.aspx",
                 pageLayout=page_layout,
                 titleArea=TitleArea(),
             )

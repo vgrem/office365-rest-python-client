@@ -1,6 +1,4 @@
-"""
-
-If the specified login name belongs to a valid user of the site, returns the User object corresponding to that user.
+"""If the specified login name belongs to a valid user of the site, returns the User object corresponding to that user.
 
 If the specified login name belongs to a valid user outside of the site, adds the user to the site and
 returns the User object corresponding to that user.

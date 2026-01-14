@@ -7,8 +7,7 @@ class TodoTaskListCollection(DeltaCollection[TodoTaskList]):
         super(TodoTaskListCollection, self).__init__(context, TodoTaskList, resource_path)
 
     def add(self, display_name):
-        """
-        Create a new lists object.
+        """Create a new lists object.
 
         :param str display_name: Field indicating title of the task list.
         """

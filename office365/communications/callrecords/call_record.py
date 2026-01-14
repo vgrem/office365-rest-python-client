@@ -7,7 +7,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class CallRecord(Entity):
     """Represents a single peer-to-peer call or a group call between multiple participants,
-    sometimes referred to as an online meeting."""
+    sometimes referred to as an online meeting.
+    """
 
     @property
     def join_web_url(self):
@@ -21,8 +22,7 @@ class CallRecord(Entity):
 
     @property
     def sessions(self):
-        """
-        List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group
+        """List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group
         calls typically have at least one session per participant.
         """
         return self.properties.get(

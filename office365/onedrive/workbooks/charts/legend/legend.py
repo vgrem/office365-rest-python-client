@@ -16,7 +16,8 @@ class WorkbookChartLegend(Entity):
     def position(self):
         # type: () -> Optional[str]
         """Represents the position of the legend on the chart.
-        The possible values are: Top, Bottom, Left, Right, Corner, Custom."""
+        The possible values are: Top, Bottom, Left, Right, Corner, Custom.
+        """
         return self.properties.get("position", None)
 
     @property

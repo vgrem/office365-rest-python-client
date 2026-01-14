@@ -10,8 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Incident(Entity):
-    """
-    An incident in Microsoft 365 Defender is a collection of correlated alert instances and associated metadata
+    """An incident in Microsoft 365 Defender is a collection of correlated alert instances and associated metadata
     that reflects the story of an attack in a tenant.
 
     Microsoft 365 services and apps create alerts when they detect a suspicious or malicious event or activity.

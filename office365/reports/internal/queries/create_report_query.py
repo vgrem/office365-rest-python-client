@@ -9,8 +9,7 @@ if TYPE_CHECKING:
 
 
 def create_report_query(report_root, report_name, period=None, return_stream=False):
-    """
-    Construct Report query
+    """Construct Report query
 
     :param ReportRoot report_root: Report container
     :param str report_name: Report name
@@ -23,7 +22,7 @@ def create_report_query(report_root, report_name, period=None, return_stream=Fal
         "period": period,
     }
     if return_stream:
-        return_type = ClientResult(report_root.context, bytes())
+        return_type = ClientResult(report_root.context, b"")
     else:
         return_type = ClientResult(report_root.context, Report())
     return FunctionQuery(report_root, report_name, params, return_type)

@@ -24,9 +24,7 @@ class SPMachineLearningHub(Entity):
     """ """
 
     def get_by_content_type_id(self, content_type_id):
-        """
-        :param str content_type_id:
-        """
+        """:param str content_type_id:"""
         return_type = SyntexModelsLandingInfo(self.context)
         payload = {"contentTypeId": content_type_id}
         qry = ServiceOperationQuery(self, "GetByContentTypeId", None, payload, None, return_type)
@@ -40,8 +38,7 @@ class SPMachineLearningHub(Entity):
         publication_types=None,
         include_management_not_allowed_models=None,
     ):
-        """
-        :param str list_id:
+        """:param str list_id:
         :param int model_types:
         :param int publication_types:
         :param bool include_management_not_allowed_models:

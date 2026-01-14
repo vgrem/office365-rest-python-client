@@ -4,8 +4,7 @@ from office365.sharepoint.sharing.link_abilities import SharingLinkAbilities
 
 
 class SharingAbilities(ClientValue):
-    """
-    Represents the matrix of possible sharing abilities for direct sharing and tokenized sharing links along
+    """Represents the matrix of possible sharing abilities for direct sharing and tokenized sharing links along
     with the state of each capability for the current user.
     """
 
@@ -17,8 +16,7 @@ class SharingAbilities(ClientValue):
         organization_link_abilities=SharingLinkAbilities(),
         people_sharing_link_abilities=SharingLinkAbilities(),
     ):
-        """
-        :param SharingLinkAbilities anonymous_link_abilities: Indicates abilities for anonymous access links.
+        """:param SharingLinkAbilities anonymous_link_abilities: Indicates abilities for anonymous access links.
         :param SharingLinkAbilities anonymous_link_abilities:
         :param DirectSharingAbilities direct_sharing_abilities: Indicates abilities for direct sharing of a document
             using the canonical URL.

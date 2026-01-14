@@ -21,10 +21,8 @@ class TenantCrawlVersionsInfoProvider(Entity):
         return return_type
 
     def disable_crawl_versions(self, site_id):
-        """
-        :param str site_id:
-        """
-        return_type = ClientResult(self.context, bool())
+        """:param str site_id:"""
+        return_type = ClientResult(self.context, False)
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(self, "DisableCrawlVersions", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -32,16 +30,14 @@ class TenantCrawlVersionsInfoProvider(Entity):
 
     def disable_crawl_versions_for_tenant(self):
         """ """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "DisableCrawlVersionsForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_crawl_versions_enabled(self, site_id):
-        """
-        :param str site_id:
-        """
-        return_type = ClientResult(self.context, bool())
+        """:param str site_id:"""
+        return_type = ClientResult(self.context, False)
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabled", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -49,7 +45,7 @@ class TenantCrawlVersionsInfoProvider(Entity):
 
     def is_crawl_versions_enabled_for_tenant(self):
         """ """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabledForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

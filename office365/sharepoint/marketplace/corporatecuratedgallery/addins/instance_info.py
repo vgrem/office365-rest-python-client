@@ -10,8 +10,7 @@ class SPAddinInstanceInfo(ClientValue):
         tenant_app_data_update_time=None,
         title=None,
     ):
-        """
-        :param str app_identifier:
+        """:param str app_identifier:
         :param str app_instance_id:
         :param str tenant_app_data:
         :param datetime.datetime tenant_app_data_update_time:

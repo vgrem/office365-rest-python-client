@@ -8,8 +8,7 @@ class Reputation(Entity):
 
     @staticmethod
     def set_rating(context, list_id, item_id, rating, return_type=None):
-        """
-        The SetRating static method rates an item within the specified list.
+        """The SetRating static method rates an item within the specified list.
         The return value is the average rating for the specified list item.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -31,8 +30,7 @@ class Reputation(Entity):
 
     @staticmethod
     def set_like(context, list_id, item_id, like, return_type=None):
-        """
-        The SetLike static method sets or unsets the like quality for the current user for an item within
+        """The SetLike static method sets or unsets the like quality for the current user for an item within
            the specified list. The return value is the total number of likes for the specified list item.
 
 

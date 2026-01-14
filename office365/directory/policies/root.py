@@ -27,9 +27,7 @@ class PolicyRoot(Entity):
 
     @property
     def admin_consent_request_policy(self):
-        """
-        The policy by which consent requests are created and managed for the entire tenant.
-        """
+        """The policy by which consent requests are created and managed for the entire tenant."""
         return self.properties.get(
             "adminConsentRequestPolicy",
             AdminConsentRequestPolicy(
@@ -40,8 +38,7 @@ class PolicyRoot(Entity):
 
     @property
     def authentication_methods_policy(self):
-        """
-        The authentication methods and the users that are allowed to use them to sign in and perform multi-factor
+        """The authentication methods and the users that are allowed to use them to sign in and perform multi-factor
         authentication (MFA) in Azure Active Directory (Azure AD).
         """
         return self.properties.get(
@@ -55,9 +52,7 @@ class PolicyRoot(Entity):
     @property
     def authentication_strength_policies(self):
         # type: () -> EntityCollection[AuthenticationStrengthPolicy]
-        """
-        The authentication method combinations that are to be used in scenarios defined by Azure AD Conditional Access.
-        """
+        """The authentication method combinations that are to be used in scenarios defined by Azure AD Conditional Access."""
         return self.properties.get(
             "authenticationStrengthPolicies",
             EntityCollection(
@@ -90,7 +85,8 @@ class PolicyRoot(Entity):
     def app_management_policies(self):
         # type: () -> EntityCollection[AppManagementPolicy]
         """The policies that enforce app management restrictions for specific applications and service principals,
-        overriding the defaultAppManagementPolicy."""
+        overriding the defaultAppManagementPolicy.
+        """
         return self.properties.get(
             "appManagementPolicies",
             EntityCollection(
@@ -115,9 +111,7 @@ class PolicyRoot(Entity):
 
     @property
     def cross_tenant_access_policy(self):
-        """
-        The custom rules that define an access scenario when interacting with external Azure AD tenants.
-        """
+        """The custom rules that define an access scenario when interacting with external Azure AD tenants."""
         return self.properties.get(
             "crossTenantAccessPolicy",
             CrossTenantAccessPolicy(
@@ -139,9 +133,7 @@ class PolicyRoot(Entity):
 
     @property
     def default_app_management_policy(self):
-        """
-        The tenant-wide policy that enforces app management restrictions for all applications and service principals.
-        """
+        """The tenant-wide policy that enforces app management restrictions for all applications and service principals."""
         return self.properties.get(
             "defaultAppManagementPolicy",
             TenantAppManagementPolicy(
@@ -166,9 +158,7 @@ class PolicyRoot(Entity):
     @property
     def permission_grant_policies(self):
         # type: () -> EntityCollection[PermissionGrantPolicy]
-        """
-        The policy that specifies the conditions under which consent can be granted.
-        """
+        """The policy that specifies the conditions under which consent can be granted."""
         return self.properties.get(
             "permissionGrantPolicies",
             EntityCollection(

@@ -2,8 +2,7 @@ from office365.teams.info import TeamInfo
 
 
 class AssociatedTeamInfo(TeamInfo):
-    """
-    Represents a team that is associated with a user.
+    """Represents a team that is associated with a user.
 
     Currently, a user can be associated with a team in two different ways:
 

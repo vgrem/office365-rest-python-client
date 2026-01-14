@@ -14,18 +14,15 @@ class EmployeeEngagement(Entity):
         super(EmployeeEngagement, self).__init__(context, ResourcePath("SP.EmployeeEngagement"))
 
     def dashboard_content(self, override_language_code=None):
-        """
-        :param str override_language_code:
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str override_language_code:"""
+        return_type = ClientResult(self.context, "")
         payload = {"override_language_code": override_language_code}
         qry = ServiceOperationQuery(self, "DashboardContent", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def full_dashboard_content(self, canvas_as_json=None, include_personalization_data=None):
-        """
-        :param bool canvas_as_json:
+        """:param bool canvas_as_json:
         :param bool include_personalization_data:
         """
         return_type = ClientResult(self.context, DashboardConfiguration())

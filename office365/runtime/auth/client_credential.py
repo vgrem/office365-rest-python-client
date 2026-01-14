@@ -1,7 +1,6 @@
-class ClientCredential(object):
+class ClientCredential:
     def __init__(self, client_id, client_secret):
-        """
-        Client credentials
+        """Client credentials
 
         :param str client_secret:
         :param str client_id:

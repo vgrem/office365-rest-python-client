@@ -1,5 +1,4 @@
-"""
-Revokes permissions from a site.
+"""Revokes permissions from a site.
 
 https://learn.microsoft.com/en-us/graph/api/site-delete-permission?view=graph-rest-1.0
 """

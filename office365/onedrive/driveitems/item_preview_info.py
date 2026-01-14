@@ -16,8 +16,7 @@ class ItemPreviewInfo(ClientValue):
     """
 
     def __init__(self, get_url=None, post_parameters=None, post_url=None):
-        """
-        :param str get_url: URL suitable for embedding using HTTP GET (iframes, etc.)
+        """:param str get_url: URL suitable for embedding using HTTP GET (iframes, etc.)
         :param str post_parameters: POST parameters to include if using postUrl
         :param str post_url: URL suitable for embedding using HTTP POST (form post, JS, etc.)
         """

@@ -13,16 +13,14 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         super(ContentTypeCollection, self).__init__(context, ContentType, resource_path, parent)
 
     def get_by_name(self, name):
-        """
-        Returns the content type with the given name from the collection.
+        """Returns the content type with the given name from the collection.
 
         :param str name: Content type name
         """
-        return self.single("Name eq '{0}'".format(name))
+        return self.single(f"Name eq '{name}'")
 
     def get_by_id(self, content_type_id):
-        """
-        Returns the content type with the given identifier from the collection.
+        """Returns the content type with the given identifier from the collection.
         If a content type with the given identifier is not found in the collection, the server MUST return null.
 
         :param str content_type_id: A hexadecimal value representing the identifier of a content type.
@@ -51,8 +49,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return return_type
 
     def create(self, name, description=None, group=None, parent_content_type=None):
-        """
-        Creates a new content type to the collection and returns a reference to the added SP.ContentType.
+        """Creates a new content type to the collection and returns a reference to the added SP.ContentType.
 
         :param str name:  Specifies the name
         :param str description: Specifies the description
@@ -61,9 +58,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """
 
         def _create_and_add_query(parent_content_type_id):
-            """
-            :type parent_content_type_id: str
-            """
+            """:type parent_content_type_id: str"""
             parameters = ContentTypeEntityData(name, description, group, parent_content_type_id)
             payload = {"parameters": parameters}
             qry = ServiceOperationQuery(self, "Create", None, payload, None, return_type)

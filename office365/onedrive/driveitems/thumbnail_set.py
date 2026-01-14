@@ -4,7 +4,8 @@ from office365.onedrive.driveitems.thumbnail import Thumbnail
 
 class ThumbnailSet(Entity):
     """The ThumbnailSet resource is a keyed collection of thumbnail resources.
-    It is used to represent a set of thumbnails associated with a DriveItem."""
+    It is used to represent a set of thumbnails associated with a DriveItem.
+    """
 
     @property
     def large(self):

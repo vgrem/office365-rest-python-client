@@ -6,8 +6,7 @@ class ResourceAction(ClientValue):
     """Set of allowed and not allowed actions for a resource."""
 
     def __init__(self, allowed=None, not_allowed=None):
-        """
-        :param list[str] allowed: Allowed Actions
+        """:param list[str] allowed: Allowed Actions
         :param list[str] not_allowed: Not Allowed Actions.
         """
         self.allowedResourceActions = StringCollection(allowed)

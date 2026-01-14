@@ -5,8 +5,7 @@ class NumberColumn(ClientValue):
     """The numberColumn on a columnDefinition resource indicates that the column's values are numbers."""
 
     def __init__(self, minimum=None, maximum=None, display_as=None, decimal_places=None):
-        """
-        :param float minimum: The minimum permitted value.
+        """:param float minimum: The minimum permitted value.
         :param float maximum: The maximum permitted value.
         :param str display_as: How the value should be presented in the UX. Must be one of number or percentage.
             If unspecified, treated as number.

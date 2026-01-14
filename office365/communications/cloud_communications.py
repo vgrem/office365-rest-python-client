@@ -10,8 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class CloudCommunications(Entity):
     def get_presences_by_user_id(self, ids):
-        """
-        Get the presence information for multiple users.
+        """Get the presence information for multiple users.
 
         :param list[str] ids: The user object IDs.
         """

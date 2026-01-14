@@ -7,7 +7,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 class TaxonomyItem(ClientObject):
     """The TaxonomyItem class is a base class that represents an item in the TermStore (section 3.1.5.23).
     A TaxonomyItem has a name and a unique identifier. It also contains date and time of when the item is created and
-    when the item is last modified."""
+    when the item is last modified.
+    """
 
     @property
     def id(self):

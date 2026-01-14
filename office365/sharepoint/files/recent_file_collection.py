@@ -10,11 +10,10 @@ class RecentFileCollection(Entity):
 
     @staticmethod
     def get_recent_files(context, top):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
+        """:type context: office365.sharepoint.client_context.ClientContext
         :param int top:
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         payload = {"top": top}
         binding_type = RecentFileCollection(context)
         qry = ServiceOperationQuery(binding_type, "GetRecentFiles", payload, None, None, return_type, True)

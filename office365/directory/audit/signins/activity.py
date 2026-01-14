@@ -4,7 +4,8 @@ from office365.runtime.client_value import ClientValue
 class SignInActivity(ClientValue):
     """Provides the last interactive or non-interactive sign-in time for a specific user. Since signInActivity
     describes a property of the user object, Azure AD stores sign in activity for your users for as long as the
-    user object exists."""
+    user object exists.
+    """
 
     def __init__(
         self,
@@ -13,8 +14,7 @@ class SignInActivity(ClientValue):
         last_sign_in_datetime=None,
         last_sign_in_request_id=None,
     ):
-        """
-        :param datetime.datetime last_non_interactive_sign_in_datetime: The last non-interactive sign-in date for a
+        """:param datetime.datetime last_non_interactive_sign_in_datetime: The last non-interactive sign-in date for a
             specific user. You can use this field to calculate the last time a client attempted to sign into the
             directory on behalf of a user. Because some users may use clients to access tenant resources rather
             than signing into your tenant directly, you can use the non-interactive sign-in date to along with

@@ -15,8 +15,7 @@ class RecurrencePattern(ClientValue):
         month=None,
         pattern_type=None,
     ):
-        """
-        :param int day_of_month: The day of the month on which the event occurs. Required if type is absoluteMonthly
+        """:param int day_of_month: The day of the month on which the event occurs. Required if type is absoluteMonthly
             or absoluteYearly.
         :param list[str] days_of_week: A collection of the days of the week on which the event occurs
         :param str first_day_of_week: The first day of the week

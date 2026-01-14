@@ -11,8 +11,7 @@ class TeamworkOnlineMeetingInfo(ClientValue):
         join_web_url=None,
         organizer=TeamworkUserIdentity(),
     ):
-        """
-        :param calendar_event_id: The identifier of the calendar event associated with the meeting.
+        """:param calendar_event_id: The identifier of the calendar event associated with the meeting.
         :param join_web_url: The URL that users click to join or uniquely identify the meeting.
         :param organizer: The organizer associated with the meeting.
         """

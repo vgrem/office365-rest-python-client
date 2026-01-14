@@ -8,11 +8,11 @@ from office365.sharepoint.webparts.webpart import WebPart
 
 class WebPartDefinition(Entity):
     """Represents a Web Part on a Web Part Page. Provides operations for moving, deleting, and changing the state of
-    the Web Part."""
+    the Web Part.
+    """
 
     def close_web_part(self):
-        """
-        Closes the Web Part. If the Web Part is already closed, this method does nothing.
+        """Closes the Web Part. If the Web Part is already closed, this method does nothing.
 
         If the current user does not have permissions to modify the Web Part,
         the server MUST ignore the call to this method.
@@ -22,8 +22,7 @@ class WebPartDefinition(Entity):
         return self
 
     def delete_web_part(self):
-        """
-        Deletes the Web Part from the page.
+        """Deletes the Web Part from the page.
         When Scope is User, the current user MUST have permissions to add and delete personalized Web Parts.
         When Scope is Shared, the current user MUST have permissions to customize pages.
         """
@@ -32,8 +31,7 @@ class WebPartDefinition(Entity):
         return self
 
     def open_web_part(self):
-        """
-        Opens the Web Part. If the Web Part is already open, this method does nothing.
+        """Opens the Web Part. If the Web Part is already open, this method does nothing.
 
         If the current user does not have permissions to modify the Web Part, the protocol server MUST ignore the
         call to this method.
@@ -43,8 +41,7 @@ class WebPartDefinition(Entity):
         return self
 
     def save_web_part_changes(self):
-        """
-        Saves changes to the Web Part made by using other properties and methods on the WebPartDefinition object (1).
+        """Saves changes to the Web Part made by using other properties and methods on the WebPartDefinition object (1).
 
         If the current user does not have permissions to modify the Web Part,
         the protocol server MUST ignore the call to this method.
@@ -63,7 +60,8 @@ class WebPartDefinition(Entity):
     def web_part(self):
         """The WebPart object, as specified in section 3.2.5.148, associated with this WebPartDefinition.
         The WebPart object (1) contains additional properties relating to the Web Part represented by this
-        WebPartDefinition object"""
+        WebPartDefinition object
+        """
         return self.properties.get(
             "WebPart",
             WebPart(self.context, ResourcePath("WebPart", self.resource_path)),

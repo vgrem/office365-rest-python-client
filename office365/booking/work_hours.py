@@ -7,8 +7,7 @@ class BookingWorkHours(ClientValue):
     """Represents the set of working hours in a single day of the week, for a bookingBusiness or bookingStaffMember."""
 
     def __init__(self, day=None, time_slots=None):
-        """
-        :param str day: The day of the week represented by this instance.
+        """:param str day: The day of the week represented by this instance.
             Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday.
         :param list[BookingWorkTimeSlot] time_slots: A list of start/end times during a day.
         """

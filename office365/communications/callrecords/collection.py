@@ -15,8 +15,7 @@ class CallRecordCollection(EntityCollection[CallRecord]):
         super(CallRecordCollection, self).__init__(context, CallRecord, resource_path)
 
     def get_direct_routing_calls(self, from_datetime=None, to_datetime=None):
-        """
-        Get a log of direct routing calls as a collection of directRoutingLogRow entries.
+        """Get a log of direct routing calls as a collection of directRoutingLogRow entries.
         :param datetime from_datetime: Start of time range to query.
         :param datetime to_datetime: End of time range to query
         """

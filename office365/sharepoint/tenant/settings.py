@@ -17,15 +17,13 @@ class TenantSettings(Entity):
 
     def get_data_access_governance_report_config(self):
         """ """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "GetDataAccessGovernanceReportConfig", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def set_corporate_catalog(self, url):
-        """
-        :param str url:
-        """
+        """:param str url:"""
         payload = {"url": url}
         qry = ServiceOperationQuery(self, "SetCorporateCatalog", None, payload, None, None)
         self.context.add_query(qry)
@@ -39,8 +37,7 @@ class TenantSettings(Entity):
 
     @staticmethod
     def current(context):
-        """
-        Specifies the current instance for the SP.TenantSettings.
+        """Specifies the current instance for the SP.TenantSettings.
         :type context: office365.sharepoint.client_context.ClientContext
         """
         return TenantSettings(context, ResourcePath("SP.TenantSettings.Current"))

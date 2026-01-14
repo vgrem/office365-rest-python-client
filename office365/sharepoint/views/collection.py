@@ -19,8 +19,7 @@ class ViewCollection(EntityCollection):
         super(ViewCollection, self).__init__(context, View, resource_path, parent_list)
 
     def add(self, view_creation_information):
-        """
-        Adds a new list view to the collection.
+        """Adds a new list view to the collection.
 
         :type view_creation_information: office365.sharepoint.views.create_information.ViewCreationInformation
         """
@@ -32,8 +31,7 @@ class ViewCollection(EntityCollection):
         return return_type
 
     def get_by_title(self, view_title):
-        """
-        Returns the list view with the specified title. If there is more than one list view with the specified title,
+        """Returns the list view with the specified title. If there is more than one list view with the specified title,
         the server MUST return one list view as determined by the server.
 
         :param str view_title: The title of the view to return.

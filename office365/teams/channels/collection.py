@@ -25,9 +25,7 @@ class ChannelCollection(EntityCollection[Channel]):
         )
 
     def get_all_messages(self):
-        """
-        Retrieve messages across all channels in a team, including text, audio, and video conversations.
-        """
+        """Retrieve messages across all channels in a team, including text, audio, and video conversations."""
         return_type = EntityCollection(self.context, ChatMessage, self.resource_path)
         qry = FunctionQuery(self, "getAllMessages", None, return_type)
         self.context.add_query(qry)

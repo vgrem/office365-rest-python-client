@@ -1,5 +1,4 @@
-"""
-List attachments
+"""List attachments
 
 https://learn.microsoft.com/en-us/graph/api/message-list-attachments?view=graph-rest-1.0
 """
@@ -12,4 +11,4 @@ messages = client.me.messages.filter("hasAttachments eq true").expand(["attachme
 
 for message in messages:
     for attachment in message.attachments:
-        print("Message: {0}, Attachment: {1}".format(message.subject, attachment.name))
+        print(f"Message: {message.subject}, Attachment: {attachment.name}")

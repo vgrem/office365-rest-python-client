@@ -1,7 +1,7 @@
 from typing import Iterator
 
 
-class ResourcePath(object):
+class ResourcePath:
     """OData resource path"""
 
     def __init__(self, key=None, parent=None):

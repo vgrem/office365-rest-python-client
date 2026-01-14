@@ -10,8 +10,7 @@ class Shared(ClientValue):
         shared_by=IdentitySet(),
         shared_datetime=None,
     ):
-        """
-        The Shared resource indicates a DriveItem has been shared with others. The resource includes information
+        """The Shared resource indicates a DriveItem has been shared with others. The resource includes information
         about how the item is shared.
 
         :param office365.directory.identities.identity_set.IdentitySet owner: The identity of the owner of the shared

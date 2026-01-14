@@ -12,7 +12,8 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class SitePage(BaseSitePage):
     """This resource represents a page in the sitePages list. It contains the title, layout, and a collection of
-    webParts."""
+    webParts.
+    """
 
     def get_web_parts_by_position(
         self,
@@ -21,8 +22,7 @@ class SitePage(BaseSitePage):
         is_in_vertical_section=None,
         column_id=None,
     ):
-        """
-        Get a collection of webPart by providing webPartPosition information.
+        """Get a collection of webPart by providing webPartPosition information.
 
         :param float web_part_index: Index of the current WebPart. Represents the order of WebPart in this column or
              section. Only works if either columnId or isInVerticalSection is provided.
@@ -43,10 +43,10 @@ class SitePage(BaseSitePage):
         return return_type
 
     def checkin(self, message):
-        """
-        Check in the latest version of a sitePage resource, which makes the version of the page available to all users.
+        """Check in the latest version of a sitePage resource, which makes the version of the page available to all users.
         If the page is checked out, check in the page and publish it. If the page is checked out to the caller
-        of this API, the page is automatically checked in and then published."""
+        of this API, the page is automatically checked in and then published.
+        """
 
         def _page_loaded():
             pages_list = self.parent_collection.parent
@@ -57,8 +57,7 @@ class SitePage(BaseSitePage):
         return self
 
     def publish(self):
-        """
-        Publish the latest version of a sitePage resource, which makes the version of the page available to all users.
+        """Publish the latest version of a sitePage resource, which makes the version of the page available to all users.
         If the page is checked out, check in the page and publish it. If the page is checked out to the caller
         of this API, the page is automatically checked in and then published.
 

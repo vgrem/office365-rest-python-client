@@ -7,7 +7,8 @@ from office365.sharepoint.sharing.principal import Principal
 
 class LinkInfo(ClientValue):
     """This class provides metadata for the tokenized sharing link including settings details, inheritance status,
-    and an optional array of members."""
+    and an optional array of members.
+    """
 
     def __init__(
         self,
@@ -18,9 +19,8 @@ class LinkInfo(ClientValue):
         link_status=None,
         total_link_members_count=None,
     ):
-        """
-        :param bool is_inherited: Boolean that indicates if the tokenized sharing link is present due to
-             inherited permissions from a parent object.
+        """:param bool is_inherited: Boolean that indicates if the tokenized sharing link is present due to
+        inherited permissions from a parent object.
         """
         self.inherited_from = inherited_from
         self.isInherited = is_inherited

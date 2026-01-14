@@ -16,8 +16,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         super(FieldLinkCollection, self).__init__(context, FieldLink, resource_path)
 
     def add(self, field):
-        """
-        Add a field link with the specified link information to the collection.
+        """Add a field link with the specified link information to the collection.
         A reference to the SP.Field that was added is returned.
 
         :param str or office365.sharepoint.fields.field.Field field: Specifies the internal name of the field or type
@@ -42,8 +41,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         return return_type
 
     def get_by_id(self, _id):
-        """
-        Gets the field link with the given id from this collection.<20> If the id is not found in the collection,
+        """Gets the field link with the given id from this collection.<20> If the id is not found in the collection,
         returns null.
 
         :param str _id: The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46)
@@ -53,8 +51,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
 
     def reorder(self, internal_names):
         # type: (list[str]) -> Self
-        """
-        Rearranges the collection of field links in the order in which field internal names are specified.
+        """Rearranges the collection of field links in the order in which field internal names are specified.
 
         :param list[str] internal_names: Specifies field internal names that are arranged in the order in which the
             collection of field links is reordered.

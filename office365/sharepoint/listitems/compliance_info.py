@@ -9,8 +9,7 @@ class ListItemComplianceInfo(ClientValue):
         tag_policy_hold=None,
         tag_policy_record=None,
     ):
-        """
-        :param str compliance_tag:
+        """:param str compliance_tag:
         :param bool tag_policy_event_based:
         :param bool tag_policy_hold:
         :param bool tag_policy_record:

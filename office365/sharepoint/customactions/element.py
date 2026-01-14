@@ -13,8 +13,7 @@ class CustomActionElement(ClientValue):
         host_properties=None,
         image_url=None,
     ):
-        """
-        :param str clientside_component_id: The unique identifier of the client-side component associated
+        """:param str clientside_component_id: The unique identifier of the client-side component associated
             with the custom action.
         :param str client_side_component_properties: This property is only used when a ClientSideComponentId is
             specified. It is optional. If non-empty, the string MUST contain a JSON object with custom

@@ -4,11 +4,11 @@ from office365.runtime.client_value import ClientValue
 
 class PublicationFacet(ClientValue):
     """The publicationFacet resource provides details on the published status of a driveItemVersion or driveItem
-    resource."""
+    resource.
+    """
 
     def __init__(self, checked_out_by=IdentitySet(), level=None, version_id=None):
-        """
-        The publicationFacet resource provides details on the published status of a driveItemVersion
+        """The publicationFacet resource provides details on the published status of a driveItemVersion
         or driveItem resource.
 
         :param str level: The state of publication for this document. Either published or checkout. Read-only.

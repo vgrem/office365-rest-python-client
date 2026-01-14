@@ -10,7 +10,8 @@ class PeopleAdminSettings(Entity):
     @property
     def profile_card_properties(self):
         """Contains a collection of the properties an administrator has defined as visible on the
-        Microsoft 365 profile card."""
+        Microsoft 365 profile card.
+        """
         return self.properties.get(
             "profileCardProperties",
             EntityCollection(

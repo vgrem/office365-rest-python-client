@@ -16,8 +16,7 @@ class SocialPost(ClientValue):
         source=SocialLink(),
         liker_info=SocialPostActorInfo(),
     ):
-        """
-        :param SocialAttachment attachment: The Attachment property specifies an image, document preview,
+        """:param SocialAttachment attachment: The Attachment property specifies an image, document preview,
             or video preview attachment.
         :param list[SocialDataOverlay] overlays: The Overlays property is an array of objects in a post, where each
             object represents a user, document, site, tag, or link.

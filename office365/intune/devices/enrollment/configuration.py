@@ -12,9 +12,7 @@ class DeviceEnrollmentConfiguration(Entity):
 
     @property
     def created_datetime(self):
-        """
-        Created date time in UTC of the device enrollment configuration
-        """
+        """Created date time in UTC of the device enrollment configuration"""
         return self.properties.get("createdDateTime", datetime.datetime.min)
 
     @property

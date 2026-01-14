@@ -19,8 +19,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         encryption_certificate=None,
         encryption_certificate_id=None,
     ):
-        """
-        Subscribes a listener application to receive change notifications when the requested type of changes occur
+        """Subscribes a listener application to receive change notifications when the requested type of changes occur
         to the specified resource in Microsoft Graph.
 
         :param str change_type: Indicates the type of change in the subscribed resource that will raise a change

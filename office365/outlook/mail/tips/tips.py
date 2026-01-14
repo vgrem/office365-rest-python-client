@@ -19,8 +19,7 @@ class MailTips(ClientValue):
         external_member_count=None,
         is_moderated=None,
     ):
-        """
-        :param AutomaticRepliesMailTips automatic_replies: Mail tips for automatic reply if it has been set up by
+        """:param AutomaticRepliesMailTips automatic_replies: Mail tips for automatic reply if it has been set up by
             the recipient.
         :param str custom_mail_tip: A custom mail tip that can be set on the recipient's mailbox.
         :param bool delivery_restricted: Whether the recipient is delivery restricted.

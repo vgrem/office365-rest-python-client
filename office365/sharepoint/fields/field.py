@@ -52,20 +52,18 @@ class Field(Entity):
         }
         if isinstance(type_id_or_name, int):
             return field_known_types.get(type_id_or_name, Field)
-        else:
-            if type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
-                return TaxonomyField
-            elif type_id_or_name == "Thumbnail":
-                from office365.sharepoint.fields.thumbnail import FieldThumbnail
+        elif type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
+            return TaxonomyField
+        elif type_id_or_name == "Thumbnail":
+            from office365.sharepoint.fields.thumbnail import FieldThumbnail
 
-                return FieldThumbnail
-            else:
-                return Field
+            return FieldThumbnail
+        else:
+            return Field
 
     @staticmethod
     def create_field(context, field_parameters):
-        """
-        Creates a field based on its type
+        """Creates a field based on its type
 
         :type context: office365.sharepoint.client_context.ClientContext
         :type field_parameters: office365.sharepoint.fields.creation_information.FieldCreationInformation
@@ -77,8 +75,7 @@ class Field(Entity):
         return field
 
     def enable_index(self):
-        """
-        Enables the index for a field
+        """Enables the index for a field
         An index speeds up queries on the indexed fields as well as sorting and grouping operations
         """
         return_type = ClientResult(self.context)
@@ -87,9 +84,7 @@ class Field(Entity):
         return return_type
 
     def disable_index(self):
-        """
-        Disables the index for a field
-        """
+        """Disables the index for a field"""
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "disableIndex", None, None, None, return_type)
         self.context.add_query(qry)
@@ -149,9 +144,7 @@ class Field(Entity):
     @property
     def schema_xml(self):
         # type: () -> Optional[str]
-        """
-        Gets a value that specifies the XML schema that defines the field.
-        """
+        """Gets a value that specifies the XML schema that defines the field."""
         return self.properties.get("SchemaXml", None)
 
     @schema_xml.setter
@@ -173,9 +166,7 @@ class Field(Entity):
 
     @title.setter
     def title(self, val):
-        """
-        Sets a value that specifies the display name of the field.
-        """
+        """Sets a value that specifies the display name of the field."""
         self.set_property("Title", val)
 
     @property
@@ -219,32 +210,25 @@ class Field(Entity):
     @property
     def enforce_unique_values(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the field enforces unique values.
-        """
+        """Specifies whether the field enforces unique values."""
         return self.properties.get("enforceUniqueValues", None)
 
     @property
     def filterable(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether list items in the list can be filtered by the field value.
-        """
+        """Specifies whether list items in the list can be filtered by the field value."""
         return self.properties.get("Filterable", None)
 
     @property
     def from_base_type(self):
         # type: () -> Optional[bool]
-        """
-        Gets a Boolean value that indicates whether the field derives from a base field type.
-        """
+        """Gets a Boolean value that indicates whether the field derives from a base field type."""
         return self.properties.get("FromBaseType", None)
 
     @property
     def js_link(self):
         # type: () -> Optional[str]
-        """
-        When implemented in a derived class, gets or sets the name of an external JavaScript file that contains
+        """When implemented in a derived class, gets or sets the name of an external JavaScript file that contains
         any client rendering logic for fields of the derived type.
         """
         return self.properties.get("JSLink", None)
@@ -252,47 +236,35 @@ class Field(Entity):
     @property
     def hidden(self):
         # type: () -> Optional[bool]
-        """
-        Gets a value that specifies whether the field is hidden in list views and list forms.
-        """
+        """Gets a value that specifies whether the field is hidden in list views and list forms."""
         return self.properties.get("Hidden", None)
 
     @hidden.setter
     def hidden(self, val):
-        """
-        Sets a value that specifies whether the field is hidden in list views and list forms.
-        """
+        """Sets a value that specifies whether the field is hidden in list views and list forms."""
         self.set_property("Hidden", val)
 
     @property
     def no_crawl(self):
         # type: () -> Optional[bool]
-        """
-        Gets value that specifies whether the field can be crawled by a search engine.
-        """
+        """Gets value that specifies whether the field can be crawled by a search engine."""
         return self.properties.get("NoCrawl", None)
 
     @property
     def read_only_field(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the value of the field is read-only.
-        """
+        """Specifies whether the value of the field is read-only."""
         return self.properties.get("ReadOnlyField", None)
 
     @property
     def default_value(self):
         # type: () -> Optional[str]
-        """
-        Gets  a value that specifies the default value for the field.
-        """
+        """Gets  a value that specifies the default value for the field."""
         return self.properties.get("DefaultValue", None)
 
     @default_value.setter
     def default_value(self, val):
-        """
-        Sets a value that specifies the default value for the field.
-        """
+        """Sets a value that specifies the default value for the field."""
         self.set_property("DefaultValue", val)
 
     @property
@@ -302,9 +274,7 @@ class Field(Entity):
     @property
     def type_display_name(self):
         # type: () -> Optional[str]
-        """
-        Gets a value that specifies the display name for the type of the field.
-        """
+        """Gets a value that specifies the display name for the type of the field."""
         return self.properties.get("TypeDisplayName", None)
 
     @property
@@ -318,9 +288,7 @@ class Field(Entity):
     @property
     def type_short_description(self):
         # type: () -> Optional[str]
-        """
-        Gets a value that specifies the description for the type of the field.
-        """
+        """Gets a value that specifies the description for the type of the field."""
         return self.properties.get("TypeShortDescription", None)
 
     def get_property(self, name, default_value=None):

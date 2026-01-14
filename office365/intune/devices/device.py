@@ -9,8 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Device(DirectoryObject):
-    """
-    Represents a device registered in the organization. Devices are created in the cloud using the
+    """Represents a device registered in the organization. Devices are created in the cloud using the
     Device Registration Service or by Intune. They're used by conditional access policies for multi-factor
     authentication. These devices can range from desktop and laptop machines to phones and tablets.
     """
@@ -21,10 +20,11 @@ class Device(DirectoryObject):
     @property
     def account_enabled(self):
         # type: () -> Optional[bool]
-        """true if the account is enabled; otherwise, false. Required. Default is true.
+        """True if the account is enabled; otherwise, false. Required. Default is true.
 
         Supports $filter (eq, ne, not, in). Only callers with at least the Cloud Device Administrator
-        role can set this property."""
+        role can set this property.
+        """
         return self.properties.get("accountEnabled", None)
 
     @property
@@ -36,21 +36,24 @@ class Device(DirectoryObject):
     def approximate_last_signin_datetime(self):
         """The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
-        Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby."""
+        Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby.
+        """
         return self.properties.get("approximateLastSignInDateTime", datetime.min)
 
     @property
     def compliance_expiration_datetime(self):
         """The timestamp when the device is no longer deemed compliant. The timestamp type represents date and
         time information using ISO 8601 format and is always in UTC time.
-        For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only."""
+        For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+        """
         return self.properties.get("complianceExpirationDateTime", datetime.min)
 
     @property
     def device_id(self):
         # type: () -> Optional[str]
         """Unique identifier set by Azure Device Registration Service at the time of registration.
-        This is an alternate key that can be used to reference the device object."""
+        This is an alternate key that can be used to reference the device object.
+        """
         return self.properties.get("deviceId", None)
 
     @property
@@ -90,7 +93,8 @@ class Device(DirectoryObject):
     @property
     def transitive_member_of(self):
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
-        return all groups the user is a nested member of."""
+        return all groups the user is a nested member of.
+        """
         return self.properties.get(
             "transitiveMemberOf",
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),

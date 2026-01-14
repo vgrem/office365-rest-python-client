@@ -13,9 +13,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
     @property
     def section_groups_url(self):
         # type: () -> Optional[str]
-        """
-        The URL for the sectionGroups navigation property, which returns all the section groups in the section group.
-        """
+        """The URL for the sectionGroups navigation property, which returns all the section groups in the section group."""
         return self.properties.get("sectionGroupsUrl", None)
 
     @property

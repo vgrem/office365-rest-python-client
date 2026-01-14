@@ -25,8 +25,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def create_list_design(context, info):
-        """
-        Creates a new list design available to users when they create a new list from the SharePoint start page.
+        """Creates a new list design available to users when they create a new list from the SharePoint start page.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param office365.sharepoint.sitedesigns.creation_info.SiteDesignCreationInfo info:
@@ -40,8 +39,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_list_designs(context, store=None):
-        """
-        Gets a list designs.
+        """Gets a list designs.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str store:
@@ -55,8 +53,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def add_site_design_task(context, web_url, site_design_id):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str web_url:
         :param str site_design_id: The ID of the site design to apply
         """
@@ -69,8 +66,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_script_from_list(context, list_url, options=None, return_type=None):
-        """
-        Creates site script syntax from an existing SharePoint list.
+        """Creates site script syntax from an existing SharePoint list.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str list_url:  URL of the list.
@@ -87,8 +83,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_script_from_web(context, web_url, info=None, return_type=None):
-        """
-        Creates site script syntax from an existing SharePoint site.
+        """Creates site script syntax from an existing SharePoint site.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str web_url:  URL of the web.
@@ -105,8 +100,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def create_site_script(context, title, description, content):
-        """
-        Creates a new site script.
+        """Creates a new site script.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str title:
@@ -126,8 +120,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def delete_site_script(context, _id):
-        """
-        Deletes a site script.
+        """Deletes a site script.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str _id:
@@ -144,8 +137,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_scripts(context, store=None):
-        """
-        Gets a list of information on all existing site scripts.
+        """Gets a list of information on all existing site scripts.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str store:
@@ -160,8 +152,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def execute_site_script_action(context, action_definition):
-        """
-        Gets a list of information on all existing site scripts.
+        """Gets a list of information on all existing site scripts.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str action_definition:
@@ -176,8 +167,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def create_site_design(context, info):
-        """
-        Creates a new site design available to users when they create a new site from the SharePoint start page.
+        """Creates a new site design available to users when they create a new site from the SharePoint start page.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param office365.sharepoint.sitedesigns.creation_info.SiteDesignCreationInfo info:
@@ -191,8 +181,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def update_site_design(context, update_info):
-        """
-        Updates a site design with new values.
+        """Updates a site design with new values.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param SiteDesignMetadata update_info:
@@ -207,8 +196,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_designs(context, include_untargeted=True, store=None):
-        """
-        Gets a list of information on existing site designs.
+        """Gets a list of information on existing site designs.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param bool include_untargeted:
@@ -224,8 +212,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_design_stages(context, site_design_id):
-        """
-        Gets a list of site design stages.
+        """Gets a list of site design stages.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str site_design_id:
@@ -239,8 +226,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_design_metadata(context, _id, store=None):
-        """
-        Gets information about a specific site script.
+        """Gets information about a specific site script.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str _id:
@@ -255,8 +241,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def get_site_design_rights(context, id_):
-        """
-        Gets a list of principals that have access to a site design.
+        """Gets a list of principals that have access to a site design.
 
         :param str id_:
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -291,8 +276,7 @@ class SiteScriptUtility(Entity):
 
     @staticmethod
     def delete_site_design(context, _id):
-        """
-        Deletes a site design.
+        """Deletes a site design.
 
         :type _id: str
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client

@@ -2,9 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class AssignedPlan(ClientValue):
-    """
-    The assignedPlans property of both the user entity and the organization entity is a collection of assignedPlan.
-    """
+    """The assignedPlans property of both the user entity and the organization entity is a collection of assignedPlan."""
 
     def __init__(
         self,
@@ -13,8 +11,7 @@ class AssignedPlan(ClientValue):
         service=None,
         service_plan_id=None,
     ):
-        """
-        :param datetime.datetime assigned_datetime: The date and time at which the plan was assigned.
+        """:param datetime.datetime assigned_datetime: The date and time at which the plan was assigned.
         :param str capability_status: Condition of the capability assignment.
             The possible values are Enabled, Warning, Suspended, Deleted, LockedOut.
             See a detailed description of each value.

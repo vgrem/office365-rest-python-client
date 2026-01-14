@@ -7,8 +7,7 @@ class SearchAggregation(ClientValue):
     """Provides the details of the search aggregation in the search response."""
 
     def __init__(self, buckets=None, field=None):
-        """
-        :param list[SearchBucket] buckets: Defines the actual buckets of the computed aggregation.
+        """:param list[SearchBucket] buckets: Defines the actual buckets of the computed aggregation.
         :param str field: Defines on which field the aggregation was computed on.
         """
         self.buckets = ClientValueCollection(SearchBucket, buckets)

@@ -17,18 +17,18 @@ from office365.runtime.types.collections import StringCollection
 
 class ContentType(BaseItem):
     """The contentType resource represents a content type in SharePoint. Content types allow you to define a set of
-    columns that must be present on every listItem in a list."""
+    columns that must be present on every listItem in a list.
+    """
 
     def is_published(self):
         """Check the publishing status of a contentType in a content type hub site."""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = FunctionQuery(self, "isPublished", None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def associate_with_hub_sites(self, hub_site_urls, propagate_to_existing_lists=False):
-        """
-        Associate a published content type present in a content type hub with a list of hub sites.
+        """Associate a published content type present in a content type hub with a list of hub sites.
         Note: This feature is limited to tenants that have a SharePoint Syntex license.
 
         :param list[str] hub_site_urls: List of canonical URLs to the hub sites where the content type needs to
@@ -45,9 +45,7 @@ class ContentType(BaseItem):
         return self
 
     def publish(self):
-        """
-        Publishes a contentType present in the content type hub site.
-        """
+        """Publishes a contentType present in the content type hub site."""
         qry = ServiceOperationQuery(self, "publish")
         self.context.add_query(qry)
         return self
@@ -60,8 +58,7 @@ class ContentType(BaseItem):
 
     @property
     def associated_hubs_urls(self):
-        """
-        List of canonical URLs for hub sites with which this content type is associated to.
+        """List of canonical URLs for hub sites with which this content type is associated to.
         This will contain all hub sites where this content type is queued to be enforced or is already enforced.
         Enforcing a content type means that the content type will be applied to the lists in the enforced sites.
         """
@@ -74,8 +71,7 @@ class ContentType(BaseItem):
 
     @property
     def document_template(self):
-        """
-        Document template metadata. To make sure that documents have consistent content across a site and its subsites,
+        """Document template metadata. To make sure that documents have consistent content across a site and its subsites,
         you can associate a Word, Excel, or PowerPoint template with a site content type.
         """
         return self.properties.get("documentTemplate", DocumentSetContent())
@@ -112,8 +108,7 @@ class ContentType(BaseItem):
 
     @property
     def inherited_from(self):
-        """
-        If this content type is inherited from another scope (like a site),
+        """If this content type is inherited from another scope (like a site),
         provides a reference to the item where the content type is defined.
         """
         return self.properties.get("inheritedFrom", ItemReference())

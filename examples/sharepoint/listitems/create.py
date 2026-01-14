@@ -1,6 +1,4 @@
-"""
-Creates a list item in a List
-"""
+"""Creates a list item in a List"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.user_value import FieldUserValue

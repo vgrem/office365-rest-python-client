@@ -6,7 +6,8 @@ from office365.sharepoint.sharing.role import Role
 
 class UserSharingResult(ClientValue):
     """Specifies a sharing result for an individual user that method UpdateDocumentSharingInfo
-    (section 3.2.5.187.2.1.1) returns."""
+    (section 3.2.5.187.2.1.1) returns.
+    """
 
     def __init__(
         self,
@@ -20,8 +21,7 @@ class UserSharingResult(ClientValue):
         status=None,
         user=None,
     ):
-        """
-        :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
+        """:param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
         :param int current_role: Specifies the role that the user is currently assigned to.
         :param str display_name: Gets the display name of the user.
         :param str email: Gets the user email.
@@ -53,7 +53,7 @@ class UserSharingResult(ClientValue):
         return "SP.Sharing"
 
     def __str__(self):
-        return "{0}: {1}".format(self.User, self.current_role_name)
+        return f"{self.User}: {self.current_role_name}"
 
     def __repr__(self):
-        return "{0}: {1}".format(self.User, self.current_role_name)
+        return f"{self.User}: {self.current_role_name}"

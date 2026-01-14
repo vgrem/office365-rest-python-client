@@ -9,7 +9,8 @@ from office365.teams.schedule.time_off_reason import TimeOffReason
 
 class Schedule(Entity):
     """A collection of schedulingGroup objects, shift objects, timeOffReason objects,
-    and timeOff objects within a team."""
+    and timeOff objects within a team.
+    """
 
     @property
     def time_zone(self):

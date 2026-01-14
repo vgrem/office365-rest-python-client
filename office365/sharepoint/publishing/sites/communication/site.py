@@ -15,8 +15,7 @@ class CommunicationSite(Entity):
     """Represents a Communication Site."""
 
     def create(self, title, site_url, description=None):
-        """
-        Initiates creation of a Communication Site.
+        """Initiates creation of a Communication Site.
 
         - If the SiteStatus returns 1, the Communication Site is in the process of being created asynchronously.
 
@@ -39,8 +38,7 @@ class CommunicationSite(Entity):
         return return_type
 
     def get_status(self, site_url):
-        """
-        Retrieves the status of creation of a Communication site.
+        """Retrieves the status of creation of a Communication site.
 
         If the SiteStatus returned is 0, then no work item for a site with the specified URL was found, and no site was
         found with the specified URL. This could mean either that a creation attempt hasn’t started yet, or that it
@@ -62,7 +60,7 @@ class CommunicationSite(Entity):
         def _construct_request(request):
             # type: (RequestOptions) -> None
             request.method = HttpMethod.Get
-            request.url += "?url='{0}'".format(site_url)
+            request.url += f"?url='{site_url}'"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return response

@@ -1,6 +1,4 @@
-"""
-Prints metadata about the site
-"""
+"""Prints metadata about the site"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.webs.web import Web

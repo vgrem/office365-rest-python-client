@@ -1,5 +1,4 @@
-"""
-Retrieve a list of events in a my calendar.
+"""Retrieve a list of events in a my calendar.
 
 https://learn.microsoft.com/en-us/graph/api/calendar-list-events?view=graph-rest-1.0
 """

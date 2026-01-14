@@ -13,8 +13,7 @@ class AutomaticRepliesMailTips(ClientValue):
         scheduled_end_time=DateTimeTimeZone(),
         scheduled_start_time=DateTimeTimeZone(),
     ):
-        """
-        :param string message: The automatic reply message.
+        """:param string message: The automatic reply message.
         :param LocaleInfo message_language: 	The language that the automatic reply message is in.
         :param datetime scheduled_end_time: 	The date and time that automatic replies are set to end.
         :param datetime scheduled_start_time: The date and time that automatic replies are set to begin.

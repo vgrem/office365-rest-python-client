@@ -12,8 +12,7 @@ class ProfileLoader(ClientObject):
 
     @staticmethod
     def get_profile_loader(context):
-        """
-        The GetProfileLoader method returns a profile loader.
+        """The GetProfileLoader method returns a profile loader.
 
         :type: office365.sharepoint.client_context.ClientContext context
         """
@@ -24,8 +23,7 @@ class ProfileLoader(ClientObject):
 
     @staticmethod
     def get_owner_user_profile(context):
-        """
-        Gets the user profile for the Site owner.
+        """Gets the user profile for the Site owner.
 
         :type context: office365.sharepoint.client_context.ClientContext
         """

@@ -4,9 +4,7 @@ from office365.sharepoint.activities.identity_item import ActivityIdentityItem
 
 class ActivityIdentity(ClientValue):
     def __init__(self, client_id=None, group=ActivityIdentityItem(), user=ActivityIdentityItem()):
-        """
-        :param str client_id:
-        """
+        """:param str client_id:"""
         self.clientId = client_id
         self.group = group
         self.user = user

@@ -9,7 +9,8 @@ class SharePointSharingSettings(Entity):
     @property
     def picker_properties(self):
         """An object containing the necessary information to initialize a client people picker control used
-        to search for and resolve desired users and groups."""
+        to search for and resolve desired users and groups.
+        """
         return self.properties.get(
             "PickerProperties",
             PickerSettings(self.context, ResourcePath("PickerProperties", self.resource_path)),

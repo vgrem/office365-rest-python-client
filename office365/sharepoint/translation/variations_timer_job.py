@@ -3,14 +3,11 @@ from office365.sharepoint.entity import Entity
 
 
 class VariationsTranslationTimerJob(Entity):
-    """
-    The VariationsTranslationTimerJob type provides methods to drive translation for list items in a variation label.
-    """
+    """The VariationsTranslationTimerJob type provides methods to drive translation for list items in a variation label."""
 
     @staticmethod
     def export_items(context, list_url, item_ids, addresses_to_email=None):
-        """
-        The protocol client calls this method to export a specific set of list items.
+        """The protocol client calls this method to export a specific set of list items.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str list_url: The server-relative URL for the list containing the list items

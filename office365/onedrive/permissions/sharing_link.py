@@ -14,8 +14,7 @@ class SharingLink(ClientValue):
         prevents_download=None,
         application=Identity(),
     ):
-        """
-        :param str _type: The type of the link created.
+        """:param str _type: The type of the link created.
         :param str scope: The scope of the link represented by this permission. Value anonymous indicates the link is
              usable by anyone, organization indicates the link is only usable for users signed into the same tenant.
          :param str web_html: For embed links, this property contains the HTML code for an <iframe> element that will

@@ -1,5 +1,4 @@
-"""
-Demonstrates how to populate Excel template
+"""Demonstrates how to populate Excel template
 
 https://learn.microsoft.com/en-us/graph/api/resources/excel?view=graph-rest-1.0
 """

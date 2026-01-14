@@ -7,7 +7,5 @@ class ChatGptRequestOptions(BaseGptRequestOptions):
     """"""
 
     def __init__(self, messages=None):
-        """
-        :param list[MessageEntry] messages:
-        """
+        """:param list[MessageEntry] messages:"""
         self.Messages = ClientValueCollection(MessageEntry, messages)

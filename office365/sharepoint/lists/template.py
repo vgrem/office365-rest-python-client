@@ -7,8 +7,7 @@ from office365.sharepoint.entity import Entity
 
 
 class ListTemplate(Entity):
-    """
-    Represents a list definition or a list template, which defines the fields and views for a list.
+    """Represents a list definition or a list template, which defines the fields and views for a list.
     List definitions are contained in files within
     \\Program Files\\Common Files\\Microsoft Shared\\Web Server Extensions\\12\\TEMPLATE\\FEATURES,
     but list templates are created through the user interface or through the object model when a list is

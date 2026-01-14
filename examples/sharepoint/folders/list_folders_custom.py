@@ -1,6 +1,4 @@
-"""
-Demonstrates how to enumerate a folder
-"""
+"""Demonstrates how to enumerate a folder"""
 
 from typing import Callable
 

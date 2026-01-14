@@ -11,8 +11,7 @@ class TenantInformation(ClientValue):
         federation_brand_name=None,
         tenant_id=None,
     ):
-        """
-        :param str default_domain_name: Primary domain name of an Azure AD tenant.
+        """:param str default_domain_name: Primary domain name of an Azure AD tenant.
         :param str display_name: Display name of an Azure AD tenant.
         :param str federation_brand_name: Name shown to users that sign in to an Azure AD tenant.
         :param str tenant_id: Unique identifier of an Azure AD tenant.

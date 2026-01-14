@@ -16,8 +16,7 @@ class ViewCreationInformation(ClientValue):
         personal_view=None,
         paged=None,
     ):
-        """
-        :param str title: Specifies the display name of the new list view. Its length MUST be equal to or less than 255.
+        """:param str title: Specifies the display name of the new list view. Its length MUST be equal to or less than 255.
         :param int view_type_kind: Specifies the type of the new list view.
         :param list[str] view_fields: Specifies the collection of field internal names for the list fields in
             the new list view

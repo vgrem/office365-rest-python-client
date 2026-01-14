@@ -16,8 +16,7 @@ class EventCollection(DeltaCollection[Event]):
 
     def add(self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs):
         # type: (str, str|ItemBody, datetime.datetime, datetime.datetime, List[str], ...) -> Event
-        """
-        Create an event in the user's default calendar or specified calendar.
+        """Create an event in the user's default calendar or specified calendar.
 
         By default, the allowNewTimeProposals property is set to true when an event is created,
         which means invitees can propose a different date/time for the event. See Propose new meeting times
@@ -31,7 +30,6 @@ class EventCollection(DeltaCollection[Event]):
             By default, the end time is in UTC.
         :param list[str] attendees: The collection of attendees for the event.
         """
-
         if body is not None:
             kwargs["body"] = body if isinstance(body, ItemBody) else ItemBody(body)
         if subject is not None:

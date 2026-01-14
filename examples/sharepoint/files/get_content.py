@@ -1,5 +1,4 @@
-"""
-Demonstrates how to download a file content.
+"""Demonstrates how to download a file content.
 Intended for a 'small' files (with a size less than 4 Mb)
 """
 

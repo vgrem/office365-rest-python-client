@@ -1,5 +1,4 @@
-"""
-Revoke an app role assignment from a client service principal
+"""Revoke an app role assignment from a client service principal
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-application-permissions
 """

@@ -8,8 +8,7 @@ class CalendarPermissionCollection(EntityCollection[CalendarPermission]):
         super(CalendarPermissionCollection, self).__init__(context, CalendarPermission, resource_path)
 
     def add(self, email_address, role):
-        """
-        Create a calendarPermission resource to specify the identity and role of the user with whom the specified
+        """Create a calendarPermission resource to specify the identity and role of the user with whom the specified
         calendar is being shared or delegated.
         :param str or EmailAddress email_address: Represents a sharee or delegate who has access to the calendar.
         :param str role: Permission level of the calendar sharee or delegate

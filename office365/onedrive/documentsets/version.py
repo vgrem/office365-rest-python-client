@@ -37,8 +37,7 @@ class DocumentSetVersion(ListItemVersion):
     @property
     def should_capture_minor_version(self):
         # type: () -> Optional[bool]
-        """
-        If true, minor versions of items are also captured; otherwise, only major versions will be captured.
+        """If true, minor versions of items are also captured; otherwise, only major versions will be captured.
         Default value is false.
         """
         return self.properties.get("shouldCaptureMinorVersion", None)

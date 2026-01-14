@@ -39,9 +39,7 @@ class User(Principal):
         return return_type
 
     def get_user_profile_properties(self, property_names=None):
-        """
-        :param list[str] property_names:
-        """
+        """:param list[str] property_names:"""
         from office365.sharepoint.userprofiles.properties_for_user import (
             UserProfilePropertiesForUser,
         )
@@ -64,7 +62,8 @@ class User(Principal):
     @property
     def aad_object_id(self):
         """Gets the information of the user that contains the user's name identifier and the issuer of the
-        user's name identifier."""
+        user's name identifier.
+        """
         return self.properties.get("AadObjectId", UserIdInfo())
 
     @property
@@ -94,14 +93,14 @@ class User(Principal):
     @property
     def user_id(self):
         """Gets the information of the user that contains the user's name identifier and the issuer of the
-        user's name identifier."""
+        user's name identifier.
+        """
         return self.properties.get("UserId", UserIdInfo())
 
     @property
     def email(self):
         # type: () -> Optional[str]
-        """
-        Specifies the e-mail address of the user.
+        """Specifies the e-mail address of the user.
         It MUST NOT be NULL. Its length MUST be equal to or less than 255.
         """
         return self.properties.get("Email", None)
@@ -119,8 +118,7 @@ class User(Principal):
     @property
     def is_email_authentication_guest_user(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the User is a share by email guest user using time of access authentication.
+        """Indicates whether the User is a share by email guest user using time of access authentication.
         If this instance is an email authentication guest user, this value MUST be true, otherwise it MUST be false.
         """
         return self.properties.get("IsEmailAuthenticationGuestUser", None)
@@ -128,8 +126,7 @@ class User(Principal):
     @property
     def is_share_by_email_guest_user(self):
         # type: () -> Optional[bool]
-        """
-        Gets a value indicating whether this User is a share by email guest user.
+        """Gets a value indicating whether this User is a share by email guest user.
         If this instance is a share by email guest user, it's true; otherwise, false.
         """
         return self.properties.get("IsShareByEmailGuestUser", None)

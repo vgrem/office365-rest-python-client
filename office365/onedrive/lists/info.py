@@ -3,8 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class ListInfo(ClientValue):
     def __init__(self, template=None, content_types_enabled=False, hidden=False):
-        """
-        The listInfo complex type provides additional information about a list.
+        """The listInfo complex type provides additional information about a list.
 
         :param str template: An enumerated value that represents the base list template used in creating the list.
             Possible values include documentLibrary, genericList, task, survey, announcements, contacts, and more.

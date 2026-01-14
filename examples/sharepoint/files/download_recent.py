@@ -14,4 +14,4 @@ for item in recent_items:
     download_path = os.path.join(tempfile.mkdtemp(), os.path.basename(file_url))
     with open(download_path, "wb") as local_file:
         item.file.download(local_file).execute_query()
-    print("[Ok] file has been downloaded into: {0}".format(download_path))
+    print(f"[Ok] file has been downloaded into: {download_path}")

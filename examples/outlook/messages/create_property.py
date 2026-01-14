@@ -1,5 +1,4 @@
-"""
-Create a single-value extended property for a message
+"""Create a single-value extended property for a message
 
 Demonstrates how to create one single-value extended property for the specified existing message.
 

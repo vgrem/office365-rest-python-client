@@ -1,12 +1,11 @@
-"""
-Delete group
+"""Delete group
 
 Notes:
-
     - Group.delete_object() Microsoft 365 groups are moved to a temporary container and can be restored within 30 days
     - Group.delete_object(permanent_delete=True) Microsoft 365 permanently deleted
 
 https://learn.microsoft.com/en-us/graph/api/group-delete?view=graph-rest-1.0
+
 """
 
 from office365.graph_client import GraphClient
@@ -18,7 +17,7 @@ deletedCount = 0
 groups_count = len(groups)
 while len(groups) > 0:
     cur_grp = groups[0]
-    print("({0} of {1}) Deleting {2} group ...".format(deletedCount + 1, groups_count, cur_grp.display_name))
+    print(f"({deletedCount + 1} of {groups_count}) Deleting {cur_grp.display_name} group ...")
     cur_grp.delete_object(permanent_delete=True).execute_query()
     print("Group deleted permanently.")
     deletedCount += 1

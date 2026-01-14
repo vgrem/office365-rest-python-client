@@ -1,7 +1,4 @@
-"""
-Demonstrates how to read messages (basic properties) in user mailbox
-
-"""
+"""Demonstrates how to read messages (basic properties) in user mailbox"""
 
 from office365.graph_client import GraphClient
 from tests import (

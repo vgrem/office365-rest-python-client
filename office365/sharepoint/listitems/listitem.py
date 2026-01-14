@@ -46,12 +46,11 @@ if TYPE_CHECKING:
 
 class ListItem(SecurableObject):
     """An individual entry within a SharePoint list. Each list item has a schema that maps to fields in the list
-    that contains the item, depending on the content type of the item."""
+    that contains the item, depending on the content type of the item.
+    """
 
     def __init__(self, context, resource_path=None, parent_list=None):
-        """
-
-        :type context: office365.sharepoint.client_context.ClientContext
+        """:type context: office365.sharepoint.client_context.ClientContext
         :type resource_path: office365.runtime.paths.resource_path.ResourcePath or None
         :type parent_list: office365.sharepoint.lists.list.List or None
         """
@@ -61,7 +60,7 @@ class ListItem(SecurableObject):
 
     def archive(self):
         """Archives the list item."""
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "Archive", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -69,7 +68,7 @@ class ListItem(SecurableObject):
     def lock_record_item(self):
         """Locks the list item."""
         list_folder = self.parent_list.root_folder
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
         def _lock_record_item():
@@ -113,8 +112,7 @@ class ListItem(SecurableObject):
         return return_type
 
     def unshare_link(self, link_kind, share_id=None):
-        """
-        Removes the specified tokenized sharing link of the list item.
+        """Removes the specified tokenized sharing link of the list item.
 
         :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
             sharing link that is intended to be removed.
@@ -141,8 +139,7 @@ class ListItem(SecurableObject):
         return self
 
     def set_rating(self, value):
-        """
-        Rates an item within the specified list. The return value is the average rating for the specified list item.
+        """Rates an item within the specified list. The return value is the average rating for the specified list item.
 
         :param int value: An integer value for the rating to be submitted.
             The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
@@ -156,8 +153,7 @@ class ListItem(SecurableObject):
         return return_value
 
     def set_like(self, value):
-        """
-        Sets or unsets the like quality for the current user for an item within
+        """Sets or unsets the like quality for the current user for an item within
            the specified list. The return value is the total number of likes for the specified list item.
 
         :param bool value: A Boolean value that indicates the operation being either like or unlike.
@@ -172,8 +168,7 @@ class ListItem(SecurableObject):
         return return_value
 
     def get_wopi_frame_url(self, action):
-        """
-        Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
+        """Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
             application associated with the list item.
 
         :param int action: Indicates which user action is indicated in the returned WOPIFrameUrl.
@@ -185,7 +180,6 @@ class ListItem(SecurableObject):
 
     def recycle(self):
         """Moves the listItem to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
-
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, result)
         self.context.add_query(qry)
@@ -213,8 +207,7 @@ class ListItem(SecurableObject):
         email_subject=None,
         email_body=None,
     ):
-        """
-        Share a ListItem (file or folder facet)
+        """Share a ListItem (file or folder facet)
 
         :param str user_principal_name: User identifier
         :param ExternalSharingSiteOption share_option: The sharing type of permission to grant on the object.
@@ -222,7 +215,6 @@ class ListItem(SecurableObject):
         :param str email_subject: The email subject.
         :param str email_body: The email subject.
         """
-
         return_type = SharingResult(self.context)
         role_values = {
             ExternalSharingSiteOption.View: "role:1073741826",
@@ -232,7 +224,7 @@ class ListItem(SecurableObject):
         def _picker_value_resolved(picker_result):
             # type: (ClientResult) -> None
             abs_url = self.get_property("EncodedAbsUrl")
-            picker_value = "[{0}]".format(picker_result.value)
+            picker_value = f"[{picker_result.value}]"
             from office365.sharepoint.webs.web import Web
 
             Web.share_object(
@@ -271,9 +263,7 @@ class ListItem(SecurableObject):
         return return_type
 
     def get_sharing_information(self):
-        """
-        Retrieves information about the sharing state for a given list item.
-        """
+        """Retrieves information about the sharing state for a given list item."""
         return_type = ObjectSharingInformation(self.context)
 
         def _item_resolved():
@@ -311,8 +301,7 @@ class ListItem(SecurableObject):
         return return_type
 
     def update(self):
-        """
-        Updates the item without creating another version of the item.
+        """Updates the item without creating another version of the item.
         Exceptions:
         - 2130575305 Microsoft.SharePoint.SPException List item was modified on the server in a way that prevents
             changes from being committed, as determined by the protocol server.
@@ -324,9 +313,7 @@ class ListItem(SecurableObject):
         return self
 
     def update_ex(self, bypass_quota_check=None, bypass_shared_lock=None):
-        """
-
-        :param bool bypass_quota_check:
+        """:param bool bypass_quota_check:
         :param bool bypass_shared_lock:
         """
         payload = {"parameters": ListItemUpdateParameters(bypass_quota_check, bypass_shared_lock)}
@@ -336,7 +323,6 @@ class ListItem(SecurableObject):
 
     def system_update(self):
         """Update the list item."""
-
         sys_metadata = ["EditorId", "Modified"]
 
         def _after_system_update(result):
@@ -381,8 +367,7 @@ class ListItem(SecurableObject):
         return self
 
     def set_comments_disabled(self, value):
-        """
-        Sets the value of CommentsDisabled for the item.
+        """Sets the value of CommentsDisabled for the item.
 
         :param bool value: Indicates whether comments for this item are disabled or not.
         """
@@ -391,8 +376,7 @@ class ListItem(SecurableObject):
         return self
 
     def set_compliance_tag_with_hold(self, compliance_tag):
-        """
-        Sets a compliance tag with a hold
+        """Sets a compliance tag with a hold
 
         :param str compliance_tag: The applying label (tag) to the list item
         """
@@ -414,13 +398,12 @@ class ListItem(SecurableObject):
         return return_type
 
     def override_policy_tip(self, user_action, justification):
-        """
-        Overrides the policy tip on this list item.
+        """Overrides the policy tip on this list item.
 
         :param int user_action: The user action to take.
         :param str justification: The reason why the override is being done.
         """
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         payload = {"userAction": user_action, "justification": justification}
         qry = ServiceOperationQuery(self, "OverridePolicyTip", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -494,7 +477,8 @@ class ListItem(SecurableObject):
     @property
     def effective_base_permissions(self):
         """Gets a value that specifies the effective permissions on the list item that are assigned
-        to the current user."""
+        to the current user.
+        """
         from office365.sharepoint.permissions.base_permissions import BasePermissions
 
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
@@ -505,7 +489,8 @@ class ListItem(SecurableObject):
         interface (UI). If the list is not in read-only UI mode, the value of EffectiveBasePermissionsForUI
         MUST be the same as the value of EffectiveBasePermissions (section 3.2.5.87.1.1.2).
         If the list is in read-only UI mode, the value of EffectiveBasePermissionsForUI MUST be a subset of the
-        value of EffectiveBasePermissions."""
+        value of EffectiveBasePermissions.
+        """
         from office365.sharepoint.permissions.base_permissions import BasePermissions
 
         return self.properties.get("EffectiveBasePermissionsForUI", BasePermissions())
@@ -533,7 +518,8 @@ class ListItem(SecurableObject):
         # type: () -> Optional[str]
         """This is an overlay icon for the item. If the parent list of the item does not already have the IconOverlay
         field and The user setting the property does not have rights to add the field to the list then the property
-        will not be set for the item."""
+        will not be set for the item.
+        """
         return self.properties.get("IconOverlay", None)
 
     @property
@@ -546,7 +532,8 @@ class ListItem(SecurableObject):
     def server_redirected_embed_uri(self):
         # type: () -> Optional[str]
         """Returns the path for previewing a document in the browser, often in an interactive way, if
-        that feature exists."""
+        that feature exists.
+        """
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
     @property
@@ -650,10 +637,10 @@ class ListItem(SecurableObject):
                 super(ListItem, self).set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, FieldMultiLookupValue):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super(ListItem, self).set_property("{name}Id".format(name=name), collection)
+                super(ListItem, self).set_property(f"{name}Id", collection)
                 super(ListItem, self).set_property(name, value, False)
             elif isinstance(value, FieldLookupValue):
-                super(ListItem, self).set_property("{name}Id".format(name=name), value.LookupId)
+                super(ListItem, self).set_property(f"{name}Id", value.LookupId)
                 super(ListItem, self).set_property(name, value, False)
             else:
                 super(ListItem, self).set_property(name, value, persist_changes)
@@ -670,8 +657,7 @@ class ListItem(SecurableObject):
 
     def _set_taxonomy_field_value(self, name, value):
         # type: (str, TaxonomyFieldValueCollection) -> None
-        """
-        Sets taxonomy field value
+        """Sets taxonomy field value
         :param str name: Taxonomy field name
         :param TaxonomyFieldValueCollection value: Taxonomy field value
         """
@@ -688,8 +674,7 @@ class ListItem(SecurableObject):
         tax_field.ensure_property("TextField", _tax_field_loaded)
 
     def ensure_type_name(self, target_list, action=None):
-        """
-        Determine metadata annotation for ListItem entity
+        """Determine metadata annotation for ListItem entity
 
         :param office365.sharepoint.lists.list.List target_list: List resource
         :param () -> None action: Event handler
@@ -702,7 +687,6 @@ class ListItem(SecurableObject):
                     action()
 
             target_list.ensure_property("ListItemEntityTypeFullName", _list_loaded)
-        else:
-            if callable(action):
-                action()
+        elif callable(action):
+            action()
         return self

@@ -5,12 +5,11 @@ from office365.runtime.client_value import ClientValue
 if TYPE_CHECKING:
     import datetime  # noqa
 
-    from typing import Optional  # noqa
+    from typing import Optional
 
 
 class RecurrenceRange(ClientValue):
-    """
-    Describes a date range over which a recurring event. This shared hobject is used to define the recurrence
+    """Describes a date range over which a recurring event. This shared hobject is used to define the recurrence
     of access reviews, calendar events, and access package assignments in Azure AD.
     """
 
@@ -23,8 +22,7 @@ class RecurrenceRange(ClientValue):
         range_type=None,
     ):
         # type: (Optional[datetime.date], Optional[datetime.date], Optional[int], Optional[str], Optional[str]) -> None
-        """
-        :param start_date: The date to start applying the recurrence pattern. The first occurrence of
+        """:param start_date: The date to start applying the recurrence pattern. The first occurrence of
             the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the
             same value as the start property of the recurring event. Required.
         :param end_date: The date to stop applying the recurrence pattern. Depending on the recurrence pattern of

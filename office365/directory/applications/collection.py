@@ -10,8 +10,7 @@ class ApplicationCollection(CountCollection[Application]):
         super(ApplicationCollection, self).__init__(context, Application, resource_path)
 
     def add(self, display_name, **kwargs):
-        """
-        Create a new application object.
+        """Create a new application object.
         :param str display_name: Display name of the application.
         """
         props = {

@@ -4,8 +4,7 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 class ListItemCreationInformationUsingPath(ClientValue):
     def __init__(self, leaf_name, object_type, folder_path=None):
-        """
-        Specifies the properties of the new list item.
+        """Specifies the properties of the new list item.
 
         :param str leaf_name: Specifies the name of the list item that will be created. In the case of a document
             library, the name is equal to the filename of the list item.

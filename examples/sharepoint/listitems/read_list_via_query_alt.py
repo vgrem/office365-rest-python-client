@@ -6,7 +6,7 @@ from tests import test_client_credentials, test_team_site_url
 
 
 def print_progress(items_read):
-    print("Items read: {0}".format(items_read))
+    print(f"Items read: {items_read}")
 
 
 def create_paged_query(page_size):

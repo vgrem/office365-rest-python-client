@@ -16,8 +16,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class IdentityGovernance(Entity):
-    """
-    The identity governance singleton is the container for the following Azure Active Directory identity governance
+    """The identity governance singleton is the container for the following Azure Active Directory identity governance
     features that are exposed through the following resources and APIs:
 
        - Access reviews
@@ -28,8 +27,7 @@ class IdentityGovernance(Entity):
 
     @property
     def app_consent(self):
-        """
-        Container for base resources that expose the app consent request API and features.
+        """Container for base resources that expose the app consent request API and features.
         Currently, exposes only the appConsentRequests resource.
         """
         return self.properties.get(
@@ -55,8 +53,7 @@ class IdentityGovernance(Entity):
 
     @property
     def terms_of_use(self):
-        """
-        Container for the resources that expose the terms of use API and its features, including agreements
+        """Container for the resources that expose the terms of use API and its features, including agreements
         and agreementAcceptances.
         """
         return self.properties.get(
@@ -66,8 +63,7 @@ class IdentityGovernance(Entity):
 
     @property
     def entitlement_management(self):
-        """
-        Container for entitlement management resources, including accessPackageCatalog, connectedOrganization,
+        """Container for entitlement management resources, including accessPackageCatalog, connectedOrganization,
         and entitlementManagementSettings.
         """
         return self.properties.get(

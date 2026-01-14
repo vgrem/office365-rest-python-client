@@ -1,6 +1,4 @@
-"""
-Get the teams in Microsoft Teams that the current user is a direct member of
-"""
+"""Get the teams in Microsoft Teams that the current user is a direct member of"""
 
 import json
 

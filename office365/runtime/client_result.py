@@ -7,8 +7,8 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 
 if TYPE_CHECKING:
-    from office365.runtime.client_runtime_context import ClientRuntimeContext  # noqa
-    from office365.runtime.client_value import ClientValue  # noqa
+    from office365.runtime.client_runtime_context import ClientRuntimeContext
+    from office365.runtime.client_value import ClientValue
 
 T = TypeVar("T", bound=Union[int, bool, str, bytes, float, dict, "ClientValue"])
 
@@ -36,7 +36,7 @@ class ClientResult(Generic[T]):
 
     def set_property(self, key, value, persist_changes=False):
         # type: (str, Any, bool) -> Self
-        from office365.runtime.client_value import ClientValue  # noqa
+        from office365.runtime.client_value import ClientValue
 
         if isinstance(self._value, ClientValue):
             self._value.set_property(key, value, persist_changes)
@@ -64,8 +64,7 @@ class ClientResult(Generic[T]):
         failure_callback=None,
         exceptions=(ClientRequestException,),
     ):
-        """
-        Executes the current set of data retrieval queries and method invocations and retries it if needed.
+        """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
         :param int max_retry: Number of times to retry the request
         :param int timeout_secs: Seconds to wait before retrying the request.

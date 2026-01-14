@@ -55,7 +55,8 @@ class AbstractFile(Entity):
 
 class File(AbstractFile):
     """Represents a file in a SharePoint Web site that can be a Web Part Page, an item in a document library,
-    or a file in a folder."""
+    or a file in a folder.
+    """
 
     def __repr__(self):
         return self.serverRelativeUrl or self.unique_id or self.entity_type_name
@@ -65,8 +66,7 @@ class File(AbstractFile):
 
     @staticmethod
     def from_url(abs_url):
-        """
-        Retrieves a File from absolute url
+        """Retrieves a File from absolute url
         :type abs_url: str
         """
         from office365.sharepoint.client_context import ClientContext
@@ -81,7 +81,7 @@ class File(AbstractFile):
 
         :param bool is_edit_link: If true, the link will allow the guest user edit privileges on the item.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
 
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
@@ -102,7 +102,7 @@ class File(AbstractFile):
         anonymous link. Both the minutes and hour value MUST be specified for the difference between the local and
         UTC time. Midnight is represented as 00:00:00.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
 
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
@@ -133,7 +133,7 @@ class File(AbstractFile):
         defined in the web application is less than the specified expiration time, the maximum expiration time
         takes precedence.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         params = {"expirationHours": expiration_hours}
         qry = FunctionQuery(self, "GetPreAuthorizedAccessUrl", params, return_type)
         self.context.add_query(qry)
@@ -155,14 +155,13 @@ class File(AbstractFile):
         return self.listItemAllFields.get_sharing_information()
 
     def get_wopi_frame_url(self, action=SPWOPIFrameAction.View):
-        """
-        Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
+        """Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
         file's associated WOPI application. If there is no associated WOPI application or associated action,
         the return value is an empty string.
 
         :param str action: The full URL to the WOPI frame.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         params = {"action": action}
         qry = ServiceOperationQuery(self, "GetWOPIFrameUrl", params, None, None, return_type)
         self.context.add_query(qry)
@@ -187,8 +186,7 @@ class File(AbstractFile):
         return self.listItemAllFields.share_link(link_kind, expiration, role, password)
 
     def unshare_link(self, link_kind, share_id=None):
-        """
-        Removes the specified tokenized sharing link of the file.
+        """Removes the specified tokenized sharing link of the file.
 
         :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
             sharing link that is intended to be removed.
@@ -197,8 +195,7 @@ class File(AbstractFile):
         return self.listItemAllFields.unshare_link(link_kind, share_id)
 
     def get_image_preview_uri(self, width, height, client_type=None):
-        """
-        Returns the uri where the thumbnail with the closest size to the desired can be found.
+        """Returns the uri where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
 
 
@@ -206,22 +203,21 @@ class File(AbstractFile):
         :param int height: The desired height of the resolution.
         :param str client_type: The client type. Used for logging.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {"width": width, "height": height, "clientType": client_type}
         qry = ServiceOperationQuery(self, "GetImagePreviewUri", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_image_preview_url(self, width, height, client_type=None):
-        """
-        Returns the url where the thumbnail with the closest size to the desired can be found.
+        """Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
 
         :param int width: The desired width of the resolution.
         :param int height: The desired height of the resolution.
         :param str client_type: The client type. Used for logging.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {"width": width, "height": height, "clientType": client_type}
         qry = ServiceOperationQuery(self, "GetImagePreviewUrl", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -229,14 +225,13 @@ class File(AbstractFile):
 
     def recycle(self):
         """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def approve(self, comment):
-        """
-        Approves the file submitted for content approval with the specified comment.
+        """Approves the file submitted for content approval with the specified comment.
 
         :param str comment: A string containing the comment.
         """
@@ -284,8 +279,7 @@ class File(AbstractFile):
         return return_type
 
     def copyto_using_path(self, destination, overwrite=False, file_name=None):
-        """
-        Copies the file to the destination path. Server MUST overwrite an existing file of the same name
+        """Copies the file to the destination path. Server MUST overwrite an existing file of the same name
         if overwrite is true.
 
         :param bool overwrite: Specifies whether a file with the same name is overwritten.
@@ -293,7 +287,6 @@ class File(AbstractFile):
             folder server relative url where to copy a file.
         :param str file_name: New file name
         """
-
         return_type = File(self.context)
         self.parent_collection.add_child(return_type)
 
@@ -348,8 +341,7 @@ class File(AbstractFile):
         return self
 
     def move_to_using_path(self, destination, flag):
-        """
-        Moves the file to the specified destination path.
+        """Moves the file to the specified destination path.
 
         :param str or office365.sharepoint.folders.folder.Folder destination: Specifies the destination folder path or
             existing folder object
@@ -397,7 +389,7 @@ class File(AbstractFile):
 
     def check_access_and_post_view_audit_event(self):
         """"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "CheckAccessAndPostViewAuditEvent", return_type=return_type)
         self.context.add_query(qry)
         return return_type
@@ -409,8 +401,7 @@ class File(AbstractFile):
         return self
 
     def checkin(self, comment, checkin_type):
-        """
-        Checks the file in to a document library based on the check-in type.
+        """Checks the file in to a document library based on the check-in type.
 
         :param comment: comment to the new version of the file
         :param checkin_type: 0 (minor), or 1 (major) or 2 (overwrite)
@@ -443,7 +434,7 @@ class File(AbstractFile):
 
     def open_binary_stream(self):
         """Opens the file as a stream."""
-        return_type = ClientResult(self.context, bytes())
+        return_type = ClientResult(self.context, b"")
         qry = ServiceOperationQuery(self, "OpenBinaryStream", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -471,8 +462,7 @@ class File(AbstractFile):
 
     def upload_with_checksum(self, upload_id, checksum, stream):
         # type: (str, str, bytes) -> File
-        """
-        :param str upload_id: The upload session ID.
+        """:param str upload_id: The upload session ID.
         :param str checksum:
         :param bytes stream:
         """
@@ -483,8 +473,7 @@ class File(AbstractFile):
         return return_type
 
     def cancel_upload(self, upload_id):
-        """
-        Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
+        """Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
         created the file, the file will be deleted.
 
         :param str upload_id:  The upload session ID.
@@ -502,21 +491,20 @@ class File(AbstractFile):
         :param bytes content: File content
         :param str upload_id: Upload session id
         """
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         params = {"uploadID": upload_id}
         qry = ServiceOperationQuery(self, "startUpload", params, content, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def continue_upload(self, upload_id, file_offset, content):
-        """
-        Continues the chunk upload session with an additional fragment. The current file content is not changed.
+        """Continues the chunk upload session with an additional fragment. The current file content is not changed.
 
         :param str upload_id: Upload session id
         :param int file_offset: File offset
         :param bytes content: File content
         """
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         qry = ServiceOperationQuery(
             self,
             "continueUpload",
@@ -575,9 +563,7 @@ class File(AbstractFile):
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath(DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
         request = RequestOptions(url)
@@ -589,8 +575,7 @@ class File(AbstractFile):
 
     @staticmethod
     def open_binary(context, server_relative_url):
-        """
-        Returns the file object located at the specified server-relative URL.
+        """Returns the file object located at the specified server-relative URL.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :type server_relative_url: str
@@ -601,9 +586,7 @@ class File(AbstractFile):
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath(DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
         request = RequestOptions(url)
@@ -612,8 +595,7 @@ class File(AbstractFile):
         return response
 
     def download(self, file_object, after_downloaded=None):
-        """
-        Download a file content. Use this method to download a content of a small size
+        """Download a file content. Use this method to download a content of a small size
 
         :param typing.IO file_object: File object
         :param (File) -> None after_downloaded: A download callback
@@ -632,8 +614,7 @@ class File(AbstractFile):
         return self
 
     def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True):
-        """
-        Download a file content. Use this method to download a content of a large size
+        """Download a file content. Use this method to download a content of a large size
 
         :type file_object: typing.IO
         :type chunk_downloaded: (int)->None or None
@@ -668,8 +649,7 @@ class File(AbstractFile):
         return self
 
     def rename(self, new_file_name):
-        """
-        Rename a file
+        """Rename a file
         :param str new_file_name: A new file name
         """
         item = self.listItemAllFields
@@ -687,7 +667,8 @@ class File(AbstractFile):
     def checkin_comment(self):
         # type: () -> Optional[str]
         """Specifies the comment used when a document is checked into a document library.
-        Its length MUST be equal to or less than 1023."""
+        Its length MUST be equal to or less than 1023.
+        """
         return self.properties.get("CheckInComment", None)
 
     @property
@@ -735,8 +716,7 @@ class File(AbstractFile):
 
     @property
     def effective_information_rights_management_settings(self):
-        """
-        Returns the effective Information Rights Management (IRM) settings for the file.
+        """Returns the effective Information Rights Management (IRM) settings for the file.
 
         A file can be IRM-protected based on the IRM settings for the file itself, based on the IRM settings for the
         list which contains the file, or based on a rule. From greatest to least, IRM settings take precedence in the

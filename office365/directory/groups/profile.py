@@ -11,8 +11,7 @@ class GroupProfile(ClientValue):
         security_enabled=True,
         group_types=None,
     ):
-        """
-        :param str name: The display name for the group
+        """:param str name: The display name for the group
         :param str description: An optional description for the group.
         :param bool mail_enabled: Specifies whether the group is mail-enabled. Default: false
         :param bool security_enabled: Specifies whether the group is a security group. Default: true.

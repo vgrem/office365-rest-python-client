@@ -7,8 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class UserActivity(Entity):
-    """
-    Represents a single activity within an app - for example, a TV show, a document, or a current campaign
+    """Represents a single activity within an app - for example, a TV show, a document, or a current campaign
     in a video game. When a user engages with that activity, the engagement is captured as a history item
     that indicates the start and end time for that activity. As the user re-engages with that activity over time,
     multiple history items are recorded for a single user activity.
@@ -38,16 +37,13 @@ class UserActivity(Entity):
     @property
     def app_activity_id(self):
         # type: () -> Optional[str]
-        """
-        The unique activity ID in the context of the app - supplied by caller and immutable thereafter.
-        """
+        """The unique activity ID in the context of the app - supplied by caller and immutable thereafter."""
         return self.properties.get("appActivityId", None)
 
     @property
     def app_display_name(self):
         # type: () -> Optional[str]
-        """
-        Short text description of the app used to generate the activity for use in cases when the app is
+        """Short text description of the app used to generate the activity for use in cases when the app is
         not installed on the user’s local device.
         """
         return self.properties.get("appDisplayName", None)

@@ -44,8 +44,7 @@ class Channel(Entity):
         return return_type
 
     def provision_email(self):
-        """
-        Provision an email address for a channel.
+        """Provision an email address for a channel.
 
         Microsoft Teams doesn't automatically provision an email address for a channel by default.
         To have Teams provision an email address, you can call provisionEmail, or through the Teams user interface,
@@ -60,8 +59,7 @@ class Channel(Entity):
         return return_type
 
     def remove_email(self):
-        """
-        Remove the email address of a channel.
+        """Remove the email address of a channel.
         You can remove an email address only if it was provisioned using the provisionEmail method or through
         the Microsoft Teams client.
         """
@@ -72,9 +70,7 @@ class Channel(Entity):
     @property
     def created_datetime(self):
         # type: () -> Optional[datetime]
-        """
-        Read only. Timestamp at which the channel was created.
-        """
+        """Read only. Timestamp at which the channel was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
@@ -107,7 +103,8 @@ class Channel(Entity):
         """Indicates whether the channel should be marked as recommended for all members of the team to show in
         their channel list. Note: All recommended channels automatically show in the channels list for
         education and frontline worker users. The property can only be set programmatically via the Create team method.
-        The default value is false"""
+        The default value is false
+        """
         return self.properties.get("isFavoriteByDefault", None)
 
     @property
@@ -119,8 +116,7 @@ class Channel(Entity):
     @property
     def membership_type(self):
         # type: () -> Optional[str]
-        """
-        The type of the channel. Can be set during creation and can't be changed.
+        """The type of the channel. Can be set during creation and can't be changed.
         The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
         Note that you must use the Prefer: include-unknown-enum-members request header to get the following value
         in this evolvable enum: shared.
@@ -132,7 +128,8 @@ class Channel(Entity):
         # type: () -> Optional[str]
         """A hyperlink that will navigate to the channel in Microsoft Teams. This is the URL that you get when you
         right-click a channel in Microsoft Teams and select Get link to channel. This URL should be treated as an
-        opaque blob, and not parsed. Read-only."""
+        opaque blob, and not parsed. Read-only.
+        """
         return self.properties.get("webUrl", None)
 
     @property

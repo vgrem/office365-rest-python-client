@@ -14,8 +14,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Organization(DirectoryObject):
-    """
-    The organization resource represents an instance of global settings and resources
+    """The organization resource represents an instance of global settings and resources
     which operate and are provisioned at the tenant-level.
     """
 
@@ -33,8 +32,7 @@ class Organization(DirectoryObject):
 
     @property
     def business_phones(self):
-        """
-        Telephone number for the organization. Although this is a string collection,
+        """Telephone number for the organization. Although this is a string collection,
         only one number can be set for this property.
         """
         return self.properties.get("businessPhones", StringCollection())

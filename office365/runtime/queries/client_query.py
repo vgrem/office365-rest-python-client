@@ -22,9 +22,7 @@ class ClientQuery(Generic[T]):
         return_type=None,
     ):
         # type: (ClientRuntimeContext, Optional[ClientObject], Optional[ClientObject|ClientValue|Dict|AnyStr], Optional[str], Optional[T]) -> None
-        """
-        Generic query
-        """
+        """Generic query"""
         self._context = context
         self._binding_type = binding_type
         self._parameters_type = parameters_type

@@ -1,5 +1,4 @@
-"""
-Get activities for a given user
+"""Get activities for a given user
 https://learn.microsoft.com/en-us/graph/api/projectrome-get-activities?view=graph-rest-1.0
 """
 

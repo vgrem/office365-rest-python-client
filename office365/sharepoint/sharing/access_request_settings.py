@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class AccessRequestSettings(ClientValue):
-    """
-    This class returns the access request settings. It’s an optional property that can be retrieved in
+    """This class returns the access request settings. It’s an optional property that can be retrieved in
     Microsoft.SharePoint.Client.Sharing.SecurableObjectExtensions.GetSharingInformation() call on a list item.
     """
 
@@ -13,8 +12,7 @@ class AccessRequestSettings(ClientValue):
         pending_access_requests_link=None,
         requires_access_approval=None,
     ):
-        """
-        :param bool has_pending_access_requests: Boolean indicating whether there are pending access requests
+        """:param bool has_pending_access_requests: Boolean indicating whether there are pending access requests
             for the list item.
         :param str pending_access_requests_link: The full URL to the access requests page for the list item,
              or an empty string if the link is not available.

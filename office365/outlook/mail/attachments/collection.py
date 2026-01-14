@@ -19,8 +19,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         super(AttachmentCollection, self).__init__(context, Attachment, resource_path)
 
     def add_file(self, name, content=None, content_type=None, base64_content=None):
-        """
-        Attach a file to message
+        """Attach a file to message
 
         :param str name: The name representing the text that is displayed below the icon representing the
              embedded attachment
@@ -44,8 +43,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         return self
 
     def resumable_upload(self, source_path, chunk_size=1000000, chunk_uploaded=None):
-        """
-        Create an upload session to allow your app to upload files up to the maximum file size.
+        """Create an upload session to allow your app to upload files up to the maximum file size.
         An upload session allows your app to upload ranges of the file in sequential API requests,
         which allows the transfer to be resumed if a connection is dropped while the upload is in progress.
 
@@ -69,7 +67,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
                 def _construct_request(request):
                     # type: (RequestOptions) -> None
                     auth_token = parse_query_string(request.url, "authtoken")
-                    request.set_header("Authorization", "Bearer {0}".format(auth_token))
+                    request.set_header("Authorization", f"Bearer {auth_token}")
 
                 def _process_response(response):
                     # type: (requests.Response) -> None
@@ -87,8 +85,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         return self
 
     def create_upload_session(self, attachment_item):
-        """
-        Create an upload session that allows an app to iteratively upload ranges of a file,
+        """Create an upload session that allows an app to iteratively upload ranges of a file,
              so as to attach the file to the specified Outlook item. The item can be a message or event.
 
         :type attachment_item: office365.mail.attachment_item.AttachmentItem

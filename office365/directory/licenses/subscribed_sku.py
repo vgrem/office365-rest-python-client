@@ -18,8 +18,7 @@ class SubscribedSku(Entity):
     @property
     def applies_to(self):
         # type: () -> Optional[str]
-        """
-        The target class for this SKU. Only SKUs with target class User are assignable.
+        """The target class for this SKU. Only SKUs with target class User are assignable.
         Possible values are: "User", "Company".
         """
         return self.properties.get("appliesTo", None)
@@ -33,8 +32,7 @@ class SubscribedSku(Entity):
     @property
     def sku_part_number(self):
         # type: () -> Optional[str]
-        """
-        The SKU part number; for example: "AAD_PREMIUM" or "RMSBASIC".
+        """The SKU part number; for example: "AAD_PREMIUM" or "RMSBASIC".
         To get a list of commercial subscriptions that an organization has acquired, see List subscribedSkus.
         """
         return self.properties.get("skuPartNumber", None)

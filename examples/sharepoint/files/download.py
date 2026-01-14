@@ -1,6 +1,4 @@
-"""
-Demonstrates how to download a file from SharePoint site
-"""
+"""Demonstrates how to download a file from SharePoint site"""
 
 import os
 import tempfile
@@ -16,4 +14,4 @@ file_url = "Shared Documents/report '123.csv"
 download_path = os.path.join(tempfile.mkdtemp(), os.path.basename(file_url))
 with open(download_path, "wb") as local_file:
     file = ctx.web.get_file_by_server_relative_path(file_url).download(local_file).execute_query()
-    print("[Ok] file has been downloaded into: {0}".format(download_path))
+    print(f"[Ok] file has been downloaded into: {download_path}")

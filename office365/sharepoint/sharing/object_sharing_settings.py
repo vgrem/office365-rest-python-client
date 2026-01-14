@@ -80,16 +80,12 @@ class ObjectSharingSettings(Entity):
 
     @property
     def roles(self):
-        """
-        A dictionary object that lists the display name and the id of the SharePoint regular roles.
-        """
+        """A dictionary object that lists the display name and the id of the SharePoint regular roles."""
         return self.properties.get("Roles", None)
 
     @property
     def object_sharing_information(self):
-        """
-        Contains information about the sharing state of a shareable object.
-        """
+        """Contains information about the sharing state of a shareable object."""
         return self.properties.get(
             "ObjectSharingInformation",
             ObjectSharingInformation(

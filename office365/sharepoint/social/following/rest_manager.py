@@ -16,7 +16,8 @@ class SocialRestFollowingManager(Entity):
 
     def followers(self):
         """The Followers method retrieves the current user's list of followers. For details on the SocialActor type,
-        see section 3.1.5.3."""
+        see section 3.1.5.3.
+        """
         return_type = ClientResult(self.context, ClientValueCollection(SocialActor))
         qry = ServiceOperationQuery(self, "Followers", None, None, None, return_type)
         self.context.add_query(qry)
@@ -25,7 +26,8 @@ class SocialRestFollowingManager(Entity):
     @property
     def my(self):
         """The My method gets a SocialRestActor object that represents the current user. See section 3.1.5.35 for
-        details on the SocialRestActor type."""
+        details on the SocialRestActor type.
+        """
         return SocialRestFollowingManager(self.context, ResourcePath("My", self.resource_path))
 
     @property

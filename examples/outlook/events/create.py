@@ -1,5 +1,4 @@
-"""
-Create an event in the current user's default calendar
+"""Create an event in the current user's default calendar
 
 https://learn.microsoft.com/en-us/graph/api/user-post-events?view=graph-rest-1.0
 """

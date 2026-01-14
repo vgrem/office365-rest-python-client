@@ -22,9 +22,7 @@ class SPOWebAppServicePrincipal(Entity):
         super(SPOWebAppServicePrincipal, self).__init__(context, stat_path)
 
     def update_spfx_client_secret(self, secret_value):
-        """
-        :param str secret_value:
-        """
+        """:param str secret_value:"""
         payload = {"secretValue": secret_value}
         qry = ServiceOperationQuery(self, "UpdateSpfxClientSecret", None, payload)
         self.context.add_query(qry)

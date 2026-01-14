@@ -12,8 +12,7 @@ class SiteScriptSerializationInfo(ClientValue):
         include_site_external_sharing_capability=None,
         include_theme=None,
     ):
-        """
-        :param bool include_branding:
+        """:param bool include_branding:
         :param list[str] included_lists:
         :param bool include_site_external_sharing_capability:
         :param bool include_theme:

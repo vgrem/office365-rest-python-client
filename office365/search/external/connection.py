@@ -8,16 +8,14 @@ class ExternalConnection(Entity):
 
     @property
     def configuration(self):
-        """
-        Specifies additional application IDs that are allowed to manage the connection and to index
+        """Specifies additional application IDs that are allowed to manage the connection and to index
         content in the connection. Optional.
         """
         return self.properties.get("configuration", Configuration())
 
     @property
     def search_settings(self):
-        """
-        The settings configuring the search experience for content in this connection,
+        """The settings configuring the search experience for content in this connection,
         such as the display templates for search results.
         """
         return self.properties.get("searchSettings", SearchSettings())

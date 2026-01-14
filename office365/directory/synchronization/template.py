@@ -4,8 +4,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class SynchronizationTemplate(Entity):
-    """
-    Provides pre-configured synchronization settings for a particular application. These settings will be used by
+    """Provides pre-configured synchronization settings for a particular application. These settings will be used by
     default for any synchronization job that is based on the template. The application developer specifies the template;
     anyone can retrieve the template to see the default settings, including the synchronization schema.
 

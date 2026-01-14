@@ -3,8 +3,7 @@ from office365.entity import Entity
 
 
 class Simulation(Entity):
-    """
-    Represents an attack simulation training campaign in a tenant.
+    """Represents an attack simulation training campaign in a tenant.
 
     Attack simulation and training is a service available as part of Microsoft Defender for Office 365.
     This service lets tenant users experience a realistic benign phishing attack and learn from it.

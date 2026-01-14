@@ -1,5 +1,4 @@
-"""
-Enumerate items in a list
+"""Enumerate items in a list
 
 https://learn.microsoft.com/en-us/graph/api/listitem-list?view=graph-rest-1.0
 """

@@ -34,8 +34,7 @@ class TenantCorporateCatalogAccessor(Entity):
     """Accessor for the tenant corporate catalog."""
 
     def add(self, content, overwrite, url=None):
-        """
-        Adds a file to the corporate catalog.
+        """Adds a file to the corporate catalog.
 
         :param str or bytes content: Specifies the binary content of the file to be added.
         :param bool overwrite: Specifies whether to overwrite an existing file with the same name and in the same
@@ -50,9 +49,7 @@ class TenantCorporateCatalogAccessor(Entity):
 
     def app_from_path(self, path, overwrite):
         # type: (str, bool) -> File
-        """
-        Adds a file to the corporate catalog.
-        """
+        """Adds a file to the corporate catalog."""
         with open(path, "rb") as f:
             content = f.read()
         url = os.path.basename(path)
@@ -67,8 +64,7 @@ class TenantCorporateCatalogAccessor(Entity):
         return return_type
 
     def download_teams_solution(self, _id):
-        """
-        Downloads a Microsoft Teams solution package associated with an app from the SharePoint App Catalog
+        """Downloads a Microsoft Teams solution package associated with an app from the SharePoint App Catalog
         :param int _id:
         """
         return_type = TeamsPackageDownload(self.context)
@@ -78,15 +74,12 @@ class TenantCorporateCatalogAccessor(Entity):
         return return_type
 
     def get_app_by_id(self, item_unique_id):
-        """
-        :param str item_unique_id:
-        """
+        """:param str item_unique_id:"""
         params = {"itemUniqueId": item_unique_id}
         return CorporateCatalogAppMetadata(self.context, ServiceOperationPath("GetAppById", params, self.resource_path))
 
     def is_app_upgrade_available(self, _id):
-        """
-        Determines if an upgrade is available for an app in the SharePoint app catalog
+        """Determines if an upgrade is available for an app in the SharePoint app catalog
         :param int _id:
         """
         return_type = ClientResult(self.context, AppUpgradeAvailability())
@@ -108,8 +101,7 @@ class TenantCorporateCatalogAccessor(Entity):
         return self
 
     def send_app_request_status_notification_email(self, request_guid):
-        """
-        Sends email notifications about the status of an app request in the corporate app catalog
+        """Sends email notifications about the status of an app request in the corporate app catalog
         :param str request_guid:
         """
         qry = ServiceOperationQuery(self, "SendAppRequestStatusNotificationEmail", [request_guid])
@@ -135,7 +127,8 @@ class TenantCorporateCatalogAccessor(Entity):
     @property
     def site_collection_app_catalogs_sites(self):
         """Returns an accessor to the allow list of site collections allowed to have site collection corporate
-        catalogs."""
+        catalogs.
+        """
         return self.properties.get(
             "SiteCollectionAppCatalogsSites",
             SiteCollectionAppCatalogAllowedItems(

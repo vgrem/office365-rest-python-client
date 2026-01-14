@@ -6,17 +6,14 @@ from office365.planner.tasks.check_list_items import PlannerChecklistItems
 
 
 class PlannerTaskDetails(Entity):
-    """
-    The plannerTaskDetails resource represents the additional information about a task.
+    """The plannerTaskDetails resource represents the additional information about a task.
     Each task object has a details object.
     """
 
     @property
     def checklist(self):
         # type: () -> PlannerChecklistItems
-        """
-        The collection of checklist items on the task.
-        """
+        """The collection of checklist items on the task."""
         return self.properties.get("checklist", PlannerChecklistItems())
 
     @property
@@ -37,7 +34,5 @@ class PlannerTaskDetails(Entity):
     @property
     def references(self):
         # type: () -> PlannerExternalReferences
-        """
-        The collection of references on the task.
-        """
+        """The collection of references on the task."""
         return self.properties.get("references", PlannerExternalReferences())

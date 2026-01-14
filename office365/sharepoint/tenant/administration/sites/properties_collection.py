@@ -18,26 +18,21 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         super(SitePropertiesCollection, self).__init__(context, SiteProperties, resource_path)
 
     def get_by_id(self, site_id):
-        """
-        :param str site_id: Site identifier
-        """
+        """:param str site_id: Site identifier"""
         return_type = SiteProperties(self.context)
         qry = ServiceOperationQuery(self, "GetById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_lock_state_by_id(self, site_id):
-        """
-        :param str site_id: Site identifier
-        """
-        return_type = ClientResult(self.context, int())
+        """:param str site_id: Site identifier"""
+        return_type = ClientResult(self.context, 0)
         qry = ServiceOperationQuery(self, "GetLockStateById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_state_properties(self, site_id):
-        """
-        Gets site state properties.
+        """Gets site state properties.
 
         :param str site_id: Site identifier
         """
@@ -47,8 +42,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def get_site_user_groups(self, site_id):
-        """
-        Gets site user groups.
+        """Gets site user groups.
 
         :param str site_id: Site identifier
         """
@@ -58,10 +52,8 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def check_site_is_archived_by_id(self, site_id):
-        """
-        :param str site_id: Site identifier
-        """
-        return_type = ClientResult(self.context, bool())
+        """:param str site_id: Site identifier"""
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "CheckSiteIsArchivedById", [site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type

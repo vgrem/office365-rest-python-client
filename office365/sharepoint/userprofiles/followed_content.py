@@ -10,8 +10,7 @@ class FollowedContent(Entity):
     """The FollowedContent class provides access to followed content items."""
 
     def follow_item(self, item):
-        """
-        The FollowItem method is reserved for server-to-server use only.
+        """The FollowItem method is reserved for server-to-server use only.
         The server sets the specified item to be followed by the current user. This method cannot be called
         from the client.
 
@@ -24,13 +23,12 @@ class FollowedContent(Entity):
         return return_type
 
     def get_followed_status(self, url):
-        """
-        The GetFollowedStatus method retrieves the followed status of the specified document or site.
+        """The GetFollowedStatus method retrieves the followed status of the specified document or site.
         An item can be followed if the url parameter identifies a document or site that the current user has access to.
 
         :param str url: URL that identifies the item
         """
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         payload = {"url": url}
         qry = ServiceOperationQuery(self, "GetFollowedStatus", None, payload, None, return_type)
         self.context.add_query(qry)

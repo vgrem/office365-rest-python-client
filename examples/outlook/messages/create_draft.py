@@ -1,5 +1,4 @@
-"""
-Create a draft of a new message
+"""Create a draft of a new message
 
 https://learn.microsoft.com/en-us/graph/api/user-post-messages?view=graph-rest-1.0
 """

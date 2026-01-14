@@ -10,8 +10,7 @@ class PushNotificationSubscriberCollection(EntityCollection[PushNotificationSubs
         super(PushNotificationSubscriberCollection, self).__init__(context, PushNotificationSubscriber, resource_path)
 
     def get_by_store_id(self, _id):
-        """
-        Returns the push notification subscriber from the specified store identifier.
+        """Returns the push notification subscriber from the specified store identifier.
 
         :param str _id: Store identifier for the notification subscriber.
         """

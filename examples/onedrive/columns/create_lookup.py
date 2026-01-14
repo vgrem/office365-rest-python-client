@@ -1,5 +1,4 @@
-"""
-Creates a lookup column in a list
+"""Creates a lookup column in a list
 
 https://learn.microsoft.com/en-us/graph/api/list-post-columns?view=graph-rest-1.0
 """

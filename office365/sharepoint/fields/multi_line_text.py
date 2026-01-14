@@ -54,5 +54,6 @@ class FieldMultiLineText(Field):
     def wiki_linking(self):
         # type: () -> Optional[bool]
         """Specifies whether an implementation-specific mechanism for linking wiki pages is supported.
-        It MUST be "false" if RichText is "false"."""
+        It MUST be "false" if RichText is "false".
+        """
         return self.properties.get("WikiLinking", None)

@@ -7,8 +7,7 @@ class AppPrincipalCredential(Entity):
 
     @staticmethod
     def create_from_symmetric_key(context, symmetric_key, not_before, not_after=None):
-        """
-        Create an instance of SP.AppPrincipalCredential that wraps a symmetric key.
+        """Create an instance of SP.AppPrincipalCredential that wraps a symmetric key.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str symmetric_key: The symmetric key of the app principal credential.
@@ -28,8 +27,7 @@ class AppPrincipalCredential(Entity):
 
     @staticmethod
     def create_from_key_group(context, key_group_identifier):
-        """
-        Create an instance of SP.AppPrincipalCredential that wraps a key group identifier.
+        """Create an instance of SP.AppPrincipalCredential that wraps a key group identifier.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str key_group_identifier:  The key group identifier.

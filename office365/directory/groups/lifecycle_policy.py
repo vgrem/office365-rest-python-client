@@ -6,8 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class GroupLifecyclePolicy(Entity):
-    """
-    Represents a lifecycle policy for a Microsoft 365 group. A group lifecycle policy allows administrators
+    """Represents a lifecycle policy for a Microsoft 365 group. A group lifecycle policy allows administrators
     to set an expiration period for groups. For example, after 180 days, a group expires.
     When a group reaches its expiration, owners of the group are required to renew their group within a time interval
     defined by the administrator. Once renewed, the group expiration is extended by the number of days defined
@@ -17,8 +16,7 @@ class GroupLifecyclePolicy(Entity):
     """
 
     def add_group(self, group_id):
-        """
-        Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
+        """Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
         only if the managedGroupTypes property of groupLifecyclePolicy is set to Selected.
 
         :param str group_id: The identifier of the group to remove from the policy.
@@ -31,8 +29,7 @@ class GroupLifecyclePolicy(Entity):
 
     def remove_group(self, group_id):
         # type: (str) -> ClientResult[bool]
-        """
-        Removes a group from a lifecycle policy.
+        """Removes a group from a lifecycle policy.
         :param str group_id: The identifier of the group to add to the policy.
         """
         return_type = ClientResult(self.context)
@@ -44,8 +41,7 @@ class GroupLifecyclePolicy(Entity):
     @property
     def alternate_notification_emails(self):
         # type: () -> Optional[str]
-        """
-        List of email address to send notifications for groups without owners.
+        """List of email address to send notifications for groups without owners.
         Multiple email address can be defined by separating email address with a semicolon.
         """
         return self.properties.get("alternateNotificationEmails", None)
@@ -53,8 +49,7 @@ class GroupLifecyclePolicy(Entity):
     @property
     def group_lifetime_in_days(self):
         # type: () -> Optional[int]
-        """
-        Number of days before a group expires and needs to be renewed. Once renewed, the group expiration is extended
+        """Number of days before a group expires and needs to be renewed. Once renewed, the group expiration is extended
         by the number of days defined.
         """
         return self.properties.get("groupLifetimeInDays", None)

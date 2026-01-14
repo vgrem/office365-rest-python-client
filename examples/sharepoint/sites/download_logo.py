@@ -1,6 +1,4 @@
-"""
-Downloads a site logo
-"""
+"""Downloads a site logo"""
 
 import os
 import tempfile
@@ -13,4 +11,4 @@ result = client.site.get_site_logo_ex().execute_query()
 download_path = os.path.join(tempfile.mkdtemp(), "SiteLogo.png")
 with open(download_path, "wb") as f:
     f.write(result.value)
-print("Saved into {0}".format(download_path))
+print(f"Saved into {download_path}")

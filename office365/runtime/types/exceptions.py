@@ -11,8 +11,8 @@ class NotFoundException(Exception):
         if self.entity is None:
             message = "Entity not found"
         else:
-            message = "{0} not found".format(self.entity.entity_type_name)
+            message = f"{self.entity.entity_type_name} not found"
 
         if self.query is not None:
-            message = "{0} for query: {1}".format(message, self.query)
+            message = f"{message} for query: {self.query}"
         return message

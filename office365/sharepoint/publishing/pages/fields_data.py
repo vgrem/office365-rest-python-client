@@ -10,8 +10,7 @@ class SitePageFieldsData(ClientValue):
         topic_header=None,
         publish_start_date=None,
     ):
-        """
-        Represents Site Page metadata for use in page authoring operations.
+        """Represents Site Page metadata for use in page authoring operations.
 
         :param str title: the Page title
         :param str banner_image_url: the preview image Url for the current Site Page.

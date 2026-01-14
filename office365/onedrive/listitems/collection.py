@@ -18,7 +18,8 @@ class ListItemCollection(EntityCollection[ListItem]):
     def honor_nonindexed(self, value):
         # type: (bool) -> "ListItemCollection"
         """Sets if true HonorNonIndexedQueriesWarningMayFailRandomly header
-        to allow non-indexed properties to be queried."""
+        to allow non-indexed properties to be queried.
+        """
         self._honor_nonindexed = value
         return self
 
@@ -34,8 +35,8 @@ class ListItemCollection(EntityCollection[ListItem]):
 
     def get_by_name(self, name):
         """Retrieve a list item by name"""
-        return self.single("fields/FileLeafRef eq '{0}'".format(name))
+        return self.single(f"fields/FileLeafRef eq '{name}'")
 
     def get_by_path(self, path):
         """Retrieve a list item by path"""
-        return self.single("fields/FileRef eq '{0}'".format(path))
+        return self.single(f"fields/FileRef eq '{path}'")

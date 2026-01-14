@@ -1,5 +1,4 @@
-"""
-Setting up an Azure AD app for app-only access for SharePoint API
+"""Setting up an Azure AD app for app-only access for SharePoint API
 
 Steps:
 

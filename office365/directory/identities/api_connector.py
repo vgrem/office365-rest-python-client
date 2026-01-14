@@ -6,8 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class IdentityApiConnector(Entity):
-    """
-    Represents API connectors in an Azure Active Directory (Azure AD) tenants.
+    """Represents API connectors in an Azure Active Directory (Azure AD) tenants.
 
     An API connector used in your Azure AD External Identities self-service sign-up user flows allows you to call
     an API during the execution of the user flow. An API connector provides the information needed to call an API
@@ -24,7 +23,6 @@ class IdentityApiConnector(Entity):
         :param str pkcs12_value:
         :param str password:
         """
-
         payload = {"pkcs12Value": pkcs12_value, "password": password}
         qry = ServiceOperationQuery(self, "uploadClientCertificate", None, payload, None, None)
         self.context.add_query(qry)
@@ -33,5 +31,6 @@ class IdentityApiConnector(Entity):
     @property
     def authentication_configuration(self):
         """The object which describes the authentication configuration details for calling the API.
-        Basic and PKCS 12 client certificate are supported."""
+        Basic and PKCS 12 client certificate are supported.
+        """
         return self.properties.get("authenticationConfiguration", ApiAuthenticationConfigurationBase())

@@ -9,7 +9,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class BaseItem(Entity):
     """The baseItem resource is an abstract resource that contains a auth set of properties shared among several
-    other resources types"""
+    other resources types
+    """
 
     @property
     def etag(self):

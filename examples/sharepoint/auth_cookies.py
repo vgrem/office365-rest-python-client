@@ -10,7 +10,7 @@ def load_cookies_from_storage_state(path: str) -> Dict[str, str]:
 
     The library does not depend on Playwright; this is a helper to demonstrate usage.
     """
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
     cookies = {}
     for c in data.get("cookies", []):

@@ -6,8 +6,7 @@ from office365.sharepoint.entity import Entity
 class Campaigns(Entity):
     @staticmethod
     def get_campaign(context, campaign_id):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
+        """:type context: office365.sharepoint.client_context.ClientContext
         :param str campaign_id:  The campaign identifier.
         """
         return_type = ClientResult(context)

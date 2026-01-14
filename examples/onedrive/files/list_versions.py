@@ -1,5 +1,4 @@
-"""
-List versions of a driveItem
+"""List versions of a driveItem
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-list-versions?view=graph-rest-1.0
 """

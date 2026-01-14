@@ -1,6 +1,4 @@
-"""
-Demonstrates how to move a folder within a site
-"""
+"""Demonstrates how to move a folder within a site"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
@@ -19,7 +17,7 @@ folder_to_url = "Shared Documents/{0}".format(create_unique_name("out"))
 print("Moving folder...")
 opt = MoveCopyOptions()
 MoveCopyUtil.move_folder(ctx, folder_from.serverRelativeUrl, folder_to_url, opt).execute_query()
-print("Folder has been moved into '{0}'".format(folder_to_url))
+print(f"Folder has been moved into '{folder_to_url}'")
 
 print("Cleaning up temporary resources ...")
 folder_to = ctx.web.get_folder_by_server_relative_url(folder_to_url)

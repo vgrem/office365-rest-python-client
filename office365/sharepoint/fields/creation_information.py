@@ -16,8 +16,7 @@ class FieldCreationInformation(ClientValue):
         formula=None,
         choices=None,
     ):
-        """
-        Represents metadata about fields creation.
+        """Represents metadata about fields creation.
 
         :param str lookup_web_id: Specifies the identifier of the site (2) that contains the list that is the
             source for the field (2) value.

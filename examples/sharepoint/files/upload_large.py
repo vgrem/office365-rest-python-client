@@ -1,6 +1,4 @@
-"""
-Demonstrates how to upload large file
-"""
+"""Demonstrates how to upload large file"""
 
 import os
 
@@ -11,7 +9,7 @@ from tests import test_team_site_url, test_user_credentials
 def print_upload_progress(offset):
     # type: (int) -> None
     file_size = os.path.getsize(local_path)
-    print("Uploaded '{0}' bytes from '{1}'...[{2}%]".format(offset, file_size, round(offset / file_size * 100, 2)))
+    print(f"Uploaded '{offset}' bytes from '{file_size}'...[{round(offset / file_size * 100, 2)}%]")
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
@@ -23,4 +21,4 @@ local_path = "../../../tests/data/big_buck_bunny.mp4"
 with open(local_path, "rb") as f:
     uploaded_file = target_folder.files.create_upload_session(f, size_chunk, print_upload_progress).execute_query()
 
-print("File {0} has been uploaded successfully".format(uploaded_file.serverRelativeUrl))
+print(f"File {uploaded_file.serverRelativeUrl} has been uploaded successfully")

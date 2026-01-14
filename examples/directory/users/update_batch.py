@@ -1,5 +1,4 @@
-"""
-Update users in batch mode
+"""Update users in batch mode
 
 https://learn.microsoft.com/en-us/graph/api/user-update
 """

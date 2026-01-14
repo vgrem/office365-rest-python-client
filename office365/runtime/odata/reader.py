@@ -5,12 +5,11 @@ from office365.runtime.odata.property import ODataProperty
 from office365.runtime.odata.type import ODataType
 
 
-class ODataReader(object):
+class ODataReader:
     """OData reader"""
 
     def __init__(self, metadata_path, xml_namespaces):
-        """
-        :type metadata_path: string
+        """:type metadata_path: string
         :type xml_namespaces: dict
         """
         self._metadata_path = metadata_path
@@ -19,7 +18,7 @@ class ODataReader(object):
     def format_file(self):
         import xml.dom.minidom
 
-        with open(self._metadata_path, "r", encoding="utf8") as in_file:
+        with open(self._metadata_path, encoding="utf8") as in_file:
             metadata_content = in_file.read()
 
         formatted_metadata_content = xml.dom.minidom.parseString(metadata_content).toprettyxml()
@@ -28,9 +27,7 @@ class ODataReader(object):
             out_file.write(formatted_metadata_content)
 
     def process_schema_node(self, model):
-        """
-        :type model: ODataModel
-        """
+        """:type model: ODataModel"""
         root = ET.parse(self._metadata_path).getroot()
         schema_node = root.find("edmx:DataServices/xmlns:Schema", self._xml_namespaces)
         for type_node in schema_node.findall("xmlns:ComplexType", self._xml_namespaces):
@@ -38,8 +35,7 @@ class ODataReader(object):
             model.add_type(type_schema)
 
     def process_type_node(self, type_node, schema_node):
-        """
-        :type type_node: xml.etree.ElementTree.Element
+        """:type type_node: xml.etree.ElementTree.Element
         :type schema_node: xml.etree.ElementTree.Element
         """
         type_schema = ODataType()
@@ -57,9 +53,7 @@ class ODataReader(object):
         pass
 
     def process_property_node(self, node):
-        """
-        :type node:  xml.etree.ElementTree.Element
-        """
+        """:type node:  xml.etree.ElementTree.Element"""
         prop_schema = ODataProperty()
         prop_schema.name = node.get("Name")
         return prop_schema

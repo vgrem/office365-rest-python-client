@@ -1,5 +1,4 @@
-"""
-Download the contents of the driveItem (folder facet)
+"""Download the contents of the driveItem (folder facet)
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-get-content?view=graph-rest-1.0
 """
@@ -20,4 +19,4 @@ with tempfile.TemporaryDirectory() as local_path:
         if drive_item.is_file:
             with open(os.path.join(local_path, drive_item.name), "wb") as local_file:
                 drive_item.download(local_file).execute_query()  # download file content
-            print("File '{0}' has been downloaded into {1}".format(drive_item.name, local_file.name))
+            print(f"File '{drive_item.name}' has been downloaded into {local_file.name}")

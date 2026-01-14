@@ -1,5 +1,4 @@
-"""
-Prerequisites:
+"""Prerequisites:
 
 Setting up an Azure AD app for app-only access:
 
@@ -20,7 +19,7 @@ from office365.sharepoint.client_context import ClientContext
 from tests import test_cert_thumbprint, test_client_id, test_site_url, test_tenant
 
 cert_path = "./selfsigncert.pem"
-with open(cert_path, "r", encoding="utf-8") as f:
+with open(cert_path, encoding="utf-8") as f:
     private_key = f.read()
 
 cert_credentials = {
@@ -31,4 +30,4 @@ cert_credentials = {
 }
 ctx = ClientContext(test_site_url).with_client_certificate(**cert_credentials)
 current_web = ctx.web.get().execute_query()
-print("{0}".format(current_web.url))
+print(f"{current_web.url}")

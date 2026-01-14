@@ -12,8 +12,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         super(FileStorageContainerCollection, self).__init__(context, FileStorageContainer, resource_path)
 
     def add(self, display_name, container_type_id=uuid.uuid4()):
-        """
-        Create a new fileStorageContainer object.
+        """Create a new fileStorageContainer object.
 
         The container type identified by containerTypeId must be registered in the tenant.
 

@@ -13,9 +13,7 @@ class DirectorySession(Entity):
         return self.properties.get("Me", User(self.context, ResourcePath("Me", self.resource_path)))
 
     def get_graph_user(self, principal_name):
-        """
-        :type principal_name: str
-        """
+        """:type principal_name: str"""
         return_type = User(self.context)
         qry = ServiceOperationQuery(self, "GetGraphUser", [principal_name], None, None, return_type)
         self.context.add_query(qry)

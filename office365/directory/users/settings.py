@@ -17,7 +17,8 @@ class UserSettings(Entity):
         When set to true, the organization doesn't have access to Office Delve. The relevancy of the content
         displayed in Microsoft 365, for example in Suggested sites in SharePoint Home and the Discover view in
         OneDrive for work or school is affected for the whole organization. This setting is read-only and can only
-        be changed by administrators in the SharePoint admin center."""
+        be changed by administrators in the SharePoint admin center.
+        """
         return self.properties.get("contributionToContentDiscoveryAsOrganizationDisabled", None)
 
     @property
@@ -35,7 +36,8 @@ class UserSettings(Entity):
         # type: () -> UserInsightsSettings
         """The user's settings for the visibility of meeting hour insights, and insights derived between
         a user and other items in Microsoft 365, such as documents or sites.
-        Get userInsightsSettings through this navigation property."""
+        Get userInsightsSettings through this navigation property.
+        """
         return self.properties.get(
             "itemInsights",
             UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path)),

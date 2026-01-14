@@ -6,14 +6,11 @@ from office365.sharepoint.webparts.tile_data import TileData
 
 
 class PromotedSites(Entity):
-    """
-    The PromotedSites object provides access to a collection of site links that are visible to all users.
-    """
+    """The PromotedSites object provides access to a collection of site links that are visible to all users."""
 
     @staticmethod
     def add_site_link(context, url, title, description=None, image_url=None):
-        """
-        Creates a new site link in the collection of promoted sites.
+        """Creates a new site link in the collection of promoted sites.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str url: Specifies the URL of the promoted site.
@@ -34,8 +31,7 @@ class PromotedSites(Entity):
 
     @staticmethod
     def delete_site_link(context, item_id):
-        """
-        Removes the promoted site with the specified identifier from the collection.
+        """Removes the promoted site with the specified identifier from the collection.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param int item_id: Specifies a number that represents the identifier of the site to remove
@@ -48,9 +44,7 @@ class PromotedSites(Entity):
 
     @staticmethod
     def get_promoted_links_as_tiles(context):
-        """
-        Retrieves the collection of promoted site links.
-        """
+        """Retrieves the collection of promoted site links."""
         return_type = ClientResult(context, ClientValueCollection(TileData))
         binding_type = PromotedSites(context)
         qry = ServiceOperationQuery(

@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class LookupColumn(ClientValue):
-    """
-    The lookupColumn on a columnDefinition resource indicates that the column's values
+    """The lookupColumn on a columnDefinition resource indicates that the column's values
     are looked up from another source in the site.
     """
 
@@ -15,8 +14,7 @@ class LookupColumn(ClientValue):
         allow_unlimited_length=None,
         primary_lookup_column_id=None,
     ):
-        """
-        :param str list_id: The unique identifier of the lookup source list.
+        """:param str list_id: The unique identifier of the lookup source list.
         :param str column_name: The name of the lookup source column.
         :param bool allow_multiple_values: Indicates whether multiple values can be selected from the source.
         :param bool allow_unlimited_length: Indicates whether values in the column should be able to exceed

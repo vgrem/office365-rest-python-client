@@ -6,8 +6,7 @@ from office365.search.hit import SearchHit
 
 class SearchHitsContainer(ClientValue):
     def __init__(self, hits=None, more_results_available=None, total=None, aggregations=None):
-        """
-        Represent the list of search results.
+        """Represent the list of search results.
 
         :param list[SearchHit] hits: A collection of the search results.
         :param int total: The total number of results. Note this is not the number of results on the page,

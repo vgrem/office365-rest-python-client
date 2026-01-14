@@ -7,8 +7,7 @@ class MySiteDismissStatusText(Entity):
 
     @staticmethod
     def dismiss_status_text(context):
-        """
-        Dismiss the status text for the personal online document library page.
+        """Dismiss the status text for the personal online document library page.
         :param office365.sharepoint.client_context.ClientContext context: Client context
         """
         binding_type = MySiteDismissStatusText(context)

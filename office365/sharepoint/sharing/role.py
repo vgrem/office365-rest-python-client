@@ -2,9 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class Role(ClientValue):
-    """
-    Specifies a set of abstract roles that a user can be assigned to share a securable object in a document library
-    """
+    """Specifies a set of abstract roles that a user can be assigned to share a securable object in a document library"""
 
     View = 1
     """The user can only read a securable object."""

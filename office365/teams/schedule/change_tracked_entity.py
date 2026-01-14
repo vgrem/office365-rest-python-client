@@ -9,16 +9,14 @@ class ChangeTrackedEntity(Entity):
 
     @property
     def created_datetime(self):
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
         """
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
     def last_modified_datetime(self):
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
         """
         return self.properties.get("lastModifiedDateTime", datetime.min)

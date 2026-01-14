@@ -1,6 +1,4 @@
-"""
-Demonstrates how to enumerate folder files and download file's content
-"""
+"""Demonstrates how to enumerate folder files and download file's content"""
 
 import os
 import tempfile
@@ -13,7 +11,7 @@ from tests import test_client_credentials, test_team_site_url
 
 def print_progress(file):
     # type: (File) -> None
-    print("File {0} has been  downloaded".format(file.serverRelativeUrl))
+    print(f"File {file.serverRelativeUrl} has been  downloaded")
 
 
 def download_files(source_folder, download_path):
@@ -28,7 +26,7 @@ def download_files(source_folder, download_path):
         download_file_name = os.path.join(download_path, file.name)
         with open(download_file_name, "wb") as local_file:
             file.download(local_file).execute_query()
-        print("[Ok] file has been downloaded: {0}".format(download_file_name))
+        print(f"[Ok] file has been downloaded: {download_file_name}")
 
 
 to_path = tempfile.mkdtemp()

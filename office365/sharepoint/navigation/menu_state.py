@@ -15,8 +15,7 @@ class MenuState(ClientValue):
         simple_url=None,
         site_prefix=None,
     ):
-        """
-        :param list[uuid] audience_ids:
+        """:param list[uuid] audience_ids:
         :param str friendly_url_prefix: Specifies the site collection relative URL for the root node of the menu tree.
         :param list[MenuNode] nodes: The child nodes of the root node of the menu tree.
         :param str simple_url: f the NodeType property (section 3.2.5.244.1.1.7) of the menu tree root node is set

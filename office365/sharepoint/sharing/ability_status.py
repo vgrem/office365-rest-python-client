@@ -5,8 +5,7 @@ class SharingAbilityStatus(ClientValue):
     """Represents the status for a specific sharing capability for the current user."""
 
     def __init__(self, disabled_reason=None, enabled=None):
-        """
-        :param str disabled_reason:  Indicates the reason why the capability is disabled if the capability is disabled
+        """:param str disabled_reason:  Indicates the reason why the capability is disabled if the capability is disabled
             for any reason.
         :param bool enabled: Indicates whether capability is enabled.
         """

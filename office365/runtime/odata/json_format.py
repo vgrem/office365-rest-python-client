@@ -1,7 +1,7 @@
 from abc import ABCMeta
 
 
-class ODataJsonFormat(object):
+class ODataJsonFormat:
     """OData JSON format"""
 
     def __init__(self, metadata_level=None):

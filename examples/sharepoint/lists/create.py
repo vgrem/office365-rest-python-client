@@ -1,6 +1,4 @@
-"""
-Creating a list in SharePoint site
-"""
+"""Creating a list in SharePoint site"""
 
 from random import randint
 
@@ -13,4 +11,4 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 list_name = "Tasks" + str(randint(0, 10000))
 create_info = ListCreationInformation(list_name, None, ListTemplateType.Tasks)
 list_object = ctx.web.lists.add(create_info).execute_query()
-print("List has been created: {0}".format(list_object.title))
+print(f"List has been created: {list_object.title}")

@@ -29,7 +29,8 @@ class SiteHealthSummary(Entity):
     @property
     def results(self):
         """Specifies a list of site collection sitehealth rule results, one for each site collection sitehealth rule that
-        was run."""
+        was run.
+        """
         return self.properties.get("Results", ClientValueCollection(SiteHealthResult))
 
     @property

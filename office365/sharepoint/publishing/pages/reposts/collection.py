@@ -9,7 +9,7 @@ class RepostPageCollection(EntityCollection):
         super(RepostPageCollection, self).__init__(context, RepostPage, resource_path)
 
     def is_content_type_available(self):
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "IsContentTypeAvailable", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

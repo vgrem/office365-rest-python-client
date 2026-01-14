@@ -10,7 +10,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class VirtualEvent(Entity):
     """Represents an abstract base type for a virtual event.
-    Base type of virtualEventTownhall and virtualEventWebinar."""
+    Base type of virtualEventTownhall and virtualEventWebinar.
+    """
 
     @property
     def description(self):

@@ -22,11 +22,11 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
-    It doesn't contain any usable properties."""
+    It doesn't contain any usable properties.
+    """
 
     def run_hunting_query(self, query):
-        """
-        Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
+        """Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
         to proactively look for specific threats in your environment.
         :param str query: The hunting query in Kusto Query Language (KQL). For more information on KQL syntax,see KQL
             quick reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/kql-quick-reference
@@ -71,7 +71,8 @@ class Security(Entity):
     def incidents(self):
         # type: () -> EntityCollection[Incident]
         """A collection of correlated alert instances and associated metadata that reflects the story of
-        an attack in a tenant"""
+        an attack in a tenant
+        """
         return self.properties.get(
             "incidents",
             EntityCollection(self.context, Incident, ResourcePath("incidents", self.resource_path)),

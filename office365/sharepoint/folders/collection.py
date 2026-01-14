@@ -16,8 +16,7 @@ class FolderCollection(EntityCollection[Folder]):
         super(FolderCollection, self).__init__(context, Folder, resource_path, parent)
 
     def add_using_path(self, decoded_url, overwrite):
-        """
-        Adds the folder located at the specified path to the collection.
+        """Adds the folder located at the specified path to the collection.
         :param str decoded_url: Specifies the path for the folder.
         :param bool overwrite:  bool
         """
@@ -28,8 +27,7 @@ class FolderCollection(EntityCollection[Folder]):
         return return_type
 
     def ensure_path(self, path):
-        """
-        Ensures a folder exist
+        """Ensures a folder exist
         :param str path: server or site relative url to a folder
         """
         path = path.replace(self.context.site_path, "")
@@ -72,8 +70,7 @@ class FolderCollection(EntityCollection[Folder]):
         return Folder(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_path(self, decoded_url):
-        """
-        Get folder at the specified path.
+        """Get folder at the specified path.
         :param str decoded_url: Specifies the path for the folder.
         """
         return Folder(

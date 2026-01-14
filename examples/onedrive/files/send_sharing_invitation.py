@@ -1,5 +1,4 @@
-"""
-Send a sharing invitation
+"""Send a sharing invitation
 
 This example sends a sharing invitation to a user with email address "ryan@contoso.com" with a message about a
 file being collaborated on. The invitation grants Ryan read-write access to the file.

@@ -1,6 +1,4 @@
-"""
-Disable MFA
-"""
+"""Disable MFA"""
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username

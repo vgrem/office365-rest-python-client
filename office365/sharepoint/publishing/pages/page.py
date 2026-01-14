@@ -21,8 +21,7 @@ class SharePagePreviewByEmailFieldsData(ClientValue):
     """This class contains the information used by SharePagePreviewByEmail method"""
 
     def __init__(self, message=None, recipient_emails=None):
-        """
-        :param str message:
+        """:param str message:
         :param list[str] recipient_emails:
         """
         self.message = message
@@ -74,8 +73,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
 
     def save_page(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
-        """
-        Updates the current Site Page with the provided pageStream content.
+        """Updates the current Site Page with the provided pageStream content.
 
         :param str title: The title of Site Page
         :param str canvas_content:
@@ -93,8 +91,7 @@ class SitePage(SitePageMetadata):
         return self
 
     def save_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
-        """
-        Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
+        """Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
         has minor versions enabled.
 
         :param str title: The title of Site Page
@@ -108,14 +105,13 @@ class SitePage(SitePageMetadata):
             banner_image_url=banner_image_url,
             topic_header=topic_header,
         )
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "SaveDraft", None, payload, "sitePage", return_type)
         self.context.add_query(qry)
         return return_type
 
     def save_page_as_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
-        """
-        Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
+        """Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
         has minor versions enabled.
 
         :param str title: The title of Site Page. At least Title property needs to be provided
@@ -129,7 +125,7 @@ class SitePage(SitePageMetadata):
             banner_image_url=banner_image_url,
             topic_header=topic_header,
         )
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "SavePageAsDraft", None, payload, "pageStream", return_type)
         self.context.add_query(qry)
         return return_type
@@ -150,8 +146,7 @@ class SitePage(SitePageMetadata):
         return return_type
 
     def demote_from_news(self):
-        """
-        Updates the promoted state of the site page to 0. On success MUST return true.
+        """Updates the promoted state of the site page to 0. On success MUST return true.
         If the site page already has promoted state as 0, MUST return true. If the site page is not checked out
         to the current user,
         the server MUST throw Microsoft.SharePoint.Client.ClientServiceException with ErrorInformation.HttpStatusCode
@@ -163,8 +158,7 @@ class SitePage(SitePageMetadata):
         return result
 
     def promote_to_news(self):
-        """
-        Updates the promoted state of the site page to 1 if the site page has not been published yet.
+        """Updates the promoted state of the site page to 1 if the site page has not been published yet.
         Updates the promoted state of the site page to 2 if the site page has already been published.
         If the site page already has promoted state set to 1 or 2, MUST return true.
         If the site page is not checked out to the current users,
@@ -177,17 +171,14 @@ class SitePage(SitePageMetadata):
         return result
 
     def publish(self):
-        """
-        Publishes a major version of the current Site Page.  Returns TRUE on success, FALSE otherwise.
-        """
-        return_type = ClientResult(self.context, bool())
+        """Publishes a major version of the current Site Page.  Returns TRUE on success, FALSE otherwise."""
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "Publish", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def schedule_publish(self, publish_start_date):
-        """
-        Schedules the page publication for a certain date
+        """Schedules the page publication for a certain date
         :param datetime.datetime publish_start_date: The pending publication scheduled date
         """
         payload = SitePageFieldsData(publish_start_date=publish_start_date)
@@ -197,8 +188,7 @@ class SitePage(SitePageMetadata):
         return result
 
     def share_page_preview_by_email(self, message, recipient_emails):
-        """
-        :param str message:
+        """:param str message:
         :param list[str] recipient_emails:
         """
         payload = SharePagePreviewByEmailFieldsData(message, recipient_emails)

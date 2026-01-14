@@ -13,11 +13,11 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class ListItem(BaseItem):
     """Represents an item in a SharePoint list. Column values in the list are available through the fieldValueSet
-    dictionary."""
+    dictionary.
+    """
 
     def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
-        """
-        Get a collection of itemActivityStats resources for the activities that took place on this resource
+        """Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
         :param datetime.datetime start_dt: The start time over which to aggregate activities.

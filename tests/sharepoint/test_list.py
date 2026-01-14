@@ -92,7 +92,7 @@ class TestSPList(SPTestCase):
         self.target_list_title += "_updated"
         list_to_update.set_property("Title", self.target_list_title).update().execute_query()
 
-        result = self.client.web.lists.filter("Title eq '{0}'".format(self.target_list_title)).get().execute_query()
+        result = self.client.web.lists.filter(f"Title eq '{self.target_list_title}'").get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test_13_get_list_permissions(self):
@@ -112,7 +112,7 @@ class TestSPList(SPTestCase):
         list_title = self.target_list_title + "_updated"
         self.client.web.lists.get_by_title(list_title).delete_object().execute_query()
 
-        result = self.client.web.lists.filter("Title eq '{0}'".format(list_title)).get().execute_query()
+        result = self.client.web.lists.filter(f"Title eq '{list_title}'").get().execute_query()
         self.assertEqual(len(result), 0)
 
     def test_16_get_list_using_path(self):

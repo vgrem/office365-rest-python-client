@@ -28,9 +28,7 @@ class V4JsonFormat(ODataJsonFormat):
 
     @property
     def collection_next(self):
-        """
-        Property name for a reference to the next page of results
-        """
+        """Property name for a reference to the next page of results"""
         return "@odata.nextLink"
 
     @property
@@ -45,9 +43,7 @@ class V4JsonFormat(ODataJsonFormat):
 
     @property
     def media_type(self):
-        return "application/json;odata.metadata={0};odata.streaming={1};IEEE754Compatible={2}".format(
-            self.metadata_level, self.streaming, self.IEEE754Compatible
-        )
+        return f"application/json;odata.metadata={self.metadata_level};odata.streaming={self.streaming};IEEE754Compatible={self.IEEE754Compatible}"
 
     @property
     def include_control_information(self):

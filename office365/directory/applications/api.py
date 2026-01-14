@@ -13,8 +13,7 @@ class ApiApplication(ClientValue):
         known_client_applications=None,
         oauth2_permission_scopes=None,
     ):
-        """
-        :param str accept_mapped_claims: When true, allows an application to use claims mapping without specifying
+        """:param str accept_mapped_claims: When true, allows an application to use claims mapping without specifying
             a custom signing key.
         :param list[str] known_client_applications: Used for bundling consent if you have a solution that contains
             two parts: a client app and a custom web API app. If you set the appID of the client app to this value,

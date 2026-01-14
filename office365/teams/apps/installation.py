@@ -5,8 +5,7 @@ from office365.teams.apps.definition import TeamsAppDefinition
 
 
 class TeamsAppInstallation(Entity):
-    """
-    Represents a teamsApp installed in a team or the personal scope of a user. Any bots that are part of the app will
+    """Represents a teamsApp installed in a team or the personal scope of a user. Any bots that are part of the app will
     become part of any team or user's personal scope that the app is added to.
     """
 

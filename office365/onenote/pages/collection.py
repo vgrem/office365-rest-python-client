@@ -13,8 +13,7 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
 
     def add(self, presentation_file, attachment_files=None):
         # type: (IO, dict) -> OnenotePage
-        """
-        Create a new OneNote page.
+        """Create a new OneNote page.
         :param typing.IO presentation_file: Presentation file
         :param dict or None attachment_files: Attachment files
         """

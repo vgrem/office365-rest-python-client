@@ -1,4 +1,4 @@
-class TokenResponse(object):
+class TokenResponse:
     def __init__(self, access_token=None, token_type=None, **kwargs):
         self.accessToken = access_token
         self.tokenType = token_type
@@ -11,7 +11,7 @@ class TokenResponse(object):
 
     @property
     def authorization_header(self):
-        return "Bearer {0}".format(self.accessToken)
+        return f"Bearer {self.accessToken}"
 
     @staticmethod
     def from_json(value):

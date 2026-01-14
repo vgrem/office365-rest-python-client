@@ -8,8 +8,7 @@ class SortCollection(Entity):
     """Contains information about how to sort the search results."""
 
     def add(self, property_name, direction):
-        """
-        Adds a new element of type Microsoft.SharePoint.Client.Search.Query.Sort to the collection and returns
+        """Adds a new element of type Microsoft.SharePoint.Client.Search.Query.Sort to the collection and returns
         a reference to the added Microsoft.SharePoint.Client.Search.Query.Sort.
 
         :param str property_name: f direction is equal to SortDirection.Ascending or SortDirection.Descending, then

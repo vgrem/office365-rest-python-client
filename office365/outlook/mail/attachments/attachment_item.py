@@ -7,8 +7,7 @@ class AttachmentItem(ClientValue):
     """Represents attributes of an item to be attached."""
 
     def __init__(self, attachment_type=None, name=None, size=None):
-        """
-        :param str attachment_type:
+        """:param str attachment_type:
         :param str name:
         :param int size:
         """

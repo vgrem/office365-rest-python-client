@@ -21,8 +21,7 @@ class SearchSetting(Entity):
         skip_group_object_id_lookup=None,
         throw_on_remote_api_check=None,
     ):
-        """
-        This operation gets the query configuration from the server. This operation requires that the Search Service
+        """This operation gets the query configuration from the server. This operation requires that the Search Service
         Application is partitioned. If the Search Service Application is not partitioned the operations returns
         HTTP code 400, not authorized.
 
@@ -49,8 +48,7 @@ class SearchSetting(Entity):
         end_date=None,
         site_collection_id=None,
     ):
-        """
-        :param str tenant_id:
+        """:param str tenant_id:
         :param str report_type:
         :param str interval:
         :param str start_date:
@@ -78,8 +76,7 @@ class SearchSetting(Entity):
         return return_type
 
     def get_promoted_result_query_rules(self, site_collection_level=None, offset=None, number_of_rules=None):
-        """
-        The operation is called to retrieve the promoted results (also called Best Bets) for a tenant or a
+        """The operation is called to retrieve the promoted results (also called Best Bets) for a tenant or a
         site collection.
 
         :param bool site_collection_level: This parameter is used by the protocol server to decide which promoted

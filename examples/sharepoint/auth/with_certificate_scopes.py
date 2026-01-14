@@ -1,5 +1,4 @@
-"""
-Demonstrates how to authenticate using App-Only flow
+"""Demonstrates how to authenticate using App-Only flow
 
 Refer this article for a detailed instruction:
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
@@ -14,8 +13,8 @@ cert_credentials = {
     "tenant": test_tenant,
     "client_id": test_client_id,
     "thumbprint": test_cert_thumbprint,
-    "cert_path": "{0}/../selfsignkey.pem".format(os.path.dirname(__file__)),
-    "scopes": ["{0}/.default".format(test_site_url)],
+    "cert_path": f"{os.path.dirname(__file__)}/../selfsignkey.pem",
+    "scopes": [f"{test_site_url}/.default"],
 }
 
 ctx = ClientContext(test_site_url).with_client_certificate(**cert_credentials)

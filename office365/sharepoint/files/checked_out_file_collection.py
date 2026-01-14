@@ -8,8 +8,7 @@ class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
         super(CheckedOutFileCollection, self).__init__(context, CheckedOutFile, resource_path)
 
     def get_by_path(self, decoded_url):
-        """
-        Get a collection of checked-out files at the specified path.
+        """Get a collection of checked-out files at the specified path.
 
         :param str decoded_url: Specifies the path for the checked-out file.
         """

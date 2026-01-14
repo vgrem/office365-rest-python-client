@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_value import ClientValue
 
 if TYPE_CHECKING:
-    from typing import Optional  # noqa
+    from typing import Optional
 
 
 class PhysicalAddress(ClientValue):
@@ -18,8 +18,7 @@ class PhysicalAddress(ClientValue):
         street=None,
     ):
         # type: (Optional[str], Optional[str], Optional[str], Optional[str], Optional[str]) -> None
-        """
-        :param city: The city.
+        """:param city: The city.
         :param country_or_region: The country or region. It's a free-format string value, for example, "United States".
         :param postal_code: The postal code.
         :param state:

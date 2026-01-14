@@ -5,8 +5,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class MailSearchFolder(MailFolder):
-    """
-    A mailSearchFolder is a virtual folder in the user's mailbox that contains all the email items
+    """A mailSearchFolder is a virtual folder in the user's mailbox that contains all the email items
     matching specified search criteria. mailSearchFolder inherits from mailFolder.
     Search folders can be created in any folder in a user's Exchange Online mailbox. However, for a search folder
     to appear in Outlook, Outlook for the web, or Outlook Live, the folder must be created in the
@@ -25,7 +24,8 @@ class MailSearchFolder(MailFolder):
         """Indicates how the mailbox folder hierarchy should be traversed in the search. true means that a deep
         search should be done to include child folders in the hierarchy of each folder explicitly specified in
         sourceFolderIds. false means a shallow search of only each of the folders explicitly specified
-        in sourceFolderIds."""
+        in sourceFolderIds.
+        """
         return self.properties.get("includeNestedFolders", None)
 
     @property

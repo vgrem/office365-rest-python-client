@@ -7,8 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class AdministrativeUnit(DirectoryObject):
-    """
-    An administrative unit provides a conceptual container for user, group, and device directory objects.
+    """An administrative unit provides a conceptual container for user, group, and device directory objects.
     Using administrative units, a company administrator can now delegate administrative responsibilities to manage
     the users, groups, and devices contained within or scoped to an administrative unit to a regional or
     departmental administrator. This resource is an open type that allows other properties to be passed in.
@@ -25,8 +24,7 @@ class AdministrativeUnit(DirectoryObject):
 
     @property
     def visibility(self):
-        """
-        Controls whether the administrative unit and its members are hidden or public. Can be set to HiddenMembership.
+        """Controls whether the administrative unit and its members are hidden or public. Can be set to HiddenMembership.
         If not set (value is null), the default behavior is public. When set to HiddenMembership, only members of
         the administrative unit can list other members of the administrative unit.
         """

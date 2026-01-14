@@ -106,8 +106,7 @@ class Tenant(Entity):
         super(Tenant, self).__init__(context, static_path)
 
     def accept_syntex_repository_terms_of_service(self):
-        """
-        Used to accept the Microsoft Syntex repository terms of service for your organization.
+        """Used to accept the Microsoft Syntex repository terms of service for your organization.
         This acceptance is often necessary for enabling features related to document processing or repositories
         in Microsoft Syntex.
         """
@@ -133,7 +132,7 @@ class Tenant(Entity):
 
     def check_m365_copilot_business_chat_license(self):
         """ """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         from office365.sharepoint.policy.license_utilities import PolicyLicenseUtilities
 
         PolicyLicenseUtilities.check_tenant_m365_copilot_business_chat_license(self.context)
@@ -166,8 +165,7 @@ class Tenant(Entity):
         return return_type
 
     def delete_policy_definition(self, item_id):
-        """
-        Deletes a policy definition from a Microsoft 365 tenant.
+        """Deletes a policy definition from a Microsoft 365 tenant.
         Policy definitions may refer to specific settings related to compliance, security,
         or site governance (such as site or group creation policies).
         :param int item_id:
@@ -177,9 +175,7 @@ class Tenant(Entity):
         return self
 
     def delete_recent_admin_action_report(self, report_id):
-        """
-        :param int report_id:
-        """
+        """:param int report_id:"""
         qry = ServiceOperationQuery(self, "DeleteRecentAdminActionReport", None, {"reportId": report_id})
         self.context.add_query(qry)
         return self
@@ -241,8 +237,7 @@ class Tenant(Entity):
         return return_type
 
     def get_top_files_sharing_insights(self, query_mode=None):
-        """
-        Retrieves a report or data about the most shared files within a SharePoint Online tenant
+        """Retrieves a report or data about the most shared files within a SharePoint Online tenant
         :param int query_mode:
         """
         payload = {"queryMode": query_mode}
@@ -253,9 +248,7 @@ class Tenant(Entity):
 
     def get_site_thumbnail_logo(self, site_url):
         # type: (str) -> ClientResult[AnyStr]
-        """
-        :param str site_url:
-        """
+        """:param str site_url:"""
         payload = {"siteUrl": site_url}
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "GetSiteThumbnailLogo", None, payload, None, return_type)
@@ -289,8 +282,7 @@ class Tenant(Entity):
         return return_type
 
     def remove_home_site(self, home_site_url):
-        """
-        Remove home site
+        """Remove home site
 
         :param str home_site_url:
         """
@@ -301,13 +293,13 @@ class Tenant(Entity):
 
     def has_valid_education_license(self):
         """"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "HasValidEducationLicense", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_request_content_management_assessment_eligible(self):
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(
             self,
             "IsRequestContentManagementAssessmentEligible",
@@ -320,7 +312,7 @@ class Tenant(Entity):
         return return_type
 
     def is_syntex_repository_terms_of_service_accepted(self):
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(
             self,
             "IsSyntexRepositoryTermsOfServiceAccepted",
@@ -333,8 +325,7 @@ class Tenant(Entity):
         return return_type
 
     def export_to_csv(self, view_xml=None, time_zone_id=None, columns_info=None, list_name=None):
-        """
-        Exports tenant-level data to a CSV file.
+        """Exports tenant-level data to a CSV file.
         :param str view_xml:
         :param int time_zone_id:
         :param list columns_info:
@@ -353,7 +344,7 @@ class Tenant(Entity):
 
     def render_policy_report(self):
         """"""
-        return_type = ClientResult(self.context, bytes())
+        return_type = ClientResult(self.context, b"")
         payload = {
             "parameters": RenderListDataParameters(),
             "overrideParameters": RenderListDataOverrideParameters(),
@@ -364,18 +355,14 @@ class Tenant(Entity):
 
     @staticmethod
     def from_url(admin_site_url):
-        """
-        :type admin_site_url: str
-        """
+        """:type admin_site_url: str"""
         from office365.sharepoint.client_context import ClientContext
 
         admin_client = ClientContext(admin_site_url)
         return Tenant(admin_client)
 
     def get_lock_state_by_id(self, site_id):
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site
-        """
+        """:param str site_id: The GUID to uniquely identify a SharePoint site"""
         return self.sites.get_lock_state_by_id(site_id)
 
     def hub_sites(self, site_url):
@@ -410,7 +397,7 @@ class Tenant(Entity):
 
     def get_root_site_url(self):
         """ """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(
             self,
             "GetRootSiteUrl",
@@ -423,7 +410,7 @@ class Tenant(Entity):
         return return_type
 
     def get_site_authorization_code_for_migration(self, endpoint_url):
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         payload = {"endpointUrl": endpoint_url}
         qry = ServiceOperationQuery(
             self,
@@ -437,7 +424,7 @@ class Tenant(Entity):
         return return_type
 
     def get_site_subscription_id(self):
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(
             self,
             "GetSiteSubscriptionId",
@@ -488,12 +475,11 @@ class Tenant(Entity):
         return return_type
 
     def check_tenant_licenses(self, licenses):
-        """
-        Checks whether a tenant has the specified licenses.
+        """Checks whether a tenant has the specified licenses.
 
         :param list[str] licenses: The list of licenses to check for.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         params = ClientValueCollection(str, licenses)
         qry = ServiceOperationQuery(self, "CheckTenantLicenses", None, params, "licenses", return_type)
         self.context.add_query(qry)
@@ -504,9 +490,7 @@ class Tenant(Entity):
         return self._aggregated_site_collections_list.items.single("SiteUrl eq '{0}'".format(site_url.rstrip("/"))).get()
 
     def get_sites_by_state(self, states=None):
-        """
-        :param list[int] states:
-        """
+        """:param list[int] states:"""
         return_type = ListItemCollection(
             self.context,
             ResourcePath("items", self._aggregated_site_collections_list.resource_path),
@@ -529,8 +513,7 @@ class Tenant(Entity):
         self.get_sites_by_state(states).after_execute(_after, execute_first=True)
 
     def get_site_health_status(self, source_url):
-        """
-        Checks the sitehealth of a specific SharePoint site or site collection in their tenant
+        """Checks the sitehealth of a specific SharePoint site or site collection in their tenant
         :type source_url: str
         """
         result = ClientResult(self.context, PortalHealthStatus())
@@ -540,8 +523,7 @@ class Tenant(Entity):
         return result
 
     def get_site_administrators(self, site_id, return_type=None):
-        """
-        Gets site collection administrators
+        """Gets site collection administrators
 
         :type site_id: str
         :type return_type: ClientResult
@@ -555,8 +537,7 @@ class Tenant(Entity):
 
     def get_site_secondary_administrators(self, site_id):
         # type: (str) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]
-        """
-        Gets site collection administrators
+        """Gets site collection administrators
         :param str site_id: Site object or identifier
         """
         return_type = ClientResult(self.context, ClientValueCollection(SecondaryAdministratorsInfo))
@@ -566,8 +547,7 @@ class Tenant(Entity):
         return return_type
 
     def set_site_secondary_administrators(self, site_id, emails=None, names=None):
-        """
-        Sets site collection administrators
+        """Sets site collection administrators
 
         :type names: list[str] or None
         :type emails: list[str]
@@ -656,8 +636,7 @@ class Tenant(Entity):
         return result
 
     def reorder_home_sites(self, home_sites_site_ids):
-        """
-        Reorders Home Sites within a SharePoint Online tenant
+        """Reorders Home Sites within a SharePoint Online tenant
         :param list[str] home_sites_site_ids:
         """
         payload = {"homeSitesSiteIds": home_sites_site_ids}
@@ -731,8 +710,7 @@ class Tenant(Entity):
 
     def get_site_properties_by_url(self, url, include_detail=False):
         # type: (str, bool) -> SiteProperties
-        """
-         Gets the site properties for the specified URL.
+        """Gets the site properties for the specified URL.
 
         :param str url: A string that represents the site URL.
         :param bool include_detail: A Boolean value that indicates whether to include all of the SPSite properties.
@@ -789,7 +767,7 @@ class Tenant(Entity):
 
     def export_unlicensed_one_drive_for_business_list_to_csv(self):
         """Exports a list of OneDrive for Business sites that are associated with unlicensed users into a CSV file"""
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "ExportUnlicensedOneDriveForBusinessListToCSV")
         self.context.add_query(qry)
         return return_type
@@ -797,7 +775,7 @@ class Tenant(Entity):
     def send_email(self, site_url, activity_event_json):
         # type: (str, str) -> ClientResult[bool]
         """Send Email"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         payload = {"siteUrl": site_url, "activityEventJson": activity_event_json}
         qry = ServiceOperationQuery(self, "SendEmail", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -820,7 +798,7 @@ class Tenant(Entity):
         return self
 
     def get_file_version_policy(self):
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
 
         def _get_file_version_policy():
             return_type.set_property("__value", self.file_version_policy_xml)
@@ -829,8 +807,7 @@ class Tenant(Entity):
         return return_type
 
     def set_file_version_policy(self, is_auto_trim_enabled, major_version_limit, expire_versions_after_days):
-        """
-        Automatically delete older versions of documents after a specified number of days.
+        """Automatically delete older versions of documents after a specified number of days.
         Specify the maximum number of major versions to retain and the number of major versions
         for which all minor versions will be kept.
 
@@ -922,8 +899,7 @@ class Tenant(Entity):
     @property
     def allow_comments_text_on_email_enabled(self):
         # type: () -> Optional[bool]
-        """
-        When enabled, the email notification that a user receives when is mentioned,
+        """When enabled, the email notification that a user receives when is mentioned,
         includes the surrounding document context
         """
         return self.properties.get("AllowCommentsTextOnEmailEnabled", None)
@@ -931,8 +907,7 @@ class Tenant(Entity):
     @property
     def allow_everyone_except_external_users_claim_in_private_site(self):
         # type: () -> Optional[bool]
-        """
-        Gets the value if EveryoneExceptExternalUsers claim is allowed or not in people picker in a private group site.
+        """Gets the value if EveryoneExceptExternalUsers claim is allowed or not in people picker in a private group site.
         False value means it is blocked
         """
         return self.properties.get("AllowEveryoneExceptExternalUsersClaimInPrivateSite", None)
@@ -940,8 +915,7 @@ class Tenant(Entity):
     @property
     def allow_editing(self):
         # type: () -> Optional[bool]
-        """
-        Prevents users from editing Office files in the browser and copying and pasting Office file contents
+        """Prevents users from editing Office files in the browser and copying and pasting Office file contents
         out of the browser window.
         """
         return self.properties.get("AllowEditing", None)
@@ -978,8 +952,7 @@ class Tenant(Entity):
     @ip_address_enforcement.setter
     def ip_address_enforcement(self, value):
         # type: (bool) -> None
-        """
-        Allows access from network locations that are defined by an administrator.
+        """Allows access from network locations that are defined by an administrator.
         Before the IPAddressEnforcement parameter is set, make sure you add a valid IPv4 or IPv6 address to the
         IPAddressAllowList parameter.
         """
@@ -1009,7 +982,8 @@ class Tenant(Entity):
     def one_drive_storage_quota(self):
         # type: () -> Optional[int]
         """Gets a default OneDrive for Business storage quota for the tenant. It will be used for new OneDrive
-        for Business sites created."""
+        for Business sites created.
+        """
         return self.properties.get("OneDriveStorageQuota", None)
 
     @property
@@ -1064,7 +1038,6 @@ class Tenant(Entity):
     @property
     def crawl_versions_info_provider(self):
         """Retrieves information about crawl versions for a tenant in SharePoint"""
-
         from office365.sharepoint.search.administration.providers.crawl_versions_info import (
             TenantCrawlVersionsInfoProvider,
         )
@@ -1073,9 +1046,7 @@ class Tenant(Entity):
 
     @property
     def syntex_billing_subscription_settings(self):
-        """
-        Manages billing and subscription details for Microsoft Syntex in SharePoint Online or Microsoft 365 environments
-        """
+        """Manages billing and subscription details for Microsoft Syntex in SharePoint Online or Microsoft 365 environments"""
         return self.properties.get("SyntexBillingSubscriptionSettings", SyntexBillingContext())
 
     @property

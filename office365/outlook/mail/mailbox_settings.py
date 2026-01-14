@@ -17,8 +17,7 @@ class MailboxSettings(ClientValue):
         language=LocaleInfo(),
         working_hours=WorkingHours(),
     ):
-        """
-        :param str time_format: The time format for the user's mailbox.
+        """:param str time_format: The time format for the user's mailbox.
         :param str time_zone: The default time zone for the user's mailbox.
         :param AutomaticRepliesSetting automatic_replies_setting: 	Configuration settings to automatically notify
             the sender of an incoming email with a message from the signed-in user.

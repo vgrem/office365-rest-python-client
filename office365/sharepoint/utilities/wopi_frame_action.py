@@ -1,7 +1,5 @@
 class SPWOPIFrameAction:
-    """
-    Specifies distinct operations that are available for the list item.
-    """
+    """Specifies distinct operations that are available for the list item."""
 
     View = 0
     """Requests a browser-based viewing experience."""

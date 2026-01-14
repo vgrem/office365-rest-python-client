@@ -16,17 +16,13 @@ class InformationRightsManagementSettings(Entity):
     @property
     def allow_script(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether a user can run scripts on the downloaded document.
-        """
+        """Specifies whether a user can run scripts on the downloaded document."""
         return self.properties.get("AllowScript", None)
 
     @property
     def allow_write_copy(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether a user can write in a copy of the downloaded document.
-        """
+        """Specifies whether a user can write in a copy of the downloaded document."""
         return self.properties.get("AllowWriteCopy", None)
 
     @property
@@ -44,8 +40,7 @@ class InformationRightsManagementSettings(Entity):
     @property
     def document_library_protection_expire_date(self):
         # type: () -> Optional[datetime.datetime]
-        """
-        Specifies the date on which the Information Rights Management (IRM) protection of this document library will
+        """Specifies the date on which the Information Rights Management (IRM) protection of this document library will
         stop.
         """
         return self.properties.get("DocumentLibraryProtectionExpireDate", datetime.datetime.min)
@@ -89,8 +84,7 @@ class InformationRightsManagementSettings(Entity):
     @property
     def license_cache_expire_days(self):
         # type: () -> Optional[int]
-        """
-        Specifies the number of days that the Information Rights Management (IRM) license can be cached by the
+        """Specifies the number of days that the Information Rights Management (IRM) license can be cached by the
         application to open the downloaded document. When these elapse, the application will connect to the IRM
         server to validate the license.
         """

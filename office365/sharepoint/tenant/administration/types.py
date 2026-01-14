@@ -80,8 +80,7 @@ class CreatePolicyRequest(ClientValue):
         policy_template=None,
         policy_type=None,
     ):
-        """
-        :param bool is_preview_run:
+        """:param bool is_preview_run:
         :param str policy_custom_name:
         :param str policy_definition_details:
         :param str policy_description:

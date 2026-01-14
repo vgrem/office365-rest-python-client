@@ -4,8 +4,7 @@ from office365.entity import Entity
 
 
 class IdentityProviderBase(Entity):
-    """
-    Represents identity providers with External Identities for both Azure Active Directory tenant and
+    """Represents identity providers with External Identities for both Azure Active Directory tenant and
     an Azure AD B2C tenant.
     """
 

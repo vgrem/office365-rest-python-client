@@ -1,6 +1,4 @@
-"""
-Gets site collection administrators
-"""
+"""Gets site collection administrators"""
 
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.tenant import Tenant

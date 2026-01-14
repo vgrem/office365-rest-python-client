@@ -18,8 +18,7 @@ from office365.runtime.queries.function import FunctionQuery
 
 
 class DeviceManagement(Entity):
-    """
-    The deviceManagement resource represents a tenant's collection device identities that have been pre-staged in
+    """The deviceManagement resource represents a tenant's collection device identities that have been pre-staged in
     Intune, and the enrollment profiles that may be assigned to device identities that support pre-enrollment
     configuration.
     """

@@ -7,11 +7,10 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 class InviteParticipantsOperation(CommsOperation):
     """Represents the status of a long-running participant invitation operation,
-    triggered by a call to the participant-invite API."""
+    triggered by a call to the participant-invite API.
+    """
 
     @property
     def participants(self):
-        """
-        The participants to invite.
-        """
+        """The participants to invite."""
         return self.properties.get("participants", ClientValueCollection(InvitationParticipantInfo))

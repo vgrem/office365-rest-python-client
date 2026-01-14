@@ -17,7 +17,8 @@ class AuthenticationMethodsRoot(Entity):
 
     def users_registered_by_feature(self):
         """Get the number of users capable of multi-factor authentication, self-service password reset,
-        and passwordless authentication."""
+        and passwordless authentication.
+        """
         return_type = ClientResult(self.context, UserRegistrationFeatureSummary())
         qry = FunctionQuery(self, "usersRegisteredByFeature", None, return_type)
         self.context.add_query(qry)
@@ -34,7 +35,8 @@ class AuthenticationMethodsRoot(Entity):
     def user_registration_details(self):
         """Represents the state of a user's authentication methods, including which methods are registered and which
         features the user is registered and capable of (such as multi-factor authentication, self-service password
-        reset, and passwordless authentication)."""
+        reset, and passwordless authentication).
+        """
         return self.properties.get(
             "userRegistrationDetails",
             EntityCollection(

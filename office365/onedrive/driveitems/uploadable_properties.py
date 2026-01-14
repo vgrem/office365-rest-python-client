@@ -12,8 +12,7 @@ class DriveItemUploadableProperties(ClientValue):
         description=None,
         file_size=None,
     ):
-        """
-        :param FileSystemInfo file_system_info: File system information on client.
+        """:param FileSystemInfo file_system_info: File system information on client.
         :param str name: The name of the item (filename and extension).
         :param str description: Provides a user-visible description of the item. Read-write. Only on OneDrive Personal.
         :param int file_size: 	Provides an expected file size to perform a quota check prior to upload.

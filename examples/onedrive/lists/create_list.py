@@ -1,5 +1,4 @@
-"""
-Create a new list
+"""Create a new list
 
 The following is an example of how to create a new generic list
 
@@ -13,7 +12,7 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 print("Creating a custom list...")
 custom_list = client.sites.root.lists.add(create_unique_name("Books"), "genericList").execute_query()
-print("List has been created at {0}".format(custom_list.web_url))
+print(f"List has been created at {custom_list.web_url}")
 
 print("Cleaning up resources...")
 custom_list.delete_object().execute_query()

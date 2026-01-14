@@ -12,8 +12,7 @@ from office365.runtime.http.request_options import RequestOptions
 
 class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
     def __init__(self, url, client_id, client_secret, environment=None):
-        """
-        Provider to acquire the access token from a Microsoft Azure Access Control Service (ACS)
+        """Provider to acquire the access token from a Microsoft Azure Access Control Service (ACS)
 
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
@@ -47,8 +46,7 @@ class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             raise ValueError(self.error)
 
     def _get_app_only_access_token(self, target_host, target_realm):
-        """
-        Retrieves an app-only access token from ACS to call the specified principal
+        """Retrieves an app-only access token from ACS to call the specified principal
         at the specified targetHost. The targetHost must be registered for target principal.
 
         :param str target_host: Url authority of the target principal
@@ -86,12 +84,12 @@ class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
     def get_formatted_principal(principal_name, host_name, realm):
         # type: (str, Optional[str], str) -> str
         if host_name:
-            return "{0}/{1}@{2}".format(principal_name, host_name, realm)
-        return "{0}@{1}".format(principal_name, realm)
+            return f"{principal_name}/{host_name}@{realm}"
+        return f"{principal_name}@{realm}"
 
     def get_security_token_service_url(self, realm):
         # type: (str) -> str
         if self._environment:
-            return "{0}/{1}/tokens/OAuth/2".format(AzureEnvironment.get_login_authority(self._environment), realm)
+            return f"{AzureEnvironment.get_login_authority(self._environment)}/{realm}/tokens/OAuth/2"
         else:
-            return "https://accounts.accesscontrol.windows.net/{0}/tokens/OAuth/2".format(realm)
+            return f"https://accounts.accesscontrol.windows.net/{realm}/tokens/OAuth/2"

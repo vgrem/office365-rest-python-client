@@ -22,18 +22,15 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Calendar(Entity):
-    """
-    A calendar which is a container for events. It can be a calendar for a user, or the default calendar
-        of a Microsoft 365 group.
+    """A calendar which is a container for events. It can be a calendar for a user, or the default calendar
+    of a Microsoft 365 group.
     """
 
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
     def allowed_calendar_sharing_roles(self, user):
-        """
-        :param str user: User identifier or principal name
-        """
+        """:param str user: User identifier or principal name"""
         params = {"user": user}
         return_type = ClientResult(self.context, StringCollection())
         qry = FunctionQuery(self, "allowedCalendarSharingRoles", params, return_type)
@@ -41,8 +38,7 @@ class Calendar(Entity):
         return return_type
 
     def get_schedule(self, schedules, start_time, end_time, availability_view_interval=30):
-        """
-        Get the free/busy availability information for a collection of users, distributions lists, or resources
+        """Get the free/busy availability information for a collection of users, distributions lists, or resources
         (rooms or equipment) for a specified time period.
 
         :param datetime.datetime end_time: The date, time, and time zone that the period ends.
@@ -65,8 +61,7 @@ class Calendar(Entity):
 
     @property
     def allowed_online_meeting_providers(self):
-        """
-        Represent the online meeting service providers that can be used to create online meetings in this calendar.
+        """Represent the online meeting service providers that can be used to create online meetings in this calendar.
         Possible values are: unknown, skypeForBusiness, skypeForConsumer, teamsForBusiness.
         """
         return self.properties.get("allowedOnlineMeetingProviders", StringCollection())
@@ -74,8 +69,7 @@ class Calendar(Entity):
     @property
     def can_edit(self):
         # type: () -> Optional[bool]
-        """
-        true if the user can write to the calendar, false otherwise.
+        """True if the user can write to the calendar, false otherwise.
         This property is true for the user who created the calendar.
         This property is also true for a user who has been shared a calendar and granted write access.
         """
@@ -84,8 +78,7 @@ class Calendar(Entity):
     @property
     def can_share(self):
         # type: () -> Optional[bool]
-        """
-        true if the user has the permission to share the calendar, false otherwise.
+        """True if the user has the permission to share the calendar, false otherwise.
         Only the user who created the calendar can share it.
         """
         return self.properties.get("canShare", None)
@@ -93,16 +86,13 @@ class Calendar(Entity):
     @property
     def can_view_private_items(self):
         # type: () -> Optional[bool]
-        """
-        true if the user can read calendar items that have been marked private, false otherwise.
-        """
+        """True if the user can read calendar items that have been marked private, false otherwise."""
         return self.properties.get("canViewPrivateItems", None)
 
     @property
     def change_key(self):
         # type: () -> Optional[str]
-        """
-        Identifies the version of the calendar object. Every time the calendar is changed, changeKey changes as well.
+        """Identifies the version of the calendar object. Every time the calendar is changed, changeKey changes as well.
         This allows Exchange to apply changes to the correct version of the object.
         """
         return self.properties.get("changeKey", None)
@@ -110,8 +100,7 @@ class Calendar(Entity):
     @property
     def color(self):
         # type: () -> Optional[str]
-        """
-        Specifies the color theme to distinguish the calendar from other calendars in a UI.
+        """Specifies the color theme to distinguish the calendar from other calendars in a UI.
         The property values are: auto, lightBlue, lightGreen, lightOrange, lightGray, lightYellow, lightTeal,
         lightPink, lightBrown, lightRed, maxColor.
         """
@@ -120,8 +109,7 @@ class Calendar(Entity):
     @property
     def default_online_meeting_provider(self):
         # type: () -> Optional[str]
-        """
-        The default online meeting provider for meetings sent from this calendar.
+        """The default online meeting provider for meetings sent from this calendar.
         Possible values are: unknown, skypeForBusiness, skypeForConsumer, teamsForBusiness.
         """
         return self.properties.get("defaultOnlineMeetingProvider", None)
@@ -135,24 +123,19 @@ class Calendar(Entity):
     @property
     def is_default_calendar(self):
         # type: () -> Optional[bool]
-        """
-        true if this is the default calendar where new events are created by default, false otherwise.
-        """
+        """True if this is the default calendar where new events are created by default, false otherwise."""
         return self.properties.get("isDefaultCalendar", None)
 
     @property
     def is_removable(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether this user calendar can be deleted from the user mailbox.
-        """
+        """Indicates whether this user calendar can be deleted from the user mailbox."""
         return self.properties.get("isRemovable", None)
 
     @property
     def is_tallying_responses(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether this user calendar supports tracking of meeting responses.
+        """Indicates whether this user calendar supports tracking of meeting responses.
         Only meeting invites sent from users' primary calendars support tracking of meeting responses.
         """
         return self.properties.get("isTallyingResponses", None)

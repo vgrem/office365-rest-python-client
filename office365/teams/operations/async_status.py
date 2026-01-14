@@ -1,7 +1,6 @@
 class TeamsAsyncOperationStatus:
     def __init__(self):
         """Describes the current status of a teamsAsyncOperation."""
-        pass
 
     invalid = 0
     """	Invalid value."""

@@ -18,7 +18,8 @@ class WorkbookRangeFormat(Entity):
     def column_width(self):
         # type: () -> Optional[float]
         """Gets or sets the width of all columns within the range. If the column widths aren't uniform,
-        null will be returned."""
+        null will be returned.
+        """
         return self.properties.get("columnWidth", None)
 
     @property
@@ -37,7 +38,8 @@ class WorkbookRangeFormat(Entity):
     def vertical_alignment(self):
         # type: () -> Optional[str]
         """Represents the vertical alignment for the specified object.
-        Possible values are: Top, Center, Bottom, Justify, Distributed."""
+        Possible values are: Top, Center, Bottom, Justify, Distributed.
+        """
         return self.properties.get("verticalAlignment", None)
 
     @property

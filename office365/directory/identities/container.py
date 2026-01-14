@@ -14,8 +14,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class IdentityContainer(Entity):
-    """
-    Represents the entry point to different features in External Identities for
+    """Represents the entry point to different features in External Identities for
     both Azure Active Directory (Azure AD) and Azure AD B2C tenants.
     """
 

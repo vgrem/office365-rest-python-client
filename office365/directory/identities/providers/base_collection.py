@@ -10,8 +10,7 @@ class IdentityProviderBaseCollection(EntityCollection[IdentityProviderBase]):
         super(IdentityProviderBaseCollection, self).__init__(context, IdentityProviderBase, resource_path)
 
     def available_provider_types(self):
-        """
-        Get all identity providers supported in a directory.
+        """Get all identity providers supported in a directory.
 
         The identityProvider API is deprecated and will stop returning data on March 2023.
         Please use the new identityProviderBase API.

@@ -1,6 +1,4 @@
-"""
-Enumerates files along with role assignments
-"""
+"""Enumerates files along with role assignments"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.principal.type import PrincipalType

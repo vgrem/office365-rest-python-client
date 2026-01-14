@@ -1,5 +1,4 @@
-"""
-Determines whether the delegated permissions is granted by the Microsoft Graph service principal in the tenant.
+"""Determines whether the delegated permissions is granted by the Microsoft Graph service principal in the tenant.
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions
 """
@@ -21,6 +20,6 @@ client_app = client.applications.get_by_app_id(test_client_id)
 result = resource.get_delegated_permissions(test_client_id).execute_query()
 found_scope = next((cur_scope for cur_scope in result.value if cur_scope == scope), None)
 if found_scope is None:
-    print("Delegated permission '{0}' is not granted".format(scope))
+    print(f"Delegated permission '{scope}' is not granted")
 else:
     print(result.value)

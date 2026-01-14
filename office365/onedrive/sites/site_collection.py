@@ -12,9 +12,7 @@ class SiteCollection(ClientValue):
         data_location_code=None,
         archival_details=SiteArchivalDetails(),
     ):
-        """
-
-        :param office365.onedrive.root.Root root: The hostname for the site collection.
+        """:param office365.onedrive.root.Root root: The hostname for the site collection.
         :param str hostname: The hostname for the site collection.
         :param str data_location_code: The geographic region code for where this site collection resides
         :param str archival_details: Represents the archival details of a siteCollection.

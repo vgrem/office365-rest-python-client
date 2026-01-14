@@ -9,8 +9,7 @@ class ListItemVersion(BaseItemVersion):
     """The listItemVersion resource represents a previous version of a ListItem resource."""
 
     def restore_version(self):
-        """
-        Restore a previous version of a DriveItem to be the current version. This will create a new version with
+        """Restore a previous version of a DriveItem to be the current version. This will create a new version with
         the contents of the previous version, but preserves all existing versions of the file.
         """
         qry = ServiceOperationQuery(self, "restoreVersion")

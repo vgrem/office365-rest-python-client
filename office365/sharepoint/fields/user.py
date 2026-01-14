@@ -33,8 +33,7 @@ class FieldUser(FieldLookup):
     @property
     def selection_group(self):
         # type: () -> Optional[int]
-        """
-        Gets a value that specifies the identifier of the SharePoint group whose members can be selected
+        """Gets a value that specifies the identifier of the SharePoint group whose members can be selected
         as values of the field.
         """
         return self.properties.get("SelectionGroup", None)

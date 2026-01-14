@@ -3,8 +3,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Relation(Entity):
-    """
-    Represents the relationship between terms in a term store.
+    """Represents the relationship between terms in a term store.
     Currently, two types of relationships are supported: pin and reuse.
 
     In a pin relationship, a term can be pinned under a different term in a different term set.
@@ -19,7 +18,8 @@ class Relation(Entity):
     @property
     def from_term(self):
         """The from term of the relation. The term from which the relationship is defined.
-        A null value would indicate the relation is directly with the set."""
+        A null value would indicate the relation is directly with the set.
+        """
         from office365.onedrive.termstore.terms.term import Term
 
         return self.properties.get("fromTerm", Term(self.context, ResourcePath("fromTerm", self.resource_path)))

@@ -18,8 +18,7 @@ class GroupCollection(EntityCollection[Group]):
         super(GroupCollection, self).__init__(context, Group, resource_path)
 
     def expand_to_principals(self, max_count):
-        """
-        Expands groups to a collection of principals.
+        """Expands groups to a collection of principals.
 
         :param int max_count: Specifies the maximum number of principals to be returned.
         """
@@ -29,8 +28,7 @@ class GroupCollection(EntityCollection[Group]):
         return return_type
 
     def add(self, title, description=None):
-        """
-        Adds a group to the collection. A reference to the SP.Group that was added is returned.
+        """Adds a group to the collection. A reference to the SP.Group that was added is returned.
 
         :param str title: A string that specifies the name of the cross-site group to be created.
             It MUST NOT be NULL. Its length MUST be equal to or less than 255. It MUST NOT be empty.

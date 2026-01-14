@@ -76,7 +76,6 @@ class FileCollection(EntityCollection[File]):
         :param str file_name: custom file name
         :param kwargs: arguments to pass to chunk_uploaded function
         """
-
         auto_close = False
         if not hasattr(file, "read"):
             file = open(file, "rb")
@@ -116,8 +115,7 @@ class FileCollection(EntityCollection[File]):
             return self.add(file_name, file.read(), True)
 
     def add(self, url, content, overwrite=False):
-        """
-        Adds a file to the collection based on provided file creation information. A reference to the SP.File that
+        """Adds a file to the collection based on provided file creation information. A reference to the SP.File that
         was added is returned.
 
         :param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative

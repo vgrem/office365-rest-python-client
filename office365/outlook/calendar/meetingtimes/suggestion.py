@@ -6,8 +6,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class MeetingTimeSuggestion(ClientValue):
-    """
-    A meeting suggestion that includes information like meeting time, attendance likelihood, individual availability,
+    """A meeting suggestion that includes information like meeting time, attendance likelihood, individual availability,
     and available meeting locations.
     """
 
@@ -19,8 +18,7 @@ class MeetingTimeSuggestion(ClientValue):
         meeting_timeslot=TimeSlot(),
     ):
         # type: (list[AttendeeAvailability], float, list[Location], TimeSlot) -> None
-        """
-        :param attendee_availability: An array that shows the availability status of each
+        """:param attendee_availability: An array that shows the availability status of each
             attendees for this meeting suggestion.
         :param confidence: A percentage that represents the likelhood of all the attendees attending.
         :param locations: An array that specifies the name and geographic location of each meeting location

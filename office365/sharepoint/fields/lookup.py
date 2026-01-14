@@ -34,21 +34,24 @@ class FieldLookup(Field):
     def lookup_list(self):
         # type: () -> Optional[str]
         """Gets value that specifies the list identifier of the list that contains the field to use as the lookup
-        values."""
+        values.
+        """
         return self.properties.get("LookupList", None)
 
     @lookup_list.setter
     def lookup_list(self, val):
         # type: (str) -> None
         """Sets a value that specifies the list identifier of the list that contains the field to use as
-        the lookup values."""
+        the lookup values.
+        """
         self.set_property("LookupList", val, True)
 
     @property
     def primary_field_id(self):
         # type: () -> Optional[str]
         """Specifies the primary lookup field identifier if this is a dependent lookup field.
-        Otherwise, it is an empty string."""
+        Otherwise, it is an empty string.
+        """
         return self.properties.get("PrimaryFieldId", None)
 
     @property
@@ -61,5 +64,6 @@ class FieldLookup(Field):
     def unlimited_length_in_document_library(self):
         # type: () -> Optional[bool]
         """Gets or sets a Boolean value that specifies whether to allow values with unlimited text
-        in the lookup field."""
+        in the lookup field.
+        """
         return self.properties.get("UnlimitedLengthInDocumentLibrary", None)

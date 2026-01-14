@@ -11,8 +11,7 @@ class ComplianceTagInfo(ClientValue):
         unified_rule_id=None,
         unified_tag_id=None,
     ):
-        """
-        :param bool is_record:
+        """:param bool is_record:
         :param bool is_regulatory:
         :param bool should_keep:
         :param str tag_name:

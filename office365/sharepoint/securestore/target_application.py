@@ -14,8 +14,7 @@ class TargetApplication(Entity):
     @staticmethod
     def create(context, application_id, friendly_name):
         # type: (ClientContext, str, str) -> "TargetApplication"
-        """
-        Creates a target application
+        """Creates a target application
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str application_id:

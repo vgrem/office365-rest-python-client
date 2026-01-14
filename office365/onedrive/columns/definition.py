@@ -24,8 +24,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class ColumnDefinition(BaseItem):
-    """
-    Represents a column in a site, list, or contentType.
+    """Represents a column in a site, list, or contentType.
 
     ColumnDefinitions and field values for hidden columns aren't shown by default.
     To list hidden columnDefinitions, include hidden in your $select statement.

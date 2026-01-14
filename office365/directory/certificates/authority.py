@@ -12,8 +12,7 @@ class CertificateAuthority(ClientValue):
         issuer=None,
         issuer_ski=None,
     ):
-        """
-        :param str certificate: The base64 encoded string representing the public certificate.
+        """:param str certificate: The base64 encoded string representing the public certificate.
         :param str certificate_revocation_list_url: The URL of the certificate revocation list.
         :param str is_root_authority: Required. true if the trusted certificate is a root authority, false if the
             trusted certificate is an intermediate authority.

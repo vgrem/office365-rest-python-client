@@ -4,8 +4,7 @@ from office365.runtime.compat import get_absolute_url, is_absolute_url, urlparse
 
 class ResourcePath(ClientValue):
     def __init__(self, decoded_url=None):
-        """
-        Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
+        """Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
         other artifacts in the database.
 
         :param str decoded_url: Gets the path in the decoded form.
@@ -15,8 +14,7 @@ class ResourcePath(ClientValue):
 
     @staticmethod
     def create_absolute(site_url, path):
-        """
-        Creates absolute path
+        """Creates absolute path
         :param str site_url: Site url
         :param str path: Resource path
         """
@@ -28,8 +26,7 @@ class ResourcePath(ClientValue):
 
     @staticmethod
     def create_relative(site_url, path):
-        """
-        Creates server relative path
+        """Creates server relative path
         :param str site_url: Site url
         :param str path: Resource path
         """

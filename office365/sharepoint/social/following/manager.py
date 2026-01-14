@@ -8,24 +8,21 @@ from office365.sharepoint.social.actor import SocialActor
 
 class SocialFollowingManager(Entity):
     """The SocialFollowingManager class provides properties and methods for managing a user's list of followed actors.
-    Actors can be users, documents, sites, and tags."""
+    Actors can be users, documents, sites, and tags.
+    """
 
     def __init__(self, context):
         super(SocialFollowingManager, self).__init__(context, ResourcePath("SP.Social.SocialFollowingManager"))
 
     def get_followers(self):
-        """
-        The GetFollowers method returns the users who are followers of the current user.
-        """
+        """The GetFollowers method returns the users who are followers of the current user."""
         return_type = ClientResult(self.context, ClientValueCollection(SocialActor))
         qry = ServiceOperationQuery(self, "GetFollowers", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_suggestions(self):
-        """
-        The GetSuggestions method returns a list of actors that are suggestions for the current user to follow.
-        """
+        """The GetSuggestions method returns a list of actors that are suggestions for the current user to follow."""
         return_type = ClientResult(self.context, ClientValueCollection(SocialActor))
         qry = ServiceOperationQuery(self, "GetSuggestions", None, None, None, return_type)
         self.context.add_query(qry)

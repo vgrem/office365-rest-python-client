@@ -20,8 +20,7 @@ class ProfileImageStore(Entity):
         file_size,
         file_stream,
     ):
-        """
-        The SaveUploadedFile method saves an uploaded file as a profile image. This method returns an array of URLs
+        """The SaveUploadedFile method saves an uploaded file as a profile image. This method returns an array of URLs
         that provide access to the saved profile image.
 
         :param int profile_type: Specifies the profile type.

@@ -1,5 +1,4 @@
-"""
-Acquires a token by using application secret
+"""Acquires a token by using application secret
 
 The following options are supported:
    - utilize built in GraphClient(tenant=tenant).with_client_secret(client_id, client_secret) method
@@ -15,7 +14,7 @@ from tests import test_client_id, test_client_secret, test_tenant
 
 
 def acquire_token():
-    authority_url = "https://login.microsoftonline.com/{0}".format(test_tenant)
+    authority_url = f"https://login.microsoftonline.com/{test_tenant}"
     app = msal.ConfidentialClientApplication(
         authority=authority_url,
         client_id=test_client_id,

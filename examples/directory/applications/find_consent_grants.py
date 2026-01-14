@@ -1,6 +1,4 @@
-"""
-Find consent grants for app permissions
-"""
+"""Find consent grants for app permissions"""
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant

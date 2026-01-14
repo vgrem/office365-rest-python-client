@@ -25,7 +25,7 @@ class ODataBatchV3Request(ODataRequest):
         request = RequestOptions(query.url)
         request.method = HttpMethod.Post
         media_type = "multipart/mixed"
-        content_type = "; ".join([media_type, "boundary={0}".format(query.current_boundary)])
+        content_type = "; ".join([media_type, f"boundary={query.current_boundary}"])
         request.ensure_header("Content-Type", content_type)
         request.data = self._prepare_payload(query)
         return request
@@ -100,7 +100,7 @@ class ODataBatchV3Request(ODataRequest):
         resp.status_code = int(status_info[0])
         if status_info[1] == "No Content" or len(lines) < 3:
             resp.headers = self._normalize_headers(lines[1:])
-            resp._content = bytes(str("").encode("utf-8"))
+            resp._content = b""
         else:
             resp._content = bytes(str(lines[-1]).encode("utf-8"))
             resp.headers = self._normalize_headers(lines[1:-1])
@@ -116,9 +116,7 @@ class ODataBatchV3Request(ODataRequest):
         method = request.method
         if "X-HTTP-Method" in request.headers:
             method = request.headers["X-HTTP-Method"]
-        lines = ["{method} {url} HTTP/1.1".format(method=method, url=request.url)] + [
-            ":".join(h) for h in request.headers.items()
-        ]
+        lines = [f"{method} {request.url} HTTP/1.1"] + [":".join(h) for h in request.headers.items()]
         if request.data:
             lines.append(eol)
             lines.append(json.dumps(request.data))

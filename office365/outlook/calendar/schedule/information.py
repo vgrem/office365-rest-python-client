@@ -6,7 +6,8 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 class ScheduleInformation(ClientValue):
     """Represents the availability of a user, distribution list, or resource (room or equipment)
-    for a specified time period."""
+    for a specified time period.
+    """
 
     def __init__(
         self,
@@ -16,8 +17,7 @@ class ScheduleInformation(ClientValue):
         error=None,
         working_hours=WorkingHours(),
     ):
-        """
-        :param WorkingHours working_hours: The days of the week and hours in a specific time zone that the user works.
+        """:param WorkingHours working_hours: The days of the week and hours in a specific time zone that the user works.
              These are set as part of the user's mailboxSettings.
         :param str error: Error information from attempting to get the availability of the user, distribution list,
              or resource.

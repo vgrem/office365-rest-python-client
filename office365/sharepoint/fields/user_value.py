@@ -10,8 +10,7 @@ class FieldUserValue(FieldLookupValue):
     @staticmethod
     def from_user(user):
         # type: (User) -> "FieldUserValue"
-        """
-        Initialize field value from User
+        """Initialize field value from User
         :param User user: User object
         """
         return_type = FieldUserValue(-1)

@@ -1,6 +1,4 @@
-"""
-Retrieves collection of checked-out files in a document library
-"""
+"""Retrieves collection of checked-out files in a document library"""
 
 import sys
 

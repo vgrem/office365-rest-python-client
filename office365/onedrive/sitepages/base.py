@@ -19,8 +19,7 @@ class BaseSitePage(BaseItem):
     @property
     def page_layout(self):
         # type: () -> Optional[str]
-        """
-        The name of the page layout of the page.
+        """The name of the page layout of the page.
         The possible values are: microsoftReserved, article, home, unknownFutureValue.
         """
         return self.properties.get("pageLayout", None)

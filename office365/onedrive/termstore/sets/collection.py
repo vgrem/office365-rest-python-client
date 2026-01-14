@@ -7,16 +7,14 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 
 class SetCollection(EntityCollection[Set]):
     def __init__(self, context, resource_path=None, parent_group=None):
-        """
-        :param office365.onedrive.termstore.groups.group.Group parent_group: The parent group that contains the set
-        """
+        """:param office365.onedrive.termstore.groups.group.Group parent_group: The parent group that contains the set"""
         super(SetCollection, self).__init__(context, Set, resource_path)
         self._parent_group = parent_group
 
     def get_by_name(self, name):
         # type: (str) -> Set
         """Returns the TermSet specified by its name."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")
 
     def add(self, name, parent_group=None):
         """Create a new set object.

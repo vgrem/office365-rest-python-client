@@ -36,8 +36,7 @@ class RegionalSettings(Entity):
     @property
     def collation(self):
         # type: () -> Optional[int]
-        """
-        Specifies the collation order of the site (2), which indicates an additional sorting order that SHOULD
+        """Specifies the collation order of the site (2), which indicates an additional sorting order that SHOULD
         be processed by any back-end database server associated with the site (2). The collation method is an
         implementation-specific capability of the front-end Web server and back-end database server.
         """
@@ -93,7 +92,8 @@ class RegionalSettings(Entity):
     def first_week_of_year(self):
         # type: () -> Optional[int]
         """Specifies the first week of the year used in calendars on the server.
-        Specifies which week of a year is considered the first week."""
+        Specifies which week of a year is considered the first week.
+        """
         return self.properties.get("FirstWeekOfYear", None)
 
     @property
@@ -106,21 +106,24 @@ class RegionalSettings(Entity):
     def is_right_to_left(self):
         # type: () -> Optional[bool]
         """Specifies whether the site uses a right-to-left language. If it uses a right-to-left language,
-        this value MUST be "true". Otherwise, this value MUST be "false"."""
+        this value MUST be "true". Otherwise, this value MUST be "false".
+        """
         return self.properties.get("IsRightToLeft", None)
 
     @property
     def is_ui_right_to_left(self):
         # type: () -> Optional[bool]
         """Specifies whether the UI of the site (2) uses a right-to-left language. If it uses a right-to-left language,
-        this value MUST be "true". Otherwise, this value MUST be "false"."""
+        this value MUST be "true". Otherwise, this value MUST be "false".
+        """
         return self.properties.get("IsUIRightToLeft", None)
 
     @property
     def list_separator(self):
         # type: () -> Optional[str]
         """Specifies the separator that is used for lists on the server. For example, if the separator is ",",
-        items in a list will appear as "1,2,3,4"."""
+        items in a list will appear as "1,2,3,4".
+        """
         return self.properties.get("ListSeparator", None)
 
     @property
@@ -139,7 +142,8 @@ class RegionalSettings(Entity):
     def neg_number_mode(self):
         # type: () -> Optional[int]
         """Specifies the negative number mode that is used for displaying negative numbers in calculated fields
-        based on the locale of the server."""
+        based on the locale of the server.
+        """
         return self.properties.get("NegNumberMode", None)
 
     @property
@@ -164,7 +168,8 @@ class RegionalSettings(Entity):
     def thousand_separator(self):
         # type: () -> Optional[str]
         """Specifies the symbol that is used to separate thousands for numbers on the site. For example,
-        if the symbol is "," the number 123456789 would appear as "123,456,789"."""
+        if the symbol is "," the number 123456789 would appear as "123,456,789".
+        """
         return self.properties.get("ThousandSeparator", None)
 
     @property

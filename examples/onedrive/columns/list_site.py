@@ -1,5 +1,4 @@
-"""
-Retrieves site columns
+"""Retrieves site columns
 
 https://learn.microsoft.com/en-us/graph/api/site-list-columns?view=graph-rest-1.0
 """

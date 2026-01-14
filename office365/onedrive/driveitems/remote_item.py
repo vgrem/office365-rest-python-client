@@ -7,8 +7,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class RemoteItem(ClientValue):
-    """
-    The remoteItem resource indicates that a driveItem references an item that exists in another drive.
+    """The remoteItem resource indicates that a driveItem references an item that exists in another drive.
     This resource provides the unique IDs of the source drive and target item.
 
     DriveItems with a non-null remoteItem facet are resources that are shared, added to the user's OneDrive,
@@ -25,8 +24,7 @@ class RemoteItem(ClientValue):
         folder=Folder(),
         image=Image(),
     ):
-        """
-        :param str _id: Unique identifier for the remote item in its drive. Read-only.
+        """:param str _id: Unique identifier for the remote item in its drive. Read-only.
         :param IdentitySet created_by: Identity of the user, device, and application which created the item. Read-only.
         :param datetime.datetime created_datetime: Date and time of item creation. Read-only.
         :param File file: Indicates that the remote item is a file. Read-only.

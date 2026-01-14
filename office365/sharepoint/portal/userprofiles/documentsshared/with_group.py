@@ -7,14 +7,11 @@ from office365.sharepoint.portal.userprofiles.sharedwithme.document import (
 
 
 class DocumentsSharedWithGroup(Entity):
-    """
-    Provides methods for working with a list that shares documents with a SharePoint Group on the user's personal site.
-    """
+    """Provides methods for working with a list that shares documents with a SharePoint Group on the user's personal site."""
 
     @staticmethod
     def get_shared_with_group_docs(context, group_id=None):
-        """
-        Gets a shared documents for a group.
+        """Gets a shared documents for a group.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str group_id:

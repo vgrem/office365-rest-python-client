@@ -1,6 +1,4 @@
-"""
-Search tenant users.
-"""
+"""Search tenant users."""
 
 import json
 

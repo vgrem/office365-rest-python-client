@@ -13,8 +13,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class OnlineMeeting(OnlineMeetingBase):
-    """
-    Contains information about a meeting, including the URL used to join a meeting,
+    """Contains information about a meeting, including the URL used to join a meeting,
     the attendees list, and the description.
     """
 
@@ -24,7 +23,7 @@ class OnlineMeeting(OnlineMeetingBase):
         With Teams Premium, you can configure a custom lobby room experience for attendees by adding your company
         logo and access the Virtual Appointments usage report for organizational analytics.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = FunctionQuery(self, "getVirtualAppointmentJoinWebUrl", None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -66,9 +65,7 @@ class OnlineMeeting(OnlineMeetingBase):
 
     @property
     def participants(self):
-        """
-        The participants associated with the online meeting. This includes the organizer and the attendees.
-        """
+        """The participants associated with the online meeting. This includes the organizer and the attendees."""
         return self.properties.get("participants", MeetingParticipants())
 
     @property

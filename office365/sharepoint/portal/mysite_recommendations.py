@@ -5,12 +5,12 @@ from office365.sharepoint.entity import Entity
 
 class MySiteRecommendations(Entity):
     """Provides a method to get site and document recommendations for the current user, and methods to follow or
-    stop following a particular item."""
+    stop following a particular item.
+    """
 
     @staticmethod
     def follow_item(context, uri, personal_site_uri, category):
-        """
-        The FollowItem method adds the specified document or site to the list of followed content (as described in
+        """The FollowItem method adds the specified document or site to the list of followed content (as described in
         [MS-SOCCSOM] section 3.1.5.38.2.1.1). FollowItem MUST return TRUE if successful or FALSE if not successful.
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -32,8 +32,7 @@ class MySiteRecommendations(Entity):
 
     @staticmethod
     def stop_following_item(context, uri, personal_site_uri, category):
-        """
-        The StopFollowingItem method removes the specified document or site from list of followed content (as described
+        """The StopFollowingItem method removes the specified document or site from list of followed content (as described
         in [MS-SOCCSOM] section 3.1.5.38.2.1.6). StopFollowingItem MUST return TRUE if successful or FALSE if
         not successful.
 

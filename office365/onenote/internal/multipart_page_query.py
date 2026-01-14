@@ -20,8 +20,7 @@ def _message_to_payload(message):
 
 class OneNotePageCreateQuery(ClientQuery):
     def __init__(self, pages, presentation_file, attachment_files=None):
-        """
-        :type pages: office365.onenote.pages.collection.OnenotePageCollection
+        """:type pages: office365.onenote.pages.collection.OnenotePageCollection
         :type presentation_file: typing.IO
         :type attachment_files: dict or None
         """
@@ -36,10 +35,10 @@ class OneNotePageCreateQuery(ClientQuery):
         # type: (RequestOptions) -> None
         request.method = HttpMethod.Post
         boundary = create_boundary("PageBoundary", True)
-        request.set_header("Content-Type", "multipart/form-data; boundary={0}".format(boundary))
+        request.set_header("Content-Type", f"multipart/form-data; boundary={boundary}")
 
         main_message = Message()
-        main_message.add_header("Content-Type", "multipart/form-data; boundary={0}".format(boundary))
+        main_message.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
         main_message.set_boundary(boundary)
 
         c_type, _enc = get_mime_type(self._presentation.name)
@@ -53,7 +52,7 @@ class OneNotePageCreateQuery(ClientQuery):
             file_message = Message()
             c_type, _enc = get_mime_type(file.name)
             file_message.add_header("Content-Type", c_type)
-            file_message.add_header("Content-Disposition", 'form-data; name="{0}"'.format(name))
+            file_message.add_header("Content-Disposition", f'form-data; name="{name}"')
             file_content = file.read()
             file_message.set_payload(file_content)
             main_message.attach(file_message)

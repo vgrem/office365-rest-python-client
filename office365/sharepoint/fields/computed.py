@@ -4,8 +4,7 @@ from office365.sharepoint.fields.field import Field
 
 
 class FieldComputed(Field):
-    """
-    Specifies a computed field.
+    """Specifies a computed field.
 
     A field that can perform data manipulation and display functions by using the contents of other fields.
     """

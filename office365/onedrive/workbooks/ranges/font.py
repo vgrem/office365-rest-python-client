@@ -40,5 +40,6 @@ class WorkbookRangeFont(Entity):
     def underline(self):
         # type: () -> Optional[bool]
         """The type of underlining applied to the font. The possible values are:
-        None, Single, Double, SingleAccountant, DoubleAccountant."""
+        None, Single, Double, SingleAccountant, DoubleAccountant.
+        """
         return self.properties.get("underline", None)

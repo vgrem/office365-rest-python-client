@@ -10,8 +10,7 @@ class ActivityIdentityItem(ClientValue):
         email=None,
         userPrincipalName=None,
     ):
-        """
-        :param str client_id:
+        """:param str client_id:
         :param str clientIdProvider:
         :param str displayName:
         :param str email:

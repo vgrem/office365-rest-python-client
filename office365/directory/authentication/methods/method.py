@@ -9,11 +9,11 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class AuthenticationMethod(Entity):
     """Represents an authentication method registered to a user. An authentication method is something used by a user
     to authenticate or otherwise prove their identity to the system. Some examples include password,
-    phone (usable via SMS or voice call), FIDO2 security keys, and more."""
+    phone (usable via SMS or voice call), FIDO2 security keys, and more.
+    """
 
     def reset_password(self, new_password, require_change_on_next_signin):
-        """
-        Reset a user's password, represented by a password authentication method object. This can only be done by an
+        """Reset a user's password, represented by a password authentication method object. This can only be done by an
         administrator with appropriate permissions and cannot be performed on a user's own account.
 
         This flow writes the new password to Azure Active Directory and pushes it to on-premises Active Directory

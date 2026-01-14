@@ -8,7 +8,8 @@ class WorkflowServicesManager(Entity):
 
     def get_workflow_instance_service(self):
         """Returns the WorkflowInstanceService (manages and reads workflow instances from the workflow host),
-        which manages workflow instances."""
+        which manages workflow instances.
+        """
         from office365.sharepoint.workflowservices.instance_service import (
             WorkflowInstanceService,
         )
@@ -20,8 +21,7 @@ class WorkflowServicesManager(Entity):
 
     @staticmethod
     def current(context):
-        """
-        Specifies the current instance for the SP.TenantSettings.
+        """Specifies the current instance for the SP.TenantSettings.
 
         :type context: office365.sharepoint.client_context.ClientContext
         """

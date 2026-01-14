@@ -45,7 +45,7 @@ class TestSharePointClient(TestCase):
         self.assertIsNotNone(result.value.WebFullUrl)
 
     def test5_init_from_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_team_site_url)
+        page_url = f"{test_team_site_url}/SitePages/Home.aspx"
         ctx = ClientContext.from_url(page_url).with_credentials(test_user_credentials)
         web = ctx.web.get().execute_query()
         self.assertIsNotNone(web.url)

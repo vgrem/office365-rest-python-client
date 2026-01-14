@@ -17,8 +17,7 @@ class Permission(Entity):
     """The Permission resource provides information about a sharing permission granted for a DriveItem resource."""
 
     def grant(self, recipients, roles):
-        """
-        Grant users access to a link represented by a permission.
+        """Grant users access to a link represented by a permission.
 
         :param list[str] recipients: A collection of recipients who will receive access.
         :param list[str] roles: If the link is an "existing access" link, specifies roles to be granted to the users.
@@ -73,8 +72,7 @@ class Permission(Entity):
 
     @roles.setter
     def roles(self, value):
-        """
-        Sets the type of permission
+        """Sets the type of permission
 
         :type value: list[str]
         """
@@ -96,8 +94,7 @@ class Permission(Entity):
 
     @property
     def inherited_from(self):
-        """
-        If this content type is inherited from another scope (like a site),
+        """If this content type is inherited from another scope (like a site),
         provides a reference to the item where the content type is defined.
         """
         return self.properties.get("inheritedFrom", ItemReference())

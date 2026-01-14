@@ -16,7 +16,7 @@ class TestExcelTables(GraphTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestExcelTables, cls).setUpClass()
-        path = "{0}/../../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../../data/Financial Sample.xlsx"
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.excel_file.resource_path is not None
         cls.worksheet = cls.excel_file.workbook.worksheets["Sheet1"].get().execute_query()

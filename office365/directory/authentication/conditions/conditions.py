@@ -8,8 +8,7 @@ class AuthenticationConditions(ClientValue):
     """The conditions on which an authenticationEventListener should trigger."""
 
     def __init__(self, applications=AuthenticationConditionsApplications()):
-        """
-        :parm AuthenticationConditionsApplications applications: Applications which trigger a custom authentication
+        """:parm AuthenticationConditionsApplications applications: Applications which trigger a custom authentication
         extension.
         """
         self.applications = applications

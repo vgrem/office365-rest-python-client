@@ -17,9 +17,7 @@ class FontPackageCollection(EntityCollection):
         super(FontPackageCollection, self).__init__(context, FontPackage, resource_path)
 
     def get_by_title(self, title):
-        """
-        :param str title: The title of the font package to return.
-        """
+        """:param str title: The title of the font package to return."""
         return FontPackage(
             self.context,
             ServiceOperationPath("GetByTitle", [title], self.resource_path),

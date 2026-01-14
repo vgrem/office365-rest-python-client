@@ -72,68 +72,48 @@ module-root = ""
 [tool.ruff]
 line-length = 121
 format.line-ending = "lf"
-# pyflakes, pycodestyle, isort
-lint.select = [ "E", "F", "I001", "W" ]
+format.docstring-code-format = true
 
+lint.select = [
+  "A",     # flake8-builtins
+  "ASYNC", # flake8-async
+  "B",     # bugbear
+  #"D",     # pydocstyle
+  "E", # pycodestyle
+  "F", # pyflakes
+  "I", # isort
+  #"PGH", # pygrep-hooks
+  "PIE", # flake8-pie
+  "PL",  # pylint
+  #"PTH", # flake8-pathlib
+  "PYI", # flake8-pyi
+  #"RUF", # ruff
+  #"UP",  # pyupgrade
+  "W", # pycodestyle
+]
+# Comments next to codes explain why they are ignored
+# All these are subject to review and possible removal in the future
+lint.ignore = [
+  "B007",    # Loop control var not used in the loop body
+  "B008",    #Do not perform function call in argument defaults; instead, perform the call within the function
+  "B020",    # Loop control variable `self` overrides iterable it iterates
+  "B904",    # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
+  "D203",
+  "D213",
+  "E203",
+  "E501",
+  "PLC0415", # `import` should be at the top-level of a file
+  "PLE0307", # `__str__` does not return `str`
+  "PLR1714", # merge multiple comparisons
+  "PLR2004", # Magic value used in comparison, consider replacing `2` with a constant variable
+  "PLW1641", # Object does not implement `__hash__` method
+  "PLW2901", # `for` loop variable `value` overwritten by assignment target
+]
+# pyflakes, pycodestyle, isort
+#lint.select = [ "E", "F", "I001", "W" ]
 lint.per-file-ignores."examples/**/*.py" = [ "F401" ]
 lint.per-file-ignores."office365/**/*.py" = [ "F401" ]
 lint.per-file-ignores."tests/**/*.py" = [ "F401" ]
 
-[tool.pylint]
-max-line-length = 121
-disable = [
-  "C0103",
-  "C0111",
-  "C0112", # empty-docstring
-  "C0114", # missing-module-docstring
-  "C0201", # consider-iterating-dictionary (Python 2)
-  "C0206", # consider-using-dict-items (Python 2)
-  "C0209", # consider-using f-string
-  "C0302", # too-many-lines
-  "C0303",
-  "C0415", # import-outside-toplevel
-  "E0307", # invalid-str-returned
-  "E0611", # no-name-in-module (!)
-  "E1102", # not-callable
-  "R0205", # useless-object-inheritance (Python 2)
-  "R0401", # cyclic-import (!)
-  "R0801", # duplicate-code
-  "R0902", # too-many-instance-attributes
-  "R0903", # too-few-public-methods
-  "R0903", # too-few-public-methods
-  "R0904", # too-many-public-methods
-  "R0912", # too-many-branches
-  "R0913", # too-many-arguments
-  "R0914", # too-many-locals
-  "R1705", # no-else-return
-  "R1710", # inconsistent-return-statements (!)
-  "R1711", # useless-return
-  "R1714", # consider-using-in
-  "R1720", # no-else-raise
-  "R1721", # unnecessary-comprehension
-  "R1725", # super-with-arguments
-  "R1732", #consider-using-with
-  "W0105", # pointless-string-statement
-  "W0106", # expression-not-assigned
-  "W0107", # unnecessary-pass
-  "W0201", # attribute-defined-outside-init
-  "W0212", # protected-access
-  "W0221", # arguments-differ
-  "W0237", # arguments-renamed
-  "W0246", # useless-parent-delegation
-  "W0404", # reimported
-  "W0611", # unused-imports # typing
-  "W0613", # unused-argument
-  "W0621", # redefine-outer-name
-  "W0707", # raise-missing-from
-  "W1113", # keyword-arg-before-vararg
-  "W3101", # missing-timeout
-  "R0917", # too-many-positional-arguments
-] # all codes: http://pylint-messages.wikidot.com/all-codes
-
-[tool.pylint.FORMAT]
-max-line-length = 121
-ignore-long-lines = '^\s*# (<?https?://\S+>?|type: .+)$'
-
-[tool.pylint.MASTER]
-ignore-patterns = 'office365\todo\tasks\**'
+lint.pylint.max-args = 22
+lint.pylint.max-branches = 16

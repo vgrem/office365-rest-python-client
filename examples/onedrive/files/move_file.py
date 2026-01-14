@@ -1,5 +1,4 @@
-"""
-This example moves an item specified by {server relative path} into a folder specified by
+"""This example moves an item specified by {server relative path} into a folder specified by
 server relative path.
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-move?view=graph-rest-1.0

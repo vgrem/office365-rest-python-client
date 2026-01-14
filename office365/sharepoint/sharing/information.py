@@ -22,9 +22,7 @@ class SharingInformation(Entity):
 
     @property
     def access_request_settings(self):
-        """
-        AccessRequestSettings is an optional property set to retrieve details for pending access requests if present.
-        """
+        """AccessRequestSettings is an optional property set to retrieve details for pending access requests if present."""
         return self.properties.get("accessRequestSettings", AccessRequestSettings())
 
     @property
@@ -40,9 +38,7 @@ class SharingInformation(Entity):
 
     @property
     def permissions_information(self):
-        """
-        The PermissionCollection that are on the list item. It contains a collection of PrincipalInfo and LinkInfo.
-        """
+        """The PermissionCollection that are on the list item. It contains a collection of PrincipalInfo and LinkInfo."""
         return self.properties.get("permissionsInformation", PermissionCollection())
 
     @property
@@ -55,9 +51,9 @@ class SharingInformation(Entity):
 
     @property
     def sharing_abilities(self):
+        """Matrix of possible sharing abilities per sharing type and the state of each capability for the current user
+        on the list item.
         """
-        Matrix of possible sharing abilities per sharing type and the state of each capability for the current user
-        on the list item."""
         return self.properties.get("sharingAbilities", SharingAbilities())
 
     @property

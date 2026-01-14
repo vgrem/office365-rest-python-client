@@ -9,8 +9,7 @@ class OutlookItem(Entity):
     @property
     def change_key(self):
         # type: () -> Optional[str]
-        """
-        Identifies the version of the item. Every time the item is changed, changeKey changes as well.
+        """Identifies the version of the item. Every time the item is changed, changeKey changes as well.
         This allows Exchange to apply changes to the correct version of the object.
         """
         return self.properties.get("ChangeKey", None)
@@ -22,16 +21,14 @@ class OutlookItem(Entity):
 
     @property
     def created_datetime(self):
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
         """
         return self.properties.get("createdDateTime", datetime.datetime.min)
 
     @property
     def last_modified_datetime(self):
-        """
-        The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+        """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
         """
         return self.properties.get("lastModifiedDateTime", datetime.datetime.min)

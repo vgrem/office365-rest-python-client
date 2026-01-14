@@ -10,8 +10,7 @@ from office365.sharepoint.multigeo.user_personal_site_location import (
 
 
 class MultiGeoServices(Entity):
-    """
-    Multi-Geo capabilities in OneDrive and SharePoint enable control of shared resources like SharePoint team sites
+    """Multi-Geo capabilities in OneDrive and SharePoint enable control of shared resources like SharePoint team sites
     and Microsoft 365 Group mailboxes stored at rest in a specified geo location.
 
     Each user, Group mailbox, and SharePoint site have a Preferred Data Location (PDL) which denotes the geo location

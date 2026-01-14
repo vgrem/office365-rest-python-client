@@ -1,5 +1,4 @@
-"""
-Demonstrates how to download a file from SharePoint site
+"""Demonstrates how to download a file from SharePoint site
 Note: this method is considered a deprecated approach nowadays!
 Refer download.py which demonstrates how to download a file
 """
@@ -19,4 +18,4 @@ with open(download_path, "wb") as local_file:
     resp = File.open_binary(ctx, file.properties["ServerRelativeUrl"])
     resp.raise_for_status()
     local_file.write(resp.content)
-    print("[Ok] file has been downloaded into: {0}".format(download_path))
+    print(f"[Ok] file has been downloaded into: {download_path}")

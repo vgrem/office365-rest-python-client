@@ -6,7 +6,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class ConditionalAccessRoot(Entity):
     """The conditionalAccessRoot resource is the entry point for the Conditional Access (CA) object model.
-    It doesn't contain any usable properties."""
+    It doesn't contain any usable properties.
+    """
 
     @property
     def authentication_strength(self):

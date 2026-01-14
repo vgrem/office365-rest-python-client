@@ -6,8 +6,7 @@ from office365.sharepoint.translation.user_resource import UserResource
 
 
 class NavigationNode(Entity):
-    """
-    Represents the URL to a specific navigation node and provides access to properties and methods for
+    """Represents the URL to a specific navigation node and provides access to properties and methods for
     manipulating the ordering of the navigation node in a navigation node collection.
     """
 

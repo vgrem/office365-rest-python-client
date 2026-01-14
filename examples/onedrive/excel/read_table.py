@@ -1,5 +1,4 @@
-"""
-Reads table rows
+"""Reads table rows
 
 https://learn.microsoft.com/en-us/graph/api/resources/excel?view=graph-rest-1.0#get-list-of-table-rows
 """

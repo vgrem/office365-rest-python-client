@@ -50,8 +50,7 @@ class ClientContext(ClientRuntimeContext):
         browser_mode=False,
     ):
         # type: (str, Optional[AuthenticationContext], str, bool, bool) -> None
-        """
-        Instantiates a SharePoint client context
+        """Instantiates a SharePoint client context
 
         :param str base_url: Absolute Web or Site Url
         :param AuthenticationContext or None auth_context: Authentication context
@@ -73,8 +72,7 @@ class ClientContext(ClientRuntimeContext):
     @staticmethod
     def from_url(full_url):
         # type: (str) -> ClientContext
-        """
-        Constructs a client from absolute resource url
+        """Constructs a client from absolute resource url
 
         :param str full_url: Absolute Url to a resource
         """
@@ -98,8 +96,7 @@ class ClientContext(ClientRuntimeContext):
         passphrase=None,
     ):
         # type: (str, str, str, Optional[str], Optional[str], Optional[List[str]], Optional[str]) -> Self
-        """
-        Creates authenticated SharePoint context via certificate credentials
+        """Creates authenticated SharePoint context via certificate credentials
 
         :param str tenant: Tenant name
         :param str or None cert_path: Path to A PEM encoded certificate private key.
@@ -116,8 +113,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_interactive(self, tenant, client_id, scopes=None):
         # type: (str, str, Optional[List[str]]) -> Self
-        """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        """Initializes a client to acquire a token interactively i.e. via a local browser.
 
         Prerequisite: In Azure Portal, configure the Redirect URI of your
         "Mobile and Desktop application" as ``http://localhost``.
@@ -131,8 +127,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_device_flow(self, tenant, client_id, scopes=None):
         # type: (str, str, Optional[List[str]]) -> Self
-        """
-        Initializes a client to acquire a token via device flow auth.
+        """Initializes a client to acquire a token via device flow auth.
 
         :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
         :param str client_id: The OAuth client id of the calling application.
@@ -143,8 +138,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_access_token(self, token_func):
         # type: (Callable[[], TokenResponse]) -> Self
-        """
-        Initializes a client to acquire a token from a callback
+        """Initializes a client to acquire a token from a callback
         :param () -> TokenResponse token_func: A token callback
         """
         self.authentication_context.with_access_token(token_func)
@@ -152,8 +146,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_user_credentials(self, username, password):
         # type: (str, str) -> Self
-        """
-        Initializes a client to acquire a token via user credentials.
+        """Initializes a client to acquire a token via user credentials.
         :param str username: Typically, a UPN in the form of an email address
         :param str password: The password
         """
@@ -162,8 +155,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_client_credentials(self, client_id, client_secret):
         # type: (str, str) -> Self
-        """
-        Initializes a client to acquire a token via client credentials (SharePoint App-Only)
+        """Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
         SharePoint App-Only is the older, but still very relevant, model of setting up app-principals.
         This model works for both SharePoint Online and SharePoint 2013/2016/2019 on-premises
@@ -176,8 +168,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_credentials(self, credentials):
         # type: (UserCredential|ClientCredential) -> Self
-        """
-        Initializes a client to acquire a token via user or client credentials
+        """Initializes a client to acquire a token via user or client credentials
         :type credentials: UserCredential or ClientCredential
         """
         self.authentication_context.with_credentials(credentials)
@@ -185,8 +176,7 @@ class ClientContext(ClientRuntimeContext):
 
     def with_cookies(self, cookie_source, ttl_seconds=None):
         # type: (object, object) -> Self
-        """
-        Initializes authentication using browser-session cookies.
+        """Initializes authentication using browser-session cookies.
 
         :param object cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
         :param object ttl_seconds: Optional max age for cached cookies before reloading from source.
@@ -196,8 +186,7 @@ class ClientContext(ClientRuntimeContext):
 
     def execute_batch(self, items_per_batch=100, success_callback=None):
         # type: (int, Callable[[List[ClientObject|ClientResult]], None]) -> Self
-        """
-        Construct and submit to a server a batch request
+        """Construct and submit to a server a batch request
         :param int items_per_batch: Maximum to be selected for bulk operation
         :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
         """
@@ -232,7 +221,7 @@ class ClientContext(ClientRuntimeContext):
         for e in self.pending_request().beforeExecute:
             if not EventHandler.is_system(e):
                 client.beforeExecute += e
-        request = RequestOptions("{0}/contextInfo".format(self.service_root_url))
+        request = RequestOptions(f"{self.service_root_url}/contextInfo")
         request.method = HttpMethod.Post
         response = client.execute_request_direct(request)
         json_format = JsonLightFormat()
@@ -247,8 +236,7 @@ class ClientContext(ClientRuntimeContext):
 
         def _try_process_if_failed(retry, ex):
             # type: (int, RequestException) -> None
-            """
-            check if request was throttled - http status code 429
+            """Check if request was throttled - http status code 429
             or check is request failed due to server unavailable - http status code 503
             """
             if ex.response.status_code == 429 or ex.response.status_code == 503:
@@ -263,8 +251,7 @@ class ClientContext(ClientRuntimeContext):
         )
 
     def clone(self, url, clear_queries=True):
-        """
-        Creates a clone of ClientContext
+        """Creates a clone of ClientContext
         :param bool clear_queries:
         :param str url: Site Url
         """
@@ -296,8 +283,7 @@ class ClientContext(ClientRuntimeContext):
 
     def create_modern_site(self, title, alias, owner=None):
         # type: (str, str, Optional[str | User]) -> Site
-        """
-        Creates a modern (Communication) site
+        """Creates a modern (Communication) site
         https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest#create-a-modern-site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
@@ -305,7 +291,7 @@ class ClientContext(ClientRuntimeContext):
         :param str or office365.sharepoint.principal.user.User owner: Site owner
         """
         return_type = Site(self)
-        site_url = "{base_url}/sites/{alias}".format(base_url=get_absolute_url(self.base_url), alias=alias)
+        site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
         def _after_site_create(result):
             # type: (ClientResult[SPSiteCreationResponse]) -> None
@@ -337,14 +323,13 @@ class ClientContext(ClientRuntimeContext):
         return return_type
 
     def create_communication_site(self, alias, title):
-        """
-        Creates a modern SharePoint Communication site
+        """Creates a modern SharePoint Communication site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
         :param str title: Site title
         """
         return_type = Site(self)
-        site_url = "{base_url}/sites/{alias}".format(base_url=get_absolute_url(self.base_url), alias=alias)
+        site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
         def _after_site_created(result):
             # type: (ClientResult[CommunicationSiteCreationResponse]) -> None
@@ -365,8 +350,7 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def web(self):
-        """
-        A group of related webpages that is hosted by a server on the World Wide Web or an intranet.
+        """A group of related webpages that is hosted by a server on the World Wide Web or an intranet.
         Each website has its own entry points, metadata, administration settings, and workflows.
         """
         if not self._web:
@@ -375,9 +359,7 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def site(self):
-        """
-        Represents a collection of sites in a Web application, including a top-level website and all its sub sites.
-        """
+        """Represents a collection of sites in a Web application, including a top-level website and all its sub sites."""
         if not self._site:
             self._site = Site(self)
         return self._site
@@ -401,7 +383,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def brand_center(self):
         """Alias to BrandCenter"""
-
         from office365.sharepoint.brandcenter.brand_center import BrandCenter
 
         return BrandCenter(self)
@@ -409,7 +390,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def client_people_picker(self):
         """Query principals service alias"""
-
         from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
             ClientPeoplePickerWebServiceInterface,
         )
@@ -419,7 +399,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def component_context_info(self):
         """ComponentContextInfo alias"""
-
         from office365.sharepoint.clientsidecomponent.component_context_info import (
             ComponentContextInfo,
         )
@@ -498,7 +477,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def font_packages(self):
         """Alias to FontPackageCollection"""
-
         from office365.sharepoint.fontpackages.collection import FontPackageCollection
 
         return FontPackageCollection(self, ResourcePath("fontpackages"))
@@ -506,7 +484,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def site_font_packages(self):
         """Alias to FontPackageCollection"""
-
         from office365.sharepoint.fontpackages.collection import FontPackageCollection
 
         return FontPackageCollection(self, ResourcePath("sitefontpackages"))
@@ -558,7 +535,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def document_crawl_log(self):
         """Alias to DocumentCrawlLog"""
-
         from office365.sharepoint.search.administration.document_crawl_log import (
             DocumentCrawlLog,
         )
@@ -643,7 +619,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def site_manager_svc(self):
         """Alias to SiteManagerService."""
-
         from office365.sharepoint.sites.manager.service import SiteManagerService
 
         return SiteManagerService(self)
@@ -674,7 +649,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def people_picker(self):
         """Query principals service alias"""
-
         from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
             PeoplePickerWebServiceInterface,
         )
@@ -693,7 +667,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def server_settings(self):
         """Provides methods for obtaining server properties"""
-
         from office365.sharepoint.server_settings import ServerSettings
 
         return ServerSettings(self)
@@ -752,7 +725,6 @@ class ClientContext(ClientRuntimeContext):
     @property
     def workflow_deployment_service(self):
         """Alias to WorkflowServicesManager"""
-
         from office365.sharepoint.workflowservices.deployment_service import (
             WorkflowDeploymentService,
         )
@@ -795,9 +767,7 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def is_tenant(self):
-        """
-        Determines whether the current site is a tenant administration site
-        """
+        """Determines whether the current site is a tenant administration site"""
         return self.tenant_url == self.base_url
 
     @property
@@ -811,4 +781,4 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def service_root_url(self):
-        return "{0}/_api".format(self.base_url)
+        return f"{self.base_url}/_api"

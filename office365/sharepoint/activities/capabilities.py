@@ -8,8 +8,7 @@ class ActivityCapabilities(ClientValue):
         client_activities_notification_enabled=None,
         enabled=None,
     ):
-        """
-        :param bool client_activities_enabled:
+        """:param bool client_activities_enabled:
         :param bool client_activities_notification_enabled:
         :param bool enabled:
         """

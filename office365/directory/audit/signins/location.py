@@ -12,8 +12,7 @@ class SignInLocation(ClientValue):
         geo_coordinates=GeoCoordinates(),
         state=None,
     ):
-        """
-        :param str city: Provides the city where the sign-in originated. This is calculated using latitude/longitude
+        """:param str city: Provides the city where the sign-in originated. This is calculated using latitude/longitude
             information from the sign-in activity.
         :param str country_or_region: Provides the country code info (2 letter code) where the sign-in originated.
             This is calculated using latitude/longitude information from the sign-in activity.

@@ -5,8 +5,7 @@ class SPContainerProperties(ClientValue):
     """"""
 
     def __init__(self, AllowEditing=None, AuthenticationContextName=None):
-        """
-        :param bool AllowEditing:
+        """:param bool AllowEditing:
         :param str AuthenticationContextName:
         """
         self.AllowEditing = AllowEditing

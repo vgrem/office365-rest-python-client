@@ -7,8 +7,7 @@ from tests import test_client_credentials, test_team_site_url
 
 
 def export_to_csv(path, list_items):
-    """
-    :param str path: export path
+    """:param str path: export path
     :param office365.sharepoint.listitems.collection.ListItemCollection list_items: List items
     """
     with open(path, "w", encoding="utf-8") as fh:
@@ -26,4 +25,4 @@ list_view = ctx.web.lists.get_by_title(list_title).views.get_by_title(view_title
 export_items = list_view.get_items().execute_query()
 export_path = os.path.join(tempfile.mkdtemp(), "DocumentsMetadata.csv")
 export_to_csv(export_path, export_items)
-print("List view has been exported into '{0}' file".format(export_path))
+print(f"List view has been exported into '{export_path}' file")

@@ -11,7 +11,8 @@ class StandardWebPart(WebPart):
     def container_text_web_part_id(self):
         # type: () -> Optional[str]
         """The instance identifier of the container text webPart. It only works for inline standard webPart in
-        rich text webParts."""
+        rich text webParts.
+        """
         return self.properties.get("containerTextWebPartId", None)
 
     @property

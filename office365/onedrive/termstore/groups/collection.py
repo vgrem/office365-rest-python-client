@@ -7,8 +7,7 @@ class GroupCollection(EntityCollection[Group]):
         super(GroupCollection, self).__init__(context, Group, resource_path)
 
     def add(self, display_name):
-        """
-        Create a new group object in a term store.
+        """Create a new group object in a term store.
         :param str display_name: Name of the group to be created.
         """
         props = {"displayName": display_name}
@@ -17,4 +16,4 @@ class GroupCollection(EntityCollection[Group]):
     def get_by_name(self, name):
         # type: (str) -> Group
         """Returns the group with the specified name."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")

@@ -2,8 +2,7 @@ from office365.entity import Entity
 
 
 class IntelligenceProfile(Entity):
-    """
-    The Microsoft Defender Threat Intelligence Profiles (Intel Profiles) API provides the most up-to-date threat actor
+    """The Microsoft Defender Threat Intelligence Profiles (Intel Profiles) API provides the most up-to-date threat actor
     infrastructure visibility in the industry today, enabling threat intelligence and security operations (SecOps)
     teams to streamline their advanced threat hunting and analysis workflows. These teams have historically
     struggled to obtain visibility into the full extent of nation state and cybercriminal adversary infrastructures,

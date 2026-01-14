@@ -6,7 +6,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class PlannerUser(Entity):
     """The plannerUser resource provide access to Planner resources for a user.
-    It doesn't contain any usable properties."""
+    It doesn't contain any usable properties.
+    """
 
     @property
     def plans(self):

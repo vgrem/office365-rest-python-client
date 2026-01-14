@@ -1,5 +1,4 @@
-"""
-Connect via national clouds (Microsoft 365 GCC High environment)
+"""Connect via national clouds (Microsoft 365 GCC High environment)
 
 Microsoft Graph for US Government L4: https://graph.microsoft.us
 """

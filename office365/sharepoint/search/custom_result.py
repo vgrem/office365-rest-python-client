@@ -2,9 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomResult(ClientValue):
-    """
-    This contains a list of query results, all of which are of the type specified in TableType.
-    """
+    """This contains a list of query results, all of which are of the type specified in TableType."""
 
     def __init__(
         self,
@@ -13,8 +11,7 @@ class CustomResult(ClientValue):
         result_title=None,
         properties=None,
     ):
-        """
-        :param str group_template_id: Specifies the identifier of the layout template that specifies how the results
+        """:param str group_template_id: Specifies the identifier of the layout template that specifies how the results
             returned will be arranged.
         :param str item_template_id: Specifies the identifier of the layout template that specifies how the result
             item will be displayed.

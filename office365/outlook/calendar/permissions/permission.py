@@ -6,8 +6,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class CalendarPermission(Entity):
-    """
-    The permissions of a user with whom the calendar has been shared or delegated in an Outlook client.
+    """The permissions of a user with whom the calendar has been shared or delegated in an Outlook client.
 
     Get, update, and delete of calendar permissions is supported on behalf of only the calendar owner.
 
@@ -22,8 +21,7 @@ class CalendarPermission(Entity):
 
     @property
     def allowed_roles(self):
-        """
-        List of allowed sharing or delegating permission levels for the calendar.
+        """List of allowed sharing or delegating permission levels for the calendar.
         Possible values are: none, freeBusyRead, limitedRead, read, write, delegateWithoutPrivateEventAccess,
         delegateWithPrivateEventAccess, custom.
         """
@@ -31,8 +29,7 @@ class CalendarPermission(Entity):
 
     @property
     def email_address(self):
-        """
-        Represents a sharee or delegate who has access to the calendar.
+        """Represents a sharee or delegate who has access to the calendar.
         For the "My Organization" sharee, the address property is null. Read-only.
         """
         return self.properties.get("emailAddress", EmailAddress())
@@ -40,16 +37,13 @@ class CalendarPermission(Entity):
     @property
     def is_inside_organization(self):
         # type: () -> Optional[bool]
-        """
-        True if the user in context (sharee or delegate) is inside the same organization as the calendar owner
-        """
+        """True if the user in context (sharee or delegate) is inside the same organization as the calendar owner"""
         return self.properties.get("isInsideOrganization", None)
 
     @property
     def is_removable(self):
         # type: () -> Optional[bool]
-        """
-        True if the user can be removed from the list of sharees or delegates for the specified calendar,
+        """True if the user can be removed from the list of sharees or delegates for the specified calendar,
         false otherwise. The "My organization" user determines the permissions other people within your organization
         have to the given calendar. You cannot remove "My organization" as a sharee to a calendar.
         """

@@ -1,5 +1,4 @@
-"""
-Assign manager
+"""Assign manager
 
 https://learn.microsoft.com/en-us/graph/api/user-post-manager?view=graph-rest-1.0
 """

@@ -12,8 +12,7 @@ class OutlookGeoCoordinates(ClientValue):
         latitude=None,
         longitude=None,
     ):
-        """
-        :param float accuracy: The accuracy of the latitude and longitude. As an example, the accuracy can be measured
+        """:param float accuracy: The accuracy of the latitude and longitude. As an example, the accuracy can be measured
             in meters, such as the latitude and longitude are accurate to within 50 meters.
         :param float altitude: The altitude of the location.
         :param float altitude_accuracy: The accuracy of the altitude.

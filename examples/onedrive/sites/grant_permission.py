@@ -1,5 +1,4 @@
-"""
-Grants permissions on a site.
+"""Grants permissions on a site.
 
 https://learn.microsoft.com/en-us/graph/api/site-post-permissions?view=graph-rest-1.0
 """

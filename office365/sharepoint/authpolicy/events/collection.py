@@ -10,8 +10,7 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
         super(SPAuthEventCollection, self).__init__(context, SPAuthEvent, resource_path, parent)
 
     def role_assignment_ms_graph_notify(self, tenant, action, type_, resource_payload, id_, container_id):
-        """
-        :param str tenant:
+        """:param str tenant:
         :param str action:
         :param str type_:
         :param RoleAssignmentResourcePayload resource_payload:

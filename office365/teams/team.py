@@ -23,15 +23,14 @@ from office365.teams.template import TeamsTemplate
 
 class Team(Entity):
     """A team in Microsoft Teams is a collection of channel objects. A channel represents a topic, and therefore a
-    logical isolation of discussion, within a team."""
+    logical isolation of discussion, within a team.
+    """
 
     def __str__(self):
         return self.display_name
 
     def execute_query_and_wait(self):
-        """
-        Submit request(s) to the server and waits until operation is completed
-        """
+        """Submit request(s) to the server and waits until operation is completed"""
 
         def _loaded():
             self.operations[0].poll_for_status(status_type="succeeded")
@@ -59,7 +58,8 @@ class Team(Entity):
     @property
     def member_settings(self):
         """Settings to configure whether members can perform certain actions, for example,
-        create channels and add bots, in the team."""
+        create channels and add bots, in the team.
+        """
         return self.properties.get("memberSettings", TeamMemberSettings())
 
     @property
@@ -108,7 +108,8 @@ class Team(Entity):
         # type: () -> Optional[str]
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when
         you right-click a team in the Microsoft Teams client and select Get link to team. This URL should be treated
-        as an opaque blob, and not parsed."""
+        as an opaque blob, and not parsed.
+        """
         return self.properties.get("webUrl", None)
 
     @property
@@ -119,9 +120,7 @@ class Team(Entity):
     @property
     def all_channels(self):
         # type: () -> ChannelCollection
-        """
-        List of channels either hosted in or shared with the team (incoming channels).
-        """
+        """List of channels either hosted in or shared with the team (incoming channels)."""
         return self.properties.get(
             "allChannels",
             ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path)),
@@ -198,9 +197,7 @@ class Team(Entity):
     @property
     def permission_grants(self):
         # type: () -> EntityCollection[ResourceSpecificPermissionGrant]
-        """
-        List all resource-specific permission grants
-        """
+        """List all resource-specific permission grants"""
         return self.properties.setdefault(
             "permissionGrants",
             EntityCollection(
@@ -240,14 +237,16 @@ class Team(Entity):
     def archive(self):
         """Archive the specified team. When a team is archived, users can no longer send or like messages on any
         channel in the team, edit the team's name, description, or other settings, or in general make most changes to
-        the team. Membership changes to the team continue to be allowed."""
+        the team. Membership changes to the team continue to be allowed.
+        """
         qry = ServiceOperationQuery(self, "archive")
         self.context.add_query(qry)
         return self
 
     def unarchive(self):
         """Restore an archived team. This restores users' ability to send messages and edit the team, abiding by
-        tenant and team settings."""
+        tenant and team settings.
+        """
         qry = ServiceOperationQuery(self, "unarchive")
         self.context.add_query(qry)
         return self
@@ -267,8 +266,7 @@ class Team(Entity):
         template_parameters,
         recipient,
     ):
-        """
-        Send an activity feed notification in the scope of a team.
+        """Send an activity feed notification in the scope of a team.
         For more details about sending notifications and the requirements for doing so,
         see sending Teams activity notifications:
         https://docs.microsoft.com/en-us/graph/teams-send-activityfeednotifications

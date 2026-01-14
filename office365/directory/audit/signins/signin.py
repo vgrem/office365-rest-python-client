@@ -40,8 +40,7 @@ class SignIn(Entity):
     @property
     def client_app_used(self):
         # type: () -> Optional[str]
-        """
-        Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern
+        """Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern
         clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients.
         """
         return self.properties.get("clientAppUsed", None)
@@ -49,9 +48,7 @@ class SignIn(Entity):
     @property
     def correlation_id(self):
         # type: () -> Optional[str]
-        """
-        The request ID sent from the client when the sign-in is initiated; used to troubleshoot sign-in activity.
-        """
+        """The request ID sent from the client when the sign-in is initiated; used to troubleshoot sign-in activity."""
         return self.properties.get("correlationId", None)
 
     @property
@@ -80,8 +77,7 @@ class SignIn(Entity):
 
     @property
     def location(self):
-        """
-        Provides the city, state, and country code where the sign-in originated.
+        """Provides the city, state, and country code where the sign-in originated.
         Supports $filter (eq and startsWith operators only) on city, state, and countryOrRegion properties.
         """
         return self.properties.get("status", SignInLocation())
@@ -95,39 +91,31 @@ class SignIn(Entity):
     @property
     def resource_id(self):
         # type: () -> Optional[str]
-        """
-        ID of the resource that the user signed into."""
+        """ID of the resource that the user signed into."""
         return self.properties.get("resourceId", None)
 
     @property
     def risk_detail(self):
         # type: () -> Optional[str]
-        """
-        Provides the 'reason' behind a specific state of a risky user, sign-in or a risk event.
-        """
+        """Provides the 'reason' behind a specific state of a risky user, sign-in or a risk event."""
         return self.properties.get("riskDetail", None)
 
     @property
     def user_id(self):
         # type: () -> Optional[str]
-        """
-        ID of the user that initiated the sign-in. Supports $filter (eq operator only).
-        """
+        """ID of the user that initiated the sign-in. Supports $filter (eq operator only)."""
         return self.properties.get("userId", None)
 
     @property
     def user_principal_name(self):
         # type: () -> Optional[str]
-        """
-        User principal name of the user that initiated the sign-in. Supports $filter (eq and startsWith operators only).
-        """
+        """User principal name of the user that initiated the sign-in. Supports $filter (eq and startsWith operators only)."""
         return self.properties.get("userPrincipalName", None)
 
     @property
     def status(self):
         # type: () -> Optional[SignInStatus]
-        """
-        Sign-in status. Includes the error code and description of the error (in case of a sign-in failure).
+        """Sign-in status. Includes the error code and description of the error (in case of a sign-in failure).
         Supports $filter (eq operator only) on errorCode property.
         """
         return self.properties.get("status", SignInStatus())

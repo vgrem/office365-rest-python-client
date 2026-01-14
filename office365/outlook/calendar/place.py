@@ -6,7 +6,8 @@ from office365.outlook.mail.physical_address import PhysicalAddress
 
 class Place(Entity):
     """Represents basic location attributes such as name, physical address, and geographic coordinates.
-    This is the base type for richer location types such as room and roomList."""
+    This is the base type for richer location types such as room and roomList.
+    """
 
     @property
     def display_name(self):

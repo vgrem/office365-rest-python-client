@@ -11,8 +11,7 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
         super(ServicePrincipalCollection, self).__init__(context, ServicePrincipal, resource_path)
 
     def add(self, app_id):
-        """
-        Create a new servicePrincipal object.
+        """Create a new servicePrincipal object.
         :param str app_id: The unique identifier for the associated application
         """
         return super(ServicePrincipalCollection, self).add(appId=app_id)
@@ -39,4 +38,4 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
     def get_by_name(self, name):
         # type: (str) -> ServicePrincipal
         """Retrieves the service principal using displayName."""
-        return self.single("displayName eq '{0}'".format(name))
+        return self.single(f"displayName eq '{name}'")

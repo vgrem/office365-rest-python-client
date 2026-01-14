@@ -61,7 +61,8 @@ from office365.subscriptions.collection import SubscriptionCollection
 
 class DriveItem(BaseItem):
     """The driveItem resource represents a file, folder, or other item stored in a drive. All file system objects in
-    OneDrive and SharePoint are returned as driveItem resources"""
+    OneDrive and SharePoint are returned as driveItem resources
+    """
 
     def get_files(self, recursive=False, page_size=None):
         # type: (bool, Optional[int]) -> EntityCollection["DriveItem"]
@@ -123,8 +124,7 @@ class DriveItem(BaseItem):
 
     def create_powerpoint(self, name):
         # type: (str) -> "DriveItem"
-        """
-        Creates a PowerPoint file
+        """Creates a PowerPoint file
         :param str name: File name
         """
         return self.upload(name, None)
@@ -139,8 +139,7 @@ class DriveItem(BaseItem):
         retain_inherited_permissions=None,
     ):
         # type: (str, Optional[str], Optional[datetime], Optional[str], Optional[str], Optional[bool]) -> Permission
-        """
-        The createLink action will create a new sharing link if the specified link type doesn't already exist
+        """The createLink action will create a new sharing link if the specified link type doesn't already exist
         for the calling application. If a sharing link of the specified type already exists for the app,
         the existing sharing link will be returned.
 
@@ -181,8 +180,7 @@ class DriveItem(BaseItem):
 
     def extract_sensitivity_labels(self):
         # type: () -> ClientResult[ExtractSensitivityLabelsResult]
-        """
-        Extract one or more sensitivity labels assigned to a drive item and update the metadata of a drive
+        """Extract one or more sensitivity labels assigned to a drive item and update the metadata of a drive
         item with the latest details of the assigned label. In case of failure to extract the sensitivity labels
         of a file, an extraction error will be thrown with the applicable error code and message.
         """
@@ -207,8 +205,7 @@ class DriveItem(BaseItem):
 
     def checkout(self):
         # type: () -> Self
-        """
-        Check out a driveItem resource to prevent others from editing the document, and prevent your changes
+        """Check out a driveItem resource to prevent others from editing the document, and prevent your changes
         from being visible until the documented is checked in.
         """
         qry = ServiceOperationQuery(self, "checkout")
@@ -217,8 +214,7 @@ class DriveItem(BaseItem):
 
     def checkin(self, comment, checkin_as=None):
         # type: (str, Optional[str]) -> Self
-        """
-        Check in a checked out driveItem resource, which makes the version of the document available to others.
+        """Check in a checked out driveItem resource, which makes the version of the document available to others.
 
         :param str comment: comment to the new version of the file
         :param str checkin_as: The status of the document after the check-in operation is complete.
@@ -230,8 +226,7 @@ class DriveItem(BaseItem):
 
     def resumable_upload(self, source_path, chunk_size=2000000, chunk_uploaded=None):
         # type: (str, int, Optional[Callable[[int], None]]) -> "DriveItem"
-        """
-        Create an upload session to allow your app to upload files up to the maximum file size.
+        """Create an upload session to allow your app to upload files up to the maximum file size.
         An upload session allows your app to upload ranges of the file in sequential API requests,
         which allows the transfer to be resumed if a connection is dropped while the upload is in progress.
 
@@ -325,8 +320,7 @@ class DriveItem(BaseItem):
 
     def get_content(self, format_name=None):
         # type: (Optional[str]) -> ClientResult[AnyStr]
-        """
-        Download the contents of the primary stream (file) of a DriveItem.
+        """Download the contents of the primary stream (file) of a DriveItem.
         Only driveItems with the file property can be downloaded.
 
         :type format_name: str or None
@@ -334,15 +328,14 @@ class DriveItem(BaseItem):
         return_type = ClientResult(self.context)
         action_name = "content"
         if format_name is not None:
-            action_name = action_name + r"?format={0}".format(format_name)
+            action_name = action_name + rf"?format={format_name}"
         qry = FunctionQuery(self, action_name, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def download(self, file_object):
         # type: (IO) -> Self
-        """
-        Download the contents of the primary stream (file) of a DriveItem. Only driveItems with the file property
+        """Download the contents of the primary stream (file) of a DriveItem. Only driveItems with the file property
         can be downloaded
         """
 
@@ -355,9 +348,7 @@ class DriveItem(BaseItem):
 
     def download_folder(self, download_file, after_file_downloaded=None, recursive=True):
         # type: (IO, Callable[["DriveItem"], None], bool) -> "DriveItem"
-        """
-        Download the folder content
-        """
+        """Download the folder content"""
         import zipfile
 
         def _after_file_downloaded(drive_item, base_path, result):
@@ -373,13 +364,12 @@ class DriveItem(BaseItem):
             for drive_item in parent_item.children:
                 if drive_item.is_file:
                     drive_item.get_content().after_execute(partial(_after_file_downloaded, drive_item, base_path))
-                else:
-                    if recursive:
-                        if base_path is None:
-                            next_base_path = str(drive_item.name)
-                        else:
-                            next_base_path = "/".join([base_path, drive_item.name])
-                        _download_folder(drive_item, next_base_path)
+                elif recursive:
+                    if base_path is None:
+                        next_base_path = str(drive_item.name)
+                    else:
+                        next_base_path = "/".join([base_path, drive_item.name])
+                    _download_folder(drive_item, next_base_path)
 
         def _download_folder(drive_item, prev_result=None):
             # type: ("DriveItem", str) -> None
@@ -393,8 +383,7 @@ class DriveItem(BaseItem):
 
     def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024):
         # type: (IO, Callable[[int], None] or None, Optional[int]) -> Self
-        """
-        By default, file gets downloaded immediately.
+        """By default, file gets downloaded immediately.
         For a large files reading the whole content of a file at once into memory should be avoided.
 
         This method allows to stream content into the file
@@ -460,14 +449,14 @@ class DriveItem(BaseItem):
 
         Returns location for details about how to monitor the progress of the copy, upon accepting the request.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
 
         def _copy(parent_reference):
             # type: (ItemReference) -> None
 
             def _create_request(request):
                 # type: (RequestOptions) -> None
-                request.url += "?@microsoft.graph.conflictBehavior={0}".format(conflict_behavior)
+                request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior}"
 
             def _process_response(resp):
                 # type: (requests.Response) -> None
@@ -503,7 +492,6 @@ class DriveItem(BaseItem):
              parent item the move will be created in.
         :param str conflict_behavior: query parameter to customize the behavior when a conflict occurs.
         """
-
         return_type = DriveItem(self.context)
         self.children.add_child(return_type)
 
@@ -514,7 +502,7 @@ class DriveItem(BaseItem):
             def _construct_request(request):
                 # type: (RequestOptions) -> None
                 request.method = HttpMethod.Patch
-                request.url += "?@microsoft.graph.conflictBehavior={0}".format(conflict_behavior)
+                request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior}"
 
             qry = ServiceOperationQuery(self, "", None, payload, None, return_type)
             self.context.add_query(qry).before_execute(_construct_request)
@@ -560,8 +548,7 @@ class DriveItem(BaseItem):
         retain_inherited_permissions=None,
     ):
         # type: (list[str], str, Optional[bool], Optional[bool], Optional[list[str]], Optional[datetime], Optional[str], Optional[bool]) -> PermissionCollection
-        """
-        Sends a sharing invitation for a driveItem. A sharing invitation provides permissions to the recipients
+        """Sends a sharing invitation for a driveItem. A sharing invitation provides permissions to the recipients
         and optionally sends them an email with a sharing link.
 
         :param list[str] recipients: A collection of recipients who will receive access and the sharing
@@ -599,8 +586,7 @@ class DriveItem(BaseItem):
         return return_type
 
     def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
-        """
-        Get a collection of itemActivityStats resources for the activities that took place on this resource
+        """Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
         :param datetime.datetime start_dt: The start time over which to aggregate activities.
@@ -620,8 +606,7 @@ class DriveItem(BaseItem):
         return return_type
 
     def permanent_delete(self):
-        """
-        Permanently delete a driveItem.
+        """Permanently delete a driveItem.
         Note that if you delete items using this method, they will be permanently removed and won't be sent to the
         recycle bin. Therefore, they cannot be restored afterward. For non-permanent delete, use delete_object()
         """
@@ -631,8 +616,7 @@ class DriveItem(BaseItem):
 
     def restore(self, parent_reference=None, name=None):
         # type: (Optional[ItemReference], str) -> "DriveItem"
-        """
-        Restore a driveItem that has been deleted and is currently in the recycle bin.
+        """Restore a driveItem that has been deleted and is currently in the recycle bin.
         NOTE: This functionality is currently only available for OneDrive Personal.
 
         :param str name: Optional. The new name for the restored item. If this isn't provided,
@@ -649,8 +633,7 @@ class DriveItem(BaseItem):
 
     def preview(self, page, zoom=None):
         # type: (str or int, int or None) -> ClientResult[ItemPreviewInfo]
-        """
-        This action allows you to obtain a short-lived embeddable URL for an item in order
+        """This action allows you to obtain a short-lived embeddable URL for an item in order
         to render a temporary preview.
 
         :param str or int page: Optional. Page number of document to start at, if applicable.
@@ -681,9 +664,7 @@ class DriveItem(BaseItem):
     @property
     def image(self):
         # type: () -> Image
-        """
-        Image metadata, if the item is an image. Read-only.
-        """
+        """Image metadata, if the item is an image. Read-only."""
         return self.properties.get("image", Image())
 
     @property
@@ -732,7 +713,8 @@ class DriveItem(BaseItem):
     def shared(self):
         # type: () -> Shared
         """Indicates that the item has been shared with others and provides information about the shared state
-        of the item. Read-only."""
+        of the item. Read-only.
+        """
         return self.properties.get("shared", Shared())
 
     @property
@@ -774,7 +756,8 @@ class DriveItem(BaseItem):
     def pending_operations(self):
         # type: () -> PendingOperations
         """If present, indicates that one or more operations that might affect the state of the driveItem are pending
-        completion. Read-only."""
+        completion. Read-only.
+        """
         return self.properties.get("pendingOperations", PendingOperations())
 
     @property
@@ -819,7 +802,8 @@ class DriveItem(BaseItem):
     def versions(self):
         # type: () -> EntityCollection[DriveItemVersion]
         """The list of previous versions of the item. For more info, see getting previous versions.
-        Read-only. Nullable."""
+        Read-only. Nullable.
+        """
         return self.properties.get(
             "versions",
             EntityCollection(
@@ -833,7 +817,8 @@ class DriveItem(BaseItem):
     def thumbnails(self):
         # type: () -> EntityCollection[ThumbnailSet]
         """Collection containing ThumbnailSet objects associated with the item. For more info, see getting thumbnails.
-        Read-only. Nullable."""
+        Read-only. Nullable.
+        """
         return self.properties.get(
             "thumbnails",
             EntityCollection(

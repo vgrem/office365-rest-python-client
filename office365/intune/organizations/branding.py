@@ -4,8 +4,7 @@ from office365.intune.organizations.branding_properties import (
 
 
 class OrganizationalBranding(OrganizationalBrandingProperties):
-    """
-    Contains details about the organization's default branding. Inherits from organizationalBrandingProperties.
+    """Contains details about the organization's default branding. Inherits from organizationalBrandingProperties.
 
     Organizations can customize their Azure Active Directory (Azure AD) sign-in pages which appear when users sign
     in to their organization's tenant-specific apps, or when Azure AD identifies the user's tenant from their username.

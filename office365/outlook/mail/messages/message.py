@@ -35,7 +35,7 @@ class Message(OutlookItem):
         prop_type = "String"
         prop_value = [
             {
-                "id": "{0} {{{1}}} Name {2}".format(prop_type, prop_id, name),
+                "id": f"{prop_type} {{{prop_id}}} Name {name}",
                 "value": value,
             }
         ]
@@ -44,8 +44,7 @@ class Message(OutlookItem):
 
     def create_forward(self, to_recipients=None, message=None, comment=None):
         # type: (List[Recipient], "Message", str) -> Message
-        """
-        Create a draft to forward an existing message, in either JSON or MIME format.
+        """Create a draft to forward an existing message, in either JSON or MIME format.
 
         :param list[Recipient] to_recipients:
         :param Message message:
@@ -81,8 +80,7 @@ class Message(OutlookItem):
         return return_type
 
     def add_file_attachment(self, name, content=None, content_type=None, base64_content=None):
-        """
-        Attach a file to message
+        """Attach a file to message
 
         :param str name: The name representing the text that is displayed below the icon representing the
              embedded attachment
@@ -96,8 +94,7 @@ class Message(OutlookItem):
         return self
 
     def upload_attachment(self, file_path, chunk_uploaded=None):
-        """
-        This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
+        """This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
         if a file that's smaller than 3 MB, then add_file_attachment method is utilized
 
         :param str file_path:
@@ -118,8 +115,7 @@ class Message(OutlookItem):
         return self
 
     def send(self):
-        """
-        Send a message in the draft folder. The draft message can be a new message draft, reply draft, reply-all draft,
+        """Send a message in the draft folder. The draft message can be a new message draft, reply draft, reply-all draft,
         or a forward draft. The message is then saved in the Sent Items folder.
         """
         qry = ServiceOperationQuery(self, "send")
@@ -145,8 +141,7 @@ class Message(OutlookItem):
         return self
 
     def create_reply(self, comment=None):
-        """
-        Create a draft to reply to the sender of a message in either JSON or MIME format.
+        """Create a draft to reply to the sender of a message in either JSON or MIME format.
 
         :param str comment:
         """
@@ -157,8 +152,7 @@ class Message(OutlookItem):
         return self
 
     def create_reply_all(self):
-        """
-        Create a draft to reply to the sender and all the recipients of the specified message.
+        """Create a draft to reply to the sender and all the recipients of the specified message.
         You can then update the draft to add reply content to the body or change other message properties, or,
         simply send the draft.
         """
@@ -167,8 +161,7 @@ class Message(OutlookItem):
         return self
 
     def copy(self, destination):
-        """
-        Copy a message to another folder within the specified user's mailbox.
+        """Copy a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder.
 
         :param str or MailFolder destination: The destination folder ID, or a well-known folder name.
@@ -193,8 +186,7 @@ class Message(OutlookItem):
         return self
 
     def move(self, destination):
-        """
-        Move a message to another folder within the specified user's mailbox.
+        """Move a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder and removes the original message.
 
         :param str or MailFolder destination: The destination folder ID, or a well-known folder name.
@@ -219,8 +211,7 @@ class Message(OutlookItem):
         return self
 
     def forward(self, to_recipients, comment=""):
-        """
-        Forward a message. The message is saved in the Sent Items folder.
+        """Forward a message. The message is saved in the Sent Items folder.
         :param list[str] to_recipients: The list of recipients.
         :param str comment: A comment to include. Can be an empty string.
         """
@@ -235,8 +226,7 @@ class Message(OutlookItem):
     @property
     def has_attachments(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the message has attachments. This property doesn't include inline attachments,
+        """Indicates whether the message has attachments. This property doesn't include inline attachments,
         so if a message contains only inline attachments, this property is false. To verify the existence
         of inline attachments, parse the body property to look for a src attribute,
         such as <IMG src="cid:image001.jpg@01D26CD8.6C05F070">.
@@ -306,15 +296,12 @@ class Message(OutlookItem):
 
     @property
     def flag(self):
-        """
-        The flag value that indicates the status, start date, due date, or completion date for the message.
-        """
+        """The flag value that indicates the status, start date, due date, or completion date for the message."""
         return self.properties.get("flag", FollowupFlag())
 
     @property
     def sent_from(self):
-        """
-        The owner of the mailbox from which the message is sent. In most cases, this value is the same as the sender
+        """The owner of the mailbox from which the message is sent. In most cases, this value is the same as the sender
         property, except for sharing or delegation scenarios. The value must correspond to the actual mailbox used.
         Find out more about setting the from and sender properties of a message.
         """
@@ -329,8 +316,7 @@ class Message(OutlookItem):
     @property
     def inference_classification(self):
         # type: () -> Optional[str]
-        """
-        The classification of the message for the user, based on inferred relevance or importance,
+        """The classification of the message for the user, based on inferred relevance or importance,
         or on an explicit override. The possible values are: focused or other.
         """
         return self.properties.get("inferenceClassification", None)
@@ -338,8 +324,7 @@ class Message(OutlookItem):
     @property
     def internet_message_headers(self):
         # type: () -> ClientValueCollection[InternetMessageHeader]
-        """
-        A collection of message headers defined by RFC5322. The set includes message headers indicating the network
+        """A collection of message headers defined by RFC5322. The set includes message headers indicating the network
         path taken by a message from the sender to the recipient. It can also contain custom message headers that
         hold app data for the message.
         """
@@ -354,17 +339,13 @@ class Message(OutlookItem):
     @property
     def is_delivery_receipt_requested(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether a read receipt is requested for the message.
-        """
+        """Indicates whether a read receipt is requested for the message."""
         return self.properties.get("isDeliveryReceiptRequested", None)
 
     @property
     def is_draft(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether the message is a draft. A message is a draft if it hasn't been sent yet.
-        """
+        """Indicates whether the message is a draft. A message is a draft if it hasn't been sent yet."""
         return self.properties.get("isDraft", None)
 
     @property
@@ -376,9 +357,7 @@ class Message(OutlookItem):
     @property
     def is_read_receipt_requested(self):
         # type: () -> Optional[bool]
-        """
-        Indicates whether a read receipt is requested for the message.
-        """
+        """Indicates whether a read receipt is requested for the message."""
         return self.properties.get("isReadReceiptRequested", None)
 
     @property
@@ -432,7 +411,8 @@ class Message(OutlookItem):
         """The account that is actually used to generate the message. In most cases, this value is the same as the
         from property. You can set this property to a different value when sending a message from a shared mailbox,
         for a shared calendar, or as a delegate. In any case, the value must correspond to the actual mailbox used.
-        Find out more about setting the from and sender properties of a message."""
+        Find out more about setting the from and sender properties of a message.
+        """
         return self.properties.get("sender", Recipient())
 
     @property
@@ -444,8 +424,7 @@ class Message(OutlookItem):
     @property
     def web_link(self):
         # type: () -> Optional[str]
-        """
-        The URL to open the message in Outlook on the web.
+        """The URL to open the message in Outlook on the web.
 
         You can append an ispopout argument to the end of the URL to change how the message is displayed.
         If ispopout is not present or if it is set to 1, then the message is shown in a popout window.

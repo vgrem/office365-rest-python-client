@@ -13,8 +13,7 @@ class DocumentLibraryInformation(ClientValue):
         from_cross_farm=None,
         is_default_document_library=None,
     ):
-        """
-        :param str title:Identifies the title of the document library
+        """:param str title:Identifies the title of the document library
         :param str absolute_url: Absolute Url of the document library.
         :param str server_relative_url: Identifies the server-relative URL of the document library.
         :param str drive_id:

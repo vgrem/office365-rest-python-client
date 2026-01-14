@@ -8,9 +8,7 @@ class Partners(Entity):
 
     @property
     def billing(self):
-        """
-        Represents billing details for billed and unbilled data.
-        """
+        """Represents billing details for billed and unbilled data."""
         return self.properties.get(
             "billing",
             Billing(self.context, ResourcePath("billing", self.resource_path)),

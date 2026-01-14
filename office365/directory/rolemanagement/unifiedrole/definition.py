@@ -11,7 +11,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class UnifiedRoleDefinition(Entity):
     """A role definition is a collection of permissions in Azure Active Directory (Azure AD) listing the operations
-    that can be performed and the resources against which they can performed."""
+    that can be performed and the resources against which they can performed.
+    """
 
     def __str__(self):
         return self.display_name or self.entity_type_name
@@ -33,16 +34,13 @@ class UnifiedRoleDefinition(Entity):
     @property
     def role_permissions(self):
         # type: () -> ClientValueCollection[UnifiedRolePermission]
-        """
-        List of permissions included in the role. Read-only when isBuiltIn is true. Required.
-        """
+        """List of permissions included in the role. Read-only when isBuiltIn is true. Required."""
         return self.properties.get("rolePermissions", ClientValueCollection(UnifiedRolePermission))
 
     @property
     def inherits_permissions_from(self):
         # type: () -> EntityCollection[UnifiedRoleDefinition]
-        """
-        Read-only collection of role definitions that the given role definition inherits from. Only Azure AD built-in
+        """Read-only collection of role definitions that the given role definition inherits from. Only Azure AD built-in
         roles (isBuiltIn is true) support this attribute. Supports $expand.
         """
         return self.properties.get(

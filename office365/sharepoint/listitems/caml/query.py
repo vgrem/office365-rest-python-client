@@ -5,28 +5,28 @@ from office365.sharepoint.listitems.collection_position import (
 from office365.sharepoint.views.scope import ViewScope
 
 
-class WhereElement(object):
+class WhereElement:
     """Used within the context of a query to specify a filter."""
 
     def __str__(self):
         return "<Where></Where>"
 
 
-class OrderByElement(object):
+class OrderByElement:
     """Determines the sort order for a query"""
 
     def __str__(self):
         return "<OrderBy></OrderBy>"
 
 
-class GroupByElement(object):
+class GroupByElement:
     """Contains a Group By section for grouping the data returned through a query in a list view."""
 
     def __str__(self):
         return "<GroupBy></GroupBy>"
 
 
-class QueryElement(object):
+class QueryElement:
     """Defines the query for a view."""
 
     def __init__(self):
@@ -39,23 +39,21 @@ class QueryElement(object):
         return QueryElement()
 
     def __repr__(self):
-        return "<Query>{0}</Query>".format(str(self.Where))
+        return f"<Query>{self.Where!s}</Query>"
 
 
-class RowLimitElement(object):
+class RowLimitElement:
     """Sets the row limit for the number of items to display in a view."""
 
     def __init__(self, top=None):
-        """
-        :param int top:
-        """
+        """:param int top:"""
         self.Top = top
 
     def __str__(self):
-        return '<RowLimit Paged="TRUE">{0}</RowLimit>'.format(self.Top)
+        return f'<RowLimit Paged="TRUE">{self.Top}</RowLimit>'
 
 
-class ViewElement(object):
+class ViewElement:
     """"""
 
     def __init__(
@@ -69,7 +67,7 @@ class ViewElement(object):
         self.RowLimit = row_limit
 
     def __str__(self):
-        return '<View Scope="{0}"><Query>{1}</Query></View>'.format(self.Scope, str(self.Query))
+        return f'<View Scope="{self.Scope}"><Query>{self.Query!s}</Query></View>'
 
 
 class CamlQuery(ClientValue):
@@ -81,8 +79,7 @@ class CamlQuery(ClientValue):
         folder_server_relative_url=None,
         allow_incremental_results=True,
     ):
-        """
-        Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
+        """Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
 
         :type bool allowIncrementalResults: Specifies whether the incremental results can be returned.
         :param ListItemCollectionPosition list_item_collection_position: Specifies the information required to
@@ -101,14 +98,13 @@ class CamlQuery(ClientValue):
 
     @staticmethod
     def parse(query_expr, scope=ViewScope.DefaultValue):
-        """
-        Creates a CamlQuery object from a query expression
+        """Creates a CamlQuery object from a query expression
 
         :param str query_expr: Defines the query for a view.
         :param ViewScope scope: Specifies whether and how files and subfolders are included in a view.
         """
         qry = CamlQuery()
-        qry.ViewXml = '<View Scope="{0}"><Query>{1}</Query></View>'.format(scope, query_expr)
+        qry.ViewXml = f'<View Scope="{scope}"><Query>{query_expr}</Query></View>'
         return qry
 
     @staticmethod

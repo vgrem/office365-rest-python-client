@@ -9,8 +9,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         super(PlannerTaskCollection, self).__init__(context, PlannerTask, resource_path)
 
     def add(self, title, plan, bucket=None):
-        """
-        Create a new plannerTask.
+        """Create a new plannerTask.
 
         :param str title: Task title
         :param str|PlannerPlan plan: Plan identifier or Plan object

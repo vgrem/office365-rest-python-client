@@ -9,8 +9,7 @@ from office365.onedrive.driveitems.retention_label_settings import (
 
 
 class ItemRetentionLabel(Entity):
-    """
-    Groups retention and compliance-related properties on an item into a single structure.
+    """Groups retention and compliance-related properties on an item into a single structure.
     Currently, supported only for driveItem.
     """
 
@@ -19,7 +18,8 @@ class ItemRetentionLabel(Entity):
         # type: () -> Optional[bool]
         """Specifies whether the label is applied explicitly on the item.
         True indicates that the label is applied explicitly; otherwise, the label is inherited from its parent.
-        Read-only."""
+        Read-only.
+        """
         return self.properties.get("isLabelAppliedExplicitly", None)
 
     @property

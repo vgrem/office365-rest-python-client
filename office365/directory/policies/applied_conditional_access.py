@@ -18,8 +18,7 @@ class AppliedConditionalAccessPolicy(ClientValue):
         id_=None,
         result=None,
     ):
-        """
-        :param str display_name: Refers to the name of the conditional access policy
+        """:param str display_name: Refers to the name of the conditional access policy
         :param list[str] enforced_grant_controls: Refers to the grant controls enforced by the conditional access policy
         :param list[str] enforced_session_controls: Refers to the session controls enforced by the conditional
             access policy

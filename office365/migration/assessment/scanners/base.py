@@ -9,11 +9,11 @@ from office365.runtime.client_object import T
 
 def mapped_property(name):
     # type: (str) -> callable
-    """
-    Decorator that maps a property to a specific key in _properties
+    """Decorator that maps a property to a specific key in _properties
 
     Args:
         name: The key to use when storing in _properties dictionary
+
     """
 
     def decorator(func):

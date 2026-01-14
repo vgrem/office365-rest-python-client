@@ -10,8 +10,7 @@ class DeviceManagementSettings(ClientValue):
         is_scheduled_action_enabled=None,
         secure_by_default=None,
     ):
-        """
-        :param int device_compliance_checkin_threshold_days: The number of days a device is allowed to go without
+        """:param int device_compliance_checkin_threshold_days: The number of days a device is allowed to go without
             checking in to remain compliant.
         :param bool is_scheduled_action_enabled: Is feature enabled or not for scheduled action for rule.
         :param bool secure_by_default: Device should be noncompliant when there is no compliance policy targeted when

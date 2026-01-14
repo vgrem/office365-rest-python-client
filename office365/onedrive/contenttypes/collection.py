@@ -24,9 +24,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.add_child(return_type)
 
         def _create(parent_id):
-            """
-            :type parent_id: str
-            """
+            """:type parent_id: str"""
             payload = {
                 "name": name,
                 "base": {"id": parent_id},
@@ -48,8 +46,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return return_type
 
     def add_copy(self, content_type):
-        """
-        Add a copy of a content type from a site to a list.
+        """Add a copy of a content type from a site to a list.
 
         :param str content_type: Canonical URL to the site content type that will be copied to the list.
         """
@@ -61,8 +58,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return return_type
 
     def add_copy_from_content_type_hub(self, content_type_id):
-        """
-        his method is part of the content type publishing changes to optimize the syncing of published content types
+        """His method is part of the content type publishing changes to optimize the syncing of published content types
         to sites and lists, effectively switching from a "push everywhere" to "pull as needed" approach.
         The method allows users to pull content types directly from the content type hub to a site or list.
 
@@ -77,8 +73,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return return_type
 
     def get_compatible_hub_content_types(self):
-        """
-        Get a list of compatible content types from the content type hub that can be added to a target site or a list.
+        """Get a list of compatible content types from the content type hub that can be added to a target site or a list.
 
         This method is part of the content type publishing changes to optimize the syncing of published content types
         to sites and lists, effectively switching from a "push everywhere" to "pull as needed" approach.

@@ -1,5 +1,4 @@
-"""
-Creates a sharing link for a file based on the specified parameters and optionally
+"""Creates a sharing link for a file based on the specified parameters and optionally
 sends an email to the people that are listed in the specified parameters
 """
 

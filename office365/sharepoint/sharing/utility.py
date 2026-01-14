@@ -13,8 +13,7 @@ class SharingUtility(Entity):
 
     @staticmethod
     def get_user_directory_info_by_email(context, email):
-        """
-        Get user information by the user’s email address in directory.
+        """Get user information by the user’s email address in directory.
 
         :param str email: The email address of a user.
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -29,8 +28,7 @@ class SharingUtility(Entity):
 
     @staticmethod
     def validate_same_user_emails(context, primary_email, other_email, principal_name):
-        """
-        Validate the primary email/principal name and other email are of the same user.
+        """Validate the primary email/principal name and other email are of the same user.
 
         :param str primary_email: User’s primary email address
         :param str other_email: Another email address.

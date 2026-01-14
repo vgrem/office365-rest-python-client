@@ -19,7 +19,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
 
     def get_by_label(self, label):
         """Gets the file version with the specified Label."""
-        return self.single("VersionLabel eq '{0}'".format(label))
+        return self.single(f"VersionLabel eq '{label}'")
 
     def delete_all(self):
         """Deletes all the file version objects in the collection."""
@@ -36,8 +36,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         return self
 
     def delete_by_label(self, label):
-        """
-        Deletes the file version object with the specified version label.
+        """Deletes the file version object with the specified version label.
         :param str label: The file version to remove.
         """
         qry = ServiceOperationQuery(self, "DeleteByLabel", {"versionlabel": label})
@@ -45,8 +44,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         return self
 
     def recycle_by_id(self, vid):
-        """
-        Recycles a file version objects in the collection by version identifier.
+        """Recycles a file version objects in the collection by version identifier.
 
         :param int vid: The file version to remove.
         """
@@ -55,8 +53,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         return self
 
     def recycle_by_label(self, label):
-        """
-        Recycles the file version object with the specified version label.
+        """Recycles the file version object with the specified version label.
 
         :param str label: The file version to remove.
         """
@@ -65,8 +62,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         return self
 
     def restore_by_label(self, label):
-        """
-        Restores the file version object that has the specified version label.
+        """Restores the file version object that has the specified version label.
 
         :param str label: The file version to remove.
         """

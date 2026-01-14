@@ -4,9 +4,7 @@ from office365.sharepoint.search.refiner.refiner import Refiner
 
 
 class RefinementResults(ClientValue):
-    """
-    The RefinementResults table contains refinement results that apply to the search query.
-    """
+    """The RefinementResults table contains refinement results that apply to the search query."""
 
     def __init__(
         self,
@@ -17,8 +15,7 @@ class RefinementResults(ClientValue):
         result_title=None,
         result_title_url=None,
     ):
-        """
-        :param str group_template_id:  Specifies the identifier of the layout template that specifies how the results
+        """:param str group_template_id:  Specifies the identifier of the layout template that specifies how the results
             returned will be arranged.
         :param str item_template_id: Specifies the identifier of the layout template that specifies how the result
             item will be displayed

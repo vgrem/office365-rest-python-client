@@ -9,8 +9,7 @@ class CallOptions(ClientValue):
         hide_bot_after_escalation=None,
         is_content_sharing_notification_enabled=None,
     ):
-        """
-        :param bool hide_bot_after_escalation: Indicates whether to hide the app after the call is escalated.
+        """:param bool hide_bot_after_escalation: Indicates whether to hide the app after the call is escalated.
         :param bool is_content_sharing_notification_enabled: Indicates whether content sharing notifications should be
            enabled for the call.
         """

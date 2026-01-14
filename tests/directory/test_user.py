@@ -15,7 +15,7 @@ class TestGraphUser(GraphTestCase):
     def test1_create_user(self):
         login = create_unique_name("testuser")
         password = create_unique_name("P@ssw0rd")
-        profile = UserProfile("{0}@{1}".format(login, test_tenant), password)
+        profile = UserProfile(f"{login}@{test_tenant}", password)
         new_user = self.client.users.add(profile).execute_query()
         self.assertIsNotNone(new_user.id)
         self.__class__.test_user = new_user
@@ -50,7 +50,7 @@ class TestGraphUser(GraphTestCase):
         prop_val = create_unique_name("city_")
         user_to_update.set_property(prop_name, prop_val).update().execute_query()
 
-        result = self.client.users.filter("{0} eq '{1}'".format(prop_name, prop_val)).get().execute_query()
+        result = self.client.users.filter(f"{prop_name} eq '{prop_val}'").get().execute_query()
         self.assertEqual(1, len(result))
 
     # def test9_check_member_groups(self):

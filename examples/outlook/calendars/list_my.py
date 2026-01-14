@@ -1,5 +1,4 @@
-"""
-Get all the user's calendars
+"""Get all the user's calendars
 
 https://learn.microsoft.com/en-us/graph/api/user-list-calendars?view=graph-rest-1.0
 """

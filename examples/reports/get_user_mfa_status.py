@@ -1,5 +1,4 @@
-"""
-Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object.
+"""Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object.
 This method doesn't work for disabled users.
 
 """
@@ -11,4 +10,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 result = client.reports.authentication_methods.user_registration_details.get().execute_query()
 for details in result:
-    print("{0}: {1}".format(details.user_principal_name, details.is_mfa_registered))
+    print(f"{details.user_principal_name}: {details.is_mfa_registered}")

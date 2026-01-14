@@ -1,4 +1,3 @@
-# coding=utf-8
 import datetime
 from typing import TYPE_CHECKING, AnyStr, Optional
 
@@ -121,8 +120,7 @@ if TYPE_CHECKING:
 
 
 class Web(SecurableObject):
-    """
-    Represents a SharePoint site. A site is a type of SecurableObject.
+    """Represents a SharePoint site. A site is a type of SecurableObject.
 
     A group of related webpages that is hosted by a server on the World Wide Web or an intranet.
     Each website has its own entry points, metadata, administration settings, and workflows.
@@ -130,8 +128,7 @@ class Web(SecurableObject):
     """
 
     def __init__(self, context, resource_path=None):
-        """
-        Specifies the push notification subscriber over the site for the specified device app instance identifier.
+        """Specifies the push notification subscriber over the site for the specified device app instance identifier.
 
         :type resource_path: ResourcePath or None
         :type context: office365.sharepoint.client_context.ClientContext
@@ -145,8 +142,7 @@ class Web(SecurableObject):
         return self.title
 
     def add_list(self, title, template_type=ListTemplateType.GenericList):
-        """
-        Creates a new list and adds it to the web.
+        """Creates a new list and adds it to the web.
 
         :param str title: Specifies the display name of the new list.
         :param int template_type: Specifies the list server template of the new list.
@@ -155,9 +151,7 @@ class Web(SecurableObject):
         return self.lists.add(info)
 
     def available_addins(self, server_relative_urls=None):
-        """
-        :param list[str] server_relative_urls:
-        """
+        """:param list[str] server_relative_urls:"""
         payload = {"serverRelativeUrls": server_relative_urls}
         return_type = ClientResult(self.context, SPAvailableAddinsResponse())
         qry = ServiceOperationQuery(self, "AvailableAddins", None, payload, None, return_type)
@@ -166,11 +160,9 @@ class Web(SecurableObject):
 
     def add_cross_farm_message(self, message):
         # type: (str) -> ClientResult[bool]
-        """
-        :param str message:
-        """
+        """:param str message:"""
         payload = {"messagePayloadBase64": message}
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "AddCrossFarmMessage", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -202,7 +194,7 @@ class Web(SecurableObject):
         qry = ClientQuery(self.context, return_type=return_type)
 
         def _construct_request(request):
-            request.url = "{0}/_layouts/15/DocIdRedir.aspx?ID={1}".format(self.context.base_url, doc_id)
+            request.url = f"{self.context.base_url}/_layouts/15/DocIdRedir.aspx?ID={doc_id}"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
@@ -214,8 +206,7 @@ class Web(SecurableObject):
         include_links_to_exported_items=True,
         include_regional_settings=True,
     ):
-        """
-        Creates site script syntax from current SharePoint site.
+        """Creates site script syntax from current SharePoint site.
 
         :param bool include_branding: Extracts the configuration of the site's branding.
         :param list[str] or None included_lists: A list of one or more lists. Each is identified by the list url.
@@ -288,8 +279,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_push_notification_subscriber(self, device_app_instance_id):
-        """
-        Specifies the push notification subscriber over the site for the specified device app instance identifier.
+        """Specifies the push notification subscriber over the site for the specified device app instance identifier.
 
         :param str device_app_instance_id: Device application instance identifier.
         """
@@ -306,8 +296,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_client_side_components(self, components):
-        """
-        Returns the client side components for the requested components.
+        """Returns the client side components for the requested components.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
 
         :param list components: array of requested components, defined by id and version.
@@ -319,9 +308,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_client_side_components_by_component_type(self, component_types):
-        """
-        :param str component_types:
-        """
+        """:param str component_types:"""
         return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentIdentifier))
         payload = {"componentTypesString": component_types}
         qry = ServiceOperationQuery(
@@ -336,17 +323,14 @@ class Web(SecurableObject):
         return return_type
 
     def get_push_notification_subscribers_by_user(self, user):
-        """
-        Queries for the push notification subscribers for the site  for the specified user.
+        """Queries for the push notification subscribers for the site  for the specified user.
 
         :param str or User user: User object or login name
         """
         return_type = PushNotificationSubscriberCollection(self.context)
 
         def _create_and_add_query(login_name):
-            """
-            :type login_name: str
-            """
+            """:type login_name: str"""
             qry = ServiceOperationQuery(
                 self,
                 "GetPushNotificationSubscribersByUser",
@@ -377,7 +361,7 @@ class Web(SecurableObject):
             string parameters, forSharing set to 1 if sharing, and bypass set to 1 to bypass any mobile logic.
         :param bool is_edit_link: If true, the link will allow the logged in user to edit privileges on the item.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         params = {"url": url, "isEditLink": is_edit_link}
         qry = ServiceOperationQuery(
             context.web,
@@ -414,8 +398,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def get_context_web_information(context):
-        """
-        Returns an object that specifies metadata about the site
+        """Returns an object that specifies metadata about the site
 
         :type context: office365.sharepoint.client_context.ClientContext
         """
@@ -431,7 +414,7 @@ class Web(SecurableObject):
         :type context: office365.sharepoint.client_context.ClientContext
         :param str page_full_url: Specifies the URL from which to return the site URL.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         payload = {"pageFullUrl": page_full_url}
         qry = ServiceOperationQuery(context.web, "GetWebUrlFromPageUrl", None, payload, None, return_type)
         qry.static = True
@@ -439,8 +422,7 @@ class Web(SecurableObject):
         return return_type
 
     def create_default_associated_groups(self, user_login, user_login2, group_name_seed):
-        """
-        Creates the default Owners, Members and Visitors SPGroups on the web.
+        """Creates the default Owners, Members and Visitors SPGroups on the web.
 
         :param str user_login: The user logon name of the group owner.
         :param str user_login2: The secondary contact for the group.
@@ -472,8 +454,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_acs_service_principals(self, app_ids=None):
-        """
-        List service principals
+        """List service principals
         :param list[str] app_ids:
         """
         payload = {"appIds": app_ids}
@@ -483,9 +464,7 @@ class Web(SecurableObject):
         return return_type
 
     def sync_flow_instances(self, target_web_url):
-        """
-        :param str target_web_url:
-        """
+        """:param str target_web_url:"""
         return_type = FlowSynchronizationResult(self.context)
         payload = {"targetWebUrl": target_web_url}
         qry = ServiceOperationQuery(self, "SyncFlowInstances", None, payload, None, return_type)
@@ -493,9 +472,7 @@ class Web(SecurableObject):
         return return_type
 
     def sync_flow_templates(self, category):
-        """
-        :param str category:
-        """
+        """:param str category:"""
         return_type = FlowSynchronizationResult(self.context)
         payload = {"category": category}
         qry = ServiceOperationQuery(self, "SyncFlowTemplates", None, payload, None, return_type)
@@ -504,14 +481,13 @@ class Web(SecurableObject):
 
     def get_all_client_side_components(self):
         """"""
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "GetAllClientSideComponents", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_addin_principals_having_permissions_in_sites(self, server_relative_urls=None, urls=None):
-        """
-        :param list[str] server_relative_urls:
+        """:param list[str] server_relative_urls:
         :param list[str] urls:
         """
         payload = {"serverRelativeUrls": server_relative_urls, "urls": urls}
@@ -528,8 +504,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_app_bdc_catalog(self):
-        """
-        Returns the Business Data Connectivity (BDC) MetadataCatalog for an application that gives access to the
+        """Returns the Business Data Connectivity (BDC) MetadataCatalog for an application that gives access to the
         external content types defined in the BDC metadata model packaged by the application.<151>
         This method SHOULD be called on the Web (section 3.2.5.143) object that represents the site for the application
         and it returns the BDC MetadataCatalog deployed on the site.
@@ -540,8 +515,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_client_side_web_parts(self, project=None, include_errors=False):
-        """
-        It MUST return an array of 3rd party webpart components installed on this site
+        """It MUST return an array of 3rd party webpart components installed on this site
 
         :param bool include_errors: If true, webparts with errors MUST be included in the results of the request.
            If false, webparts with errors MUST be excluded in the results of the request.
@@ -554,8 +528,7 @@ class Web(SecurableObject):
         return return_type
 
     def add_supported_ui_language(self, lcid):
-        """
-        Adds a supported UI language by its language identifier.
+        """Adds a supported UI language by its language identifier.
         :param int lcid: Specifies the language identifier to be added.
         """
         qry = ServiceOperationQuery(self, "AddSupportedUILanguage", {"lcid": lcid})
@@ -563,9 +536,7 @@ class Web(SecurableObject):
         return self
 
     def get_lists(self, row_limit=100):
-        """
-        :param int row_limit: Specifies a limit for the number of lists in the query that are returned per page
-        """
+        """:param int row_limit: Specifies a limit for the number of lists in the query that are returned per page"""
         return_type = ListCollection(self.context)
         payload = {"getListsParams": GetListsParameters(row_limit=row_limit)}
         qry = ServiceOperationQuery(self, "GetLists", None, payload, None, return_type)
@@ -601,8 +572,7 @@ class Web(SecurableObject):
         order_by=None,
         item_state=None,
     ):
-        """
-        Gets the recycle bin items that are based on the specified query.
+        """Gets the recycle bin items that are based on the specified query.
 
         :param str paging_info: an Object that is used to obtain the next set of rows in a paged view of the Recycle Bin
         :param int row_limit: a limit for the number of items returned in the query per page.
@@ -631,8 +601,7 @@ class Web(SecurableObject):
         row_limit=100,
         show_only_my_items=False,
     ):
-        """
-        Gets the recycle bin items that are based on the specified query.
+        """Gets the recycle bin items that are based on the specified query.
 
         :param str paging_info: an Object that is used to obtain the next set of rows in a paged view of the Recycle Bin
         :param int row_limit: a limit for the number of items returned in the query per page.
@@ -667,8 +636,7 @@ class Web(SecurableObject):
         return return_type
 
     def _load_sub_webs_inner(self, webs, all_webs):
-        """
-        :type webs: office365.sharepoint.webs.collection.WebCollection
+        """:type webs: office365.sharepoint.webs.collection.WebCollection
         :type all_webs: office365.sharepoint.webs.collection.WebCollection
         """
         for cur_web in webs:
@@ -681,8 +649,7 @@ class Web(SecurableObject):
             cur_web.ensure_property("Webs", _webs_loaded, cur_web)
 
     def get_list_using_path(self, decoded_url):
-        """
-        Returns the list that is associated with the specified server-relative path.
+        """Returns the list that is associated with the specified server-relative path.
 
         :param str decoded_url: Contains the site-relative path for a list, for example, /Lists/Announcements.
         """
@@ -694,8 +661,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_news_list(self, allow_create=False):
-        """
-        Returns the News List on this web, if it exists. If the list does not exist, the list will be created and
+        """Returns the News List on this web, if it exists. If the list does not exist, the list will be created and
         then returned if allowCreate is set to true. The News List is a hidden SP.List in which News Posts are stored.
 
         :param bool allow_create: Indicates whether to create the list if it does not exist on this web.
@@ -730,15 +696,14 @@ class Web(SecurableObject):
 
     def get_regional_datetime_schema(self):
         """Get DateTime Schema based on regional settings"""
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "GetRegionalDateTimeSchema", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_sharing_link_data(self, link_url):
         # type: (str) -> ClientResult[SharingLinkData]
-        """
-        This method determines basic information about the supplied link URL, including limited data about the object
+        """This method determines basic information about the supplied link URL, including limited data about the object
         the link URL refers to and any additional sharing link data if the link URL is a tokenized sharing link
 
         :param str link_url: A URL that is either a tokenized sharing link or a canonical URL for a document
@@ -752,12 +717,11 @@ class Web(SecurableObject):
     @staticmethod
     def get_context_web_theme_data(context):
         # type: (ClientContext) -> ClientResult[str]
-        """
-        Get ThemeData for the context web.
+        """Get ThemeData for the context web.
 
         :type context: office365.sharepoint.client_context.ClientContext
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         qry = ServiceOperationQuery(context.web, "GetContextWebThemeData", None, None, None, return_type)
         qry.static = True
         context.add_query(qry)
@@ -785,7 +749,7 @@ class Web(SecurableObject):
         :param ClientResult[str] return_type: Return type
         """
         if return_type is None:
-            return_type = ClientResult(context, str())
+            return_type = ClientResult(context, "")
         payload = {
             "url": str(SPResPath.create_absolute(context.base_url, url)),
             "isEditLink": is_edit_link,
@@ -796,8 +760,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def create_anonymous_link_with_expiration(context, url, is_edit_link, expiration_string, return_type=None):
-        """
-        Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
+        """Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
 
         :param bool is_edit_link: If true, the link will allow the guest user edit privileges on the item.
         :param str url: The URL of the site, with the path of the object in SharePoint represented as query
@@ -810,7 +773,7 @@ class Web(SecurableObject):
         :param ClientResult return_type: Return type
         """
         if return_type is None:
-            return_type = ClientResult(context, str())
+            return_type = ClientResult(context, "")
         payload = {
             "url": str(SPResPath.create_absolute(context.base_url, url)),
             "isEditLink": is_edit_link,
@@ -860,8 +823,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_client_side_components_by_id(self, component_ids=None):
-        """
-        Returns the client side components for the requested component identifiers.
+        """Returns the client side components for the requested component identifiers.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
 
         :param list[str] component_ids: List of requested component identifiers.
@@ -874,8 +836,7 @@ class Web(SecurableObject):
 
     def get_file_by_server_relative_url(self, server_relative_url):
         # type: (str) -> File
-        """
-        Returns the file object located at the specified server-relative URL, for example:
+        """Returns the file object located at the specified server-relative URL, for example:
             - "/sites/MySite/Shared Documents/MyDocument.docx"
             - "Shared Documents/MyDocument.docx"
 
@@ -933,37 +894,30 @@ class Web(SecurableObject):
         )
 
     def get_site_page_copy_to_status(self, work_item_id):
-        """
-        :param str work_item_id:
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str work_item_id:"""
+        return_type = ClientResult(self.context, "")
         payload = {"workItemId": work_item_id}
         qry = ServiceOperationQuery(self, "GetSitePageCopyToStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_page_move_status(self, work_item_id):
-        """
-        :param str work_item_id:
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str work_item_id:"""
+        return_type = ClientResult(self.context, "")
         payload = {"workItemId": work_item_id}
         qry = ServiceOperationQuery(self, "GetSitePageMoveStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def ensure_folder_path(self, path):
-        """
-        Ensures a nested folder hierarchy exist
+        """Ensures a nested folder hierarchy exist
         :param str path: relative server URL (path) to a folder
         """
         return self.root_folder.folders.ensure_path(path)
 
     def ensure_edu_class_setup(self, bypass_for_automation):
-        """
-        :param bool bypass_for_automation:
-        """
-        return_type = ClientResult(self.context, bool())
+        """:param bool bypass_for_automation:"""
+        return_type = ClientResult(self.context, False)
         payload = {"byPassForAutomation": bypass_for_automation}
         qry = ServiceOperationQuery(self, "EnsureEduClassSetup", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -982,18 +936,15 @@ class Web(SecurableObject):
         return return_type
 
     def ensure_tenant_app_catalog(self, caller_id):
-        """
-        :param str caller_id:
-        """
-        return_type = ClientResult(self.context, bool())
+        """:param str caller_id:"""
+        return_type = ClientResult(self.context, False)
         payload = {"callerId": caller_id}
         qry = ServiceOperationQuery(self, "EnsureTenantAppCatalog", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_list_by_title(self, title):
-        """
-        Returns the list with the specified display name.
+        """Returns the list with the specified display name.
 
         :param str title: Specifies the display name
         """
@@ -1007,27 +958,25 @@ class Web(SecurableObject):
 
         :param BasePermissions permission_mask: Specifies the set of permissions to verify.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "DoesUserHavePermissions", permission_mask, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def does_push_notification_subscriber_exist(self, device_app_instance_id):
-        """
-        Specifies whether the push notification subscriber exists for the current user
+        """Specifies whether the push notification subscriber exists for the current user
             with the given device  app instance identifier.
 
         :param str device_app_instance_id: Device application instance identifier.
         """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         params = {"deviceAppInstanceId": device_app_instance_id}
         qry = ServiceOperationQuery(self, "DoesPushNotificationSubscriberExist", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_folder_by_id(self, unique_id):
-        """
-        Returns the folder object with the specified GUID.
+        """Returns the folder object with the specified GUID.
 
         :param str unique_id: A GUID that identifies the folder.
         """
@@ -1079,8 +1028,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_available_web_templates(self, lcid=1033, do_include_cross_language=False):
-        """
-        Returns a collection of site templates available for the site.
+        """Returns a collection of site templates available for the site.
 
         :param int lcid: Specifies the LCID of the site templates to be retrieved.
         :param bool do_include_cross_language: Specifies whether to include language-neutral site templates.
@@ -1115,8 +1063,7 @@ class Web(SecurableObject):
         return self
 
     def apply_web_template(self, web_template):
-        """
-        Applies the specified site definition or site template to the website that has no template applied to it.
+        """Applies the specified site definition or site template to the website that has no template applied to it.
 
         :param str web_template: The name of the site definition or the file name of the site template to be applied.
         """
@@ -1132,8 +1079,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_guest_url(self, guest_url):
-        """
-        Returns the file object from the guest access URL.
+        """Returns the file object from the guest access URL.
         :param str guest_url: The guest access URL to get the file with.
         """
         return_type = File(self.context)
@@ -1143,8 +1089,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_guest_url_extended(self, guest_url, ensure_access=None, password=None):
-        """
-        Returns the file object from the tokenized sharing link URL.
+        """Returns the file object from the tokenized sharing link URL.
 
         :param str guest_url: The tokenized sharing link URL for the folder.
         :param str password: This value contains the password to be supplied to a tokenized sharing link for validation.
@@ -1166,8 +1111,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_guest_url_ensure_access(self, guest_url, ensure_access):
-        """
-        Returns the file object from the tokenized sharing link URL.
+        """Returns the file object from the tokenized sharing link URL.
 
         :param str guest_url: The guest access URL to get the file with.
         :param bool ensure_access:  Indicates if the request to the tokenized sharing link grants perpetual access to
@@ -1181,8 +1125,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_linking_url(self, linking_url):
-        """
-        Returns the file object from the linking URL.
+        """Returns the file object from the linking URL.
 
         :param str linking_url: The linking URL to return the file object for.
             A linking URL can be obtained from LinkingUrl.
@@ -1194,8 +1137,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_url(self, file_url):
-        """
-        Returns the file object from the given URL.
+        """Returns the file object from the given URL.
 
         :param str file_url: The URL used to get the file object.
         """
@@ -1206,8 +1148,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_file_by_wopi_frame_url(self, wopi_frame_url):
-        """
-        Returns the file object from the WOPI frame URL.
+        """Returns the file object from the WOPI frame URL.
 
         :param str wopi_frame_url:  The WOPI frame URL used to get the file object.
         """
@@ -1217,8 +1158,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_folder_by_guest_url(self, guest_url):
-        """
-        Returns the folder object from the tokenized sharing link URL.
+        """Returns the folder object from the tokenized sharing link URL.
 
         :param str guest_url: The tokenized sharing link URL for the folder.
         """
@@ -1229,8 +1169,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_folder_by_guest_url_extended(self, guest_url, ensure_access=None, password=None):
-        """
-        Returns the folder object from the tokenized sharing link URL.
+        """Returns the folder object from the tokenized sharing link URL.
 
         :param str guest_url: The tokenized sharing link URL for the folder.
         :param str password: This value contains the password to be supplied to a tokenized sharing link for validation.
@@ -1258,8 +1197,7 @@ class Web(SecurableObject):
         calendar_type=CalendarType.None_,
     ):
         # type: (str, int, int) -> ClientResult[str]
-        """
-        Returns parsed DateTime value.
+        """Returns parsed DateTime value.
 
         :param str value: The input is the string of a datetime that's in web's local time and in web's calendar.
            For example, the input "09/08/1430" when web's calendar was set to Hijri, the actual datetime is 07/31/2009
@@ -1285,8 +1223,7 @@ class Web(SecurableObject):
         email_subject=None,
         email_body=None,
     ):
-        """
-        Share a Web with user
+        """Share a Web with user
 
         :param str user_principal_name: User identifier
         :param ExternalSharingSiteOption share_option: The sharing type of permission to grant on the object.
@@ -1294,7 +1231,6 @@ class Web(SecurableObject):
         :param str email_subject: The email subject.
         :param str email_body: The email subject.
         """
-
         return_type = SharingResult(self.context)
 
         def _share(picker_result):
@@ -1305,8 +1241,8 @@ class Web(SecurableObject):
                 ExternalSharingSiteOption.Owner: self.associated_owner_group,
             }  # type: dict[ExternalSharingSiteOption, Group]
 
-            picker_input = "[{0}]".format(picker_result.value)
-            role_value = "group:{groupId}".format(groupId=groups[share_option].id)
+            picker_input = f"[{picker_result.value}]"
+            role_value = f"group:{groups[share_option].id}"
             Web.share_object(
                 self.context,
                 self.url,
@@ -1349,8 +1285,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def get_document_libraries(context, web_full_url):
-        """
-        Returns the document libraries of a SharePoint site, specifically a list of objects that represents
+        """Returns the document libraries of a SharePoint site, specifically a list of objects that represents
         document library information. Document libraries that are private—picture library, catalog library,
         asset library, application list, form template or libraries—for whom the user does not have permission to view
         the items are not included.
@@ -1367,8 +1302,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def default_document_library_url(context, web_url):
-        """
-        Returns the default document library URL.
+        """Returns the default document library URL.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str web_url:  URL of the web.
@@ -1391,8 +1325,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def delete_all_anonymous_links_for_object(context, url):
-        """
-        Removes all existing anonymous links for an object.
+        """Removes all existing anonymous links for an object.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str url:  The URL of the object being shared, with the path of the object in SharePoint that is
@@ -1406,8 +1339,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def delete_anonymous_link_for_object(context, url, is_edit_link, remove_associated_sharing_link_group):
-        """
-        Removes an existing anonymous link for an object..
+        """Removes an existing anonymous link for an object..
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str url:  The URL of the object being shared, with the path of the object in SharePoint that is
@@ -1429,8 +1361,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def get_document_and_media_libraries(context, web_full_url, include_page_libraries):
-        """
-        Returns the document libraries of a SharePoint site, including picture, asset, and site assets libraries.
+        """Returns the document libraries of a SharePoint site, including picture, asset, and site assets libraries.
         Document libraries that are private, catalog library, application list, form template, or libraries that user
         does not have permission to view items are not inlcuded.
 
@@ -1457,8 +1388,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def get_sharing_link_kind(context, file_url, return_type=None):
-        """
-        This method determines the kind of tokenized sharing link represented by the supplied file URL.
+        """This method determines the kind of tokenized sharing link represented by the supplied file URL.
 
         :param office365.sharepoint.client_context.ClientContext context:
         :param str file_url: A URL that is a tokenized sharing link for a document
@@ -1480,8 +1410,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def forward_object_link(context, url, people_picker_input, email_subject=None, email_body=None):
-        """
-        Shares an object in SharePoint, such as a list item or a site with no Acl changes, by sending the link.
+        """Shares an object in SharePoint, such as a list item or a site with no Acl changes, by sending the link.
         This is used when the user has no permission to share and cannot send access request.
         The user can use this method to send the link of the object to site members who already have permission
         to view the object.
@@ -1520,8 +1449,7 @@ class Web(SecurableObject):
         use_simplified_roles=True,
         return_type=None,
     ):
-        """
-        This method shares an object in SharePoint such as a list item or site. It returns a SharingResult object
+        """This method shares an object in SharePoint such as a list item or site. It returns a SharingResult object
         which contains the completion script and a page to redirect to if desired.
 
 
@@ -1561,8 +1489,7 @@ class Web(SecurableObject):
 
     @staticmethod
     def unshare_object(context, url, return_type=None):
-        """
-        Removes Sharing permissions on an object.
+        """Removes Sharing permissions on an object.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str url: A SharingResult object which contains status codes pertaining to the completion of the operation
@@ -1588,8 +1515,7 @@ class Web(SecurableObject):
 
     def get_list_item(self, str_url):
         # type: (str) -> ListItem
-        """
-        Returns the list item that is associated with the specified server-relative URL.
+        """Returns the list item that is associated with the specified server-relative URL.
 
         :param str str_url: A string that contains the server-relative URL,
         for example, "/sites/MySite/Shared Documents/MyDocument.docx".
@@ -1601,8 +1527,7 @@ class Web(SecurableObject):
 
     def get_list_item_using_path(self, decoded_url):
         # type: (str) -> ListItem
-        """
-        Returns the list item that is associated with the specified server-relative path.
+        """Returns the list item that is associated with the specified server-relative path.
 
         :param str decoded_url: A string that contains the server-relative path,
         for example, "/sites/MySite/Shared Documents/MyDocument.docx" or "Shared Documents/MyDocument.docx".
@@ -1625,8 +1550,7 @@ class Web(SecurableObject):
 
     def page_context_info(self, include_odb_settings, emit_navigation_info):
         # type: (bool, bool) -> ClientResult[AnyStr]
-        """
-        Return Page context info for the current list being rendered.
+        """Return Page context info for the current list being rendered.
 
         :param bool include_odb_settings:
         :param bool emit_navigation_info:
@@ -1641,8 +1565,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_storage_entity(self, key):
-        """
-        This will return the storage entity identified by the given key
+        """This will return the storage entity identified by the given key
 
         :param str key: ID of storage entity to be returned.
         """
@@ -1655,8 +1578,7 @@ class Web(SecurableObject):
         return return_type
 
     def set_storage_entity(self, key, value, description=None, comments=None):
-        """
-        This will set the storage entity identified by the given key
+        """This will set the storage entity identified by the given key
 
         :param str key: Id of the storage entity to be set.
         :param str value: Value of the storage entity to be set.
@@ -1674,8 +1596,7 @@ class Web(SecurableObject):
         return self
 
     def remove_storage_entity(self, key):
-        """
-        This will remove the storage entity identified by the given key
+        """This will remove the storage entity identified by the given key
         :param str key: Id of the storage entity to be removed.
         """
         params = {
@@ -1686,8 +1607,7 @@ class Web(SecurableObject):
         return self
 
     def register_push_notification_subscriber(self, device_app_instance_id, service_token):
-        """
-        Registers the push notification subscriber for the site. If the registration already exists,
+        """Registers the push notification subscriber for the site. If the registration already exists,
         the service token is updated with the new value.
         :param str device_app_instance_id: Device  app instance identifier.
         :param str service_token: Token provided by the notification service to the device to receive notifications.
@@ -1702,8 +1622,7 @@ class Web(SecurableObject):
         return return_type
 
     def unregister_push_notification_subscriber(self, device_app_instance_id):
-        """
-        Unregisters the push notification subscriber from the site
+        """Unregisters the push notification subscriber from the site
         :param str device_app_instance_id: Device  app instance identifier.
         """
         payload = {
@@ -1714,8 +1633,7 @@ class Web(SecurableObject):
         return self
 
     def remove_supported_ui_language(self, lcid):
-        """
-        Removes a supported UI language by its language identifier.
+        """Removes a supported UI language by its language identifier.
         :param str lcid: Specifies the language identifier to be removed.
         """
         params = {"lcid": lcid}
@@ -1724,17 +1642,14 @@ class Web(SecurableObject):
         return self
 
     def set_access_request_site_description_and_update(self, description=None):
-        """
-        :param str description:
-        """
+        """:param str description:"""
         payload = {"description": description}
         qry = ServiceOperationQuery(self, "SetAccessRequestSiteDescriptionAndUpdate", None, payload)
         self.context.add_query(qry)
         return self
 
     def set_global_nav_settings(self, title, source):
-        """
-        :param str title:
+        """:param str title:
         :param str source:
         """
         payload = {"title": title, "source": source}
@@ -1749,8 +1664,7 @@ class Web(SecurableObject):
         return self
 
     def assign_document_id(self, site_prefix, enabled=True):
-        """
-        Assign Document IDs
+        """Assign Document IDs
 
         :param str site_prefix: Specify whether IDs will be automatically assigned to all documents in the
             Site Collection. Additionally, you can specify a set of 4-12 characters that will be used at the beginning
@@ -1759,7 +1673,6 @@ class Web(SecurableObject):
             documents already in the Site Collection.
         :param bool enabled:
         """
-
         props = {
             "docid_x005f_msft_x005f_hier_x005f_siteprefix": site_prefix,
             "docid_x005f_enabled": "1",
@@ -1789,9 +1702,7 @@ class Web(SecurableObject):
     @property
     def allow_rss_feeds(self):
         # type: () -> Optional[bool]
-        """
-        Gets a Boolean value that specifies whether the site collection allows RSS feeds.
-        """
+        """Gets a Boolean value that specifies whether the site collection allows RSS feeds."""
         return self.properties.get("AllowRssFeeds", None)
 
     @property
@@ -1803,17 +1714,14 @@ class Web(SecurableObject):
     @property
     def app_instance_id(self):
         # type: () -> Optional[str]
-        """
-        Specifies the identifier of the app instance that this site (2) represents. If this site (2) does not
+        """Specifies the identifier of the app instance that this site (2) represents. If this site (2) does not
         represent an app instance, then this MUST specify an empty GUID.
         """
         return self.properties.get("AppInstanceId", None)
 
     @property
     def author(self):
-        """
-        Gets a user object that represents the user who created the Web site.
-        """
+        """Gets a user object that represents the user who created the Web site."""
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
@@ -1844,7 +1752,8 @@ class Web(SecurableObject):
         """Gets or sets the ID of the Design Package used in this SP.Web.
 
         A value of Guid.Empty will mean that the default Design Package will be used for this SP.Web.
-        The default is determined by the SP.WebTemplate of this SP.Web."""
+        The default is determined by the SP.WebTemplate of this SP.Web.
+        """
         return self.properties.get("DesignPackageId", None)
 
     @property
@@ -1894,25 +1803,19 @@ class Web(SecurableObject):
     @property
     def allow_designer_for_current_user(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the current user is allowed to use a designer application to customize this site
-        """
+        """Specifies whether the current user is allowed to use a designer application to customize this site"""
         return self.properties.get("AllowDesignerForCurrentUser", None)
 
     @property
     def allow_master_page_editing_for_current_user(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the current user is allowed to edit the master page.
-        """
+        """Specifies whether the current user is allowed to edit the master page."""
         return self.properties.get("AllowMasterPageEditingForCurrentUser", None)
 
     @property
     def allow_revert_from_template_for_current_user(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the current user is allowed to revert the site (2) to a default site template.
-        """
+        """Specifies whether the current user is allowed to revert the site (2) to a default site template."""
         return self.properties.get("AllowRevertFromTemplateForCurrentUser", None)
 
     @property
@@ -1923,8 +1826,7 @@ class Web(SecurableObject):
     @property
     def enable_minimal_download(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the site will use the minimal download strategy by default.
+        """Specifies whether the site will use the minimal download strategy by default.
 
         The minimal download strategy will use a single .aspx file (start.aspx) for your pages, with the actual URL
         encoded in the text following the hash mark ('#'). When navigating from page to page, only the changes
@@ -1963,7 +1865,8 @@ class Web(SecurableObject):
     def lists(self):
         # type: () -> ListCollection
         """Specifies the collection of lists that are contained in the site available to the current user based on the
-        current user's permissions."""
+        current user's permissions.
+        """
         return self.properties.get(
             "Lists",
             ListCollection(self.context, ResourcePath("lists", self.resource_path)),
@@ -2073,8 +1976,7 @@ class Web(SecurableObject):
 
     @property
     def configuration(self):
-        """
-        Specifies the identifier (ID) of the site definition that was used to create the site (2). If the site (2)
+        """Specifies the identifier (ID) of the site definition that was used to create the site (2). If the site (2)
         was created with a custom site template this specifies the identifier (ID) of the site definition from which
         the custom site template is derived.
         """
@@ -2118,10 +2020,10 @@ class Web(SecurableObject):
 
     @property
     def client_web_parts(self):
-        """
-        Gets a collection of the ClientWebParts installed in this SP.Web. It can be used to get metadata of the
+        """Gets a collection of the ClientWebParts installed in this SP.Web. It can be used to get metadata of the
         ClientWebParts or render them. It is a read-only collection as ClientWebParts need to be installed in
-        an app package."""
+        an app package.
+        """
         return self.properties.get(
             "ClientWebParts",
             ClientWebPartCollection(self.context, ResourcePath("ClientWebParts", self.resource_path)),
@@ -2203,7 +2105,8 @@ class Web(SecurableObject):
     @property
     def list_templates(self):
         """Gets a value that specifies the collection of list definitions and list templates available for creating
-        lists on the site."""
+        lists on the site.
+        """
         return self.properties.get(
             "ListTemplates",
             ListTemplateCollection(self.context, ResourcePath("ListTemplates", self.resource_path)),
@@ -2218,15 +2121,14 @@ class Web(SecurableObject):
     @is_multilingual.setter
     def is_multilingual(self, val):
         # type: (bool) -> None
-        """
-        Sets whether Multilingual UI is turned on for this web or not.
-        """
+        """Sets whether Multilingual UI is turned on for this web or not."""
         self.set_property("IsMultilingual", val)
 
     @property
     def multilingual_settings(self):
         """Gets a value that specifies the collection of list definitions and list templates available for creating
-        lists on the site."""
+        lists on the site.
+        """
         return self.properties.get(
             "MultilingualSettings",
             MultilingualSettings(self.context, ResourcePath("MultilingualSettings", self.resource_path)),
@@ -2338,8 +2240,7 @@ class Web(SecurableObject):
     @property
     def available_fields(self):
         # type: () -> FieldCollection
-        """
-        Specifies the collection of all fields available for the current scope, including those of the
+        """Specifies the collection of all fields available for the current scope, including those of the
         current site, as well as any parent sites.
         """
         return self.properties.get(
@@ -2350,8 +2251,7 @@ class Web(SecurableObject):
     @property
     def available_content_types(self):
         # type: () -> ContentTypeCollection
-        """
-        Specifies the collection of all site content types that apply to the current scope,
+        """Specifies the collection of all site content types that apply to the current scope,
         including those of the current site (2), as well as any parent sites.
         """
         return self.properties.get(
@@ -2361,9 +2261,7 @@ class Web(SecurableObject):
 
     @property
     def site_user_info_list(self):
-        """
-        Specifies the user information list for the site collection that contains the site
-        """
+        """Specifies the user information list for the site collection that contains the site"""
         return self.properties.get(
             "SiteUserInfoList",
             List(self.context, ResourcePath("SiteUserInfoList", self.resource_path)),

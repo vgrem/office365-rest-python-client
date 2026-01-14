@@ -2,8 +2,7 @@ from office365.entity import Entity
 
 
 class ProfileCardProperty(Entity):
-    """
-    Represents an attribute of a user on the Microsoft 365 profile card for an organization to surface in a shared,
+    """Represents an attribute of a user on the Microsoft 365 profile card for an organization to surface in a shared,
     people experience.
 
     The attribute can be an Microsoft Entra ID built-in attribute, such as Alias or UserPrincipalName,

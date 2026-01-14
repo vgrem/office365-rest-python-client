@@ -33,18 +33,17 @@ class Site(BaseItem):
 
     def get_by_path(self, path):
         # type: (str) -> Site
-        """
-        Retrieve properties and relationships for a site resource. A site resource represents a team site in SharePoint.
+        """Retrieve properties and relationships for a site resource. A site resource represents a team site in SharePoint.
 
-            In addition to retrieving a site by ID you can retrieve a site based on server-relative URL path.
+        In addition to retrieving a site by ID you can retrieve a site based on server-relative URL path.
 
-            Site collection hostname (contoso.sharepoint.com)
-            Site path, relative to server hostname.
-            There is also a reserved site identifier, root, which always references the root site for a given target,
-            as follows:
+        Site collection hostname (contoso.sharepoint.com)
+        Site path, relative to server hostname.
+        There is also a reserved site identifier, root, which always references the root site for a given target,
+        as follows:
 
-            /sites/root: The tenant root site.
-            /groups/{group-id}/sites/root: The group's team site.
+        /sites/root: The tenant root site.
+        /groups/{group-id}/sites/root: The group's team site.
         """
         return_type = Site(self.context)
         qry = ServiceOperationQuery(self, "GetByPath", [path], None, None, return_type)
@@ -53,8 +52,7 @@ class Site(BaseItem):
 
     def get_applicable_content_types_for_list(self, list_id):
         # type: (str) -> ContentTypeCollection
-        """
-        Get site contentTypes that can be added to a list.
+        """Get site contentTypes that can be added to a list.
 
         :param str list_id: GUID of the list for which the applicable content types need to be fetched.
         """
@@ -66,8 +64,7 @@ class Site(BaseItem):
 
     def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
         # type: (Optional[datetime], Optional[datetime], str) -> EntityCollection[ItemActivityStat]
-        """
-        Get a collection of itemActivityStats resources for the activities that took place on this resource
+        """Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
         :param datetime.datetime start_dt: The start time over which to aggregate activities.

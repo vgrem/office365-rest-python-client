@@ -5,9 +5,7 @@ from office365.teams.tabs.configuration import TeamsTabConfiguration
 
 
 class TeamsTab(Entity):
-    """
-    A teamsTab is a tab that's pinned (attached) to a channel within a team.
-    """
+    """A teamsTab is a tab that's pinned (attached) to a channel within a team."""
 
     @property
     def teams_app(self):
@@ -19,9 +17,7 @@ class TeamsTab(Entity):
 
     @property
     def configuration(self):
-        """
-        Container for custom settings applied to a tab. The tab is considered configured only once this property is set.
-        """
+        """Container for custom settings applied to a tab. The tab is considered configured only once this property is set."""
         return self.properties.get("configuration", TeamsTabConfiguration())
 
     def get_property(self, name, default_value=None):

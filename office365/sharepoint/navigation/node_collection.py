@@ -8,7 +8,7 @@ from office365.sharepoint.navigation.node import NavigationNode
 
 if TYPE_CHECKING:
     from office365.sharepoint.navigation.node_creation_information import (
-        NavigationNodeCreationInformation,  # noqa
+        NavigationNodeCreationInformation,
     )
 
 
@@ -18,9 +18,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
 
     def add(self, create_node_info):
         # type: (NavigationNodeCreationInformation) -> NavigationNode
-        """
-        Creates a navigation node object and adds it to the collection.
-        """
+        """Creates a navigation node object and adds it to the collection."""
         return_type = NavigationNode(self.context)
         return_type.title = create_node_info.Title
         return_type.url = create_node_info.Url
@@ -30,8 +28,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         return return_type
 
     def move_after(self, node_id, previous_node_id):
-        """
-        Moves a navigation node after a specified navigation node in the navigation node collection.
+        """Moves a navigation node after a specified navigation node in the navigation node collection.
 
         :param int node_id: Identifier of the navigation node that is moved.
         :param int previous_node_id: Identifier of the navigation node after which the node identified by nodeId moves to
@@ -42,8 +39,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         return self
 
     def get_by_index(self, index):
-        """
-        Returns the navigation node at the specified index.
+        """Returns the navigation node at the specified index.
 
         :param int index: The index of the navigation node to be returned.
         """

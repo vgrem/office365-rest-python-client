@@ -1,6 +1,4 @@
-"""
-Create a new team.
-
+"""Create a new team.
 
 Since `TeamCollection.create` is an async operation, execute_query_and_wait is called to ensure teams gets created
 
@@ -18,7 +16,7 @@ from tests import (
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 team_name = create_unique_name("Team")
-print("Creating a team '{0}' ...".format(team_name))
+print(f"Creating a team '{team_name}' ...")
 team = client.teams.create(team_name).execute_query_and_wait()
 print("Team has been created")
 

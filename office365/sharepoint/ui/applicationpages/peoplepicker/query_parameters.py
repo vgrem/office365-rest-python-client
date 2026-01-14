@@ -20,8 +20,7 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         url_zone_specified=False,
         sharepoint_group_id=0,
     ):
-        """
-        Specifies the properties of a principal query
+        """Specifies the properties of a principal query
 
         :type int urlZone: Specifies a location in the topology of the farm for the principal query.
         :param int sharepoint_group_id: specifies a group containing allowed principals to be used in the principal query

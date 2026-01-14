@@ -42,9 +42,7 @@ class SharingResult(Entity):
     @property
     def status_code(self):
         # type: () -> Optional[int]
-        """
-        Gets the enumeration value which summarizes the result of the sharing operation.
-        """
+        """Gets the enumeration value which summarizes the result of the sharing operation."""
         return self.properties.get("StatusCode", None)
 
     @property
@@ -56,8 +54,7 @@ class SharingResult(Entity):
     @property
     def invited_users(self):
         # type: () ->  ClientValueCollection[SPInvitationCreationResult]
-        """
-        Gets a list of SPInvitationCreationResult (section 3.2.5.325) objects representing the external users being
+        """Gets a list of SPInvitationCreationResult (section 3.2.5.325) objects representing the external users being
         invited to have access.
         """
         return self.properties.get("InvitedUsers", ClientValueCollection(SPInvitationCreationResult))

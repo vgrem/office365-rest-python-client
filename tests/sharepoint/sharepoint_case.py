@@ -19,5 +19,5 @@ class SPTestCase(TestCase):
     @staticmethod
     def ensure_list(web, list_properties):
         # type: (Web, ListCreationInformation) -> List
-        lists = web.lists.filter("Title eq '{0}'".format(list_properties.Title)).get().execute_query()
+        lists = web.lists.filter(f"Title eq '{list_properties.Title}'").get().execute_query()
         return lists[0] if len(lists) == 1 else web.lists.add(list_properties).execute_query()

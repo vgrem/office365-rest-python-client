@@ -1,6 +1,4 @@
-"""
-Retrieves the permissions on the file that are assigned to the current user.
-"""
+"""Retrieves the permissions on the file that are assigned to the current user."""
 
 from pprint import pprint
 

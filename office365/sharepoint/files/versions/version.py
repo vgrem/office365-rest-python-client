@@ -17,7 +17,7 @@ class FileVersion(Entity):
         return self.version_label
 
     def __repr__(self):
-        return "Is Current: {0}, {1}".format(self.is_current_version, self.version_label)
+        return f"Is Current: {self.is_current_version}, {self.version_label}"
 
     def download(self, file_object):
         # type: (IO) -> Self

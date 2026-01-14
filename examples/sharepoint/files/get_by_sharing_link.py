@@ -1,6 +1,4 @@
-"""
-Gets file by shared link
-"""
+"""Gets file by shared link"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.links.kind import SharingLinkKind

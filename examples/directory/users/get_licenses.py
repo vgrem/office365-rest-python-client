@@ -1,5 +1,4 @@
-"""
-Retrieve a list of licenseDetails objects for enterprise users.
+"""Retrieve a list of licenseDetails objects for enterprise users.
 
 https://learn.microsoft.com/en-us/graph/api/user-list-licensedetails?view=graph-rest-1.0
 """

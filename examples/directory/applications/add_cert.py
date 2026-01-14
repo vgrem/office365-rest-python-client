@@ -1,5 +1,4 @@
-"""
-Add a certificate to an app using Microsoft Graph
+"""Add a certificate to an app using Microsoft Graph
 
 To create the self-signed certificate, run the following command at a terminal prompt:
 - openssl req -x509 -newkey rsa:2048 -keyout selfsignkey.pem -out selfsigncert.pem -nodes -days 365

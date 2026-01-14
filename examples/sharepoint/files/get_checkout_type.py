@@ -1,5 +1,4 @@
-"""
-Retrieves file check out status
+"""Retrieves file check out status
 
 https://support.microsoft.com/en-us/office/check-out-or-check-in-files-in-a-document-library-acce24cd-ab39-4fcf-9c4d-1ce3050dc602
 """

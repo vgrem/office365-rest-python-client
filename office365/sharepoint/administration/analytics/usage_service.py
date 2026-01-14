@@ -11,8 +11,7 @@ class SPAnalyticsUsageService(Entity):
         super(SPAnalyticsUsageService, self).__init__(context, static_path)
 
     def log_event(self, event_type_id, scope_id, item_id, site=None, user=None):
-        """
-        Used to log events.
+        """Used to log events.
 
         :param int event_type_id: Specifies the type of an analytics event
         :param str scope_id:

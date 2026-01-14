@@ -12,8 +12,7 @@ class ListCollection(EntityCollection[List]):
         super(ListCollection, self).__init__(context, List, resource_path)
 
     def add(self, display_name, list_template=ListTemplateType.genericList):
-        """
-        Create a new list.
+        """Create a new list.
 
         :param str display_name: The displayable title of the list.
         :param str list_template: The base list template used in creating the list

@@ -12,9 +12,7 @@ class PickerEntityInformation(ClientObject):
     @property
     def total_member_count(self):
         # type: () -> Optional[int]
-        """
-        The count of members in a group. Valid when the principal is a SharePoint group or a security group.
-        """
+        """The count of members in a group. Valid when the principal is a SharePoint group or a security group."""
         return self.properties.get("TotalMemberCount", None)
 
     @property

@@ -24,7 +24,7 @@ class TenantAdminSettingsService(Entity):
 
     def get_tenant_sharing_status(self):
         """Retrieves the current state of sharing settings for a tenant"""
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         qry = ServiceOperationQuery(self, "GetTenantSharingStatus", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -39,15 +39,12 @@ class TenantAdminSettingsService(Entity):
 
     @property
     def available_managed_paths_for_site_creation(self):
-        """
-        Specifies the managed paths that are available for the creation of new SharePoint sites within a tenant.
-        """
+        """Specifies the managed paths that are available for the creation of new SharePoint sites within a tenant."""
         return self.properties.get("AvailableManagedPathsForSiteCreation", StringCollection())
 
     @property
     def disable_groupify(self):
-        """
-        Controls whether SharePoint site owners in your tenant are allowed to convert classic SharePoint sites into
+        """Controls whether SharePoint site owners in your tenant are allowed to convert classic SharePoint sites into
         Microsoft 365 Groups (a process commonly known as "groupifying" a site)
         """
         return self.properties.get("DisableGroupify", DisableGroupify())
@@ -65,7 +62,8 @@ class TenantAdminSettingsService(Entity):
     @property
     def smtp_server(self):
         """Specifies the server address or endpoint of the SMTP server that SharePoint Online or tenant-related
-        services use for sending emails"""
+        services use for sending emails
+        """
         return self.properties.get("SmtpServer", SmtpServer())
 
     @property

@@ -1,5 +1,4 @@
-"""
-List the directory roles that are activated in the tenant.
+"""List the directory roles that are activated in the tenant.
 
 https://learn.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0
 """

@@ -6,7 +6,8 @@ from office365.entity import Entity
 class OutlookCategory(Entity):
     """Represents a category by which a user can group Outlook items such as messages and events.
     The user defines categories in a master list, and can apply one or more
-    of these user-defined categories to an item."""
+    of these user-defined categories to an item.
+    """
 
     def __str__(self):
         return self.display_name or self.entity_type_name
@@ -21,5 +22,6 @@ class OutlookCategory(Entity):
     def display_name(self):
         # type: () -> Optional[str]
         """A unique name that identifies a category in the user's mailbox.
-        After a category is created, the name cannot be changed"""
+        After a category is created, the name cannot be changed
+        """
         return self.properties.get("displayName", None)

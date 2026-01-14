@@ -14,9 +14,7 @@ class ServerSettings(Entity):
 
     @staticmethod
     def is_sharepoint_online(context):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        """
+        """:type context: office365.sharepoint.client_context.ClientContext"""
         binding_type = ServerSettings(context)
         return_type = ClientResult(context)
         qry = ServiceOperationQuery(binding_type, "IsSharePointOnline", None, None, None, return_type, True)
@@ -25,9 +23,7 @@ class ServerSettings(Entity):
 
     @staticmethod
     def get_blocked_file_extensions(context):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        """
+        """:type context: office365.sharepoint.client_context.ClientContext"""
         binding_type = ServerSettings(context)
         return_type = ClientResult(context, StringCollection())
         qry = ServiceOperationQuery(
@@ -44,8 +40,7 @@ class ServerSettings(Entity):
 
     @staticmethod
     def get_global_installed_languages(context, compatibility_level):
-        """
-        Gets a list of installed languages that are compatible with a given version of SharePoint.
+        """Gets a list of installed languages that are compatible with a given version of SharePoint.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param int compatibility_level: The value of the major SharePoint version to query for installed languages.

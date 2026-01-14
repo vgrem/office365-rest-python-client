@@ -16,8 +16,7 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_file_by_path(context, src_path, dest_path, overwrite, options=None):
-        """
-        Copies a file from a source URL to a destination URL.
+        """Copies a file from a source URL to a destination URL.
 
         :param office365.sharepoint.client_context.ClientContext context: client context
         :param str src_path: A full or server relative path that represents the source file.
@@ -46,8 +45,7 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_folder(context, src_url, dest_url, options=None):
-        """
-        Copies a folder from a source URL to a destination URL.
+        """Copies a folder from a source URL to a destination URL.
 
         :param office365.sharepoint.client_context.ClientContext context: Client context
         :param str src_url: A full or server relative url that represents the source folder.
@@ -68,8 +66,7 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_folder_by_path(context, src_path, dest_path, options=None):
-        """
-        Copies a folder from a source URL to a destination URL.
+        """Copies a folder from a source URL to a destination URL.
 
         :param office365.sharepoint.client_context.ClientContext context: client context
         :param str src_path: A full or server relative path that represents the source folder.
@@ -96,8 +93,7 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def move_folder(context, src_url, dest_url, options):
-        """
-        Moves a folder from a source URL to a destination URL.
+        """Moves a folder from a source URL to a destination URL.
 
         :param office365.sharepoint.client_context.ClientContext context: client context
         :param str src_url: A full or server relative url that represents the source folder.
@@ -117,8 +113,7 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def move_folder_by_path(context, src_path, dest_path, options):
-        """
-        Moves a folder from a source URL to a destination URL.
+        """Moves a folder from a source URL to a destination URL.
 
         :param str src_path: A full or server relative path that represents the source folder.
         :param str dest_path: A full or server relative path that represents the destination folder.
@@ -139,8 +134,7 @@ class MoveCopyUtil(Entity):
     @staticmethod
     def download_folder(remove_folder, download_file, after_file_downloaded=None, recursive=True):
         # type: (Folder, IO, Callable[[File], None], bool) -> Folder
-        """
-        Downloads a folder into a zip file
+        """Downloads a folder into a zip file
         :param office365.sharepoint.folders.folder.Folder remove_folder: Parent folder
         :param typing.IO download_file: A download zip file object
         :param (office365.sharepoint.files.file.File)->None after_file_downloaded: A download callback

@@ -30,8 +30,7 @@ class DocumentSharingManager(Entity):
 
     @staticmethod
     def remove_items_from_shared_with_me_view(context, item_urls):
-        """
-        Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
+        """Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
             does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.
             Returns a list of results indicating whether the items were successfully removed. The length of this array
             will match the length of the itemUrls array that was provided.
@@ -67,8 +66,7 @@ class DocumentSharingManager(Entity):
         propagate_acl=None,
         return_type=None,
     ):
-        """
-        This method allows a caller with the 'ManagePermission' permission to update sharing information about a
+        """This method allows a caller with the 'ManagePermission' permission to update sharing information about a
         document to enable document sharing with a set of users. It returns an array of
         UserSharingResult (section 3.2.5.190) elements where each element contains the sharing status for each user.
 

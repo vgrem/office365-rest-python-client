@@ -13,8 +13,7 @@ class ActivityLogger(Entity):
         audit_creation_time,
         is_offline,
     ):
-        """
-        :param str operation:
+        """:param str operation:
         :param str list_id:
         :param str list_item_unique_id:
         :param str affected_resource_url:

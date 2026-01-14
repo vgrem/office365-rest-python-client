@@ -13,8 +13,7 @@ class RoleDefinition(Entity):
 
     @property
     def base_permissions(self):
-        """
-        Specifies the base permissions for the role definition.
+        """Specifies the base permissions for the role definition.
         When assigning values to the property, use bitwise AND, OR, and XOR operators with values from
         the BasePermissions uint.
         """
@@ -24,7 +23,8 @@ class RoleDefinition(Entity):
     def id(self):
         # type: () -> Optional[int]
         """Specifies the identifier of the role definition.
-        Its value MUST be equal to or greater than 1073741824."""
+        Its value MUST be equal to or greater than 1073741824.
+        """
         return self.properties.get("Id", None)
 
     @property

@@ -7,8 +7,7 @@ from office365.sharepoint.search.special_term_results import SpecialTermResults
 
 
 class QueryResult(ClientValue):
-    """
-    The QueryResult type is a grouping of result tables, where each contained result table is a ResultTable
+    """The QueryResult type is a grouping of result tables, where each contained result table is a ResultTable
     as specified in [MS-QSSWS] section 3.1.4.1.3.6.
     """
 
@@ -21,8 +20,7 @@ class QueryResult(ClientValue):
         query_rule_id=None,
         special_term_results=SpecialTermResults(),
     ):
-        """
-        :param str query_id: Specifies the identifier for the search query
+        """:param str query_id: Specifies the identifier for the search query
         :param list[CustomResults] custom_results: CustomResults is a list that contains zero or more CustomResult
             instances. A CustomResult instance is a ResultTable with ResultType of any kind (except RefinementResults,
             RelevantResults, and SpecialTermResults)

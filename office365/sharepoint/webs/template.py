@@ -21,8 +21,7 @@ class WebTemplate(Entity):
     @property
     def display_category(self):
         # type: () -> Optional[str]
-        """
-        Specifies the display name for the category that this site definition configuration or site template is
+        """Specifies the display name for the category that this site definition configuration or site template is
         a part of.
         """
         return self.properties.get("DisplayCategory", None)
@@ -30,24 +29,19 @@ class WebTemplate(Entity):
     @property
     def image_url(self):
         # type: () -> Optional[str]
-        """
-        Specifies the URL for the image that is associated with the site definition configuration or site template.
-        """
+        """Specifies the URL for the image that is associated with the site definition configuration or site template."""
         return self.properties.get("ImageUrl", None)
 
     @property
     def is_hidden(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the site definition configuration is displayed in the user interface for creating new sites
-        """
+        """Specifies whether the site definition configuration is displayed in the user interface for creating new sites"""
         return self.properties.get("IsHidden", None)
 
     @property
     def is_root_web_only(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the site definition configuration or site template can only be applied to the top-level site
+        """Specifies whether the site definition configuration or site template can only be applied to the top-level site
         in the site collection.
         """
         return self.properties.get("IsRootWebOnly", None)
@@ -55,8 +49,7 @@ class WebTemplate(Entity):
     @property
     def is_sub_web_only(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the site definition configuration or site template can only be applied to subsites
+        """Specifies whether the site definition configuration or site template can only be applied to subsites
         created within the site collection.
         """
         return self.properties.get("IsSubWebOnly", None)

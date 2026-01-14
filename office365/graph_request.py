@@ -18,16 +18,13 @@ class GraphRequest(ODataRequest):
 
     def with_access_token(self, token_callback):
         # type: (Callable[[], dict]) -> "GraphRequest"
-        """
-        Initializes the confidential client with token callback.
-        """
+        """Initializes the confidential client with token callback."""
         self._auth_context.with_access_token(token_callback)
         return self
 
     def with_certificate(self, client_id, thumbprint, private_key):
         # type: (str, str, str) -> "GraphRequest"
-        """
-        Initializes the confidential client with client certificate
+        """Initializes the confidential client with client certificate
 
         :param str client_id: The OAuth client id of the calling application.
         :param str thumbprint: Thumbprint
@@ -38,8 +35,7 @@ class GraphRequest(ODataRequest):
 
     def with_client_secret(self, client_id, client_secret):
         # type: (str, str) -> "GraphRequest"
-        """
-        Initializes the confidential client with client secret
+        """Initializes the confidential client with client secret
 
         :param str client_id: The OAuth client id of the calling application.
         :param str client_secret: Client secret
@@ -49,8 +45,7 @@ class GraphRequest(ODataRequest):
 
     def with_token_interactive(self, client_id, username=None):
         # type: (str, Optional[str]) -> "GraphRequest"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
 
 
@@ -62,8 +57,7 @@ class GraphRequest(ODataRequest):
 
     def with_username_and_password(self, client_id, username, password):
         # type: (str, str, str) -> "GraphRequest"
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
         :param str client_id: The OAuth client id of the calling application.
         :param str username: Typically a UPN in the form of an email address.
         :param str password: The password.
@@ -75,9 +69,9 @@ class GraphRequest(ODataRequest):
         # type: (RequestOptions) -> None
         """Authenticate request"""
         token = self._auth_context.acquire_token()
-        request.ensure_header("Authorization", "Bearer {0}".format(token.accessToken))
+        request.ensure_header("Authorization", f"Bearer {token.accessToken}")
 
     @property
     def service_root_url(self):
         # type: () -> str
-        return "{0}/{1}".format(AzureEnvironment.get_graph_authority(self._environment), self._version)
+        return f"{AzureEnvironment.get_graph_authority(self._environment)}/{self._version}"

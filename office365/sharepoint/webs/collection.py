@@ -8,14 +8,11 @@ class WebCollection(EntityCollection[Web]):
     """Web collection"""
 
     def __init__(self, context, resource_path=None, parent_web=None):
-        """
-        :type parent_web: Web
-        """
+        """:type parent_web: Web"""
         super(WebCollection, self).__init__(context, Web, resource_path, parent_web)
 
     def add(self, web_creation_information):
-        """
-        Create WebSite
+        """Create WebSite
 
         :type web_creation_information: office365.sharepoint.webs.creation_information.WebCreationInformation
         """

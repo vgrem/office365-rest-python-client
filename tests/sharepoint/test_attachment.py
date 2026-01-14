@@ -15,7 +15,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestListItemAttachment(SPTestCase):
     attachment_file_name = "Sample.txt"
     target_item = None  # type: ListItem
-    attachment_path = "{0}/../data/{1}".format(os.path.dirname(__file__), attachment_file_name)
+    attachment_path = f"{os.path.dirname(__file__)}/../data/{attachment_file_name}"
     target_attachment = None  # type: Attachment
 
     @classmethod

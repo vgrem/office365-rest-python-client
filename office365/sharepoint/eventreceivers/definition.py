@@ -5,7 +5,8 @@ from office365.sharepoint.entity import Entity
 
 class EventReceiverDefinition(Entity):
     """Abstract base class that defines general properties of an event receiver for list items, lists,
-    websites, and workflows."""
+    websites, and workflows.
+    """
 
     @property
     def receiver_assembly(self):

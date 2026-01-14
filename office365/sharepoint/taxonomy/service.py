@@ -9,13 +9,11 @@ class TaxonomyService(ClientRuntimeContext):
     """Wraps all of the associated TermStore objects for an Site object."""
 
     def __init__(self, context):
-        """
-        :type  context: office365.sharepoint.client_context.ClientContext
-        """
+        """:type  context: office365.sharepoint.client_context.ClientContext"""
         super(TaxonomyService, self).__init__()
         self._pending_request = ODataRequest(V4JsonFormat())
         self._pending_request.beforeExecute += context.authentication_context.authenticate_request
-        self._service_root_url = "{0}/v2.1".format(context.service_root_url)
+        self._service_root_url = f"{context.service_root_url}/v2.1"
 
     def pending_request(self):
         return self._pending_request

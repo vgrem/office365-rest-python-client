@@ -5,8 +5,7 @@ from office365.entity import Entity
 
 
 class TeamsAsyncOperation(Entity):
-    """
-    A Microsoft Teams async operation is an operation that transcends the lifetime of a single API request.
+    """A Microsoft Teams async operation is an operation that transcends the lifetime of a single API request.
     These operations are long-running or too expensive to complete within the timeframe of their originating request.
 
     When an async operation is initiated, the method returns a 202 Accepted response code.
@@ -25,8 +24,7 @@ class TeamsAsyncOperation(Entity):
         success_callback=None,
         failure_callback=None,
     ):
-        """
-        Poll to check for completion of an async Teams create call
+        """Poll to check for completion of an async Teams create call
 
         :param int polling_interval_secs:
         :param int max_polling_count:
@@ -49,9 +47,8 @@ class TeamsAsyncOperation(Entity):
                 if return_type.status != status_type:
                     time.sleep(polling_interval_secs)
                     _poll_for_status(polling_number + 1)
-                else:
-                    if callable(success_callback):
-                        success_callback(return_type)
+                elif callable(success_callback):
+                    success_callback(return_type)
 
             self.get().after_execute(_verify_status, execute_first=True)
 

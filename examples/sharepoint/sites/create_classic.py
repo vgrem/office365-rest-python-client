@@ -1,7 +1,4 @@
-"""
-Create a modern site
-
-"""
+"""Create a modern site"""
 
 import logging
 from random import randint
@@ -19,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 alias = str(randint(0, 10000))
 title = "Custom Site"
-site_url = "{0}/sites/{1}".format(test_site_url, alias)
+site_url = f"{test_site_url}/sites/{alias}"
 
 tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
 

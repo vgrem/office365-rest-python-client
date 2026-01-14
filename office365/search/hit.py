@@ -3,8 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class SearchHit(ClientValue):
     def __init__(self, content_source=None, summary=None, resource=None, result_template_id=None):
-        """
-        Represents a single result within the list of search results.
+        """Represents a single result within the list of search results.
         :param str content_source:
         :param str summary: A summary of the result, if a summary is available.
         :param office365.entity.Entity resource: The underlying Microsoft Graph representation of the search result.

@@ -1,5 +1,4 @@
-"""
-Search messages in a user's mailbox
+"""Search messages in a user's mailbox
 
 https://learn.microsoft.com/en-us/graph/search-concept-messages
 """

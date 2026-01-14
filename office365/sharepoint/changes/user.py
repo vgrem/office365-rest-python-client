@@ -9,8 +9,7 @@ class ChangeUser(Change):
     @property
     def activate(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether a user has changed from an inactive state to an active state.
+        """Specifies whether a user has changed from an inactive state to an active state.
 
         When a user is added to a site and only has browse permissions, the user is in an inactive state.
         However, once the user can author list items, add documents, be assigned tasks, or make any contribution

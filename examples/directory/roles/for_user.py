@@ -1,5 +1,4 @@
-"""
-List the directory roles for the user.
+"""List the directory roles for the user.
 
 https://learn.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0
 """

@@ -7,7 +7,8 @@ from office365.sharepoint.social.posts.reference import SocialPostReference
 
 class SocialThread(ClientValue):
     """The SocialThread property provides the object that contains the thread.
-    For details on the SocialThread type, see section 3.1.5.42."""
+    For details on the SocialThread type, see section 3.1.5.42.
+    """
 
     def __init__(
         self,
@@ -17,8 +18,7 @@ class SocialThread(ClientValue):
         root_post=SocialPost(),
         post_reference=SocialPostReference(),
     ):
-        """
-        :param str thread_id: The Id property specifies the unique identification of the thread.
+        """:param str thread_id: The Id property specifies the unique identification of the thread.
         :param list[SocialActor] actors: The Actors property is an array that specifies the users who have created
             a post in the returned thread and also contains any users, documents, sites, and tags that are referenced
             in any of the posts in the returned thread.

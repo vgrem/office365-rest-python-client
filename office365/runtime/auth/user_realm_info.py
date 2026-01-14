@@ -1,8 +1,6 @@
-class UserRealmInfo(object):
+class UserRealmInfo:
     def __init__(self, auth_url, federated):
-        """
-
-        :type federated: bool
+        """:type federated: bool
         :type auth_url: str or None
         """
         self.STSAuthUrl = auth_url

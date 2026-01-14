@@ -8,7 +8,5 @@ class ShiftPreferences(ChangeTrackedEntity):
 
     @property
     def availability(self):
-        """
-        Availability of the user to be scheduled for work and its recurrence pattern.
-        """
+        """Availability of the user to be scheduled for work and its recurrence pattern."""
         return self.properties.get("availability", ClientValueCollection(ShiftAvailability))

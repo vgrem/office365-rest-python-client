@@ -15,8 +15,7 @@ class DocumentSet(ClientValue):
         propagate_welcome_page_changes=None,
         should_prefix_name_to_file=None,
     ):
-        """
-        :param str welcome_page_url:  Welcome page absolute URL.
+        """:param str welcome_page_url:  Welcome page absolute URL.
         :param list[ContentTypeInfo] allowed_content_types:  Content types allowed in document set.
         :param list[DocumentSetContent] default_contents:  Default contents of document set.
         :param bool propagate_welcome_page_changes:  Specifies whether to push welcome page changes to inherited

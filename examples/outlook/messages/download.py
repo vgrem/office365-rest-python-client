@@ -1,5 +1,4 @@
-"""
-Downloads MIME representation of a message
+"""Downloads MIME representation of a message
 
 https://learn.microsoft.com/en-us/graph/outlook-get-mime-message
 Requires Mail.ReadWrite permission
@@ -18,4 +17,4 @@ with tempfile.TemporaryDirectory() as local_path:
         with open(os.path.join(local_path, message.subject + ".eml"), "wb") as f:
             message.download(f).execute_query()
 
-        print("Message downloaded into {0}".format(f.name))
+        print(f"Message downloaded into {f.name}")

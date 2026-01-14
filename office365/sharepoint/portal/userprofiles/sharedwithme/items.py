@@ -11,9 +11,7 @@ class SharedWithMeItems(Entity):
 
     @staticmethod
     def shared_with_me(context):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        """
+        """:param office365.sharepoint.client_context.ClientContext context: Client context"""
         binding_type = SharedWithMeItems(context)
         return_type = EntityCollection(context, SharedWithMeDocument)
         qry = ServiceOperationQuery(binding_type, "SharedWithMe", return_type=return_type, is_static=True)

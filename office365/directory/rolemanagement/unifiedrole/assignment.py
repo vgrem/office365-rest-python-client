@@ -9,16 +9,14 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class UnifiedRoleAssignment(Entity):
-    """
-    A role assignment is used to grant access to resources. It represents a role definition assigned to a principal
+    """A role assignment is used to grant access to resources. It represents a role definition assigned to a principal
     (for example, a user or a role-assignable group) at a particular scope.
     """
 
     @property
     def app_scope_id(self):
         # type: () -> Optional[str]
-        """
-        Identifier of the app-specific scope when the assignment scope is app-specific. Either this property or
+        """Identifier of the app-specific scope when the assignment scope is app-specific. Either this property or
         directoryScopeId is required. App scopes are scopes that are defined and understood by this application only.
         Use / for tenant-wide app scopes. Use directoryScopeId to limit the scope to particular directory objects,
         for example, administrative units. Supports $filter (eq, in).
@@ -35,7 +33,8 @@ class UnifiedRoleAssignment(Entity):
     def principal_id(self):
         # type: () -> Optional[str]
         """Identifier of the principal to which the assignment is granted. Supported principals are users,
-        role-assignable groups, and service principals. Supports $filter (eq, in)."""
+        role-assignable groups, and service principals. Supports $filter (eq, in).
+        """
         return self.properties.get("principalId", None)
 
     @property
@@ -56,9 +55,7 @@ class UnifiedRoleAssignment(Entity):
 
     @property
     def role_definition(self):
-        """
-        The roleDefinition the assignment is for. Supports $expand. roleDefinition.Id will be auto expanded.
-        """
+        """The roleDefinition the assignment is for. Supports $expand. roleDefinition.Id will be auto expanded."""
         return self.properties.get(
             "roleDefinition",
             UnifiedRoleDefinition(self.context, ResourcePath("roleDefinition", self.resource_path)),
@@ -66,8 +63,7 @@ class UnifiedRoleAssignment(Entity):
 
     @property
     def app_scope(self):
-        """
-        Read-only property with details of the app specific scope when the assignment scope is app specific.
+        """Read-only property with details of the app specific scope when the assignment scope is app specific.
         Containment entity. Supports $expand for the entitlement provider only.
         """
         return self.properties.get(

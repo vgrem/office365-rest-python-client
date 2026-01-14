@@ -33,9 +33,7 @@ class User(Entity):
         return return_type
 
     def get_my_groups(self):
-        """
-        Retrieves information about groups that a user belongs to.
-        """
+        """Retrieves information about groups that a user belongs to."""
         return_type = MyGroupsResult(self.context)
 
         def _user_loaded():

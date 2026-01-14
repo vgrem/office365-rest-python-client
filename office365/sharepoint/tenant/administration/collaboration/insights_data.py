@@ -10,8 +10,7 @@ class CollaborativeUsers(ClientValue):
 
 class CollaborationInsightsData(ClientValue):
     def __init__(self, last_report_date=None, collaborative_users=None):
-        """
-        :param str last_report_date:
+        """:param str last_report_date:
         :param list[CollaborativeUsers] collaborative_users:
         """
         self.collaborativeUsers = ClientValueCollection(CollaborativeUsers, collaborative_users)

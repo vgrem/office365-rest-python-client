@@ -6,13 +6,15 @@ from office365.onedrive.base_item import BaseItem
 
 class RecycleBinItem(BaseItem):
     """Represents information about a deleted item in a recycleBin of a SharePoint site or a SharePoint
-    Embedded fileStorageContainer."""
+    Embedded fileStorageContainer.
+    """
 
     @property
     def deleted_datetime(self):
         # type: () -> Optional[datetime]
         """Date and time when the item was deleted. The timestamp type represents date and time information using
-        ISO 8601 format and is always in UTC."""
+        ISO 8601 format and is always in UTC.
+        """
         return self.properties.get("deletedDateTime", datetime.min)
 
     @property

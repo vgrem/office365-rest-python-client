@@ -12,9 +12,7 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
         anchor_id="00000000-0000-0000-0000-000000000000",
         allow_multiple_values=False,
     ):
-        """
-        :param str name:
-        """
+        """:param str name:"""
         self.Name = name
         self.SspId = term_store_id
         self.TermSetId = term_set_id
@@ -31,19 +29,19 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
 
     @property
     def schema_xml(self):
-        list_attr = 'List="{{{list_id}}}"'.format(list_id=self.ListId) if self.ListId is not None else ""
+        list_attr = f'List="{{{self.ListId}}}"' if self.ListId is not None else ""
 
-        return """
-            <Field Type="{type_name}" DisplayName="{name}" {list_attr}
-                   WebId="{web_id}" Required="FALSE" EnforceUniqueValues="FALSE"
-                   ID="{{{field_id}}}" StaticName="{name}" Name="{name}" Mult="{allow_multiple_values}">
+        return f"""
+            <Field Type="{self.type_name}" DisplayName="{self.Name}" {list_attr}
+                   WebId="{self.WebId}" Required="FALSE" EnforceUniqueValues="FALSE"
+                   ID="{{{self.FieldId}}}" StaticName="{self.Name}" Name="{self.Name}" Mult="{str(self.AllowMultipleValues).upper()}">
                 <Default/>
                 <Customization>
                     <ArrayOfProperty>
                         <Property>
                             <Name>SspId</Name>
                             <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string"
-                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{ssp_id}
+                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{self.SspId}
                             </Value>
                         </Property>
                         <Property>
@@ -52,13 +50,13 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
                         <Property>
                             <Name>TermSetId</Name>
                             <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string"
-                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{term_set_id}
+                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{self.TermSetId}
                             </Value>
                         </Property>
                         <Property>
                             <Name>AnchorId</Name>
                             <Value xmlns:q3="http://www.w3.org/2001/XMLSchema" p4:type="q3:string"
-                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{anchor_id}
+                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{self.AnchorId}
                             </Value>
                         </Property>
                         <Property>
@@ -76,7 +74,7 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
                         <Property>
                             <Name>TextField</Name>
                             <Value xmlns:q6="http://www.w3.org/2001/XMLSchema" p4:type="q6:string"
-                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{{{text_field_id}}}
+                                   xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{{{self.TextFieldId}}}
                             </Value>
                         </Property>
                         <Property>
@@ -128,15 +126,4 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
                     </ArrayOfProperty>
                 </Customization>
             </Field>
-            """.format(
-            name=self.Name,
-            list_attr=list_attr,
-            web_id=self.WebId,
-            field_id=self.FieldId,
-            ssp_id=self.SspId,
-            term_set_id=self.TermSetId,
-            anchor_id=self.AnchorId,
-            text_field_id=self.TextFieldId,
-            allow_multiple_values=str(self.AllowMultipleValues).upper(),
-            type_name=self.type_name,
-        )
+            """

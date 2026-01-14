@@ -10,8 +10,7 @@ class ApplicationTemplate(Entity):
     """Represents an application in the Azure AD application gallery."""
 
     def instantiate(self, display_name):
-        """
-        Add an instance of an application from the Azure AD application gallery into your directory. You can also use
+        """Add an instance of an application from the Azure AD application gallery into your directory. You can also use
         this API to instantiate non-gallery apps.
         Use the following ID for the applicationTemplate object: 8adf8e6e-67b2-4cf2-a259-e3dc5476c621.
 
@@ -31,8 +30,7 @@ class ApplicationTemplate(Entity):
 
     @property
     def categories(self):
-        """
-        The list of categories for the application. Supported values can be: Collaboration, Business Management,
+        """The list of categories for the application. Supported values can be: Collaboration, Business Management,
         Consumer, Content management, CRM, Data services, Developer services, E-commerce, Education, ERP, Finance,
         Health, Human resources, IT infrastructure, Mail, Management, Marketing, Media, Productivity,
         Project management, Telecommunications, Tools, Travel, and Web design & hosting.
@@ -46,8 +44,7 @@ class ApplicationTemplate(Entity):
 
     @property
     def supported_single_signon_modes(self):
-        """
-        The list of single sign-on modes supported by this application.
+        """The list of single sign-on modes supported by this application.
         The supported values are oidc, password, saml, and notSupported.
         """
         return self.properties.get("supportedSingleSignOnModes", StringCollection())

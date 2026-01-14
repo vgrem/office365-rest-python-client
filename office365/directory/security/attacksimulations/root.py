@@ -13,7 +13,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class AttackSimulationRoot(Entity):
     """Represents an abstract type that provides the ability to launch a realistic phishing attack that organizations
-    can learn from."""
+    can learn from.
+    """
 
     @property
     def landing_pages(self):

@@ -9,8 +9,7 @@ class MeetingParticipants(ClientValue):
     """Participants in a meeting."""
 
     def __init__(self, organizer=MeetingParticipantInfo(), attendees=None):
-        """
-        :param MeetingParticipantInfo organizer:
+        """:param MeetingParticipantInfo organizer:
         :param list[MeetingParticipantInfo] attendees:
         """
         super(MeetingParticipants, self).__init__()

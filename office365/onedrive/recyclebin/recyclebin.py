@@ -7,7 +7,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class RecycleBin(BaseItem):
     """Represents a container for a collection of recycleBinItem resources in a SharePoint site or a
-    SharePoint Embedded fileStorageContainer."""
+    SharePoint Embedded fileStorageContainer.
+    """
 
     @property
     def items(self):

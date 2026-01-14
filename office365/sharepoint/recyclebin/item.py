@@ -24,8 +24,7 @@ class RecycleBinItem(Entity):
         return self
 
     def move_to_second_stage(self):
-        """
-        Moves the Recycle Bin item from the first-stage Recycle Bin to the second-stage Recycle Bin if the
+        """Moves the Recycle Bin item from the first-stage Recycle Bin to the second-stage Recycle Bin if the
         SecondStageRecycleBinQuota property on the current web application is not 0. Otherwise, deletes the item.
         """
         qry = ServiceOperationQuery(self, "MoveToSecondStage")
@@ -59,8 +58,7 @@ class RecycleBinItem(Entity):
     @property
     def deleted_date_local_formatted(self):
         # type: () -> Optional[str]
-        """
-        Specifies when, in the default time zone for the current site,
+        """Specifies when, in the default time zone for the current site,
         the Recycle Bin item was moved to the Recycle Bin.
         """
         return self.properties.get("DeletedDateLocalFormatted", None)
@@ -68,9 +66,7 @@ class RecycleBinItem(Entity):
     @property
     def dir_name(self):
         # type: () -> Optional[str]
-        """
-        Specifies the site-relative URL of the list or folder that originally contained the Recycle Bin item.
-        """
+        """Specifies the site-relative URL of the list or folder that originally contained the Recycle Bin item."""
         return self.properties.get("DirName", None)
 
     @property

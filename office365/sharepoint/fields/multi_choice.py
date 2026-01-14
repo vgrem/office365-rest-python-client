@@ -10,8 +10,7 @@ class FieldMultiChoice(Field):
     @property
     def fill_in_choice(self):
         # type: () -> Optional[bool]
-        """
-        Specifies whether the field can accept values other than those specified in
+        """Specifies whether the field can accept values other than those specified in
         Microsoft.Sharepoint.Client.FieldMultiChoice.Choices, as specified in section 3.2.5.51.1.1.2.
         """
         return self.properties.get("FillInChoice", None)

@@ -16,8 +16,7 @@ class SelfSignedCertificate(ClientValue):
         type_=None,
         usage=None,
     ):
-        """
-        :param custom_key_identifier: 	Custom key identifier.
+        """:param custom_key_identifier: 	Custom key identifier.
         :param str display_name: The friendly name for the key.
         :param end_datetime: The date and time at which the credential expires. The timestamp type represents date
              and time information using ISO 8601 format and is always in UTC time

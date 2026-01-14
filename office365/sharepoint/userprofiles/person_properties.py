@@ -6,8 +6,7 @@ from office365.sharepoint.entity import Entity
 
 
 class PersonProperties(Entity):
-    """
-    The PersonProperties class contains the data about people and is returned by PeopleManager methods
+    """The PersonProperties class contains the data about people and is returned by PeopleManager methods
     (see section 3.1.5.58).
     """
 
@@ -40,8 +39,7 @@ class PersonProperties(Entity):
 
     @property
     def peers(self):
-        """
-        The Peers property specifies an array of strings that specify the account names of person's peers, that is,
+        """The Peers property specifies an array of strings that specify the account names of person's peers, that is,
         those who have the same manager.
         """
         return self.properties.get("Peers", StringCollection())
@@ -54,16 +52,14 @@ class PersonProperties(Entity):
 
     @property
     def extended_managers(self):
-        """
-        The ExtendedManagers property specifies an array of strings that specify the account names of
+        """The ExtendedManagers property specifies an array of strings that specify the account names of
         a person's managers.
         """
         return self.properties.get("ExtendedManagers", StringCollection())
 
     @property
     def extended_reports(self):
-        """
-        The ExtendedReports properties specifies an array of strings that specify the account names of
+        """The ExtendedReports properties specifies an array of strings that specify the account names of
         person's extended reports.
         """
         return self.properties.get("ExtendedReports", StringCollection())

@@ -8,8 +8,7 @@ from office365.sharepoint.lists.list import List
 class DocumentSet(Folder):
     @staticmethod
     def create(context, parent_folder, name, ct_id="0x0120D520"):
-        """
-        Creates a DocumentSet (section 3.1.5.3) object on the server.
+        """Creates a DocumentSet (section 3.1.5.3) object on the server.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param office365.sharepoint.folders.folder.Folder parent_folder: The folder inside which to create the new
@@ -18,7 +17,6 @@ class DocumentSet(Folder):
         :param office365.sharepoint.contenttypes.content_type_id.ContentTypeId ct_id: The identifier of the content
             type to give to the new document set.
         """
-
         return_type = DocumentSet(context)
 
         def _create(target_list):
@@ -30,8 +28,8 @@ class DocumentSet(Folder):
             def _construct_request(request):
                 # type: (RequestOptions) -> None
                 list_name = target_list.title.replace(" ", "")
-                request.url = r"{0}/_vti_bin/listdata.svc/{1}".format(context.base_url, list_name)
-                request.set_header("Slug", "{0}|{1}".format(folder_url, ct_id))
+                request.url = rf"{context.base_url}/_vti_bin/listdata.svc/{list_name}"
+                request.set_header("Slug", f"{folder_url}|{ct_id}")
                 request.method = HttpMethod.Post
 
             context.add_query(qry).before_query_execute(_construct_request)

@@ -11,9 +11,7 @@ class UserProfilePropertiesForUser(Entity):
     """The UserProfilePropertiesForUser class represents a set of user profile properties for a user."""
 
     def get_property_names(self):
-        """
-        The GetPropertyNames method gets an array of strings that specify the user profile property names.
-        """
+        """The GetPropertyNames method gets an array of strings that specify the user profile property names."""
         return_type = ClientResult(self.context, StringCollection())
         qry = ServiceOperationQuery(self, "GetPropertyNames", None, None, None, return_type)
         self.context.add_query(qry)

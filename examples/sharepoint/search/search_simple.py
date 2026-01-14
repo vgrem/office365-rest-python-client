@@ -1,5 +1,4 @@
-"""
-Search for document files in tenant
+"""Search for document files in tenant
 
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """

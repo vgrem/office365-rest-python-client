@@ -4,8 +4,7 @@ from office365.teams.channels.collection import ChannelCollection
 
 
 class DeletedTeam(Entity):
-    """
-    A deleted team in Microsoft Teams is a collection of channel objects. A channel represents a topic,
+    """A deleted team in Microsoft Teams is a collection of channel objects. A channel represents a topic,
     and therefore a logical isolation of discussion, within a deleted team.
 
     Every deleted team is associated with a Microsoft 365 group. For more information about working with groups

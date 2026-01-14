@@ -14,8 +14,7 @@ class ConfiguredMetadataNavigationItem(ClientValue):
         is_folder_hierarchy=None,
         is_hierarchy=None,
     ):
-        """
-        :param str field_display_name: The display name of the field that this item refers to.
+        """:param str field_display_name: The display name of the field that this item refers to.
         :param str field_title: The internal name of the field that this item refers to.
         :param str field_type_as_string: The type of the field that this item refers to.
         :param bool is_content_type_field: Indicates whether the type of this field is a content type.

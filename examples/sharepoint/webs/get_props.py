@@ -1,5 +1,4 @@
-"""
-Retrieve only selected properties (Author) of a website
+"""Retrieve only selected properties (Author) of a website
 
 The client library queries only for those properties on the server via select and expand methods,
 and the server sends only those properties to the client.

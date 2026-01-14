@@ -13,7 +13,8 @@ class UserConsentRequestCollection(EntityCollection[UserConsentRequest]):
 
     def filter_by_current_user(self, on):
         """Retrieve a collection of userConsentRequest objects for accessing a specified app, for which the current
-        user is the reviewer."""
+        user is the reviewer.
+        """
         return_type = UserConsentRequestCollection(self.context, self.resource_path)
         params = {"on": on}
         qry = FunctionQuery(self, "filterByCurrentUser", params, return_type)

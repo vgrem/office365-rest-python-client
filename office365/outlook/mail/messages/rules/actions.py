@@ -21,8 +21,7 @@ class MessageRuleActions(ClientValue):
         redirect_to=None,
         stop_processing_rules=None,
     ):
-        """
-        :param list[str] assign_categories: A list of categories to be assigned to a message.
+        """:param list[str] assign_categories: A list of categories to be assigned to a message.
         :param str copy_to_folder: The ID of a folder that a message is to be copied to.
         :param bool delete: Indicates whether a message should be moved to the Deleted Items folder.
         :param list[Recipient] forward_as_attachment_to: The email addresses of the recipients to which a message

@@ -6,13 +6,12 @@ from office365.runtime.paths.resource_path import ResourcePath
 class OrgContact(DirectoryObject):
     """Represents an organizational contact. Organizational contacts are managed by an organization's administrators
     and are different from personal contacts. Additionally, organizational contacts are either synchronized
-    from on-premises directories or from Exchange Online, and are read-only."""
+    from on-premises directories or from Exchange Online, and are read-only.
+    """
 
     @property
     def direct_reports(self):
-        """
-        Get a user's direct reports.
-        """
+        """Get a user's direct reports."""
         return self.properties.get(
             "directReports",
             DirectoryObjectCollection(self.context, ResourcePath("directReports", self.resource_path)),
@@ -20,9 +19,7 @@ class OrgContact(DirectoryObject):
 
     @property
     def manager(self):
-        """
-        The user or contact that is this contact's manager.
-        """
+        """The user or contact that is this contact's manager."""
         return self.properties.get(
             "manager",
             DirectoryObject(self.context, ResourcePath("manager", self.resource_path)),

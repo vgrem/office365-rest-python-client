@@ -12,8 +12,7 @@ class PresenceStatusMessage(ClientValue):
         message=ItemBody(),
         published_datetime=None,
     ):
-        """
-        :param DateTimeTimeZone expiry_datetime: Time in which the status message expires. If not provided, the status
+        """:param DateTimeTimeZone expiry_datetime: Time in which the status message expires. If not provided, the status
             message does not expire.
         :param ItemBody message: Status message item.
         :param datetime.datetime published_datetime: Time in which the status message was published.

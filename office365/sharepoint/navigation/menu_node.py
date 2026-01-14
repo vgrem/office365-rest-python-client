@@ -5,7 +5,8 @@ from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
 class MenuNode(ClientValue):
     """Represents a navigation node in the navigation hierarchy. A navigation hierarchy is a tree structure of
-    navigation nodes."""
+    navigation nodes.
+    """
 
     def __init__(
         self,
@@ -21,8 +22,7 @@ class MenuNode(ClientValue):
         simple_url=None,
         translations=None,
     ):
-        """
-        :param list[str] audience_ids:
+        """:param list[str] audience_ids:
         :param int current_lcid:
         :param str title: Specifies the title of the navigation node. The value is in the preferred language of the
             user, if available, or is in the default language of the site (2) as a fallback.

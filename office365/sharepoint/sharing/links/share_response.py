@@ -3,14 +3,10 @@ from office365.sharepoint.sharing.links.info import SharingLinkInfo
 
 
 class ShareLinkResponse(ClientValue):
-    """
-    Represents a response for a request for the retrieval or creation/update of a tokenized sharing link.
-    """
+    """Represents a response for a request for the retrieval or creation/update of a tokenized sharing link."""
 
     def __init__(self, sharing_link_info=SharingLinkInfo()):
-        """
-        :param SharingLinkInfo sharing_link_info:
-        """
+        """:param SharingLinkInfo sharing_link_info:"""
         self.sharingLinkInfo = sharing_link_info
 
     def __str__(self):

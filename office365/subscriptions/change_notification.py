@@ -14,8 +14,7 @@ class ChangeNotification(ClientValue):
         resource=None,
         resource_data=ResourceData(),
     ):
-        """
-        :param str change_type: Indicates the type of change that will raise the change notification.
+        """:param str change_type: Indicates the type of change that will raise the change notification.
             The supported values are: created, updated, deleted. Required.
         :param str client_state: Value of the clientState property sent in the subscription request (if any).
             The maximum length is 255 characters. The client can check whether the change notification came from the

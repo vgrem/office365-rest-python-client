@@ -4,8 +4,7 @@ from office365.sharepoint.eventreceivers.definition import EventReceiverDefiniti
 
 
 class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition]):
-    """
-    Represents a collection of SP.EventReceiverDefinition objects that are used to enumerate the list of
+    """Represents a collection of SP.EventReceiverDefinition objects that are used to enumerate the list of
     registered event receivers for Windows SharePoint Services objects that can have events.
     """
 

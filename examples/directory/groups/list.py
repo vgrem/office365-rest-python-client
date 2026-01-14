@@ -1,5 +1,4 @@
-"""
-List groups
+"""List groups
 
 https://learn.microsoft.com/en-us/graph/api/user-list?view=graph-rest-1.0
 """

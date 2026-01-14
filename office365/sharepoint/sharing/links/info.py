@@ -20,8 +20,7 @@ class SharingLinkInfo(ClientValue):
         share_token_string=None,
         url=None,
     ):
-        """
-        Specifies the information about the tokenized sharing link.
+        """Specifies the information about the tokenized sharing link.
 
         :param bool allows_anonymous_access: Indicates whether the tokenized sharing link allows anonymous access.
         :param str application_id:

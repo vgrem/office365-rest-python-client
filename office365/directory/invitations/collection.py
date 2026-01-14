@@ -10,8 +10,7 @@ class InvitationCollection(EntityCollection[Invitation]):
         super(InvitationCollection, self).__init__(context, Invitation, resource_path)
 
     def create(self, invited_user_email_address, invite_redirect_url=None):
-        """
-        Use this API to create a new invitation. Invitation adds an external user to the organization.
+        """Use this API to create a new invitation. Invitation adds an external user to the organization.
 
         When creating a new invitation you have several options available:
 

@@ -1,5 +1,4 @@
-"""
-Create a Microsoft 365 group
+"""Create a Microsoft 365 group
 
 The following example creates a Microsoft 365 group. Because the owners have not been specified,
 the calling user is automatically added as the owner of the group.

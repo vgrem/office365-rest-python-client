@@ -24,8 +24,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         entity_types=None,
         context_url=None,
     ):
-        """
-        Specifies a JSON formatted CSOM String of principals found in the search grouped by hierarchy.
+        """Specifies a JSON formatted CSOM String of principals found in the search grouped by hierarchy.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str provider_id: The identifier of a claims provider.
@@ -34,7 +33,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         :param str entity_types: The type of principals to search for.
         :param str context_url: The URL to use as context when searching for principals.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         payload = {
             "providerID": provider_id,
             "hierarchyNodeID": hierarchy_node_id,
@@ -48,14 +47,13 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
     @staticmethod
     def client_people_picker_resolve_user(context, query_string):
-        """
-        Resolves the principals to a string of JSON representing users in people picker format.
+        """Resolves the principals to a string of JSON representing users in people picker format.
 
         :param str query_string: Specifies the value to be used in the principal query.
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
 
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         binding_type = ClientPeoplePickerWebServiceInterface(context)
         payload = {"queryParams": ClientPeoplePickerQueryParameters(query_string=query_string)}
         qry = ServiceOperationQuery(
@@ -72,15 +70,14 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
     @staticmethod
     def client_people_picker_search_user(context, query_string, maximum_entity_suggestions=100):
-        """
-        Returns for a string of JSON representing users in people picker format of the specified principals.
+        """Returns for a string of JSON representing users in people picker format of the specified principals.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str query_string: Specifies the value to be used in the principal query.
         :param int maximum_entity_suggestions: Specifies the maximum number of principals to be returned by the
         principal query.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         binding_type = ClientPeoplePickerWebServiceInterface(context)
         params = ClientPeoplePickerQueryParameters(
             query_string=query_string,
@@ -101,8 +98,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
     @staticmethod
     def get_picker_entity_information(context, email_address):
-        """
-        Gets information of the specified principal.
+        """Gets information of the specified principal.
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str email_address: Specifies the principal for which information is being requested.
 
@@ -137,8 +133,7 @@ class PeoplePickerWebServiceInterface(Entity):
         hierarchy_node_id=None,
         entity_types=None,
     ):
-        """
-        Specifies a JSON formatted CSOM String of principals found in the search.
+        """Specifies a JSON formatted CSOM String of principals found in the search.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str search_pattern: Specifies a pattern used to search for principals.
@@ -148,7 +143,7 @@ class PeoplePickerWebServiceInterface(Entity):
             this node.
         :param str entity_types: The type of principals to search for.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         payload = {
             "searchPattern": search_pattern,
             "providerID": provider_id,

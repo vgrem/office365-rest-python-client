@@ -10,7 +10,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class ItemActivityStat(Entity):
     """The itemActivityStat resource provides information about activities that took place
-    within an interval of time."""
+    within an interval of time.
+    """
 
     @property
     def access(self):

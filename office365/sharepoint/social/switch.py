@@ -8,8 +8,7 @@ class SPSocialSwitch(Entity):
 
     @staticmethod
     def is_following_feature_enabled(context):
-        """
-        Returns true if the SPSocial follow feature is enabled, taking into account the current context
+        """Returns true if the SPSocial follow feature is enabled, taking into account the current context
         as appropriate. Specifically, if there is a SP.Web within the SP.RequestContext, this method will take into
         account whether the FollowingContent feature is activated within the SP.Web as well.
         Regardless of whether there is an SP.Web within the context, it will take into account if SPSocial

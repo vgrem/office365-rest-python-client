@@ -3,8 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class GroupSiteInfo(ClientValue):
     def __init__(self, site_url=None, site_status=None):
-        """
-        :param str site_url: Site url
+        """:param str site_url: Site url
         :param int site_status: Site status
         """
         super(GroupSiteInfo, self).__init__()

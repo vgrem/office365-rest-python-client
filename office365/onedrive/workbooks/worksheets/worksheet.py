@@ -17,9 +17,7 @@ from office365.runtime.queries.function import FunctionQuery
 
 
 class WorkbookWorksheet(Entity):
-    """
-    An Excel worksheet is a grid of cells. It can contain data, tables, charts, etc
-    """
+    """An Excel worksheet is a grid of cells. It can contain data, tables, charts, etc"""
 
     def __repr__(self):
         return self.name or self.entity_type_name

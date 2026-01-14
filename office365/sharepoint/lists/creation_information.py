@@ -16,8 +16,7 @@ class ListCreationInformation(ClientValue):
         template_feature_id=None,
         template_type=None,
     ):
-        """
-        :param int or None base_template:
+        """:param int or None base_template:
         :param bool allow_content_types:
         :poram str or None description: Specifies the description of the new list.
         :param str title: Specifies the display name of the new list.

@@ -8,7 +8,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 ClientValueT = TypeVar("ClientValueT", int, float, str, bool, "ClientValue")
 
 
-class ClientValue(object):
+class ClientValue:
     """Represent complex type.
     Complex types consist of a list of properties with no key, and can therefore only exist as properties of a
     containing entity or as a temporary value

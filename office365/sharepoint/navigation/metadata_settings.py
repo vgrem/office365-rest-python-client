@@ -11,13 +11,11 @@ class MetadataNavigationSettings(Entity):
 
     @staticmethod
     def get_configured_settings(context, url, return_type=None):
-        """
-        Retrieves the configured metadata navigation settings for the list with the specified url.
+        """Retrieves the configured metadata navigation settings for the list with the specified url.
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str url: Specifies list url
         :param ClientResult return_type: Return type
         """
-
         if return_type is None:
             return_type = ClientResult(context, ConfiguredMetadataNavigationItemCollection())
         payload = {"DecodedUrl": url}

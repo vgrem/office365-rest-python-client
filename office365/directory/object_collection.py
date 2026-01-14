@@ -15,8 +15,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         super(DirectoryObjectCollection, self).__init__(context, DirectoryObject, resource_path)
 
     def get_by_ids(self, ids, types=None):
-        """
-        Returns the directory objects specified in a list of IDs.
+        """Returns the directory objects specified in a list of IDs.
         :param list[str] ids: A collection of IDs for which to return objects. The IDs are GUIDs, represented as
             strings. You can specify up to 1000 IDs.
         :param list[str] types: A collection of resource types that specifies the set of resource collections to search.
@@ -43,8 +42,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         return self
 
     def get_available_extension_properties(self, is_synced_from_on_premises=None):
-        """
-        Return all or a filtered list of the directory extension properties that have been registered in a directory.
+        """Return all or a filtered list of the directory extension properties that have been registered in a directory.
         The following entities support extension properties: user, group, organization, device, application,
         and servicePrincipal.
         """
@@ -67,7 +65,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         """
 
         def _remove(id_):
-            qry = ServiceOperationQuery(self, "{0}/$ref".format(id_))
+            qry = ServiceOperationQuery(self, f"{id_}/$ref")
 
             def _construct_request(request):
                 # type: (RequestOptions) -> None
@@ -93,8 +91,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         mail_nickname=None,
         on_behalf_of_userid=None,
     ):
-        """
-        Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.
+        """Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.
         Clients can use this API to determine whether a display name or mail nickname is valid before trying to
         create a Microsoft 365 group. To validate the properties of an existing group, use the group:
         validateProperties function.

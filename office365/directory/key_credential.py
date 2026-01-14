@@ -2,8 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class KeyCredential(ClientValue):
-    """
-    Contains a key credential associated with an application .
+    """Contains a key credential associated with an application .
     The keyCredentials property of the application entity is a collection of keyCredential.
     """
 
@@ -18,8 +17,7 @@ class KeyCredential(ClientValue):
         key_type=None,
         usage=None,
     ):
-        """
-        :param str custom_key_identifier: A 40-character binary type that can be used to identify the credential.
+        """:param str custom_key_identifier: A 40-character binary type that can be used to identify the credential.
            Optional. When not provided in the payload, defaults to the thumbprint of the certificate.
         :param str display_name: Friendly name for the key. Optional.
         :param datetime.datetime or str end_datetime: The date and time at which the credential expires.

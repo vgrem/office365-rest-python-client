@@ -26,12 +26,12 @@ class TestSharePointWeb(SPTestCase):
         self.__class__.target_user = current_user
 
     def test2_get_web_from_page_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
+        page_url = f"{test_site_url}/SitePages/Home.aspx"
         result = Web.get_web_url_from_page_url(self.client, page_url).execute_query()
         self.assertIsNotNone(result.value)
 
     def test3_get_list_item_by_url(self):
-        page_url = "{site_url}/SitePages/Home.aspx".format(site_url=test_site_url)
+        page_url = f"{test_site_url}/SitePages/Home.aspx"
         target_item = self.client.web.get_list_item(page_url).execute_query()
         self.assertIsNotNone(target_item.resource_path)
 
@@ -52,7 +52,7 @@ class TestSharePointWeb(SPTestCase):
         creation_info.Title = target_web_name
         self.__class__.target_web = self.client.web.webs.add(creation_info).execute_query()
 
-        results = self.client.web.webs.filter("Title eq '{0}'".format(target_web_name)).get().execute_query()
+        results = self.client.web.webs.filter(f"Title eq '{target_web_name}'").get().execute_query()
         self.assertEqual(len(results), 1)
         self.assertIsNotNone(results[0].resource_path)
 
@@ -74,7 +74,7 @@ class TestSharePointWeb(SPTestCase):
         title = self.__class__.target_web.properties["Title"]
         self.__class__.target_web.delete_object().execute_query()
 
-        results = self.client.web.webs.filter("Title eq '{0}'".format(title)).get().execute_query()
+        results = self.client.web.webs.filter(f"Title eq '{title}'").get().execute_query()
         self.assertEqual(len(results), 0)
 
     def test_10_enum_all_webs(self):

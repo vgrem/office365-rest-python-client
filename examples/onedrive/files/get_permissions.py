@@ -1,5 +1,4 @@
-"""
-List sharing permissions on a driveItem
+"""List sharing permissions on a driveItem
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-list-permissions?view=graph-rest-1.0
 """

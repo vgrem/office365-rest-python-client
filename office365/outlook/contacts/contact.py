@@ -36,8 +36,7 @@ class Contact(OutlookItem):
     @property
     def display_name(self):
         # type: () -> Optional[str]
-        """
-        The contact's display name. You can specify the display name in a create or update operation.
+        """The contact's display name. You can specify the display name in a create or update operation.
         Note that later updates to other properties may cause an automatically generated value to overwrite the
         displayName value you have specified. To preserve a pre-existing value, always include it as displayName
         in an update operation.
@@ -47,9 +46,7 @@ class Contact(OutlookItem):
     @property
     def manager(self):
         # type: () -> Optional[str]
-        """
-        The name of the contact's manager.
-        """
+        """The name of the contact's manager."""
         return self.properties.get("manager", None)
 
     @manager.setter

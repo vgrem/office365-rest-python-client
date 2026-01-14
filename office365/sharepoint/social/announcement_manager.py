@@ -10,8 +10,7 @@ class SocialAnnouncementManager(Entity):
 
     @staticmethod
     def get_current_announcements(context, url):
-        """
-        Gets the currently active announcements for a given site and returns them as a list of TileData objects.
+        """Gets the currently active announcements for a given site and returns them as a list of TileData objects.
         Announcement details are stored in Title, Description, BackgroundImageLocation, and LinkLocation properties
         of the TileData.
 

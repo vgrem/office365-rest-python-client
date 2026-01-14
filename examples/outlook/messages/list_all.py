@@ -1,5 +1,4 @@
-"""
-Get the messages in the signed-in user's mailbox
+"""Get the messages in the signed-in user's mailbox
 
 # The example is adapted from https://learn.microsoft.com/en-us/graph/api/user-list-messages
 """

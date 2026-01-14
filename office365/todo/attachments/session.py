@@ -15,13 +15,15 @@ class AttachmentSession(Entity):
     @property
     def expiration_datetime(self):
         """The date and time in UTC when the upload session will expire.
-        The complete file must be uploaded before this expiration time is reached."""
+        The complete file must be uploaded before this expiration time is reached.
+        """
         return self.properties.get("expirationDateTime", datetime.min)
 
     @property
     def next_expected_ranges(self):
         """Indicates a single value {start} that represents the location in the file where the next
-        upload should begin."""
+        upload should begin.
+        """
         return self.properties.get("nextExpectedRanges", StringCollection())
 
     def get_property(self, name, default_value=None):

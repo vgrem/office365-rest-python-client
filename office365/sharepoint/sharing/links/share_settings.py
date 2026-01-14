@@ -17,8 +17,7 @@ class ShareLinkSettings(ClientValue):
         share_id=None,
         update_password=None,
     ):
-        """
-        :param bool allow_anonymous_access: Indicates if the tokenized sharing link supports anonymous access.
+        """:param bool allow_anonymous_access: Indicates if the tokenized sharing link supports anonymous access.
              This value is optional and defaults to false for Flexible links (section 3.2.5.315.1.7) and is ignored
              for other link kinds.
         :param bool application_link:

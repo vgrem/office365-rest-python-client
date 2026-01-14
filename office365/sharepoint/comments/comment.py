@@ -7,25 +7,20 @@ from office365.sharepoint.likes.user_entity import UserEntity
 
 class Comment(Entity):
     def like(self):
-        """
-        The Like method makes the current user a liker of the comment.
-        """
+        """The Like method makes the current user a liker of the comment."""
         qry = ServiceOperationQuery(self, "Like")
         self.context.add_query(qry)
         return self
 
     def unlike(self):
-        """
-        The Unlike method removes the current user from the list of likers for the comment.
-        """
+        """The Unlike method removes the current user from the list of likers for the comment."""
         qry = ServiceOperationQuery(self, "Unlike")
         self.context.add_query(qry)
         return self
 
     @property
     def liked_by(self):
-        """
-        List of like entries corresponding to individual likes. MUST NOT contain more than one entry
+        """List of like entries corresponding to individual likes. MUST NOT contain more than one entry
         for the same user in the set.
         """
         return self.properties.get(

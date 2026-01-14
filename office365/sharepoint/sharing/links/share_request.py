@@ -12,8 +12,7 @@ class ShareLinkRequest(ClientValue):
         settings=None,
         create_link=True,
     ):
-        """
-        :param int or None link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
+        """:param int or None link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
         :param datetime or None expiration: A date/time string for which the format conforms to the ISO 8601:2004(E)
             complete representation for calendar date and time of day and which represents the time and date of expiry
             for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference

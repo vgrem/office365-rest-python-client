@@ -7,4 +7,5 @@ class ProtectionRuleBase(Entity):
     that a protection policy should match the specified criteria, can be defined.
 
     Currently, protection Rules are static in nature, meaning policy changes are applied only when the
-    rule is executed, with no automatic/dynamic updates."""
+    rule is executed, with no automatic/dynamic updates.
+    """

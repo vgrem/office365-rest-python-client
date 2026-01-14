@@ -9,8 +9,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Domain(Entity):
-    """
-    Represents a domain associated with the tenant.
+    """Represents a domain associated with the tenant.
 
     Use domain operations to associate domains to a tenant, verify domain ownership, and configure supported services.
     Domain operations enable registrars to automate domain association for services such as Microsoft 365.
@@ -28,8 +27,7 @@ class Domain(Entity):
 
     @property
     def supported_services(self):
-        """
-        The capabilities assigned to the domain. Can include 0, 1 or more of following values:
+        """The capabilities assigned to the domain. Can include 0, 1 or more of following values:
         Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain,
         FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.
         The values which you can add/remove using Graph API include: Email, OfficeCommunicationsOnline, Yammer.
@@ -38,8 +36,7 @@ class Domain(Entity):
 
     @property
     def domain_name_references(self):
-        """
-        The objects such as users and groups that reference the domain ID. Read-only, Nullable.
+        """The objects such as users and groups that reference the domain ID. Read-only, Nullable.
         Supports $expand and $filter by the OData type of objects returned.
         For example /domains/{domainId}/domainNameReferences/microsoft.graph.user
         and /domains/{domainId}/domainNameReferences/microsoft.graph.group.
@@ -51,8 +48,7 @@ class Domain(Entity):
 
     @property
     def service_configuration_records(self):
-        """
-        DNS records the customer adds to the DNS zone file of the domain before the domain can be used by
+        """DNS records the customer adds to the DNS zone file of the domain before the domain can be used by
         Microsoft Online services. Read-only, Nullable. Supports $expand.
         """
         return self.properties.get(
@@ -66,8 +62,7 @@ class Domain(Entity):
 
     @property
     def verification_dns_records(self):
-        """
-        DNS records that the customer adds to the DNS zone file of the domain before the customer can complete
+        """DNS records that the customer adds to the DNS zone file of the domain before the customer can complete
         domain ownership verification with Azure AD. Read-only, Nullable. Supports $expand.
         """
         return self.properties.get(

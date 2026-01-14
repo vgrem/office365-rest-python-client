@@ -3,8 +3,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class ApiAuthenticationConfigurationBase(ClientValue):
-    """
-    The base type to hold authentication information for calling an API.
+    """The base type to hold authentication information for calling an API.
 
     Derived types include:
 
@@ -15,7 +14,5 @@ class ApiAuthenticationConfigurationBase(ClientValue):
     """
 
     def __init__(self, order=None):
-        """
-        :param list[str] order:
-        """
+        """:param list[str] order:"""
         self.order = StringCollection(order)

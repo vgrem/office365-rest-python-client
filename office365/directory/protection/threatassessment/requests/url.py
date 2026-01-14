@@ -4,6 +4,4 @@ from office365.directory.protection.threatassessment.requests.request import (
 
 
 class UrlAssessmentRequest(ThreatAssessmentRequest):
-    """
-    Used to create and retrieve a URL threat assessment, derived from threatAssessmentRequest.
-    """
+    """Used to create and retrieve a URL threat assessment, derived from threatAssessmentRequest."""

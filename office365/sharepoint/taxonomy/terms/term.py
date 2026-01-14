@@ -10,7 +10,7 @@ class Term(TaxonomyItem):
     """Represents a Term or a Keyword in a managed metadata hierarchy."""
 
     def __repr__(self):
-        return "{0}".format(self.id)
+        return f"{self.id}"
 
     @property
     def is_deprecated(self):

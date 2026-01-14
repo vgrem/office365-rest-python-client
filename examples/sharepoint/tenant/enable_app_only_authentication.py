@@ -1,5 +1,4 @@
-"""
-Since for new tenants, apps using an ACS app-only access token is disabled by default,
+"""Since for new tenants, apps using an ACS app-only access token is disabled by default,
 you can change the behavior using the below script
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs
 """

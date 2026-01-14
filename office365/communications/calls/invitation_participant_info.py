@@ -13,8 +13,7 @@ class InvitationParticipantInfo(ClientValue):
         remove_from_default_audio_routing_group=None,
         replaces_call_id=None,
     ):
-        """
-        :param bool hidden: Optional. Whether to hide the participant from the roster.
+        """:param bool hidden: Optional. Whether to hide the participant from the roster.
         :param IdentitySet identity: The identitySet associated with this invitation.
         :param str participant_id: Optional. The ID of the target participant.
         :param bool remove_from_default_audio_routing_group: Optional. Whether to remove them from the main mixer.

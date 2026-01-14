@@ -10,8 +10,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         super(OnlineMeetingCollection, self).__init__(context, OnlineMeeting, resource_path)
 
     def create(self, subject, start_datetime=None, end_datetime=None):
-        """
-        Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
+        """Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
 
         :param datetime.datetime start_datetime: The meeting start time in UTC.
         :param datetime.datetime end_datetime: The meeting end time in UTC.
@@ -64,8 +63,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         return return_type
 
     def get_all_recordings(self, meeting_organizer_user_id, start_datetime=None, end_datetime=None):
-        """
-        Get all recordings from scheduled onlineMeeting instances for which the specified user is the organizer.
+        """Get all recordings from scheduled onlineMeeting instances for which the specified user is the organizer.
         This API currently doesn't support getting call recordings from channel meetings.
 
         :param str meeting_organizer_user_id: 	The user identifier of the meeting organizer to filter for artifacts

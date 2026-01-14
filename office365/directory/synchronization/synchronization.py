@@ -6,8 +6,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Synchronization(Entity):
-    """
-    Represents the capability for Azure Active Directory (Azure AD) identity synchronization through
+    """Represents the capability for Azure Active Directory (Azure AD) identity synchronization through
     the Microsoft Graph API. Identity synchronization (also called provisioning) allows you to automate
     the provisioning (creation, maintenance) and de-provisioning (removal) of user identities and roles from
     Azure AD to supported cloud applications. For more information, see How Application Provisioning works
@@ -17,8 +16,7 @@ class Synchronization(Entity):
     @property
     def jobs(self):
         # type: () -> EntityCollection[SynchronizationJob]
-        """
-        Performs synchronization by periodically running in the background, polling for changes in one directory,
+        """Performs synchronization by periodically running in the background, polling for changes in one directory,
         and pushing them to another directory.
         """
         return self.properties.get(
@@ -33,8 +31,7 @@ class Synchronization(Entity):
     @property
     def templates(self):
         # type: () -> EntityCollection[SynchronizationTemplate]
-        """
-        Performs synchronization by periodically running in the background, polling for changes in one directory,
+        """Performs synchronization by periodically running in the background, polling for changes in one directory,
         and pushing them to another directory.
         """
         return self.properties.get(

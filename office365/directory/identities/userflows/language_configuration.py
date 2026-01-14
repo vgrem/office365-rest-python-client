@@ -11,7 +11,8 @@ class UserFlowLanguageConfiguration(Entity):
 
     For Azure Active Directory user flows, you can only leverage the built-in languages provided by Microsoft.
     User flows for Azure Active Directory support defining the language and strings shown to users
-    as they go through the journeys you configure with your user flows."""
+    as they go through the journeys you configure with your user flows.
+    """
 
     def __str__(self):
         return self.display_name or self.entity_type_name

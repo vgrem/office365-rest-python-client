@@ -21,8 +21,7 @@ class SharePointRequest(ODataRequest):
         allow_ntlm=False,
         browser_mode=False,
     ):
-        """
-        :param str base_url: Absolute Web or Site Url
+        """:param str base_url: Absolute Web or Site Url
         :param str environment: The Office 365 Cloud Environment endpoint used for authentication
         :param bool allow_ntlm: Flag indicates whether NTLM scheme is enabled. Disabled by default
         :param bool browser_mode: Allow browser authentication
@@ -38,21 +37,18 @@ class SharePointRequest(ODataRequest):
 
     def execute_request(self, path):
         # type: (str) -> Response
-        request_url = "{0}/{1}".format(self.service_root_url, path)
+        request_url = f"{self.service_root_url}/{path}"
         return self.execute_request_direct(RequestOptions(request_url))
 
     def with_credentials(self, credentials):
         # type: (UserCredential|ClientCredential) -> Self
-        """
-        Initializes a client to acquire a token via user or client credentials
-        """
+        """Initializes a client to acquire a token via user or client credentials"""
         self._auth_context.with_credentials(credentials)
         return self
 
     def with_cookies(self, cookie_source, ttl_seconds=None):
         # type: (object, object) -> Self
-        """
-        Initializes authentication using browser-session cookies.
+        """Initializes authentication using browser-session cookies.
 
         :param object cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
         :param object ttl_seconds: Optional max age for cached cookies before reloading from source.
@@ -71,8 +67,7 @@ class SharePointRequest(ODataRequest):
         passphrase=None,
     ):
         # type: (str, str, str, Optional[str], Optional[str], Optional[List[str]], Optional[str]) -> Self
-        """
-        Creates authenticated SharePoint context via certificate credentials
+        """Creates authenticated SharePoint context via certificate credentials
 
         :param str tenant: Tenant name
         :param str or None cert_path: Path to A PEM encoded certificate private key.
@@ -89,8 +84,7 @@ class SharePointRequest(ODataRequest):
 
     def with_device_flow(self, tenant, client_id, scopes=None):
         # type: (str, str, Optional[List[str]]) -> Self
-        """
-        Initializes a client to acquire a token via device flow auth.
+        """Initializes a client to acquire a token via device flow auth.
 
         :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
         :param str client_id: The OAuth client id of the calling application.
@@ -101,8 +95,7 @@ class SharePointRequest(ODataRequest):
 
     def with_interactive(self, tenant, client_id, scopes=None):
         # type: (str, str, Optional[List[str]]) -> Self
-        """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        """Initializes a client to acquire a token interactively i.e. via a local browser.
 
         Prerequisite: In Azure Portal, configure the Redirect URI of your
         "Mobile and Desktop application" as ``http://localhost``.
@@ -116,8 +109,7 @@ class SharePointRequest(ODataRequest):
 
     def with_access_token(self, token_func):
         # type: (Callable[[], TokenResponse]) -> Self
-        """
-        Initializes a client to acquire a token from a callback
+        """Initializes a client to acquire a token from a callback
         :param () -> TokenResponse token_func: A token callback
         """
         self._auth_context.with_access_token(token_func)
@@ -139,4 +131,4 @@ class SharePointRequest(ODataRequest):
 
     @property
     def service_root_url(self):
-        return "{0}/_api".format(self._auth_context.url)
+        return f"{self._auth_context.url}/_api"

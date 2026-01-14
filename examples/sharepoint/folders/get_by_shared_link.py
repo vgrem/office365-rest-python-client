@@ -1,6 +1,4 @@
-"""
-Returns the folder object from the tokenized sharing link URL.
-"""
+"""Returns the folder object from the tokenized sharing link URL."""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.links.kind import SharingLinkKind

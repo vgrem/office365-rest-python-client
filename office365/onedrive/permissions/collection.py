@@ -21,14 +21,12 @@ class PermissionCollection(EntityCollection[Permission]):
 
     def add(self, roles, identity=None, identity_type=None):
         # type: (list[str], Application|User|Group|Device|str, str) -> Permission
-        """
-        Create a new permission object.
+        """Create a new permission object.
 
         :param list[str] roles: Permission types
         :param Application or User or Device or User or Group or str identity: Identity object or identifier
         :param str identity_type: Identity type
         """
-
         return_type = Permission(self.context)
         self.add_child(return_type)
 

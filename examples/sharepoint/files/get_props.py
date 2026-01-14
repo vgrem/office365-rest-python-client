@@ -1,6 +1,4 @@
-"""
-Retrieves basic file properties
-"""
+"""Retrieves basic file properties"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url

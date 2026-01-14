@@ -1,5 +1,4 @@
-"""
-Acquires a token by using application secret
+"""Acquires a token by using application secret
 
 The following options are supported:
    - utilize built in GraphClient(tenant=tenant).with_client_secret(client_id, client_secret) method

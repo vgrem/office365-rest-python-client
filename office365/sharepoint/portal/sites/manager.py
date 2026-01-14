@@ -21,8 +21,7 @@ class SPSiteManager(Entity):
         super(SPSiteManager, self).__init__(context, resource_path)
 
     def create(self, title, site_url, owner=None):
-        """
-        When executing this method server MUST create a SharePoint site according to the parameters passed in the
+        """When executing this method server MUST create a SharePoint site according to the parameters passed in the
         SPSiteCreationRequest and return the information about the site it created in the format of a
         SPSiteCreationResponse.
 
@@ -74,24 +73,20 @@ class SPSiteManager(Entity):
         def _construct_request(request):
             # type: (RequestOptions) -> None
             request.method = HttpMethod.Get
-            request.url += "?url='{0}'".format(site_url)
+            request.url += f"?url='{site_url}'"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return response
 
     def get_site_url(self, site_id):
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site.
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str site_id: The GUID to uniquely identify a SharePoint site."""
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "SiteUrl", None, {"siteId": site_id}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_team_channel_site_owner(self, site_id):
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site.
-        """
+        """:param str site_id: The GUID to uniquely identify a SharePoint site."""
         return_type = ClientResult(self.context, GetTeamChannelSiteOwnerResponse())
         qry = ServiceOperationQuery(
             self,
@@ -105,9 +100,7 @@ class SPSiteManager(Entity):
         return return_type
 
     def viva_backend_site_url_from_name(self, site_name):
-        """
-        :param str site_name:
-        """
+        """:param str site_name:"""
         return_type = ClientResult(self.context, VivaSiteRequestInfo())
         payload = {"siteName": site_name}
         qry = ServiceOperationQuery(self, "VivaBackendSiteUrlFromName", None, payload, None, return_type)

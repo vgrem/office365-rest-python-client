@@ -4,15 +4,12 @@ from office365.sharepoint.entity import Entity
 
 
 class SharingPermissionInformation(Entity):
-    """
-    Contains information about a sharing permission entity such as group or role.
-    """
+    """Contains information about a sharing permission entity such as group or role."""
 
     @property
     def is_default_permission(self):
         # type: () -> Optional[bool]
-        """
-        Identifies whether or not the permission entity is a default SP.Group or role (meaning it is recommended
+        """Identifies whether or not the permission entity is a default SP.Group or role (meaning it is recommended
         for granting permissions).
 
         A value of true specifies the current permission is a default SP.Group for granting permissions to a site

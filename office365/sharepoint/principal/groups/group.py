@@ -15,8 +15,7 @@ class Group(Principal):
     """Represents a collection of members in a SharePoint site. A group is a type of SP.Principal."""
 
     def delete_object(self):
-        """
-        Deletes the group
+        """Deletes the group
         A custom operation since the default type SP.Group does not support HTTP DELETE method.
         """
         if self.id:
@@ -32,8 +31,7 @@ class Group(Principal):
         return self
 
     def expand_to_principals(self, max_count=10):
-        """
-        Expands current group to a collection of principals.
+        """Expands current group to a collection of principals.
         :param int max_count: Specifies the maximum number of principals to be returned.
         """
         return_type = ClientResult(self.context, ClientValueCollection(PrincipalInfo))
@@ -47,8 +45,7 @@ class Group(Principal):
         return return_type
 
     def set_user_as_owner(self, user):
-        """
-        Sets the user as group owner
+        """Sets the user as group owner
         :param long or Principal user: User object or identifier
         """
 

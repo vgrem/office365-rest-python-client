@@ -10,11 +10,9 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.types.event_handler import EventHandler
 
 
-class ClientRequest(object):
+class ClientRequest:
     def __init__(self):
-        """
-        Abstract request client
-        """
+        """Abstract request client"""
         self.beforeExecute = EventHandler()
         self.afterExecute = EventHandler()
 
@@ -22,7 +20,6 @@ class ClientRequest(object):
     def build_request(self, query):
         # type: (ClientQuery) -> RequestOptions
         """Builds a request"""
-        pass
 
     @abstractmethod
     def process_response(self, response, query):

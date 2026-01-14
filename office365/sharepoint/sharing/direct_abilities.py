@@ -12,8 +12,7 @@ class DirectSharingAbilities(ClientValue):
         can_request_grant_access=SharingAbilityStatus(),
         supports_review_permission=SharingAbilityStatus(),
     ):
-        """
-        :param SharingAbilityStatus can_add_external_principal: Indicates whether the current user can share to new
+        """:param SharingAbilityStatus can_add_external_principal: Indicates whether the current user can share to new
             external users.
         :param SharingAbilityStatus can_add_internal_principal: Indicates whether the current user can share to
             internal users.

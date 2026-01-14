@@ -10,8 +10,7 @@ class ContactCollection(DeltaCollection[Contact]):
         super(ContactCollection, self).__init__(context, Contact, resource_path)
 
     def add(self, given_name, surname, email_address=None, business_phone=None, **kwargs):
-        """
-        Add a contact to the root Contacts folder or to the contacts endpoint of another contact folder.
+        """Add a contact to the root Contacts folder or to the contacts endpoint of another contact folder.
         :param str given_name: The contact's given name.
         :param str surname: The contact's surname.
         :param str email_address: Default email address
@@ -19,7 +18,7 @@ class ContactCollection(DeltaCollection[Contact]):
         """
 
         def _create_email_address(address):
-            return EmailAddress(address, "{0} {1}".format(given_name, surname))
+            return EmailAddress(address, f"{given_name} {surname}")
 
         kwargs["givenName"] = given_name
         kwargs["surname"] = surname

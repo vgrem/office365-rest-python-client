@@ -8,25 +8,21 @@ from office365.sharepoint.translation.item_info import TranslationItemInfo
 
 
 class SyncTranslator(Entity):
-    """
-    The SyncTranslator type is used to submit immediate translation jobs to the protocol server.
+    """The SyncTranslator type is used to submit immediate translation jobs to the protocol server.
 
     Status: The Machine Translations Service API will no longer be supported as of the end of July 2022.
     https://go.microsoft.com/fwlink/?linkid=2187153
     """
 
     def __init__(self, context, target_language):
-        """
-        :param str target_language:
-        """
+        """:param str target_language:"""
         super(SyncTranslator, self).__init__(
             context,
             ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language}),
         )
 
     def translate(self, input_file, output_file):
-        """
-        The protocol client calls this method to submit an immediate translation job to the protocol server.
+        """The protocol client calls this method to submit an immediate translation job to the protocol server.
         The method returns a TranslationItemInfo object (section 3.1.5.2) that contains the results of the translation
         item of the immediate translation job.
 
@@ -46,8 +42,7 @@ class SyncTranslator(Entity):
     @property
     def output_save_behavior(self):
         # type: () -> Optional[int]
-        """
-        The protocol client sets this property to determine the behavior of the protocol server in the case that
+        """The protocol client sets this property to determine the behavior of the protocol server in the case that
         the output file already exists when a translation occurs.
 
         If the protocol client does not set this property, the AppendIfPossible (section 3.1.5.2.1.1) behavior is used.

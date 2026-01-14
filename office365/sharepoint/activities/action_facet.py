@@ -37,8 +37,7 @@ class ActionFacet(ClientValue):
         taskCompleted=TaskCompletedFacet(),
         version=VersionFacet(),
     ):
-        """
-        :param AddToOneDriveFacet add_to_one_drive:
+        """:param AddToOneDriveFacet add_to_one_drive:
         :param CheckinFacet checkin:
         :param CheckoutFacet checkout:
         :param GetCommentFacet comment:

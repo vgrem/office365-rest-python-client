@@ -1,6 +1,4 @@
-"""
-Share a folder with a set of users
-"""
+"""Share a folder with a set of users"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.role import Role

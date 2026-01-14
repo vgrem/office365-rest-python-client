@@ -28,19 +28,16 @@ class SearchService(Entity):
         super(SearchService, self).__init__(context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchService"))
 
     def export(self, user, start_time):
-        """
-        The operation is used by the administrator to retrieve the query log entries,
+        """The operation is used by the administrator to retrieve the query log entries,
         issued after a specified date, for a specified user.
 
         :param datetime.datetime start_time: The timestamp of the oldest query log entry returned.
         :param str or User user: The name of the user or user object that issued the queries.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
 
         def _export(user_name):
-            """
-            :type user_name: str
-            """
+            """:type user_name: str"""
             payload = {"userName": user_name, "startTime": start_time.isoformat()}
             qry = ServiceOperationQuery(self, "export", None, payload, None, return_type)
             self.context.add_query(qry)
@@ -63,8 +60,7 @@ class SearchService(Entity):
         return return_type
 
     def export_popular_tenant_queries(self, count):
-        """
-        This method is used to get a list of popular search queries executed on the tenant.
+        """This method is used to get a list of popular search queries executed on the tenant.
 
         :param int count:
         """
@@ -211,17 +207,17 @@ class SearchService(Entity):
 
     def results_page_address(self):
         """The operation is used to get the URI address of the result page by using the HTTP protocol
-        with the GET method. The operation returns the URI of the result page."""
-        return_type = ClientResult(self.context, str())
+        with the GET method. The operation returns the URI of the result page.
+        """
+        return_type = ClientResult(self.context, "")
         qry = ServiceOperationQuery(self, "resultspageaddress", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def suggest(self, query_text):
-        """
-        :param str query_text: The query text of the search query. If this element is not present or a value
-             is not specified, a default value of an empty string MUST be used, and the server MUST return a
-             FaultException<ExceptionDetail> message.
+        """:param str query_text: The query text of the search query. If this element is not present or a value
+        is not specified, a default value of an empty string MUST be used, and the server MUST return a
+        FaultException<ExceptionDetail> message.
         """
         return_type = ClientResult(self.context, QuerySuggestionResults())
         payload = {"querytext": query_text}
@@ -230,8 +226,7 @@ class SearchService(Entity):
         return return_type
 
     def auto_completions(self, query_text, sources=None, number_of_completions=None, cursor_position=None):
-        """
-        The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
+        """The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
 
         :param str query_text: The query text of the search query. If this element is not present or a value is not
              specified, a default value of an empty string MUST be used, and the server MUST return

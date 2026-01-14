@@ -39,7 +39,7 @@ class TestFile(GraphTestCase):
 
     def test3_upload_file(self):
         file_name = "SharePoint User Guide.docx"
-        file_path = "{0}/../data/{1}".format(os.path.dirname(__file__), file_name)
+        file_path = f"{os.path.dirname(__file__)}/../data/{file_name}"
         self.__class__.target_file = self.target_drive.root.upload_file(file_path).execute_query()
         self.assertIsNotNone(self.target_file.web_url)
 
@@ -74,7 +74,7 @@ class TestFile(GraphTestCase):
 
     def test_11_upload_file_session(self):
         file_name = "big_buck_bunny.mp4"
-        local_path = "{0}/../data/{1}".format(os.path.dirname(__file__), file_name)
+        local_path = f"{os.path.dirname(__file__)}/../data/{file_name}"
         target_file = self.target_drive.root.resumable_upload(local_path).get().execute_query()
         self.assertIsNotNone(target_file.web_url)
 
@@ -87,7 +87,7 @@ class TestFile(GraphTestCase):
         self.assertIsNotNone(result.value)
 
     def test_14_copy_file(self):
-        file_name = "Copied_{0}_SharePoint User Guide.docx".format(uuid.uuid4().hex)
+        file_name = f"Copied_{uuid.uuid4().hex}_SharePoint User Guide.docx"
         result = self.__class__.target_file.copy(file_name).execute_query()
         self.assertIsNotNone(result.value)
 

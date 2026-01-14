@@ -2,8 +2,7 @@ from office365.entity import Entity
 
 
 class RetentionLabel(Entity):
-    """
-    Represents how organizations, for compliance and governance purposes, can manage their data at an item
+    """Represents how organizations, for compliance and governance purposes, can manage their data at an item
     level (email or document), including whether and for how long to retain or delete the item.
 
      Organizations can use retention labels for different types of content that require different retention settings.

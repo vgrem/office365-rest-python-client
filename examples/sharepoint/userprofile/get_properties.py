@@ -1,6 +1,4 @@
-"""
-Gets user properties for the specified user
-"""
+"""Gets user properties for the specified user"""
 
 from pprint import pprint
 

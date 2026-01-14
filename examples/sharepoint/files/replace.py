@@ -1,6 +1,4 @@
-"""
-Demonstrates how to replace file content
-"""
+"""Demonstrates how to replace file content"""
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_team_site_url, test_user_credentials

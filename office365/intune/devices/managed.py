@@ -20,8 +20,7 @@ class ManagedDevice(Entity):
     @property
     def activation_lock_bypass_code(self):
         # type: () -> Optional[str]
-        """
-        The code that allows the Activation Lock on managed device to be bypassed. Default,
+        """The code that allows the Activation Lock on managed device to be bypassed. Default,
         is Null (Non-Default property) for this property when returned as part of managedDevice entity in LIST call.
         To retrieve actual values GET call needs to be made, with device id and included in select parameter.
         Supports: $select. $Search is not supported. Read-only. This property is read-only.

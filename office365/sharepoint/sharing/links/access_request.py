@@ -3,11 +3,11 @@ from office365.runtime.client_value import ClientValue
 
 class SharingLinkAccessRequest(ClientValue):
     """Represents extended values to include in a request for access to an object exposed through a tokenized
-    sharing link."""
+    sharing link.
+    """
 
     def __init__(self, ensure_access=None, password=None):
-        """
-        :param str password: This value contains the password to be supplied to a tokenized sharing link for validation.
+        """:param str password: This value contains the password to be supplied to a tokenized sharing link for validation.
              This value is only needed if the link requires a password before granting access and the calling user
              does not currently have perpetual access through the tokenized sharing link.
              This value MUST be set to the correct password for the tokenized sharing link for the access granting

@@ -1,4 +1,4 @@
-class QueryOptions(object):
+class QueryOptions:
     """ """
 
     def __init__(
@@ -11,8 +11,7 @@ class QueryOptions(object):
         skip=None,
         custom=None,
     ):
-        """
-        A query option is a set of query string parameters applied to a resource that can help control the amount
+        """A query option is a set of query string parameters applied to a resource that can help control the amount
         of data being returned for the resource in the URL
 
         :param list[str] select: The $select system query option allows the clients to requests a limited set of
@@ -45,8 +44,7 @@ class QueryOptions(object):
 
     @staticmethod
     def build(client_object, properties_to_include=None):
-        """
-        Builds query options
+        """Builds query options
 
         :param office365.runtime.client_object.ClientObject client_object: Client object
         :param list[str] or None properties_to_include: The list of properties to include

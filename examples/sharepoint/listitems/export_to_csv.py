@@ -1,6 +1,4 @@
-"""
-Demonstrates how to export a list items into csv file
-"""
+"""Demonstrates how to export a list items into csv file"""
 
 import csv
 import os
@@ -23,4 +21,4 @@ with open(path, "w") as fh:
     w.writeheader()
     for item in items:
         w.writerow(item.properties)
-print("List data has been exported into '{0}' file".format(path))
+print(f"List data has been exported into '{path}' file")

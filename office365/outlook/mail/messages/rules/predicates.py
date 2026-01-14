@@ -18,8 +18,7 @@ class MessageRulePredicates(ClientValue):
         importance=None,
         is_approval_request=None,
     ):
-        """
-        :param list[str] body_contains: Represents the strings that should appear in the body of an incoming message
+        """:param list[str] body_contains: Represents the strings that should appear in the body of an incoming message
             in order for the condition or exception to apply.
         :param list[str] body_or_subject_contains: Represents the strings that should appear in the body or subject
              of an incoming message in order for the condition or exception to apply.

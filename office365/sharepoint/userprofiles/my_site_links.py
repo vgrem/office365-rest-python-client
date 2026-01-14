@@ -9,8 +9,7 @@ class MySiteLinks(Entity):
 
     @staticmethod
     def get_my_site_links(context):
-        """
-        Return Type: Microsoft.SharePoint.Portal.UserProfiles.MySiteLinks
+        """Return Type: Microsoft.SharePoint.Portal.UserProfiles.MySiteLinks
         The GetMySiteLinks function retrieves a MySiteLinks (section 3.1.5.22) object for the current user.
 
         :param office365.sharepoint.client_context.ClientContext context: Client context
@@ -24,8 +23,7 @@ class MySiteLinks(Entity):
     @property
     def all_documents_link(self):
         # type: () -> Optional[str]
-        """
-        This property value is the URL of the user’s document library on their personal site. This property value is
+        """This property value is the URL of the user’s document library on their personal site. This property value is
         null if the user does not have a personal site or the user does not have a document library in their personal
         site.
         """
@@ -34,8 +32,7 @@ class MySiteLinks(Entity):
     @property
     def all_sites_link(self):
         # type: () -> Optional[str]
-        """
-        This property value is the URL of the user’s followed sites view on their personal site.  This property value
+        """This property value is the URL of the user’s followed sites view on their personal site.  This property value
         is null if the user does not have a personal site or social features are not enabled on their personal site.
         """
         return self.properties.get("AllSitesLink", None)

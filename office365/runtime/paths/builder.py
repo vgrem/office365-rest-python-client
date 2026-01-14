@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from office365.runtime.paths.service_operation import ServiceOperationPath
 
 
-class ODataPathBuilder(object):
+class ODataPathBuilder:
     @staticmethod
     def parse_url(path_str):
         # type: (str) -> ResourcePath
@@ -29,7 +29,7 @@ class ODataPathBuilder(object):
         """Constructs url for path segment"""
         url = path.name or ""
         if isinstance(path.parameters, ClientValue):
-            url += "(@v)?@v={0}".format(json.dumps(path.parameters.to_json()))
+            url += f"(@v)?@v={json.dumps(path.parameters.to_json())}"
         elif path.parameters is not None:
             url += "("
             if isinstance(path.parameters, dict):
@@ -66,7 +66,7 @@ class ODataPathBuilder(object):
             value = value.replace("#", "%23")
             value = value.replace("&", "%26")
 
-            value = "'{0}'".format(value)
+            value = f"'{value}'"
         elif isinstance(value, bool):
             value = str(value).lower()
         return value

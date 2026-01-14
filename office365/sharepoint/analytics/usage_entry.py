@@ -7,8 +7,7 @@ class AnalyticsUsageEntry(Entity):
 
     @staticmethod
     def log_analytics_event(context, event_type_id, item_id):
-        """
-        Creates and logs an analytics event into the analytics pipeline.
+        """Creates and logs an analytics event into the analytics pipeline.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str event_type_id: The event type identifier of the analytics event to create.
@@ -25,8 +24,7 @@ class AnalyticsUsageEntry(Entity):
 
     @staticmethod
     def log_analytics_app_event2(context, app_event_type_id, item_id, rollup_scope_id, site_id, user_id):
-        """
-        Creates and logs an analytics event into the analytics pipeline with additional parameters.
+        """Creates and logs an analytics event into the analytics pipeline with additional parameters.
 
         :type context: office365.sharepoint.client_context.ClientContext
         :param str app_event_type_id: The event type identifier of the analytics event to be created.

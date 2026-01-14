@@ -5,9 +5,7 @@ from office365.sharepoint.publishing.portal_health_details import PortalHealthDe
 
 class PortalHealthStatus(ClientValue):
     def __init__(self, details=None, status=None):
-        """
-        :param int status:
-        """
+        """:param int status:"""
         self.Details = ClientValueCollection(PortalHealthDetails, details)
         self.Status = status
 

@@ -9,8 +9,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         super(WorkbookTableRowCollection, self).__init__(context, WorkbookTableRow, resource_path)
 
     def add(self, values, index=None):
-        """
-        Adds rows to the end of a table.
+        """Adds rows to the end of a table.
         Note that this API can accept multiple rows of data. Adding one row at a time can affect performance.
         The recommended approach is to batch the rows together in a single call rather than inserting single rows.
         For best results, collect the rows to be inserted on the application side and perform a single
@@ -28,7 +27,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
 
     def count(self):
         """"""
-        return_type = ClientResult(self.context, int())
+        return_type = ClientResult(self.context, 0)
         qry = FunctionQuery(self, "count", None, return_type)
         self.context.add_query(qry)
         return return_type

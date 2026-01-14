@@ -5,12 +5,12 @@ from office365.sharepoint.entity import Entity
 
 class DocumentsSharedWithMe(Entity):
     """Provides methods for working with a list that shares documents with the current user on the user's personal site.
-    All methods in this object are static."""
+    All methods in this object are static.
+    """
 
     @staticmethod
     def get_list_data(context, sort_field_name, is_ascending_sort, offset, row_limit):
-        """
-        Gets the JSON string containing the row data for a list that shares documents with the current user on the
+        """Gets the JSON string containing the row data for a list that shares documents with the current user on the
         user's personal site.
         :param office365.sharepoint.client_context.ClientContext context: Client context
         :param str sort_field_name: Specifies the view field on which to sort the data in the Web Part.
@@ -24,7 +24,7 @@ class DocumentsSharedWithMe(Entity):
             "offset": offset,
             "rowLimit": row_limit,
         }
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         qry = ServiceOperationQuery(
             DocumentsSharedWithMe(context),
             "GetListData",

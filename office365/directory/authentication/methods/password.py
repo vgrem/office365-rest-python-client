@@ -6,7 +6,8 @@ from office365.directory.authentication.methods.method import AuthenticationMeth
 
 class PasswordAuthenticationMethod(AuthenticationMethod):
     """A representation of a user's password. For security, the password itself will never be returned in the object,
-    but action can be taken to reset a password."""
+    but action can be taken to reset a password.
+    """
 
     @property
     def created_datetime(self):

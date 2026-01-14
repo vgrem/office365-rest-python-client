@@ -22,8 +22,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
     def add(self, attachment_file_information):
         # type: (AttachmentCreationInformation|dict) -> Attachment
-        """
-        Adds the attachment represented by the file name and stream in the specified parameter to the list item.
+        """Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
         :param AttachmentCreationInformation attachment_file_information: The creation information which contains file
             name and content stream.
@@ -51,8 +50,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
     def add_using_path(self, decoded_url, content_stream):
         # type: (str, AnyStr) -> Attachment
-        """
-        Adds the attachment represented by the file name and stream in the specified parameter to the list item.
+        """Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
         :param str decoded_url: Specifies the path for the attachment file.
         :param str content_stream: Stream containing the content of the attachment.

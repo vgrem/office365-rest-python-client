@@ -40,8 +40,7 @@ class ViewFieldCollection(Entity):
         return self
 
     def add_view_field(self, field_name):
-        """
-        Adds the field with the specified field internal name or display name to the collection.
+        """Adds the field with the specified field internal name or display name to the collection.
         :param str field_name:
         """
         qry = ServiceOperationQuery(self, "AddViewField", [field_name])
@@ -49,8 +48,7 @@ class ViewFieldCollection(Entity):
         return self
 
     def move_view_field_to(self, name, index):
-        """
-        Moves the field with the specified field internal name to the specified position in the collection
+        """Moves the field with the specified field internal name to the specified position in the collection
         :param str name: Specifies the field internal name.
         :param int index: Specifies the new position for the field (2). The first position is 0.
         """
@@ -66,8 +64,7 @@ class ViewFieldCollection(Entity):
         return self
 
     def remove_view_field(self, field_name):
-        """
-        Removes the field with the specified field internal name or display name from the collection.
+        """Removes the field with the specified field internal name or display name from the collection.
         :param str field_name:
         """
         qry = ServiceOperationQuery(self, "RemoveViewField", [field_name])

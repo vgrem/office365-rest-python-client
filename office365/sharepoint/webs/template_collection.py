@@ -15,5 +15,5 @@ class WebTemplateCollection(EntityCollection[WebTemplate]):
         """
         return WebTemplate(
             self.context,
-            ServiceOperationPath("getByName", ["{name}".format(name=name)], self.resource_path),
+            ServiceOperationPath("getByName", [f"{name}"], self.resource_path),
         )

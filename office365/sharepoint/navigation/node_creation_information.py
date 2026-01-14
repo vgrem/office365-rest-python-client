@@ -10,8 +10,7 @@ class NavigationNodeCreationInformation(ClientValue):
         as_last_node=False,
         previous_node=None,
     ):
-        """
-        Describes a new navigation node to be created.
+        """Describes a new navigation node to be created.
 
         :param NavigationNodeCreationInformation previous_node: Gets or sets a value that specifies the navigation node
             after which the new navigation node will appear in the navigation node collection.

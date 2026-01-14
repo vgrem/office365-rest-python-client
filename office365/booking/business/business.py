@@ -20,12 +20,12 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class BookingBusiness(Entity):
     """Represents a business in Microsoft Bookings. This is the top level object in the Microsoft Bookings API.
     It contains business information and related business objects such as appointments, customers, services,
-    and staff members."""
+    and staff members.
+    """
 
     def get_staff_availability(self, staff_ids=None, start_datetime=None, end_datetime=None):
         # type: (List[str], datetime, datetime) -> ClientResult[ClientValueCollection[StaffAvailabilityItem]]
-        """
-        Get the availability information of staff members of a Microsoft Bookings calendar.
+        """Get the availability information of staff members of a Microsoft Bookings calendar.
         :param list[str] staff_ids: The list of staff IDs
         :param datetime.datetime start_datetime:
         :param datetime.datetime end_datetime:
@@ -41,8 +41,7 @@ class BookingBusiness(Entity):
         return return_type
 
     def publish(self):
-        """
-        Make the scheduling page of a business available to external customers.
+        """Make the scheduling page of a business available to external customers.
 
         Set the isPublished property to true, and the publicUrl property to the URL of the scheduling page.
         """
@@ -55,8 +54,7 @@ class BookingBusiness(Entity):
 
     @property
     def address(self):
-        """
-        The street address of the business. The address property, together with phone and webSiteUrl, appear in the
+        """The street address of the business. The address property, together with phone and webSiteUrl, appear in the
         footer of a business scheduling page. The attribute type of physicalAddress is not supported in v1.0.
         Internally we map the addresses to the type others.
         """
@@ -70,8 +68,7 @@ class BookingBusiness(Entity):
 
     def display_name(self):
         # type: () -> Optional[str]
-        """
-        The name of the business, which interfaces with customers. This name appears at the top of the business
+        """The name of the business, which interfaces with customers. This name appears at the top of the business
         scheduling page.
         """
         return self.properties.get("displayName", None)

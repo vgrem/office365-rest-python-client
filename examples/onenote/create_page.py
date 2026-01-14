@@ -1,5 +1,4 @@
-"""
-Create OneNote pages
+"""Create OneNote pages
 
 https://learn.microsoft.com/en-us/graph/onenote-create-page
 """

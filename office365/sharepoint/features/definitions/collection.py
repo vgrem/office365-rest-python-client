@@ -10,8 +10,7 @@ class FeatureDefinitionCollection(EntityCollection):
         super(FeatureDefinitionCollection, self).__init__(context, FeatureDefinition, resource_path, parent)
 
     def get_feature_definition(self, feature_display_name, compatibility_level=None):
-        """
-        :param str feature_display_name:
+        """:param str feature_display_name:
         :param int compatibility_level:
         """
         return_type = FeatureDefinition(self.context)

@@ -9,7 +9,8 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class Alert(Entity):
     """This resource corresponds to the latest generation of alerts in the Microsoft Graph security API,
     representing potential security issues within a customer's tenant that Microsoft 365 Defender,
-    or a security provider integrated with Microsoft 365 Defender, has identified."""
+    or a security provider integrated with Microsoft 365 Defender, has identified.
+    """
 
     @property
     def activity_group_name(self):

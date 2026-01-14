@@ -5,7 +5,8 @@ from office365.sharepoint.fields.number import FieldNumber
 
 class FieldCurrency(FieldNumber):
     """Specifies a field that contains currency values. To set properties, call the Update method
-    (section 3.2.5.43.2.1.5)."""
+    (section 3.2.5.43.2.1.5).
+    """
 
     @property
     def currency_locale_id(self):

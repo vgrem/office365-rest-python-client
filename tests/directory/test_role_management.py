@@ -24,7 +24,7 @@ class TestRoleManagement(GraphTestCase):
     def test4_get_user_role_assignments(self):
         user = self.client.users.get_by_principal_name(test_user_principal_name).get().execute_query()
         result = (
-            self.client.role_management.directory.role_assignments.filter("principalId eq '{0}'".format(user.id))
+            self.client.role_management.directory.role_assignments.filter(f"principalId eq '{user.id}'")
             .get()
             .execute_query()
         )

@@ -4,8 +4,7 @@ from office365.sharepoint.fields.field import Field
 
 
 class FieldCalculated(Field):
-    """
-    Specifies a calculated field in a list. To set properties, call the Update method (section 3.2.5.38.2.1.5).
+    """Specifies a calculated field in a list. To set properties, call the Update method (section 3.2.5.38.2.1.5).
 
     The NoCrawl and SchemaXmlWithResourceTokens properties are not included in the default scalar property set
         for this type.

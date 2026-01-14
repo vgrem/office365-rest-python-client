@@ -1,6 +1,4 @@
-"""
-Returns the user permissions for the site
-"""
+"""Returns the user permissions for the site"""
 
 from pprint import pprint
 

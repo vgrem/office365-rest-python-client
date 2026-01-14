@@ -7,4 +7,5 @@ class AccessPackageCatalog(Entity):
 
      An access package catalog might also have linked resources that are used in those access packages
      to provide access. To view or change the membership of catalog-scoped roles, use the role assignments API
-     with the entitlement management RBAC provider."""
+     with the entitlement management RBAC provider.
+    """

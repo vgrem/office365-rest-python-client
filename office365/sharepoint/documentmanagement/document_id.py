@@ -4,8 +4,7 @@ from office365.sharepoint.entity import Entity
 
 
 class DocumentId(Entity):
-    """
-    Contains methods that enable or disable the capability to assign Document IDs to query Document ID feature
+    """Contains methods that enable or disable the capability to assign Document IDs to query Document ID feature
     and assignment status, and to query and set Document ID providers.
 
     Provides methods for assigning Document Ids to documents, and provides methods to use lookup and search
@@ -28,8 +27,7 @@ class DocumentId(Entity):
         return self
 
     def reset_doc_ids_in_library(self, decoded_url, content_type_id=None):
-        """
-        Performs the same function as ResetDocIdByServerRelativePath (section 3.1.5.10.2.1.1), but for every
+        """Performs the same function as ResetDocIdByServerRelativePath (section 3.1.5.10.2.1.1), but for every
         document in the specified document library.
 
         :param str decoded_url: Server relative path to the document library, for which all document identifiers
@@ -42,8 +40,7 @@ class DocumentId(Entity):
         return self
 
     def set_doc_id_site_prefix(self, prefix, schedule_assignment, overwrite_existing_ids):
-        """
-        Allows to set or change the prefix used for Document IDs
+        """Allows to set or change the prefix used for Document IDs
 
         :param str prefix:
         :param bool schedule_assignment:

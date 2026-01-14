@@ -39,9 +39,7 @@ class UserTeamwork(Entity):
     @property
     def associated_teams(self):
         # type: () -> EntityCollection[AssociatedTeamInfo]
-        """
-        The apps installed in the personal scope of this user.
-        """
+        """The apps installed in the personal scope of this user."""
         return self.properties.get(
             "associatedTeams",
             EntityCollection(
@@ -54,9 +52,7 @@ class UserTeamwork(Entity):
     @property
     def installed_apps(self):
         # type: () -> EntityCollection[UserScopeTeamsAppInstallation]
-        """
-        The apps installed in the personal scope of this user.
-        """
+        """The apps installed in the personal scope of this user."""
         return self.properties.get(
             "installedApps",
             EntityCollection(
@@ -67,8 +63,7 @@ class UserTeamwork(Entity):
         )
 
     def send_activity_notification(self, topic, activity_type, chain_id, preview_text, template_parameters=None):
-        """
-        Send an activity feed notification in the scope of a team. For more details about sending notifications
+        """Send an activity feed notification in the scope of a team. For more details about sending notifications
         and the requirements for doing so, see sending Teams activity notifications.
 
         :param TeamworkActivityTopic topic: Topic of the notification. Specifies the resource being talked about.

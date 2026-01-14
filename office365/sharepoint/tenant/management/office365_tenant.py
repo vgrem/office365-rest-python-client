@@ -51,8 +51,7 @@ class Office365Tenant(Entity):
         return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
     def add_tenant_cdn_origin(self, cdn_type, origin_url):
-        """
-        Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
+        """Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
         Effectively, a tenant admin points out to a document library, or a folder in the document library
         and requests that content in that library should be retrievable by using a CDN.
 
@@ -72,8 +71,7 @@ class Office365Tenant(Entity):
         return self
 
     def disable_sharing_for_non_owners_of_site(self, site_url):
-        """
-        Disables Sharing For Non Owners
+        """Disables Sharing For Non Owners
         :param str site_url:
         """
         payload = {"siteUrl": site_url}
@@ -82,8 +80,7 @@ class Office365Tenant(Entity):
         return self
 
     def get_tenant_cdn_enabled(self, cdn_type):
-        """
-        Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
+        """Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
@@ -116,8 +113,7 @@ class Office365Tenant(Entity):
         return self
 
     def set_tenant_cdn_enabled(self, cdn_type, is_enabled):
-        """
-        Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
+        """Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
@@ -131,8 +127,7 @@ class Office365Tenant(Entity):
         return self
 
     def remove_tenant_cdn_origin(self, cdn_type, origin_url):
-        """
-        Removes a new origin from the Public or Private content delivery network (CDN).
+        """Removes a new origin from the Public or Private content delivery network (CDN).
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
@@ -150,8 +145,7 @@ class Office365Tenant(Entity):
         return self
 
     def get_tenant_cdn_policies(self, cdn_type):
-        """
-        Get the public or private Policies applied on your SharePoint Online Tenant.
+        """Get the public or private Policies applied on your SharePoint Online Tenant.
 
         Requires Tenant administrator permissions.
 
@@ -167,8 +161,7 @@ class Office365Tenant(Entity):
         return return_type
 
     def set_tenant_cdn_policy(self, cdn_type, policy, policy_value):
-        """
-        Sets the content delivery network (CDN) policies at the tenant level.
+        """Sets the content delivery network (CDN) policies at the tenant level.
 
         Requires Tenant administrator permissions.
 
@@ -186,8 +179,7 @@ class Office365Tenant(Entity):
         return self
 
     def revoke_all_user_sessions(self, user):
-        """
-        Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
+        """Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
 
         :param str or User user: Specifies a user name or user object
               (for example, user1@contoso.com) or User object
@@ -195,8 +187,7 @@ class Office365Tenant(Entity):
         return_type = SPOUserSessionRevocationResult(self.context)
 
         def _revoke_all_user_sessions(login_name):
-            """
-            Logouts a user's sessions across all their devices
+            """Logouts a user's sessions across all their devices
 
             :type login_name: str
             """
@@ -214,8 +205,7 @@ class Office365Tenant(Entity):
         return return_type
 
     def get_external_users(self, position=0, page_size=50, _filter=None, sort_order=0):
-        """
-        Returns external users in the tenant.
+        """Returns external users in the tenant.
 
         :param int position: Use to specify the zero-based index of the position in the sorted collection of the
                              first result to be returned.
@@ -238,8 +228,7 @@ class Office365Tenant(Entity):
         return return_type
 
     def remove_external_users(self, unique_ids=None):
-        """
-        Removes a collection of external users from the tenancy's folder.
+        """Removes a collection of external users from the tenancy's folder.
 
         :param list[str] unique_ids: Specifies an ID that can be used to identify an external user based on
                                      their Windows Live ID.
@@ -253,17 +242,14 @@ class Office365Tenant(Entity):
         return return_type
 
     def get_all_tenant_themes(self):
-        """
-        Get all themes from tenant
-        """
+        """Get all themes from tenant"""
         return_type = ClientObjectCollection(self.context, ThemeProperties)
         qry = ServiceOperationQuery(self, "GetAllTenantThemes", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def add_tenant_theme(self, name, theme_json):
-        """
-        Adds a new theme to a tenant.
+        """Adds a new theme to a tenant.
 
         :param str name:
         :param str theme_json:
@@ -278,8 +264,7 @@ class Office365Tenant(Entity):
         return return_type
 
     def delete_tenant_theme(self, name):
-        """
-        Removes a theme from tenant
+        """Removes a theme from tenant
         :type name: str
         """
         payload = {

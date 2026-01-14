@@ -10,7 +10,8 @@ from office365.sharepoint.social.thread import SocialThread
 
 class SocialFeedManager(Entity):
     """The SocialFeedManager class provides access to social feeds. It provides methods to create posts,
-    delete posts, read posts, and perform other operations on posts."""
+    delete posts, read posts, and perform other operations on posts.
+    """
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
@@ -18,8 +19,7 @@ class SocialFeedManager(Entity):
         super(SocialFeedManager, self).__init__(context, resource_path)
 
     def create_post(self, target_id=None, creation_data=None):
-        """
-        The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
+        """The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
         the specified thread. This method returns a new or a modified thread.
 
         :param str or None target_id: Optional, specifies the target of the post. If this parameter is null, the post is
@@ -36,8 +36,7 @@ class SocialFeedManager(Entity):
         return return_type
 
     def delete_post(self, post_id):
-        """
-        The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
+        """The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
         If the entire thread is deleted, this method returns null.
 
         :param str post_id: Specifies the post to be deleted. The post identifier is specified in the
@@ -51,8 +50,7 @@ class SocialFeedManager(Entity):
         return return_type
 
     def create_file_attachment(self, name, description, file_data):
-        """
-        Creates a file attachment for a future post.
+        """Creates a file attachment for a future post.
 
         :param str name: The name of the file.
         :param str description: An optional description of the file.
@@ -65,8 +63,7 @@ class SocialFeedManager(Entity):
         return return_type
 
     def get_feed(self, feed_type=None, options=None):
-        """
-        The GetFeed method returns a feed for the current user. The feed consists of an array of message threads.
+        """The GetFeed method returns a feed for the current user. The feed consists of an array of message threads.
         Each thread consists of a root post and an array of reply posts. See section 3.1.5.17 for details on
         the SocialFeed type. The server selects a set of posts to return in the feed based on the type
         and options parameters, but this protocol does require any specific algorithm to select the set of posts

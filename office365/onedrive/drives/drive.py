@@ -17,11 +17,11 @@ from office365.runtime.queries.function import FunctionQuery
 
 class Drive(BaseItem):
     """The drive resource is the top level object representing a user's OneDrive or a document library in
-    SharePoint."""
+    SharePoint.
+    """
 
     def create_bundle(self, name, children=None):
-        """
-        Add a new bundle to the user's drive.
+        """Add a new bundle to the user's drive.
 
         :param str name: Bundle name
         :param list children: the list of file facets if creating a files or a folder facets if creating a folder
@@ -50,8 +50,7 @@ class Drive(BaseItem):
         return return_type
 
     def recent(self):
-        """
-        List a set of items that have been recently used by the signed in user.
+        """List a set of items that have been recently used by the signed in user.
         This collection includes items that are in the user's drive as well as items
         they have access to from other drives.
         """
@@ -70,8 +69,7 @@ class Drive(BaseItem):
     @property
     def drive_type(self):
         # type: () -> Optional[str]
-        """
-        Describes the type of drive represented by this resource. OneDrive personal drives will return personal.
+        """Describes the type of drive represented by this resource. OneDrive personal drives will return personal.
         OneDrive for Business will return business. SharePoint document libraries will return documentLibrary.
         """
         return self.properties.get("driveType", None)

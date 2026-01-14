@@ -12,9 +12,7 @@ from office365.sharepoint.translation.notification_recipient_users import (
 
 class MultilingualSettings(Entity):
     def set_notification_recipients(self, notification_recipients):
-        """
-        :param list notification_recipients:
-        """
+        """:param list notification_recipients:"""
         request = TranslationNotificationRecipientSetRequest(notification_recipients)
         qry = ServiceOperationQuery(self, "SetNotificationRecipients", None, request)
         self.context.add_query(qry)

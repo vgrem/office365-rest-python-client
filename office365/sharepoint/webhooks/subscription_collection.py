@@ -18,16 +18,12 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         return Subscription(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
     def add(self, parameters):
-        """
-        :param SubscriptionInformation or str parameters: Subscription information object or notification string
-        """
+        """:param SubscriptionInformation or str parameters: Subscription information object or notification string"""
         return_type = Subscription(self.context)
         self.add_child(return_type)
 
         def _create_and_add_query(information):
-            """
-            :type information: SubscriptionInformation
-            """
+            """:type information: SubscriptionInformation"""
             payload = {"parameters": information}
             qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)
             self.context.add_query(qry)

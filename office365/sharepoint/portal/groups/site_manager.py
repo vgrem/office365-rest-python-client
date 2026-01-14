@@ -27,14 +27,13 @@ class GroupSiteManager(ClientObject):
 
     def can_user_create_group(self):
         """Determines if the current user can create group site"""
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "CanUserCreateGroup", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def create_group_for_site(self, display_name, alias, is_public=None, optional_params=None):
-        """
-        Create a modern site
+        """Create a modern site
 
         :param str display_name:
         :param str alias:
@@ -53,8 +52,7 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def create_group_ex(self, display_name, alias, is_public, optional_params=None):
-        """
-        Creates a modern site
+        """Creates a modern site
 
         :param str display_name:
         :param str alias:
@@ -68,8 +66,7 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def delete(self, site_url):
-        """
-        Deletes a SharePoint Team site
+        """Deletes a SharePoint Team site
 
         :type site_url: str
         """
@@ -101,18 +98,17 @@ class GroupSiteManager(ClientObject):
         def _construct_request(request):
             # type: (RequestOptions) -> None
             request.method = HttpMethod.Get
-            request.url += "?groupId='{0}'".format(group_id)
+            request.url += f"?groupId='{group_id}'"
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
 
     def get_current_user_joined_teams(self, get_logo_data=False, force_cache_update=False):
-        """
-        Get the teams in Microsoft Teams that the current user is a direct member of.
+        """Get the teams in Microsoft Teams that the current user is a direct member of.
         :type get_logo_data: bool
         :type force_cache_update: bool
         """
-        result = ClientResult(self.context, str())
+        result = ClientResult(self.context, "")
         payload = {"getLogoData": get_logo_data, "forceCacheUpdate": force_cache_update}
         qry = ServiceOperationQuery(self, "GetCurrentUserJoinedTeams", None, payload, None, result)
         self.context.add_query(qry)
@@ -133,8 +129,7 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels(self, team_id, use_staging_endpoint=False):
-        """
-        Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
+        """Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
 
         :param str team_id:
         :param bool use_staging_endpoint:
@@ -146,10 +141,8 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels_direct(self, team_id):
-        """
-        :param str team_id:
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str team_id:"""
+        return_type = ClientResult(self.context, "")
         payload = {
             "teamId": team_id,
         }
@@ -158,8 +151,7 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels_with_site_url(self, site_url):
-        """
-        Returns a list of team channels associated with a Microsoft 365 Group.
+        """Returns a list of team channels associated with a Microsoft 365 Group.
         :param str site_url:
         """
         return_type = ClientResult(self.context, ChannelInfoCollection())
@@ -171,10 +163,8 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def notebook(self, group_id):
-        """
-        :param str group_id:
-        """
-        return_type = ClientResult(self.context, str())
+        """:param str group_id:"""
+        return_type = ClientResult(self.context, "")
         payload = {"groupId": group_id}
         qry = ServiceOperationQuery(self, "Notebook", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -187,8 +177,7 @@ class GroupSiteManager(ClientObject):
         include_pinned=None,
         existing_joined_teams_data=None,
     ):
-        """
-        Retrieves a list of teams that a user has recently accessed or joined
+        """Retrieves a list of teams that a user has recently accessed or joined
 
         :param bool include_recent:
         :param bool include_teams:

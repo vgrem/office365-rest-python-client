@@ -1,5 +1,4 @@
-"""
-Export personal data
+"""Export personal data
 
 https://learn.microsoft.com/en-us/graph/api/user-exportpersonaldata?view=graph-rest-1.0
 """

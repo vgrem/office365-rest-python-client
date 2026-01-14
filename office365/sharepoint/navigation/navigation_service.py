@@ -18,8 +18,7 @@ class NavigationService(Entity):
         super(NavigationService, self).__init__(context, static_path)
 
     def get_publishing_navigation_provider_type(self, map_provider_name=NavigationProviderType.SPNavigationProvider):
-        """
-        Gets a publishing navigation provider type when publishing feature is turned on for the site (2).
+        """Gets a publishing navigation provider type when publishing feature is turned on for the site (2).
         If navigation provider is not found on the site MUST return InvalidSiteMapProvider type.
 
         :param str map_provider_name: The server will use "SPNavigationProvider" as provider name
@@ -40,35 +39,31 @@ class NavigationService(Entity):
 
     def global_nav_enabled(self):
         """ """
-        return_type = ClientResult(self.context, bool())
+        return_type = ClientResult(self.context, False)
         qry = ServiceOperationQuery(self, "GlobalNavEnabled", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def set_global_nav_enabled(self, is_enabled):
-        """
-        :param bool is_enabled:
-        """
+        """:param bool is_enabled:"""
         qry = ServiceOperationQuery(self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled})
         self.context.add_query(qry)
         return self
 
     def menu_node_key(self, current_url, map_provider_name=None):
-        """
-        Returns the unique key for a node within the menu tree. If a key cannot be found, an exception is returned.
+        """Returns the unique key for a node within the menu tree. If a key cannot be found, an exception is returned.
 
         :param str current_url: A URL relative to the site collection identifying the node within the menu tree.
         :param str map_provider_name: The name identifying a provider to use for the lookup
         """
-        return_type = ClientResult(self.context, str())
+        return_type = ClientResult(self.context, "")
         params = {"currentUrl": current_url, "mapProviderName": map_provider_name}
         qry = ServiceOperationQuery(self, "MenuNodeKey", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def menu_state(self, menu_node_key, map_provider_name, depth=None, custom_properties=None):
-        """
-        Returns the menu tree rooted at the specified root node for a given provider.
+        """Returns the menu tree rooted at the specified root node for a given provider.
 
         :param str menu_node_key: A unique key identifying the node that will be used as root node in the returned
             result

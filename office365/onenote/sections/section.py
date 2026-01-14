@@ -52,10 +52,8 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
     @property
     def pages(self):
         # type: () -> EntityCollection[OnenotePage]
-        """
-        The collection of pages in the section. Read-only. Nullable.
-        """
-        from office365.onenote.pages.page import OnenotePage  # noqa
+        """The collection of pages in the section. Read-only. Nullable."""
+        from office365.onenote.pages.page import OnenotePage
 
         return self.properties.get(
             "pages",
@@ -64,9 +62,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
     @property
     def parent_notebook(self):
-        """
-        The notebook that contains the page. Read-only.
-        """
+        """The notebook that contains the page. Read-only."""
         from office365.onenote.notebooks.notebook import Notebook
 
         return self.properties.get(
@@ -76,9 +72,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
     @property
     def parent_section_group(self):
-        """
-        The section group that contains the section. Read-only.
-        """
+        """The section group that contains the section. Read-only."""
         from office365.onenote.sectiongroups.section_group import SectionGroup
 
         return self.properties.get(

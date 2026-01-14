@@ -1,5 +1,4 @@
-"""
-List followed items
+"""List followed items
 
 https://learn.microsoft.com/en-us/graph/api/drive-list-following?view=graph-rest-1.0
 """

@@ -5,8 +5,7 @@ from office365.sharepoint.social.thread import SocialThread
 
 
 class SocialRestThread(Entity):
-    """
-    The SocialRestThread class specifies a thread that is stored on the server. The thread contains a root post
+    """The SocialRestThread class specifies a thread that is stored on the server. The thread contains a root post
     and zero or more reply posts. The SocialRestThread type is available when the protocol client sends an OData
     request to a protocol server using [MS-CSOMREST]. It is not available using [MS-CSOM].
     """
@@ -15,8 +14,7 @@ class SocialRestThread(Entity):
         super(SocialRestThread, self).__init__(context, ResourcePath("SP.Social.SocialRestThread"))
 
     def like(self, post_id):
-        """
-        The Like method makes the current user a liker of the specified post.
+        """The Like method makes the current user a liker of the specified post.
 
         :param str post_id: Specifies the post by its identifier.
         """
@@ -26,8 +24,7 @@ class SocialRestThread(Entity):
         return self
 
     def unlike(self, post_id):
-        """
-        The Unlike method removes the current user from the list of likers for the specified post.
+        """The Unlike method removes the current user from the list of likers for the specified post.
         If the current is not a liker of the post, this method has no effect.
 
         :param str post_id: Specifies the post by its identifier.

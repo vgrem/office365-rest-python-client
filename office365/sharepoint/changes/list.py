@@ -5,14 +5,13 @@ from office365.sharepoint.changes.change import Change
 
 
 class ChangeList(Change):
-    """
-    Specifies a change on a list.
+    """Specifies a change on a list.
 
     The RelativeTime and RootFolderUrl properties are not included in the default scalar property set for this type.
     """
 
     def __repr__(self):
-        return "List: {0}".format(self.list_id)
+        return f"List: {self.list_id}"
 
     @property
     def base_template(self):

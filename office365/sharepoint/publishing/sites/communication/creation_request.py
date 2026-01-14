@@ -13,8 +13,7 @@ class CommunicationSiteCreationRequest(ClientValue):
         web_template_extension_id=None,
         site_design_id=None,
     ):
-        """
-        Options for configuring the Communication Site that will be created.
+        """Options for configuring the Communication Site that will be created.
 
         :param str title: Site title
         :param str url: Absolute site url

@@ -8,8 +8,7 @@ class ContextWebInformation(ClientValue):
     """Specifies metadata about a site."""
 
     def __init__(self, form_digest_value=None, form_digest_timeout_secs=None):
-        """
-        :param str form_digest_value: An object that is inserted into a page and is used by a protocol server
+        """:param str form_digest_value: An object that is inserted into a page and is used by a protocol server
              to validate client requests. The validation is specific to a user, site, and time period.
         :param int form_digest_timeout_secs: Specifies the amount of time in seconds before security validation expires.
         """
@@ -24,9 +23,7 @@ class ContextWebInformation(ClientValue):
 
     @property
     def is_valid(self):
-        """
-        Determines whether FormDigest has been expired or not
-        """
+        """Determines whether FormDigest has been expired or not"""
         if self.FormDigestTimeoutSeconds is None:
             return False
 

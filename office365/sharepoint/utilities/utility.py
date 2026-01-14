@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class Utility(Entity):
-    """
-    Provides tools for converting date and time formats, for obtaining information from user names,
+    """Provides tools for converting date and time formats, for obtaining information from user names,
     for modifying access to sites, and for various other tasks in managing deployment.
     """
 
@@ -29,7 +28,7 @@ class Utility(Entity):
         :type context: office365.sharepoint.client_context.ClientContext
         :param str page_address: Specifies part of the display name for the document or resource.
         """
-        return_type = ClientResult(context, str())
+        return_type = ClientResult(context, "")
         utility = Utility(context)
         payload = {"pageAddress": str(SPResPath.create_absolute(context.base_url, page_address))}
         qry = ServiceOperationQuery(
@@ -46,8 +45,7 @@ class Utility(Entity):
 
     @staticmethod
     def get_current_user_email_addresses(context):
-        """
-        Returns the email addresses of the current user. If more than one email address exists for the current user,
+        """Returns the email addresses of the current user. If more than one email address exists for the current user,
         returns a list of email addresses separated by semicolons.
         :type context: office365.sharepoint.client_context.ClientContext
         """
@@ -60,8 +58,7 @@ class Utility(Entity):
 
     @staticmethod
     def get_user_permission_levels(context):
-        """
-        Retrieves a collection of permission levels of the current user on the web.
+        """Retrieves a collection of permission levels of the current user on the web.
         :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, StringCollection())
@@ -72,8 +69,7 @@ class Utility(Entity):
 
     @staticmethod
     def search_principals_using_context_web(context, s_input, sources, scopes, max_count, group_name=None):
-        """
-        Returns the collection of principals that partially or uniquely matches the specified search criteria in the
+        """Returns the collection of principals that partially or uniquely matches the specified search criteria in the
         context of the current Web site
         :param str s_input: Specifies the value to be used when searching for a principal.
         :param str sources: Specifies the source to be used when searching for a principal.
@@ -100,8 +96,7 @@ class Utility(Entity):
 
     @staticmethod
     def create_wiki_page_in_context_web(context, parameters, return_type=None):
-        """
-        Creates a wiki page.
+        """Creates a wiki page.
         :type context: office365.sharepoint.client_context.ClientContext
         :type parameters: office365.sharepoint.pages.wiki_page_creation_information.WikiPageCreationInformation
         :type return_type: File
@@ -117,8 +112,7 @@ class Utility(Entity):
 
     @staticmethod
     def send_email(context, properties):
-        """
-        This method is a static method.
+        """This method is a static method.
         :type context: office365.sharepoint.client_context.ClientContext
         :type properties: office365.sharepoint.utilities.email_properties.EmailProperties
         """
@@ -130,8 +124,7 @@ class Utility(Entity):
 
     @staticmethod
     def unmark_discussion_as_featured(context, list_id, topic_ids):
-        """
-        This method is a static method.
+        """This method is a static method.
         :type context: office365.sharepoint.client_context.ClientContext
         :type list_id: str
         :type topic_ids: str
@@ -144,8 +137,7 @@ class Utility(Entity):
 
     @staticmethod
     def expand_groups_to_principals(context, inputs, max_count=None, return_type=None):
-        """
-        Expands groups to a collection of principals.
+        """Expands groups to a collection of principals.
         :type context: office365.sharepoint.client_context.ClientContext
         :param list[str] inputs: A collection of groups to be expanded.
         :param int max_count: Specifies the maximum number of principals to be returned.
@@ -163,8 +155,7 @@ class Utility(Entity):
     @staticmethod
     def log_custom_app_error(context, error):
         # type: (ClientContext, str) -> ClientResult[int]
-        """
-        Logs an error from a SharePoint Add-in. The return value indicates the success or failure of this operation.
+        """Logs an error from a SharePoint Add-in. The return value indicates the success or failure of this operation.
         These errors are of interest to administrators who monitor such apps (2).
 
         :type context: office365.sharepoint.client_context.ClientContext
@@ -190,8 +181,7 @@ class Utility(Entity):
         add_to_user_info_list=None,
         match_user_info_list=None,
     ):
-        """
-        Returns information about a principal that matches the specified search criteria in the context of the current
+        """Returns information about a principal that matches the specified search criteria in the context of the current
         Web site.
 
         :type context: office365.sharepoint.client_context.ClientContext

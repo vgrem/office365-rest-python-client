@@ -1,5 +1,4 @@
-"""
-Gets folders from drive
+"""Gets folders from drive
 https://learn.microsoft.com/en-us/graph/api/driveitem-list-children?view=graph-rest-1.0
 """
 
@@ -16,6 +15,6 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 # items = client.me.drive.root.get_files(False).execute_query()
 site = client.sites.get_by_url(test_team_site_url)
 items = site.lists["Documents"].drive.root.get_files(True, 1000).execute_query()
-print("{0} files found".format(len(items)))
+print(f"{len(items)} files found")
 for file_item in items:
     print(file_item.web_url)

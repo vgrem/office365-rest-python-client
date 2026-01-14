@@ -9,7 +9,7 @@ def enum_folders_and_files(root_folder):
     # type: (DriveItem) ->  None
     drive_items = root_folder.children.get().execute_query()
     for drive_item in drive_items:
-        print("Name: {0}".format(drive_item.web_url))
+        print(f"Name: {drive_item.web_url}")
         if drive_item.is_folder:  # is folder facet?
             enum_folders_and_files(drive_item)
 

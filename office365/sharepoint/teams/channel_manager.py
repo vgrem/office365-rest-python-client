@@ -9,8 +9,7 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def add_team_channel(context, channel_url, private_channel=False, private_channel_group_owner=None):
-        """
-        Create Team Channel based folder with specific prodID.
+        """Create Team Channel based folder with specific prodID.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str channel_url:  Team channel URL to be stored in the folder metadata.
@@ -31,8 +30,7 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def get_team_site_data(context, ignore_validation=True):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param bool ignore_validation:
         """
         payload = {
@@ -53,8 +51,7 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def save_conversations(context, list_url, list_item_id, updated_conversations_object):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context
         :param str list_url:
         :param int list_item_id:
         :param str updated_conversations_object:
@@ -71,9 +68,7 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def sync_teamsite_settings(context):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        """
+        """:param office365.sharepoint.client_context.ClientContext context: SharePoint client context"""
         return_type = TeamSiteData(context)
         qry = ServiceOperationQuery(
             TeamChannelManager(context),

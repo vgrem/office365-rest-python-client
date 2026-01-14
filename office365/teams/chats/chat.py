@@ -44,7 +44,8 @@ class Chat(Entity):
     def online_meeting_info(self):
         # type: () -> TeamworkOnlineMeetingInfo
         """Represents details about an online meeting. If the chat isn't associated with an online meeting,
-        the property is empty. Read-only."""
+        the property is empty. Read-only.
+        """
         return self.properties.get("onlineMeetingInfo", TeamworkOnlineMeetingInfo())
 
     @property
@@ -115,9 +116,7 @@ class Chat(Entity):
     @property
     def operations(self):
         # type: () -> EntityCollection[TeamsAsyncOperation]
-        """
-        A collection of all the Teams async operations that ran or are running on the chat. Nullable.
-        """
+        """A collection of all the Teams async operations that ran or are running on the chat. Nullable."""
         return self.properties.get(
             "operations",
             EntityCollection(

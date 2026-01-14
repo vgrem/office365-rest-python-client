@@ -7,8 +7,7 @@ class TimeZoneInformation(ClientValue):
     """
 
     def __init__(self, alias=None, display_name=None):
-        """
-        :param str alias: An identifier for the time zone.
+        """:param str alias: An identifier for the time zone.
         :param str display_name: A display string that represents the time zone.
         """
         self.alias = alias

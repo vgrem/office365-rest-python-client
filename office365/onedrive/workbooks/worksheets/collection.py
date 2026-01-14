@@ -8,8 +8,7 @@ class WorkbookWorksheetCollection(EntityCollection[WorkbookWorksheet]):
         super(WorkbookWorksheetCollection, self).__init__(context, WorkbookWorksheet, resource_path)
 
     def add(self, name=None):
-        """
-        Adds a new worksheet to the workbook. The worksheet will be added at the end of existing worksheets.
+        """Adds a new worksheet to the workbook. The worksheet will be added at the end of existing worksheets.
         If you wish to activate the newly added worksheet, call ".activate() on it.
 
         :param str name: The name of the worksheet to be added. If specified, name should be unique.

@@ -11,9 +11,7 @@ class PageDiagnosticsController(Entity):
         super(PageDiagnosticsController, self).__init__(context, static_path)
 
     def by_page(self, page_relative_file_path):
-        """
-        :param str page_relative_file_path:
-        """
+        """:param str page_relative_file_path:"""
         return_type = ClientResult(self.context, PageDiagnostics())
         payload = {"pageRelativeFilePath": page_relative_file_path}
         qry = ServiceOperationQuery(self, "ByPage", None, payload, None, return_type)

@@ -37,8 +37,7 @@ class Folder(Entity):
 
     @staticmethod
     def from_url(abs_url):
-        """
-        Addresses a Folder by absolute url
+        """Addresses a Folder by absolute url
         :type abs_url: str
         """
         from office365.sharepoint.client_context import ClientContext
@@ -48,8 +47,7 @@ class Folder(Entity):
         return ctx.web.get_folder_by_server_relative_url(relative_url)
 
     def download_folder(self, download_file, after_file_downloaded=None, recursive=True):
-        """
-        Downloads a folder into a zip file
+        """Downloads a folder into a zip file
         :param typing.IO download_file: A download zip file object
         :param (office365.sharepoint.files.file.File)->None after_file_downloaded: A download callback
         :param bool recursive: Determines whether to traverse folders recursively
@@ -57,11 +55,10 @@ class Folder(Entity):
         return MoveCopyUtil.download_folder(self, download_file, after_file_downloaded, recursive)
 
     def get_folders(self, recursive=False):
-        """
-        Retrieves folders
+        """Retrieves folders
         :param bool recursive: Determines whether to enumerate folders recursively
         """
-        from office365.sharepoint.folders.collection import FolderCollection  # noqa
+        from office365.sharepoint.folders.collection import FolderCollection
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
@@ -76,11 +73,10 @@ class Folder(Entity):
         return return_type
 
     def get_files(self, recursive=False):
-        """
-        Retrieves files
+        """Retrieves files
         :param bool recursive: Determines whether to enumerate folders recursively
         """
-        from office365.sharepoint.files.collection import FileCollection  # noqa
+        from office365.sharepoint.files.collection import FileCollection
 
         return_type = FileCollection(self.context, self.files.resource_path, self)
 
@@ -99,8 +95,7 @@ class Folder(Entity):
         return self.list_item_all_fields.get_sharing_information()
 
     def move_to(self, destination):
-        """
-        Moves the folder and its contents under a new folder at the specified destination.
+        """Moves the folder and its contents under a new folder at the specified destination.
         This method applies only to the context of a single site.
 
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
@@ -129,8 +124,7 @@ class Folder(Entity):
         return self
 
     def move_to_using_path(self, destination):
-        """
-        Moves the folder and its contents to a new folder at the specified path.
+        """Moves the folder and its contents to a new folder at the specified path.
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
 
         :param str or Folder destination: Specifies the server relative url or an existing folder
@@ -198,8 +192,7 @@ class Folder(Entity):
         )
 
     def unshare_link(self, link_kind, share_id=None):
-        """
-        Removes the specified tokenized sharing link of the folder.
+        """Removes the specified tokenized sharing link of the folder.
 
         :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
             sharing link that is intended to be removed.
@@ -209,15 +202,13 @@ class Folder(Entity):
 
     def recycle(self):
         """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
-
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def recycle_with_parameters(self, parameters):
-        """
-        Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
+        """Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
 
         :type parameters: office365.sharepoint.folders.delete_parameters.FolderDeleteParameters
         """
@@ -242,8 +233,7 @@ class Folder(Entity):
         return return_type
 
     def get_list_item_changes(self, query):
-        """
-        Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
+        """Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
         folder based on the specified query.
 
         :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
@@ -288,8 +278,7 @@ class Folder(Entity):
         include_anonymous_links_in_notification=None,
         propagate_acl=None,
     ):
-        """
-        This method allows a caller with the 'ManagePermission' permission to update sharing information about a
+        """This method allows a caller with the 'ManagePermission' permission to update sharing information about a
         document to enable document sharing with a set of users. It returns an array of
         UserSharingResult (section 3.2.5.190) elements where each element contains the sharing status for each user.
 
@@ -316,7 +305,6 @@ class Folder(Entity):
             an anonymous access link in the email notification, and if the value is "false", no link will be included.
         :param bool propagate_acl: A flag to determine if permissions SHOULD be pushed to items with unique permission.
         """
-
         return_type = ClientResult(self.context, ClientValueCollection(UserSharingResult))
 
         def _loaded():
@@ -375,7 +363,6 @@ class Folder(Entity):
         :type keep_both: bool
         :type reset_author_and_created: bool
         """
-
         return_type = Folder(self.context)
         self.parent_collection.add_child(return_type)
 
@@ -422,7 +409,7 @@ class Folder(Entity):
     def files(self):
         # type: () -> FileCollection
         """Specifies the collection of files contained in the list folder."""
-        from office365.sharepoint.files.collection import FileCollection  # noqa
+        from office365.sharepoint.files.collection import FileCollection
 
         return self.properties.get(
             "Files",
@@ -433,7 +420,7 @@ class Folder(Entity):
     def folders(self):
         # type: () -> FolderCollection
         """Specifies the collection of list folders contained within the list folder."""
-        from office365.sharepoint.folders.collection import FolderCollection  # noqa
+        from office365.sharepoint.folders.collection import FolderCollection
 
         return self.properties.get(
             "Folders",

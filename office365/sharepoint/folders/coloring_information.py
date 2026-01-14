@@ -1,7 +1,7 @@
 from office365.runtime.client_value import ClientValue
 
 
-class FolderColors(object):
+class FolderColors:
     Yellow = "#FFCE3C"
 
     Grey = "#B0B7BA"
@@ -39,8 +39,7 @@ class FolderColoringInformation(ClientValue):
     """"""
 
     def __init__(self, color_hex=None, color_tag=None, emoji=None):
-        """
-        :param str color_hex:
+        """:param str color_hex:
         :param str color_tag:
         :param str emoji:
         """

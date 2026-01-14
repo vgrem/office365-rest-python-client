@@ -23,7 +23,8 @@ class CorporateCatalogAppMetadata(Entity):
 
     def remove(self):
         """This is the inverse of the add step above. One removed from the app catalog,
-        the solution can't be deployed."""
+        the solution can't be deployed.
+        """
         qry = ServiceOperationQuery(self, "Remove")
         self.context.add_query(qry)
         return self

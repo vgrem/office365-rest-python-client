@@ -24,8 +24,7 @@ class EntityCollection(ClientObjectCollection[T]):
 
     def token(self, value):
         # type: (str) -> T
-        """
-        Apply delta query
+        """Apply delta query
 
         :param str value: If unspecified, enumerates the hierarchy's current state. If latest, returns empty
             response with latest delta token. If a previous delta token, returns new state since that token.
@@ -35,8 +34,7 @@ class EntityCollection(ClientObjectCollection[T]):
 
     def __getitem__(self, key):
         # type: (int | str) -> T
-        """
-        :param key: key is used to address an entity by either an index or by identifier
+        """:param key: key is used to address an entity by either an index or by identifier
         :type key: int or str
         """
         if isinstance(key, int):

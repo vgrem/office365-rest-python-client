@@ -21,9 +21,7 @@ class UserCustomAction(Entity):
     @script_block.setter
     def script_block(self, value):
         # type: (str) -> None
-        """
-        Sets the value that specifies the ECMAScript to be executed when the custom action is performed.
-        """
+        """Sets the value that specifies the ECMAScript to be executed when the custom action is performed."""
         self.set_property("ScriptBlock", value)
 
     @property
@@ -35,9 +33,7 @@ class UserCustomAction(Entity):
     @script_src.setter
     def script_src(self, value):
         # type: (str) -> None
-        """
-        Sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
-        """
+        """Sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page"""
         self.set_property("ScriptSrc", value)
 
     @property

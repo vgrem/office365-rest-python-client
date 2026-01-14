@@ -16,8 +16,7 @@ class Principal(ClientValue):
         login_name=None,
         name=None,
     ):
-        """
-        :param int id_: Id of the Principal in SharePoint's UserInfo List.
+        """:param int id_: Id of the Principal in SharePoint's UserInfo List.
         :param str directory_object_id:
         :param str email: Email address of the Principal.
         :param str expiration:

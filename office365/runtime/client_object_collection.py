@@ -37,7 +37,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         # type: (Optional[dict], Optional[ResourcePath]) -> T
         """Create an object from the item_type."""
         if self._item_type is None:
-            raise AttributeError("No class model for entity type '{0}' was found".format(self._item_type))
+            raise AttributeError(f"No class model for entity type '{self._item_type}' was found")
         if resource_path is None:
             resource_path = ResourcePath(None, self.resource_path)
         client_object = self._item_type(context=self.context, resource_path=resource_path)  # type: T
@@ -95,8 +95,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
     def filter(self, expression):
         # type: (str) -> Self
-        """
-        Allows clients to filter a collection of resources that are addressed by a request URL
+        """Allows clients to filter a collection of resources that are addressed by a request URL
         :param str expression: Filter expression, for example: 'Id eq 123'
         """
         self.query_options.filter = expression
@@ -104,17 +103,13 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
     def order_by(self, value):
         # type: (str) -> Self
-        """
-        Allows clients to request resources in either ascending order using asc or descending order using desc
-        """
+        """Allows clients to request resources in either ascending order using asc or descending order using desc"""
         self.query_options.orderBy = value
         return self
 
     def skip(self, value):
         # type: (int) -> Self
-        """
-        Requests the number of items in the queried collection that are to be skipped and not included in the result
-        """
+        """Requests the number of items in the queried collection that are to be skipped and not included in the result"""
         self.query_options.skip = value
         return self
 
@@ -182,7 +177,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         def _after_loaded(col):
             # type: (ClientObjectCollection) -> None
             if len(col) < 1:
-                message = "Not found for filter: {0}".format(self.query_options.filter)
+                message = f"Not found for filter: {self.query_options.filter}"
                 raise ValueError(message)
             [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
@@ -191,8 +186,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
 
     def single(self, expression):
         # type: (str) -> T
-        """
-        Return only one resulting Entity
+        """Return only one resulting Entity
 
         :param str expression: Filter expression
         """
@@ -204,7 +198,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             if len(col) == 0:
                 raise NotFoundException(return_type, expression)
             elif len(col) > 1:
-                message = "Ambiguous match found for filter: {0}".format(expression)
+                message = f"Ambiguous match found for filter: {expression}"
                 raise ValueError(message)
             [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
@@ -233,5 +227,5 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Returns server type name for the collection of entities"""
         if self._entity_type_name is None:
             client_object = self.create_typed_object()
-            self._entity_type_name = "Collection({0})".format(client_object.entity_type_name)
+            self._entity_type_name = f"Collection({client_object.entity_type_name})"
         return self._entity_type_name

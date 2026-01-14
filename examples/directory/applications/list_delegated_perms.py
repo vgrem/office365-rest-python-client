@@ -1,5 +1,4 @@
-"""
-How to list delegated permissions for an app using Microsoft Graph.
+"""How to list delegated permissions for an app using Microsoft Graph.
 Delegated permissions, also called scopes or OAuth2 permissions, allow an app to call an API
 on behalf of a signed-in user.
 

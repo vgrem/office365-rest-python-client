@@ -7,8 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class ActivityHistoryItem(Entity):
-    """
-    Represents a history item for an activity in an app. User activities represent a single destination within
+    """Represents a history item for an activity in an app. User activities represent a single destination within
     your app; for example, a TV show, a document, or a current campaign in a video game.
     When a user engages with that activity, the engagement is captured as a history item that indicates
     the start and end time for that activity. As the user re-engages with that activity over time, multiple
@@ -18,8 +17,7 @@ class ActivityHistoryItem(Entity):
     @property
     def active_duration_seconds(self):
         # type: () -> Optional[int]
-        """
-        The duration of active user engagement. if not supplied, this is calculated from the startedDateTime
+        """The duration of active user engagement. if not supplied, this is calculated from the startedDateTime
         and lastActiveDateTime.
         """
         return self.properties.get("activeDurationSeconds", None)

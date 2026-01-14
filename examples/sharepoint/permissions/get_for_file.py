@@ -1,6 +1,4 @@
-"""
-Returns the user permissions for the file.
-"""
+"""Returns the user permissions for the file."""
 
 from pprint import pprint
 

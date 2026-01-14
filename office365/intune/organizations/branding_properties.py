@@ -2,8 +2,7 @@ from office365.entity import Entity
 
 
 class OrganizationalBrandingProperties(Entity):
-    """
-    An abstract type that exposes properties for configuring an organization's branding.
+    """An abstract type that exposes properties for configuring an organization's branding.
 
     Organizations can customize their Azure Active Directory (Azure AD) sign-in pages which appear when users sign in to
     their organization's tenant-specific apps, or when Azure AD identifies the user's tenant from their username.

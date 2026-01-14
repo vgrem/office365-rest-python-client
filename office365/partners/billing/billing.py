@@ -8,9 +8,7 @@ class Billing(Entity):
 
     @property
     def usage(self):
-        """
-        Represents details for billed and unbilled Azure usage data.
-        """
+        """Represents details for billed and unbilled Azure usage data."""
         return self.properties.get(
             "usage",
             AzureUsage(self.context, ResourcePath("usage", self.resource_path)),

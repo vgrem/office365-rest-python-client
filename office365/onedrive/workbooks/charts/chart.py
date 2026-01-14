@@ -27,8 +27,7 @@ class WorkbookChart(Entity):
         return return_type
 
     def set_data(self, source_data, series_by):
-        """
-        Updates the data source of a chart
+        """Updates the data source of a chart
         :param dict source_data:
         :param str series_by:
         """

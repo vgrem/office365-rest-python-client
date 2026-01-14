@@ -3,9 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 class ImageFieldValue(ClientValue):
     def __init__(self, server_relative_url=None):
-        """
-        :param str server_relative_url:
-        """
+        """:param str server_relative_url:"""
         self.serverRelativeUrl = server_relative_url
         self.type = ("thumbnail",)
         self.fileName = None

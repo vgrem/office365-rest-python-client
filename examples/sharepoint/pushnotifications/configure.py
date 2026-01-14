@@ -1,6 +1,4 @@
-"""
-Configure and use push notifications in SharePoint apps
-"""
+"""Configure and use push notifications in SharePoint apps"""
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.features.definitions.scope import FeatureDefinitionScope

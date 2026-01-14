@@ -3,8 +3,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class LicenseAssignmentState(ClientValue):
-    """
-    The licenseAssignmentStates property of the user entity is a collection of licenseAssignmentState objects.
+    """The licenseAssignmentStates property of the user entity is a collection of licenseAssignmentState objects.
     It provides details about license assignments to a user. The details include information such as:
 
         - What plans are disabled for a user
@@ -22,8 +21,7 @@ class LicenseAssignmentState(ClientValue):
         sku_id=None,
         state=None,
     ):
-        """
-        :param str assigned_by_group: ndicates whether the license is directly assigned or inherited from a group.
+        """:param str assigned_by_group: ndicates whether the license is directly assigned or inherited from a group.
              If directly assigned, this field is null; if inherited through a group membership, this field contains
              the ID of the group.
         :param list[str] disabled_plans: The service plans that are disabled in this assignment

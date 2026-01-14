@@ -1,5 +1,4 @@
-"""
-Adds a strong password or secret to an application.
+"""Adds a strong password or secret to an application.
 https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-rest-1.0
 """
 

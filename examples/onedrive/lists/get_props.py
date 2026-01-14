@@ -1,5 +1,4 @@
-"""
-Get metadata for a list
+"""Get metadata for a list
 
 https://learn.microsoft.com/en-us/graph/api/list-get?view=graph-rest-1.0
 """

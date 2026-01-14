@@ -17,8 +17,7 @@ class Reminder(ClientValue):
         event_web_link=None,
         reminder_fire_time=DateTimeTimeZone(),
     ):
-        """
-        :param str change_key: Identifies the version of the reminder. Every time the reminder is changed, changeKey
+        """:param str change_key: Identifies the version of the reminder. Every time the reminder is changed, changeKey
             changes as well. This allows Exchange to apply changes to the correct version of the object.
         :param DateTimeTimeZone event_end_time: The date, time and time zone that the event ends.
         :param str event_id: The unique ID of the event. Read only.

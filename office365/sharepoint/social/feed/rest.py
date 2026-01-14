@@ -4,8 +4,7 @@ from office365.sharepoint.social.feed.feed import SocialFeed
 
 
 class SocialRestFeed(Entity):
-    """
-    The SocialRestFeed class specifies a feed, which is an array of thread, each of which specifies a root post
+    """The SocialRestFeed class specifies a feed, which is an array of thread, each of which specifies a root post
     and an array of response posts. The SocialRestFeed type is available when the protocol client sends an OData
     request to a protocol server using [MS-CSOMREST]. It is not available using [MS-CSOM].
     """

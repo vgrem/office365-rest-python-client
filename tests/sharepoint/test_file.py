@@ -27,7 +27,7 @@ class TestSharePointFile(SPTestCase):
         cls.folder_to.delete_object().execute_query()
 
     def test1_upload_file_as_content(self):
-        path = "{0}/../data/Sample.txt".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../data/Sample.txt"
         uploaded_file = self.folder_from.files.upload(path).execute_query()
         self.assertEqual(uploaded_file.name, os.path.basename(path))
         self.assertIsNotNone(uploaded_file.resource_path)
@@ -125,7 +125,7 @@ class TestSharePointFile(SPTestCase):
         self.assertEqual(len(files_after), len(files_before) - 1)
 
     def test_22_upload_large_file(self):
-        path = "{0}/../data/big_buck_bunny.mp4".format(os.path.dirname(__file__))
+        path = f"{os.path.dirname(__file__)}/../data/big_buck_bunny.mp4"
         file_size = os.path.getsize(path)
         size_1mb = 1000000
         file = self.folder_from.files.create_upload_session(path, size_1mb).execute_query()

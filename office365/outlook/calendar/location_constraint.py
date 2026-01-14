@@ -7,8 +7,7 @@ class LocationConstraint(ClientValue):
     """The conditions stated by a client for the location of a meeting."""
 
     def __init__(self, is_required=None, locations=None, suggest_location=None):
-        """
-        :param bool is_required: 	The client requests the service to include in the response a meeting location
+        """:param bool is_required: 	The client requests the service to include in the response a meeting location
             for the meeting. If this is true and all the resources are busy, findMeetingTimes will not return any
             meeting time suggestions. If this is false and all the resources are busy, findMeetingTimes would still
             look for meeting times without locations.

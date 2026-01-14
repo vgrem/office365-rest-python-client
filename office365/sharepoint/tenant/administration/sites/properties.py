@@ -62,7 +62,8 @@ class SiteProperties(Entity):
     def allow_editing(self):
         # type: () -> Optional[bool]
         """Prevents users from editing Office files in the browser and copying and pasting Office file contents
-        out of the browser window."""
+        out of the browser window.
+        """
         return self.properties.get("AllowEditing", None)
 
     @property
@@ -75,7 +76,8 @@ class SiteProperties(Entity):
     def anonymous_link_expiration_in_days(self):
         # type: () -> Optional[int]
         """Specifies all anonymous/anyone links that have been created
-        (or will be created) will expire after the set number of days."""
+        (or will be created) will expire after the set number of days.
+        """
         return self.properties.get("AnonymousLinkExpirationInDays", None)
 
     @property
@@ -201,8 +203,7 @@ class SiteProperties(Entity):
     @property
     def sharing_capability(self):
         # type: () -> Optional[int]
-        """
-        Determines what level of sharing is available for the site.
+        """Determines what level of sharing is available for the site.
 
         The valid values are:
             - ExternalUserAndGuestSharing (default) - External user sharing (share by email) and guest link sharing

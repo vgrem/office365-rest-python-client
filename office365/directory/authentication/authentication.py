@@ -5,8 +5,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Authentication(Entity):
-    """
-    Exposes relationships that represent the authentication methods supported by Azure AD and that can configured
+    """Exposes relationships that represent the authentication methods supported by Azure AD and that can configured
     for users.
     """
 

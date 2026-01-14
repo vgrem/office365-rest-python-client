@@ -1,6 +1,4 @@
-"""
-Demonstrates how to download list item attachments
-"""
+"""Demonstrates how to download list item attachments"""
 
 import os
 import tempfile

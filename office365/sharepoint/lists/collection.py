@@ -14,8 +14,7 @@ class ListCollection(EntityCollection[List]):
 
     def get_by_title(self, list_title):
         # type: (str) -> List
-        """
-        Returns the list with the specified display name.
+        """Returns the list with the specified display name.
         :param str list_title: Specifies the display name
         """
         return List(
@@ -25,16 +24,13 @@ class ListCollection(EntityCollection[List]):
 
     def get_by_id(self, list_id):
         # type: (str) -> List
-        """
-        Returns the list with the specified list identifier.
+        """Returns the list with the specified list identifier.
         :param str list_id: Specifies the list identifier
         """
         return List(self.context, ServiceOperationPath("GetById", [list_id], self.resource_path))
 
     def ensure_client_rendered_site_pages_library(self):
-        """
-        Returns a list that is designated as a default location for site pages.
-        """
+        """Returns a list that is designated as a default location for site pages."""
         return_type = List(self.context)
         self.add_child(return_type)
         qry = ServiceOperationQuery(self, "EnsureClientRenderedSitePagesLibrary", None, None, None, return_type)
@@ -51,7 +47,8 @@ class ListCollection(EntityCollection[List]):
 
     def ensure_site_assets_library(self):
         """Gets a list that is the default asset location for images or other files, which the users
-        upload to their wiki pages."""
+        upload to their wiki pages.
+        """
         return_type = List(self.context)
         self.add_child(return_type)
         qry = ServiceOperationQuery(self, "ensureSiteAssetsLibrary", None, None, None, return_type)

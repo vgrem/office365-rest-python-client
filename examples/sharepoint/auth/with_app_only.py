@@ -1,5 +1,4 @@
-"""
-There are two approaches for doing app-only for SharePoint:
+"""There are two approaches for doing app-only for SharePoint:
 
    - Using an Azure AD application: this is the preferred method when using SharePoint Online because you can also
     grant permissions to other Office 365 services (if needed) + you’ve a user interface (Azure portal) to maintain
@@ -21,6 +20,7 @@ Notice:
 Starting April 2, 2026, Azure Access Control service (ACS) usage will be retired for SharePoint in Microsoft 365
 and users will no longer be able to create or use Azure ACS principals to access SharePoint.
 Learn more about the [Access Control retirement](https://aka.ms/retirement/acs/support)
+
 """
 
 from office365.sharepoint.client_context import ClientContext

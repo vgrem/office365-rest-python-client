@@ -1,5 +1,4 @@
-"""
-Get the collection of sitePage objects from the site pages list in a site.
+"""Get the collection of sitePage objects from the site pages list in a site.
 
 https://learn.microsoft.com/en-us/graph/api/sitepage-list?view=graph-rest-1.0
 """
@@ -11,4 +10,4 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 site = client.sites.get_by_url(test_team_site_url)
 pages = site.pages.get().execute_query()
 for page in pages:
-    print("Page url: {0}".format(page))
+    print(f"Page url: {page}")

@@ -22,8 +22,7 @@ class Event(OutlookItem):
     """An event in a user calendar, or the default calendar of a Microsoft 365 group."""
 
     def accept(self, send_response, comment=None):
-        """
-        Accept the specified event in a user calendar.
+        """Accept the specified event in a user calendar.
 
         :param bool send_response: true if a response is to be sent to the organizer; otherwise, false.
         :param str comment: Text included in the response.
@@ -34,8 +33,7 @@ class Event(OutlookItem):
         return self
 
     def cancel(self, comment=None):
-        """
-        This action allows the organizer of a meeting to send a cancellation message and cancel the event.
+        """This action allows the organizer of a meeting to send a cancellation message and cancel the event.
 
         The action moves the event to the Deleted Items folder. The organizer can also cancel an occurrence
         of a recurring meeting by providing the occurrence event ID.
@@ -50,8 +48,7 @@ class Event(OutlookItem):
         return self
 
     def decline(self, proposed_new_time=None, send_response=True, comment=None):
-        """
-        Decline invitation to the specified event in a user calendar.
+        """Decline invitation to the specified event in a user calendar.
 
         If the event allows proposals for new times, on declining the event, an invitee can choose to suggest
         an alternative time by including the proposedNewTime parameter. For more information on how to propose a time,
@@ -79,8 +76,7 @@ class Event(OutlookItem):
         return self
 
     def permanent_delete(self):
-        """
-        Permanently delete an event and place it in the purges folder in the dumpster in the user's mailbox.
+        """Permanently delete an event and place it in the purges folder in the dumpster in the user's mailbox.
         Email clients such as outlook or outlook on the web can't access permanently deleted items.
         Unless there's a hold set on the mailbox, the items are permanently deleted after a set period of time.
         """
@@ -91,8 +87,7 @@ class Event(OutlookItem):
     @property
     def allow_new_time_proposals(self):
         # type: () -> Optional[bool]
-        """
-        true if the meeting organizer allows invitees to propose a new time when responding; otherwise, false.
+        """True if the meeting organizer allows invitees to propose a new time when responding; otherwise, false.
         Optional. Default is true.
         """
         return self.properties.get("allowNewTimeProposals", None)
@@ -106,8 +101,7 @@ class Event(OutlookItem):
     @property
     def hide_attendees(self):
         # type: () -> Optional[bool]
-        """
-        When set to true, each attendee only sees themselves in the meeting request and meeting Tracking list.
+        """When set to true, each attendee only sees themselves in the meeting request and meeting Tracking list.
         Default is false.
         """
         return self.properties.get("hideAttendees", None)
@@ -115,8 +109,7 @@ class Event(OutlookItem):
     @property
     def ical_uid(self):
         # type: () -> Optional[str]
-        """
-        A unique identifier for an event across calendars. This ID is different for each occurrence in a recurring
+        """A unique identifier for an event across calendars. This ID is different for each occurrence in a recurring
         series.
         """
         return self.properties.get("iCalUId", None)
@@ -130,8 +123,7 @@ class Event(OutlookItem):
     @property
     def is_all_day(self):
         # type: () -> Optional[bool]
-        """
-        Set to true if the event lasts all day. If true, regardless of whether it's a single-day or multi-day event,
+        """Set to true if the event lasts all day. If true, regardless of whether it's a single-day or multi-day event,
         start and end time must be set to midnight and be in the same time zone.
         """
         return self.properties.get("isAllDay", None)
@@ -139,16 +131,13 @@ class Event(OutlookItem):
     @property
     def is_cancelled(self):
         # type: () -> Optional[bool]
-        """
-        Set to true if the event has been canceled.
-        """
+        """Set to true if the event has been canceled."""
         return self.properties.get("isCancelled", None)
 
     @property
     def is_draft(self):
         # type: () -> Optional[bool]
-        """
-        Set to true if the user has updated the meeting in Outlook but hasn't sent the updates to attendees.
+        """Set to true if the user has updated the meeting in Outlook but hasn't sent the updates to attendees.
         Set to false if all changes are sent, or if the event is an appointment without any attendees.
         """
         return self.properties.get("isDraft", None)
@@ -156,8 +145,7 @@ class Event(OutlookItem):
     @property
     def is_online_meeting(self):
         # type: () -> Optional[bool]
-        """
-        True if this event has online meeting information
+        """True if this event has online meeting information
         (that is, onlineMeeting points to an onlineMeetingInfo resource), false otherwise.
         Default is false (onlineMeeting is null). Optional.
         After you set isOnlineMeeting to true, Microsoft Graph initializes onlineMeeting.
@@ -168,8 +156,7 @@ class Event(OutlookItem):
     @property
     def is_organizer(self):
         # type: () -> Optional[bool]
-        """
-        Set to true if the calendar owner (specified by the owner property of the calendar) is the organizer of
+        """Set to true if the calendar owner (specified by the owner property of the calendar) is the organizer of
         the event (specified by the organizer property of the event). It also applies if a delegate organized the
         event on behalf of the owner.
         """
@@ -178,9 +165,7 @@ class Event(OutlookItem):
     @property
     def is_reminder_on(self):
         # type: () -> Optional[bool]
-        """
-        Set to true if an alert is set to remind the user of the event.
-        """
+        """Set to true if an alert is set to remind the user of the event."""
         return self.properties.get("isReminderOn", None)
 
     @property
@@ -190,8 +175,7 @@ class Event(OutlookItem):
 
     @start.setter
     def start(self, value):
-        """
-        Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
+        """Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
 
         :type value: datetime.datetime
         """
@@ -204,8 +188,7 @@ class Event(OutlookItem):
 
     @end.setter
     def end(self, value):
-        """
-        Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
+        """Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
 
         :type value: datetime.datetime
         """
@@ -297,8 +280,7 @@ class Event(OutlookItem):
     @property
     def transaction_id(self):
         # type: () -> Optional[str]
-        """
-        A custom identifier specified by a client app for the server to avoid redundant POST operations in case of
+        """A custom identifier specified by a client app for the server to avoid redundant POST operations in case of
         client retries to create the same event. This is useful when low network connectivity causes the client to
         time out before receiving a response from the server for the client's prior create-event request.
         After you set transactionId when creating an event, you cannot change transactionId in a subsequent update.
@@ -309,16 +291,13 @@ class Event(OutlookItem):
     @property
     def type(self):
         # type: () -> Optional[str]
-        """
-        The event type. Possible values are: singleInstance, occurrence, exception, seriesMaster
-        """
+        """The event type. Possible values are: singleInstance, occurrence, exception, seriesMaster"""
         return self.properties.get("type", None)
 
     @property
     def web_link(self):
         # type: () -> Optional[str]
-        """
-        The URL to open the event in Outlook on the web.
+        """The URL to open the event in Outlook on the web.
 
         Outlook on the web opens the event in the browser if you are signed in to your mailbox. Otherwise, Outlook
         on the web prompts you to sign in.
@@ -363,7 +342,8 @@ class Event(OutlookItem):
     def instances(self):
         """The occurrences of a recurring series, if the event is a series master. This property includes occurrences
         that are part of the recurrence pattern, and exceptions that have been modified, but does not include
-        occurrences that have been cancelled from the series"""
+        occurrences that have been cancelled from the series
+        """
         from office365.outlook.calendar.events.collection import EventCollection
 
         return self.properties.get(

@@ -51,7 +51,7 @@ test_user_principal_name_alt = settings.get("users", "test_user2")
 test_admin_principal_name = settings.get("users", "test_user3")
 
 test_cert_thumbprint = settings.get("certificate_credentials", "thumbprint")
-test_cert_path = "{0}/selfsigncert.pem".format(os.path.dirname(__file__))
+test_cert_path = f"{os.path.dirname(__file__)}/selfsigncert.pem"
 
 test_username = settings.get("user_credentials", "username")
 test_password = settings.get("user_credentials", "password")

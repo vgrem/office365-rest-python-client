@@ -25,7 +25,7 @@ class TestGraphGroup(GraphTestCase):
                 self.directory_quota_exceeded = True
                 result = self.client.me.get_member_groups().execute_query()
                 self.assertIsNotNone(result.value)
-                filter_expr = "displayName eq '{0}'".format(result.value[0])
+                filter_expr = f"displayName eq '{result.value[0]}'"
                 result = self.client.groups.filter(filter_expr).get().execute_query()
                 self.__class__.target_group = result[0]
 
@@ -46,7 +46,7 @@ class TestGraphGroup(GraphTestCase):
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test5_add_group_owner(self):
-        users = self.client.users.filter("mail eq '{mail}'".format(mail=test_user_principal_name)).get().execute_query()
+        users = self.client.users.filter(f"mail eq '{test_user_principal_name}'").get().execute_query()
         self.assertEqual(len(users), 1)
 
         owner = users[0]

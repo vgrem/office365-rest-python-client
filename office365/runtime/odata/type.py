@@ -4,7 +4,7 @@ import uuid
 from typing import Type
 
 
-class ODataType(object):
+class ODataType:
     primitive_types = {
         bool: "Edm.Boolean",
         int: "Edm.Int32",
@@ -23,9 +23,7 @@ class ODataType(object):
 
     @staticmethod
     def _try_parse_key_value(value):
-        """
-        :type value: dict
-        """
+        """:type value: dict"""
         key = value.get("Key", None)
         type_name = value.get("ValueType", None)
         raw_value = value.get("Value", None)
@@ -43,8 +41,7 @@ class ODataType(object):
 
     @staticmethod
     def parse_key_value_collection(value):
-        """
-        Converts the collection of SP.KeyValue into dict
+        """Converts the collection of SP.KeyValue into dict
 
         :type value: dict
         """
@@ -56,8 +53,7 @@ class ODataType(object):
 
     @staticmethod
     def try_parse_datetime(value):
-        """
-        Converts the specified string representation of an Edm.DateTime or Edm.DateTimeOffset to its datetime equivalent
+        """Converts the specified string representation of an Edm.DateTime or Edm.DateTimeOffset to its datetime equivalent
 
         :param str value: Represents date and time with values ranging from 12:00:00 midnight, January 1, 1753 A.D.
             through 11:59:59 P.M, December 9999 A.D.
@@ -85,8 +81,7 @@ class ODataType(object):
 
     @staticmethod
     def resolve_type(client_type):
-        """
-        Resolves OData type name
+        """Resolves OData type name
         :param T client_type: Client value type
         """
         from office365.runtime.client_value import ClientValue
@@ -106,9 +101,7 @@ class ODataType(object):
         )
 
     def add_property(self, prop_schema):
-        """
-        :type prop_schema:  office365.runtime.odata.property.ODataProperty
-        """
+        """:type prop_schema:  office365.runtime.odata.property.ODataProperty"""
         alias = prop_schema.name
         # if type_schema['state'] == 'detached':
         #    prop_schema['state'] = 'detached'
