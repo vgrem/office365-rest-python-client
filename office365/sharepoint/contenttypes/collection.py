@@ -10,9 +10,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     """Content Type resource collection"""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(ContentTypeCollection, self).__init__(
-            context, ContentType, resource_path, parent
-        )
+        super(ContentTypeCollection, self).__init__(context, ContentType, resource_path, parent)
 
     def get_by_name(self, name):
         """
@@ -66,13 +64,9 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             """
             :type parent_content_type_id: str
             """
-            parameters = ContentTypeEntityData(
-                name, description, group, parent_content_type_id
-            )
+            parameters = ContentTypeEntityData(name, description, group, parent_content_type_id)
             payload = {"parameters": parameters}
-            qry = ServiceOperationQuery(
-                self, "Create", None, payload, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "Create", None, payload, None, return_type)
             self.context.add_query(qry)
 
         return_type = ContentType(self.context)
@@ -95,8 +89,6 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "AddAvailableContentType", [content_type_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddAvailableContentType", [content_type_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type

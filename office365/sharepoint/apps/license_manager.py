@@ -11,8 +11,6 @@ class SPAppLicenseManager(Entity):
         """
         return_type = ClientResult(self.context, AppLicenseCollection())
         payload = {"productId": product_id}
-        qry = ServiceOperationQuery(
-            self, "CheckLicense", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckLicense", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

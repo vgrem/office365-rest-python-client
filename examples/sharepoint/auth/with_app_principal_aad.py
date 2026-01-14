@@ -30,9 +30,7 @@ def acquire_token():
         client_id=test_client_id,
         client_credential=test_client_secret,
     )
-    token_json = app.acquire_token_for_client(
-        scopes=["https://mediadev8.sharepoint.com/.default"]
-    )
+    token_json = app.acquire_token_for_client(scopes=["https://mediadev8.sharepoint.com/.default"])
     return TokenResponse.from_json(token_json)
 
 

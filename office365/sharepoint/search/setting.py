@@ -13,9 +13,7 @@ class SearchSetting(Entity):
     """This object provides the REST operations defined under search settings."""
 
     def __init__(self, context):
-        super(SearchSetting, self).__init__(
-            context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchSetting")
-        )
+        super(SearchSetting, self).__init__(context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchSetting"))
 
     def get_query_configuration(
         self,
@@ -38,9 +36,7 @@ class SearchSetting(Entity):
             "skipGroupObjectIdLookup": skip_group_object_id_lookup,
             "throwOnRemoteApiCheck": throw_on_remote_api_check,
         }
-        qry = ServiceOperationQuery(
-            self, "getqueryconfiguration", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getqueryconfiguration", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -70,24 +66,18 @@ class SearchSetting(Entity):
             "EndDate": end_date,
             "SiteCollectionId": site_collection_id,
         }
-        qry = ServiceOperationQuery(
-            self, "ExportSearchReports", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ExportSearchReports", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def ping_admin_endpoint(self):
         """ """
         return_type = ClientResult[bool](self.context)
-        qry = ServiceOperationQuery(
-            self, "PingAdminEndpoint", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "PingAdminEndpoint", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_promoted_result_query_rules(
-        self, site_collection_level=None, offset=None, number_of_rules=None
-    ):
+    def get_promoted_result_query_rules(self, site_collection_level=None, offset=None, number_of_rules=None):
         """
         The operation is called to retrieve the promoted results (also called Best Bets) for a tenant or a
         site collection.
@@ -107,9 +97,7 @@ class SearchSetting(Entity):
             "offset": offset,
             "numberOfRules": number_of_rules,
         }
-        qry = ServiceOperationQuery(
-            self, "getpromotedresultqueryrules", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getpromotedresultqueryrules", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

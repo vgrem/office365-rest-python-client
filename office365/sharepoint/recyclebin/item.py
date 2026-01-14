@@ -124,9 +124,7 @@ class RecycleBinItem(Entity):
     @property
     def author(self):
         """Gets a value that specifies the user who created the Recycle Bin item."""
-        return self.properties.get(
-            "Author", User(self.context, ResourcePath("Author", self.resource_path))
-        )
+        return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
     def deleted_by(self):
@@ -163,8 +161,6 @@ class RecycleBinItem(Entity):
 
         if name == "Id":
             if self._resource_path is None:
-                self._resource_path = self.parent_collection.get_by_id(
-                    value
-                ).resource_path
+                self._resource_path = self.parent_collection.get_by_id(value).resource_path
             else:
                 self._resource_path.patch(value)

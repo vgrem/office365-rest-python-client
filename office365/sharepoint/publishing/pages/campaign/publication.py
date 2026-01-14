@@ -12,18 +12,14 @@ class CampaignPublication(SitePage):
     def get_highlights_info(self):
         """ """
         return_type = HighlightsInfo(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetHighlightsInfo", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetHighlightsInfo", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def send_test_email(self):
         """ """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "SendTestEmail", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SendTestEmail", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

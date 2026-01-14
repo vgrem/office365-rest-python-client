@@ -13,9 +13,7 @@ class WorkbookChartSeries(Entity):
         """The formatting of a chart series, which includes fill and line formatting."""
         return self.properties.get(
             "format",
-            WorkbookChartSeriesFormat(
-                self.context, ResourcePath("format", self.resource_path)
-            ),
+            WorkbookChartSeriesFormat(self.context, ResourcePath("format", self.resource_path)),
         )
 
     @property

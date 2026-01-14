@@ -9,9 +9,7 @@ class ConnectionSettings(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.BusinessData.Infrastructure.SecureStore.ConnectionSettings"
-            )
+            resource_path = ResourcePath("Microsoft.BusinessData.Infrastructure.SecureStore.ConnectionSettings")
         super(ConnectionSettings, self).__init__(context, resource_path)
 
     @property

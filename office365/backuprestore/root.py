@@ -33,9 +33,7 @@ class BackupRestoreRoot(Entity):
             EntityCollection(
                 self.context,
                 OneDriveForBusinessProtectionPolicy,
-                ResourcePath(
-                    "oneDriveForBusinessProtectionPolicies", self.resource_path
-                ),
+                ResourcePath("oneDriveForBusinessProtectionPolicies", self.resource_path),
             ),
         )
 

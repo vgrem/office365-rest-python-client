@@ -34,9 +34,7 @@ class Set(Entity):
     def localized_names(self):
         # type: () -> ClientValueCollection[LocalizedName]
         """"""
-        return self.properties.get(
-            "localizedNames", ClientValueCollection(LocalizedName)
-        )
+        return self.properties.get("localizedNames", ClientValueCollection(LocalizedName))
 
     @property
     def parent_group(self):
@@ -54,9 +52,7 @@ class Set(Entity):
         """Indicates which terms have been pinned or reused directly under the set."""
         return self.properties.get(
             "relations",
-            EntityCollection(
-                self.context, Relation, ResourcePath("relations", self.resource_path)
-            ),
+            EntityCollection(self.context, Relation, ResourcePath("relations", self.resource_path)),
         )
 
     @property
@@ -65,9 +61,7 @@ class Set(Entity):
         """All the terms under the set."""
         return self.properties.get(
             "terms",
-            TermCollection(
-                self.context, ResourcePath("terms", self.resource_path), self
-            ),
+            TermCollection(self.context, ResourcePath("terms", self.resource_path), self),
         )
 
     def get_property(self, name, default_value=None):

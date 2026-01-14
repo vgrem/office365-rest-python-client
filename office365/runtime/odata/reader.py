@@ -22,9 +22,7 @@ class ODataReader(object):
         with open(self._metadata_path, "r", encoding="utf8") as in_file:
             metadata_content = in_file.read()
 
-        formatted_metadata_content = xml.dom.minidom.parseString(
-            metadata_content
-        ).toprettyxml()
+        formatted_metadata_content = xml.dom.minidom.parseString(metadata_content).toprettyxml()
 
         with open(self._metadata_path, "w", encoding="utf8") as out_file:
             out_file.write(formatted_metadata_content)

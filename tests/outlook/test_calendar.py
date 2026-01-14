@@ -14,9 +14,7 @@ class TestCalendar(GraphTestCase):
     cal_name = create_unique_name("Volunteer")
     target_cal = None  # type: Optional[Calendar]
 
-    @requires_delegated_permission(
-        "Calendars.Read.Shared", "Calendars.ReadWrite.Shared"
-    )
+    @requires_delegated_permission("Calendars.Read.Shared", "Calendars.ReadWrite.Shared")
     def test1_find_my_meeting_times(self):
         result = self.client.me.find_meeting_times().execute_query()
         self.assertIsNotNone(result.value.meetingTimeSuggestions)
@@ -57,23 +55,17 @@ class TestCalendar(GraphTestCase):
         result = self.client.me.calendar.calendar_permissions.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite"
-    )
+    @requires_delegated_permission("Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite")
     def test5_list_my_cal_view(self):
         end_time = datetime.utcnow()
         start_time = end_time - timedelta(days=14)
-        result = self.client.me.get_calendar_view(
-            start_dt=start_time, end_dt=end_time
-        ).execute_query()
+        result = self.client.me.get_calendar_view(start_dt=start_time, end_dt=end_time).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test6_get_my_reminder_view(self):
         end_time = datetime.utcnow()
         start_time = end_time - timedelta(days=14)
-        result = self.client.me.get_reminder_view(
-            start_dt=start_time, end_dt=end_time
-        ).execute_query()
+        result = self.client.me.get_reminder_view(start_dt=start_time, end_dt=end_time).execute_query()
         self.assertIsNotNone(result.value)
 
     def test7_list_my_events(self):
@@ -96,12 +88,7 @@ class TestCalendar(GraphTestCase):
 
     def test_10_get_cal(self):
         cal_id = self.__class__.target_cal.id
-        result = (
-            self.client.me.calendars[cal_id]
-            .select(["name", "owner"])
-            .get()
-            .execute_query()
-        )
+        result = self.client.me.calendars[cal_id].select(["name", "owner"]).get().execute_query()
         self.assertEqual(result.name, self.cal_name)
         self.assertIsInstance(result.owner, EmailAddress)
 
@@ -110,7 +97,5 @@ class TestCalendar(GraphTestCase):
         cal.delete_object().execute_query()
 
     def test_12_allowed_calendar_sharing_roles(self):
-        result = self.client.me.calendar.allowed_calendar_sharing_roles(
-            test_user_principal_name
-        ).execute_query()
+        result = self.client.me.calendar.allowed_calendar_sharing_roles(test_user_principal_name).execute_query()
         self.assertIsNotNone(result.value)

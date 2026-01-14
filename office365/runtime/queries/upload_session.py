@@ -10,9 +10,7 @@ class UploadSessionQuery(ServiceOperationQuery):
     """
 
     def __init__(self, binding_type, parameters_type):
-        super(UploadSessionQuery, self).__init__(
-            binding_type, "createUploadSession", None, parameters_type
-        )
+        super(UploadSessionQuery, self).__init__(binding_type, "createUploadSession", None, parameters_type)
 
     @property
     def upload_session_url(self):

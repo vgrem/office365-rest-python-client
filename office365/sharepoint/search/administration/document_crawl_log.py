@@ -15,9 +15,7 @@ class DocumentCrawlLog(Entity):
     about items that were crawled."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
-        )
+        static_path = ResourcePath("Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog")
         super(DocumentCrawlLog, self).__init__(context, static_path)
 
     @staticmethod
@@ -25,9 +23,7 @@ class DocumentCrawlLog(Entity):
         # type: (ClientContext) -> "DocumentCrawlLog"
         """"""
         return_type = DocumentCrawlLog(context)
-        qry = ServiceOperationQuery(
-            return_type, "Create", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "Create", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -54,9 +50,7 @@ class DocumentCrawlLog(Entity):
             "queryString": query_string,
             "contentSourceID": content_source_id,
         }
-        qry = ServiceOperationQuery(
-            self, "GetCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -68,9 +62,7 @@ class DocumentCrawlLog(Entity):
         """
         return_type = ClientResult(self.context, SimpleDataTable())
         payload = {"displayUrl": display_url}
-        qry = ServiceOperationQuery(
-            self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

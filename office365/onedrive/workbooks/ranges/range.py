@@ -48,9 +48,7 @@ class WorkbookRange(Entity):
         """
         return_type = WorkbookRange(self.context)
         payload = {"shift": shift}
-        qry = ServiceOperationQuery(
-            self, "insert", parameters_type=payload, return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "insert", parameters_type=payload, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -131,9 +129,7 @@ class WorkbookRange(Entity):
         """Returns a format object, encapsulating the range's font, fill, borders, alignment, and other properties"""
         return self.properties.get(
             "format",
-            WorkbookRangeFormat(
-                self.context, ResourcePath("format", self.resource_path)
-            ),
+            WorkbookRangeFormat(self.context, ResourcePath("format", self.resource_path)),
         )
 
     @property
@@ -165,7 +161,5 @@ class WorkbookRange(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )

@@ -11,9 +11,7 @@ class WorkflowDeploymentService(Entity):
         """Returns a WorkflowDefinition from the workflow store."""
         return_type = WorkflowDefinition(self.context)
         payload = {"definitionId": definition_id}
-        qry = ServiceOperationQuery(
-            self, "GetDefinition", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetDefinition", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -21,9 +19,7 @@ class WorkflowDeploymentService(Entity):
         """Returns the WorkflowDefinition objects from the workflow store that match the specified parameters."""
         return_type = EntityCollection(self.context, WorkflowDefinition)
         payload = {"publishedOnly": published_only}
-        qry = ServiceOperationQuery(
-            self, "EnumerateDefinitions", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnumerateDefinitions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

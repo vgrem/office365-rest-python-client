@@ -2,9 +2,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPSiteCreationRequest(ClientValue):
-    def __init__(
-        self, title, url, owner=None, lcid=1033, web_template="SITEPAGEPUBLISHING#0"
-    ):
+    def __init__(self, title, url, owner=None, lcid=1033, web_template="SITEPAGEPUBLISHING#0"):
         """
         :param str title:
         :param str url:

@@ -21,15 +21,11 @@ class EducationRoot(Entity):
 
     @property
     def me(self):
-        return self.properties.get(
-            "me", EducationUser(self.context, ResourcePath("me", self.resource_path))
-        )
+        return self.properties.get("me", EducationUser(self.context, ResourcePath("me", self.resource_path)))
 
     @property
     def users(self):
         return self.properties.get(
             "users",
-            EntityCollection(
-                self.context, EducationUser, ResourcePath("users", self.resource_path)
-            ),
+            EntityCollection(self.context, EducationUser, ResourcePath("users", self.resource_path)),
         )

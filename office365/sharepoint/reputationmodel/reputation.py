@@ -24,9 +24,7 @@ class Reputation(Entity):
 
         binding_type = Reputation(context)
         payload = {"listID": list_id, "itemID": item_id, "rating": rating}
-        qry = ServiceOperationQuery(
-            binding_type, "SetRating", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "SetRating", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -49,9 +47,7 @@ class Reputation(Entity):
             return_type = ClientResult(context)
         binding_type = Reputation(context)
         payload = {"listID": list_id, "itemID": item_id, "like": like}
-        qry = ServiceOperationQuery(
-            binding_type, "SetLike", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "SetLike", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type

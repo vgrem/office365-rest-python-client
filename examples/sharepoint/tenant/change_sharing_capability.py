@@ -24,8 +24,6 @@ admin_client = ClientContext(test_admin_site_url).with_client_certificate(
 #    test_admin_credentials
 # )
 
-site_props = admin_client.tenant.get_site_properties_by_url(
-    test_team_site_url
-).execute_query()
+site_props = admin_client.tenant.get_site_properties_by_url(test_team_site_url).execute_query()
 site_props.sharing_capability = SharingCapabilities.ExternalUserAndGuestSharing
 site_props.update().execute_query()

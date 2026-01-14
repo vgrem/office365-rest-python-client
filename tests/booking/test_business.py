@@ -18,9 +18,7 @@ class TestBusiness(GraphTestCase):
 
     @requires_delegated_permission("Bookings.Manage.All")
     def test2_create_booking_business(self):
-        result = self.client.solutions.booking_businesses.add(
-            "Fourth Coffee"
-        ).execute_query()
+        result = self.client.solutions.booking_businesses.add("Fourth Coffee").execute_query()
         self.assertIsNotNone(result.resource_path)
         self.__class__.business = result
 

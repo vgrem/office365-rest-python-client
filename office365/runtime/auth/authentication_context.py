@@ -26,9 +26,7 @@ JSONToken = TypedDict(
 
 def _get_authorization_header(token):
     # type: (Any) -> str
-    return "{token_type} {access_token}".format(
-        token_type=token.tokenType, access_token=token.accessToken
-    )
+    return "{token_type} {access_token}".format(token_type=token.tokenType, access_token=token.accessToken)
 
 
 class AuthenticationContext(object):
@@ -74,17 +72,13 @@ class AuthenticationContext(object):
             resource = get_absolute_url(self.url)
             scopes = ["{url}/.default".format(url=resource)]
         if cert_path is None and private_key is None:
-            raise ValueError(
-                "Private key is missing. Use either 'cert_path' or 'private_key' to pass the value"
-            )
+            raise ValueError("Private key is missing. Use either 'cert_path' or 'private_key' to pass the value")
         elif cert_path is not None:
             with open(cert_path, "r", encoding="utf8") as f:
                 private_key = f.read()
 
         def _acquire_token():
-            authority_url = "{0}/{1}".format(
-                AzureEnvironment.get_login_authority(self._environment), tenant
-            )
+            authority_url = "{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant)
             credentials = {
                 "thumbprint": thumbprint,
                 "private_key": private_key,
@@ -123,9 +117,7 @@ class AuthenticationContext(object):
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(
-                    AzureEnvironment.get_login_authority(self._environment), tenant
-                ),
+                authority="{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant),
                 client_credential=None,
             )
             result = app.acquire_token_interactive(scopes=scopes)
@@ -151,17 +143,13 @@ class AuthenticationContext(object):
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority="{0}/{1}".format(
-                    AzureEnvironment.get_login_authority(self._environment), tenant
-                ),
+                authority="{0}/{1}".format(AzureEnvironment.get_login_authority(self._environment), tenant),
                 client_credential=None,
             )
 
             flow = app.initiate_device_flow(scopes=scopes)
             if "user_code" not in flow:
-                raise ValueError(
-                    "Failed to create device flow: %s" % json.dumps(flow, indent=4)
-                )
+                raise ValueError("Failed to create device flow: %s" % json.dumps(flow, indent=4))
 
             print(flow["message"])
             sys.stdout.flush()
@@ -186,12 +174,8 @@ class AuthenticationContext(object):
             if self._cached_token is None or request_time > self._token_expires:
                 self._cached_token = token_func()
                 if hasattr(self._cached_token, "expiresIn"):
-                    self._token_expires = request_time + timedelta(
-                        seconds=self._cached_token.expiresIn
-                    )
-            request.set_header(
-                "Authorization", _get_authorization_header(self._cached_token)
-            )
+                    self._token_expires = request_time + timedelta(seconds=self._cached_token.expiresIn)
+            request.set_header("Authorization", _get_authorization_header(self._cached_token))
 
         self._authenticate = _authenticate
         return self

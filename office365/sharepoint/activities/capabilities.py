@@ -14,9 +14,7 @@ class ActivityCapabilities(ClientValue):
         :param bool enabled:
         """
         self.clientActivitiesEnabled = client_activities_enabled
-        self.clientActivitiesNotificationEnabled = (
-            client_activities_notification_enabled
-        )
+        self.clientActivitiesNotificationEnabled = client_activities_notification_enabled
         self.enabled = enabled
 
     @property

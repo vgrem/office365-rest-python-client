@@ -5,9 +5,7 @@ from office365.subscriptions.subscription import Subscription
 
 class SubscriptionCollection(EntityCollection[Subscription]):
     def __init__(self, context, resource_path=None):
-        super(SubscriptionCollection, self).__init__(
-            context, Subscription, resource_path
-        )
+        super(SubscriptionCollection, self).__init__(context, Subscription, resource_path)
 
     def add(
         self,

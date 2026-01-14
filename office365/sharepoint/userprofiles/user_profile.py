@@ -133,9 +133,7 @@ class UserProfile(Entity):
         """Gets a FollowedContent object for the user."""
         return self.properties.get(
             "FollowedContent",
-            FollowedContent(
-                self.context, ResourcePath("FollowedContent", self.resource_path)
-            ),
+            FollowedContent(self.context, ResourcePath("FollowedContent", self.resource_path)),
         )
 
     @property
@@ -188,9 +186,7 @@ class UserProfile(Entity):
         """
         payload = {"shareAll": share_all}
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "ShareAllSocialData", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ShareAllSocialData", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

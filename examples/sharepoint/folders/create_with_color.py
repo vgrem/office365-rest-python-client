@@ -10,7 +10,5 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
 
 
 root_folder = ctx.web.default_document_library().root_folder
-folder = root_folder.folders.add(
-    "Report123", color_hex=FolderColors.DarkGreen
-).execute_query()
+folder = root_folder.folders.add("Report123", color_hex=FolderColors.DarkGreen).execute_query()
 print("Folder : {0} has been created".format(folder.serverRelativeUrl))

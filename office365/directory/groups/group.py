@@ -55,9 +55,7 @@ class Group(DirectoryObject):
     def check_granted_permissions_for_app(self):
         """"""
         return_type = EntityCollection(self.context, ResourceSpecificPermissionGrant)
-        qry = ServiceOperationQuery(
-            self, "checkGrantedPermissionsForApp", return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "checkGrantedPermissionsForApp", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -123,9 +121,7 @@ class Group(DirectoryObject):
     def assigned_labels(self):
         # type: () -> ClientValueCollection[AssignedLabel]
         """The list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group."""
-        return self.properties.get(
-            "assignedLabels", ClientValueCollection(AssignedLabel)
-        )
+        return self.properties.get("assignedLabels", ClientValueCollection(AssignedLabel))
 
     @property
     def classification(self):
@@ -252,9 +248,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
@@ -262,9 +256,7 @@ class Group(DirectoryObject):
         """Users and groups that are members of this group."""
         return self.properties.get(
             "members",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("members", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property
@@ -274,9 +266,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "rejectedSenders",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("rejectedSenders", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("rejectedSenders", self.resource_path)),
         )
 
     @property
@@ -287,9 +277,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "transitiveMembers",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("transitiveMembers", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("transitiveMembers", self.resource_path)),
         )
 
     @property
@@ -301,9 +289,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "transitiveMemberOf",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("transitiveMemberOf", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
 
     @property
@@ -324,9 +310,7 @@ class Group(DirectoryObject):
         """The owners of the group."""
         return self.properties.get(
             "owners",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("owners", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
     @property
@@ -337,9 +321,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get(
             "drives",
-            EntityCollection(
-                self.context, Drive, ResourcePath("drives", self.resource_path)
-            ),
+            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path)),
         )
 
     @property
@@ -368,9 +350,7 @@ class Group(DirectoryObject):
         """Get an event collection or an appRoleAssignments."""
         return self.properties.get(
             "appRoleAssignments",
-            AppRoleAssignmentCollection(
-                self.context, ResourcePath("appRoleAssignments", self.resource_path)
-            ),
+            AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignments", self.resource_path)),
         )
 
     @property
@@ -413,9 +393,7 @@ class Group(DirectoryObject):
     @property
     def team(self):
         """The team associated with this group."""
-        return self.properties.setdefault(
-            "team", Team(self.context, ResourcePath(self.id, ResourcePath("teams")))
-        )
+        return self.properties.setdefault("team", Team(self.context, ResourcePath(self.id, ResourcePath("teams"))))
 
     @property
     def assigned_licenses(self):
@@ -423,9 +401,7 @@ class Group(DirectoryObject):
         The licenses that are assigned to the group.
         Returned only on $select. Supports $filter (eq).Read-only.
         """
-        return self.properties.get(
-            "assignedLicenses", ClientValueCollection(AssignedLicense)
-        )
+        return self.properties.get("assignedLicenses", ClientValueCollection(AssignedLicense))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

@@ -10,9 +10,7 @@ class AuthCookies:
     @property
     def is_valid(self) -> bool:
         """Validates authorization cookies."""
-        return bool(self._cookies) and (
-            self.fed_auth is not None or self.spo_idcrl is not None
-        )
+        return bool(self._cookies) and (self.fed_auth is not None or self.spo_idcrl is not None)
 
     @property
     def cookie_header(self):

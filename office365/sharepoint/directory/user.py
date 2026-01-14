@@ -27,9 +27,7 @@ class User(Entity):
         def _user_loaded():
             from office365.sharepoint.directory.helper import SPHelper
 
-            SPHelper.is_member_of(
-                self.context, self.properties["principalName"], group_id, return_type
-            )
+            SPHelper.is_member_of(self.context, self.properties["principalName"], group_id, return_type)
 
         self.ensure_property("principalName", _user_loaded)
         return return_type
@@ -43,9 +41,7 @@ class User(Entity):
         def _user_loaded():
             from office365.sharepoint.directory.helper import SPHelper
 
-            SPHelper.get_my_groups(
-                self.context, self.properties["principalName"], 0, 10, return_type
-            )
+            SPHelper.get_my_groups(self.context, self.properties["principalName"], 0, 10, return_type)
 
         self.ensure_property("principalName", _user_loaded)
         return return_type

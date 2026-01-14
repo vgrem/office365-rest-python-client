@@ -7,9 +7,7 @@ class SPOWebAppServicePrincipalPublic(Entity):
 
     def __init__(self, context):
         """ """
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.SPOWebAppServicePrincipalPublic"
-        )
+        static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.SPOWebAppServicePrincipalPublic")
         super(SPOWebAppServicePrincipalPublic, self).__init__(context, static_path)
 
     @property

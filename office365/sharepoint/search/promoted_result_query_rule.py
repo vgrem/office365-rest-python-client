@@ -17,9 +17,7 @@ class PromotedResultQueryRule(ClientValue):
         :param str creation_date: This property is the creation date for the promoted result.
         """
         self.Contact = contact
-        self.ContextConditions = ClientValueCollection(
-            ContextCondition, context_conditions
-        )
+        self.ContextConditions = ClientValueCollection(ContextCondition, context_conditions)
         self.CreationDate = creation_date
 
     @property

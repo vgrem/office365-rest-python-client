@@ -27,9 +27,7 @@ class RoleAssignment(Entity):
         """Specifies a collection of role definitions for this role assignment."""
         return self.properties.get(
             "RoleDefinitionBindings",
-            RoleDefinitionCollection(
-                self.context, ResourcePath("RoleDefinitionBindings", self.resource_path)
-            ),
+            RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitionBindings", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -44,7 +42,5 @@ class RoleAssignment(Entity):
         super(RoleAssignment, self).set_property(name, value, persist_changes)
         if self._resource_path is None:
             if name == "PrincipalId":
-                self._resource_path = self.parent_collection.get_by_principal_id(
-                    value
-                ).resource_path
+                self._resource_path = self.parent_collection.get_by_principal_id(value).resource_path
         return self

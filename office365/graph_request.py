@@ -8,16 +8,12 @@ from office365.runtime.odata.v4.json_format import V4JsonFormat
 
 
 class GraphRequest(ODataRequest):
-    def __init__(
-        self, version="v1.0", tenant=None, environment=AzureEnvironment.Global
-    ):
+    def __init__(self, version="v1.0", tenant=None, environment=AzureEnvironment.Global):
         # type: (str, str, str) -> None
         super(GraphRequest, self).__init__(V4JsonFormat())
         self._version = version
         self._environment = environment
-        self._auth_context = AuthenticationContext(
-            environment=environment, tenant=tenant
-        )
+        self._auth_context = AuthenticationContext(environment=environment, tenant=tenant)
         self.beforeExecute += self.authenticate_request
 
     def with_access_token(self, token_callback):
@@ -84,6 +80,4 @@ class GraphRequest(ODataRequest):
     @property
     def service_root_url(self):
         # type: () -> str
-        return "{0}/{1}".format(
-            AzureEnvironment.get_graph_authority(self._environment), self._version
-        )
+        return "{0}/{1}".format(AzureEnvironment.get_graph_authority(self._environment), self._version)

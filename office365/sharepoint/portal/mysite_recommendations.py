@@ -25,9 +25,7 @@ class MySiteRecommendations(Entity):
             "category": category,
         }
         manager = MySiteRecommendations(context)
-        qry = ServiceOperationQuery(
-            manager, "FollowItem", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(manager, "FollowItem", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -51,9 +49,7 @@ class MySiteRecommendations(Entity):
             "category": category,
         }
         manager = MySiteRecommendations(context)
-        qry = ServiceOperationQuery(
-            manager, "StopFollowingItem", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(manager, "StopFollowingItem", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type

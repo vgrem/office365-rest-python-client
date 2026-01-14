@@ -7,9 +7,7 @@ class MountPoint(Entity):
     """"""
 
     @staticmethod
-    def get_mounted_folder_info(
-        context, target_site_id, target_web_id, target_unique_id
-    ):
+    def get_mounted_folder_info(context, target_site_id, target_web_id, target_unique_id):
         """
         :type context: office365.sharepoint.client_context.ClientContext
         :param str target_site_id:
@@ -22,8 +20,6 @@ class MountPoint(Entity):
             "targetWebId": target_web_id,
             "targetUniqueId": target_unique_id,
         }
-        qry = ServiceOperationQuery(
-            context.web, "GetMountedFolderInfo", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(context.web, "GetMountedFolderInfo", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type

@@ -8,9 +8,7 @@ class ProfileLoader(ClientObject):
     """The ProfileLoader class provides access to the current user's profile."""
 
     def __init__(self, context):
-        super(ProfileLoader, self).__init__(
-            context, ResourcePath("SP.UserProfiles.ProfileLoader.GetProfileLoader")
-        )
+        super(ProfileLoader, self).__init__(context, ResourcePath("SP.UserProfiles.ProfileLoader.GetProfileLoader"))
 
     @staticmethod
     def get_profile_loader(context):
@@ -20,9 +18,7 @@ class ProfileLoader(ClientObject):
         :type: office365.sharepoint.client_context.ClientContext context
         """
         return_type = ProfileLoader(context)
-        qry = ServiceOperationQuery(
-            return_type, "GetProfileLoader", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "GetProfileLoader", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -48,9 +44,7 @@ class ProfileLoader(ClientObject):
 
     def get_user_profile(self):
         """The GetUserProfile method returns the user profile for the current user."""
-        result = UserProfile(
-            self.context, ResourcePath("GetUserProfile", self.resource_path)
-        )
+        result = UserProfile(self.context, ResourcePath("GetUserProfile", self.resource_path))
         qry = ServiceOperationQuery(self, "GetUserProfile", None, None, None, result)
         self.context.add_query(qry)
         return result

@@ -82,7 +82,5 @@ class WorkbookRangeFormat(Entity):
         """Returns the format protection object for a range"""
         return self.properties.get(
             "protection",
-            WorkbookFormatProtection(
-                self.context, ResourcePath("protection", self.resource_path)
-            ),
+            WorkbookFormatProtection(self.context, ResourcePath("protection", self.resource_path)),
         )

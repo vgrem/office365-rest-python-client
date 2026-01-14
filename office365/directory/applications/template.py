@@ -19,9 +19,7 @@ class ApplicationTemplate(Entity):
         """
         return_type = ClientResult(self.context)
         payload = {"displayName": display_name}
-        qry = ServiceOperationQuery(
-            self, "instantiate", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "instantiate", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

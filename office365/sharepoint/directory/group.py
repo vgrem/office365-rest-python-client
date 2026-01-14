@@ -14,9 +14,7 @@ class Group(Entity):
         def _user_loaded():
             from office365.sharepoint.directory.helper import SPHelper
 
-            SPHelper.get_members_info(
-                self.context, self.properties["Id"], row_limit, return_type
-            )
+            SPHelper.get_members_info(self.context, self.properties["Id"], row_limit, return_type)
 
         self.ensure_property("Id", _user_loaded)
         return return_type

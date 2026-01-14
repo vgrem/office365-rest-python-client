@@ -5,9 +5,7 @@ from office365.outlook.calendar.permissions.permission import CalendarPermission
 
 class CalendarPermissionCollection(EntityCollection[CalendarPermission]):
     def __init__(self, context, resource_path=None):
-        super(CalendarPermissionCollection, self).__init__(
-            context, CalendarPermission, resource_path
-        )
+        super(CalendarPermissionCollection, self).__init__(context, CalendarPermission, resource_path)
 
     def add(self, email_address, role):
         """

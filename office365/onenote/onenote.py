@@ -18,9 +18,7 @@ class Onenote(Entity):
         """Retrieve a list of notebook objects."""
         return self.properties.get(
             "notebooks",
-            NotebookCollection(
-                self.context, ResourcePath("notebooks", self.resource_path)
-            ),
+            NotebookCollection(self.context, ResourcePath("notebooks", self.resource_path)),
         )
 
     @property
@@ -41,9 +39,7 @@ class Onenote(Entity):
         """Retrieve a list of page objects."""
         return self.properties.get(
             "pages",
-            OnenotePageCollection(
-                self.context, ResourcePath("pages", self.resource_path)
-            ),
+            OnenotePageCollection(self.context, ResourcePath("pages", self.resource_path)),
         )
 
     @property

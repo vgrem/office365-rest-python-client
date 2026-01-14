@@ -27,6 +27,4 @@ class PasswordProfile(ClientValue):
         super(PasswordProfile, self).__init__()
         self.password = password
         self.forceChangePasswordNextSignIn = force_change_password_next_sign_in
-        self.forceChangePasswordNextSignInWithMfa = (
-            force_change_password_next_sign_in_with_mfa
-        )
+        self.forceChangePasswordNextSignInWithMfa = force_change_password_next_sign_in_with_mfa

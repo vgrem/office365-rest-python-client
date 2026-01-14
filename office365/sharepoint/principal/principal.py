@@ -13,12 +13,7 @@ class Principal(Entity):
         return self.title or self.entity_type_name
 
     def __repr__(self):
-        return (
-            self.user_principal_name
-            or self.login_name
-            or self.id
-            or self.entity_type_name
-        )
+        return self.user_principal_name or self.login_name or self.id or self.entity_type_name
 
     @property
     def id(self):
@@ -75,11 +70,7 @@ class Principal(Entity):
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "Id":
-                self._resource_path = ServiceOperationPath(
-                    "GetById", [value], self.parent_collection.resource_path
-                )
+                self._resource_path = ServiceOperationPath("GetById", [value], self.parent_collection.resource_path)
             elif name == "LoginName":
-                self._resource_path = ServiceOperationPath(
-                    "GetByName", [value], self.parent_collection.resource_path
-                )
+                self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)
         return self

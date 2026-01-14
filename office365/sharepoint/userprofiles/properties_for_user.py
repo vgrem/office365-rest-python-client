@@ -15,9 +15,7 @@ class UserProfilePropertiesForUser(Entity):
         The GetPropertyNames method gets an array of strings that specify the user profile property names.
         """
         return_type = ClientResult(self.context, StringCollection())
-        qry = ServiceOperationQuery(
-            self, "GetPropertyNames", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPropertyNames", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -38,7 +36,5 @@ class UserProfilePropertiesForUser(Entity):
                 "accountName": self.account_name,
                 "propertyNames": self.property_names,
             }
-            self._resource_path = ServiceOperationPath(
-                "SP.UserProfiles.UserProfilePropertiesForUser", params
-            )
+            self._resource_path = ServiceOperationPath("SP.UserProfiles.UserProfilePropertiesForUser", params)
         return self._resource_path

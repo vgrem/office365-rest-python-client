@@ -10,9 +10,7 @@ class RequestUserContext(Entity):
         """Gets the SP.RequestUserContext for the current request."""
         return self.properties.get(
             "Current",
-            RequestUserContext(
-                self.context, ResourcePath("Current", self.resource_path)
-            ),
+            RequestUserContext(self.context, ResourcePath("Current", self.resource_path)),
         )
 
     @property
@@ -20,6 +18,4 @@ class RequestUserContext(Entity):
         """The SP.User object for the current request."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "User", User(self.context, ResourcePath("User", self.resource_path))
-        )
+        return self.properties.get("User", User(self.context, ResourcePath("User", self.resource_path)))

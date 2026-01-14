@@ -101,9 +101,7 @@ class ListItem(SecurableObject):
         """
         return_type = ClientResult(self.context, ShareLinkResponse())
         request = ShareLinkRequest(
-            settings=ShareLinkSettings(
-                link_kind=link_kind, expiration=expiration, role=role, password=password
-            )
+            settings=ShareLinkSettings(link_kind=link_kind, expiration=expiration, role=role, password=password)
         )
         if password:
             request.settings.allowAnonymousAccess = True
@@ -152,9 +150,7 @@ class ListItem(SecurableObject):
         return_value = ClientResult(self.context)
 
         def _list_item_loaded():
-            Reputation.set_rating(
-                self.context, self.parent_list.id, self.id, value, return_value
-            )
+            Reputation.set_rating(self.context, self.parent_list.id, self.id, value, return_value)
 
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
         return return_value
@@ -170,9 +166,7 @@ class ListItem(SecurableObject):
         return_value = ClientResult(self.context)
 
         def _list_item_loaded():
-            Reputation.set_like(
-                self.context, self.parent_list.id, self.id, value, return_value
-            )
+            Reputation.set_like(self.context, self.parent_list.id, self.id, value, return_value)
 
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
         return return_value
@@ -185,9 +179,7 @@ class ListItem(SecurableObject):
         :param int action: Indicates which user action is indicated in the returned WOPIFrameUrl.
         """
         result = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetWOPIFrameUrl", [action], None, None, result
-        )
+        qry = ServiceOperationQuery(self, "GetWOPIFrameUrl", [action], None, None, result)
         self.context.add_query(qry)
         return result
 
@@ -209,9 +201,7 @@ class ListItem(SecurableObject):
             query = ChangeQuery(item=True)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
-        qry = ServiceOperationQuery(
-            self, "getChanges", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -310,19 +300,13 @@ class ListItem(SecurableObject):
         :param bool or None dates_in_utc:
         """
         payload = {
-            "formValues": [
-                ListItemFormUpdateValue(k, v) for k, v in form_values.items()
-            ],
+            "formValues": [ListItemFormUpdateValue(k, v) for k, v in form_values.items()],
             "bNewDocumentUpdate": new_document_update,
             "checkInComment": checkin_comment,
             "datesInUTC": dates_in_utc,
         }
-        return_type = ClientResult(
-            self.context, ClientValueCollection(ListItemFormUpdateValue)
-        )
-        qry = ServiceOperationQuery(
-            self, "ValidateUpdateListItem", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(ListItemFormUpdateValue))
+        qry = ServiceOperationQuery(self, "ValidateUpdateListItem", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -345,11 +329,7 @@ class ListItem(SecurableObject):
         :param bool bypass_quota_check:
         :param bool bypass_shared_lock:
         """
-        payload = {
-            "parameters": ListItemUpdateParameters(
-                bypass_quota_check, bypass_shared_lock
-            )
-        }
+        payload = {"parameters": ListItemUpdateParameters(bypass_quota_check, bypass_shared_lock)}
         qry = ServiceOperationQuery(self, "UpdateEx", None, payload)
         self.context.add_query(qry)
         return self
@@ -423,9 +403,7 @@ class ListItem(SecurableObject):
 
     def get_comments(self):
         """Retrieve ListItem comments"""
-        return_type = CommentCollection(
-            self.context, ServiceOperationPath("GetComments", [], self.resource_path)
-        )
+        return_type = CommentCollection(self.context, ServiceOperationPath("GetComments", [], self.resource_path))
         qry = ServiceOperationQuery(self, "GetComments", [], None, None, return_type)
 
         def _create_request(request):
@@ -444,9 +422,7 @@ class ListItem(SecurableObject):
         """
         return_type = ClientResult(self.context, int())
         payload = {"userAction": user_action, "justification": justification}
-        qry = ServiceOperationQuery(
-            self, "OverridePolicyTip", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OverridePolicyTip", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -483,18 +459,14 @@ class ListItem(SecurableObject):
         """Get file"""
         from office365.sharepoint.files.file import File
 
-        return self.properties.get(
-            "File", File(self.context, ResourcePath("File", self.resource_path))
-        )
+        return self.properties.get("File", File(self.context, ResourcePath("File", self.resource_path)))
 
     @property
     def folder(self):
         """Get folder"""
         from office365.sharepoint.folders.folder import Folder
 
-        return self.properties.get(
-            "Folder", Folder(self.context, ResourcePath("Folder", self.resource_path))
-        )
+        return self.properties.get("Folder", Folder(self.context, ResourcePath("Folder", self.resource_path)))
 
     @property
     def attachment_files(self):
@@ -506,9 +478,7 @@ class ListItem(SecurableObject):
 
         return self.properties.get(
             "AttachmentFiles",
-            AttachmentCollection(
-                self.context, ResourcePath("AttachmentFiles", self.resource_path), self
-            ),
+            AttachmentCollection(self.context, ResourcePath("AttachmentFiles", self.resource_path), self),
         )
 
     @property
@@ -608,9 +578,7 @@ class ListItem(SecurableObject):
         """Gets the Data Loss Protection policy tip notification for this item."""
         return self.properties.get(
             "GetDlpPolicyTip",
-            DlpPolicyTip(
-                self.context, ResourcePath("GetDlpPolicyTip", self.resource_path)
-            ),
+            DlpPolicyTip(self.context, ResourcePath("GetDlpPolicyTip", self.resource_path)),
         )
 
     @property
@@ -618,9 +586,7 @@ class ListItem(SecurableObject):
         """Specifies the values for the list item as Hypertext Markup Language (HTML)."""
         return self.properties.get(
             "FieldValuesAsHtml",
-            FieldStringValues(
-                self.context, ResourcePath("FieldValuesAsHtml", self.resource_path)
-            ),
+            FieldStringValues(self.context, ResourcePath("FieldValuesAsHtml", self.resource_path)),
         )
 
     @property
@@ -628,9 +594,7 @@ class ListItem(SecurableObject):
         """Gets a value that specifies the list item identifier."""
         return self.properties.get(
             "LikedByInformation",
-            LikedByInformation(
-                self.context, ResourcePath("likedByInformation", self.resource_path)
-            ),
+            LikedByInformation(self.context, ResourcePath("likedByInformation", self.resource_path)),
         )
 
     @property
@@ -638,9 +602,7 @@ class ListItem(SecurableObject):
         """Gets the collection of item version objects that represent the versions of the item."""
         return self.properties.get(
             "Versions",
-            ListItemVersionCollection(
-                self.context, ResourcePath("versions", self.resource_path)
-            ),
+            ListItemVersionCollection(self.context, ResourcePath("versions", self.resource_path)),
         )
 
     @property
@@ -685,19 +647,13 @@ class ListItem(SecurableObject):
             if isinstance(value, TaxonomyFieldValueCollection):
                 self._set_taxonomy_field_value(name, value)
             elif isinstance(value, ImageFieldValue):
-                super(ListItem, self).set_property(
-                    name, json.dumps(value.to_json()), persist_changes
-                )
+                super(ListItem, self).set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, FieldMultiLookupValue):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super(ListItem, self).set_property(
-                    "{name}Id".format(name=name), collection
-                )
+                super(ListItem, self).set_property("{name}Id".format(name=name), collection)
                 super(ListItem, self).set_property(name, value, False)
             elif isinstance(value, FieldLookupValue):
-                super(ListItem, self).set_property(
-                    "{name}Id".format(name=name), value.LookupId
-                )
+                super(ListItem, self).set_property("{name}Id".format(name=name), value.LookupId)
                 super(ListItem, self).set_property(name, value, False)
             else:
                 super(ListItem, self).set_property(name, value, persist_changes)
@@ -707,9 +663,7 @@ class ListItem(SecurableObject):
         # fallback: create a new resource path
         if name == "Id":
             if self._resource_path is None and self.parent_collection is not None:
-                self._resource_path = EntityPath(
-                    value, self.parent_collection.resource_path
-                )
+                self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self
@@ -724,16 +678,12 @@ class ListItem(SecurableObject):
         tax_field = self.parent_list.fields.get_by_internal_name_or_title(name)
 
         def _tax_field_loaded():
-            tax_text_field = self.parent_list.fields.get_by_id(
-                tax_field.properties["TextField"]
-            )
+            tax_text_field = self.parent_list.fields.get_by_id(tax_field.properties["TextField"])
 
             def _tax_text_field_loaded(return_type):
                 self.set_property(tax_text_field.properties["StaticName"], str(value))
 
-            tax_text_field.select(["StaticName"]).get().after_execute(
-                _tax_text_field_loaded, execute_first=True
-            )
+            tax_text_field.select(["StaticName"]).get().after_execute(_tax_text_field_loaded, execute_first=True)
 
         tax_field.ensure_property("TextField", _tax_field_loaded)
 
@@ -747,9 +697,7 @@ class ListItem(SecurableObject):
         if self._entity_type_name is None:
 
             def _list_loaded():
-                self._entity_type_name = target_list.properties[
-                    "ListItemEntityTypeFullName"
-                ]
+                self._entity_type_name = target_list.properties["ListItemEntityTypeFullName"]
                 if callable(action):
                     action()
 

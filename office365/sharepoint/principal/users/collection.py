@@ -54,9 +54,7 @@ class UserCollection(EntityCollection[User]):
         Returns the user with the specified member identifier.
         :param int user_id: Specifies the member identifier.
         """
-        return User(
-            self.context, ServiceOperationPath("GetById", [user_id], self.resource_path)
-        )
+        return User(self.context, ServiceOperationPath("GetById", [user_id], self.resource_path))
 
     def get_by_login_name(self, login_name):
         """

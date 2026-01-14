@@ -34,9 +34,7 @@ class DeviceCollection(DeltaCollection[Device]):
         """
 
         if alternative_security_id is None:
-            key_id = "base64" + "".join(
-                random.choice(string.ascii_lowercase + string.digits) for _ in range(10)
-            )
+            key_id = "base64" + "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
             alternative_security_id = AlternativeSecurityId(2, key_id)
         if device_id is None:
             device_id = str(uuid.uuid4())

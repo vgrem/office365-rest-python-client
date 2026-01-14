@@ -51,9 +51,7 @@ prek run --all-files
 
 The project uses the following tools (mirroring CI):
 
-- Black (formatting)
-- Ruff (linting and import sorting)
-- Pylint (static analysis)
+- Ruff (linting and formatting)
 
 Line length: 121 characters (configured in `pyproject.toml`).
 
@@ -127,10 +125,7 @@ CI note: Full E2E tests in CI rely on repository secrets and may not run on fork
 ### Pull Request Process
 
 1. CI Checks must pass:
-   - Ruff linting
-   - Black formatting
-   - Pylint analysis
-   - Pytest execution
+   - Ruff linting and formatting
 2. Await maintainer review
 3. Update documentation where applicable
 

@@ -29,7 +29,5 @@ class CalendarGroup(Entity):
         """The calendars in the calendar group. Navigation property. Read-only. Nullable."""
         return self.properties.get(
             "calendars",
-            EntityCollection(
-                self.context, Calendar, ResourcePath("calendars", self.resource_path)
-            ),
+            EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path)),
         )

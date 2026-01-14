@@ -30,10 +30,7 @@ class TestSPList(SPTestCase):
 
     def test3_has_library_unique_perms_chaining(self):
         default_lib = (
-            self.client.web.default_document_library()
-            .select(["HasUniqueRoleAssignments"])
-            .get()
-            .execute_query()
+            self.client.web.default_document_library().select(["HasUniqueRoleAssignments"]).get().execute_query()
         )
         self.assertFalse(default_lib.has_unique_role_assignments)
 
@@ -45,9 +42,7 @@ class TestSPList(SPTestCase):
         self.assertTrue(default_lib.has_unique_role_assignments)
 
     def test5_library_add_unique_perms(self):
-        target_role_def = self.client.web.role_definitions.get_by_type(
-            RoleType.Contributor
-        )
+        target_role_def = self.client.web.role_definitions.get_by_type(RoleType.Contributor)
         target_user = self.client.web.current_user
         target_lib = self.client.web.default_document_library()
         target_lib.add_role_assignment(target_user, target_role_def).execute_query()
@@ -59,9 +54,7 @@ class TestSPList(SPTestCase):
         self.assertIsNotNone(assignment.principal_id)
 
     def test6_library_remove_unique_perms(self):
-        target_role_def = self.client.web.role_definitions.get_by_type(
-            RoleType.Contributor
-        )
+        target_role_def = self.client.web.role_definitions.get_by_type(RoleType.Contributor)
         target_user = self.client.web.current_user
         target_lib = self.client.web.default_document_library()
         target_lib.remove_role_assignment(target_user, target_role_def).execute_query()
@@ -83,19 +76,11 @@ class TestSPList(SPTestCase):
         self.__class__.target_list = list_to_create
 
     def test9_read_list_by_title(self):
-        list_to_read = (
-            self.client.web.lists.get_by_title(self.target_list_title)
-            .get()
-            .execute_query()
-        )
+        list_to_read = self.client.web.lists.get_by_title(self.target_list_title).get().execute_query()
         self.assertEqual(self.target_list_title, list_to_read.title)
 
     def test_10_read_list_by_id(self):
-        list_to_read = (
-            self.client.web.lists.get_by_id(self.__class__.target_list.id)
-            .get()
-            .execute_query()
-        )
+        list_to_read = self.client.web.lists.get_by_id(self.__class__.target_list.id).get().execute_query()
         self.assertEqual(self.target_list.id, list_to_read.id)
 
     def test_11_read_list_fields(self):
@@ -105,24 +90,14 @@ class TestSPList(SPTestCase):
     def test_12_update_list(self):
         list_to_update = self.__class__.target_list
         self.target_list_title += "_updated"
-        list_to_update.set_property(
-            "Title", self.target_list_title
-        ).update().execute_query()
+        list_to_update.set_property("Title", self.target_list_title).update().execute_query()
 
-        result = (
-            self.client.web.lists.filter(
-                "Title eq '{0}'".format(self.target_list_title)
-            )
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.filter("Title eq '{0}'".format(self.target_list_title)).get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test_13_get_list_permissions(self):
         current_user = self.client.web.current_user
-        result = self.__class__.target_list.get_user_effective_permissions(
-            current_user
-        ).execute_query()
+        result = self.__class__.target_list.get_user_effective_permissions(current_user).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 
     def test_14_get_list_changes(self):
@@ -137,11 +112,7 @@ class TestSPList(SPTestCase):
         list_title = self.target_list_title + "_updated"
         self.client.web.lists.get_by_title(list_title).delete_object().execute_query()
 
-        result = (
-            self.client.web.lists.filter("Title eq '{0}'".format(list_title))
-            .get()
-            .execute_query()
-        )
+        result = self.client.web.lists.filter("Title eq '{0}'".format(list_title)).get().execute_query()
         self.assertEqual(len(result), 0)
 
     def test_16_get_list_using_path(self):
@@ -166,9 +137,7 @@ class TestSPList(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_21_get_list_by_title(self):
-        site_pages = (
-            self.client.web.get_list_by_title("Site Pages").get().execute_query()
-        )
+        site_pages = self.client.web.get_list_by_title("Site Pages").get().execute_query()
         self.assertIsNotNone(site_pages.resource_path)
 
     def test_22_get_metadata_navigation_settings(self):
@@ -177,9 +146,5 @@ class TestSPList(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test_23_render_list_data_as_stream(self):
-        result = (
-            self.client.web.get_list_by_title("Site Pages")
-            .render_list_data_as_stream()
-            .execute_query()
-        )
+        result = self.client.web.get_list_by_title("Site Pages").render_list_data_as_stream().execute_query()
         self.assertIsInstance(result.value, dict)

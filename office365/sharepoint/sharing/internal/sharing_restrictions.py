@@ -7,9 +7,7 @@ class SharingRestrictions(Entity):
     """ """
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.Sharing.Internal.SharingRestrictions"
-        )
+        static_path = ResourcePath("Microsoft.SharePoint.Sharing.Internal.SharingRestrictions")
         super(SharingRestrictions, self).__init__(context, static_path)
 
     @property

@@ -21,11 +21,7 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
             # type: (str) -> None
             payload = {
                 "title": title,
-                "container": {
-                    "url": "https://graph.microsoft.com/v1.0/groups/{0}".format(
-                        owner_id
-                    )
-                },
+                "container": {"url": "https://graph.microsoft.com/v1.0/groups/{0}".format(owner_id)},
             }
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)

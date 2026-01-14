@@ -55,9 +55,9 @@ class ListScanner(BaseScanner[List]):
         ).expand(["RootFolder", "ContentTypes", "Fields"]).get()
 
     def _query_list_items(self):
-        self.source.items.select(
-            ["Id", "FSObjType", "FileLeafRef", "ContentTypeId"]
-        ).get().paged(page_size=1000, page_loaded=self._process_item)
+        self.source.items.select(["Id", "FSObjType", "FileLeafRef", "ContentTypeId"]).get().paged(
+            page_size=1000, page_loaded=self._process_item
+        )
 
     def _process_item(self, items):
         # type: (ListItemCollection) -> None

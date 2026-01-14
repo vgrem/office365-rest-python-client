@@ -7,14 +7,10 @@ from tests.graph_case import GraphTestCase
 class TestNotebook(GraphTestCase):
     target_notebook = None  # type: Notebook
 
-    @requires_delegated_permission(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"
-    )
+    @requires_delegated_permission("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All")
     def test1_create_notebook(self):
         notebook_name = create_unique_name("My Private notebook")
-        new_notebook = self.client.me.onenote.notebooks.add(
-            notebook_name
-        ).execute_query()
+        new_notebook = self.client.me.onenote.notebooks.add(notebook_name).execute_query()
         self.assertIsNotNone(new_notebook.resource_path)
         self.__class__.target_notebook = new_notebook
 
@@ -41,8 +37,6 @@ class TestNotebook(GraphTestCase):
     )
     def test4_create_section(self):
         name = create_unique_name("Section name")
-        new_section = self.__class__.target_notebook.sections.add(
-            displayName=name
-        ).execute_query()
+        new_section = self.__class__.target_notebook.sections.add(displayName=name).execute_query()
         self.assertIsNotNone(new_section.resource_path)
         self.__class__.target_section = new_section

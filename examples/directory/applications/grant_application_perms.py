@@ -22,9 +22,7 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_token_interactive(
-    test_client_id, test_admin_principal_name
-)
+client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
 # Step 1: Get the resource service principal
 resource = client.service_principals.get_by_name("Microsoft Graph")

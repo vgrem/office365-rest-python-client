@@ -25,16 +25,12 @@ class Permission(Entity):
             Otherwise must match the role of the link.
         """
         payload = {
-            "recipients": ClientValueCollection(
-                DriveRecipient, [DriveRecipient.from_email(r) for r in recipients]
-            ),
+            "recipients": ClientValueCollection(DriveRecipient, [DriveRecipient.from_email(r) for r in recipients]),
             "roles": StringCollection(roles),
         }
         from office365.onedrive.permissions.collection import PermissionCollection
 
-        return_type = PermissionCollection(
-            self.context, ResourcePath("permissions", self.resource_path)
-        )
+        return_type = PermissionCollection(self.context, ResourcePath("permissions", self.resource_path))
         qry = ServiceOperationQuery(self, "grant", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -57,16 +53,12 @@ class Permission(Entity):
     @property
     def granted_to_identities(self):
         """For link type permissions, the details of the users to whom permission was granted. Read-only."""
-        return self.properties.get(
-            "grantedToIdentities", ClientValueCollection(IdentitySet)
-        )
+        return self.properties.get("grantedToIdentities", ClientValueCollection(IdentitySet))
 
     @property
     def granted_to_identities_v2(self):
         """For link type permissions, the details of the users to whom permission was granted."""
-        return self.properties.get(
-            "grantedToIdentitiesV2", ClientValueCollection(SharePointIdentitySet)
-        )
+        return self.properties.get("grantedToIdentitiesV2", ClientValueCollection(SharePointIdentitySet))
 
     @property
     def link(self):

@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 class OnenoteSection(OnenoteEntityHierarchyModel):
     """A section in a OneNote notebook. Sections can contain pages."""
 
-    def copy_to_section_group(
-        self, group_id, _id, rename_as=None, site_collection_id=None, site_id=None
-    ):
+    def copy_to_section_group(self, group_id, _id, rename_as=None, site_collection_id=None, site_id=None):
         """For Copy operations, you follow an asynchronous calling pattern: First call the Copy action,
         and then poll the operation endpoint for the result.
 
@@ -34,9 +32,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             "siteCollectionId": site_collection_id,
             "siteId": site_id,
         }
-        qry = ServiceOperationQuery(
-            self, "copyToSectionGroup", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "copyToSectionGroup", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -63,9 +59,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
         return self.properties.get(
             "pages",
-            EntityCollection(
-                self.context, OnenotePage, ResourcePath("pages", self.resource_path)
-            ),
+            EntityCollection(self.context, OnenotePage, ResourcePath("pages", self.resource_path)),
         )
 
     @property
@@ -89,9 +83,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
 
         return self.properties.get(
             "parentSectionGroup",
-            SectionGroup(
-                self.context, ResourcePath("parentSectionGroup", self.resource_path)
-            ),
+            SectionGroup(self.context, ResourcePath("parentSectionGroup", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

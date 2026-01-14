@@ -14,8 +14,6 @@ def enum_folders_and_files(root_folder):
             enum_folders_and_files(drive_item)
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 root = client.me.drive.root
 enum_folders_and_files(root)

@@ -42,9 +42,7 @@ class AuditLogRoot(Entity):
         """
         return self.properties.get(
             "signIns",
-            EntityCollection(
-                self.context, SignIn, ResourcePath("signIns", self.resource_path)
-            ),
+            EntityCollection(self.context, SignIn, ResourcePath("signIns", self.resource_path)),
         )
 
     @property

@@ -28,9 +28,7 @@ class SiteProperties(Entity):
         # type: (ClientContext, str) -> SiteProperties
         payload = {"siteUrl": site_url}
         binding_type = SiteProperties(context)
-        qry = ServiceOperationQuery(
-            binding_type, "ClearSharingLockDown", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(binding_type, "ClearSharingLockDown", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
@@ -48,9 +46,7 @@ class SiteProperties(Entity):
         return_type = SpoOperation(self.context)
 
         def _update_ex():
-            qry = ServiceOperationQuery(
-                self, "Update", parameters_type=self, return_type=return_type
-            )
+            qry = ServiceOperationQuery(self, "Update", parameters_type=self, return_type=return_type)
             self.context.add_query(qry)
 
         self._ensure_site_path(_update_ex)
@@ -116,9 +112,7 @@ class SiteProperties(Entity):
     def block_download_microsoft365_group_ids(self):
         # type: () -> Optional[StringCollection]
         """Block downloads for view-only files in SharePoint and OneDrive."""
-        return self.properties.get(
-            "BlockDownloadMicrosoft365GroupIds", StringCollection()
-        )
+        return self.properties.get("BlockDownloadMicrosoft365GroupIds", StringCollection())
 
     @property
     def block_download_policy_file_type_ids(self):
@@ -136,9 +130,7 @@ class SiteProperties(Entity):
     def deny_add_and_customize_pages(self):
         # type: () -> Optional[int]
         """Represents the status of the [DenyAddAndCustomizePages] feature on a site collection."""
-        return self.properties.get(
-            "DenyAddAndCustomizePages", DenyAddAndCustomizePagesStatus.Unknown
-        )
+        return self.properties.get("DenyAddAndCustomizePages", DenyAddAndCustomizePagesStatus.Unknown)
 
     @deny_add_and_customize_pages.setter
     def deny_add_and_customize_pages(self, value):
@@ -174,9 +166,7 @@ class SiteProperties(Entity):
     def title_translations(self):
         # type: () -> Optional[str]
         """Site titles"""
-        return self.properties.get(
-            "TitleTranslations", ClientValueCollection(SPResourceEntry)
-        )
+        return self.properties.get("TitleTranslations", ClientValueCollection(SPResourceEntry))
 
     @property
     def owner_login_name(self):
@@ -255,9 +245,7 @@ class SiteProperties(Entity):
         super(SiteProperties, self).set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "Url" and self._resource_path is None:
-            self._resource_path = StaticOperationPath(
-                self.entity_type_name, {"Url": value}
-            )
+            self._resource_path = StaticOperationPath(self.entity_type_name, {"Url": value})
         return self
 
     def _ensure_site_path(self, action):
@@ -266,9 +254,7 @@ class SiteProperties(Entity):
             def _loaded(return_type):
                 # type: (ListItem) -> None
                 site_id = return_type.get_property("SiteId")
-                self._resource_path = EntityPath(
-                    site_id, self.parent_collection.resource_path
-                )
+                self._resource_path = EntityPath(site_id, self.parent_collection.resource_path)
                 action()
 
             self.context.tenant.get_site(self.url).after_execute(_loaded)

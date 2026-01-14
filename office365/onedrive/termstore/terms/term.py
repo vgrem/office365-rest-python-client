@@ -15,9 +15,7 @@ class Term(Entity):
     @property
     def descriptions(self):
         """Description about term that is dependent on the languageTag."""
-        return self.properties.get(
-            "descriptions", ClientValueCollection(LocalizedDescription)
-        )
+        return self.properties.get("descriptions", ClientValueCollection(LocalizedDescription))
 
     @property
     def labels(self):
@@ -37,9 +35,7 @@ class Term(Entity):
             EntityCollection(
                 self.context,
                 Term,
-                ChildrenPath(
-                    self.resource_path, ResourcePath("terms", self.resource_path.parent)
-                ),
+                ChildrenPath(self.resource_path, ResourcePath("terms", self.resource_path.parent)),
             ),
         )
 
@@ -50,9 +46,7 @@ class Term(Entity):
 
         return self.properties.get(
             "relations",
-            EntityCollection(
-                self.context, Relation, ResourcePath("relations", self.resource_path)
-            ),
+            EntityCollection(self.context, Relation, ResourcePath("relations", self.resource_path)),
         )
 
     @property
@@ -60,9 +54,7 @@ class Term(Entity):
         """The set in which the term is created."""
         from office365.onedrive.termstore.sets.set import Set
 
-        return self.properties.get(
-            "set", Set(self.context, ResourcePath("set", self.resource_path))
-        )
+        return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
 
     @property
     def entity_type_name(self):

@@ -46,9 +46,7 @@ class Domain(Entity):
         """
         return self.properties.get(
             "domainNameReferences",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("domainNameReferences", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("domainNameReferences", self.resource_path)),
         )
 
     @property

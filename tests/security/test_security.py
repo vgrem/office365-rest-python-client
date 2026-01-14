@@ -8,9 +8,7 @@ from tests.decorators import requires_app_permission
 class TestSecurity(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
+        cls.client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # def test1_create_alert(self):
     #    result = self.client.security.alerts.add(
@@ -34,9 +32,7 @@ class TestSecurity(TestCase):
             "status": "scheduled",
             "startDateTime": "2023-12-01T08:00:00Z",
         }
-        result = self.client.security.attack_simulation.simulations.add(
-            **simulation
-        ).execute_query()
+        result = self.client.security.attack_simulation.simulations.add(**simulation).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     # @requires_app_permission("SecurityIncident.Read.All")

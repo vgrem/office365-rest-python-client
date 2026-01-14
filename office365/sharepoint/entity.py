@@ -68,9 +68,7 @@ class Entity(ClientObject):
         if name == self.property_ref_name:
             if self.resource_path is None:
                 if self.parent_collection:
-                    self._resource_path = EntityPath(
-                        value, self.parent_collection.resource_path
-                    )
+                    self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

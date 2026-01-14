@@ -28,6 +28,4 @@ class ApiApplication(ClientValue):
         """
         self.acceptMappedClaims = accept_mapped_claims
         self.knownClientApplications = StringCollection(known_client_applications)
-        self.oauth2PermissionScopes = ClientValueCollection(
-            PermissionScope, oauth2_permission_scopes
-        )
+        self.oauth2PermissionScopes = ClientValueCollection(PermissionScope, oauth2_permission_scopes)

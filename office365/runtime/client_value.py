@@ -19,15 +19,9 @@ class ClientValue(object):
         prop_type = getattr(self, k, None)
         if isinstance(prop_type, ClientValue) and v is not None:
             if isinstance(v, list):
-                [
-                    prop_type.set_property(i, p_v, persist_changes)
-                    for i, p_v in enumerate(v)
-                ]
+                [prop_type.set_property(i, p_v, persist_changes) for i, p_v in enumerate(v)]
             else:
-                [
-                    prop_type.set_property(k, p_v, persist_changes)
-                    for k, p_v in v.items()
-                ]
+                [prop_type.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
             setattr(self, k, prop_type)
         else:
             setattr(self, k, v)

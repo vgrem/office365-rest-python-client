@@ -15,9 +15,7 @@ class Admin(Entity):
         """A container for the Microsoft 365 apps admin functionality."""
         return self.properties.get(
             "microsoft365Apps",
-            AdminMicrosoft365Apps(
-                self.context, ResourcePath("microsoft365Apps", self.resource_path)
-            ),
+            AdminMicrosoft365Apps(self.context, ResourcePath("microsoft365Apps", self.resource_path)),
         )
 
     @property
@@ -33,9 +31,7 @@ class Admin(Entity):
         """A container for service communications resources. Read-only."""
         return self.properties.get(
             "serviceAnnouncement",
-            ServiceAnnouncement(
-                self.context, ResourcePath("serviceAnnouncement", self.resource_path)
-            ),
+            ServiceAnnouncement(self.context, ResourcePath("serviceAnnouncement", self.resource_path)),
         )
 
     @property
@@ -43,9 +39,7 @@ class Admin(Entity):
         """A container for administrative resources to manage reports."""
         return self.properties.get(
             "reportSettings",
-            AdminReportSettings(
-                self.context, ResourcePath("reportSettings", self.resource_path)
-            ),
+            AdminReportSettings(self.context, ResourcePath("reportSettings", self.resource_path)),
         )
 
     @property
@@ -53,9 +47,7 @@ class Admin(Entity):
         """Represents a setting to control people-related admin settings in the tenant."""
         return self.properties.get(
             "people",
-            PeopleAdminSettings(
-                self.context, ResourcePath("people", self.resource_path)
-            ),
+            PeopleAdminSettings(self.context, ResourcePath("people", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

@@ -29,9 +29,7 @@ class PlannerPlan(Entity):
             # type: (RequestOptions) -> None
             request.set_header("If-Match", self.properties.get("__etag"))
 
-        return (
-            super(PlannerPlan, self).delete_object().before_execute(_construct_request)
-        )
+        return super(PlannerPlan, self).delete_object().before_execute(_construct_request)
 
     @property
     def container(self):
@@ -55,9 +53,7 @@ class PlannerPlan(Entity):
         """Collection of buckets in the plan."""
         return self.properties.get(
             "buckets",
-            EntityCollection(
-                self.context, PlannerBucket, ResourcePath("buckets", self.resource_path)
-            ),
+            EntityCollection(self.context, PlannerBucket, ResourcePath("buckets", self.resource_path)),
         )
 
     @property
@@ -65,9 +61,7 @@ class PlannerPlan(Entity):
         """Additional details about the plan."""
         return self.properties.get(
             "details",
-            PlannerPlanDetails(
-                self.context, ResourcePath("details", self.resource_path)
-            ),
+            PlannerPlanDetails(self.context, ResourcePath("details", self.resource_path)),
         )
 
     @property
@@ -76,9 +70,7 @@ class PlannerPlan(Entity):
         """Collection of tasks in the plan."""
         return self.properties.get(
             "tasks",
-            EntityCollection(
-                self.context, PlannerTask, ResourcePath("tasks", self.resource_path)
-            ),
+            EntityCollection(self.context, PlannerTask, ResourcePath("tasks", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

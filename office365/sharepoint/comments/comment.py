@@ -30,9 +30,7 @@ class Comment(Entity):
         """
         return self.properties.get(
             "likedBy",
-            EntityCollection(
-                self.context, UserEntity, ResourcePath("likedBy", self.resource_path)
-            ),
+            EntityCollection(self.context, UserEntity, ResourcePath("likedBy", self.resource_path)),
         )
 
     @property

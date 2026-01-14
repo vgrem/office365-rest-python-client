@@ -9,9 +9,7 @@ class SiteManagerService(Entity):
     """ """
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.SiteManager.SiteManagerService"
-        )
+        static_path = ResourcePath("Microsoft.SharePoint.SiteManager.SiteManagerService")
         super(SiteManagerService, self).__init__(context, static_path)
 
     def top_files(self, max_count=None):

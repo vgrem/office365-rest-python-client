@@ -62,9 +62,7 @@ class MoveCopyUtil(Entity):
             "destUrl": str(SPResPath.create_absolute(context.base_url, dest_url)),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "CopyFolder", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "CopyFolder", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -113,9 +111,7 @@ class MoveCopyUtil(Entity):
             "destUrl": str(SPResPath.create_absolute(context.base_url, dest_url)),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "MoveFolder", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(binding_type, "MoveFolder", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
@@ -136,16 +132,12 @@ class MoveCopyUtil(Entity):
             "destPath": SPResPath.create_absolute(context.base_url, dest_path),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "MoveFolderByPath", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(binding_type, "MoveFolderByPath", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
     @staticmethod
-    def download_folder(
-        remove_folder, download_file, after_file_downloaded=None, recursive=True
-    ):
+    def download_folder(remove_folder, download_file, after_file_downloaded=None, recursive=True):
         # type: (Folder, IO, Callable[[File], None], bool) -> Folder
         """
         Downloads a folder into a zip file
@@ -159,9 +151,7 @@ class MoveCopyUtil(Entity):
         def _get_relative_file_path(file):
             # type: (File) -> str
             return os.path.join(
-                file.parent_folder.serverRelativeUrl.replace(
-                    remove_folder.serverRelativeUrl, ""
-                ),
+                file.parent_folder.serverRelativeUrl.replace(remove_folder.serverRelativeUrl, ""),
                 file.name,
             )
 
@@ -173,9 +163,7 @@ class MoveCopyUtil(Entity):
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
                     after_file_downloaded(file)
-                with zipfile.ZipFile(
-                    download_file.name, "a", zipfile.ZIP_DEFLATED
-                ) as zf:
+                with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(filename, result.value)
 
             file.get_content().after_execute(_after_downloaded)

@@ -47,15 +47,11 @@ class CookieAuthProvider(AuthenticationProvider):
             elif isinstance(result, dict):
                 cookies = AuthCookies(result)
             else:
-                raise ValueError(
-                    "cookie_source must return Dict[str, str] or AuthCookies"
-                )
+                raise ValueError("cookie_source must return Dict[str, str] or AuthCookies")
         elif isinstance(source, AuthCookies):
             cookies = source
         else:
-            raise ValueError(
-                "cookie_source must be a Callable[[], Dict[str, str]] or AuthCookies"
-            )
+            raise ValueError("cookie_source must be a Callable[[], Dict[str, str]] or AuthCookies")
 
         if not cookies.is_valid:
             raise ValueError("Provided cookies are not valid for SharePoint Online.")

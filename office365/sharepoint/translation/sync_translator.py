@@ -21,9 +21,7 @@ class SyncTranslator(Entity):
         """
         super(SyncTranslator, self).__init__(
             context,
-            ServiceOperationPath(
-                "SP.Translation.SyncTranslator", {"targetLanguage": target_language}
-            ),
+            ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language}),
         )
 
     def translate(self, input_file, output_file):

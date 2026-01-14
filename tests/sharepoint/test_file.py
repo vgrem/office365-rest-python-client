@@ -18,12 +18,8 @@ class TestSharePointFile(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSharePointFile, cls).setUpClass()
-        cls.folder_from = cls.client.web.default_document_library().root_folder.add(
-            create_unique_name("from")
-        )
-        cls.folder_to = cls.client.web.default_document_library().root_folder.add(
-            create_unique_name("to")
-        )
+        cls.folder_from = cls.client.web.default_document_library().root_folder.add(create_unique_name("from"))
+        cls.folder_to = cls.client.web.default_document_library().root_folder.add(create_unique_name("to"))
 
     @classmethod
     def tearDownClass(cls):
@@ -43,12 +39,7 @@ class TestSharePointFile(SPTestCase):
 
     def test4_get_file_from_absolute_url(self):
         result = self.__class__.file.get_absolute_url().execute_query()
-        file = (
-            File.from_url(result.value)
-            .with_credentials(test_client_credentials)
-            .get()
-            .execute_query()
-        )
+        file = File.from_url(result.value).with_credentials(test_client_credentials).get().execute_query()
         self.assertIsNotNone(file.serverRelativeUrl)
 
     def test5_create_file_anon_link(self):
@@ -56,9 +47,7 @@ class TestSharePointFile(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test6_load_file_metadata(self):
-        list_item = (
-            self.__class__.file.listItemAllFields.expand(["File"]).get().execute_query()
-        )
+        list_item = self.__class__.file.listItemAllFields.expand(["File"]).get().execute_query()
         self.assertIsInstance(list_item.file, File)
 
     def test7_load_file_metadata_alt(self):
@@ -115,9 +104,7 @@ class TestSharePointFile(SPTestCase):
         self.__class__.deleted_file_guid = result.value
 
     def test_18_restore_file(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(
-            self.__class__.deleted_file_guid
-        )
+        recycle_item = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_file_guid)
         recycle_item.restore().execute_query()
         self.assertIsNotNone(recycle_item.resource_path)
 
@@ -127,9 +114,7 @@ class TestSharePointFile(SPTestCase):
     #    self.assertEqual(file.name, file_url)
 
     def test_19_get_files_changes(self):
-        changes = self.__class__.file.listItemAllFields.get_changes(
-            ChangeQuery(item=True)
-        ).execute_query()
+        changes = self.__class__.file.listItemAllFields.get_changes(ChangeQuery(item=True)).execute_query()
         self.assertGreater(len(changes), 0)
 
     def test_20_delete_file(self):
@@ -143,7 +128,5 @@ class TestSharePointFile(SPTestCase):
         path = "{0}/../data/big_buck_bunny.mp4".format(os.path.dirname(__file__))
         file_size = os.path.getsize(path)
         size_1mb = 1000000
-        file = self.folder_from.files.create_upload_session(
-            path, size_1mb
-        ).execute_query()
+        file = self.folder_from.files.create_upload_session(path, size_1mb).execute_query()
         self.assertEqual(file_size, file.length)

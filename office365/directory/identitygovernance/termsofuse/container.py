@@ -17,9 +17,7 @@ class TermsOfUseContainer(Entity):
         Azure Active Directory (Azure AD)."""
         return self.properties.get(
             "agreements",
-            EntityCollection(
-                self.context, Agreement, ResourcePath("agreements", self.resource_path)
-            ),
+            EntityCollection(self.context, Agreement, ResourcePath("agreements", self.resource_path)),
         )
 
     @property

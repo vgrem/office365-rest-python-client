@@ -15,9 +15,7 @@ class TenantCrawlVersionsInfoProvider(Entity):
     def create(context):
         # type: (ClientContext) -> TenantCrawlVersionsInfoProvider
         return_type = TenantCrawlVersionsInfoProvider(context)
-        qry = ServiceOperationQuery(
-            return_type, "Create", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(return_type, "Create", None, None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -28,18 +26,14 @@ class TenantCrawlVersionsInfoProvider(Entity):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "DisableCrawlVersions", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DisableCrawlVersions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def disable_crawl_versions_for_tenant(self):
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "DisableCrawlVersionsForTenant", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DisableCrawlVersionsForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -49,18 +43,14 @@ class TenantCrawlVersionsInfoProvider(Entity):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "IsCrawlVersionsEnabled", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabled", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_crawl_versions_enabled_for_tenant(self):
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "IsCrawlVersionsEnabledForTenant", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabledForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

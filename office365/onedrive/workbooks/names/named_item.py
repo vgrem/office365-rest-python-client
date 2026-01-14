@@ -14,9 +14,7 @@ class WorkbookNamedItem(Entity):
     def range(self):
         """Returns the range object that is associated with the name. Throws an exception if the named item's type
         isn't a range."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         qry = FunctionQuery(self, "range", return_type=return_type)
         self.context.add_query(qry)
         return return_type
@@ -47,9 +45,7 @@ class WorkbookNamedItem(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
     @property

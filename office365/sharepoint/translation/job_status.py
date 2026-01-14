@@ -14,9 +14,7 @@ class TranslationJobStatus(Entity):
     @staticmethod
     def get_all_jobs(context, return_type=None):
         if return_type is None:
-            return_type = ClientResult(
-                context, ClientValueCollection(TranslationJobInfo)
-            )
+            return_type = ClientResult(context, ClientValueCollection(TranslationJobInfo))
         qry = ServiceOperationQuery(
             TranslationJobStatus(context),
             "GetAllJobs",

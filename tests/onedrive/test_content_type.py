@@ -22,17 +22,13 @@ class TestContentType(TestCase):
         pass
 
     def test1_get_compatible_hub_content_types(self):
-        cts = (
-            self.client.sites.root.content_types.get_compatible_hub_content_types().execute_query()
-        )
+        cts = self.client.sites.root.content_types.get_compatible_hub_content_types().execute_query()
         self.assertIsNotNone(cts.resource_path)
 
     @requires_delegated_permission("Sites.Manage.All", "Sites.FullControl.All")
     def test2_create_site_content_type(self):
         name = "docSet" + uuid.uuid4().hex
-        ct = self.client.sites.root.content_types.add(
-            name, "0x0120D520"
-        ).execute_query()
+        ct = self.client.sites.root.content_types.add(name, "0x0120D520").execute_query()
         self.assertIsNotNone(ct.resource_path)
         self.__class__.target_ct = ct
 

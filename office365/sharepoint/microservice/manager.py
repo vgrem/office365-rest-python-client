@@ -15,9 +15,7 @@ class MicroServiceManager(Entity):
         return_type = ClientResult(context)
         payload = {"payLoad": payload, "minutes": minutes, "properties": properties}
         manager = MicroServiceManager(context)
-        qry = ServiceOperationQuery(
-            manager, "AddMicroserviceWorkItem", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(manager, "AddMicroserviceWorkItem", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 

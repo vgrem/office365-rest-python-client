@@ -171,9 +171,7 @@ class ContentType(Entity):
         """Gets the SP.UserResource object (section 3.2.5.333) for the description of this content type"""
         return self.properties.get(
             "DescriptionResource",
-            UserResource(
-                self.context, ResourcePath("DescriptionResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
     @property
@@ -233,9 +231,7 @@ class ContentType(Entity):
         """Specifies the SP.UserResource object for the name of this content type"""
         return self.properties.get(
             "NameResource",
-            UserResource(
-                self.context, ResourcePath("NameResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("NameResource", self.resource_path)),
         )
 
     @property
@@ -265,9 +261,7 @@ class ContentType(Entity):
         """Specifies the collection of field links for the content type."""
         return self.properties.get(
             "FieldLinks",
-            FieldLinkCollection(
-                self.context, ResourcePath("FieldLinks", self.resource_path)
-            ),
+            FieldLinkCollection(self.context, ResourcePath("FieldLinks", self.resource_path)),
         )
 
     @property

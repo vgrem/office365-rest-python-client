@@ -5,9 +5,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class WorkbookWorksheetCollection(EntityCollection[WorkbookWorksheet]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookWorksheetCollection, self).__init__(
-            context, WorkbookWorksheet, resource_path
-        )
+        super(WorkbookWorksheetCollection, self).__init__(context, WorkbookWorksheet, resource_path)
 
     def add(self, name=None):
         """

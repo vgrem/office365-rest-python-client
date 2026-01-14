@@ -18,9 +18,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
     """Represents a collection of Attachment resources."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(AttachmentCollection, self).__init__(
-            context, Attachment, resource_path, parent
-        )
+        super(AttachmentCollection, self).__init__(context, Attachment, resource_path, parent)
 
     def add(self, attachment_file_information):
         # type: (AttachmentCreationInformation|dict) -> Attachment
@@ -61,9 +59,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return_type = Attachment(self.context)
         params = {"DecodedUrl": decoded_url}
-        qry = ServiceOperationQuery(
-            self, "AddUsingPath", params, content_stream, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)
         self.context.add_query(qry)
         self.add_child(return_type)
         return return_type
@@ -92,9 +88,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
         def _download(return_type):
             for attachment_file in return_type:
-                attachment_file.get_content().after_execute(
-                    partial(_file_downloaded, attachment_file)
-                )
+                attachment_file.get_content().after_execute(partial(_file_downloaded, attachment_file))
 
         self.get().after_execute(_download)
         return self
@@ -125,7 +119,5 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return Attachment(
             self.context,
-            ServiceOperationPath(
-                "GetByFileNameAsPath", [decoded_url], self.resource_path
-            ),
+            ServiceOperationPath("GetByFileNameAsPath", [decoded_url], self.resource_path),
         )

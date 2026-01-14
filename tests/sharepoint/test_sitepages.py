@@ -17,9 +17,7 @@ class TestSitePages(SPTestCase):
 
     def test1_create_draft_page(self):
         page_title = create_unique_name("Site Page ")
-        page = self.client.site_pages.create_page(
-            page_title, "Site Page.aspx"
-        ).execute_query()
+        page = self.client.site_pages.create_page(page_title, "Site Page.aspx").execute_query()
         self.assertIsNotNone(page.resource_path)
         self.__class__.target_page = page
 

@@ -141,9 +141,7 @@ class MailFolder(Entity):
         """The collection of messages in the mailFolder."""
         return self.properties.get(
             "messages",
-            MessageCollection(
-                self.context, ResourcePath("messages", self.resource_path)
-            ),
+            MessageCollection(self.context, ResourcePath("messages", self.resource_path)),
         )
 
     @property

@@ -61,9 +61,7 @@ class UnifiedRoleAssignment(Entity):
         """
         return self.properties.get(
             "roleDefinition",
-            UnifiedRoleDefinition(
-                self.context, ResourcePath("roleDefinition", self.resource_path)
-            ),
+            UnifiedRoleDefinition(self.context, ResourcePath("roleDefinition", self.resource_path)),
         )
 
     @property

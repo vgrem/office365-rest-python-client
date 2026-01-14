@@ -15,17 +15,9 @@ from tests import (
     test_user_principal_name,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 user = client.users[test_user_principal_name]
-messages = (
-    user.messages.filter("hasAttachments eq true")
-    .expand(["attachments"])
-    .top(10)
-    .get()
-    .execute_query()
-)
+messages = user.messages.filter("hasAttachments eq true").expand(["attachments"]).top(10).get().execute_query()
 with tempfile.TemporaryDirectory() as local_path:
     for message in messages:
         for attachment in message.attachments:

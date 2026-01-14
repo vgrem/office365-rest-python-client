@@ -21,9 +21,7 @@ class MultiGeoServices(Entity):
     """
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta"
-        )
+        static_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta")
         super(MultiGeoServices, self).__init__(context, static_path)
 
     def user_personal_site_location(self, user_principal_name):

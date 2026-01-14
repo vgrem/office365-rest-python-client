@@ -13,6 +13,4 @@ class SPClientSideComponentIdentifier(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.ClientSideComponent.SPClientSideComponentIdentifier"
-        )
+        return "Microsoft.SharePoint.ClientSideComponent.SPClientSideComponentIdentifier"

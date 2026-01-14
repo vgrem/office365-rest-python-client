@@ -25,9 +25,7 @@ class IdentityProtectionRoot(Entity):
         """Get the teams in Microsoft Teams that the user is a direct member of."""
         return self.properties.get(
             "riskyUsers",
-            RiskyUserCollection(
-                self.context, ResourcePath("riskyUsers", self.resource_path)
-            ),
+            RiskyUserCollection(self.context, ResourcePath("riskyUsers", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

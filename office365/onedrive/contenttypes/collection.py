@@ -72,9 +72,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         payload = {"contentTypeId": content_type_id}
         return_type = ContentType(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "addCopyFromContentTypeHub", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "addCopyFromContentTypeHub", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

@@ -73,10 +73,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         logger = self.logger(self.authenticate_request.__name__)
 
         request_time = datetime.now(timezone.utc)
-        if (
-            self._cached_auth_cookies is None
-            or request_time >= self._sts_profile.expires
-        ):
+        if self._cached_auth_cookies is None or request_time >= self._sts_profile.expires:
             self._sts_profile.reset()
             self._cached_auth_cookies = self.get_authentication_cookie()
         logger.debug_secrets(self._cached_auth_cookies)
@@ -139,9 +136,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             headers={"Content-Type": "application/soap+xml; charset=utf-8"},
         )
         dom = minidom.parseString(response.content.decode())
-        assertion_node = dom.getElementsByTagNameNS(
-            "urn:oasis:names:tc:SAML:1.0:assertion", "Assertion"
-        )[0].toxml()
+        assertion_node = dom.getElementsByTagNameNS("urn:oasis:names:tc:SAML:1.0:assertion", "Assertion")[0].toxml()
 
         try:
             payload = self._prepare_request_from_template(
@@ -163,9 +158,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             logger.debug_secrets("security token: %s", token)
             return token
         except ElementTree.ParseError as e:
-            self.error = (
-                "An error occurred while parsing the server response: {}".format(e)
-            )
+            self.error = "An error occurred while parsing the server response: {}".format(e)
             logger.error(self.error)
             return None
 
@@ -197,16 +190,12 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
 
     def _process_service_token_response(self, response):
         logger = self.logger(self._process_service_token_response.__name__)
-        logger.debug_secrets(
-            "response: %s\nresponse.content: %s", response, response.content
-        )
+        logger.debug_secrets("response: %s\nresponse.content: %s", response, response.content)
 
         try:
             xml = ElementTree.fromstring(response.content)
         except ElementTree.ParseError as e:
-            self.error = (
-                "An error occurred while parsing the server response: {}".format(e)
-            )
+            self.error = "An error occurred while parsing the server response: {}".format(e)
             logger.error(self.error)
             return None
 
@@ -218,13 +207,9 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
                 )
             )
             if error is None:
-                self.error = (
-                    "An error occurred while retrieving token from XML response."
-                )
+                self.error = "An error occurred while retrieving token from XML response."
             else:
-                self.error = "An error occurred while retrieving token from XML response: {0}".format(
-                    error.text
-                )
+                self.error = "An error occurred while retrieving token from XML response: {0}".format(error.text)
             logger.error(self.error)
             raise ValueError(self.error)
 
@@ -263,16 +248,10 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         if not federated or self._browser_mode:
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             if self._browser_mode:
-                headers["User-Agent"] = (
-                    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
-                )
-            session.post(
-                self._sts_profile.signin_page_url, data=security_token, headers=headers
-            )
+                headers["User-Agent"] = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
+            session.post(self._sts_profile.signin_page_url, data=security_token, headers=headers)
         else:
-            idcrl_endpoint = "https://{}/_vti_bin/idcrl.svc/".format(
-                self._sts_profile.tenant
-            )
+            idcrl_endpoint = "https://{}/_vti_bin/idcrl.svc/".format(self._sts_profile.tenant)
             session.get(
                 idcrl_endpoint,
                 headers={
@@ -285,10 +264,8 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         cookies = AuthCookies(requests.utils.dict_from_cookiejar(session.cookies))
         logger.debug_secrets("cookies: %s", cookies)
         if not cookies.is_valid:
-            self.error = (
-                "An error occurred while retrieving auth cookies from {0}".format(
-                    self._sts_profile.signin_page_url
-                )
+            self.error = "An error occurred while retrieving auth cookies from {0}".format(
+                self._sts_profile.signin_page_url
             )
             logger.error(self.error)
             raise ValueError(self.error)
@@ -299,9 +276,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         logger = self.logger(self._prepare_request_from_template.__name__)
         logger.debug_secrets("params: %s", params)
 
-        template_path = os.path.join(
-            os.path.dirname(__file__), "templates", template_name
-        )
+        template_path = os.path.join(os.path.dirname(__file__), "templates", template_name)
 
         with open(template_path, encoding="utf8") as f:
             data = f.read()

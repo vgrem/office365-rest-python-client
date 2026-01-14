@@ -7,9 +7,7 @@ class GroupAndUserStatus(Entity):
     @property
     def group(self):
         """Get a Group"""
-        return self.properties.get(
-            "Group", Group(self.context, ResourcePath("Group", self.resource_path))
-        )
+        return self.properties.get("Group", Group(self.context, ResourcePath("Group", self.resource_path)))
 
     @property
     def entity_type_name(self):

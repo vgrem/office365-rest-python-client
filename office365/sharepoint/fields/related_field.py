@@ -44,9 +44,7 @@ class RelatedField(Entity):
     def set_property(self, name, value, persist_changes=True):
         super(RelatedField, self).set_property(name, value, persist_changes)
         if name == "FieldId" and self._resource_path is None:
-            self._resource_path = self.parent_collection.get_by_field_id(
-                value
-            ).resource_path
+            self._resource_path = self.parent_collection.get_by_field_id(value).resource_path
         return self
 
     def get_property(self, name, default_value=None):

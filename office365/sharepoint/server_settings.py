@@ -19,9 +19,7 @@ class ServerSettings(Entity):
         """
         binding_type = ServerSettings(context)
         return_type = ClientResult(context)
-        qry = ServiceOperationQuery(
-            binding_type, "IsSharePointOnline", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "IsSharePointOnline", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 

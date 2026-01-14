@@ -39,9 +39,7 @@ class AdministrativeUnit(DirectoryObject):
 
         return self.properties.get(
             "members",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("members", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property
@@ -50,7 +48,5 @@ class AdministrativeUnit(DirectoryObject):
         """The collection of open extensions defined for this administrative unit."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )

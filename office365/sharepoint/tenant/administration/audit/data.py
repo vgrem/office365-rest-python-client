@@ -23,9 +23,7 @@ class AuditData(ClientValue):
         self.EventSource = event_source
         self.ItemType = item_type
         self.ListItemUniqueId = list_item_unique_id
-        self.ModifiedProperties = ClientValueCollection(
-            ModifiedProperty, modified_properties
-        )
+        self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)
         self.Site = site
         self.TeamName = team_name
         self.UserId = user_id

@@ -40,9 +40,7 @@ class Calendar(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_schedule(
-        self, schedules, start_time, end_time, availability_view_interval=30
-    ):
+    def get_schedule(self, schedules, start_time, end_time, availability_view_interval=30):
         """
         Get the free/busy availability information for a collection of users, distributions lists, or resources
         (rooms or equipment) for a specified time period.
@@ -60,12 +58,8 @@ class Calendar(Entity):
             "endTime": DateTimeTimeZone.parse(end_time),
             "availabilityViewInterval": availability_view_interval,
         }
-        return_type = ClientResult(
-            self.context, ClientValueCollection(ScheduleInformation)
-        )
-        qry = ServiceOperationQuery(
-            self, "getSchedule", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(ScheduleInformation))
+        qry = ServiceOperationQuery(self, "getSchedule", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -186,9 +180,7 @@ class Calendar(Entity):
         """The calendar view for the calendar. Navigation property. Read-only."""
         return self.properties.get(
             "calendarView",
-            EventCollection(
-                self.context, ResourcePath("calendarView", self.resource_path)
-            ),
+            EventCollection(self.context, ResourcePath("calendarView", self.resource_path)),
         )
 
     @property
@@ -196,9 +188,7 @@ class Calendar(Entity):
         """The permissions of the users with whom the calendar is shared."""
         return self.properties.get(
             "calendarPermissions",
-            CalendarPermissionCollection(
-                self.context, ResourcePath("calendarPermissions", self.resource_path)
-            ),
+            CalendarPermissionCollection(self.context, ResourcePath("calendarPermissions", self.resource_path)),
         )
 
     @property

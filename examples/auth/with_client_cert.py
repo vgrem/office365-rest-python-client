@@ -21,9 +21,7 @@ def acquire_token():
         authority=authority_url,
         client_credential=credentials,
     )
-    result = app.acquire_token_for_client(
-        scopes=["https://graph.microsoft.com/.default"]
-    )
+    result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
     return result
 
 

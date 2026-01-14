@@ -42,9 +42,7 @@ class SiteMoveService(Entity):
         )
         super(SiteMoveService, self).__init__(context, static_path)
 
-    def acquire_system_site_lock(
-        self, lock_requestor, lock_type, lease_duration_in_minutes
-    ):
+    def acquire_system_site_lock(self, lock_requestor, lock_type, lease_duration_in_minutes):
         """"""
         return_type = ClientResult(self.context, SystemSiteLockExpirationResult())
         payload = {

@@ -63,9 +63,7 @@ class ServicePrincipal(DirectoryObject):
         """
         params = PasswordCredential(display_name=display_name)
         return_type = ClientResult(self.context, params)
-        qry = ServiceOperationQuery(
-            self, "addPassword", None, params, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "addPassword", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -96,9 +94,7 @@ class ServicePrincipal(DirectoryObject):
         """
         payload = {"displayName": display_name, "endDateTime": end_datetime}
         return_type = ClientResult(self.context, SelfSignedCertificate())
-        qry = ServiceOperationQuery(
-            self, "addTokenSigningCertificate", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "addTokenSigningCertificate", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -114,26 +110,16 @@ class ServicePrincipal(DirectoryObject):
             # type: (str, str) -> None
 
             if principal_id is None:
-                query_text = "clientId eq '{0}'  and consentType eq '{1}'".format(
-                    client_id, consent_type
-                )
+                query_text = "clientId eq '{0}'  and consentType eq '{1}'".format(client_id, consent_type)
             else:
-                query_text = "principalId eq '{0}' and clientId eq '{1}'".format(
-                    principal_id, client_id
-                )
+                query_text = "principalId eq '{0}' and clientId eq '{1}'".format(principal_id, client_id)
 
             def _loaded(col):
-                scope_val = next(
-                    iter([g.scope for g in col if g.resource_id == self.id]), None
-                )
+                scope_val = next(iter([g.scope for g in col if g.resource_id == self.id]), None)
                 if scope_val is not None:
                     [return_type.value.add(name) for name in scope_val.split(" ")]
 
-            (
-                self.context.oauth2_permission_grants.get()
-                .filter(query_text)
-                .after_execute(_loaded)
-            )
+            (self.context.oauth2_permission_grants.get().filter(query_text).after_execute(_loaded))
 
         def _resolve_application():
             # type: () -> None
@@ -179,9 +165,7 @@ class ServicePrincipal(DirectoryObject):
             def _client_loaded(return_type):
                 _grant_delegated(principal_id, return_type.id)
 
-            self.context.service_principals.get_by_app(app).get().after_execute(
-                _client_loaded
-            )
+            self.context.service_principals.get_by_app(app).get().after_execute(_client_loaded)
 
         def _resource_resolved():
             if isinstance(principal, User):
@@ -216,9 +200,7 @@ class ServicePrincipal(DirectoryObject):
                     client_id, self.id
                 )
 
-            self.context.oauth2_permission_grants.filter(
-                query_text
-            ).get().after_execute(_after)
+            self.context.oauth2_permission_grants.filter(query_text).get().after_execute(_after)
 
         def _principal_resolved(principal_id):
             # type: (str) -> None
@@ -226,9 +208,7 @@ class ServicePrincipal(DirectoryObject):
                 # type: (ServicePrincipal) -> None
                 _revoke_delegated_permissions(principal_id, return_type.id)
 
-            self.context.service_principals.get_by_app(app).get().after_execute(
-                _client_loaded
-            )
+            self.context.service_principals.get_by_app(app).get().after_execute(_client_loaded)
 
         def _resource_resolved():
             if isinstance(principal, User):
@@ -250,9 +230,7 @@ class ServicePrincipal(DirectoryObject):
         def _get_application_permissions(app_id):
             # type: (str) -> None
             app_role_ids = [
-                app_role.app_role_id
-                for app_role in self.app_role_assigned_to
-                if app_role.principal_id == app_id
+                app_role.app_role_id for app_role in self.app_role_assigned_to if app_role.principal_id == app_id
             ]
             for app_role in self.app_roles:
                 if app_role.id in app_role_ids:
@@ -277,9 +255,7 @@ class ServicePrincipal(DirectoryObject):
 
         def _grant(principal_id, app_role_id):
             # type: (str, str) -> None
-            self.app_role_assigned_to.add(
-                principalId=principal_id, resourceId=self.id, appRoleId=app_role_id
-            )
+            self.app_role_assigned_to.add(principalId=principal_id, resourceId=self.id, appRoleId=app_role_id)
 
         def _ensure_resource():
             def _after(return_type):
@@ -316,13 +292,9 @@ class ServicePrincipal(DirectoryObject):
                 _revoke(principal.id, self.app_roles[app_role].id)
 
         def _ensure_principal():
-            self.context.service_principals.get_by_app(app).select(
-                ["id"]
-            ).get().after_execute(_ensure_app_role)
+            self.context.service_principals.get_by_app(app).select(["id"]).get().after_execute(_ensure_app_role)
 
-        self.ensure_properties(
-            ["id", "appId", "appRoles", "appRoleAssignedTo"], _ensure_principal
-        )
+        self.ensure_properties(["id", "appId", "appRoles", "appRoleAssignedTo"], _ensure_principal)
         return self
 
     def remove_password(self, key_id):
@@ -385,9 +357,7 @@ class ServicePrincipal(DirectoryObject):
         Supports $expand."""
         return self.properties.get(
             "appRoleAssignedTo",
-            AppRoleAssignmentCollection(
-                self.context, ResourcePath("appRoleAssignedTo", self.resource_path)
-            ),
+            AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignedTo", self.resource_path)),
         )
 
     @property
@@ -395,9 +365,7 @@ class ServicePrincipal(DirectoryObject):
         """Get an event collection or an appRoleAssignments."""
         return self.properties.get(
             "appRoleAssignments",
-            AppRoleAssignmentCollection(
-                self.context, ResourcePath("appRoleAssignments", self.resource_path)
-            ),
+            AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignments", self.resource_path)),
         )
 
     @property
@@ -423,9 +391,7 @@ class ServicePrincipal(DirectoryObject):
         The collection of key credentials associated with the service principal. Not nullable.
         Supports $filter (eq, not, ge, le).
         """
-        return self.properties.setdefault(
-            "keyCredentials", ClientValueCollection(KeyCredential)
-        )
+        return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
 
     @property
     def login_url(self):
@@ -487,9 +453,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get(
             "owners",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("owners", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
     @property
@@ -499,9 +463,7 @@ class ServicePrincipal(DirectoryObject):
         The delegated permissions exposed by the application. For more information see the oauth2PermissionScopes
         property on the application entity's api property.
         """
-        return self.properties.get(
-            "oauth2PermissionScopes", ClientValueCollection(PermissionScope)
-        )
+        return self.properties.get("oauth2PermissionScopes", ClientValueCollection(PermissionScope))
 
     @property
     def oauth2_permission_grants(self):
@@ -521,9 +483,7 @@ class ServicePrincipal(DirectoryObject):
         """Directory objects created by this service principal."""
         return self.properties.get(
             "createdObjects",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("createdObjects", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path)),
         )
 
     @property
@@ -531,9 +491,7 @@ class ServicePrincipal(DirectoryObject):
         """Directory objects that are owned by this service principal."""
         return self.properties.get(
             "ownedObjects",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("ownedObjects", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("ownedObjects", self.resource_path)),
         )
 
     @property
@@ -544,9 +502,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get(
             "synchronization",
-            Synchronization(
-                self.context, ResourcePath("synchronization", self.resource_path)
-            ),
+            Synchronization(self.context, ResourcePath("synchronization", self.resource_path)),
         )
 
     @property

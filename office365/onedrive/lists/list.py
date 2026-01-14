@@ -40,9 +40,7 @@ class List(BaseItem):
         """Only present on document libraries. Allows access to the list as a drive resource with driveItems."""
         from office365.onedrive.drives.drive import Drive
 
-        return self.properties.get(
-            "drive", Drive(self.context, ResourcePath("drive", self.resource_path))
-        )
+        return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
     @property
     def columns(self):
@@ -50,9 +48,7 @@ class List(BaseItem):
         """The collection of columns under this site."""
         return self.properties.setdefault(
             "columns",
-            ColumnDefinitionCollection(
-                self.context, ResourcePath("columns", self.resource_path), self
-            ),
+            ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
         )
 
     @property
@@ -61,9 +57,7 @@ class List(BaseItem):
         """The collection of content types under this site."""
         return self.properties.get(
             "contentTypes",
-            ContentTypeCollection(
-                self.context, ResourcePath("contentTypes", self.resource_path)
-            ),
+            ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path)),
         )
 
     @property

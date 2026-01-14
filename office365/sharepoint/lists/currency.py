@@ -18,8 +18,6 @@ class CurrencyList(Entity):
         :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, CurrencyInformationCollection())
-        qry = ServiceOperationQuery(
-            CurrencyList(context), "GetList", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(CurrencyList(context), "GetList", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type

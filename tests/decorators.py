@@ -69,9 +69,7 @@ def requires_delegated_permission(*scopes):
             granted_scopes = _get_cached_delegated_permissions(client, test_client_id)
 
             if not any(scope in granted_scopes for scope in scopes):
-                self.skipTest(
-                    f"Required delegated permission '{', '.join(scopes)}' not granted"
-                )
+                self.skipTest(f"Required delegated permission '{', '.join(scopes)}' not granted")
 
             return test_method(self, *args, **kwargs)
 

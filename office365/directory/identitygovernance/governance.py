@@ -34,9 +34,7 @@ class IdentityGovernance(Entity):
         """
         return self.properties.get(
             "appConsent",
-            AppConsentApprovalRoute(
-                self.context, ResourcePath("appConsent", self.resource_path)
-            ),
+            AppConsentApprovalRoute(self.context, ResourcePath("appConsent", self.resource_path)),
         )
 
     @property
@@ -44,9 +42,7 @@ class IdentityGovernance(Entity):
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "accessReviews",
-            AccessReviewSet(
-                self.context, ResourcePath("accessReviews", self.resource_path)
-            ),
+            AccessReviewSet(self.context, ResourcePath("accessReviews", self.resource_path)),
         )
 
     @property
@@ -54,9 +50,7 @@ class IdentityGovernance(Entity):
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "privilegedAccess",
-            PrivilegedAccessRoot(
-                self.context, ResourcePath("privilegedAccess", self.resource_path)
-            ),
+            PrivilegedAccessRoot(self.context, ResourcePath("privilegedAccess", self.resource_path)),
         )
 
     @property
@@ -67,9 +61,7 @@ class IdentityGovernance(Entity):
         """
         return self.properties.get(
             "termsOfUse",
-            TermsOfUseContainer(
-                self.context, ResourcePath("termsOfUse", self.resource_path)
-            ),
+            TermsOfUseContainer(self.context, ResourcePath("termsOfUse", self.resource_path)),
         )
 
     @property
@@ -80,7 +72,5 @@ class IdentityGovernance(Entity):
         """
         return self.properties.get(
             "entitlementManagement",
-            EntitlementManagement(
-                self.context, ResourcePath("entitlementManagement", self.resource_path)
-            ),
+            EntitlementManagement(self.context, ResourcePath("entitlementManagement", self.resource_path)),
         )

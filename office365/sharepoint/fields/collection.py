@@ -105,15 +105,9 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field
         :param str or None description:
         """
-        return self.add(
-            FieldCreationInformation(
-                title=title, description=description, field_type_kind=FieldType.URL
-            )
-        )
+        return self.add(FieldCreationInformation(title=title, description=description, field_type_kind=FieldType.URL))
 
-    def add_lookup_field(
-        self, title, lookup_list, lookup_field_name, allow_multiple_values=False
-    ):
+    def add_lookup_field(self, title, lookup_list, lookup_field_name, allow_multiple_values=False):
         """
         Creates a Lookup field
 
@@ -192,9 +186,7 @@ class FieldCollection(EntityCollection[Field]):
         """
         return self.add_field(FieldCreationInformation(title, FieldType.Text))
 
-    def add_dependent_lookup_field(
-        self, display_name, primary_lookup_field_id, show_field
-    ):
+    def add_dependent_lookup_field(self, display_name, primary_lookup_field_id, show_field):
         """Adds a secondary lookup field to a field collection (target).
         Args:
             display_name (str): title of the added field in the target FieldCollection.
@@ -211,9 +203,7 @@ class FieldCollection(EntityCollection[Field]):
             "primaryLookupFieldId": primary_lookup_field_id,
             "showField": show_field,
         }
-        qry = ServiceOperationQuery(
-            self, "AddDependentLookupField", None, parameters, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddDependentLookupField", None, parameters, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -279,9 +269,7 @@ class FieldCollection(EntityCollection[Field]):
                     return_type=return_type,
                 )
 
-            self.context.load(self.context.taxonomy.term_store).after_query_execute(
-                _term_store_loaded
-            )
+            self.context.load(self.context.taxonomy.term_store).after_query_execute(_term_store_loaded)
 
         return return_type
 
@@ -296,9 +284,7 @@ class FieldCollection(EntityCollection[Field]):
             return_type = Field(self.context)
         self.add_child(return_type)
         payload = {"parameters": XmlSchemaFieldCreationInformation(schema_xml)}
-        qry = ServiceOperationQuery(
-            self, "CreateFieldAsXml", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateFieldAsXml", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -308,9 +294,7 @@ class FieldCollection(EntityCollection[Field]):
 
         :param str _id: The field identifier.
         """
-        return Field(
-            self.context, ServiceOperationPath("getById", [_id], self.resource_path)
-        )
+        return Field(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
     def get_by_internal_name_or_title(self, value):
         """Returns the first field in the collection based on the internal name or the title specified
@@ -320,9 +304,7 @@ class FieldCollection(EntityCollection[Field]):
         """
         return Field(
             self.context,
-            ServiceOperationPath(
-                "getByInternalNameOrTitle", [value], self.resource_path
-            ),
+            ServiceOperationPath("getByInternalNameOrTitle", [value], self.resource_path),
         )
 
     def get_by_title(self, title):

@@ -46,9 +46,7 @@ class TodoTask(Entity):
         """The collection of open extensions defined for the task."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property

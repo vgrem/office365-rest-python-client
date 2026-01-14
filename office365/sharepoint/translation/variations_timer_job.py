@@ -24,9 +24,7 @@ class VariationsTranslationTimerJob(Entity):
             "addressesToEmail": addresses_to_email,
         }
         binding_type = VariationsTranslationTimerJob(context)
-        qry = ServiceOperationQuery(
-            binding_type, "ExportItems", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "ExportItems", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 

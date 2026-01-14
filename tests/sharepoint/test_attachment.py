@@ -15,9 +15,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestListItemAttachment(SPTestCase):
     attachment_file_name = "Sample.txt"
     target_item = None  # type: ListItem
-    attachment_path = "{0}/../data/{1}".format(
-        os.path.dirname(__file__), attachment_file_name
-    )
+    attachment_path = "{0}/../data/{1}".format(os.path.dirname(__file__), attachment_file_name)
     target_attachment = None  # type: Attachment
 
     @classmethod
@@ -38,25 +36,17 @@ class TestListItemAttachment(SPTestCase):
     def test1_upload_attachment(self):
         with open(self.attachment_path, "rb") as content_file:
             file_content = content_file.read()
-        attachment_file_information = AttachmentCreationInformation(
-            self.attachment_file_name, file_content
-        )
-        attachment = self.__class__.target_item.attachment_files.add(
-            attachment_file_information
-        ).execute_query()
+        attachment_file_information = AttachmentCreationInformation(self.attachment_file_name, file_content)
+        attachment = self.__class__.target_item.attachment_files.add(attachment_file_information).execute_query()
         self.assertIsNotNone(attachment.file_name)
         self.__class__.target_attachment = attachment
 
     def test2_list_attachments(self):
-        attachment_files = (
-            self.__class__.target_item.attachment_files.get().execute_query()
-        )
+        attachment_files = self.__class__.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(attachment_files), 1)
 
     def test3_get_by_filename(self):
-        attachment_file = self.__class__.target_item.attachment_files.get_by_filename(
-            self.attachment_file_name
-        )
+        attachment_file = self.__class__.target_item.attachment_files.get_by_filename(self.attachment_file_name)
         self.assertIsNotNone(attachment_file.resource_path)
 
     def test4_download_attachment(self):
@@ -76,7 +66,5 @@ class TestListItemAttachment(SPTestCase):
 
     def test6_delete_attachments(self):
         self.__class__.target_attachment.delete_object().execute_query()
-        attachment_files = (
-            self.__class__.target_item.attachment_files.get().execute_query()
-        )
+        attachment_files = self.__class__.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(attachment_files), 0)

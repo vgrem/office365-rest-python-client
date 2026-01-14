@@ -56,9 +56,7 @@ class SearchEntity(Entity):
 
         def _patch_hit(search_hit):
             # type: (SearchHit) -> None
-            resource_type_name = search_hit.get_property("resource").get(
-                "@odata.type", None
-            )
+            resource_type_name = search_hit.get_property("resource").get("@odata.type", None)
             resource_type = EntityType.resolve(resource_type_name)
             resource = resource_type(self.context, EntityPath())
             self.context.pending_request().map_json(search_hit.resource, resource)
@@ -76,9 +74,7 @@ class SearchEntity(Entity):
         self.context.add_query(qry).after_query_execute(_process_response)
         return return_type
 
-    def query_messages(
-        self, query_string, page_from=None, size=None, enable_top_results=None
-    ):
+    def query_messages(self, query_string, page_from=None, size=None, enable_top_results=None):
         """Searches Outlook messages. Alias to query method
         :param str query_string: Contains the query terms.
         :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.

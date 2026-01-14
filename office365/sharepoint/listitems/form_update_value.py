@@ -30,18 +30,14 @@ class ListItemFormUpdateValue(ClientValue):
 
     def __repr__(self):
         if self.HasException:
-            return "{0} update failed: Message: {1}".format(
-                self.FieldName, self.ErrorMessage
-            )
+            return "{0} update failed: Message: {1}".format(self.FieldName, self.ErrorMessage)
         else:
             return "{0} update succeeded".format(self.FieldName)
 
     def to_json(self, json_format=None):
         json = super(ListItemFormUpdateValue, self).to_json(json_format)
         if isinstance(self.FieldValue, FieldLookupValue):
-            json["FieldValue"] = (
-                "[{" + "'Key':'{0}'".format(self.FieldValue.LookupValue) + "}]"
-            )
+            json["FieldValue"] = "[{" + "'Key':'{0}'".format(self.FieldValue.LookupValue) + "}]"
         elif isinstance(self.FieldValue, datetime):
             json["FieldValue"] = self.FieldValue.isoformat()
         return json

@@ -9,9 +9,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
     """Represents a collection of View resources."""
 
     def __init__(self, context, resource_path=None):
-        super(RecycleBinItemCollection, self).__init__(
-            context, RecycleBinItem, resource_path
-        )
+        super(RecycleBinItemCollection, self).__init__(context, RecycleBinItem, resource_path)
 
     def delete_all_second_stage_items(self):
         """Permanently deletes all Recycle Bin items in the second-stage Recycle Bin"""

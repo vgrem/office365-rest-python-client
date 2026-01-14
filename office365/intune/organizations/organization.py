@@ -28,9 +28,7 @@ class Organization(DirectoryObject):
     def branding(self):
         return self.properties.get(
             "branding",
-            OrganizationalBranding(
-                self.context, ResourcePath("branding", self.resource_path)
-            ),
+            OrganizationalBranding(self.context, ResourcePath("branding", self.resource_path)),
         )
 
     @property
@@ -47,9 +45,7 @@ class Organization(DirectoryObject):
         """The collection of open extensions defined for the message. Nullable."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
@@ -68,16 +64,12 @@ class Organization(DirectoryObject):
 
     @property
     def provisioned_plans(self):
-        return self.properties.get(
-            "provisionedPlans", ClientValueCollection(ProvisionedPlan)
-        )
+        return self.properties.get("provisionedPlans", ClientValueCollection(ProvisionedPlan))
 
     @property
     def verified_domains(self):
         """The collection of domains associated with this tenant."""
-        return self.properties.get(
-            "verifiedDomains", ClientValueCollection(VerifiedDomain)
-        )
+        return self.properties.get("verifiedDomains", ClientValueCollection(VerifiedDomain))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

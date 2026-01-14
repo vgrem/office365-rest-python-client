@@ -8,9 +8,7 @@ class MultiGeoApiVersions(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions"
-            )
+            resource_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions")
         super(MultiGeoApiVersions, self).__init__(context, resource_path)
 
     @property

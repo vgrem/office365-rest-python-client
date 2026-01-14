@@ -28,9 +28,7 @@ class PromotedSites(Entity):
             "imageUrl": image_url,
         }
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "AddSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "AddSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 
@@ -44,9 +42,7 @@ class PromotedSites(Entity):
         """
         payload = {"itemID": item_id}
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "DeleteSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "DeleteSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 

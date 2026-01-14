@@ -7,9 +7,7 @@ class TestCallRecord(GraphTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestCallRecord, cls).setUpClass()
-        cls.app_client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
+        cls.app_client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     @classmethod
     def tearDownClass(cls):
@@ -20,7 +18,5 @@ class TestCallRecord(GraphTestCase):
     #    self.assertIsNotNone(result.resource_path)
 
     def test2_get_direct_routing_calls(self):
-        result = (
-            self.app_client.communications.call_records.get_direct_routing_calls().execute_query()
-        )
+        result = self.app_client.communications.call_records.get_direct_routing_calls().execute_query()
         self.assertIsNotNone(result.value)

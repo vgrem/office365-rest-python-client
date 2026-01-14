@@ -43,6 +43,4 @@ class ChangeList(Change):
         """An SP.User object that represents information about the user who created the list."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "Creator", User(self.context, ResourcePath("Creator", self.resource_path))
-        )
+        return self.properties.get("Creator", User(self.context, ResourcePath("Creator", self.resource_path)))

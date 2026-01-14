@@ -19,17 +19,13 @@ class TenantAdminSettingsService(Entity):
     """Manage various tenant-level settings related to SharePoint administration"""
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.TenantAdminSettingsService"
-        )
+        static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.TenantAdminSettingsService")
         super(TenantAdminSettingsService, self).__init__(context, static_path)
 
     def get_tenant_sharing_status(self):
         """Retrieves the current state of sharing settings for a tenant"""
         return_type = ClientResult(self.context, int())
-        qry = ServiceOperationQuery(
-            self, "GetTenantSharingStatus", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTenantSharingStatus", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -46,9 +42,7 @@ class TenantAdminSettingsService(Entity):
         """
         Specifies the managed paths that are available for the creation of new SharePoint sites within a tenant.
         """
-        return self.properties.get(
-            "AvailableManagedPathsForSiteCreation", StringCollection()
-        )
+        return self.properties.get("AvailableManagedPathsForSiteCreation", StringCollection())
 
     @property
     def disable_groupify(self):
@@ -61,9 +55,7 @@ class TenantAdminSettingsService(Entity):
     @property
     def disable_self_service_site_creation(self):
         """ " """
-        return self.properties.get(
-            "DisableSelfServiceSiteCreation", DisableSelfServiceSiteCreation()
-        )
+        return self.properties.get("DisableSelfServiceSiteCreation", DisableSelfServiceSiteCreation())
 
     @property
     def enable_auto_news_digest(self):

@@ -42,13 +42,9 @@ class TestSharePointListItem(SPTestCase):
             if not self.target_list.enable_folder_creation:
                 self.target_list.enable_folder_creation = True
                 self.target_list.update().execute_query()
-            self.assertTrue(
-                self.target_list.enable_folder_creation, "Folder creation enabled"
-            )
+            self.assertTrue(self.target_list.enable_folder_creation, "Folder creation enabled")
 
-        self.target_list.ensure_property(
-            "EnableFolderCreation", _init_list
-        ).execute_query()
+        self.target_list.ensure_property("EnableFolderCreation", _init_list).execute_query()
 
     def test3_create_folder_in_list(self):
         new_folder = self.target_list.root_folder.add("Archive").execute_query()
@@ -62,17 +58,13 @@ class TestSharePointListItem(SPTestCase):
     def test5_get_list_item_via_caml(self):
         item_id = self.__class__.target_item.id
         caml_query = CamlQuery.parse(
-            "<Where><Eq><FieldRef Name='ID' /><Value Type='Counter'>{0}</Value></Eq></Where>".format(
-                item_id
-            )
+            "<Where><Eq><FieldRef Name='ID' /><Value Type='Counter'>{0}</Value></Eq></Where>".format(item_id)
         )
         result = self.target_list.get_items(caml_query).execute_query()
         self.assertEqual(len(result), 1)
 
     def test6_get_wopi_frame_url(self):
-        result = self.__class__.target_item.get_wopi_frame_url(
-            SPWOPIAction.default
-        ).execute_query()
+        result = self.__class__.target_item.get_wopi_frame_url(SPWOPIAction.default).execute_query()
         self.assertIsNotNone(result.value)
 
     def test7_update_listItem(self):
@@ -111,9 +103,7 @@ class TestSharePointListItem(SPTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test_13_enable_comments(self):
-        comments = self.__class__.target_item.set_comments_disabled(
-            False
-        ).execute_query()
+        comments = self.__class__.target_item.set_comments_disabled(False).execute_query()
         self.assertIsNotNone(comments.resource_path)
 
     def test_10_get_comments(self):
@@ -127,9 +117,7 @@ class TestSharePointListItem(SPTestCase):
         self.__class__.deleted_item_guid = result.value
 
     def test_15_restore_item(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(
-            self.__class__.deleted_item_guid
-        )
+        recycle_item = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_item_guid)
         recycle_item.restore().execute_query()
         self.assertIsNotNone(recycle_item.resource_path)
 
@@ -142,11 +130,7 @@ class TestSharePointListItem(SPTestCase):
         item_to_delete = self.__class__.target_item
         item_to_delete.delete_object().execute_query()
 
-        result = (
-            self.target_list.items.filter("Id eq {0}".format(item_id))
-            .get()
-            .execute_query()
-        )
+        result = self.target_list.items.filter("Id eq {0}".format(item_id)).get().execute_query()
         self.assertEqual(0, len(result))
 
     def test_18_create_multiple_items(self):

@@ -103,9 +103,7 @@ class DirectoryAudit(Entity):
         Device, Directory, App, Role, Group, Policy or Other. Supports $filter (eq) for id and displayName;
         and $filter (startswith) for displayName.
         """
-        return self.properties.get(
-            "targetResources", ClientValueCollection(TargetResource)
-        )
+        return self.properties.get("targetResources", ClientValueCollection(TargetResource))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

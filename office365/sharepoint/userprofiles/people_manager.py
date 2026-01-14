@@ -31,9 +31,7 @@ class PeopleManager(Entity):
     """Provides methods for operations related to people."""
 
     def __init__(self, context):
-        super(PeopleManager, self).__init__(
-            context, ResourcePath("SP.UserProfiles.PeopleManager")
-        )
+        super(PeopleManager, self).__init__(context, ResourcePath("SP.UserProfiles.PeopleManager"))
 
     @staticmethod
     def get_trending_tags(context):
@@ -44,9 +42,7 @@ class PeopleManager(Entity):
         """
         return_type = HashTagCollection(context)
         manager = PeopleManager(context)
-        qry = ServiceOperationQuery(
-            manager, "GetTrendingTags", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(manager, "GetTrendingTags", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -56,9 +52,7 @@ class PeopleManager(Entity):
         """
         return_type = ClientResult(self.context, int())
         params = {"accountName": account_name}
-        qry = ServiceOperationQuery(
-            self, "GetUserOneDriveQuotaMax", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUserOneDriveQuotaMax", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -86,9 +80,7 @@ class PeopleManager(Entity):
 
         def _get_followers_for(account_name):
             params = {"accountName": account_name}
-            qry = ServiceOperationQuery(
-                self, "GetFollowersFor", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "GetFollowersFor", params, None, None, return_type)
             self.context.add_query(qry)
 
         if isinstance(account, User):
@@ -108,9 +100,7 @@ class PeopleManager(Entity):
         """
         return_type = ClientResult(self.context, {})
         params = {"accountName": account_name, "siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "GetSPUserInformation", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSPUserInformation", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -159,9 +149,7 @@ class PeopleManager(Entity):
         def _user_resolved(account_name):
             # type: (str) -> None
             params = {"accountName": account_name}
-            qry = ServiceOperationQuery(
-                self, "GetUserProfileProperties", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "GetUserProfileProperties", params, None, None, return_type)
             self.context.add_query(qry)
 
         _ensure_user(user_or_name, _user_resolved)
@@ -177,9 +165,7 @@ class PeopleManager(Entity):
         def _get_properties_for_inner(account_name):
             # type: (str) -> None
             params = {"accountName": account_name}
-            qry = ServiceOperationQuery(
-                self, "GetPropertiesFor", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "GetPropertiesFor", params, None, None, return_type)
             self.context.add_query(qry)
 
         _ensure_user(account, _get_properties_for_inner)
@@ -208,9 +194,7 @@ class PeopleManager(Entity):
                 "createSiteIfNotExists": create_site_if_not_exists,
                 "siteCreationPriority": site_creation_priority,
             }
-            qry = ServiceOperationQuery(
-                self, "GetDefaultDocumentLibrary", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "GetDefaultDocumentLibrary", params, None, None, return_type)
             self.context.add_query(qry)
 
         _ensure_user(user_or_name, _get_default_document_library)
@@ -226,9 +210,7 @@ class PeopleManager(Entity):
         """
         return_type = EntityCollection(self.context, PersonProperties)
         params = {"accountName": account_name}
-        qry = ServiceOperationQuery(
-            self, "GetPeopleFollowedBy", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPeopleFollowedBy", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -237,9 +219,7 @@ class PeopleManager(Entity):
         This method returns a list of PersonProperties objects for the people who are following the current user.
         """
         return_type = EntityCollection(self.context, PersonProperties)
-        qry = ServiceOperationQuery(
-            self, "GetMyFollowers", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetMyFollowers", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -269,9 +249,7 @@ class PeopleManager(Entity):
         """
         return_type = ClientResult(self.context, str())
         params = {"accountName": account_name}
-        qry = ServiceOperationQuery(
-            self, "ResetUserOneDriveQuotaToDefault", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ResetUserOneDriveQuotaToDefault", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -282,9 +260,7 @@ class PeopleManager(Entity):
 
         :param str or bytes picture: Binary content of an image file
         """
-        qry = ServiceOperationQuery(
-            self, "SetMyProfilePicture", None, {"picture": picture}
-        )
+        qry = ServiceOperationQuery(self, "SetMyProfilePicture", None, {"picture": picture})
         self.context.add_query(qry)
         return self
 
@@ -300,15 +276,11 @@ class PeopleManager(Entity):
             "newQuota": new_quota,
             "newQuotaWarning": new_quota_warning,
         }
-        qry = ServiceOperationQuery(
-            self, "SetUserOneDriveQuota", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SetUserOneDriveQuota", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def set_multi_valued_profile_property(
-        self, account_name, property_name, property_values
-    ):
+    def set_multi_valued_profile_property(self, account_name, property_name, property_values):
         """
         Sets the value of a multivalued user profile property.
         :param str account_name: Specifies the user by account name.
@@ -320,15 +292,11 @@ class PeopleManager(Entity):
             "propertyName": property_name,
             "propertyValues": StringCollection(property_values),
         }
-        qry = ServiceOperationQuery(
-            self, "SetMultiValuedProfileProperty", None, payload
-        )
+        qry = ServiceOperationQuery(self, "SetMultiValuedProfileProperty", None, payload)
         self.context.add_query(qry)
         return self
 
-    def set_single_value_profile_property(
-        self, account_name, property_name, property_value
-    ):
+    def set_single_value_profile_property(self, account_name, property_name, property_value):
         """
         Sets the value of a user profile property.
 
@@ -341,9 +309,7 @@ class PeopleManager(Entity):
             "propertyName": property_name,
             "propertyValue": property_value,
         }
-        qry = ServiceOperationQuery(
-            self, "SetSingleValueProfileProperty", None, payload
-        )
+        qry = ServiceOperationQuery(self, "SetSingleValueProfileProperty", None, payload)
         self.context.add_query(qry)
         return self
 

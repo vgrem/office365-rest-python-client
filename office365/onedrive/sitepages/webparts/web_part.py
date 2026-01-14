@@ -10,8 +10,6 @@ class WebPart(Entity):
     def get_position_of_web_part(self):
         """Returns the position of the specified web part in the page."""
         return_type = ClientResult(self.context, WebPartPosition())
-        qry = ServiceOperationQuery(
-            self, "getPositionOfWebPart", return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "getPositionOfWebPart", return_type=return_type)
         self.context.add_query(qry)
         return return_type

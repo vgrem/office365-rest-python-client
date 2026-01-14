@@ -45,9 +45,7 @@ class SitePageService(Entity):
         """Gets a CommunicationSite for the current web."""
         return self.properties.get(
             "CommunicationSite",
-            CommunicationSite(
-                self.context, ResourcePath("CommunicationSite", self.resource_path)
-            ),
+            CommunicationSite(self.context, ResourcePath("CommunicationSite", self.resource_path)),
         )
 
     @property
@@ -68,9 +66,7 @@ class SitePageService(Entity):
                 # type: (ClientResult[bool]) -> None
                 return_type.get()
 
-            return_type.save_draft(title=title).after_execute(
-                _draft_saved, execute_first=True
-            )
+            return_type.save_draft(title=title).after_execute(_draft_saved, execute_first=True)
 
         return self.pages.add().after_execute(_page_created)
 
@@ -97,9 +93,7 @@ class SitePageService(Entity):
         MUST return true if the user has permission to create a site page, otherwise MUST return false.
         """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CanCreatePage", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CanCreatePage", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -109,9 +103,7 @@ class SitePageService(Entity):
         MUST return true if the user has permission to create a site page, otherwise MUST return false.
         """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CanCreatePromotedPage", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CanCreatePromotedPage", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -120,9 +112,7 @@ class SitePageService(Entity):
         # type: (ClientContext, Optional[str]) -> ClientResult[StringCollection]
         return_type = ClientResult(context, StringCollection())
         svc = SitePageService(context)
-        qry = ServiceOperationQuery(
-            svc, "GetCurrentUserMemberships", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(svc, "GetCurrentUserMemberships", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -137,9 +127,7 @@ class SitePageService(Entity):
         return_type = PrimaryCityTime(context)
         binding_type = SitePageService(context)
         params = {"cityName": city_name}
-        qry = ServiceOperationQuery(
-            binding_type, "GetTimeZone", params, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "GetTimeZone", params, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -153,19 +141,13 @@ class SitePageService(Entity):
         return_type = ClientResult(context)
         binding_type = SitePageService(context)
         params = {"title": title}
-        qry = ServiceOperationQuery(
-            binding_type, "ComputeFileName", params, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "ComputeFileName", params, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def get_available_full_page_applications(
-        context, include_errors=None, project=None
-    ):
-        return_type = ClientResult(
-            context, ClientValueCollection(SPClientSideComponentQueryResult)
-        )
+    def get_available_full_page_applications(context, include_errors=None, project=None):
+        return_type = ClientResult(context, ClientValueCollection(SPClientSideComponentQueryResult))
         params = {"includeErrors": include_errors, "project": project}
         qry = ServiceOperationQuery(
             SitePageService(context),
@@ -201,9 +183,7 @@ class SitePageService(Entity):
         # type: (ClientContext) -> ClientResult[OrgAssets]
         return_type = ClientResult(context, OrgAssets())
         svc = SitePageService(context)
-        qry = ServiceOperationQuery(
-            svc, "OrgAssets", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(svc, "OrgAssets", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -212,9 +192,7 @@ class SitePageService(Entity):
         # type: (ClientContext) -> ClientResult[FilePickerOptions]
         return_type = ClientResult(context, FilePickerOptions())
         svc = SitePageService(context)
-        qry = ServiceOperationQuery(
-            svc, "FilePickerTabOptions", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(svc, "FilePickerTabOptions", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -234,15 +212,11 @@ class SitePageService(Entity):
             "imageFileName": image_file_name,
             "imageStream": image_stream,
         }
-        qry = ServiceOperationQuery(
-            self, "AddImage", params, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(self, "AddImage", params, None, None, return_type, True)
         self.context.add_query(qry)
         return return_type
 
-    def add_image_from_external_url(
-        self, page_name, image_file_name, external_url, sub_folder_name, page_id
-    ):
+    def add_image_from_external_url(self, page_name, image_file_name, external_url, sub_folder_name, page_id):
         """
         Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
@@ -261,9 +235,7 @@ class SitePageService(Entity):
             "subFolderName": sub_folder_name,
             "pageId": page_id,
         }
-        qry = ServiceOperationQuery(
-            self, "AddImageFromExternalUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddImageFromExternalUrl", params, None, None, return_type)
         qry.static = True
         self.context.add_query(qry)
         return return_type

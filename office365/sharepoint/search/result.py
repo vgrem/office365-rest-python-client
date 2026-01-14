@@ -42,9 +42,7 @@ class SearchResult(ClientValue):
         self.PrimaryQueryResult = primary_query_result
         self.ElapsedTime = elapsed_time
         self.Properties = properties
-        self.SecondaryQueryResults = ClientValueCollection(
-            QueryResult, secondary_query_results
-        )
+        self.SecondaryQueryResults = ClientValueCollection(QueryResult, secondary_query_results)
         self.SpellingSuggestion = spelling_suggestion
         self.TriggeredRules = StringCollection(triggered_rules)
 

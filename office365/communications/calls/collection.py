@@ -29,8 +29,6 @@ class CallCollection(EntityCollection):
 
         :param TeleconferenceDeviceQuality quality : Quality data of VTC media leg.
         """
-        qry = ServiceOperationQuery(
-            self, "logTeleconferenceDeviceQuality", None, quality
-        )
+        qry = ServiceOperationQuery(self, "logTeleconferenceDeviceQuality", None, quality)
         self.context.add_query(qry)
         return self

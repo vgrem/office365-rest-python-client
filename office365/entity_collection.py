@@ -19,9 +19,7 @@ class EntityCollection(ClientObjectCollection[T]):
 
     def __init__(self, context, item_type, resource_path=None, parent=None):
         # type: (GraphClient, Type[T], Optional[ResourcePath], Optional[Entity]) -> None
-        super(EntityCollection, self).__init__(
-            context, item_type, resource_path, parent
-        )
+        super(EntityCollection, self).__init__(context, item_type, resource_path, parent)
         self._delta_request_url = None
 
     def token(self, value):
@@ -44,20 +42,14 @@ class EntityCollection(ClientObjectCollection[T]):
         if isinstance(key, int):
             return super(EntityCollection, self).__getitem__(key)
         elif is_string_type(key):
-            return self.create_typed_object(
-                resource_path=EntityPath(key, self.resource_path)
-            )
+            return self.create_typed_object(resource_path=EntityPath(key, self.resource_path))
         else:
-            raise ValueError(
-                "Invalid key: expected either an entity index [int] or identifier [str]"
-            )
+            raise ValueError("Invalid key: expected either an entity index [int] or identifier [str]")
 
     def add(self, **kwargs):
         # type: (Any) -> T
         """Creates an entity and prepares the query"""
-        return_type = self.create_typed_object(
-            kwargs, EntityPath(None, self.resource_path)
-        )
+        return_type = self.create_typed_object(kwargs, EntityPath(None, self.resource_path))
         self.add_child(return_type)
         qry = CreateEntityQuery(self, return_type, return_type)
         self.context.add_query(qry)
@@ -67,9 +59,7 @@ class EntityCollection(ClientObjectCollection[T]):
         # type: (Optional[dict], Optional[ResourcePath]) -> T
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super(EntityCollection, self).create_typed_object(initial_properties, resource_path)
 
     def set_property(self, key, value, persist_changes=False):
         # type: (str | int, dict, bool) -> Self

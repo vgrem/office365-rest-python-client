@@ -19,9 +19,7 @@ class SiteVersionPolicyManager(Entity):
     def version_policies(self):
         return self.properties.get(
             "VersionPolicies",
-            VersionPolicyManager(
-                self.context, ResourcePath("VersionPolicies", self.resource_path)
-            ),
+            VersionPolicyManager(self.context, ResourcePath("VersionPolicies", self.resource_path)),
         )
 
     def inherit_tenant_settings(self):

@@ -117,9 +117,7 @@ class SearchRequest(ClientValue):
         self.Properties = ClientValueCollection(QueryProperty, properties)
         self.UILanguage = ui_language
         self.HitHighlightedProperties = StringCollection(hit_highlighted_properties)
-        self.HitHighlightedMultivaluePropertyLimit = (
-            hit_highlighted_multivalue_property_limit
-        )
+        self.HitHighlightedMultivaluePropertyLimit = hit_highlighted_multivalue_property_limit
         self.__dict__.update(**kwargs)
 
     @property

@@ -33,9 +33,7 @@ class RemoteWeb(ClientObject):
         :type request_url: str
         """
         remote_web = RemoteWeb(context)
-        qry = ServiceOperationQuery(
-            context, None, [request_url], None, None, remote_web
-        )
+        qry = ServiceOperationQuery(context, None, [request_url], None, None, remote_web)
         qry.static = True
         context.add_query(qry)
         return remote_web
@@ -43,6 +41,4 @@ class RemoteWeb(ClientObject):
     @property
     def web(self):
         """Gets the SPWeb."""
-        return self.properties.get(
-            "Web", Web(self.context, ResourcePath("Web", self.resource_path))
-        )
+        return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))

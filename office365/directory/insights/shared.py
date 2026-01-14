@@ -39,9 +39,7 @@ class SharedInsight(Entity):
     def sharing_history(self):
         # type: () -> ClientValueCollection[SharingDetail]
         """Details about the sharing history. Read-only"""
-        return self.properties.get(
-            "sharingHistory", ClientValueCollection(SharingDetail)
-        )
+        return self.properties.get("sharingHistory", ClientValueCollection(SharingDetail))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

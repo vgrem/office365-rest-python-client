@@ -29,9 +29,7 @@ class FileVersionEvent(Entity):
     def shared_with_users(self):
         # type: () -> ClientValueCollection[SharedWithUser]
         """Returns the array of users that have been shared in sharing action for the change log."""
-        return self.properties.get(
-            "SharedWithUsers", ClientValueCollection(SharedWithUser)
-        )
+        return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 
     def get_property(self, name, default_value=None):
         if default_value is None:

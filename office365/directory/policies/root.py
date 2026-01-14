@@ -83,9 +83,7 @@ class PolicyRoot(Entity):
         """The policy that controls Azure AD authorization settings."""
         return self.properties.get(
             "authorizationPolicy",
-            AuthorizationPolicy(
-                self.context, ResourcePath("authorizationPolicy", self.resource_path)
-            ),
+            AuthorizationPolicy(self.context, ResourcePath("authorizationPolicy", self.resource_path)),
         )
 
     @property

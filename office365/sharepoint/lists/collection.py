@@ -29,9 +29,7 @@ class ListCollection(EntityCollection[List]):
         Returns the list with the specified list identifier.
         :param str list_id: Specifies the list identifier
         """
-        return List(
-            self.context, ServiceOperationPath("GetById", [list_id], self.resource_path)
-        )
+        return List(self.context, ServiceOperationPath("GetById", [list_id], self.resource_path))
 
     def ensure_client_rendered_site_pages_library(self):
         """
@@ -39,9 +37,7 @@ class ListCollection(EntityCollection[List]):
         """
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "EnsureClientRenderedSitePagesLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureClientRenderedSitePagesLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -49,9 +45,7 @@ class ListCollection(EntityCollection[List]):
         """Returns a list that is designated as a default location for events."""
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "EnsureEventsList", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureEventsList", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -60,9 +54,7 @@ class ListCollection(EntityCollection[List]):
         upload to their wiki pages."""
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "ensureSiteAssetsLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ensureSiteAssetsLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -70,9 +62,7 @@ class ListCollection(EntityCollection[List]):
         """Gets a list that is the default location for wiki pages."""
         return_type = List(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "ensureSitePagesLibrary", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ensureSitePagesLibrary", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

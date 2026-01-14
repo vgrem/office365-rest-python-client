@@ -160,9 +160,7 @@ class Web(SecurableObject):
         """
         payload = {"serverRelativeUrls": server_relative_urls}
         return_type = ClientResult(self.context, SPAvailableAddinsResponse())
-        qry = ServiceOperationQuery(
-            self, "AvailableAddins", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AvailableAddins", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -173,9 +171,7 @@ class Web(SecurableObject):
         """
         payload = {"messagePayloadBase64": message}
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "AddCrossFarmMessage", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddCrossFarmMessage", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -195,12 +191,8 @@ class Web(SecurableObject):
             "includeErrors": include_errors,
             "project": project,
         }
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPClientSideComponentQueryResult)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetAdaptiveCardExtensions", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentQueryResult))
+        qry = ServiceOperationQuery(self, "GetAdaptiveCardExtensions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -210,9 +202,7 @@ class Web(SecurableObject):
         qry = ClientQuery(self.context, return_type=return_type)
 
         def _construct_request(request):
-            request.url = "{0}/_layouts/15/DocIdRedir.aspx?ID={1}".format(
-                self.context.base_url, doc_id
-            )
+            request.url = "{0}/_layouts/15/DocIdRedir.aspx?ID={1}".format(self.context.base_url, doc_id)
 
         self.context.add_query(qry).before_query_execute(_construct_request)
         return return_type
@@ -242,9 +232,7 @@ class Web(SecurableObject):
         )
 
         def _web_loaded():
-            SiteScriptUtility.get_site_script_from_web(
-                self.context, self.url, info, return_type=result
-            )
+            SiteScriptUtility.get_site_script_from_web(self.context, self.url, info, return_type=result)
 
         self.ensure_property("Url", _web_loaded)
         return result
@@ -252,9 +240,7 @@ class Web(SecurableObject):
     def consent_to_power_platform(self):
         """"""
         return_type = FlowSynchronizationResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "ConsentToPowerPlatform", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ConsentToPowerPlatform", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -271,9 +257,7 @@ class Web(SecurableObject):
         def _get_list_data_as_stream():
             list_abs_url = self.url + path
             parameters = RenderListDataParameters(view_xml=view_xml)
-            List.get_list_data_as_stream(
-                self.context, list_abs_url, parameters, return_type=return_type
-            )
+            List.get_list_data_as_stream(self.context, list_abs_url, parameters, return_type=return_type)
 
         self.ensure_property("Url", _get_list_data_as_stream)
         return return_type
@@ -328,13 +312,9 @@ class Web(SecurableObject):
 
         :param list components: array of requested components, defined by id and version.
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPClientSideComponentIdentifier)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentIdentifier))
         payload = {"components": components}
-        qry = ServiceOperationQuery(
-            self, "GetClientSideComponents", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetClientSideComponents", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -342,9 +322,7 @@ class Web(SecurableObject):
         """
         :param str component_types:
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPClientSideComponentIdentifier)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentIdentifier))
         payload = {"componentTypesString": component_types}
         qry = ServiceOperationQuery(
             self,
@@ -414,9 +392,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def destroy_organization_sharing_link(
-        context, url, is_edit_link, remove_associated_sharing_link_group
-    ):
+    def destroy_organization_sharing_link(context, url, is_edit_link, remove_associated_sharing_link_group):
         """Removes an existing organization link for an object.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -431,9 +407,7 @@ class Web(SecurableObject):
             "isEditLink": is_edit_link,
             "removeAssociatedSharingLinkGroup": remove_associated_sharing_link_group,
         }
-        qry = ServiceOperationQuery(
-            context.web, "DestroyOrganizationSharingLink", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(context.web, "DestroyOrganizationSharingLink", None, payload, None, None)
         qry.static = True
         context.add_query(qry)
         return context.web
@@ -446,9 +420,7 @@ class Web(SecurableObject):
         :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, ContextWebInformation())
-        qry = ServiceOperationQuery(
-            context.web, "GetContextWebInformation", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(context.web, "GetContextWebInformation", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -461,16 +433,12 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(context, str())
         payload = {"pageFullUrl": page_full_url}
-        qry = ServiceOperationQuery(
-            context.web, "GetWebUrlFromPageUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "GetWebUrlFromPageUrl", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
 
-    def create_default_associated_groups(
-        self, user_login, user_login2, group_name_seed
-    ):
+    def create_default_associated_groups(self, user_login, user_login2, group_name_seed):
         """
         Creates the default Owners, Members and Visitors SPGroups on the web.
 
@@ -486,26 +454,20 @@ class Web(SecurableObject):
             "userLogin2": user_login2,
             "groupNameSeed": group_name_seed,
         }
-        qry = ServiceOperationQuery(
-            self, "CreateDefaultAssociatedGroups", None, payload
-        )
+        qry = ServiceOperationQuery(self, "CreateDefaultAssociatedGroups", None, payload)
         qry.static = True
         self.context.add_query(qry)
         return self
 
     def create_group_based_environment(self):
         return_type = FlowSynchronizationResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "CreateGroupBasedEnvironment", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateGroupBasedEnvironment", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_group_based_environment(self):
         return_type = FlowSynchronizationResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetGroupBasedEnvironment", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetGroupBasedEnvironment", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -515,12 +477,8 @@ class Web(SecurableObject):
         :param list[str] app_ids:
         """
         payload = {"appIds": app_ids}
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPACSServicePrincipalInfo)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetACSServicePrincipals", None, payload, None, return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPACSServicePrincipalInfo))
+        qry = ServiceOperationQuery(self, "GetACSServicePrincipals", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -530,9 +488,7 @@ class Web(SecurableObject):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"targetWebUrl": target_web_url}
-        qry = ServiceOperationQuery(
-            self, "SyncFlowInstances", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SyncFlowInstances", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -542,24 +498,18 @@ class Web(SecurableObject):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"category": category}
-        qry = ServiceOperationQuery(
-            self, "SyncFlowTemplates", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SyncFlowTemplates", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_all_client_side_components(self):
         """"""
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "GetAllClientSideComponents", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetAllClientSideComponents", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_addin_principals_having_permissions_in_sites(
-        self, server_relative_urls=None, urls=None
-    ):
+    def get_addin_principals_having_permissions_in_sites(self, server_relative_urls=None, urls=None):
         """
         :param list[str] server_relative_urls:
         :param list[str] urls:
@@ -585,9 +535,7 @@ class Web(SecurableObject):
         and it returns the BDC MetadataCatalog deployed on the site.
         """
         return_type = AppBdcCatalog(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetAppBdcCatalog", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetAppBdcCatalog", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -599,13 +547,9 @@ class Web(SecurableObject):
            If false, webparts with errors MUST be excluded in the results of the request.
         :param str project:
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPClientSideComponentQueryResult)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentQueryResult))
         params = {"includeErrors": include_errors, "project": project}
-        qry = ServiceOperationQuery(
-            self, "GetClientSideWebParts", None, params, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetClientSideWebParts", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -666,9 +610,7 @@ class Web(SecurableObject):
         :param int order_by: the column by which to order the Recycle Bin query.
         :param int item_state: Recycle Bin stage of items to return in the query.
         """
-        return_type = RecycleBinItemCollection(
-            self.context, self.recycle_bin.resource_path
-        )
+        return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {
             "rowLimit": row_limit,
             "isAscending": is_ascending,
@@ -676,9 +618,7 @@ class Web(SecurableObject):
             "orderBy": order_by,
             "itemState": item_state,
         }
-        qry = ServiceOperationQuery(
-            self, "GetRecycleBinItems", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRecycleBinItems", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -701,9 +641,7 @@ class Web(SecurableObject):
         :param int item_state: Recycle Bin stage of items to return in the query.
         :param bool show_only_my_items:
         """
-        return_type = RecycleBinItemCollection(
-            self.context, self.recycle_bin.resource_path
-        )
+        return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {
             "rowLimit": row_limit,
             "isAscending": is_ascending,
@@ -712,9 +650,7 @@ class Web(SecurableObject):
             "itemState": item_state,
             "ShowOnlyMyItems": show_only_my_items,
         }
-        qry = ServiceOperationQuery(
-            self, "GetRecycleBinItemsByQueryInfo", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRecycleBinItemsByQueryInfo", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -753,9 +689,7 @@ class Web(SecurableObject):
         path = SPResPath.create_relative(self.context.base_url, decoded_url)
         return_type = List(self.context)
         self.lists.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "GetListUsingPath", path, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetListUsingPath", path, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -770,9 +704,7 @@ class Web(SecurableObject):
         return_type = List(self.context)
         self.lists.add_child(return_type)
         payload = {"allowCreate": allow_create}
-        qry = ServiceOperationQuery(
-            self, "GetNewsList", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetNewsList", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -799,9 +731,7 @@ class Web(SecurableObject):
     def get_regional_datetime_schema(self):
         """Get DateTime Schema based on regional settings"""
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "GetRegionalDateTimeSchema", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRegionalDateTimeSchema", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -815,9 +745,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, SharingLinkData())
         payload = {"linkUrl": link_url}
-        qry = ServiceOperationQuery(
-            self, "GetSharingLinkData", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSharingLinkData", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -830,9 +758,7 @@ class Web(SecurableObject):
         :type context: office365.sharepoint.client_context.ClientContext
         """
         return_type = ClientResult(context, str())
-        qry = ServiceOperationQuery(
-            context.web, "GetContextWebThemeData", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "GetContextWebThemeData", None, None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -844,9 +770,7 @@ class Web(SecurableObject):
         """
         payload = {"pageMetaData": page_metadata}
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "CreateSitePage", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateSitePage", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -866,16 +790,12 @@ class Web(SecurableObject):
             "url": str(SPResPath.create_absolute(context.base_url, url)),
             "isEditLink": is_edit_link,
         }
-        qry = ServiceOperationQuery(
-            context.web, "CreateAnonymousLink", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(context.web, "CreateAnonymousLink", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def create_anonymous_link_with_expiration(
-        context, url, is_edit_link, expiration_string, return_type=None
-    ):
+    def create_anonymous_link_with_expiration(context, url, is_edit_link, expiration_string, return_type=None):
         """
         Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
 
@@ -909,9 +829,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def get_object_sharing_settings(
-        context, object_url, group_id=None, use_simplified_roles=None, return_type=None
-    ):
+    def get_object_sharing_settings(context, object_url, group_id=None, use_simplified_roles=None, return_type=None):
         """Given a path to an object in SharePoint, this will generate a sharing settings object which contains
         necessary information for rendering sharing information
 
@@ -936,9 +854,7 @@ class Web(SecurableObject):
             "groupId": group_id,
             "useSimplifiedRoles": use_simplified_roles,
         }
-        qry = ServiceOperationQuery(
-            context.web, "GetObjectSharingSettings", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "GetObjectSharingSettings", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -950,13 +866,9 @@ class Web(SecurableObject):
 
         :param list[str] component_ids: List of requested component identifiers.
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPClientSideComponentQueryResult)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentQueryResult))
         payload = {"componentIds": StringCollection(component_ids)}
-        qry = ServiceOperationQuery(
-            self, "GetClientSideComponentsById", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetClientSideComponentsById", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -972,9 +884,7 @@ class Web(SecurableObject):
         path = SPResPath.create_relative(self.context.base_url, server_relative_url)
         return File(
             self.context,
-            ServiceOperationPath(
-                "getFileByServerRelativeUrl", [str(path)], self.resource_path
-            ),
+            ServiceOperationPath("getFileByServerRelativeUrl", [str(path)], self.resource_path),
             self.root_folder.files,
         )
 
@@ -990,9 +900,7 @@ class Web(SecurableObject):
         path = SPResPath.create_relative(self.context.base_url, path)
         return File(
             self.context,
-            ServiceOperationPath(
-                "getFileByServerRelativePath", path.to_json(), self.resource_path
-            ),
+            ServiceOperationPath("getFileByServerRelativePath", path.to_json(), self.resource_path),
             self.root_folder.files,
         )
 
@@ -1004,9 +912,7 @@ class Web(SecurableObject):
         """
         return Folder(
             self.context,
-            ServiceOperationPath(
-                "getFolderByServerRelativeUrl", [url], self.resource_path
-            ),
+            ServiceOperationPath("getFolderByServerRelativeUrl", [url], self.resource_path),
             self.folders,
         )
 
@@ -1022,9 +928,7 @@ class Web(SecurableObject):
         path = SPResPath(decoded_url)
         return Folder(
             self.context,
-            ServiceOperationPath(
-                "getFolderByServerRelativePath", path.to_json(), self.resource_path
-            ),
+            ServiceOperationPath("getFolderByServerRelativePath", path.to_json(), self.resource_path),
             self.folders,
         )
 
@@ -1034,9 +938,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, str())
         payload = {"workItemId": work_item_id}
-        qry = ServiceOperationQuery(
-            self, "GetSitePageCopyToStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSitePageCopyToStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1046,9 +948,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, str())
         payload = {"workItemId": work_item_id}
-        qry = ServiceOperationQuery(
-            self, "GetSitePageMoveStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSitePageMoveStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1065,9 +965,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"byPassForAutomation": bypass_for_automation}
-        qry = ServiceOperationQuery(
-            self, "EnsureEduClassSetup", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureEduClassSetup", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1079,9 +977,7 @@ class Web(SecurableObject):
         """
         return_type = User(self.context)
         self.site_users.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "EnsureUser", [login_name], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureUser", [login_name], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1091,9 +987,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"callerId": caller_id}
-        qry = ServiceOperationQuery(
-            self, "EnsureTenantAppCatalog", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureTenantAppCatalog", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1114,9 +1008,7 @@ class Web(SecurableObject):
         :param BasePermissions permission_mask: Specifies the set of permissions to verify.
         """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "DoesUserHavePermissions", permission_mask, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DoesUserHavePermissions", permission_mask, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1129,9 +1021,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context, bool())
         params = {"deviceAppInstanceId": device_app_instance_id}
-        qry = ServiceOperationQuery(
-            self, "DoesPushNotificationSubscriberExist", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DoesPushNotificationSubscriberExist", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1184,9 +1074,7 @@ class Web(SecurableObject):
             query = ChangeQuery(web=True, fetch_limit=100)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
-        qry = ServiceOperationQuery(
-            self, "getChanges", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1200,14 +1088,10 @@ class Web(SecurableObject):
         params = {"lcid": lcid, "doIncludeCrossLanguage": do_include_cross_language}
         return_type = WebTemplateCollection(
             self.context,
-            ServiceOperationPath(
-                "GetAvailableWebTemplates", params, self.resource_path
-            ),
+            ServiceOperationPath("GetAvailableWebTemplates", params, self.resource_path),
         )
 
-        qry = ServiceOperationQuery(
-            self, "GetAvailableWebTemplates", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetAvailableWebTemplates", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1220,9 +1104,7 @@ class Web(SecurableObject):
         """
         return_type = ClientResult(self.context)
         payload = {"forceRefresh": force_refresh}
-        qry = ServiceOperationQuery(
-            self, "HubSiteData", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "HubSiteData", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1238,18 +1120,14 @@ class Web(SecurableObject):
 
         :param str web_template: The name of the site definition or the file name of the site template to be applied.
         """
-        qry = ServiceOperationQuery(
-            self, "ApplyWebTemplate", {"webTemplate": web_template}
-        )
+        qry = ServiceOperationQuery(self, "ApplyWebTemplate", {"webTemplate": web_template})
         self.context.add_query(qry)
         return self
 
     def get_custom_list_templates(self):
         """Specifies the collection of custom list templates for a given site."""
         return_type = ListTemplateCollection(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetCustomListTemplates", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCustomListTemplates", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1260,15 +1138,11 @@ class Web(SecurableObject):
         """
         return_type = File(self.context)
         payload = {"guestUrl": guest_url}
-        qry = ServiceOperationQuery(
-            self, "GetFileByGuestUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByGuestUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_file_by_guest_url_extended(
-        self, guest_url, ensure_access=None, password=None
-    ):
+    def get_file_by_guest_url_extended(self, guest_url, ensure_access=None, password=None):
         """
         Returns the file object from the tokenized sharing link URL.
 
@@ -1287,9 +1161,7 @@ class Web(SecurableObject):
             "guestUrl": guest_url,
             "requestSettings": SharingLinkAccessRequest(ensure_access, password),
         }
-        qry = ServiceOperationQuery(
-            self, "GetFileByGuestUrlExtended", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByGuestUrlExtended", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1304,9 +1176,7 @@ class Web(SecurableObject):
         """
         return_type = File(self.context)
         payload = {"guestUrl": guest_url, "ensureAccess": ensure_access}
-        qry = ServiceOperationQuery(
-            self, "GetFileByGuestUrlEnsureAccess", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByGuestUrlEnsureAccess", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1319,9 +1189,7 @@ class Web(SecurableObject):
         """
         return_type = File(self.context)
         payload = {"linkingUrl": linking_url}
-        qry = ServiceOperationQuery(
-            self, "GetFileByLinkingUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByLinkingUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1333,9 +1201,7 @@ class Web(SecurableObject):
         """
         return_type = File(self.context)
         params = {"fileUrl": file_url}
-        qry = ServiceOperationQuery(
-            self, "GetFileByUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1346,9 +1212,7 @@ class Web(SecurableObject):
         :param str wopi_frame_url:  The WOPI frame URL used to get the file object.
         """
         return_type = File(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetFileByWOPIFrameUrl", [wopi_frame_url], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFileByWOPIFrameUrl", [wopi_frame_url], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1360,15 +1224,11 @@ class Web(SecurableObject):
         """
         return_type = Folder(self.context, parent_collection=self.folders)
         payload = {"guestUrl": guest_url}
-        qry = ServiceOperationQuery(
-            self, "GetFolderByGuestUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFolderByGuestUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_folder_by_guest_url_extended(
-        self, guest_url, ensure_access=None, password=None
-    ):
+    def get_folder_by_guest_url_extended(self, guest_url, ensure_access=None, password=None):
         """
         Returns the folder object from the tokenized sharing link URL.
 
@@ -1387,9 +1247,7 @@ class Web(SecurableObject):
             "guestUrl": guest_url,
             "requestSettings": SharingLinkAccessRequest(ensure_access, password),
         }
-        qry = ServiceOperationQuery(
-            self, "GetFolderByGuestUrlExtended", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetFolderByGuestUrlExtended", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1415,9 +1273,7 @@ class Web(SecurableObject):
             "displayFormat": display_format,
             "calendarType": calendar_type,
         }
-        qry = ServiceOperationQuery(
-            self, "ParseDateTime", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ParseDateTime", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1502,13 +1358,9 @@ class Web(SecurableObject):
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         :param str web_full_url: The URL of the web.
         """
-        return_type = ClientResult(
-            context, ClientValueCollection(DocumentLibraryInformation)
-        )
+        return_type = ClientResult(context, ClientValueCollection(DocumentLibraryInformation))
         payload = {"webFullUrl": web_full_url}
-        qry = ServiceOperationQuery(
-            context.web, "GetDocumentLibraries", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "GetDocumentLibraries", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -1547,17 +1399,13 @@ class Web(SecurableObject):
              represented as query string parameters.
         """
         payload = {"url": url}
-        qry = ServiceOperationQuery(
-            context.web, "DeleteAllAnonymousLinksForObject", None, payload
-        )
+        qry = ServiceOperationQuery(context.web, "DeleteAllAnonymousLinksForObject", None, payload)
         qry.static = True
         context.add_query(qry)
         return context.web
 
     @staticmethod
-    def delete_anonymous_link_for_object(
-        context, url, is_edit_link, remove_associated_sharing_link_group
-    ):
+    def delete_anonymous_link_for_object(context, url, is_edit_link, remove_associated_sharing_link_group):
         """
         Removes an existing anonymous link for an object..
 
@@ -1574,9 +1422,7 @@ class Web(SecurableObject):
             "isEditLink": is_edit_link,
             "removeAssociatedSharingLinkGroup": remove_associated_sharing_link_group,
         }
-        qry = ServiceOperationQuery(
-            context.web, "DeleteAnonymousLinkForObject", None, payload
-        )
+        qry = ServiceOperationQuery(context.web, "DeleteAnonymousLinkForObject", None, payload)
         qry.static = True
         context.add_query(qry)
         return context.web
@@ -1592,9 +1438,7 @@ class Web(SecurableObject):
         :param str web_full_url:  URL of the web.
         :param bool include_page_libraries: Indicates whether to include page libraries. A value of "true" means yes.
         """
-        return_type = ClientResult(
-            context, ClientValueCollection(DocumentLibraryInformation)
-        )
+        return_type = ClientResult(context, ClientValueCollection(DocumentLibraryInformation))
         payload = {
             "webFullUrl": web_full_url,
             "includePageLibraries": include_page_libraries,
@@ -1635,9 +1479,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def forward_object_link(
-        context, url, people_picker_input, email_subject=None, email_body=None
-    ):
+    def forward_object_link(context, url, people_picker_input, email_subject=None, email_body=None):
         """
         Shares an object in SharePoint, such as a list item or a site with no Acl changes, by sending the link.
         This is used when the user has no permission to share and cannot send access request.
@@ -1658,9 +1500,7 @@ class Web(SecurableObject):
             "emailSubject": email_subject,
             "emailBody": email_body,
         }
-        qry = ServiceOperationQuery(
-            context.web, "ForwardObjectLink", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "ForwardObjectLink", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -1714,9 +1554,7 @@ class Web(SecurableObject):
             "emailBody": email_body,
             "useSimplifiedRoles": use_simplified_roles,
         }
-        qry = ServiceOperationQuery(
-            context.web, "ShareObject", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "ShareObject", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -1733,9 +1571,7 @@ class Web(SecurableObject):
         if return_type is None:
             return_type = SharingResult(context)
         payload = {"url": url}
-        qry = ServiceOperationQuery(
-            context.web, "UnshareObject", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(context.web, "UnshareObject", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -1800,9 +1636,7 @@ class Web(SecurableObject):
             "includeODBSettings": include_odb_settings,
             "emitNavigationInfo": emit_navigation_info,
         }
-        qry = ServiceOperationQuery(
-            self, "PageContextInfo", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "PageContextInfo", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1816,9 +1650,7 @@ class Web(SecurableObject):
         params = {
             "key": key,
         }
-        qry = ServiceOperationQuery(
-            self, "GetStorageEntity", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetStorageEntity", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1853,9 +1685,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def register_push_notification_subscriber(
-        self, device_app_instance_id, service_token
-    ):
+    def register_push_notification_subscriber(self, device_app_instance_id, service_token):
         """
         Registers the push notification subscriber for the site. If the registration already exists,
         the service token is updated with the new value.
@@ -1867,9 +1697,7 @@ class Web(SecurableObject):
             "serviceToken": service_token,
         }
         return_type = PushNotificationSubscriber(self.context)
-        qry = ServiceOperationQuery(
-            self, "RegisterPushNotificationSubscriber", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RegisterPushNotificationSubscriber", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -1881,9 +1709,7 @@ class Web(SecurableObject):
         payload = {
             "deviceAppInstanceId": device_app_instance_id,
         }
-        qry = ServiceOperationQuery(
-            self, "UnregisterPushNotificationSubscriber", None, payload
-        )
+        qry = ServiceOperationQuery(self, "UnregisterPushNotificationSubscriber", None, payload)
         self.context.add_query(qry)
         return self
 
@@ -1902,9 +1728,7 @@ class Web(SecurableObject):
         :param str description:
         """
         payload = {"description": description}
-        qry = ServiceOperationQuery(
-            self, "SetAccessRequestSiteDescriptionAndUpdate", None, payload
-        )
+        qry = ServiceOperationQuery(self, "SetAccessRequestSiteDescriptionAndUpdate", None, payload)
         self.context.add_query(qry)
         return self
 
@@ -1959,9 +1783,7 @@ class Web(SecurableObject):
         """"""
         return self.properties.get(
             "ActivityLogger",
-            ActivityLogger(
-                self.context, ResourcePath("ActivityLogger", self.resource_path)
-            ),
+            ActivityLogger(self.context, ResourcePath("ActivityLogger", self.resource_path)),
         )
 
     @property
@@ -1992,9 +1814,7 @@ class Web(SecurableObject):
         """
         Gets a user object that represents the user who created the Web site.
         """
-        return self.properties.get(
-            "Author", User(self.context, ResourcePath("Author", self.resource_path))
-        )
+        return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
     def created(self):
@@ -2016,9 +1836,7 @@ class Web(SecurableObject):
     @property
     def description_translations(self):
         """"""
-        return self.properties.get(
-            "DescriptionTranslations", ClientValueCollection(SPResourceEntry)
-        )
+        return self.properties.get("DescriptionTranslations", ClientValueCollection(SPResourceEntry))
 
     @property
     def design_package_id(self):
@@ -2130,9 +1948,7 @@ class Web(SecurableObject):
         """Specifies the collection of all first-level folders in the site"""
         return self.properties.get(
             "Folders",
-            FolderCollection(
-                self.context, ResourcePath("folders", self.resource_path), self
-            ),
+            FolderCollection(self.context, ResourcePath("folders", self.resource_path), self),
         )
 
     @property
@@ -2140,9 +1956,7 @@ class Web(SecurableObject):
         """"""
         return self.properties.get(
             "HostedApps",
-            HostedAppsManager(
-                self.context, ResourcePath("HostedApps", self.resource_path)
-            ),
+            HostedAppsManager(self.context, ResourcePath("HostedApps", self.resource_path)),
         )
 
     @property
@@ -2183,9 +1997,7 @@ class Web(SecurableObject):
         """Gets the collection of groups for the site collection."""
         return self.properties.get(
             "SiteGroups",
-            GroupCollection(
-                self.context, ResourcePath("siteGroups", self.resource_path)
-            ),
+            GroupCollection(self.context, ResourcePath("siteGroups", self.resource_path)),
         )
 
     @property
@@ -2212,9 +2024,7 @@ class Web(SecurableObject):
         """Gets or sets the associated visitor group of the Web site."""
         return self.properties.get(
             "AssociatedVisitorGroup",
-            Group(
-                self.context, ResourcePath("AssociatedVisitorGroup", self.resource_path)
-            ),
+            Group(self.context, ResourcePath("AssociatedVisitorGroup", self.resource_path)),
         )
 
     @property
@@ -2223,9 +2033,7 @@ class Web(SecurableObject):
         """Gets or sets the associated owner group of the Web site."""
         return self.properties.get(
             "AssociatedOwnerGroup",
-            Group(
-                self.context, ResourcePath("AssociatedOwnerGroup", self.resource_path)
-            ),
+            Group(self.context, ResourcePath("AssociatedOwnerGroup", self.resource_path)),
         )
 
     @property
@@ -2234,9 +2042,7 @@ class Web(SecurableObject):
         """Gets or sets the group of users who have been given contribute permissions to the Web site."""
         return self.properties.get(
             "AssociatedMemberGroup",
-            Group(
-                self.context, ResourcePath("AssociatedMemberGroup", self.resource_path)
-            ),
+            Group(self.context, ResourcePath("AssociatedMemberGroup", self.resource_path)),
         )
 
     @property
@@ -2244,9 +2050,7 @@ class Web(SecurableObject):
         """Specifies the site theme associated with the site"""
         return self.properties.get(
             "CanModernizeHomepage",
-            ModernizeHomepageResult(
-                self.context, ResourcePath("CanModernizeHomepage", self.resource_path)
-            ),
+            ModernizeHomepageResult(self.context, ResourcePath("CanModernizeHomepage", self.resource_path)),
         )
 
     @property
@@ -2264,9 +2068,7 @@ class Web(SecurableObject):
         """Gets the collection of content types for the Web site."""
         return self.properties.get(
             "ContentTypes",
-            ContentTypeCollection(
-                self.context, ResourcePath("ContentTypes", self.resource_path), self
-            ),
+            ContentTypeCollection(self.context, ResourcePath("ContentTypes", self.resource_path), self),
         )
 
     @property
@@ -2293,9 +2095,7 @@ class Web(SecurableObject):
         """A UserResource object that represents the description of this web."""
         return self.properties.get(
             "DescriptionResource",
-            UserResource(
-                self.context, ResourcePath("DescriptionResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
     @property
@@ -2304,9 +2104,7 @@ class Web(SecurableObject):
         """Gets the collection of role definitions for the Web site."""
         return self.properties.get(
             "RoleDefinitions",
-            RoleDefinitionCollection(
-                self.context, ResourcePath("RoleDefinitions", self.resource_path)
-            ),
+            RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitions", self.resource_path)),
         )
 
     @property
@@ -2315,9 +2113,7 @@ class Web(SecurableObject):
         """Specifies the collection of event receiver definitions that are currently available on the Web site"""
         return self.properties.get(
             "EventReceivers",
-            EventReceiverDefinitionCollection(
-                self.context, ResourcePath("EventReceivers", self.resource_path), self
-            ),
+            EventReceiverDefinitionCollection(self.context, ResourcePath("EventReceivers", self.resource_path), self),
         )
 
     @property
@@ -2328,9 +2124,7 @@ class Web(SecurableObject):
         an app package."""
         return self.properties.get(
             "ClientWebParts",
-            ClientWebPartCollection(
-                self.context, ResourcePath("ClientWebParts", self.resource_path)
-            ),
+            ClientWebPartCollection(self.context, ResourcePath("ClientWebParts", self.resource_path)),
         )
 
     @property
@@ -2338,9 +2132,7 @@ class Web(SecurableObject):
         """Get web features"""
         return self.properties.get(
             "Features",
-            FeatureCollection(
-                self.context, ResourcePath("Features", self.resource_path), self
-            ),
+            FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self),
         )
 
     @property
@@ -2348,9 +2140,7 @@ class Web(SecurableObject):
         """Returns the tenant app catalog for the given tenant if it exists."""
         return self.properties.get(
             "TenantAppCatalog",
-            TenantCorporateCatalogAccessor(
-                self.context, ResourcePath("TenantAppCatalog", self.resource_path)
-            ),
+            TenantCorporateCatalogAccessor(self.context, ResourcePath("TenantAppCatalog", self.resource_path)),
         )
 
     @property
@@ -2369,9 +2159,7 @@ class Web(SecurableObject):
         """Specifies the collection of all child sites for the site"""
         return self.properties.get(
             "WebInfos",
-            WebInformationCollection(
-                self.context, ResourcePath("WebInfos", self.resource_path)
-            ),
+            WebInformationCollection(self.context, ResourcePath("WebInfos", self.resource_path)),
         )
 
     @property
@@ -2418,9 +2206,7 @@ class Web(SecurableObject):
         lists on the site."""
         return self.properties.get(
             "ListTemplates",
-            ListTemplateCollection(
-                self.context, ResourcePath("ListTemplates", self.resource_path)
-            ),
+            ListTemplateCollection(self.context, ResourcePath("ListTemplates", self.resource_path)),
         )
 
     @property
@@ -2443,9 +2229,7 @@ class Web(SecurableObject):
         lists on the site."""
         return self.properties.get(
             "MultilingualSettings",
-            MultilingualSettings(
-                self.context, ResourcePath("MultilingualSettings", self.resource_path)
-            ),
+            MultilingualSettings(self.context, ResourcePath("MultilingualSettings", self.resource_path)),
         )
 
     @property
@@ -2459,9 +2243,7 @@ class Web(SecurableObject):
         """Gets the regional settings that are currently implemented on the website."""
         return self.properties.get(
             "RegionalSettings",
-            RegionalSettings(
-                self.context, ResourcePath("RegionalSettings", self.resource_path)
-            ),
+            RegionalSettings(self.context, ResourcePath("RegionalSettings", self.resource_path)),
         )
 
     @property
@@ -2469,9 +2251,7 @@ class Web(SecurableObject):
         """Specifies the collection of Recycle Bin items of the Recycle Bin of the site"""
         return self.properties.get(
             "RecycleBin",
-            RecycleBinItemCollection(
-                self.context, ResourcePath("RecycleBin", self.resource_path)
-            ),
+            RecycleBinItemCollection(self.context, ResourcePath("RecycleBin", self.resource_path)),
         )
 
     @property
@@ -2564,9 +2344,7 @@ class Web(SecurableObject):
         """
         return self.properties.get(
             "AvailableFields",
-            FieldCollection(
-                self.context, ResourcePath("AvailableFields", self.resource_path)
-            ),
+            FieldCollection(self.context, ResourcePath("AvailableFields", self.resource_path)),
         )
 
     @property
@@ -2578,9 +2356,7 @@ class Web(SecurableObject):
         """
         return self.properties.get(
             "AvailableContentTypes",
-            ContentTypeCollection(
-                self.context, ResourcePath("AvailableContentTypes", self.resource_path)
-            ),
+            ContentTypeCollection(self.context, ResourcePath("AvailableContentTypes", self.resource_path)),
         )
 
     @property
@@ -2621,9 +2397,7 @@ class Web(SecurableObject):
         """Specifies the collection of user custom actions for the site"""
         return self.properties.get(
             "UserCustomActions",
-            UserCustomActionCollection(
-                self.context, ResourcePath("UserCustomActions", self.resource_path)
-            ),
+            UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
     @property
@@ -2642,9 +2416,7 @@ class Web(SecurableObject):
         """A UserResource object that represents the title of this web."""
         return self.properties.get(
             "TitleResource",
-            UserResource(
-                self.context, ResourcePath("TitleResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
     @property
@@ -2713,7 +2485,5 @@ class Web(SecurableObject):
         """Returns Web url"""
         orig_resource_url = super(Web, self).resource_url
         if self._web_url is not None:
-            orig_resource_url = orig_resource_url.replace(
-                self.context.service_root_url, self._web_url + "/_api"
-            )
+            orig_resource_url = orig_resource_url.replace(self.context.service_root_url, self._web_url + "/_api")
         return orig_resource_url

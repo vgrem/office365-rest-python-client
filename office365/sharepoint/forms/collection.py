@@ -13,9 +13,7 @@ class FormCollection(EntityCollection[Form]):
 
         :param str _id: Specifies the identifier of the list form.
         """
-        return Form(
-            self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
-        )
+        return Form(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def get_by_page_type(self, form_type):
         """

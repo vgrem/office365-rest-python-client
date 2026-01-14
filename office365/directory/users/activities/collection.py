@@ -7,9 +7,7 @@ class UserActivityCollection(EntityCollection[UserActivity]):
     """User activities collection"""
 
     def __init__(self, context, resource_path=None):
-        super(UserActivityCollection, self).__init__(
-            context, UserActivity, resource_path
-        )
+        super(UserActivityCollection, self).__init__(context, UserActivity, resource_path)
 
     def recent(self):
         """

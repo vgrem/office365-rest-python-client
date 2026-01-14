@@ -34,9 +34,7 @@ class DirectoryRole(DirectoryObject):
 
         return self.properties.get(
             "members",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("members", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property

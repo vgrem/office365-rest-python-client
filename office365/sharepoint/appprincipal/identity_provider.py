@@ -8,8 +8,6 @@ class AppPrincipalIdentityProvider(Entity):
     @staticmethod
     def external(context):
         return_type = AppPrincipalIdentityProvider(context)
-        qry = ServiceOperationQuery(
-            return_type, "External", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "External", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type

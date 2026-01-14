@@ -31,9 +31,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         """
         return_type = ClientResult(self.context, CopyNotebookModel())
         params = {"webUrl": web_url}
-        qry = ServiceOperationQuery(
-            self, "getNotebookFromWebUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getNotebookFromWebUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

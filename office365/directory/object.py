@@ -19,9 +19,7 @@ class DirectoryObject(Entity):
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"ids": StringCollection(ids)}
-        qry = ServiceOperationQuery(
-            self, "checkMemberObjects", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "checkMemberObjects", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -32,9 +30,7 @@ class DirectoryObject(Entity):
         :type security_enabled_only: bool"""
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
-        qry = ServiceOperationQuery(
-            self, "getMemberObjects", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getMemberObjects", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -49,9 +45,7 @@ class DirectoryObject(Entity):
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
-        qry = ServiceOperationQuery(
-            self, "getMemberGroups", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getMemberGroups", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -68,9 +62,7 @@ class DirectoryObject(Entity):
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"groupIds": group_ids}
-        qry = ServiceOperationQuery(
-            self, "checkMemberGroups", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "checkMemberGroups", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

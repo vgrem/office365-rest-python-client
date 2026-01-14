@@ -13,9 +13,7 @@ class SPHubSitesUtility(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.SharePoint.Portal.SPHubSitesUtility"
-            )
+            resource_path = ResourcePath("Microsoft.SharePoint.Portal.SPHubSitesUtility")
         super(SPHubSitesUtility, self).__init__(context, resource_path)
 
     def get_hub_sites(self):

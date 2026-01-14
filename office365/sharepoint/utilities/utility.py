@@ -31,11 +31,7 @@ class Utility(Entity):
         """
         return_type = ClientResult(context, str())
         utility = Utility(context)
-        payload = {
-            "pageAddress": str(
-                SPResPath.create_absolute(context.base_url, page_address)
-            )
-        }
+        payload = {"pageAddress": str(SPResPath.create_absolute(context.base_url, page_address))}
         qry = ServiceOperationQuery(
             utility,
             "CreateEmailBodyForInvitation",
@@ -57,9 +53,7 @@ class Utility(Entity):
         """
         result = ClientResult(context)
         utility = Utility(context)
-        qry = ServiceOperationQuery(
-            utility, "GetCurrentUserEmailAddresses", None, None, None, result
-        )
+        qry = ServiceOperationQuery(utility, "GetCurrentUserEmailAddresses", None, None, None, result)
         qry.static = True
         context.add_query(qry)
         return result
@@ -72,16 +66,12 @@ class Utility(Entity):
         """
         return_type = ClientResult(context, StringCollection())
         utility = Utility(context)
-        qry = ServiceOperationQuery(
-            utility, "GetUserPermissionLevels", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(utility, "GetUserPermissionLevels", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def search_principals_using_context_web(
-        context, s_input, sources, scopes, max_count, group_name=None
-    ):
+    def search_principals_using_context_web(context, s_input, sources, scopes, max_count, group_name=None):
         """
         Returns the collection of principals that partially or uniquely matches the specified search criteria in the
         context of the current Web site
@@ -103,9 +93,7 @@ class Utility(Entity):
             "maxCount": max_count,
             "groupName": group_name,
         }
-        qry = ServiceOperationQuery(
-            utility, "SearchPrincipalsUsingContextWeb", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "SearchPrincipalsUsingContextWeb", params, None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -122,9 +110,7 @@ class Utility(Entity):
             return_type = File(context)
         utility = Utility(context)
         payload = {"parameters": parameters}
-        qry = ServiceOperationQuery(
-            utility, "CreateWikiPageInContextWeb", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "CreateWikiPageInContextWeb", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -138,9 +124,7 @@ class Utility(Entity):
         """
         utility = Utility(context)
         payload = {"properties": properties}
-        qry = ServiceOperationQuery(
-            utility, "SendEmail", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(utility, "SendEmail", None, payload, None, None, True)
         context.add_query(qry)
         return utility
 
@@ -154,9 +138,7 @@ class Utility(Entity):
         """
         utility = Utility(context)
         payload = {"listID": list_id, "topicIDs": topic_ids}
-        qry = ServiceOperationQuery(
-            utility, "UnmarkDiscussionAsFeatured", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(utility, "UnmarkDiscussionAsFeatured", None, payload, None, None, True)
         context.add_query(qry)
         return utility
 
@@ -173,9 +155,7 @@ class Utility(Entity):
         payload = {"inputs": inputs, "maxCount": max_count}
         if return_type is None:
             return_type = ClientResult(context, ClientValueCollection(PrincipalInfo))
-        qry = ServiceOperationQuery(
-            binding_type, "ExpandGroupsToPrincipals", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "ExpandGroupsToPrincipals", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -195,9 +175,7 @@ class Utility(Entity):
             "error": error,
         }
         return_type = ClientResult(context)
-        qry = ServiceOperationQuery(
-            utility, "LogCustomAppError", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "LogCustomAppError", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type

@@ -19,9 +19,7 @@ class AlertCollection(EntityCollection[Alert]):
         """
         return_type = Alert(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "Add", None, parameters, "alertCreationInformation", return_type
-        )
+        qry = ServiceOperationQuery(self, "Add", None, parameters, "alertCreationInformation", return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -33,9 +31,7 @@ class AlertCollection(EntityCollection[Alert]):
         :param str id_alert: The Id of the alert to search.
         """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "Contains", {"idAlert": id_alert}, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "Contains", {"idAlert": id_alert}, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -45,9 +41,7 @@ class AlertCollection(EntityCollection[Alert]):
         :param int index:  A 32-bit integer that is greater than or equal to 0 and less than the count of the
               alert in the collection. Specifies the index of the alert in the collection.
         """
-        qry = ServiceOperationQuery(
-            self, "DeleteAlertAtIndex", {"index": index}, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "DeleteAlertAtIndex", {"index": index}, None, None, None)
         self.context.add_query(qry)
         return self
 

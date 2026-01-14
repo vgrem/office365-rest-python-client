@@ -11,6 +11,4 @@ class CreateEntityQuery(ClientQuery[T]):
     def __init__(self, parent_entity, parameters, return_type=None):
         # type: (ClientObject, ClientObject|ClientValue|Dict, T) -> None
         """Create entity query"""
-        super(CreateEntityQuery, self).__init__(
-            parent_entity.context, parent_entity, parameters, None, return_type
-        )
+        super(CreateEntityQuery, self).__init__(parent_entity.context, parent_entity, parameters, None, return_type)

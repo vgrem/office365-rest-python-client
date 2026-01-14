@@ -17,9 +17,7 @@ class TestDirectory(GraphTestCase):
 
     def test4_get_deleted_applications(self):
         deleted_apps = self.client.directory.deleted_applications.get().execute_query()
-        self.assertEqual(
-            deleted_apps.resource_path.segment, "microsoft.graph.application"
-        )
+        self.assertEqual(deleted_apps.resource_path.segment, "microsoft.graph.application")
 
     def test5_get_member_objects(self):
         result = self.client.me.get_member_objects().execute_query()

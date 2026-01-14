@@ -101,9 +101,7 @@ class ODataType(object):
     def resolve_enum_key(enum_type, value):
         # type: (Type, int) -> str
         return next(
-            iter(
-                [item[0] for item in inspect.getmembers(enum_type) if item[1] == value]
-            ),
+            iter([item[0] for item in inspect.getmembers(enum_type) if item[1] == value]),
             None,
         )
 

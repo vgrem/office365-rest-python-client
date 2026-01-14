@@ -80,9 +80,7 @@ class SPPolicyStoreProxy(Entity):
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "GetDynamicScopeBindingBySiteId", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetDynamicScopeBindingBySiteId", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -152,9 +150,7 @@ class SPPolicyStoreProxy(Entity):
         return binding_type
 
     @staticmethod
-    def lock_record_item(
-        context, list_url, item_id, refresh_labeled_time=None, return_type=None
-    ):
+    def lock_record_item(context, list_url, item_id, refresh_labeled_time=None, return_type=None):
         """ """
         if return_type is None:
             return_type = ClientResult(context, int())

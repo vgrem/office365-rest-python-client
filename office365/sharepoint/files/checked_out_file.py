@@ -44,7 +44,5 @@ class CheckedOutFile(Entity):
         super(CheckedOutFile, self).set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "CheckedOutById":
-            self._resource_path = EntityPath(
-                value, self.parent_collection.resource_path
-            )
+            self._resource_path = EntityPath(value, self.parent_collection.resource_path)
         return self

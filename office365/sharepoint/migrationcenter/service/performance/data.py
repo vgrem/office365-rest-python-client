@@ -15,9 +15,7 @@ class PerformanceData(MigrationPerformanceEntityData):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.Online.SharePoint.MigrationCenter.Service.PerformanceData"
-            )
+            resource_path = ResourcePath("Microsoft.Online.SharePoint.MigrationCenter.Service.PerformanceData")
         super(PerformanceData, self).__init__(context, resource_path)
 
     @property
@@ -29,9 +27,7 @@ class PerformanceDataCollection(EntityCollection[PerformanceData]):
     """ """
 
     def __init__(self, context, resource_path=None):
-        super(PerformanceDataCollection, self).__init__(
-            context, PerformanceData, resource_path
-        )
+        super(PerformanceDataCollection, self).__init__(context, PerformanceData, resource_path)
 
     def get_perf_data_test(self, start_time=None, end_time=None, agent_id=None):
         """ """
@@ -41,9 +37,7 @@ class PerformanceDataCollection(EntityCollection[PerformanceData]):
             "EndTime": end_time,
             "AgentId": agent_id,
         }
-        qry = ServiceOperationQuery(
-            self, "GetPerfDataTest", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPerfDataTest", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

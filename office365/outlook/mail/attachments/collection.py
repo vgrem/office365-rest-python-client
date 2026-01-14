@@ -59,16 +59,12 @@ class AttachmentCollection(EntityCollection[Attachment]):
         return_type = FileAttachment(self.context)
         self.add_child(return_type)
 
-        qry = UploadSessionQuery(
-            self, {"AttachmentItem": AttachmentItem.create_file(source_path)}
-        )
+        qry = UploadSessionQuery(self, {"AttachmentItem": AttachmentItem.create_file(source_path)})
 
         def _start_upload(result):
             # type: (ClientResult[UploadSession]) -> None
             with open(source_path, "rb") as local_file:
-                session_request = UploadSessionRequest(
-                    local_file, chunk_size, chunk_uploaded
-                )
+                session_request = UploadSessionRequest(local_file, chunk_size, chunk_uploaded)
 
                 def _construct_request(request):
                     # type: (RequestOptions) -> None
@@ -87,9 +83,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
                 session_request.afterExecute += _process_response
                 session_request.execute_query(qry)
 
-        self.context.add_query(qry).after_query_execute(
-            _start_upload, execute_first=True
-        )
+        self.context.add_query(qry).after_query_execute(_start_upload, execute_first=True)
         return self
 
     def create_upload_session(self, attachment_item):

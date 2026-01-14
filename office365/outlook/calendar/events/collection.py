@@ -14,9 +14,7 @@ class EventCollection(DeltaCollection[Event]):
     def __init__(self, context, resource_path=None):
         super(EventCollection, self).__init__(context, Event, resource_path)
 
-    def add(
-        self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs
-    ):
+    def add(self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs):
         # type: (str, str|ItemBody, datetime.datetime, datetime.datetime, List[str], ...) -> Event
         """
         Create an event in the user's default calendar or specified calendar.
@@ -46,10 +44,7 @@ class EventCollection(DeltaCollection[Event]):
         if attendees is not None:
             kwargs["attendees"] = ClientValueCollection(
                 Attendee,
-                [
-                    Attendee(EmailAddress(v), attendee_type="required")
-                    for v in attendees
-                ],
+                [Attendee(EmailAddress(v), attendee_type="required") for v in attendees],
             )
 
         return super(EventCollection, self).add(**kwargs)

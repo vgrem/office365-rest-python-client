@@ -59,9 +59,7 @@ class ColumnDefinition(BaseItem):
     @property
     def content_approval_status(self):
         """This column stores content approval status."""
-        return self.properties.get(
-            "contentApprovalStatus", ContentApprovalStatusColumn()
-        )
+        return self.properties.get("contentApprovalStatus", ContentApprovalStatusColumn())
 
     @property
     def column_group(self):

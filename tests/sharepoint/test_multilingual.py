@@ -20,9 +20,7 @@ class TestMultilingual(SPTestCase):
 
     def test2_create_page(self):
         page_title = "My Page"
-        site_page = self.client.site_pages.create_page(
-            page_title, language="en-us"
-        ).execute_query()
+        site_page = self.client.site_pages.create_page(page_title, language="en-us").execute_query()
         self.assertIsNotNone(site_page.resource_path)
         self.__class__.site_page = site_page
 

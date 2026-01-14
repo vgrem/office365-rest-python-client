@@ -13,9 +13,7 @@ class AppCatalogs(Entity):
         """List apps from the Microsoft Teams app catalog."""
         return self.properties.get(
             "teamsApps",
-            EntityCollection(
-                self.context, TeamsApp, ResourcePath("teamsApps", self.resource_path)
-            ),
+            EntityCollection(self.context, TeamsApp, ResourcePath("teamsApps", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

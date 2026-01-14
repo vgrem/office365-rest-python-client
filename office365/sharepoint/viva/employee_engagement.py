@@ -11,9 +11,7 @@ from office365.sharepoint.viva.home import VivaHome
 
 class EmployeeEngagement(Entity):
     def __init__(self, context):
-        super(EmployeeEngagement, self).__init__(
-            context, ResourcePath("SP.EmployeeEngagement")
-        )
+        super(EmployeeEngagement, self).__init__(context, ResourcePath("SP.EmployeeEngagement"))
 
     def dashboard_content(self, override_language_code=None):
         """
@@ -21,15 +19,11 @@ class EmployeeEngagement(Entity):
         """
         return_type = ClientResult(self.context, str())
         payload = {"override_language_code": override_language_code}
-        qry = ServiceOperationQuery(
-            self, "DashboardContent", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DashboardContent", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def full_dashboard_content(
-        self, canvas_as_json=None, include_personalization_data=None
-    ):
+    def full_dashboard_content(self, canvas_as_json=None, include_personalization_data=None):
         """
         :param bool canvas_as_json:
         :param bool include_personalization_data:
@@ -39,9 +33,7 @@ class EmployeeEngagement(Entity):
             "canvasAsJson": canvas_as_json,
             "includePersonalizationData": include_personalization_data,
         }
-        qry = ServiceOperationQuery(
-            self, "FullDashboardContent", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "FullDashboardContent", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -61,18 +53,14 @@ class EmployeeEngagement(Entity):
     def app_configuration(self):
         return self.properties.get(
             "AppConfiguration",
-            AppConfiguration(
-                self.context, ResourcePath("AppConfiguration", self.resource_path)
-            ),
+            AppConfiguration(self.context, ResourcePath("AppConfiguration", self.resource_path)),
         )
 
     @property
     def viva_connections_page(self):
         return self.properties.get(
             "VivaConnectionsPage",
-            VivaConnectionsPage(
-                self.context, ResourcePath("VivaConnectionsPage", self.resource_path)
-            ),
+            VivaConnectionsPage(self.context, ResourcePath("VivaConnectionsPage", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

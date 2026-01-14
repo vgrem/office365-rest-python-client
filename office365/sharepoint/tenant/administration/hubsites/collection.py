@@ -15,9 +15,7 @@ class HubSiteCollection(EntityCollection[HubSite]):
         """Retrieve Hub site by id
         :type _id: str
         """
-        return HubSite(
-            self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
-        )
+        return HubSite(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def get_connected_hubs(self, hub_site_id, option):
         """
@@ -26,9 +24,7 @@ class HubSiteCollection(EntityCollection[HubSite]):
         """
         payload = {"hubSiteId": hub_site_id, "option": option}
         return_type = HubSiteCollection(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetConnectedHubs", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetConnectedHubs", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -37,8 +33,6 @@ class HubSiteCollection(EntityCollection[HubSite]):
         :param str hub_site_id:
         """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetSiteUrlByHubSiteId", [hub_site_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteUrlByHubSiteId", [hub_site_id], None, None, return_type)
         self.context.add_query(qry)
         return return_type

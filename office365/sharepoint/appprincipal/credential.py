@@ -21,9 +21,7 @@ class AppPrincipalCredential(Entity):
             "notBefore": not_before.isoformat(),
             "notAfter": not_after.isoformat(),
         }
-        qry = ServiceOperationQuery(
-            return_type, "CreateFromSymmetricKey", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(return_type, "CreateFromSymmetricKey", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -38,9 +36,7 @@ class AppPrincipalCredential(Entity):
         """
         return_type = AppPrincipalCredential(context)
         payload = {"keyGroupIdentifier": key_group_identifier}
-        qry = ServiceOperationQuery(
-            return_type, "CreateFromKeyGroup", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(return_type, "CreateFromKeyGroup", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type

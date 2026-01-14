@@ -7,13 +7,9 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
     """Represents a collection of Field resource."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(SPAuthEventCollection, self).__init__(
-            context, SPAuthEvent, resource_path, parent
-        )
+        super(SPAuthEventCollection, self).__init__(context, SPAuthEvent, resource_path, parent)
 
-    def role_assignment_ms_graph_notify(
-        self, tenant, action, type_, resource_payload, id_, container_id
-    ):
+    def role_assignment_ms_graph_notify(self, tenant, action, type_, resource_payload, id_, container_id):
         """
         :param str tenant:
         :param str action:
@@ -32,8 +28,6 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
         }
         return_type = SPAuthEvent(self.context)
         self.add_child(return_type)
-        qry = ServiceOperationQuery(
-            self, "RoleAssignmentMSGraphNotify", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RoleAssignmentMSGraphNotify", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

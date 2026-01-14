@@ -19,9 +19,7 @@ class SharedDriveItem(BaseItem):
         """All driveItems contained in the sharing root. This collection cannot be enumerated."""
         return self.properties.get(
             "items",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("items", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path)),
         )
 
     @property
@@ -37,9 +35,7 @@ class SharedDriveItem(BaseItem):
     def list(self):
         # type: () -> List
         """Used to access the underlying list"""
-        return self.properties.get(
-            "list", List(self.context, ResourcePath("list", self.resource_path))
-        )
+        return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
     @property
     def drive_item(self):
@@ -62,17 +58,13 @@ class SharedDriveItem(BaseItem):
         """
         return self.properties.get(
             "root",
-            DriveItem(
-                self.context, RootPath(self.resource_path, self.items.resource_path)
-            ),
+            DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path)),
         )
 
     @property
     def site(self):
         """Used to access the underlying site"""
-        return self.properties.get(
-            "site", Site(self.context, ResourcePath("site", self.resource_path))
-        )
+        return self.properties.get("site", Site(self.context, ResourcePath("site", self.resource_path)))
 
     @property
     def permission(self):

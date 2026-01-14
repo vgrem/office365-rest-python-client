@@ -28,9 +28,7 @@ class FileCollection(EntityCollection[File]):
     def get_published_file(self, base_file_path):
         """ """
         return_type = FileStatus(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetPublishedFile", [base_file_path], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPublishedFile", [base_file_path], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -65,15 +63,11 @@ class FileCollection(EntityCollection[File]):
             content = file_object.read(chunk_size)
             h.update(content)
 
-            return_type.upload_with_checksum(
-                upload_id, h.hexdigest(), content
-            )  # .after_execute(_upload_session)
+            return_type.upload_with_checksum(upload_id, h.hexdigest(), content)  # .after_execute(_upload_session)
 
         return self.add(file_name, None, True).after_execute(_upload_session)
 
-    def create_upload_session(
-        self, file, chunk_size, chunk_uploaded=None, file_name=None, **kwargs
-    ):
+    def create_upload_session(self, file, chunk_size, chunk_uploaded=None, file_name=None, **kwargs):
         # type: (IO|str, int, Callable[[int, ...], None], str, ...) -> File
         """Upload a file as multiple chunks
         :param str or typing.IO file: path where file to upload resides or file handle
@@ -110,17 +104,11 @@ class FileCollection(EntityCollection[File]):
                 return
 
             if uploaded_bytes == 0:
-                return_type.start_upload(upload_id, content).after_execute(
-                    _after_uploaded
-                )
+                return_type.start_upload(upload_id, content).after_execute(_after_uploaded)
             elif uploaded_bytes + len(content) < file_size:
-                return_type.continue_upload(
-                    upload_id, uploaded_bytes, content
-                ).after_execute(_after_uploaded)
+                return_type.continue_upload(upload_id, uploaded_bytes, content).after_execute(_after_uploaded)
             else:
-                return_type.finish_upload(
-                    upload_id, uploaded_bytes, content
-                ).after_execute(_upload)
+                return_type.finish_upload(upload_id, uploaded_bytes, content).after_execute(_upload)
 
         if file_size > chunk_size:
             return self.add(file_name, None, True).after_execute(_upload)
@@ -141,9 +129,7 @@ class FileCollection(EntityCollection[File]):
         return_type = File(self.context)
         self.add_child(return_type)
         params = FileCreationInformation(url=url, overwrite=overwrite)
-        qry = ServiceOperationQuery(
-            self, "add", params.to_json(), content, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -158,16 +144,10 @@ class FileCollection(EntityCollection[File]):
 
         def _add_template_file():
             params = {
-                "urlOfFile": str(
-                    SPResPath.create_relative(
-                        self.parent.properties["ServerRelativeUrl"], url_of_file
-                    )
-                ),
+                "urlOfFile": str(SPResPath.create_relative(self.parent.properties["ServerRelativeUrl"], url_of_file)),
                 "templateFileType": template_file_type,
             }
-            qry = ServiceOperationQuery(
-                self, "addTemplateFile", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "addTemplateFile", params, None, None, return_type)
             self.context.add_query(qry)
 
         self.parent.ensure_property("ServerRelativeUrl", _add_template_file)
@@ -176,16 +156,12 @@ class FileCollection(EntityCollection[File]):
     def get_by_url(self, url):
         # type: (str) -> File
         """Retrieve File object by url"""
-        return File(
-            self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path)
-        )
+        return File(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_id(self, _id):
         # type: (int) -> File
         """Gets the File with the specified ID."""
-        return File(
-            self.context, ServiceOperationPath("getById", [_id], self.resource_path)
-        )
+        return File(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
     @property
     def parent(self):

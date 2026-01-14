@@ -30,9 +30,7 @@ class ObjectSharingInformation(Entity):
         binding_type = ObjectSharingInformation(context)
         payload = {"docId": doc_id}
         return_type = ClientResult(context, int())
-        qry = ServiceOperationQuery(
-            binding_type, "CanCurrentUserShare", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "CanCurrentUserShare", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -111,9 +109,7 @@ class ObjectSharingInformation(Entity):
     def get_shared_with_users(self):
         """Returns an array that contains the users with whom a securable object is shared."""
         return_type = EntityCollection(self.context, ObjectSharingInformationUser)
-        qry = ServiceOperationQuery(
-            self, "GetSharedWithUsers", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSharedWithUsers", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -243,9 +239,7 @@ class ObjectSharingInformation(Entity):
     def sharing_links(self):
         # type: () -> ClientValueCollection[SharingLinkInfo]
         """Indicates the collection of all available sharing links for the securable object."""
-        return self.properties.get(
-            "SharingLinks", ClientValueCollection(SharingLinkInfo)
-        )
+        return self.properties.get("SharingLinks", ClientValueCollection(SharingLinkInfo))
 
     @property
     def shared_with_users_collection(self):

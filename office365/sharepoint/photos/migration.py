@@ -12,9 +12,7 @@ class PhotosMigration(Entity):
     def migrate_photos_data(self):
         """ """
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "MigratePhotosData", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "MigratePhotosData", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

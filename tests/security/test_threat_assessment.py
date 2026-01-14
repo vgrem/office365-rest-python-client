@@ -24,7 +24,5 @@ class TestThreatAssessment(GraphTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test4_list_threat_assessment_requests(self):
-        col = (
-            self.client.information_protection.threat_assessment_requests.get().execute_query()
-        )
+        col = self.client.information_protection.threat_assessment_requests.get().execute_query()
         self.assertIsNotNone(col.resource_path)

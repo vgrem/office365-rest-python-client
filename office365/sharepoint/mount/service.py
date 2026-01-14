@@ -15,9 +15,7 @@ class MountService(Entity):
         """
         return_type = ClientResult(context, str())
         payload = {"request": GetRemoteItemInfoRequest(remote_item_unique_ids)}
-        qry = ServiceOperationQuery(
-            context.web, "GetRemoteItemInfo", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(context.web, "GetRemoteItemInfo", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 

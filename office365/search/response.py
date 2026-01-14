@@ -15,6 +15,4 @@ class SearchResponse(ClientValue):
         """
         super(SearchResponse, self).__init__()
         self.searchTerms = StringCollection(search_terms)
-        self.hitsContainers = ClientValueCollection(
-            SearchHitsContainer, hits_containers
-        )
+        self.hitsContainers = ClientValueCollection(SearchHitsContainer, hits_containers)

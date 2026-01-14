@@ -43,11 +43,7 @@ class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             url_info = urlparse(self.url)
             return self._get_app_only_access_token(url_info.hostname, realm)
         except requests.exceptions.RequestException as e:
-            self.error = (
-                e.response.text
-                if e.response is not None
-                else "Acquire app-only access token failed."
-            )
+            self.error = e.response.text if e.response is not None else "Acquire app-only access token failed."
             raise ValueError(self.error)
 
     def _get_app_only_access_token(self, target_host, target_realm):
@@ -58,9 +54,7 @@ class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         :param str target_host: Url authority of the target principal
         :param str target_realm: Realm to use for the access token's nameid and audience
         """
-        resource = self.get_formatted_principal(
-            self.SharePointPrincipal, target_host, target_realm
-        )
+        resource = self.get_formatted_principal(self.SharePointPrincipal, target_host, target_realm)
         principal_id = self.get_formatted_principal(self._client_id, None, target_realm)
         sts_url = self.get_security_token_service_url(target_realm)
         oauth2_request = {
@@ -98,12 +92,6 @@ class ACSTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
     def get_security_token_service_url(self, realm):
         # type: (str) -> str
         if self._environment:
-            return "{0}/{1}/tokens/OAuth/2".format(
-                AzureEnvironment.get_login_authority(self._environment), realm
-            )
+            return "{0}/{1}/tokens/OAuth/2".format(AzureEnvironment.get_login_authority(self._environment), realm)
         else:
-            return (
-                "https://accounts.accesscontrol.windows.net/{0}/tokens/OAuth/2".format(
-                    realm
-                )
-            )
+            return "https://accounts.accesscontrol.windows.net/{0}/tokens/OAuth/2".format(realm)

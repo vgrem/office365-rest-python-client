@@ -20,7 +20,5 @@ class CopilotRoot(Entity):
         """The history of interactions between AI agents and users."""
         return self.properties.get(
             "interactionHistory",
-            AIInteractionHistory(
-                self.context, ResourcePath("interactionHistory", self.resource_path)
-            ),
+            AIInteractionHistory(self.context, ResourcePath("interactionHistory", self.resource_path)),
         )

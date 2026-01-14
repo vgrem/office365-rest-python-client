@@ -37,9 +37,7 @@ class SitePage(BaseSitePage):
             "isInverticalSection": is_in_vertical_section,
             "columnId": column_id,
         }
-        return_type = EntityCollection(
-            self.context, WebPart, ResourcePath("webParts", self.resource_path)
-        )
+        return_type = EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         qry = FunctionQuery(self, "getWebPartsByPosition", params, return_type)
         self.context.add_query(qry)
         return return_type
@@ -107,9 +105,7 @@ class SitePage(BaseSitePage):
         """The default termStore under this site."""
         return self.properties.get(
             "canvasLayout",
-            CanvasLayout(
-                self.context, ResourcePath("canvasLayout", self.resource_path)
-            ),
+            CanvasLayout(self.context, ResourcePath("canvasLayout", self.resource_path)),
         )
 
     @property
@@ -118,9 +114,7 @@ class SitePage(BaseSitePage):
         """Collection of webparts on the SharePoint page."""
         return self.properties.get(
             "webParts",
-            EntityCollection(
-                self.context, WebPart, ResourcePath("webParts", self.resource_path)
-            ),
+            EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

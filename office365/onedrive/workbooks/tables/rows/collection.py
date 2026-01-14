@@ -6,9 +6,7 @@ from office365.runtime.queries.function import FunctionQuery
 
 class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookTableRowCollection, self).__init__(
-            context, WorkbookTableRow, resource_path
-        )
+        super(WorkbookTableRowCollection, self).__init__(context, WorkbookTableRow, resource_path)
 
     def add(self, values, index=None):
         """

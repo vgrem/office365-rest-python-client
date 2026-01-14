@@ -14,7 +14,5 @@ class Session(Entity):
         """
         return self.properties.get(
             "segments",
-            EntityCollection(
-                self.context, Segment, ResourcePath("segments", self.resource_path)
-            ),
+            EntityCollection(self.context, Segment, ResourcePath("segments", self.resource_path)),
         )

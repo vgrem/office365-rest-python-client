@@ -14,9 +14,7 @@ class ListItemVersion(Entity):
     """Represents a version of a list item."""
 
     def __repr__(self):
-        return "Label: {0}, Url: {1}".format(
-            self.version_label, self.properties.get("FileRef", None)
-        )
+        return "Label: {0}, Url: {1}".format(self.version_label, self.properties.get("FileRef", None))
 
     @property
     def version_id(self):
@@ -97,7 +95,5 @@ class ListItemVersion(Entity):
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None:
             if name == "VersionId":
-                self._resource_path = self.parent_collection.get_by_id(
-                    value
-                ).resource_path
+                self._resource_path = self.parent_collection.get_by_id(value).resource_path
         return super(ListItemVersion, self).set_property(name, value, persist_changes)

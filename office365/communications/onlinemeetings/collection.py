@@ -7,9 +7,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
     def __init__(self, context, resource_path=None):
-        super(OnlineMeetingCollection, self).__init__(
-            context, OnlineMeeting, resource_path
-        )
+        super(OnlineMeetingCollection, self).__init__(context, OnlineMeeting, resource_path)
 
     def create(self, subject, start_datetime=None, end_datetime=None):
         """
@@ -61,15 +59,11 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "chatInfo": chat_info,
             "participants": participants,
         }
-        qry = ServiceOperationQuery(
-            self, "createOrGet", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "createOrGet", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_all_recordings(
-        self, meeting_organizer_user_id, start_datetime=None, end_datetime=None
-    ):
+    def get_all_recordings(self, meeting_organizer_user_id, start_datetime=None, end_datetime=None):
         """
         Get all recordings from scheduled onlineMeeting instances for which the specified user is the organizer.
         This API currently doesn't support getting call recordings from channel meetings.
@@ -89,8 +83,6 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "startDateTime": start_datetime,
             "endDateTime": end_datetime,
         }
-        qry = ServiceOperationQuery(
-            self, "getAllRecordings", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getAllRecordings", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

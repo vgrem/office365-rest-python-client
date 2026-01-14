@@ -23,6 +23,4 @@ class AttachmentItem(ClientValue):
         file_size = os.stat(path).st_size
         from office365.outlook.mail.attachments.attachment_type import AttachmentType
 
-        return AttachmentItem(
-            attachment_type=AttachmentType.file, name=file_name, size=file_size
-        )
+        return AttachmentItem(attachment_type=AttachmentType.file, name=file_name, size=file_size)

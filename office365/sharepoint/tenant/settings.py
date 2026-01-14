@@ -11,18 +11,14 @@ class TenantSettings(Entity):
 
     def clear_corporate_catalog(self):
         """"""
-        qry = ServiceOperationQuery(
-            self, "ClearCorporateCatalog", None, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "ClearCorporateCatalog", None, None, None, None)
         self.context.add_query(qry)
         return self
 
     def get_data_access_governance_report_config(self):
         """ """
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "GetDataAccessGovernanceReportConfig", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetDataAccessGovernanceReportConfig", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -31,9 +27,7 @@ class TenantSettings(Entity):
         :param str url:
         """
         payload = {"url": url}
-        qry = ServiceOperationQuery(
-            self, "SetCorporateCatalog", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "SetCorporateCatalog", None, payload, None, None)
         self.context.add_query(qry)
         return self
 

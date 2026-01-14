@@ -32,9 +32,7 @@ class TaxonomyFieldValueCollection(ClientValueCollection[TaxonomyFieldValue]):
         """
         :param list[TaxonomyFieldValue] initial_values:
         """
-        super(TaxonomyFieldValueCollection, self).__init__(
-            TaxonomyFieldValue, initial_values
-        )
+        super(TaxonomyFieldValueCollection, self).__init__(TaxonomyFieldValue, initial_values)
 
     def __str__(self):
         return ";#".join([str(item) for item in self._data])

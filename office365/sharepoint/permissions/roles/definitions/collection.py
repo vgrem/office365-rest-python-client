@@ -12,9 +12,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
     """Represents the collection of role definitions that are available within the site"""
 
     def __init__(self, context, resource_path=None):
-        super(RoleDefinitionCollection, self).__init__(
-            context, RoleDefinition, resource_path
-        )
+        super(RoleDefinitionCollection, self).__init__(context, RoleDefinition, resource_path)
 
     def add(self, base_permissions, name, description=None, order=None):
         """
@@ -28,9 +26,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         """
         return_type = RoleDefinition(self.context)
         self.add_child(return_type)
-        payload = RoleDefinitionCreationInformation(
-            base_permissions, name, description, order
-        )
+        payload = RoleDefinitionCreationInformation(base_permissions, name, description, order)
         qry = CreateEntityQuery(self, payload, return_type)
         self.context.add_query(qry)
         return return_type
@@ -57,9 +53,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
 
         :param str name: Specifies name of role definition.
         """
-        return RoleDefinition(
-            self.context, ServiceOperationPath("GetByName", [name], self.resource_path)
-        )
+        return RoleDefinition(self.context, ServiceOperationPath("GetByName", [name], self.resource_path))
 
     def get_by_id(self, _id):
         """
@@ -69,9 +63,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
            correspond to the index of the role definition within the collection, but refers to the value of the
            Id property of the role definition.
         """
-        return RoleDefinition(
-            self.context, ServiceOperationPath("GetById", [_id], self.resource_path)
-        )
+        return RoleDefinition(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def get_by_type(self, role_type):
         """Returns role definition of the specified type from the collection.

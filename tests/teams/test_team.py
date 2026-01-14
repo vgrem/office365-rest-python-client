@@ -14,18 +14,14 @@ class TestGraphTeam(GraphTestCase):
     def setUpClass(cls):
         super(TestGraphTeam, cls).setUpClass()
 
-    @requires_delegated_permission(
-        "Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"
-    )
+    @requires_delegated_permission("Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All")
     def test1_create_team(self):
         team_name = "Group_" + uuid.uuid4().hex
         team = self.client.teams.create(team_name).execute_query()
         self.assertIsNotNone(team.id)
         self.__class__.target_team = team
 
-    @requires_delegated_permission(
-        "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All"
-    )
+    @requires_delegated_permission("Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All")
     def test3_list_all_teams_in_org(self):
         result = self.client.teams.get_all().execute_query()
         self.assertGreater(len(result), 0)
@@ -56,17 +52,13 @@ class TestGraphTeam(GraphTestCase):
             self.client.execute_query()
             self.assertFalse(existing_team.is_archived)
 
-    @requires_delegated_permission(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"
-    )
+    @requires_delegated_permission("TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All")
     def test6_update_team(self):
         team = self.__class__.target_team
         team.fun_settings.allowGiphy = False
         team.update().execute_query()
 
-    @requires_delegated_permission(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"
-    )
+    @requires_delegated_permission("TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All")
     def test7_archive_team(self):
         team = self.__class__.target_team
         team.archive().execute_query()

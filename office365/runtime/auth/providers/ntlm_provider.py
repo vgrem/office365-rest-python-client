@@ -3,9 +3,7 @@ from office365.runtime.auth.authentication_provider import AuthenticationProvide
 try:
     from requests_ntlm import HttpNtlmAuth
 except ImportError:
-    raise ImportError(
-        "To use NTLM authentication the package 'requests_ntlm' needs to be installed."
-    )
+    raise ImportError("To use NTLM authentication the package 'requests_ntlm' needs to be installed.")
 
 
 class NtlmProvider(AuthenticationProvider):

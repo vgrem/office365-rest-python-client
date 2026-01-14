@@ -17,9 +17,7 @@ class ContactFolder(Entity):
 
         return self.properties.get(
             "contacts",
-            EntityCollection(
-                self.context, Contact, ResourcePath("contacts", self.resource_path)
-            ),
+            EntityCollection(self.context, Contact, ResourcePath("contacts", self.resource_path)),
         )
 
     @property

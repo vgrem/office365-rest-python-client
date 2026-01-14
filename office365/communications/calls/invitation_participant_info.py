@@ -24,7 +24,5 @@ class InvitationParticipantInfo(ClientValue):
         self.hidden = hidden
         self.identity = identity
         self.participantId = participant_id
-        self.removeFromDefaultAudioRoutingGroup = (
-            remove_from_default_audio_routing_group
-        )
+        self.removeFromDefaultAudioRoutingGroup = remove_from_default_audio_routing_group
         self.replacesCallId = replaces_call_id

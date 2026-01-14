@@ -66,9 +66,7 @@ class ChangeItem(Change):
     @property
     def shared_with_users(self):
         """Returns the array of users that have been shared in sharing action for the change log."""
-        return self.properties.get(
-            "SharedWithUsers", ClientValueCollection(SharedWithUser)
-        )
+        return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 
     @property
     def unique_id(self):

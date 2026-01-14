@@ -46,13 +46,7 @@ class TestGraphGroup(GraphTestCase):
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test5_add_group_owner(self):
-        users = (
-            self.client.users.filter(
-                "mail eq '{mail}'".format(mail=test_user_principal_name)
-            )
-            .get()
-            .execute_query()
-        )
+        users = self.client.users.filter("mail eq '{mail}'".format(mail=test_user_principal_name)).get().execute_query()
         self.assertEqual(len(users), 1)
 
         owner = users[0]
@@ -88,7 +82,5 @@ class TestGraphGroup(GraphTestCase):
         grp_to_delete.delete_object(True).execute_query()
 
     def test_11_get_changes(self):
-        changed_groups = (
-            self.client.groups.delta.select(["displayName"]).get().execute_query()
-        )
+        changed_groups = self.client.groups.delta.select(["displayName"]).get().execute_query()
         self.assertGreater(len(changed_groups), 0)

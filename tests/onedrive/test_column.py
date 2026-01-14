@@ -32,9 +32,7 @@ class TestColumn(GraphTestCase):
     @requires_delegated_permission("Sites.Manage.All", "Sites.FullControl.All")
     def test3_create_lookup_column_for_list(self):
         column_name = create_unique_name("LookupColumn")
-        column = self.doclib.columns.add_lookup(
-            column_name, self.doclib
-        ).execute_query()
+        column = self.doclib.columns.add_lookup(column_name, self.doclib).execute_query()
         self.assertIsNotNone(column.resource_path)
         self.__class__.list_columns.append(column)
 

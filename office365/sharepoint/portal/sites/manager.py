@@ -35,9 +35,7 @@ class SPSiteManager(Entity):
         def _create(owner_string=None):
             request = SPSiteCreationRequest(title, site_url, owner_string)
             payload = {"request": request}
-            qry = ServiceOperationQuery(
-                self, "Create", None, payload, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "Create", None, payload, None, return_type)
             self.context.add_query(qry)
 
         from office365.sharepoint.principal.users.user import User
@@ -71,9 +69,7 @@ class SPSiteManager(Entity):
         :param str site_url: URL of the site to return status for
         """
         response = ClientResult(self.context, SPSiteCreationResponse())
-        qry = ServiceOperationQuery(
-            self, "Status", None, {"url": site_url}, None, response
-        )
+        qry = ServiceOperationQuery(self, "Status", None, {"url": site_url}, None, response)
 
         def _construct_request(request):
             # type: (RequestOptions) -> None
@@ -88,9 +84,7 @@ class SPSiteManager(Entity):
         :param str site_id: The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "SiteUrl", None, {"siteId": site_id}, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SiteUrl", None, {"siteId": site_id}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -116,8 +110,6 @@ class SPSiteManager(Entity):
         """
         return_type = ClientResult(self.context, VivaSiteRequestInfo())
         payload = {"siteName": site_name}
-        qry = ServiceOperationQuery(
-            self, "VivaBackendSiteUrlFromName", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "VivaBackendSiteUrlFromName", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

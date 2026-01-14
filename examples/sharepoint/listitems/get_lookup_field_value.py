@@ -24,11 +24,5 @@ items = (
 )
 for item in items:
     assigned_to = item.properties.get("AssignedTo", {}).get("Id", None)
-    predecessors_ids = [
-        v.get("Id", None) for k, v in item.properties.get("Predecessors", {}).items()
-    ]
-    print(
-        "AssignedTo Id: {0}, Predecessors Ids: {1}".format(
-            assigned_to, predecessors_ids
-        )
-    )
+    predecessors_ids = [v.get("Id", None) for k, v in item.properties.get("Predecessors", {}).items()]
+    print("AssignedTo Id: {0}, Predecessors Ids: {1}".format(assigned_to, predecessors_ids))

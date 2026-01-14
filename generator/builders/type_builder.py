@@ -46,9 +46,7 @@ class TypeBuilder(ast.NodeTransformer):
             "ComplexType": "complex_type.py",
             "EntityType": "entity_type.py",
         }
-        path = abspath(
-            os.path.join(self._options.get("templatepath"), file_mapping[type_name])
-        )
+        path = abspath(os.path.join(self._options.get("templatepath"), file_mapping[type_name]))
         return path
 
     def _resolve_type(self, type_name):
@@ -64,9 +62,7 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["file"] = found_modules[0].__file__
         else:
             type_info["state"] = "detached"
-            type_info["file"] = abspath(
-                os.path.join(self._options["outputpath"], type_name + ".py")
-            )
+            type_info["file"] = abspath(os.path.join(self._options["outputpath"], type_name + ".py"))
         return type_info
 
     def _ensure_type_info(self):

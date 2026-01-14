@@ -85,9 +85,7 @@ class TaxonomyField(FieldLookup):
                     <Field Type="Note" DisplayName="{name}_0" Hidden="TRUE" CanBeDeleted="TRUE" ShowInViewForms="FALSE"
                            CanToggleHidden="TRUE" StaticName="{text_field_name}" Name="{text_field_name}">
                     </Field>
-                """.format(
-            name=name, text_field_name=text_field_name
-        )
+                """.format(name=name, text_field_name=text_field_name)
         return self.parent_collection.create_field_as_xml(text_field_schema)
 
     @property

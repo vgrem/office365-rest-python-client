@@ -24,9 +24,7 @@ class ListTemplate(Entity):
     def get_global_schema_xml(self):
         """Retrieves the global schema.xml file."""
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetGlobalSchemaXml", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetGlobalSchemaXml", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -40,7 +38,5 @@ class ListTemplate(Entity):
         super(ListTemplate, self).set_property(name, value, persist_changes)
         if self._resource_path is None:
             if name == "Name":
-                self._resource_path = ServiceOperationPath(
-                    "GetByName", [value], self._parent_collection.resource_path
-                )
+                self._resource_path = ServiceOperationPath("GetByName", [value], self._parent_collection.resource_path)
         return self

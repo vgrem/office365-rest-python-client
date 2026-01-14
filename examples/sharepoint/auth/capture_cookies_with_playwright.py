@@ -26,13 +26,9 @@ from playwright.sync_api import sync_playwright
 def main() -> None:
     site_url = os.environ.get("SP_SITE_URL")
     if not site_url:
-        raise SystemExit(
-            "SP_SITE_URL is required, e.g. https://contoso.sharepoint.com/sites/demo"
-        )
+        raise SystemExit("SP_SITE_URL is required, e.g. https://contoso.sharepoint.com/sites/demo")
 
-    storage_state_path = os.environ.get(
-        "PLAYWRIGHT_STORAGE_STATE", "./storage_state.json"
-    )
+    storage_state_path = os.environ.get("PLAYWRIGHT_STORAGE_STATE", "./storage_state.json")
     headless_env = os.environ.get("HEADLESS", "false").lower()
     headless = headless_env in ("1", "true", "yes")
 
@@ -44,12 +40,8 @@ def main() -> None:
         # Wait for network to be idle; login flow may redirect to Microsoft login pages
         page.wait_for_load_state("networkidle")
 
-        print(
-            "\nA browser window is open. Complete the login (including MFA) if prompted."
-        )
-        input(
-            "When the SharePoint page is fully loaded and you are authenticated, press Enter here to continue..."
-        )
+        print("\nA browser window is open. Complete the login (including MFA) if prompted.")
+        input("When the SharePoint page is fully loaded and you are authenticated, press Enter here to continue...")
 
         # Persist cookies and related state
         context.storage_state(path=storage_state_path)

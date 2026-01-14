@@ -10,9 +10,7 @@ class RichSharing(Entity):
             resource_path = ResourcePath("SP.Publishing.RichSharing")
         super(RichSharing, self).__init__(context, resource_path)
 
-    def share_page_by_email(
-        self, url, message, recipient_emails, page_content, subject
-    ):
+    def share_page_by_email(self, url, message, recipient_emails, page_content, subject):
         """
         :param str url:
         :param str message:
@@ -31,9 +29,7 @@ class RichSharing(Entity):
         self.context.add_query(qry)
         return self
 
-    def share_site_by_email(
-        self, custom_description, custom_title, message, url, recipient_emails
-    ):
+    def share_site_by_email(self, custom_description, custom_title, message, url, recipient_emails):
         """
         :param str url:
         :param str message:

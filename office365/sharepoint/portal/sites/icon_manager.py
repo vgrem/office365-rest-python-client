@@ -14,9 +14,7 @@ class SiteIconManager(Entity):
         payload = {"siteUrl": site_url, "target": target, "type": _type}
         if return_type is None:
             return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetSiteLogo", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteLogo", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

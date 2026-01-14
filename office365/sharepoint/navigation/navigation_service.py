@@ -14,14 +14,10 @@ class NavigationService(Entity):
 
     def __init__(self, context):
         """The entry point for REST-based navigation service operations."""
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.Navigation.REST.NavigationServiceRest"
-        )
+        static_path = ResourcePath("Microsoft.SharePoint.Navigation.REST.NavigationServiceRest")
         super(NavigationService, self).__init__(context, static_path)
 
-    def get_publishing_navigation_provider_type(
-        self, map_provider_name=NavigationProviderType.SPNavigationProvider
-    ):
+    def get_publishing_navigation_provider_type(self, map_provider_name=NavigationProviderType.SPNavigationProvider):
         """
         Gets a publishing navigation provider type when publishing feature is turned on for the site (2).
         If navigation provider is not found on the site MUST return InvalidSiteMapProvider type.
@@ -31,9 +27,7 @@ class NavigationService(Entity):
         """
         return_type = ClientResult(self.context)
         params = {"mapProviderName": map_provider_name}
-        qry = ServiceOperationQuery(
-            self, "GetPublishingNavigationProviderType", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPublishingNavigationProviderType", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -47,9 +41,7 @@ class NavigationService(Entity):
     def global_nav_enabled(self):
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "GlobalNavEnabled", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GlobalNavEnabled", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -57,9 +49,7 @@ class NavigationService(Entity):
         """
         :param bool is_enabled:
         """
-        qry = ServiceOperationQuery(
-            self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled}
-        )
+        qry = ServiceOperationQuery(self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled})
         self.context.add_query(qry)
         return self
 
@@ -72,15 +62,11 @@ class NavigationService(Entity):
         """
         return_type = ClientResult(self.context, str())
         params = {"currentUrl": current_url, "mapProviderName": map_provider_name}
-        qry = ServiceOperationQuery(
-            self, "MenuNodeKey", None, params, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "MenuNodeKey", None, params, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def menu_state(
-        self, menu_node_key, map_provider_name, depth=None, custom_properties=None
-    ):
+    def menu_state(self, menu_node_key, map_provider_name, depth=None, custom_properties=None):
         """
         Returns the menu tree rooted at the specified root node for a given provider.
 
@@ -112,9 +98,7 @@ class NavigationService(Entity):
         """
         return_type = ClientResult(self.context)
         payload = {"menuNodeKey": menu_node_key, "mapProviderName": map_provider_name}
-        qry = ServiceOperationQuery(
-            self, "SaveMenuState", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SaveMenuState", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -122,9 +106,7 @@ class NavigationService(Entity):
     def home_site_settings(self):
         return self.properties.get(
             "HomeSiteSettings",
-            HomeSiteNavigationSettings(
-                self.context, ResourcePath("HomeSiteSettings", self.resource_path)
-            ),
+            HomeSiteNavigationSettings(self.context, ResourcePath("HomeSiteSettings", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

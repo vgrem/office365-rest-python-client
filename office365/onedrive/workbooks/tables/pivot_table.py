@@ -36,7 +36,5 @@ class WorkbookPivotTable(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )

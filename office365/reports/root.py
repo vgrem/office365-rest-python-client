@@ -19,9 +19,7 @@ class ReportRoot(Entity):
         Metadata for the device configuration device activity report
         """
         return_type = ClientResult(self.context, Report())
-        qry = FunctionQuery(
-            self, "deviceConfigurationDeviceActivity", None, return_type
-        )
+        qry = FunctionQuery(self, "deviceConfigurationDeviceActivity", None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -37,9 +35,7 @@ class ReportRoot(Entity):
     def managed_device_enrollment_failure_details(self):
         """ """
         return_type = ClientResult(self.context, Report())
-        qry = FunctionQuery(
-            self, "managedDeviceEnrollmentFailureDetails", None, return_type
-        )
+        qry = FunctionQuery(self, "managedDeviceEnrollmentFailureDetails", None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -48,9 +44,7 @@ class ReportRoot(Entity):
         Note: The Microsoft Graph API for Intune requires an active Intune license for the tenant.
         """
         return_type = ClientResult(self.context, Report())
-        qry = FunctionQuery(
-            self, "managedDeviceEnrollmentTopFailures", {"period": period}, return_type
-        )
+        qry = FunctionQuery(self, "managedDeviceEnrollmentTopFailures", {"period": period}, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -64,9 +58,7 @@ class ReportRoot(Entity):
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
         return_type = ClientResult(self.context, str())
-        qry = FunctionQuery(
-            self, "getEmailActivityCounts", {"period": period}, return_type
-        )
+        qry = FunctionQuery(self, "getEmailActivityCounts", {"period": period}, return_type)
         self.context.add_query(qry)
         return qry.return_type
 
@@ -91,9 +83,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(
-            self, "getEmailActivityUserDetail", period, return_stream=True
-        )
+        qry = create_report_query(self, "getEmailActivityUserDetail", period, return_stream=True)
         self.context.add_query(qry)
         return qry.return_type
 
@@ -152,9 +142,7 @@ class ReportRoot(Entity):
         PowerPoint, OneNote, and Teams) in your organization.
         """
         return_type = ClientResult(self.context, bytes())
-        qry = FunctionQuery(
-            self, "getM365AppUserCounts", {"period": period}, return_type
-        )
+        qry = FunctionQuery(self, "getM365AppUserCounts", {"period": period}, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -163,9 +151,7 @@ class ReportRoot(Entity):
         Get a report that provides the details about which apps and platforms users have used.
         """
         return_type = ClientResult(self.context, bytes())
-        qry = FunctionQuery(
-            self, "getM365AppUserDetail", {"period": period_or_date}, return_type
-        )
+        qry = FunctionQuery(self, "getM365AppUserDetail", {"period": period_or_date}, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -274,9 +260,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(
-            self, "getMailboxUsageQuotaStatusMailboxCounts", period
-        )
+        qry = create_report_query(self, "getMailboxUsageQuotaStatusMailboxCounts", period)
         self.context.add_query(qry)
         return qry.return_type
 
@@ -359,9 +343,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(
-            self, "getTeamsTeamCounts", period, return_stream=True
-        )
+        qry = create_report_query(self, "getTeamsTeamCounts", period, return_stream=True)
         self.context.add_query(qry)
         return qry.return_type
 
@@ -371,9 +353,7 @@ class ReportRoot(Entity):
         Get the number of Microsoft Teams activities by activity type.
         The activities are performed by Microsoft Teams licensed users.
         """
-        qry = create_report_query(
-            self, "getTeamsUserActivityCounts", period, return_stream=True
-        )
+        qry = create_report_query(self, "getTeamsUserActivityCounts", period, return_stream=True)
         self.context.add_query(qry)
         return qry.return_type
 
@@ -382,9 +362,7 @@ class ReportRoot(Entity):
         """Container for navigation properties for Azure AD authentication methods resources."""
         return self.properties.get(
             "authenticationMethods",
-            AuthenticationMethodsRoot(
-                self.context, ResourcePath("authenticationMethods", self.resource_path)
-            ),
+            AuthenticationMethodsRoot(self.context, ResourcePath("authenticationMethods", self.resource_path)),
         )
 
     @property
@@ -400,7 +378,5 @@ class ReportRoot(Entity):
         """Container for navigation properties for Azure AD authentication methods resources."""
         return self.properties.get(
             "security",
-            SecurityReportsRoot(
-                self.context, ResourcePath("security", self.resource_path)
-            ),
+            SecurityReportsRoot(self.context, ResourcePath("security", self.resource_path)),
         )

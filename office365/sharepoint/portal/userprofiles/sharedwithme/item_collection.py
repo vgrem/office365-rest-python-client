@@ -26,9 +26,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
-    def get_shared_with_me_items(
-        context, top, skip_token=None, include_sharing_history=None
-    ):
+    def get_shared_with_me_items(context, top, skip_token=None, include_sharing_history=None):
         """
         :param office365.sharepoint.client_context.ClientContext context: Client context
         :param int top:

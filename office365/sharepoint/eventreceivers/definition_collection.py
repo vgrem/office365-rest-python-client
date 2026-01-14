@@ -13,9 +13,7 @@ class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition
         """Represents a collection of SP.EventReceiverDefinition objects that are used to enumerate the list of
         registered event receivers for Windows SharePoint Services objects that can have events.
         """
-        super(EventReceiverDefinitionCollection, self).__init__(
-            context, EventReceiverDefinition, resource_path, parent
-        )
+        super(EventReceiverDefinitionCollection, self).__init__(context, EventReceiverDefinition, resource_path, parent)
 
     def get_by_id(self, event_receiver_id):
         """Returns the event receiver with the specified identifier.

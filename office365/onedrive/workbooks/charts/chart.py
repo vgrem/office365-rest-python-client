@@ -62,9 +62,7 @@ class WorkbookChart(Entity):
         """Represents the data labels on the chart."""
         return self.properties.get(
             "dataLabels",
-            WorkbookChartDataLabels(
-                self.context, ResourcePath("dataLabels", self.resource_path)
-            ),
+            WorkbookChartDataLabels(self.context, ResourcePath("dataLabels", self.resource_path)),
         )
 
     @property
@@ -72,9 +70,7 @@ class WorkbookChart(Entity):
         """Represents the legend on the chart."""
         return self.properties.get(
             "legend",
-            WorkbookChartLegend(
-                self.context, ResourcePath("legend", self.resource_path)
-            ),
+            WorkbookChartLegend(self.context, ResourcePath("legend", self.resource_path)),
         )
 
     @property
@@ -104,9 +100,7 @@ class WorkbookChart(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

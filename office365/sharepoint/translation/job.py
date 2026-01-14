@@ -15,9 +15,7 @@ class TranslationJob(Entity):
         """
         super().__init__(
             context,
-            ServiceOperationPath(
-                "SP.Translation.TranslationJob", {"targetLanguage": target_language}
-            ),
+            ServiceOperationPath("SP.Translation.TranslationJob", {"targetLanguage": target_language}),
         )
 
     @staticmethod
@@ -32,9 +30,7 @@ class TranslationJob(Entity):
 
         return_type = ClientResult(context, bool())
         binding_type = TranslationJob(context, target_language)
-        qry = ServiceOperationQuery(
-            binding_type, "IsServiceEnabled", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "IsServiceEnabled", None, None, None, return_type)
         context.add_query(qry)
         return return_type
 

@@ -9,9 +9,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
     """Represents a collection of RoleAssignment resources."""
 
     def __init__(self, context, resource_path=None):
-        super(RoleAssignmentCollection, self).__init__(
-            context, RoleAssignment, resource_path
-        )
+        super(RoleAssignmentCollection, self).__init__(context, RoleAssignment, resource_path)
 
     def __getitem__(self, key):
         """
@@ -29,9 +27,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         """
         return RoleAssignment(
             self.context,
-            ServiceOperationPath(
-                "GetByPrincipalId", [principal_id], self.resource_path
-            ),
+            ServiceOperationPath("GetByPrincipalId", [principal_id], self.resource_path),
         )
 
     def add_role_assignment(self, principal_id, role_def_id):
@@ -41,9 +37,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         :param int role_def_id: Specifies the role definition of the role assignment.
         """
         payload = {"principalId": principal_id, "roleDefId": role_def_id}
-        qry = ServiceOperationQuery(
-            self, "AddRoleAssignment", payload, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "AddRoleAssignment", payload, None, None, None)
         self.context.add_query(qry)
         return self
 
@@ -54,8 +48,6 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         :param int principal_id: The ID of the user or group in the role assignment.
         """
         payload = {"principalId": principal_id, "roleDefId": role_def_id}
-        qry = ServiceOperationQuery(
-            self, "RemoveRoleAssignment", payload, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "RemoveRoleAssignment", payload, None, None, None)
         self.context.add_query(qry)
         return self

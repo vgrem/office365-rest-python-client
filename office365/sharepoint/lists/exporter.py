@@ -14,26 +14,20 @@ class ListExporter(object):
     """ """
 
     @staticmethod
-    def export(
-        source_list, destination_file, include_content=False, item_exported=None
-    ):
+    def export(source_list, destination_file, include_content=False, item_exported=None):
         # type: (List, IO, bool, Callable[[ListItem], None]) -> Self
         """Exports SharePoint List"""
         import zipfile
 
         def _append_file(name, data):
-            with zipfile.ZipFile(
-                destination_file.name, "a", zipfile.ZIP_DEFLATED
-            ) as zf:
+            with zipfile.ZipFile(destination_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr(name, data)
 
         def _download_content(list_item):
             # type: (ListItem) -> None
             def _after_downloaded(result):
                 # type: (ClientResult[AnyStr]) -> None
-                item_path = list_item.properties["FileRef"].replace(
-                    source_list.root_folder.serverRelativeUrl, ""
-                )
+                item_path = list_item.properties["FileRef"].replace(source_list.root_folder.serverRelativeUrl, "")
                 _append_file(item_path, result.value)
 
             list_item.file.get_content().after_execute(_after_downloaded)

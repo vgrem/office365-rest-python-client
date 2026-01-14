@@ -12,9 +12,5 @@ sharing_link_url = "https://mediadev8.sharepoint.com/:x:/s/team/EcEbi_M2xQJLng_b
 
 download_path = os.path.join(tempfile.mkdtemp(), "Report.csv")
 with open(download_path, "wb") as local_file:
-    file = (
-        client.web.get_file_by_guest_url(sharing_link_url)
-        .download(local_file)
-        .execute_query()
-    )
+    file = client.web.get_file_by_guest_url(sharing_link_url).download(local_file).execute_query()
 print("[Ok] file has been downloaded into: {0}".format(download_path))

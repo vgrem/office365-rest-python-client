@@ -43,18 +43,14 @@ class AppConsentRequest(Entity):
     def pending_scopes(self):
         # type: () -> ClientValueCollection[AppConsentRequestScope]
         """A list of pending scopes waiting for approval. Required."""
-        return self.properties.get(
-            "pendingScopes", ClientValueCollection(AppConsentRequestScope)
-        )
+        return self.properties.get("pendingScopes", ClientValueCollection(AppConsentRequestScope))
 
     @property
     def user_consent_requests(self):
         """A list of pending user consent requests."""
         return self.properties.get(
             "userConsentRequests",
-            UserConsentRequestCollection(
-                self.context, ResourcePath("userConsentRequests", self.resource_path)
-            ),
+            UserConsentRequestCollection(self.context, ResourcePath("userConsentRequests", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

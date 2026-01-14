@@ -23,7 +23,5 @@ class ListItemVersion(BaseItemVersion):
         """A collection of the fields and values for this version of the list item."""
         return self.properties.get(
             "fields",
-            EntityCollection(
-                self.context, FieldValueSet, ResourcePath("fields", self.resource_path)
-            ),
+            EntityCollection(self.context, FieldValueSet, ResourcePath("fields", self.resource_path)),
         )

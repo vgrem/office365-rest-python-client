@@ -18,9 +18,7 @@ class Planner(Entity):
         """Returns the plannerBuckets assigned to the user."""
         return self.properties.get(
             "buckets",
-            EntityCollection(
-                self.context, PlannerBucket, ResourcePath("buckets", self.resource_path)
-            ),
+            EntityCollection(self.context, PlannerBucket, ResourcePath("buckets", self.resource_path)),
         )
 
     @property
@@ -29,9 +27,7 @@ class Planner(Entity):
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "tasks",
-            PlannerTaskCollection(
-                self.context, ResourcePath("tasks", self.resource_path)
-            ),
+            PlannerTaskCollection(self.context, ResourcePath("tasks", self.resource_path)),
         )
 
     @property
@@ -40,7 +36,5 @@ class Planner(Entity):
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "plans",
-            PlannerPlanCollection(
-                self.context, ResourcePath("plans", self.resource_path)
-            ),
+            PlannerPlanCollection(self.context, ResourcePath("plans", self.resource_path)),
         )

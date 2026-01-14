@@ -22,9 +22,7 @@ class TermCollection(EntityCollection[Term]):
         self.add_child(return_type)
 
         def _set_loaded():
-            term_create_info = {
-                "labels": ClientValueCollection(LocalizedLabel, [LocalizedLabel(label)])
-            }
+            term_create_info = {"labels": ClientValueCollection(LocalizedLabel, [LocalizedLabel(label)])}
             qry = CreateEntityQuery(self, term_create_info, return_type)
             self.context.add_query(qry)
 

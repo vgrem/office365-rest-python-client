@@ -69,9 +69,7 @@ class ViewElement(object):
         self.RowLimit = row_limit
 
     def __str__(self):
-        return '<View Scope="{0}"><Query>{1}</Query></View>'.format(
-            self.Scope, str(self.Query)
-        )
+        return '<View Scope="{0}"><Query>{1}</Query></View>'.format(self.Scope, str(self.Query))
 
 
 class CamlQuery(ClientValue):
@@ -110,9 +108,7 @@ class CamlQuery(ClientValue):
         :param ViewScope scope: Specifies whether and how files and subfolders are included in a view.
         """
         qry = CamlQuery()
-        qry.ViewXml = '<View Scope="{0}"><Query>{1}</Query></View>'.format(
-            scope, query_expr
-        )
+        qry.ViewXml = '<View Scope="{0}"><Query>{1}</Query></View>'.format(scope, query_expr)
         return qry
 
     @staticmethod

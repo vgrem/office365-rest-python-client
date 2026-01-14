@@ -17,9 +17,7 @@ class FileVersion(Entity):
         return self.version_label
 
     def __repr__(self):
-        return "Is Current: {0}, {1}".format(
-            self.is_current_version, self.version_label
-        )
+        return "Is Current: {0}, {1}".format(self.is_current_version, self.version_label)
 
     def download(self, file_object):
         # type: (IO) -> Self
@@ -39,9 +37,7 @@ class FileVersion(Entity):
         # type: () -> ClientResult[AnyStr]
         """Opens the file as a stream."""
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStream", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStream", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -49,9 +45,7 @@ class FileVersion(Entity):
         # type: (int) -> ClientResult[AnyStr]
         """Opens the file as a stream."""
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStreamWithOptions", [open_options], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStreamWithOptions", [open_options], None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -113,9 +107,7 @@ class FileVersion(Entity):
         super(FileVersion, self).set_property(key, value, persist_changes)
         if key.lower() == self.property_ref_name.lower():
             if self._resource_path is None:
-                self._resource_path = EntityPath(
-                    value, self.parent_collection.resource_path
-                )
+                self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

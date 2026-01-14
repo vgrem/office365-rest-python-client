@@ -41,9 +41,7 @@ class Call(Entity):
         payload = {
             "clientContext": client_context,
         }
-        qry = ServiceOperationQuery(
-            self, "cancelMediaProcessing", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "cancelMediaProcessing", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -84,9 +82,7 @@ class Call(Entity):
         """
         return_type = UpdateRecordingStatusOperation(self.context)
         payload = {"status": status, "clientContext": client_context}
-        qry = ServiceOperationQuery(
-            self, "updateRecordingStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "updateRecordingStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

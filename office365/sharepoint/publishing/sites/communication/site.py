@@ -34,9 +34,7 @@ class CommunicationSite(Entity):
         """
         request = CommunicationSiteCreationRequest(title, site_url, description)
         return_type = ClientResult(self.context, CommunicationSiteCreationResponse())
-        qry = ServiceOperationQuery(
-            self, "Create", None, {"request": request}, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "Create", None, {"request": request}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -59,9 +57,7 @@ class CommunicationSite(Entity):
         If the SiteStatus returns 3 or 0, the Communication site failed to be created.
         """
         response = ClientResult(self.context, CommunicationSiteCreationResponse())
-        qry = ServiceOperationQuery(
-            self, "Status", None, {"url": site_url}, None, response
-        )
+        qry = ServiceOperationQuery(self, "Status", None, {"url": site_url}, None, response)
 
         def _construct_request(request):
             # type: (RequestOptions) -> None
@@ -72,9 +68,7 @@ class CommunicationSite(Entity):
         return response
 
     def enable(self, design_package_id):
-        qry = ServiceOperationQuery(
-            self, "Enable", None, {"designPackageId": design_package_id}
-        )
+        qry = ServiceOperationQuery(self, "Enable", None, {"designPackageId": design_package_id})
         self.context.add_query(qry)
         return self
 

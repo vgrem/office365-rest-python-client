@@ -12,7 +12,5 @@ class Todo(Entity):
         """The task lists in the users mailbox."""
         return self.properties.get(
             "lists",
-            TodoTaskListCollection(
-                self.context, ResourcePath("lists", self.resource_path)
-            ),
+            TodoTaskListCollection(self.context, ResourcePath("lists", self.resource_path)),
         )

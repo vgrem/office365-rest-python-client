@@ -36,9 +36,7 @@ class SharingInformation(Entity):
     @property
     def domain_restriction_settings(self):
         """Whether DomainRestrictionSettings is used to limit the external Users set by Admin."""
-        return self.properties.get(
-            "anonymousLinkExpirationRestrictionDays", DomainRestrictionSettings()
-        )
+        return self.properties.get("anonymousLinkExpirationRestrictionDays", DomainRestrictionSettings())
 
     @property
     def permissions_information(self):
@@ -52,9 +50,7 @@ class SharingInformation(Entity):
         """PickerSettings used by the PeoplePicker Control."""
         return self.properties.get(
             "pickerSettings",
-            PickerSettings(
-                self.context, ResourcePath("pickerSettings", self.resource_path)
-            ),
+            PickerSettings(self.context, ResourcePath("pickerSettings", self.resource_path)),
         )
 
     @property
@@ -67,9 +63,7 @@ class SharingInformation(Entity):
     @property
     def sharing_link_templates(self):
         """"""
-        return self.properties.get(
-            "sharingLinkTemplates", SharingLinkDefaultTemplatesCollection()
-        )
+        return self.properties.get("sharingLinkTemplates", SharingLinkDefaultTemplatesCollection())
 
     def get_property(self, name, default_value=None):
         if default_value is None:

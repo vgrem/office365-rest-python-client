@@ -24,11 +24,7 @@ class TermGroup(TaxonomyItem):
 
         def _sets_loaded(col):
             # type: (TermSetCollection) -> None
-            [
-                return_type.add_child(ts)
-                for ts in col
-                if str(ts.localized_names[0]) == label
-            ]
+            [return_type.add_child(ts) for ts in col if str(ts.localized_names[0]) == label]
 
         def _group_resolved():
             self.term_sets.get().after_execute(_sets_loaded)
@@ -44,9 +40,7 @@ class TermGroup(TaxonomyItem):
         """
         return self.properties.get(
             "termSets",
-            TaxonomyItemCollection(
-                self.context, TermSet, ResourcePath("termSets", self.resource_path)
-            ),
+            TaxonomyItemCollection(self.context, TermSet, ResourcePath("termSets", self.resource_path)),
         )
 
     @property

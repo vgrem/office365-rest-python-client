@@ -19,6 +19,4 @@ class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
         :param list[Pkcs12CertificateInformation] certificates:
         """
         super(ClientCertificateAuthentication, self).__init__()
-        self.certificateList = ClientValueCollection(
-            Pkcs12CertificateInformation, certificates
-        )
+        self.certificateList = ClientValueCollection(Pkcs12CertificateInformation, certificates)

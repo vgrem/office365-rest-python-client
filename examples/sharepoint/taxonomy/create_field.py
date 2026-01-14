@@ -16,9 +16,7 @@ term_set_id = "3b712032-95c4-4bb5-952d-f85ae9288f99"
 tax_field_name = "Country"  # create_unique_name("Country")
 
 print("1. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
-tax_field = custom_list.fields.create_taxonomy_field(
-    tax_field_name, term_set_id
-).execute_query()
+tax_field = custom_list.fields.create_taxonomy_field(tax_field_name, term_set_id).execute_query()
 
 
 print("2. Adding a taxonomy field into list '{0}'...".format(custom_list.title))

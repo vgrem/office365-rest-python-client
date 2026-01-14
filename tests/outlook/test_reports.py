@@ -22,9 +22,7 @@ class TestOutlookReports(GraphTestCase):
 
     @requires_delegated_permission("Reports.Read.All")
     def test3_get_email_activity_user_detail(self):
-        result = self.client.reports.get_email_activity_user_detail(
-            "D7"
-        ).execute_query()
+        result = self.client.reports.get_email_activity_user_detail("D7").execute_query()
         self.assertIsNotNone(result.value)
 
     @requires_delegated_permission("Reports.Read.All")

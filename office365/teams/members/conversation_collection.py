@@ -4,9 +4,7 @@ from office365.teams.members.conversation import ConversationMember
 
 class ConversationMemberCollection(EntityCollection[ConversationMember]):
     def __init__(self, context, resource_path=None):
-        super(ConversationMemberCollection, self).__init__(
-            context, ConversationMember, resource_path
-        )
+        super(ConversationMemberCollection, self).__init__(context, ConversationMember, resource_path)
 
     def add(self, user, roles, visible_history_start_datetime=None):
         """

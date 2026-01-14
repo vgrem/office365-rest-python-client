@@ -16,9 +16,7 @@ class TestListItem(GraphTestCase):
     def setUpClass(cls):
         super(TestListItem, cls).setUpClass()
         site = cls.client.sites.get_by_url(test_team_site_url)
-        cls.target_list = site.lists.add(
-            create_unique_name("Orders"), ListTemplateType.genericList
-        ).execute_query()
+        cls.target_list = site.lists.add(create_unique_name("Orders"), ListTemplateType.genericList).execute_query()
 
     @classmethod
     def tearDownClass(cls):

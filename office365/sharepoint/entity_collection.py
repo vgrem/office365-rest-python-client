@@ -15,17 +15,13 @@ class EntityCollection(ClientObjectCollection[T]):
 
     def __init__(self, context, item_type, resource_path=None, parent=None):
         # type: (ClientContext, Type[T], Optional[ResourcePath], Optional[Entity]) -> None
-        super(EntityCollection, self).__init__(
-            context, item_type, resource_path, parent
-        )
+        super(EntityCollection, self).__init__(context, item_type, resource_path, parent)
 
     def create_typed_object(self, initial_properties=None, resource_path=None):
         # type: (Optional[dict], Optional[ResourcePath]) -> T
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super(EntityCollection, self).create_typed_object(initial_properties, resource_path)
 
     @property
     def context(self):

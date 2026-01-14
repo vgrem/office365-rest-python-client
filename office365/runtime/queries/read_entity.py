@@ -8,18 +8,14 @@ class ReadEntityQuery(ClientQuery[T]):
         """
         Read client object query
         """
-        super(ReadEntityQuery, self).__init__(
-            return_type.context, return_type, None, None, return_type
-        )
+        super(ReadEntityQuery, self).__init__(return_type.context, return_type, None, None, return_type)
         self._query_options = None
         self._properties_to_include = properties_to_include
 
     @property
     def query_options(self):
         if self._query_options is None:
-            self._query_options = QueryOptions.build(
-                self._return_type, self._properties_to_include
-            )
+            self._query_options = QueryOptions.build(self._return_type, self._properties_to_include)
         return self._query_options
 
     @property
@@ -29,9 +25,7 @@ class ReadEntityQuery(ClientQuery[T]):
             from office365.runtime.client_value import ClientValue
             from office365.runtime.paths.service_operation import ServiceOperationPath
 
-            if isinstance(self.path, ServiceOperationPath) and isinstance(
-                self.path.parameters, ClientValue
-            ):
+            if isinstance(self.path, ServiceOperationPath) and isinstance(self.path.parameters, ClientValue):
                 delimiter = "&"
             return self.binding_type.resource_url + delimiter + str(self.query_options)
         else:

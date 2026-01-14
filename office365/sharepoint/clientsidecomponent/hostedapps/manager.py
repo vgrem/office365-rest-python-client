@@ -10,9 +10,7 @@ class HostedAppsManager(Entity):
 
         :param str id_: The Id of the hosted app to get.
         """
-        return HostedApp(
-            self.context, ServiceOperationPath("GetById", [id_], self.resource_path)
-        )
+        return HostedApp(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
     @property
     def entity_type_name(self):

@@ -23,9 +23,7 @@ class User(Principal):
             return_type.set_property("__siteUrl", person_props.personal_url)
 
         def _get_properties_for():
-            self.context.people_manager.get_properties_for(
-                self.login_name
-            ).after_execute(_person_props_loaded)
+            self.context.people_manager.get_properties_for(self.login_name).after_execute(_person_props_loaded)
 
         self.ensure_property("LoginName", _get_properties_for)
         return return_type

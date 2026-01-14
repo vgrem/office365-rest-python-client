@@ -26,9 +26,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return return_type
 
-    def associate_with_hub_sites(
-        self, hub_site_urls, propagate_to_existing_lists=False
-    ):
+    def associate_with_hub_sites(self, hub_site_urls, propagate_to_existing_lists=False):
         """
         Associate a published content type present in a content type hub with a list of hub sites.
         Note: This feature is limited to tenants that have a SharePoint Syntex license.
@@ -136,9 +134,7 @@ class ContentType(BaseItem):
     @property
     def base(self):
         """Parent contentType from which this content type is derived."""
-        return self.properties.get(
-            "base", ContentType(self.context, ResourcePath(self.resource_path))
-        )
+        return self.properties.get("base", ContentType(self.context, ResourcePath(self.resource_path)))
 
     @property
     def base_types(self):
@@ -146,9 +142,7 @@ class ContentType(BaseItem):
         """The collection of content types that are ancestors of this content type."""
         return self.properties.get(
             "baseTypes",
-            EntityCollection(
-                self.context, ContentType, ResourcePath("baseTypes", self.resource_path)
-            ),
+            EntityCollection(self.context, ContentType, ResourcePath("baseTypes", self.resource_path)),
         )
 
     @property

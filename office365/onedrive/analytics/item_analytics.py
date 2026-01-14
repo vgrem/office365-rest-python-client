@@ -34,9 +34,7 @@ class ItemAnalytics(Entity):
         """Analytics for the last seven days."""
         return self.properties.get(
             "lastSevenDays",
-            ItemActivityStat(
-                self.context, ResourcePath("lastSevenDays", self.resource_path)
-            ),
+            ItemActivityStat(self.context, ResourcePath("lastSevenDays", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

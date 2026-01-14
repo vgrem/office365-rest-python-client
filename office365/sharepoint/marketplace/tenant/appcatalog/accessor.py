@@ -62,9 +62,7 @@ class TenantCorporateCatalogAccessor(Entity):
         """"""
         return_type = ClientResult(self.context, SPStoreAppResponseInformation())
         payload = {"AppRequestInfo": SPStoreAppRequestInformation()}
-        qry = ServiceOperationQuery(
-            self, "AppRequests", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AppRequests", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -75,9 +73,7 @@ class TenantCorporateCatalogAccessor(Entity):
         """
         return_type = TeamsPackageDownload(self.context)
         payload = {"id": _id}
-        qry = ServiceOperationQuery(
-            self, "DownloadTeamsSolution", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DownloadTeamsSolution", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -86,9 +82,7 @@ class TenantCorporateCatalogAccessor(Entity):
         :param str item_unique_id:
         """
         params = {"itemUniqueId": item_unique_id}
-        return CorporateCatalogAppMetadata(
-            self.context, ServiceOperationPath("GetAppById", params, self.resource_path)
-        )
+        return CorporateCatalogAppMetadata(self.context, ServiceOperationPath("GetAppById", params, self.resource_path))
 
     def is_app_upgrade_available(self, _id):
         """
@@ -97,9 +91,7 @@ class TenantCorporateCatalogAccessor(Entity):
         """
         return_type = ClientResult(self.context, AppUpgradeAvailability())
         payload = {"id": _id}
-        qry = ServiceOperationQuery(
-            self, "IsAppUpgradeAvailable", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "IsAppUpgradeAvailable", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -120,9 +112,7 @@ class TenantCorporateCatalogAccessor(Entity):
         Sends email notifications about the status of an app request in the corporate app catalog
         :param str request_guid:
         """
-        qry = ServiceOperationQuery(
-            self, "SendAppRequestStatusNotificationEmail", [request_guid]
-        )
+        qry = ServiceOperationQuery(self, "SendAppRequestStatusNotificationEmail", [request_guid])
         self.context.add_query(qry)
         return self
 
@@ -131,9 +121,7 @@ class TenantCorporateCatalogAccessor(Entity):
         """Returns the apps available in this corporate catalog."""
         return self.properties.get(
             "AvailableApps",
-            CorporateCatalogAppMetadataCollection(
-                self.context, ResourcePath("AvailableApps", self.resource_path)
-            ),
+            CorporateCatalogAppMetadataCollection(self.context, ResourcePath("AvailableApps", self.resource_path)),
         )
 
     @property
@@ -168,6 +156,4 @@ class TenantCorporateCatalogAccessor(Entity):
                 "SiteCollectionAppCatalogsSites": self.site_collection_app_catalogs_sites,
             }
             default_value = property_mapping.get(name, None)
-        return super(TenantCorporateCatalogAccessor, self).get_property(
-            name, default_value
-        )
+        return super(TenantCorporateCatalogAccessor, self).get_property(name, default_value)

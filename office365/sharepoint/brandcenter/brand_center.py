@@ -20,9 +20,7 @@ class BrandCenter(Entity):
     def configuration(self):
         """ """
         return_type = ClientResult(self.context, BrandCenterConfiguration())
-        qry = ServiceOperationQuery(
-            self, "Configuration", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "Configuration", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -30,17 +28,13 @@ class BrandCenter(Entity):
         """ """
         return_type = ClientResult(self.context, ThemeData())
         payload = {"themeData": theme_data}
-        qry = ServiceOperationQuery(
-            self, "AddSiteTheme", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddSiteTheme", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_themes(self):
         """ """
         return_type = ClientResult(self.context, SiteThemes())
-        qry = ServiceOperationQuery(
-            self, "GetSiteThemes", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteThemes", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

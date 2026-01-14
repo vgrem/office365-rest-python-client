@@ -9,12 +9,8 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 
 
 print("Creating a temporary folders in a Documents library ...")
-folder_from = ctx.web.default_document_library().root_folder.add(
-    create_unique_name("in")
-)
-folder_to_parent = ctx.web.default_document_library().root_folder.add(
-    create_unique_name("out")
-)
+folder_from = ctx.web.default_document_library().root_folder.add(create_unique_name("in"))
+folder_to_parent = ctx.web.default_document_library().root_folder.add(create_unique_name("out"))
 # folder_to_url = "Shared Documents/archive"
 
 print("Moving folder...")

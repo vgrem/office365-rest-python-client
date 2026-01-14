@@ -28,9 +28,7 @@ class FolderColoring(Entity):
             "path": SPResPath(decoded_url),
             "coloringInformation": coloring_information,
         }
-        qry = ServiceOperationQuery(
-            self, "CreateFolder", parameters_type=payload, return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateFolder", parameters_type=payload, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 

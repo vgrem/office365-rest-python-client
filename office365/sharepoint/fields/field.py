@@ -53,10 +53,7 @@ class Field(Entity):
         if isinstance(type_id_or_name, int):
             return field_known_types.get(type_id_or_name, Field)
         else:
-            if (
-                type_id_or_name == "TaxonomyFieldType"
-                or type_id_or_name == "TaxonomyFieldTypeMulti"
-            ):
+            if type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
                 return TaxonomyField
             elif type_id_or_name == "Thumbnail":
                 from office365.sharepoint.fields.thumbnail import FieldThumbnail
@@ -146,9 +143,7 @@ class Field(Entity):
         """Gets the resource object corresponding to the Description property for a field"""
         return self.properties.get(
             "DescriptionResource",
-            UserResource(
-                self.context, ResourcePath("DescriptionResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
     @property
@@ -317,9 +312,7 @@ class Field(Entity):
         """Gets the resource object corresponding to the Title property for a field"""
         return self.properties.get(
             "TitleResource",
-            UserResource(
-                self.context, ResourcePath("TitleResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
     @property

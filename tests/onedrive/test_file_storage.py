@@ -10,9 +10,7 @@ class TestFileStorage(GraphTestCase):
 
     @requires_delegated_permission("FileStorageContainer.Selected")
     def test1_create_file_storage_container(self):
-        result = self.client.storage.file_storage.containers.add(
-            "My Application Storage Container"
-        ).execute_query()
+        result = self.client.storage.file_storage.containers.add("My Application Storage Container").execute_query()
         self.assertIsNotNone(result.resource_path)
         self.__class__.target_container = result
 

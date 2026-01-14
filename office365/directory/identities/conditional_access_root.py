@@ -13,9 +13,7 @@ class ConditionalAccessRoot(Entity):
         """The entry point for the Conditional Access (CA) object model."""
         return self.properties.get(
             "authenticationStrength",
-            ConditionalAccessRoot(
-                self.context, ResourcePath("authenticationStrength", self.resource_path)
-            ),
+            ConditionalAccessRoot(self.context, ResourcePath("authenticationStrength", self.resource_path)),
         )
 
     @property

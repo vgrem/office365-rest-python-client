@@ -15,12 +15,8 @@ class CloudCommunications(Entity):
 
         :param list[str] ids: The user object IDs.
         """
-        return_type = EntityCollection(
-            self.context, Presence, ResourcePath("presences", self.resource_path)
-        )
-        qry = ServiceOperationQuery(
-            self, "getPresencesByUserId", None, {"ids": ids}, None, return_type
-        )
+        return_type = EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path))
+        qry = ServiceOperationQuery(self, "getPresencesByUserId", None, {"ids": ids}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -48,9 +44,7 @@ class CloudCommunications(Entity):
         """ " """
         return self.properties.get(
             "onlineMeetings",
-            OnlineMeetingCollection(
-                self.context, ResourcePath("onlineMeetings", self.resource_path)
-            ),
+            OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path)),
         )
 
     @property
@@ -58,9 +52,7 @@ class CloudCommunications(Entity):
         """ " """
         return self.properties.get(
             "presences",
-            EntityCollection(
-                self.context, Presence, ResourcePath("presences", self.resource_path)
-            ),
+            EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

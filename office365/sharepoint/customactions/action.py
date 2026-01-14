@@ -24,9 +24,7 @@ class UserCustomAction(Entity):
         """Gets the SP.UserResource object that corresponds to the Description for this object."""
         return self.properties.get(
             "DescriptionResource",
-            UserResource(
-                self.context, ResourcePath("DescriptionResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
     @property
@@ -34,7 +32,5 @@ class UserCustomAction(Entity):
         """Returns the UserResource object that corresponds to the Title for this object."""
         return self.properties.get(
             "TitleResource",
-            UserResource(
-                self.context, ResourcePath("TitleResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )

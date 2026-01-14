@@ -16,9 +16,7 @@ class SiteSharingReportHelper(Entity):
         # type: (ClientContext) -> ClientResult[SiteSharingReportStatus]
         return_type = ClientResult(context, SiteSharingReportStatus())
         binding_type = SiteSharingReportHelper(context)
-        qry = ServiceOperationQuery(
-            binding_type, "CancelSharingReportJob", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "CancelSharingReportJob", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 

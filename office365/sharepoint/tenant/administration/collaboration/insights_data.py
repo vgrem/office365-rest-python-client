@@ -14,13 +14,9 @@ class CollaborationInsightsData(ClientValue):
         :param str last_report_date:
         :param list[CollaborativeUsers] collaborative_users:
         """
-        self.collaborativeUsers = ClientValueCollection(
-            CollaborativeUsers, collaborative_users
-        )
+        self.collaborativeUsers = ClientValueCollection(CollaborativeUsers, collaborative_users)
         self.lastReportDate = last_report_date
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsData"
-        )
+        return "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsData"

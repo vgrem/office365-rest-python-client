@@ -29,9 +29,7 @@ class WebCollection(EntityCollection[Web]):
     def create_typed_object(self, initial_properties=None, resource_path=None):
         if resource_path is None:
             resource_path = WebPath(self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super(EntityCollection, self).create_typed_object(initial_properties, resource_path)
 
     @property
     def resource_url(self):

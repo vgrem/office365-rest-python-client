@@ -22,9 +22,7 @@ class SiteScriptSerializationInfo(ClientValue):
         self.IncludedLists = StringCollection(included_lists)
         self.IncludeLinksToExportedItems = include_links_to_exported_items
         self.IncludeRegionalSettings = include_regional_settings
-        self.IncludeSiteExternalSharingCapability = (
-            include_site_external_sharing_capability
-        )
+        self.IncludeSiteExternalSharingCapability = include_site_external_sharing_capability
         self.IncludeTheme = include_theme
 
     @property

@@ -33,9 +33,7 @@ class WorkbookWorksheet(Entity):
         :param int row: Row number of the cell to be retrieved. Zero-indexed.
         :param int column: Column number of the cell to be retrieved. Zero-indexed.
         """
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         params = {"row": row, "column": column}
         qry = FunctionQuery(self, "cell", method_params=params, return_type=return_type)
         self.context.add_query(qry)
@@ -43,13 +41,9 @@ class WorkbookWorksheet(Entity):
 
     def range(self, address=None):
         """Gets the range object specified by the address or name."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         params = {"address": address}
-        qry = FunctionQuery(
-            self, "range", method_params=params, return_type=return_type
-        )
+        qry = FunctionQuery(self, "range", method_params=params, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -70,9 +64,7 @@ class WorkbookWorksheet(Entity):
         """Returns collection of charts that are part of the worksheet"""
         return self.properties.get(
             "charts",
-            EntityCollection(
-                self.context, WorkbookChart, ResourcePath("charts", self.resource_path)
-            ),
+            EntityCollection(self.context, WorkbookChart, ResourcePath("charts", self.resource_path)),
         )
 
     @property
@@ -100,9 +92,7 @@ class WorkbookWorksheet(Entity):
         """Collection of tables that are part of the worksheet."""
         return self.properties.get(
             "tables",
-            WorkbookTableCollection(
-                self.context, ResourcePath("tables", self.resource_path)
-            ),
+            WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
     @property
@@ -123,9 +113,7 @@ class WorkbookWorksheet(Entity):
         """Returns sheet protection object for a worksheet."""
         return self.properties.get(
             "protection",
-            WorkbookWorksheetProtection(
-                self.context, ResourcePath("protection", self.resource_path)
-            ),
+            WorkbookWorksheetProtection(self.context, ResourcePath("protection", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

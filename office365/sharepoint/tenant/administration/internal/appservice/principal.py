@@ -18,9 +18,7 @@ from office365.sharepoint.tenant.administration.internal.appservice.permission_r
 
 class SPOWebAppServicePrincipal(Entity):
     def __init__(self, context):
-        stat_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal"
-        )
+        stat_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal")
         super(SPOWebAppServicePrincipal, self).__init__(context, stat_path)
 
     def update_spfx_client_secret(self, secret_value):

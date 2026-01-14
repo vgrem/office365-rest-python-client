@@ -47,13 +47,9 @@ class AzureEnvironment(object):
     @classmethod
     def get_graph_authority(cls, env):
         # type: (str) -> str
-        return cls._authority_endpoints.get(env, cls._authority_endpoints["Global"])[
-            "graph"
-        ]
+        return cls._authority_endpoints.get(env, cls._authority_endpoints["Global"])["graph"]
 
     @classmethod
     def get_login_authority(cls, env):
         # type: (str) -> str
-        return cls._authority_endpoints.get(env, cls._authority_endpoints["Global"])[
-            "login"
-        ]
+        return cls._authority_endpoints.get(env, cls._authority_endpoints["Global"])["login"]

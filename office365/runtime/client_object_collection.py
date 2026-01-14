@@ -37,20 +37,12 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         # type: (Optional[dict], Optional[ResourcePath]) -> T
         """Create an object from the item_type."""
         if self._item_type is None:
-            raise AttributeError(
-                "No class model for entity type '{0}' was found".format(self._item_type)
-            )
+            raise AttributeError("No class model for entity type '{0}' was found".format(self._item_type))
         if resource_path is None:
             resource_path = ResourcePath(None, self.resource_path)
-        client_object = self._item_type(
-            context=self.context, resource_path=resource_path
-        )  # type: T
+        client_object = self._item_type(context=self.context, resource_path=resource_path)  # type: T
         if initial_properties is not None:
-            [
-                client_object.set_property(k, v)
-                for k, v in initial_properties.items()
-                if v is not None
-            ]
+            [client_object.set_property(k, v) for k, v in initial_properties.items() if v is not None]
         return client_object
 
     def set_property(self, key, value, persist_changes=False):
@@ -60,10 +52,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         else:
             client_object = self.create_typed_object()
             self.add_child(client_object)
-            [
-                client_object.set_property(k, v, persist_changes)
-                for k, v in value.items()
-            ]
+            [client_object.set_property(k, v, persist_changes) for k, v in value.items()]
         return self
 
     def add_child(self, client_object):
@@ -195,10 +184,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             if len(col) < 1:
                 message = "Not found for filter: {0}".format(self.query_options.filter)
                 raise ValueError(message)
-            [
-                return_type.set_property(k, v, False)
-                for k, v in col[0].properties.items()
-            ]
+            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
@@ -220,10 +206,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             elif len(col) > 1:
                 message = "Ambiguous match found for filter: {0}".format(expression)
                 raise ValueError(message)
-            [
-                return_type.set_property(k, v, False)
-                for k, v in col[0].properties.items()
-            ]
+            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
 
         self.get().filter(expression).top(2).after_execute(_after_loaded)
         return return_type
@@ -250,7 +233,5 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Returns server type name for the collection of entities"""
         if self._entity_type_name is None:
             client_object = self.create_typed_object()
-            self._entity_type_name = "Collection({0})".format(
-                client_object.entity_type_name
-            )
+            self._entity_type_name = "Collection({0})".format(client_object.entity_type_name)
         return self._entity_type_name

@@ -3,9 +3,7 @@ from office365.runtime.types.collections import StringCollection
 
 
 class HomeSitesDetails(ClientValue):
-    def __init__(
-        self, audiences=None, is_in_draft_mode=None, title=None, url=None, web_id=None
-    ):
+    def __init__(self, audiences=None, is_in_draft_mode=None, title=None, url=None, web_id=None):
         """
         :param list[str] audiences:
         :param bool is_in_draft_mode:

@@ -28,9 +28,7 @@ class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
 
     def get_all_copilot_agent_insights_reports_metadata(self):
         """ """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPOCopilotAgentInsightsReportMetadata)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPOCopilotAgentInsightsReportMetadata))
         qry = ServiceOperationQuery(
             self,
             "GetAllCopilotAgentInsightsReportsMetadata",

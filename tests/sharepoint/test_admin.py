@@ -8,9 +8,7 @@ from tests import test_admin_credentials, test_admin_site_url
 class TestAdmin(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = ClientContext(test_admin_site_url).with_credentials(
-            test_admin_credentials
-        )
+        cls.client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
         cls.tenant = Tenant(cls.client)
 
     def test1_get_analytics_usage(self):

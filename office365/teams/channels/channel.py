@@ -22,9 +22,7 @@ class Channel(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
-    def does_user_have_access(
-        self, user_id=None, tenant_id=None, user_principal_name=None
-    ):
+    def does_user_have_access(self, user_id=None, tenant_id=None, user_principal_name=None):
         # type: (str, str, str) -> ClientResult[bool]
         """Determine whether a user has access to a shared channel.
 
@@ -57,9 +55,7 @@ class Channel(Entity):
         To remove the email address of a channel, use the removeEmail method.
         """
         return_type = ClientResult(self.context, ProvisionChannelEmailResult())
-        qry = ServiceOperationQuery(
-            self, "provisionEmail", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "provisionEmail", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -153,9 +149,7 @@ class Channel(Entity):
         """A collection of all the tabs in the channel. A navigation property."""
         return self.properties.get(
             "tabs",
-            EntityCollection(
-                self.context, TeamsTab, ResourcePath("tabs", self.resource_path)
-            ),
+            EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
         )
 
     @property
@@ -164,9 +158,7 @@ class Channel(Entity):
         """A collection of all the messages in the channel."""
         return self.properties.get(
             "messages",
-            EntityCollection(
-                self.context, ChatMessage, ResourcePath("messages", self.resource_path)
-            ),
+            EntityCollection(self.context, ChatMessage, ResourcePath("messages", self.resource_path)),
         )
 
     @property

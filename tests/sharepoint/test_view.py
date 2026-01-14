@@ -28,9 +28,7 @@ class TestView(SPTestCase):
             ListCreationInformation("Tasks", None, ListTemplateType.Tasks),
         )
 
-        field_info = FieldCreationInformation(
-            "TaskComment_" + uuid.uuid4().hex, FieldType.Note
-        )
+        field_info = FieldCreationInformation("TaskComment_" + uuid.uuid4().hex, FieldType.Note)
         cls.target_field = cls.target_list.fields.add(field_info).execute_query()
 
     @classmethod
@@ -46,8 +44,7 @@ class TestView(SPTestCase):
         view_properties.Title = create_unique_name("My Tasks")
         view_properties.PersonalView = True
         view_properties.Query = (
-            "<Where><Eq><FieldRef ID='AssignedTo' /><Value "
-            "Type='Integer'><UserID/></Value></Eq></Where> "
+            "<Where><Eq><FieldRef ID='AssignedTo' /><Value Type='Integer'><UserID/></Value></Eq></Where> "
         )
 
         new_view = self.target_list.views.add(view_properties).execute_query()
@@ -75,11 +72,7 @@ class TestView(SPTestCase):
         view_to_update = self.__class__.target_view
         view_to_update.set_property("Title", title_updated).update().execute_query()
 
-        result = (
-            self.target_list.views.filter("Title eq '{0}'".format(title_updated))
-            .get()
-            .execute_query()
-        )
+        result = self.target_list.views.filter("Title eq '{0}'".format(title_updated)).get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test8_get_view_fields(self):
@@ -90,25 +83,19 @@ class TestView(SPTestCase):
 
     def test9_add_view_field(self):
         field_name = self.__class__.target_field.internal_name
-        self.__class__.target_view.view_fields.add_view_field(
-            field_name
-        ).execute_query()
+        self.__class__.target_view.view_fields.add_view_field(field_name).execute_query()
         after_view_fields = self.__class__.target_view.view_fields.get().execute_query()
         self.assertEqual(self.__class__.view_fields_count + 1, len(after_view_fields))
 
     def test_10_move_view_field_to(self):
         field_name = self.__class__.target_field.internal_name
-        self.__class__.target_view.view_fields.move_view_field_to(
-            field_name, 2
-        ).execute_query()
+        self.__class__.target_view.view_fields.move_view_field_to(field_name, 2).execute_query()
         after_view_fields = self.__class__.target_view.view_fields.get().execute_query()
         self.assertEqual(after_view_fields[2], field_name)
 
     def test_11_remove_view_field(self):
         field_name = self.__class__.target_field.internal_name
-        self.__class__.target_view.view_fields.remove_view_field(
-            field_name
-        ).execute_query()
+        self.__class__.target_view.view_fields.remove_view_field(field_name).execute_query()
         after_view_fields = self.__class__.target_view.view_fields.get().execute_query()
         self.assertEqual(self.__class__.view_fields_count, len(after_view_fields))
 

@@ -49,9 +49,7 @@ class AbstractFile(Entity):
         """Immediately writes content of file"""
         if not self.is_property_available("ServerRelativeUrl"):
             raise ValueError
-        response = File.save_binary(
-            self.context, self.properties["ServerRelativeUrl"], content
-        )
+        response = File.save_binary(self.context, self.properties["ServerRelativeUrl"], content)
         return response
 
 
@@ -88,9 +86,7 @@ class File(AbstractFile):
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
 
-            Web.create_anonymous_link(
-                self.context, self.serverRelativeUrl, is_edit_link, return_type
-            )
+            Web.create_anonymous_link(self.context, self.serverRelativeUrl, is_edit_link, return_type)
 
         self.ensure_property("ServerRelativeUrl", _file_loaded)
         return return_type
@@ -149,9 +145,7 @@ class File(AbstractFile):
         return_type = ClientResult(self.context)
 
         def _loaded():
-            return_type.set_property(
-                "__value", self.listItemAllFields.properties.get("EncodedAbsUrl")
-            )
+            return_type.set_property("__value", self.listItemAllFields.properties.get("EncodedAbsUrl"))
 
         self.listItemAllFields.ensure_property("EncodedAbsUrl", _loaded)
         return return_type
@@ -170,9 +164,7 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, str())
         params = {"action": action}
-        qry = ServiceOperationQuery(
-            self, "GetWOPIFrameUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetWOPIFrameUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -216,9 +208,7 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
-        qry = ServiceOperationQuery(
-            self, "GetImagePreviewUri", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetImagePreviewUri", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -233,9 +223,7 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
-        qry = ServiceOperationQuery(
-            self, "GetImagePreviewUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetImagePreviewUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -279,9 +267,7 @@ class File(AbstractFile):
 
         def _copyto(destination_folder):
             # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.serverRelativeUrl), file_name or self.name]
-            )
+            file_path = "/".join([str(destination_folder.serverRelativeUrl), file_name or self.name])
             return_type.set_property("ServerRelativeUrl", file_path)
 
             params = {"strNewUrl": file_path, "boverwrite": overwrite}
@@ -313,9 +299,7 @@ class File(AbstractFile):
 
         def _copyto_using_path(destination_folder):
             # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.server_relative_path), file_name or self.name]
-            )
+            file_path = "/".join([str(destination_folder.server_relative_path), file_name or self.name])
             return_type.set_property("ServerRelativePath", file_path)
 
             params = {"DecodedUrl": file_path, "bOverWrite": overwrite}
@@ -324,13 +308,11 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property(
-                    "ServerRelativePath", _copyto_using_path, destination
-                )
+                destination.ensure_property("ServerRelativePath", _copyto_using_path, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().select(
-                    ["ServerRelativePath"]
-                ).after_execute(_copyto_using_path)
+                self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
+                    _copyto_using_path
+                )
 
         self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
         return return_type
@@ -360,9 +342,7 @@ class File(AbstractFile):
             if isinstance(destination, Folder):
                 destination.ensure_property("ServerRelativeUrl", _moveto, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().after_execute(
-                    _moveto
-                )
+                self.context.web.ensure_folder_path(destination).get().after_execute(_moveto)
 
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
         return self
@@ -378,9 +358,7 @@ class File(AbstractFile):
 
         def _move_to_using_path(destination_folder):
             # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.server_relative_path), self.name]
-            )
+            file_path = "/".join([str(destination_folder.server_relative_path), self.name])
             params = {"DecodedUrl": file_path, "moveOperations": flag}
             qry = ServiceOperationQuery(self, "MoveToUsingPath", params)
 
@@ -392,13 +370,11 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property(
-                    "ServerRelativePath", _move_to_using_path, destination
-                )
+                destination.ensure_property("ServerRelativePath", _move_to_using_path, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().select(
-                    ["ServerRelativePath"]
-                ).after_execute(_move_to_using_path)
+                self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
+                    _move_to_using_path
+                )
 
         self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
         return self
@@ -422,9 +398,7 @@ class File(AbstractFile):
     def check_access_and_post_view_audit_event(self):
         """"""
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CheckAccessAndPostViewAuditEvent", return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckAccessAndPostViewAuditEvent", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -464,17 +438,13 @@ class File(AbstractFile):
         """
         return LimitedWebPartManager(
             self.context,
-            ServiceOperationPath(
-                "GetLimitedWebPartManager", [scope], self.resource_path
-            ),
+            ServiceOperationPath("GetLimitedWebPartManager", [scope], self.resource_path),
         )
 
     def open_binary_stream(self):
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStream", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStream", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -495,9 +465,7 @@ class File(AbstractFile):
             "uploadId": upload_id,
         }
         return_type = UploadStatus(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetUploadStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUploadStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -510,9 +478,7 @@ class File(AbstractFile):
         """
         return_type = File(self.context)
         params = {"uploadId": upload_id, "checksum": checksum}
-        qry = ServiceOperationQuery(
-            self, "UploadWithChecksum", params, stream, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -538,9 +504,7 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, int())
         params = {"uploadID": upload_id}
-        qry = ServiceOperationQuery(
-            self, "startUpload", params, content, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "startUpload", params, content, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -594,9 +558,7 @@ class File(AbstractFile):
             "fileOffset": file_offset,
             "checksum": checksum,
         }
-        qry = ServiceOperationQuery(
-            self, "FinishUploadWithChecksum", payload, stream, None, self
-        )
+        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)
         self.context.add_query(qry)
         return self
 
@@ -669,9 +631,7 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativePath", _download_inner)
         return self
 
-    def download_session(
-        self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True
-    ):
+    def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True):
         """
         Download a file content. Use this method to download a content of a large size
 
@@ -699,9 +659,7 @@ class File(AbstractFile):
                         chunk_downloaded(bytes_read)
                     file_object.write(chunk)
 
-            self.context.add_query(qry).before_query_execute(
-                _construct_request
-            ).after_execute(_process_response)
+            self.context.add_query(qry).before_query_execute(_construct_request).after_execute(_process_response)
 
         if use_path:
             self.ensure_property("ServerRelativePath", _download_as_stream)
@@ -741,9 +699,7 @@ class File(AbstractFile):
     @property
     def author(self):
         """Specifies the user who added the file."""
-        return self.properties.get(
-            "Author", User(self.context, ResourcePath("Author", self.resource_path))
-        )
+        return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
     def checked_out_by_user(self):
@@ -786,9 +742,7 @@ class File(AbstractFile):
         list which contains the file, or based on a rule. From greatest to least, IRM settings take precedence in the
         following order: rule, list, then file.
         """
-        path = ResourcePath(
-            "EffectiveInformationRightsManagementSettings", self.resource_path
-        )
+        path = ResourcePath("EffectiveInformationRightsManagementSettings", self.resource_path)
         return self.properties.get(
             "EffectiveInformationRightsManagementSettings",
             EffectiveInformationRightsManagementSettings(self.context, path),
@@ -811,9 +765,7 @@ class File(AbstractFile):
         """Gets a value that specifies the list item fields values for the list item corresponding to the file."""
         return self.properties.setdefault(
             "ListItemAllFields",
-            ListItem(
-                self.context, ResourcePath("listItemAllFields", self.resource_path)
-            ),
+            ListItem(self.context, ResourcePath("listItemAllFields", self.resource_path)),
         )
 
     @property
@@ -833,9 +785,7 @@ class File(AbstractFile):
         """Gets a value that returns a collection of file version objects that represent the versions of the file."""
         return self.properties.get(
             "Versions",
-            FileVersionCollection(
-                self.context, ResourcePath("versions", self.resource_path)
-            ),
+            FileVersionCollection(self.context, ResourcePath("versions", self.resource_path)),
         )
 
     @property
@@ -994,11 +944,7 @@ class File(AbstractFile):
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "ServerRelativeUrl":
-                self._resource_path = self.context.web.get_file_by_server_relative_url(
-                    value
-                ).resource_path
+                self._resource_path = self.context.web.get_file_by_server_relative_url(value).resource_path
             elif name == "ServerRelativePath":
-                self._resource_path = self.context.web.get_file_by_server_relative_path(
-                    value
-                ).resource_path
+                self._resource_path = self.context.web.get_file_by_server_relative_path(value).resource_path
         return self

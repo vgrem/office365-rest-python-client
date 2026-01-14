@@ -28,9 +28,7 @@ class Office365Tenant(Entity):
     """Represents a SharePoint Online tenant."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantManagement.Office365Tenant"
-        )
+        static_path = ResourcePath("Microsoft.Online.SharePoint.TenantManagement.Office365Tenant")
         super(Office365Tenant, self).__init__(context, static_path)
 
     @property
@@ -50,9 +48,7 @@ class Office365Tenant(Entity):
 
     @property
     def ai_builder_site_info_list(self):
-        return self.properties.get(
-            "AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker)
-        )
+        return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
     def add_tenant_cdn_origin(self, cdn_type, origin_url):
         """
@@ -81,9 +77,7 @@ class Office365Tenant(Entity):
         :param str site_url:
         """
         payload = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            self, "DisableSharingForNonOwnersOfSite", None, payload
-        )
+        qry = ServiceOperationQuery(self, "DisableSharingForNonOwnersOfSite", None, payload)
         self.context.add_query(qry)
         return self
 
@@ -100,9 +94,7 @@ class Office365Tenant(Entity):
             "cdnType": cdn_type,
         }
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetTenantCdnEnabled", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTenantCdnEnabled", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -119,9 +111,7 @@ class Office365Tenant(Entity):
             "fileTypeIds": file_type_ids,
             "excludedBlockDownloadGroupIds": excluded_block_download_group_ids,
         }
-        qry = ServiceOperationQuery(
-            self, "SetBlockDownloadFileTypePolicyData", None, payload
-        )
+        qry = ServiceOperationQuery(self, "SetBlockDownloadFileTypePolicyData", None, payload)
         self.context.add_query(qry)
         return self
 
@@ -172,9 +162,7 @@ class Office365Tenant(Entity):
             "cdnType": cdn_type,
         }
         return_type = ClientResult(self.context, ClientValueCollection(str))
-        qry = ServiceOperationQuery(
-            self, "GetTenantCdnPolicies", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTenantCdnPolicies", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -212,9 +200,7 @@ class Office365Tenant(Entity):
 
             :type login_name: str
             """
-            qry = ServiceOperationQuery(
-                self, "RevokeAllUserSessions", [login_name], None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "RevokeAllUserSessions", [login_name], None, None, return_type)
             self.context.add_query(qry)
 
         if isinstance(user, User):
@@ -247,9 +233,7 @@ class Office365Tenant(Entity):
             "filter": _filter,
             "sortOrder": sort_order,
         }
-        qry = ServiceOperationQuery(
-            self, "GetExternalUsers", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetExternalUsers", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -264,9 +248,7 @@ class Office365Tenant(Entity):
             "uniqueIds": unique_ids,
         }
         return_type = RemoveExternalUsersResults(self.context)
-        qry = ServiceOperationQuery(
-            self, "RemoveExternalUsers", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RemoveExternalUsers", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -275,9 +257,7 @@ class Office365Tenant(Entity):
         Get all themes from tenant
         """
         return_type = ClientObjectCollection(self.context, ThemeProperties)
-        qry = ServiceOperationQuery(
-            self, "GetAllTenantThemes", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetAllTenantThemes", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -293,9 +273,7 @@ class Office365Tenant(Entity):
             "name": name,
             "themeJson": theme_json,
         }
-        qry = ServiceOperationQuery(
-            self, "AddTenantTheme", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddTenantTheme", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -311,9 +289,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    def queue_import_profile_properties(
-        self, id_type, source_data_id_property, property_map, source_uri
-    ):
+    def queue_import_profile_properties(self, id_type, source_data_id_property, property_map, source_uri):
         """Bulk import custom user profile properties
 
         :param int id_type: The type of id to use when looking up the user profile.
@@ -328,8 +304,6 @@ class Office365Tenant(Entity):
             "propertyMap": property_map,
             "sourceUri": source_uri,
         }
-        qry = ServiceOperationQuery(
-            self, "QueueImportProfileProperties", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "QueueImportProfileProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

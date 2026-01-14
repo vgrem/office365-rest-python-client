@@ -16,9 +16,7 @@ class SitePageCollection(EntityCollection[SitePage]):
 
     def __init__(self, context, resource_path=None, parent_list=None):
         # type: (GraphClient, ResourcePath, List) -> None
-        super(SitePageCollection, self).__init__(
-            context, SitePage, resource_path, parent_list
-        )
+        super(SitePageCollection, self).__init__(context, SitePage, resource_path, parent_list)
 
     def get(self):
         def _construct_request(request):

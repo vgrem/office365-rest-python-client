@@ -19,9 +19,7 @@ class TestExcelTables(GraphTestCase):
         path = "{0}/../../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.excel_file.resource_path is not None
-        cls.worksheet = (
-            cls.excel_file.workbook.worksheets["Sheet1"].get().execute_query()
-        )
+        cls.worksheet = cls.excel_file.workbook.worksheets["Sheet1"].get().execute_query()
         assert cls.worksheet.resource_path is not None
         cls.table = cls.worksheet.tables["financials"].get().execute_query()
         assert cls.table.resource_path is not None

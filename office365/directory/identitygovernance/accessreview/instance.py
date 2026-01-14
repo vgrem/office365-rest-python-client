@@ -23,7 +23,5 @@ class AccessReviewInstance(Entity):
         A new stage will only be created when the previous stage ends"""
         return self.properties.get(
             "stages",
-            AccessReviewStageCollection(
-                self.context, ResourcePath("stages", self.resource_path)
-            ),
+            AccessReviewStageCollection(self.context, ResourcePath("stages", self.resource_path)),
         )

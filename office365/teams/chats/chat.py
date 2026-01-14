@@ -91,9 +91,7 @@ class Chat(Entity):
         """Preview of the last message sent in the chat. Null if no messages have been sent in the chat."""
         return self.properties.get(
             "lastMessagePreview",
-            ChatMessageInfo(
-                self.context, ResourcePath("lastMessagePreview", self.resource_path)
-            ),
+            ChatMessageInfo(self.context, ResourcePath("lastMessagePreview", self.resource_path)),
         )
 
     @property
@@ -102,9 +100,7 @@ class Chat(Entity):
         """A collection of membership records associated with the chat."""
         return self.properties.setdefault(
             "members",
-            ConversationMemberCollection(
-                self.context, ResourcePath("members", self.resource_path)
-            ),
+            ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property
@@ -113,9 +109,7 @@ class Chat(Entity):
         """A collection of all the messages in the chat. Nullable."""
         return self.properties.get(
             "messages",
-            EntityCollection(
-                self.context, ChatMessage, ResourcePath("messages", self.resource_path)
-            ),
+            EntityCollection(self.context, ChatMessage, ResourcePath("messages", self.resource_path)),
         )
 
     @property
@@ -139,9 +133,7 @@ class Chat(Entity):
         """A collection of all the tabs in the chat."""
         return self.properties.get(
             "tabs",
-            EntityCollection(
-                self.context, TeamsTab, ResourcePath("tabs", self.resource_path)
-            ),
+            EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

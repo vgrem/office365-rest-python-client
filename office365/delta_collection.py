@@ -32,7 +32,5 @@ class DeltaCollection(EntityCollection[T]):
         """
         return self.properties.get(
             "delta",
-            DeltaCollection(
-                self.context, self._item_type, DeltaPath(self.resource_path)
-            ),
+            DeltaCollection(self.context, self._item_type, DeltaPath(self.resource_path)),
         )

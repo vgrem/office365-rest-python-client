@@ -22,9 +22,7 @@ class SharingUtility(Entity):
         return_type = ClientResult(context, UserDirectoryInfo())
         payload = {"email": email}
         utility = SharingUtility(context)
-        qry = ServiceOperationQuery(
-            utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
@@ -46,9 +44,7 @@ class SharingUtility(Entity):
             "principalName": principal_name,
         }
         result = ClientResult(context)
-        qry = ServiceOperationQuery(
-            utility, "ValidateSameUserEmails", None, payload, None, result
-        )
+        qry = ServiceOperationQuery(utility, "ValidateSameUserEmails", None, payload, None, result)
         qry.static = True
         context.add_query(qry)
         return result

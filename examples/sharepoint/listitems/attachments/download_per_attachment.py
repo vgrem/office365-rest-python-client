@@ -17,11 +17,7 @@ items = source_list.items.get().execute_query()
 for item in items:
     attachment_files = item.attachment_files.get().execute_query()
     for attachment_file in attachment_files:
-        download_file_name = os.path.join(
-            download_path, os.path.basename(attachment_file.file_name)
-        )
+        download_file_name = os.path.join(download_path, os.path.basename(attachment_file.file_name))
         with open(download_file_name, "wb") as fh:
             attachment_file.download(fh).execute_query()
-        print(
-            f"{attachment_file.server_relative_url} has been downloaded into {download_file_name}"
-        )
+        print(f"{attachment_file.server_relative_url} has been downloaded into {download_file_name}")

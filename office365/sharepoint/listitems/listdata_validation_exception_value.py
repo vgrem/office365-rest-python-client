@@ -7,6 +7,4 @@ class ListDataValidationExceptionValue(ClientValue):
     """Specifies failure information for a failed field or list item data validation."""
 
     def __init__(self, field_failures=None):
-        self.FieldFailures = ClientValueCollection(
-            ListDataValidationFailure, field_failures
-        )
+        self.FieldFailures = ClientValueCollection(ListDataValidationFailure, field_failures)

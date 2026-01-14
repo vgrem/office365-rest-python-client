@@ -105,18 +105,14 @@ class SecurableObject(Entity):
             "copyRoleAssignments": copy_role_assignments,
             "clearSubscopes": clear_sub_scopes,
         }
-        qry = ServiceOperationQuery(
-            self, "BreakRoleInheritance", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "BreakRoleInheritance", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
     def reset_role_inheritance(self):
         """Resets the role inheritance for the securable object and inherits role assignments from
         the parent securable object."""
-        qry = ServiceOperationQuery(
-            self, "ResetRoleInheritance", None, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "ResetRoleInheritance", None, None, None, None)
         self.context.add_query(qry)
         return self
 
@@ -178,9 +174,7 @@ class SecurableObject(Entity):
         """The role assignments for the securable object."""
         return self.properties.get(
             "RoleAssignments",
-            RoleAssignmentCollection(
-                self.context, ResourcePath("RoleAssignments", self.resource_path)
-            ),
+            RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

@@ -79,9 +79,7 @@ class Contact(OutlookItem):
     def email_addresses(self):
         # type: () -> ClientValueCollection[EmailAddress]
         """The contact's email addresses."""
-        return self.properties.setdefault(
-            "emailAddresses", ClientValueCollection(EmailAddress)
-        )
+        return self.properties.setdefault("emailAddresses", ClientValueCollection(EmailAddress))
 
     @property
     def extensions(self):
@@ -89,9 +87,7 @@ class Contact(OutlookItem):
         """The collection of open extensions defined for the contact. Nullable."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property

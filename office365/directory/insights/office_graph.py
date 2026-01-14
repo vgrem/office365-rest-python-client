@@ -22,9 +22,7 @@ class OfficeGraphInsights(Entity):
         """
         return self.properties.get(
             "shared",
-            EntityCollection(
-                self.context, SharedInsight, ResourcePath("shared", self.resource_path)
-            ),
+            EntityCollection(self.context, SharedInsight, ResourcePath("shared", self.resource_path)),
         )
 
     @property
@@ -38,9 +36,7 @@ class OfficeGraphInsights(Entity):
         """
         return self.properties.get(
             "trending",
-            EntityCollection(
-                self.context, Trending, ResourcePath("trending", self.resource_path)
-            ),
+            EntityCollection(self.context, Trending, ResourcePath("trending", self.resource_path)),
         )
 
     @property
@@ -52,7 +48,5 @@ class OfficeGraphInsights(Entity):
         """
         return self.properties.get(
             "used",
-            EntityCollection(
-                self.context, UsedInsight, ResourcePath("used", self.resource_path)
-            ),
+            EntityCollection(self.context, UsedInsight, ResourcePath("used", self.resource_path)),
         )

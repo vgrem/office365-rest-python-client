@@ -25,9 +25,7 @@ class SearchService(Entity):
     """SearchService exposes OData Service Operations."""
 
     def __init__(self, context):
-        super(SearchService, self).__init__(
-            context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchService")
-        )
+        super(SearchService, self).__init__(context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchService"))
 
     def export(self, user, start_time):
         """
@@ -44,9 +42,7 @@ class SearchService(Entity):
             :type user_name: str
             """
             payload = {"userName": user_name, "startTime": start_time.isoformat()}
-            qry = ServiceOperationQuery(
-                self, "export", None, payload, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "export", None, payload, None, return_type)
             self.context.add_query(qry)
 
         if isinstance(user, User):
@@ -62,9 +58,7 @@ class SearchService(Entity):
     def export_manual_suggestions(self):
         """ """
         return_type = ClientResult(self.context, TenantCustomQuerySuggestions())
-        qry = ServiceOperationQuery(
-            self, "exportmanualsuggestions", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "exportmanualsuggestions", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -74,15 +68,11 @@ class SearchService(Entity):
 
         :param int count:
         """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(PopularTenantQuery)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(PopularTenantQuery))
         payload = {
             "count": count,
         }
-        qry = ServiceOperationQuery(
-            self, "exportpopulartenantqueries", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "exportpopulartenantqueries", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -149,9 +139,7 @@ class SearchService(Entity):
         if refiners:
             params["refiners"] = str(StringCollection(refiners))
         params.update(**kwargs)
-        return_type = ClientResult(
-            self.context, SearchResult()
-        )  # type: ClientResult[SearchResult]
+        return_type = ClientResult(self.context, SearchResult())  # type: ClientResult[SearchResult]
         qry = FunctionQuery(self, "query", params, return_type)
         self.context.add_query(qry)
         return return_type
@@ -217,9 +205,7 @@ class SearchService(Entity):
         with the GET method. The operation returns the URI of the of the search center.
         """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "searchCenterUrl", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "searchCenterUrl", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -227,9 +213,7 @@ class SearchService(Entity):
         """The operation is used to get the URI address of the result page by using the HTTP protocol
         with the GET method. The operation returns the URI of the result page."""
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "resultspageaddress", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "resultspageaddress", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -245,9 +229,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def auto_completions(
-        self, query_text, sources=None, number_of_completions=None, cursor_position=None
-    ):
+    def auto_completions(self, query_text, sources=None, number_of_completions=None, cursor_position=None):
         """
         The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
 
@@ -272,8 +254,6 @@ class SearchService(Entity):
             "numberOfCompletions": number_of_completions,
             "cursorPosition": cursor_position,
         }
-        qry = ServiceOperationQuery(
-            self, "autocompletions", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "autocompletions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

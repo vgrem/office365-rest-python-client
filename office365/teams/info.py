@@ -20,6 +20,4 @@ class TeamInfo(Entity):
     def team(self):
         from office365.teams.team import Team
 
-        return self.properties.get(
-            "team", Team(self.context, ResourcePath("team", self.resource_path))
-        )
+        return self.properties.get("team", Team(self.context, ResourcePath("team", self.resource_path)))

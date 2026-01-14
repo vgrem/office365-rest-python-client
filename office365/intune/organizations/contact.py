@@ -15,9 +15,7 @@ class OrgContact(DirectoryObject):
         """
         return self.properties.get(
             "directReports",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("directReports", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("directReports", self.resource_path)),
         )
 
     @property
@@ -35,9 +33,7 @@ class OrgContact(DirectoryObject):
         """Groups that this contact is a member of."""
         return self.properties.get(
             "memberOf",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("memberOf", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path)),
         )
 
     @property
@@ -45,9 +41,7 @@ class OrgContact(DirectoryObject):
         """Groups that this contact is a member of, including groups that the contact is nested under."""
         return self.properties.get(
             "transitiveMemberOf",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("transitiveMemberOf", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

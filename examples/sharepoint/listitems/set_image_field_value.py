@@ -15,9 +15,7 @@ def upload_image(web, file_path):
     with open(file_path, "rb") as content_file:
         file_content = content_file.read()
     lib = web.lists.ensure_site_assets_library().execute_query()
-    file = lib.root_folder.upload_file(
-        os.path.basename(file_path), file_content
-    ).execute_query()
+    file = lib.root_folder.upload_file(os.path.basename(file_path), file_content).execute_query()
     return file.serverRelativeUrl
 
 
