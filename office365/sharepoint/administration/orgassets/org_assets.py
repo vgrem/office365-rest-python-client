@@ -6,7 +6,6 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 
 class OrgAssets(ClientValue):
-
     def __init__(
         self,
         central_asset_repository_libraries: OrgAssetsLibraryCollection = OrgAssetsLibraryCollection(),

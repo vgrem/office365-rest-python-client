@@ -5,7 +5,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSitePages(SPTestCase):
-
     target_page: SitePage = None
 
     def test1_create_draft_page(self):

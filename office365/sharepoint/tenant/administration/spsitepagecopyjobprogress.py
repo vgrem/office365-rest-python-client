@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPSitePageCopyJobProgress(ClientValue):
-
     def __init__(
         self,
         error_message: str = None,

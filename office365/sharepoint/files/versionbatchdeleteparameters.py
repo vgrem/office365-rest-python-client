@@ -5,7 +5,6 @@ from office365.sharepoint.files.versions.policyselectionparameters import (
 
 
 class FileVersionBatchDeleteParameters(ClientValue):
-
     def __init__(
         self,
         batch_delete_mode: int = None,

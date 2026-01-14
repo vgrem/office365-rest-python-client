@@ -2,7 +2,6 @@ from office365.sharepoint.clientsidecomponent.card_element import CardElement
 
 
 class AdaptiveCardImage(CardElement):
-
     def __init__(
         self,
         alt_text: str = None,

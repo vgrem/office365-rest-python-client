@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class MicrofeedRetrievalOptions(ClientValue):
-
     def __init__(
         self,
         content_formatting_option: int = None,

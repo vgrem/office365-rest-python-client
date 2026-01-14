@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TenantAdminRansomwareActivity(ClientValue):
-
     def __init__(
         self,
         activity_generated_on: datetime = None,

@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class TenantRenameJob(Entity):
-
     @property
     def attention_required(self) -> Optional[int]:
         """Gets the AttentionRequired property"""

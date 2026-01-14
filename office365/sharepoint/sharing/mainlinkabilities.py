@@ -7,7 +7,6 @@ from office365.sharepoint.sharing.mainlinkroleabilities import MainLinkRoleAbili
 
 
 class MainLinkAbilities(ClientValue):
-
     def __init__(
         self,
         can_get_link: SharingAbilityStatus = SharingAbilityStatus(),

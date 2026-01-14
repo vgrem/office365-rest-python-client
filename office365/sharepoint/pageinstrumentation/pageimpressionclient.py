@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PageImpressionClient(ClientValue):
-
     def __init__(
         self,
         base_page_correlation_id: str = None,

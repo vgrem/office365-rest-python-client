@@ -6,7 +6,6 @@ from office365.sharepoint.microfeed.link import MicrofeedLink
 
 
 class MicrofeedPost(ClientValue):
-
     def __init__(
         self,
         author_index: int = None,

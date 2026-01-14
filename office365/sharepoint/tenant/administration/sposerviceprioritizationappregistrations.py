@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.serviceprioritizationappregistra
 
 
 class SPOServicePrioritizationAppRegistrations(ClientValue):
-
     def __init__(
         self,
         registrations: ClientValueCollection[SPOServicePrioritizationAppRegistration] = ClientValueCollection(

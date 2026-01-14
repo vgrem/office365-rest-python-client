@@ -191,7 +191,6 @@ class TestTenant(TestCase):
     #    self.assertIsNotNone(result.value)
 
     def test_29_get_app_service_principal(self):
-
         from office365.sharepoint.tenant.administration.app_service_principal_public import (
             SPOWebAppServicePrincipalPublic,
         )

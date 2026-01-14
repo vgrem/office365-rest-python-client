@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ColumnDef(ClientValue):
-
     def __init__(
         self,
         custom_formatter: str = None,

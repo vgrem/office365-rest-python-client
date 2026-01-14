@@ -4,7 +4,6 @@ from office365.sharepoint.activities.identity import ActivityIdentity
 
 
 class TaskCreatedFacet(ClientValue):
-
     def __init__(
         self,
         assignees: ClientValueCollection[ActivityIdentity] = ClientValueCollection(ActivityIdentity),

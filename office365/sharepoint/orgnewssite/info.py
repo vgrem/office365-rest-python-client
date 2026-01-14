@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class OrgNewsSiteInfo(ClientValue):
-
     def __init__(self, site_id: str = None, url: str = None, web_id: str = None):
         self.SiteId = site_id
         self.Url = url

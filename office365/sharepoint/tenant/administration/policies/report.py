@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TenantAdminPolicyReport(ClientValue):
-
     def __init__(
         self,
         policy_execution_time: datetime = None,

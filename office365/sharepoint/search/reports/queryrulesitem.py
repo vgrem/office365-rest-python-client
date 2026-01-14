@@ -4,7 +4,6 @@ from office365.sharepoint.search.reports.queryrulesdata import ReportQueryRulesD
 
 
 class ReportQueryRulesItem(ClientValue):
-
     def __init__(
         self,
         date: str = None,

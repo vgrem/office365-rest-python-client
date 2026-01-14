@@ -4,7 +4,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Fido2KeyRestrictions(ClientValue):
-
     def __init__(
         self,
         aa_guids: StringCollection = None,

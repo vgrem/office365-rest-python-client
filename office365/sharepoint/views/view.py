@@ -30,7 +30,6 @@ class View(Entity):
         resource_path: ResourcePath = None,
         parent_list: List = None,
     ):
-
         super().__init__(context, resource_path)
         self._parent_list = parent_list
 

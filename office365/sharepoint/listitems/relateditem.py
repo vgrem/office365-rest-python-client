@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RelatedItem(ClientValue):
-
     def __init__(
         self,
         icon_url: str = None,

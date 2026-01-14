@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class ContentControlInfo(ClientValue):
-
     def __init__(
         self,
         content_control_tag_name: str = None,

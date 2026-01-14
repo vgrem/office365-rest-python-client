@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharePointIds(ClientValue):
-
     def __init__(
         self,
         hub_site_id: str = None,

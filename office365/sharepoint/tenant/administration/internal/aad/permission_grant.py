@@ -12,7 +12,6 @@ class SPO3rdPartyAADPermissionGrant(Entity):
 
 
 class SPO3rdPartyAADPermissionGrantCollection(EntityCollection[SPO3rdPartyAADPermissionGrant]):
-
     def __init__(self, context, resource_path=None):
         super().__init__(context, SPO3rdPartyAADPermissionGrant, resource_path)
 

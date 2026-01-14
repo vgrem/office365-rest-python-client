@@ -6,7 +6,6 @@ from office365.sharepoint.sharepointids import SharePointIds
 
 
 class PublicationMetadata(ClientValue):
-
     def __init__(
         self,
         amplified_channels: AmplifiedChannels = AmplifiedChannels(),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AutoInvokeOptions(ClientValue):
-
     def __init__(self, show_card_on_failure: str = None):
         self.showCardOnFailure = show_card_on_failure
 

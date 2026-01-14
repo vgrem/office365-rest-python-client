@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AlternateUrl(Entity):
-
     @property
     def uri(self) -> Optional[str]:
         """Gets the Uri property"""

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOTenantWebTemplate(ClientValue):
-
     def __init__(
         self,
         compatibility_level: int = None,

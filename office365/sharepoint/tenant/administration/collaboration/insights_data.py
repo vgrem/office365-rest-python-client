@@ -9,7 +9,6 @@ from office365.sharepoint.tenant.administration.collaboration.collaborativeusers
 
 
 class CollaborationInsightsData(ClientValue):
-
     def __init__(
         self,
         last_report_date=None,

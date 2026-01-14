@@ -4,7 +4,6 @@ from office365.sharepoint.portal.home.datacache import SharePointHomeDataCache
 
 
 class SharePointHomeDataCacheCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[SharePointHomeDataCache] = ClientValueCollection(SharePointHomeDataCache),

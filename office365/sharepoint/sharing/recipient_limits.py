@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.recipientlimitsinfo import RecipientLimitsInfo
 
 
 class RecipientLimits(ClientValue):
-
     def __init__(
         self,
         check_permissions: RecipientLimitsInfo = RecipientLimitsInfo(),

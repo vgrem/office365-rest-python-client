@@ -28,7 +28,6 @@ expired_count = 0
 password_max_age = 90
 
 for user in users:
-
     password_age = (datetime.now() - user.last_password_change_datetime).days
     must_change_password = password_age >= password_max_age
 

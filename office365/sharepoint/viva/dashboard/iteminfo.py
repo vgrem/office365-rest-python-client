@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class DashboardItemInfo(ClientValue):
-
     def __init__(
         self,
         item_id: int = None,

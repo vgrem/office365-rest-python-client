@@ -6,7 +6,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class X509CertificateAuthenticationModeConfiguration(ClientValue):
-
     def __init__(
         self,
         rules: ClientValueCollection[X509CertificateRule] = ClientValueCollection(X509CertificateRule),

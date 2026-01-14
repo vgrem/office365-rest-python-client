@@ -5,7 +5,6 @@ from office365.sharepoint.directory.provider.property_change import PropertyChan
 
 
 class DirectoryObjectChanges(ClientValue):
-
     def __init__(
         self,
         directory_object_sub_type: int = None,

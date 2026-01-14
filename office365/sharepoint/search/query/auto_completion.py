@@ -6,7 +6,6 @@ from office365.sharepoint.search.query.auto_completion_match import (
 
 
 class QueryAutoCompletion(ClientValue):
-
     def __init__(
         self,
         query=None,

@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RegistrationEnforcement(ClientValue):
-
     def __init__(
         self,
         authentication_methods_registration_campaign: RegistrationCampaign = RegistrationCampaign(),

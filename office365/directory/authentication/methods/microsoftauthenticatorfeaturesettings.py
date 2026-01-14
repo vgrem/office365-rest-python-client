@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MicrosoftAuthenticatorFeatureSettings(ClientValue):
-
     def __init__(
         self,
         display_app_information_required_state: FeatureConfiguration = FeatureConfiguration(),

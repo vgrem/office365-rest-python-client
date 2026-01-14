@@ -9,7 +9,6 @@ from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 
 
 class PersonMagazineUserProfile(ClientValue):
-
     def __init__(
         self,
         aad_object_id: str = None,

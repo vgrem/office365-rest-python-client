@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.icon import Icon
 
 
 class AnnouncementsData(ClientValue):
-
     def __init__(
         self,
         call_to_action: CallToAction = CallToAction(),

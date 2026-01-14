@@ -4,7 +4,6 @@ from office365.sharepoint.utilities.webappexturlpair import WebAppExtUrlPair
 
 
 class WebAppUrlsByAction(ClientValue):
-
     def __init__(
         self,
         action: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.social.microfeed.user_posts import MicrofeedUserPosts
 
 
 class MicrofeedUserPostCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[MicrofeedUserPosts] = ClientValueCollection(MicrofeedUserPosts),

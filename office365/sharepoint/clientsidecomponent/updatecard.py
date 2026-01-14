@@ -4,7 +4,6 @@ from office365.sharepoint.clientsidecomponent.elementupdate import ElementUpdate
 
 
 class UpdateCard(ClientValue):
-
     def __init__(
         self,
         card_updates: ClientValueCollection[ElementUpdate] = ClientValueCollection(ElementUpdate),

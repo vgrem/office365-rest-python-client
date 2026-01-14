@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CardDesignFeatures(ClientValue):
-
     def __init__(
         self,
         catalog_type: int = None,

@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class GroupSiteConversionInfo(ClientValue):
-
     def __init__(
         self,
         group_type: int = None,

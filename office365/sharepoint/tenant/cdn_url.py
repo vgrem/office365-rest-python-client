@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TenantCdnUrl(ClientValue):
-
     def __init__(
         self,
         cdn_url: str = None,

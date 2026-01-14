@@ -3,7 +3,6 @@ from office365.sharepoint.principal.users.user import User
 
 
 class FieldUserValue(FieldLookupValue):
-
     def __init__(self, user_id: int, email: str = None):
         """Represents the value of a user fields for a list item."""
         super().__init__(user_id)

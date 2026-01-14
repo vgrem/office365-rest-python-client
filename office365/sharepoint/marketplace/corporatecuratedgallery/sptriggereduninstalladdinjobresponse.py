@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPTriggeredUninstallAddinJobResponse(ClientValue):
-
     def __init__(
         self,
         absolute_url: str = None,

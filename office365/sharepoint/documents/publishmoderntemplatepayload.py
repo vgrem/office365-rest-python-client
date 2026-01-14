@@ -6,7 +6,6 @@ from office365.sharepoint.documents.snippet import Snippet
 
 
 class PublishModernTemplatePayload(ClientValue):
-
     def __init__(
         self,
         disable_search_and_approvals: bool = None,

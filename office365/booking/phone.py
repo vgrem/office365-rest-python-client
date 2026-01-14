@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class Phone(ClientValue):
-
     def __init__(self, language: str = None, number: str = None, region: str = None, type_: PhoneType = PhoneType.none):
         self.language = language
         self.number = number

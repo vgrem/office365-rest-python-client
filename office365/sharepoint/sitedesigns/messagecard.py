@@ -7,7 +7,6 @@ from office365.sharepoint.sitedesigns.section import Section
 
 
 class MessageCard(ClientValue):
-
     def __init__(
         self,
         auto_invoke_action: AutoInvokeAction = AutoInvokeAction(),

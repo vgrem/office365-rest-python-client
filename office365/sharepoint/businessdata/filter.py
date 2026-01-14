@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class Filter(Entity):
-
     @property
     def default_display_name(self) -> Optional[str]:
         """Gets the DefaultDisplayName property"""

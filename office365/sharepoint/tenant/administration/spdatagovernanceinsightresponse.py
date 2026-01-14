@@ -5,7 +5,6 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 class SPDataGovernanceInsightResponse(ClientValue):
-
     def __init__(
         self,
         count_of_sites_in_report: int = None,

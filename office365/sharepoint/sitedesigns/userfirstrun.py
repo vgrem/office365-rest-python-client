@@ -3,7 +3,6 @@ from office365.sharepoint.entity import Entity
 
 
 class UserFirstRun(Entity):
-
     @property
     def experiences(self) -> ClientValueCollection[int]:
         """Gets the Experiences property"""

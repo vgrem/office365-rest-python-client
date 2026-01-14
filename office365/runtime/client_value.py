@@ -24,11 +24,10 @@ class ClientValue:
             else:
                 [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
             setattr(self, k, prop_val)
+        elif isinstance(prop_val, Enum):
+            setattr(self, k, parse_enum(type(prop_val), v))
         else:
-            if isinstance(prop_val, Enum):
-                setattr(self, k, parse_enum(type(prop_val), v))
-            else:
-                setattr(self, k, v)
+            setattr(self, k, v)
         return self
 
     def get_property(self, name: str) -> ClientValueT:

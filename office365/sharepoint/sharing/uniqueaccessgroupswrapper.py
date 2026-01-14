@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.uniqueaccessgroupinfo import UniqueAccessGroup
 
 
 class UniqueAccessGroupsWrapper(ClientValue):
-
     def __init__(
         self,
         discoverable_by_organization: UniqueAccessGroupInfo = UniqueAccessGroupInfo(),

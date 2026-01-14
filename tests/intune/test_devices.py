@@ -27,7 +27,7 @@ class TestDevices(GraphTestCase):
         result = self.__class__.device.registered_owners.add(self.client.me).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("Device.Read.All" "Directory.Read.All", "Directory.ReadWrite.All")
+    @requires_delegated_permission("Device.Read.AllDirectory.Read.All", "Directory.ReadWrite.All")
     def test7_list_registered_owners(self):
         result = self.__class__.device.registered_owners.get().execute_query()
         self.assertIsNotNone(result.resource_path)

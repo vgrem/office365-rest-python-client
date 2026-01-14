@@ -9,7 +9,6 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sperrorwithserverr
 
 
 class SPAvailableAddinsResponse(ClientValue):
-
     def __init__(
         self,
         addins=None,

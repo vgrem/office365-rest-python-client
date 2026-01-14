@@ -4,7 +4,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestRoleManagement(GraphTestCase):
-
     @requires_delegated_permission("EntitlementManagement.Read.All", "EntitlementManagement.ReadWrite.All")
     def test1_list_role_definitions(self):
         result = self.client.role_management.directory.role_definitions.get().execute_query()

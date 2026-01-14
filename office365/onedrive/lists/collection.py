@@ -22,8 +22,7 @@ class ListCollection(EntityCollection[List]):
     Example:
         >>> ctx = GraphClient()
         >>> lists = ListCollection(ctx)
-        >>> new_list = lists.add("Project Tasks",
-        ...     ListTemplateType.tasks).execute_query()
+        >>> new_list = lists.add("Project Tasks", ListTemplateType.tasks).execute_query()
     """
 
     def __init__(self, context: "GraphClient", resource_path: ResourcePath = None):

@@ -6,7 +6,6 @@ from office365.sharepoint.copilot.useridentity import UserIdentity
 
 
 class CopilotFileMetadata(ClientValue):
-
     def __init__(
         self,
         container_url: str = None,

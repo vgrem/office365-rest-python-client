@@ -4,7 +4,6 @@ from office365.sharepoint.workflow.configureduserinfo import ConfiguredUserInfo
 
 
 class WorkflowConfigurationResponse(ClientValue):
-
     def __init__(
         self,
         approvers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(ConfiguredUserInfo),

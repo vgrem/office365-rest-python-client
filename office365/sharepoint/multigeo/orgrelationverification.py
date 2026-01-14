@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class OrgRelationVerification(Entity):
-
     @property
     def partner_site_subscription_id(self) -> Optional[UUID]:
         """Gets the PartnerSiteSubscriptionId property"""

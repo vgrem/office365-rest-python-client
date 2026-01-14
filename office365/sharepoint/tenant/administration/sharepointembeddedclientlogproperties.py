@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharePointEmbeddedClientLogProperties(ClientValue):
-
     def __init__(
         self,
         identifier: str = None,

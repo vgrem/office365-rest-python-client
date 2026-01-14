@@ -8,7 +8,6 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class TemplatizationMetaData(ClientValue):
-
     def __init__(
         self,
         file_info: ContentAssemblyFileInfo = ContentAssemblyFileInfo(),

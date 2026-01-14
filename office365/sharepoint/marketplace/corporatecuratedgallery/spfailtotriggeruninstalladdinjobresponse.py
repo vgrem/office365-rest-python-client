@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPFailToTriggerUninstallAddinJobResponse(ClientValue):
-
     def __init__(
         self,
         app_instance_id: str = None,

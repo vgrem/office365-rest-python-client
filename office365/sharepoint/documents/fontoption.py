@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FontOption(ClientValue):
-
     def __init__(
         self,
         font_face: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.views.visualization.field import VisualizationField
 
 
 class VisualizationStyleSet(ClientValue):
-
     def __init__(
         self,
         aspect_ratio: str = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPMachineLearningPublicationEntityData(ClientValue):
-
     def __init__(
         self,
         model_unique_id: str = None,

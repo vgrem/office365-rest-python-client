@@ -5,7 +5,6 @@ from office365.sharepoint.search.analytics.analyticsitem import AnalyticsItem
 
 
 class AnalyticsSignal(ClientValue):
-
     def __init__(
         self,
         action: AnalyticsAction = AnalyticsAction(),

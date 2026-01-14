@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.sharepointpublishingstatus import (
 
 
 class SharePointPublishingStatusResponse(ClientValue):
-
     def __init__(
         self,
         site_id: str = None,

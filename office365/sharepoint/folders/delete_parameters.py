@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FolderDeleteParameters(ClientValue):
-
     def __init__(
         self,
         bypass_shared_lock=None,

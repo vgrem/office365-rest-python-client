@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.authoringschemafeatureversion import (
 
 
 class SitePageCoAuthState(ClientValue):
-
     def __init__(
         self,
         action=None,

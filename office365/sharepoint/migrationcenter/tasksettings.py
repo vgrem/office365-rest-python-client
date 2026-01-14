@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class MigrationTaskSettings(ClientValue):
-
     def __init__(
         self,
         agent_group_name: str = None,

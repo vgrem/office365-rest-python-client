@@ -3,7 +3,6 @@ from office365.sharepoint.entity import Entity
 
 
 class MultiValueStringCustomProperty(Entity):
-
     @property
     def value(self) -> StringCollection:
         """Gets the Value property"""

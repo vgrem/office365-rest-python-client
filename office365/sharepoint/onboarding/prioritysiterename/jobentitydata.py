@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class PrioritySiteRenameJobEntityData(Entity):
-
     @property
     def site_url(self) -> Optional[str]:
         """Gets the SiteUrl property"""

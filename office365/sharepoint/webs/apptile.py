@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AppTile(Entity):
-
     @property
     def app_id(self) -> Optional[UUID]:
         """Gets the AppId property"""

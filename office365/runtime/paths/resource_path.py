@@ -55,7 +55,7 @@ class ResourcePath:
         Example:
             >>> res_path = ResourcePath("items", ResourcePath("lists"))
             >>> for segment in res_path:
-            ...   print(segment.segment)
+            ...     print(segment.segment)
         """
         current = self
         while current:

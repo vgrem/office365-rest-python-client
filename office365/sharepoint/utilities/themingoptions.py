@@ -4,7 +4,6 @@ from office365.sharepoint.utilities.jsontheme import JsonTheme
 
 
 class ThemingOptions(ClientValue):
-
     def __init__(
         self,
         hide_default_themes: bool = None,

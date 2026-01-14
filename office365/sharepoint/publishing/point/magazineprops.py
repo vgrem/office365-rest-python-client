@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class PointPublishingMagazineProps(Entity):
-
     @property
     def banner_color(self) -> Optional[str]:
         """Gets the BannerColor property"""

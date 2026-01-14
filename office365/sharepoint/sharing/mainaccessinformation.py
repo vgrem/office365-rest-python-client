@@ -4,7 +4,6 @@ from office365.sharepoint.sharing.mainlinkinfo import MainLinkInfo
 
 
 class MainAccessInformation(ClientValue):
-
     def __init__(
         self,
         default_main_link_role: int = None,

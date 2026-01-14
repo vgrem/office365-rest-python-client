@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.copilot.transpilerstatement impo
 
 
 class CopilotTranspilerPayload(ClientValue):
-
     def __init__(
         self,
         statement_list: ClientValueCollection[TranspilerStatement] = ClientValueCollection(TranspilerStatement),

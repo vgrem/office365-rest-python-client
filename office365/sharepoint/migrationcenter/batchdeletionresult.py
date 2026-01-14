@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class BatchDeletionResult(ClientValue):
-
     def __init__(
         self,
         deleted_count: int = None,

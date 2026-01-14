@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class Hashtag(ClientValue):
-
     def __init__(
         self,
         actor: str = None,

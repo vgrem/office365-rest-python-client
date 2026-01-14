@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class NewSubsiteInModernOffForAll(ClientValue):
-
     def __init__(self, is_read_only: bool = None, value: bool = None):
         self.IsReadOnly = is_read_only
         self.Value = value

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharedWithMeViewItemRemovalResult(ClientValue):
-
     def __init__(self, error_code: int = None, error_message: str = None, success: bool = None):
         self.ErrorCode = error_code
         self.ErrorMessage = error_message

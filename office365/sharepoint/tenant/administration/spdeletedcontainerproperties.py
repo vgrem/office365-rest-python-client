@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPDeletedContainerProperties(ClientValue):
-
     def __init__(
         self,
         container_id: str = None,

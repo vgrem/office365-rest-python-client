@@ -6,7 +6,6 @@ from office365.sharepoint.viva.dashboard.carddetails import DashboardCardDetails
 
 
 class DashboardContent(ClientValue):
-
     def __init__(
         self,
         dashboard_card_details: ClientValueCollection[DashboardCardDetails] = ClientValueCollection(

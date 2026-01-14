@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UniqueAccessGroupInfo(ClientValue):
-
     def __init__(self, enabled: bool = None, group_id: UUID = None):
         self.enabled = enabled
         self.groupId = group_id

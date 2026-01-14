@@ -4,7 +4,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class StaffAvailabilityItem(ClientValue):
-
     def __init__(
         self,
         availability_items: ClientValueCollection[AvailabilityItem] = ClientValueCollection(AvailabilityItem),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AgreementReportFilter(ClientValue):
-
     def __init__(
         self,
         category: str = None,

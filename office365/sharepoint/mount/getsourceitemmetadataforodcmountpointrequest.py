@@ -5,7 +5,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class GetSourceItemMetadataForODCMountPointRequest(ClientValue):
-
     def __init__(
         self,
         is_create_mount_point_flow: bool = None,

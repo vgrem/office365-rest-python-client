@@ -708,7 +708,6 @@ class ListItem(SecurableObject):
                     action()
 
             target_list.ensure_property("ListItemEntityTypeFullName", _list_loaded)
-        else:
-            if callable(action):
-                action()
+        elif callable(action):
+            action()
         return self

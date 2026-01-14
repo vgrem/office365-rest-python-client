@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPAllOrgSGMetadata(Entity):
-
     @property
     def all_organization_security_group_id(self) -> Optional[UUID]:
         """Gets the AllOrganizationSecurityGroupId property"""

@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.user_info import UserInfo
 
 
 class SiteUserGroupsData(ClientValue):
-
     def __init__(
         self,
         members: ClientValueCollection[UserInfo] = ClientValueCollection(UserInfo),

@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 
 
 class MainLinkRoleAbilities(ClientValue):
-
     def __init__(
         self,
         comment_role_available: SharingAbilityStatus = SharingAbilityStatus(),

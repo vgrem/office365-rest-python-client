@@ -3,7 +3,6 @@ from office365.runtime.types.collections import GuidCollection
 
 
 class SPSiteCreationRequest(ClientValue):
-
     def __init__(
         self,
         title,

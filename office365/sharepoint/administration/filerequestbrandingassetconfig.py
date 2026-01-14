@@ -4,7 +4,6 @@ from office365.sharepoint.administration.filerequestbrandingprofile import FileR
 
 
 class FileRequestBrandingAssetConfig(ClientValue):
-
     def __init__(
         self,
         asset_library_relative_url: str = None,

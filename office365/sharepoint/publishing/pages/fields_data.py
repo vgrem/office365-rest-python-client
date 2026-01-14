@@ -14,7 +14,6 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import (
 
 
 class SitePageFieldsData(ClientValue):
-
     def __init__(
         self,
         title=None,

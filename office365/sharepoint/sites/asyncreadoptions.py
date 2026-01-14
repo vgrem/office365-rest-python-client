@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AsyncReadOptions(ClientValue):
-
     def __init__(
         self,
         include_direct_descendants_only: bool = None,

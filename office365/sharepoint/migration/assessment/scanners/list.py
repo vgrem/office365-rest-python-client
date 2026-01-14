@@ -6,7 +6,6 @@ from office365.sharepoint.migration.assessment.scanners.base import BaseScanner,
 
 
 class ListScanner(BaseScanner[List]):
-
     @property
     def files_count(self):
         return self._properties.get("FilesCount", None)

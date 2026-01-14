@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class IngestionTaskKey(ClientValue):
-
     def __init__(
         self,
         ingestion_table_account_key: str = None,

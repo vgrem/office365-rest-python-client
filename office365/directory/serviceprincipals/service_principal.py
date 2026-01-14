@@ -115,7 +115,6 @@ class ServicePrincipal(DirectoryObject):
         return_type = ClientResult(self.context, StringCollection())
 
         def _get_delegated_permissions(client_id: str, principal_id: str = None) -> None:
-
             if principal_id is None:
                 query_text = f"clientId eq '{client_id}'  and consentType eq '{consent_type}'"
             else:
@@ -194,7 +193,6 @@ class ServicePrincipal(DirectoryObject):
         """"""
 
         def _revoke_delegated_permissions(principal_id: str, client_id: str) -> None:
-
             def _after(return_type):
                 if len(return_type) > 0:
                     return_type[0].delete_object()

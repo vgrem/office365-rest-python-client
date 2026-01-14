@@ -9,7 +9,6 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.query_settings import
 
 
 class ClientPeoplePickerQueryParameters(ClientValue):
-
     def __init__(
         self,
         query_string: str,

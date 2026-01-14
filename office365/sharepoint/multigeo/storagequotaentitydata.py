@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class StorageQuotaEntityData(Entity):
-
     @property
     def geo_allocated_storage_mb(self) -> Optional[str]:
         """Gets the GeoAllocatedStorageMB property"""

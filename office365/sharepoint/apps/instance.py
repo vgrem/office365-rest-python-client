@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AppInstance(Entity):
-
     @property
     def app_principal_id(self) -> Optional[str]:
         """Gets the AppPrincipalId property"""

@@ -5,7 +5,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class BookingsAvailability(ClientValue):
-
     def __init__(
         self,
         availability_type: BookingsServiceAvailabilityType = BookingsServiceAvailabilityType.none,

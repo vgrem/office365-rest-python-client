@@ -10,7 +10,6 @@ from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails i
 
 
 class ContentManagementAssessmentResults(ClientValue):
-
     def __init__(
         self,
         last_updated_time: datetime = None,

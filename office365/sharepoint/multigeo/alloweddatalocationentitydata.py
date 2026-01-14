@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AllowedDataLocationEntityData(Entity):
-
     @property
     def app_id(self) -> Optional[str]:
         """Gets the appId property"""

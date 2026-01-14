@@ -6,7 +6,6 @@ from office365.sharepoint.contentcenter.machinelearning.dependentmodel import (
 
 
 class SPModelDependencies(ClientValue):
-
     def __init__(self, dependent_models: ClientValueCollection[SPDependentModel] = None):
         self.DependentModels = dependent_models
 

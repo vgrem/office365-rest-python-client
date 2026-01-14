@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPAddinInstanceInfo(ClientValue):
-
     def __init__(
         self,
         app_identifier: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.search.reports.queryrulesitem import ReportQueryRulesI
 
 
 class ReportQueryRules(ClientValue):
-
     def __init__(
         self,
         reports: ClientValueCollection[ReportQueryRulesItem] = ClientValueCollection(ReportQueryRulesItem),

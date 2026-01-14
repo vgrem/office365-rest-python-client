@@ -5,7 +5,6 @@ from office365.sharepoint.viva.announcementaction import AnnouncementAction
 
 
 class AnnouncementState(ClientValue):
-
     def __init__(
         self,
         action: AnnouncementAction = AnnouncementAction(),

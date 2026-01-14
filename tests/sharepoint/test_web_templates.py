@@ -3,7 +3,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointWebTemplates(SPTestCase):
-
     def test1_get_available_web_templates(self):
         templates = self.client.web.get_available_web_templates().execute_query()
         self.assertGreater(len(templates), 0)

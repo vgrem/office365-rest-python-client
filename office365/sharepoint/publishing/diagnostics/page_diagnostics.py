@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.diagnostics.page_result import (
 
 
 class PageDiagnostics(ClientValue):
-
     def __init__(
         self,
         results=None,

@@ -6,7 +6,6 @@ from office365.sharepoint.sharing.principal import Principal
 
 
 class MainLinkInfo(ClientValue):
-
     def __init__(
         self,
         accessors: ClientValueCollection[Principal] = ClientValueCollection(Principal),

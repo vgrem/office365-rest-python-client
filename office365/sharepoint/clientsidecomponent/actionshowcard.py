@@ -3,6 +3,5 @@ from office365.sharepoint.clientsidecomponent.adaptivecard import AdaptiveCard
 
 
 class ActionShowCard(ClientValue):
-
     def __init__(self, card: AdaptiveCard = AdaptiveCard()):
         self.card = card

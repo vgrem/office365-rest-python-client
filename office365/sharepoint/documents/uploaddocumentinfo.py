@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UploadDocumentInfo(ClientValue):
-
     def __init__(
         self,
         agreement_library_id: str = None,

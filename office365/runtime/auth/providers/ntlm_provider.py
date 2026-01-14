@@ -68,4 +68,4 @@ class NtlmProvider(AuthenticationProvider):
         logger.debug("Successfully authenticated request with NTLM")
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(" f"verify_ssl={self.verify_ssl}, " f"timeout={self.timeout})"
+        return f"{self.__class__.__name__}(verify_ssl={self.verify_ssl}, timeout={self.timeout})"

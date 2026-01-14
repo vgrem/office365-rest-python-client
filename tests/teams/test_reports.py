@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestTeamsReports(GraphTestCase):
-
     @requires_delegated_permission("Reports.Read.All")
     def test1_get_teams_team_counts(self):
         result = self.client.reports.get_teams_team_counts("D90").execute_query()

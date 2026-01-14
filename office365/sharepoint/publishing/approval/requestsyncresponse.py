@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ApprovalRequestSyncResponse(Entity):
-
     @property
     def approval_request(self) -> Optional[str]:
         """Gets the ApprovalRequest property"""

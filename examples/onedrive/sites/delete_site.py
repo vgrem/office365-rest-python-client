@@ -7,7 +7,6 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 sites = client.sites.get().execute_query()
 for site in sites:
-
     try:
         site.delete_object().execute_query()
         print("✓ Success")

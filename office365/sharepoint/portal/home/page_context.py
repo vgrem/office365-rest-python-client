@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SharePointHomePageContext(ClientValue):
-
     def __init__(
         self,
         active_flights: StringCollection = None,

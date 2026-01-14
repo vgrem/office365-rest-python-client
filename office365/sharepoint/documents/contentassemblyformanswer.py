@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ContentAssemblyFormAnswer(ClientValue):
-
     def __init__(
         self,
         additional_data: str = None,

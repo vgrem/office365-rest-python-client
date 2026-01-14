@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class InteropService(Entity):
-
     @property
     def current(self) -> InteropService:
         """Gets the Current property"""

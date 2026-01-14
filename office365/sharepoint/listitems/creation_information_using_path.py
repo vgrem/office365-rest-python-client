@@ -5,7 +5,6 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
 class ListItemCreationInformationUsingPath(ClientValue):
-
     def __init__(
         self,
         leaf_name: str,

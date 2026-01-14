@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MicrofeedPostDefinition(ClientValue):
-
     def __init__(
         self,
         can_delete: bool = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AutoLabellingWorkInformation(ClientValue):
-
     def __init__(
         self,
         routing_hint: str = None,

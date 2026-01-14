@@ -6,7 +6,6 @@ from office365.sharepoint.social.posts.definition_data_item import (
 
 
 class SocialPostDefinitionData(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[SocialPostDefinitionDataItem] = ClientValueCollection(SocialPostDefinitionDataItem),

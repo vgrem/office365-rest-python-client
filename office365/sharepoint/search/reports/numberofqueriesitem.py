@@ -6,7 +6,6 @@ from office365.sharepoint.search.reports.numberofqueriesdata import (
 
 
 class ReportNumberOfQueriesItem(ClientValue):
-
     def __init__(
         self,
         date: str = None,

@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOFileVersionBatchDeleteJobProgress(ClientValue):
-
     def __init__(
         self,
         batch_delete_mode: int = None,

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPContainerTypeBillingProperties(ClientValue):
-
     def __init__(
         self,
         azure_subscription_id: UUID = None,

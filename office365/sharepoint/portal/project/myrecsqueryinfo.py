@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class MyRecsQueryInfo(ClientValue):
-
     def __init__(
         self,
         category: int = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SharingLinkTemplate(ClientValue):
-
     def __init__(
         self,
         password_protected: bool = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteScriptActionStatus(ClientValue):
-
     def __init__(
         self,
         action_index: int = None,

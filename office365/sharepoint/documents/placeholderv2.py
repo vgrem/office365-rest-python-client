@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PlaceholderV2(ClientValue):
-
     def __init__(
         self,
         additional_fields_data: str = None,

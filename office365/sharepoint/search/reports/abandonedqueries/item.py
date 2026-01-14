@@ -6,7 +6,6 @@ from office365.sharepoint.search.reports.abandonedqueriesdata import (
 
 
 class ReportAbandonedQueriesItem(ClientValue):
-
     def __init__(
         self,
         date=None,

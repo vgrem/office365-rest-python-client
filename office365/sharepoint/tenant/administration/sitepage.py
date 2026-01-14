@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPSitePage(ClientValue):
-
     def __init__(
         self,
         created_by: str = None,

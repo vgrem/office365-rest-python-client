@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class App(Entity):
-
     @property
     def asset_id(self) -> Optional[str]:
         """Gets the AssetId property"""

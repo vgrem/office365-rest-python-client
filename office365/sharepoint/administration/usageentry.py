@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UsageEntry(ClientValue):
-
     def __init__(
         self,
         event_type_id: int = None,

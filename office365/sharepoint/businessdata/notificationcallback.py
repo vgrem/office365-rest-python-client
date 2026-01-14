@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class NotificationCallback(Entity):
-
     @property
     def notification_context(self) -> Optional[str]:
         """Gets the NotificationContext property"""

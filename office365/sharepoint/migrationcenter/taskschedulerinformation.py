@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TaskSchedulerInformation(ClientValue):
-
     def __init__(
         self,
         average_duration_milli_seconds: int = None,

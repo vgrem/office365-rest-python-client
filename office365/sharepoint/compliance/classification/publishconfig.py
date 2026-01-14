@@ -6,7 +6,6 @@ from office365.sharepoint.compliance.sensitivitylabels.config import (
 
 
 class SPClassificationPublishConfig(ClientValue):
-
     def __init__(
         self,
         classifier_id: str = None,

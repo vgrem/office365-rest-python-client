@@ -10,7 +10,6 @@ class SharePointHomeServiceContextBuilder(Entity):
         return_type = SharePointHomeServiceContext(self.context)
         qry = ServiceOperationQuery(self, "Context", None, None, None, return_type)
         self.context.add_query(qry)
-        return None
 
     @property
     def entity_type_name(self):

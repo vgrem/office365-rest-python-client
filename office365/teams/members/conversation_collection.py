@@ -35,7 +35,6 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         return_type = super().add(roles=roles)
 
         if isinstance(user, User):
-
             user.ensure_property("id", lambda: return_type.set_property("userId", user.id))
         else:
             return_type.set_property("userId", user)

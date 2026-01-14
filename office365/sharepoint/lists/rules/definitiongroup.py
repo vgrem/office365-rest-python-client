@@ -4,7 +4,6 @@ from office365.sharepoint.lists.rules.definition import RulesDefinition
 
 
 class RulesDefinitionGroup(ClientValue):
-
     def __init__(
         self,
         rule_definitions_list: ClientValueCollection[RulesDefinition] = ClientValueCollection(RulesDefinition),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SchemaData(ClientValue):
-
     def __init__(
         self,
         attribute_data_source: int = None,

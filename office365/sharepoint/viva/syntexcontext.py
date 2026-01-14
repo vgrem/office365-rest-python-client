@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SyntexContext(Entity):
-
     @property
     def syntex_ai_builder_enabled(self) -> Optional[bool]:
         """Gets the SyntexAIBuilderEnabled property"""

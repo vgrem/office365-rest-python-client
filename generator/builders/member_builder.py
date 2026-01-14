@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 
 class MemberBuilder:
-
     def __init__(self, schema: MemberInformation, status="detached"):
         self.schema = schema
         self.status = status

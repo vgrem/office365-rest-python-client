@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class CopyToParams(ClientValue):
-
     def __init__(
         self,
         as_news: bool = None,

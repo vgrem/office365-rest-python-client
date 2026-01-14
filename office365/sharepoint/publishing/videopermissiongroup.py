@@ -5,7 +5,6 @@ from office365.sharepoint.principal.users.user import User
 
 
 class VideoPermissionGroup(Entity):
-
     @property
     def users(self) -> EntityCollection[User]:
         """Gets the Users property"""

@@ -5,7 +5,6 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 class GetRemoteItemInfoRequest(ClientValue):
-
     def __init__(
         self,
         remote_item_unique_ids=None,

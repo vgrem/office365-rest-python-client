@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class PrePublishValidationsErrorCodesForSharePointSite(ClientValue):
-
     def __init__(
         self,
         error_codes: ClientValueCollection[int] = ClientValueCollection(int),

@@ -8,7 +8,6 @@ from office365.sharepoint.documents.location import DocumentLocation
 
 
 class DocumentGenerationInfo(ClientValue):
-
     def __init__(
         self,
         conditional_fields_to_be_deleted: StringCollection = StringCollection(),

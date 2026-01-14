@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.submitinfo import SubmitInfo
 
 
 class FaqSignalData(ClientValue):
-
     def __init__(
         self,
         question_id: str = None,

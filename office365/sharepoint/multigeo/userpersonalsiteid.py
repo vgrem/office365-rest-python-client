@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class UserPersonalSiteId(Entity):
-
     @property
     def my_site_url(self) -> Optional[str]:
         """Gets the MySiteUrl property"""

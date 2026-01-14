@@ -5,7 +5,6 @@ from office365.sharepoint.contentcenter.machinelearning.publicationentitydata im
 
 
 class SPMachineLearningPublicationResult(ClientValue):
-
     def __init__(
         self,
         error_message: str = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SpotlightVideo(Entity):
-
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""

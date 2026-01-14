@@ -7,7 +7,6 @@ from office365.sharepoint.viva.dashboard.content import DashboardContent
 
 
 class DashboardConfiguration(ClientValue):
-
     def __init__(
         self,
         canvas_content: str = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AmplifiedChannels(ClientValue):
-
     def __init__(
         self,
         was_amplified_to_email: bool = None,

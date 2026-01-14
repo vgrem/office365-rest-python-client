@@ -4,7 +4,6 @@ from office365.sharepoint.navigation.home_site_navigation_settings import HomeSi
 
 
 class NavigationServiceRest(Entity):
-
     @property
     def home_site_settings(self) -> HomeSiteNavigationSettings:
         """Gets the HomeSiteSettings property"""

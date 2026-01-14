@@ -5,7 +5,6 @@ from office365.sharepoint.sharing.sitesharingreportjobdata import (
 
 
 class SiteSharingReportCapabilities(ClientValue):
-
     def __init__(
         self,
         can_cancel_sharing_report: bool = None,

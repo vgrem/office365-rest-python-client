@@ -6,7 +6,6 @@ from office365.sharepoint.sharing.audience import Audience
 
 
 class TargetedSiteDetails(ClientValue):
-
     def __init__(
         self,
         audiences: List[Audience] = None,

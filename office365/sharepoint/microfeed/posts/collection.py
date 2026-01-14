@@ -4,7 +4,6 @@ from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 
 
 class MicrofeedPostCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[MicrofeedPost] = ClientValueCollection(MicrofeedPost),

@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
 
 
 class ClientAmplifyResults(ClientValue):
-
     def __init__(
         self,
         errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),

@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.statusresponse import PublishingStatusRespo
 
 
 class AmplifyPublishingHistoryResult(ClientValue):
-
     def __init__(
         self,
         amplify_id: str = None,

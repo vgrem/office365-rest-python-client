@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SiteRenameJobEntityData(Entity):
-
     @property
     def operation_id(self) -> Optional[UUID]:
         """Gets the OperationId property"""

@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class FollowedItemData(Entity):
-
     @property
     def properties(self) -> Optional[dict]:
         """Gets the Properties property"""

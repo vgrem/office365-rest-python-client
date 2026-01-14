@@ -4,7 +4,6 @@ from office365.sharepoint.sites.manager.missinglinkreferrer import MissingLinkRe
 
 
 class MissingLink(ClientValue):
-
     def __init__(
         self,
         hits: int = None,

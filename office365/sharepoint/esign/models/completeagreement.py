@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CompleteAgreementModel(ClientValue):
-
     def __init__(
         self,
         document_id: str = None,

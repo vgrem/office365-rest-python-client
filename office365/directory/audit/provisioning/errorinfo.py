@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisioningErrorInfo(ClientValue):
-
     def __init__(
         self,
         additional_details: str = None,

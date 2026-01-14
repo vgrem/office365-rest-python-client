@@ -2,7 +2,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPLibrary(SPTestCase):
-
     def test1_get_default_library(self):
         result = self.client.web.default_document_library().get().execute_query()
         self.assertIsNotNone(result.id)

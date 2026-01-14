@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UpdateUploadedAgreementMetadataPayload(ClientValue):
-
     def __init__(
         self,
         agreement_number: str = None,

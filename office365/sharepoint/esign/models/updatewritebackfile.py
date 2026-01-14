@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UpdateWriteBackFileModel(ClientValue):
-
     def __init__(
         self,
         file_name: str = None,

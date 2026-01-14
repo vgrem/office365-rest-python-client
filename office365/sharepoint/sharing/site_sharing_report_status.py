@@ -5,7 +5,6 @@ from office365.sharepoint.sharing.sitesharingreportjobdata import (
 
 
 class SiteSharingReportStatus(ClientValue):
-
     def __init__(
         self,
         error_code: int = None,

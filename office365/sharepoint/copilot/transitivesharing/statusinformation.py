@@ -6,7 +6,6 @@ from office365.sharepoint.copilot.transitivesharing.statusitem import (
 
 
 class CopilotTransitiveSharingStatusInformation(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[CopilotTransitiveSharingStatusItem] = ClientValueCollection(

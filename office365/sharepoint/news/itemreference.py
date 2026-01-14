@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ItemReference(ClientValue):
-
     def __init__(
         self,
         exchange_id: str = None,

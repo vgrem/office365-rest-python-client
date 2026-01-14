@@ -7,7 +7,6 @@ from office365.sharepoint.onboarding.tenantrename.job import TenantRenameJob
 
 
 class OnboardingServicesBeta(Entity):
-
     @property
     def priority_site_rename_jobs(self) -> EntityCollection[PrioritySiteRenameJob]:
         """Gets the PrioritySiteRenameJobs property"""

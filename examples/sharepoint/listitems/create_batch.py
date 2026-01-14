@@ -20,6 +20,6 @@ tasks_list = ctx.web.lists.get_by_title("Company Tasks")
 
 num_of_items = 512
 item_props = {"Title": create_unique_name("Task")}
-task_items = [tasks_list.add_item(item_props) for idx in range(0, num_of_items)]
+task_items = [tasks_list.add_item(item_props) for idx in range(num_of_items)]
 ctx.execute_batch(success_callback=print_progress)
 print("{0} task items created".format(len(task_items)))

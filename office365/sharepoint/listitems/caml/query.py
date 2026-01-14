@@ -9,7 +9,6 @@ from office365.sharepoint.views.scope import ViewScope
 
 
 class CamlQuery(ClientValue):
-
     def __init__(
         self,
         dates_in_utc: bool = True,

@@ -5,7 +5,6 @@ from office365.sharepoint.lists.rules.userinfo import SPRuleUserInfo
 
 
 class SPListRule(ClientValue):
-
     def __init__(
         self,
         action_params: str = None,

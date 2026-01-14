@@ -6,7 +6,6 @@ from office365.sharepoint.fields.type import FieldType
 
 
 class FieldCreationInformation(ClientValue):
-
     def __init__(
         self,
         title: str,

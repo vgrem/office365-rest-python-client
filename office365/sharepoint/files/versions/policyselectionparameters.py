@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class VersionPolicySelectionParameters(ClientValue):
-
     def __init__(
         self,
         file_types_selected: StringCollection = StringCollection(),

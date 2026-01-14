@@ -5,7 +5,6 @@ from office365.sharepoint.tenant.administration.transpilerresponse import (
 
 
 class CopilotTranspilerResponse(ClientValue):
-
     def __init__(
         self,
         data: TranspilerResponse = TranspilerResponse(),

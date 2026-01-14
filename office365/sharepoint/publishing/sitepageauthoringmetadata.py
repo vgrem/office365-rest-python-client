@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SitePageAuthoringMetadata(ClientValue):
-
     def __init__(
         self,
         client_operation: int = None,

@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SharePageByEmailData(ClientValue):
-
     def __init__(
         self,
         bcc_emails: StringCollection = StringCollection(),

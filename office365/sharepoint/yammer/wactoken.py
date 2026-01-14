@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class WacToken(ClientValue):
-
     def __init__(
         self,
         access_token: str = None,

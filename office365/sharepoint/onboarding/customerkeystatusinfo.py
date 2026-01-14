@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomerKeyStatusInfo(ClientValue):
-
     def __init__(
         self,
         availability_key_vault_uri: str = None,

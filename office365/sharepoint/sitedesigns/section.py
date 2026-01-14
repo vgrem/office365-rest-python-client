@@ -3,7 +3,6 @@ from office365.sharepoint.sitedesigns.heroimage import HeroImage
 
 
 class Section(ClientValue):
-
     def __init__(
         self,
         activity_image: str = None,

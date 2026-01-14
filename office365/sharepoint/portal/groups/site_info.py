@@ -3,7 +3,6 @@ from office365.sharepoint.portal.sites.status import SiteStatus
 
 
 class GroupSiteInfo(ClientValue):
-
     def __init__(
         self,
         site_url=None,

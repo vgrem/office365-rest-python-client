@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AppInstanceErrorDetails(Entity):
-
     @property
     def correlation_id(self) -> Optional[UUID]:
         """Gets the CorrelationId property"""

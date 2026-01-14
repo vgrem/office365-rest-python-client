@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RenderListFilterDataParameters(ClientValue):
-
     def __init__(
         self,
         exclude_field_filtering_html: bool = None,

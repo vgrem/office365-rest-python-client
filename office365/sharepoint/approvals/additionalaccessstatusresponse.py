@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AdditionalAccessStatusResponse(ClientValue):
-
     def __init__(
         self,
         additional_access_request_status: int = None,

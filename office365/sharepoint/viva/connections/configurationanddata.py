@@ -6,7 +6,6 @@ from office365.sharepoint.viva.spotlightnews import SpotlightNews
 
 
 class ConnectionsConfigurationAndData(ClientValue):
-
     def __init__(
         self,
         is_configured: bool = None,

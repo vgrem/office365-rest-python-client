@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class MnAGroupMoveValidationResult(Entity):
-
     @property
     def result(self) -> Optional[str]:
         """Gets the Result property"""

@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class PolicyEvaluationInfo(Entity):
-
     @property
     def applicable_policies(self) -> StringCollection:
         """Gets the ApplicablePolicies property"""

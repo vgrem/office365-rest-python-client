@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AddAuditTrailEntryModel(ClientValue):
-
     def __init__(
         self,
         action: str = None,

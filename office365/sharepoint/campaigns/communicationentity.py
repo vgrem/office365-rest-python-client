@@ -6,7 +6,6 @@ from office365.sharepoint.campaigns.userinfo import CampaignUserInfo
 
 
 class CampaignCommunicationEntity(ClientValue):
-
     def __init__(
         self,
         campaign_id: str = None,

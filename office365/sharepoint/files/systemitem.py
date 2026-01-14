@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class FileSystemItem(Entity):
-
     @property
     def created_by(self) -> UserInformation:
         """Gets the CreatedBy property"""

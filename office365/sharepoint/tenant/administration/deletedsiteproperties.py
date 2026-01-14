@@ -6,7 +6,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DeletedSiteProperties(Entity):
-
     @property
     def archive_status(self) -> Optional[str]:
         """Gets the ArchiveStatus property"""

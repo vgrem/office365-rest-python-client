@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class VideoServiceDiscoverer(Entity):
-
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Publishing.VideoServiceDiscoverer"))
 

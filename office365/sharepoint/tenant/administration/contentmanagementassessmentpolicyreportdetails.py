@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ContentManagementAssessmentPolicyReportDetails(ClientValue):
-
     def __init__(
         self,
         total_impacted_sites: int = None,

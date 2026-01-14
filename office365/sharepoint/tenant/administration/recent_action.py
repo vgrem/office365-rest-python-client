@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TenantAdminRecentAction(ClientValue):
-
     def __init__(
         self,
         admin_action_id: str = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AgreementPermissionsData(ClientValue):
-
     def __init__(
         self,
         can_add_amendment: bool = None,

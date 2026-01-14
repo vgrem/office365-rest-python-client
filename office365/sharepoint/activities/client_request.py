@@ -7,7 +7,6 @@ from office365.sharepoint.activities.facets.revision_set import RevisionSetFacet
 
 
 class ActivityClientRequest(ClientValue):
-
     def __init__(
         self,
         revision_set=RevisionSetFacet(),

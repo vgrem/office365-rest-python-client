@@ -3,7 +3,6 @@ from tests.graph_case import GraphTestCase
 
 
 class TestRecordsManagement(GraphTestCase):
-
     @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
     def test2_list_retention_event_types(self):
         result = self.client.security.trigger_types.retention_event_types.get().execute_query()

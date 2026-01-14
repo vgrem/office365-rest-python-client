@@ -3,7 +3,6 @@ from office365.sharepoint.portal.home.datacacheentry import SharePointHomeDataCa
 
 
 class SharePointHomeDataCache(ClientValue):
-
     def __init__(
         self,
         key: str = None,

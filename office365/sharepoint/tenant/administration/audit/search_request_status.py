@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AuditSearchRequestStatus(ClientValue):
-
     def __init__(
         self,
         completed_time_utc: datetime = None,

@@ -4,7 +4,6 @@ from office365.sharepoint.brandcenter.theme_data import ThemeData
 
 
 class SiteThemes(ClientValue):
-
     def __init__(
         self,
         theme_data: ClientValueCollection[ThemeData] = ClientValueCollection(ThemeData),

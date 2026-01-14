@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SemanticSearchCrawlerEnqueueItem(ClientValue):
-
     def __init__(
         self,
         associate_site_id: str = None,

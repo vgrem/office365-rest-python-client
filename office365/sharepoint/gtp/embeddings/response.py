@@ -5,7 +5,6 @@ from office365.sharepoint.gtp.responseusage import GptResponseUsage
 
 
 class GptEmbeddingsResponse(ClientValue):
-
     def __init__(
         self,
         data: ClientValueCollection[GptEmbeddingsResponseData] = ClientValueCollection(GptEmbeddingsResponseData),

@@ -5,7 +5,6 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 class SPSyntexApplicationProperties(ClientValue):
-
     def __init__(
         self,
         application_id: UUID = None,

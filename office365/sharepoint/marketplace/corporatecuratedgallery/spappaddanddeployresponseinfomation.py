@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPAppAddAndDeployResponseInfomation(ClientValue):
-
     def __init__(
         self,
         is_first_time_deployed: bool = None,

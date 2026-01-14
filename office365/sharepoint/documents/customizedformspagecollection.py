@@ -4,7 +4,6 @@ from office365.sharepoint.documents.customizedformspage import CustomizedFormsPa
 
 
 class CustomizedFormsPageCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[CustomizedFormsPage] = ClientValueCollection(CustomizedFormsPage),

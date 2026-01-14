@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UpdateAgreementStatePayload(ClientValue):
-
     def __init__(
         self,
         agreement_url: str = None,

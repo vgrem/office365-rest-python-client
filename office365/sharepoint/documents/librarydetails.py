@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class LibraryDetails(ClientValue):
-
     def __init__(
         self,
         base_template_type: int = None,

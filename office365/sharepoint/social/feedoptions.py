@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SocialFeedOptions(ClientValue):
-
     def __init__(
         self,
         max_thread_count: int = None,

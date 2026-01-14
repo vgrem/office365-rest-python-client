@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RecentAdminActionReportPayload(ClientValue):
-
     def __init__(
         self,
         actions: str = None,

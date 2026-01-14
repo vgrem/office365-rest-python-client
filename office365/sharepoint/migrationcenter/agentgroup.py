@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class AgentGroup(Entity):
-
     @property
     def active_agent_count(self) -> Optional[int]:
         """Gets the ActiveAgentCount property"""

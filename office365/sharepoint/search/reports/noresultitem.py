@@ -4,7 +4,6 @@ from office365.sharepoint.search.reports.noresultdata import ReportNoResultData
 
 
 class ReportNoResultItem(ClientValue):
-
     def __init__(
         self,
         date: str = None,

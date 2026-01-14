@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SiteAtTargetEntityData(Entity):
-
     @property
     def normalized_content_db_id_at_source(self) -> Optional[str]:
         """Gets the NormalizedContentDBIdAtSource property"""

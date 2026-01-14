@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CanCreatePageResponse(Entity):
-
     @property
     def can_create_page(self) -> Optional[bool]:
         """Gets the CanCreatePage property"""

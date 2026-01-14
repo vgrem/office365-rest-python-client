@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CloudPcRestorePointSetting(ClientValue):
-
     def __init__(
         self,
         frequency_type: CloudPcRestorePointFrequencyType = CloudPcRestorePointFrequencyType.none,

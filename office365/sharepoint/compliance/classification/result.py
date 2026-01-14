@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ClassificationResult(ClientValue):
-
     def __init__(
         self,
         confidence_score: float = None,

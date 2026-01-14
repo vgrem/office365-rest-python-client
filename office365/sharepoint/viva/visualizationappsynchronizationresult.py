@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class VisualizationAppSynchronizationResult(Entity):
-
     @property
     def synchronization_data(self) -> Optional[str]:
         """Gets the SynchronizationData property"""

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class FileDeleteParameters(ClientValue):
-
     def __init__(
         self,
         bypass_checked_out: bool = None,

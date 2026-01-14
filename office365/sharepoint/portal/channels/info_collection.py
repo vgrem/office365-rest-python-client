@@ -6,7 +6,6 @@ from office365.sharepoint.portal.channels.info import ChannelInfo
 
 
 class ChannelInfoCollection(ClientValue):
-
     def __init__(self, value=None, cache_updated_time: datetime = None):
         self.value = ClientValueCollection(ChannelInfo, value)
         self.CacheUpdatedTime = cache_updated_time

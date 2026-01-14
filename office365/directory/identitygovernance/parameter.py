@@ -4,7 +4,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class Parameter(ClientValue):
-
     def __init__(self, name: str = None, values: StringCollection = StringCollection(), value_type: ValueType = None):
         self.name = name
         self.values = values

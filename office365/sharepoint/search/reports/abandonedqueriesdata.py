@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReportAbandonedQueriesData(ClientValue):
-
     def __init__(
         self,
         abandoned_percentage: float = None,

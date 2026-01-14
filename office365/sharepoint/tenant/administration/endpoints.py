@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 
 class TenantAdminEndpoints(Entity):
-
     def __init__(self, context: ClientContext) -> None:
         static_path = StaticPath("Microsoft.Online.SharePoint.TenantAdministration.TenantAdminEndpoints")
         super().__init__(context, static_path)

@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.amplify.historyresult import (
 
 
 class AmplifyPublishingHistory(ClientValue):
-
     def __init__(
         self,
         results: ClientValueCollection[AmplifyPublishingHistoryResult] = ClientValueCollection(

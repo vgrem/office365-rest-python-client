@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SiteRenameJob(Entity):
-
     @property
     def error_code(self) -> Optional[int]:
         """Gets the ErrorCode property"""

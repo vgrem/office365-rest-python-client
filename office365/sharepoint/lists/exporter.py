@@ -49,7 +49,6 @@ class ListExporter:
             list_item.file.get_content().after_execute(_after_downloaded)
 
         def _export_items(items: ListItemCollection) -> None:
-
             progress.processed_items += len(items)
 
             for item in items:

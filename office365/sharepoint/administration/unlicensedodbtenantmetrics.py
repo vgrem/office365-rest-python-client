@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UnlicensedOdbTenantMetrics(ClientValue):
-
     def __init__(
         self,
         admin_locked_count: int = None,

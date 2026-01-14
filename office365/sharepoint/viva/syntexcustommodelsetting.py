@@ -7,7 +7,6 @@ from office365.sharepoint.viva.syntexcustommodeldeploymentproperties import (
 
 
 class SyntexCustomModelSetting(ClientValue):
-
     def __init__(
         self,
         analyzer_id: str = None,

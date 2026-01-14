@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomFontsResource(ClientValue):
-
     def __init__(
         self,
         byte_array: bytes = None,

@@ -3,7 +3,6 @@ from office365.sharepoint.microfeed.linkaction import MicrofeedLinkAction
 
 
 class MicrofeedLink(ClientValue):
-
     def __init__(
         self,
         click_action: MicrofeedLinkAction = MicrofeedLinkAction(),

@@ -4,7 +4,6 @@ from office365.sharepoint.sharing.principal import Principal
 
 
 class OversharedWebInfo(ClientValue):
-
     def __init__(
         self,
         has_unique_role_assignments_for_list: bool = None,

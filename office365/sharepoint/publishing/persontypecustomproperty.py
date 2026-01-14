@@ -3,7 +3,6 @@ from office365.sharepoint.publishing.profilecoreproperties import ProfileCorePro
 
 
 class PersonTypeCustomProperty(Entity):
-
     @property
     def value(self) -> ProfileCoreProperties:
         """Gets the Value property"""

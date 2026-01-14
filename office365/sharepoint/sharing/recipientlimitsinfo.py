@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RecipientLimitsInfo(ClientValue):
-
     def __init__(
         self,
         alias_only: int = None,

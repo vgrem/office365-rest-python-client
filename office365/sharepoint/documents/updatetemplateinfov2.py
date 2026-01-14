@@ -5,7 +5,6 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
 class UpdateTemplateInfoV2(ClientValue):
-
     def __init__(
         self,
         deleted_placeholder_column_ids: StringCollection = StringCollection(),

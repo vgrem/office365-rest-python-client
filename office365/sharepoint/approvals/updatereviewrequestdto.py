@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UpdateReviewRequestDTO(ClientValue):
-
     def __init__(
         self,
         action: str = None,

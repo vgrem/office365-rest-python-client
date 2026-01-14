@@ -190,10 +190,12 @@ def parse_key_value_collection(
         Dictionary with {key: converted_value} pairs
 
     Examples:
-        >>> parse_key_value_collection({
-        ...     0: {'Key': 'UserProfile_GUID', 'Value': 'd895ff01...', 'ValueType': 'Edm.String'},
-        ...     1: {'Key': 'IsAdmin', 'Value': 'true', 'ValueType': 'Edm.Boolean'}
-        ... })
+        >>> parse_key_value_collection(
+        ...     {
+        ...         0: {"Key": "UserProfile_GUID", "Value": "d895ff01...", "ValueType": "Edm.String"},
+        ...         1: {"Key": "IsAdmin", "Value": "true", "ValueType": "Edm.Boolean"},
+        ...     }
+        ... )
         {'UserProfile_GUID': 'd895ff01...', 'IsAdmin': True}
     """
     result = {}

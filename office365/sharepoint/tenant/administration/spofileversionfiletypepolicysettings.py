@@ -5,7 +5,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class SPOFileVersionFileTypePolicySettings(ClientValue):
-
     def __init__(
         self,
         enable_auto_expiration_version_trim: bool = None,

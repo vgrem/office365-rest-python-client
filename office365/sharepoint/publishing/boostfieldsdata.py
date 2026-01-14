@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class BoostFieldsData(ClientValue):
-
     def __init__(
         self,
         boost_order_type: int = None,

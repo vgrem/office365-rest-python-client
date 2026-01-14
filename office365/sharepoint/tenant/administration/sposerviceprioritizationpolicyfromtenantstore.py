@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOServicePrioritizationPolicyFromTenantStore(ClientValue):
-
     def __init__(
         self,
         azure_region: str = None,

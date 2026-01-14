@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ReportNoResultData(ClientValue):
-
     def __init__(
         self,
         no_result_percentage: float = None,

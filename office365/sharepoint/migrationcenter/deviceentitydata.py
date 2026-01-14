@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class DeviceEntityData(Entity):
-
     @property
     def client_user_name(self) -> Optional[str]:
         """Gets the ClientUserName property"""

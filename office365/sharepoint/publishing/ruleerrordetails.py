@@ -4,7 +4,6 @@ from office365.sharepoint.publishing.error import Error
 
 
 class RuleErrorDetails(ClientValue):
-
     def __init__(
         self,
         error_headers: StringCollection = StringCollection(),

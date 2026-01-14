@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPJitDlpPolicyData(ClientValue):
-
     def __init__(
         self,
         execution_mode: int = None,

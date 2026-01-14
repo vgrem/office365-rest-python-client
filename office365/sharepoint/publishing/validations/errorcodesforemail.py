@@ -3,7 +3,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class PrePublishValidationsErrorCodesForEmail(ClientValue):
-
     def __init__(
         self,
         email_address: str = None,

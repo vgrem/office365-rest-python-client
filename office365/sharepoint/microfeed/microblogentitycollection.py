@@ -4,7 +4,6 @@ from office365.sharepoint.microfeed.entity import MicroBlogEntity
 
 
 class MicroBlogEntityCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(MicroBlogEntity),

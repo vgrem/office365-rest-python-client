@@ -690,7 +690,6 @@ class Tenant(Entity):
     def remove_sites(
         self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
     ) -> Self:
-
         def _remove_next_site(op: SpoOperation = None):
             if site_urls:
                 site_url = site_urls.pop(0)
@@ -715,7 +714,6 @@ class Tenant(Entity):
     def remove_deleted_sites(
         self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
     ) -> Self:
-
         def _remove_next_deleted_site(op: SpoOperation = None):
             if site_urls:
                 site_url = site_urls.pop(0)

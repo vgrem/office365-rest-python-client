@@ -4,7 +4,6 @@ from office365.sharepoint.viva.destinationv2 import VivaEngageDestinationV2
 
 
 class PrePublishValidationsErrorCodesForVivaEngage(ClientValue):
-
     def __init__(
         self,
         destination_name: str = None,

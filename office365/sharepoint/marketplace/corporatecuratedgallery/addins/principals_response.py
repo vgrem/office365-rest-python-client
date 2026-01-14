@@ -9,7 +9,6 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sperrorwithserverr
 
 
 class SPGetAddinPrincipalsResponse(ClientValue):
-
     def __init__(
         self,
         addin_principals: ClientValueCollection[SPAddinPrincipalInfo] = ClientValueCollection(SPAddinPrincipalInfo),

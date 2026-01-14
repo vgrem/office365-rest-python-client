@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class OnPremisesExtensionAttributes(ClientValue):
-
     def __init__(
         self,
         extension_attribute1: str = None,

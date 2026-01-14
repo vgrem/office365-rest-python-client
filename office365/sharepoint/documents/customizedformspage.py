@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomizedFormsPage(ClientValue):
-
     def __init__(
         self,
         form_type: int = None,

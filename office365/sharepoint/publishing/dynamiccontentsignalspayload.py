@@ -5,7 +5,6 @@ from office365.sharepoint.publishing.faqsignaldata import FaqSignalData
 
 
 class DynamicContentSignalsPayload(ClientValue):
-
     def __init__(
         self,
         additional_data: ClientValueCollection[DynamicFaqSingalsData] = ClientValueCollection(DynamicFaqSingalsData),

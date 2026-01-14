@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class GroupNameValidationResultErrorParams(ClientValue):
-
     def __init__(
         self,
         blocked_word: str = None,

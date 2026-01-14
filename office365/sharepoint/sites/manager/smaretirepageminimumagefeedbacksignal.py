@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SMARetirePageMinimumAgeFeedbackSignal(ClientValue):
-
     def __init__(
         self,
         default_age: int = None,

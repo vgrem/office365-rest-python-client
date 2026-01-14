@@ -3,7 +3,6 @@ from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 
 
 class MainLinkAudienceAbilities(ClientValue):
-
     def __init__(
         self,
         anyone_link_available: SharingAbilityStatus = SharingAbilityStatus(),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CollaborationMailboxResponse(ClientValue):
-
     def __init__(
         self,
         alternate_url: str = None,

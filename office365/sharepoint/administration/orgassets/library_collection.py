@@ -4,7 +4,6 @@ from office365.sharepoint.administration.orgassets.library import OrgAssetsLibra
 
 
 class OrgAssetsLibraryCollection(ClientValue):
-
     def __init__(
         self,
         org_assets_libraries: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(OrgAssetsLibrary),

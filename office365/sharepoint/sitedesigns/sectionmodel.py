@@ -4,7 +4,6 @@ from office365.sharepoint.sitedesigns.webpartmodel import WebPartModel
 
 
 class SectionModel(ClientValue):
-
     def __init__(
         self,
         index: int = None,

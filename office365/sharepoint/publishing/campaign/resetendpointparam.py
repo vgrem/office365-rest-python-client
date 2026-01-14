@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class CampaignPublicationResetEndpointParam(ClientValue):
-
     def __init__(
         self,
         email_transpile_content: str = None,

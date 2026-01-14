@@ -34,7 +34,7 @@ class ServiceOperationQuery(ClientQuery[T]):
         self.static = is_static
 
     def __repr__(self) -> str:
-        return f"ServiceOperationQuery(name={self.path.name}, " f"static={self.static}"
+        return f"ServiceOperationQuery(name={self.path.name}, static={self.static}"
 
     @property
     def path(self) -> ServiceOperationPath:

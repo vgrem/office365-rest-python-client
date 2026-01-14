@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SpotlightNews(ClientValue):
-
     def __init__(
         self,
         alt_text: str = None,

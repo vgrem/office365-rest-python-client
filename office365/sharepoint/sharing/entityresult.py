@@ -5,7 +5,6 @@ from office365.sharepoint.sharing.entityresultdescription import (
 
 
 class SharingEntityResult(ClientValue):
-
     def __init__(
         self,
         description: SharingEntityResultDescription = SharingEntityResultDescription(),

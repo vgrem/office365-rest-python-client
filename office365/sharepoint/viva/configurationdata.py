@@ -4,7 +4,6 @@ from office365.sharepoint.sites.home.navconfiguration import HomeSiteNavConfigur
 
 
 class ConfigurationData(ClientValue):
-
     def __init__(
         self,
         bridge_absolute_path: ResourcePath = None,

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SuggestionItem(ClientValue):
-
     def __init__(
         self,
         dismissed_date: datetime = None,

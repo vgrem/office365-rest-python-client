@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class EntityField(Entity):
-
     @property
     def contains_localized_display_name(self) -> Optional[bool]:
         """Gets the ContainsLocalizedDisplayName property"""

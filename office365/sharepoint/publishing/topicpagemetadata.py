@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class TopicPageMetadata(Entity):
-
     @property
     def entity_id(self) -> Optional[str]:
         """Gets the EntityId property"""

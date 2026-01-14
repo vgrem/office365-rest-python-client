@@ -4,7 +4,6 @@ from office365.sharepoint.sharing.shared_with_user import SharedWithUser
 
 
 class SharedWithUserCollection(ClientValue):
-
     def __init__(
         self,
         items: ClientValueCollection[SharedWithUser] = ClientValueCollection(SharedWithUser),

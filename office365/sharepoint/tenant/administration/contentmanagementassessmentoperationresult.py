@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ContentManagementAssessmentOperationResult(ClientValue):
-
     def __init__(
         self,
         data_access_governance_error_message: str = None,

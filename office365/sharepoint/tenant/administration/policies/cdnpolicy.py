@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPOTenantCdnPolicy(Entity):
-
     @property
     def policy_type(self) -> Optional[int]:
         """Gets the PolicyType property"""

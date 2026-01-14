@@ -3,7 +3,6 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 
 class OrgAssetsLibrary(ClientValue):
-
     def __init__(
         self,
         display_name: str = None,

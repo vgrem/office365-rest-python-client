@@ -6,7 +6,6 @@ from office365.sharepoint.migrationcenter.folderinformation import SPFolderInfor
 
 
 class SPListInformation(ClientValue):
-
     def __init__(
         self,
         absolute_url: str = None,

@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class FormsCustomization(Entity):
-
     @staticmethod
     def can_customize_forms(
         context: ClientContext,

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ShortcutInformation(ClientValue):
-
     def __init__(
         self,
         added_by_id: int = None,

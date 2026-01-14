@@ -5,7 +5,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class X509CertificateRule(ClientValue):
-
     def __init__(
         self,
         identifier: str = None,

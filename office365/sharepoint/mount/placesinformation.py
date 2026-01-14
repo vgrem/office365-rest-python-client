@@ -5,7 +5,6 @@ from office365.sharepoint.mount.placesuserentity import PlacesUserEntity
 
 
 class PlacesInformation(Entity):
-
     @property
     def in_callers_drive(self) -> Optional[str]:
         """Gets the inCallersDrive property"""

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPOCopilotAgentInsightsCopilotAgentsOnSitesDetails(ClientValue):
-
     def __init__(
         self,
         copilot_name: str = None,

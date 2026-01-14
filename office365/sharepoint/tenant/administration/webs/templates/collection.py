@@ -4,7 +4,6 @@ from office365.sharepoint.tenant.administration.webs.templates.template import S
 
 
 class SPOTenantWebTemplateCollection(Entity):
-
     @property
     def items(self):
         return self.properties.get("Items", ClientValueCollection(SPOTenantWebTemplate))

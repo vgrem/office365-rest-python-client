@@ -5,7 +5,6 @@ from office365.sharepoint.gtp.responseusage import GptResponseUsage
 
 
 class GptResponse(ClientValue):
-
     def __init__(
         self,
         choices: ClientValueCollection[GptResponseChoice] = ClientValueCollection(GptResponseChoice),

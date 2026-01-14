@@ -91,7 +91,7 @@ class ODataType:
         self._used_modules = modules_key
         return resolved
 
-    @lru_cache(maxsize=512)
+    @lru_cache(maxsize=512)  # noqa: B019
     def _resolve_type(self, modules_key: tuple) -> Optional[Type]:
         """Internal cached resolution."""
         target_name = self.client_type_name

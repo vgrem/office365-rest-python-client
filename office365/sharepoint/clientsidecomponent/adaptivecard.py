@@ -7,7 +7,6 @@ from office365.sharepoint.sitedesigns.autoinvokeoptions import AutoInvokeOptions
 
 
 class AdaptiveCard(ClientValue):
-
     def __init__(
         self,
         body: ClientValueCollection[CardElement] = ClientValueCollection(CardElement),

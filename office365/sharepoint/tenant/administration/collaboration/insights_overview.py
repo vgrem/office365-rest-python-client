@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CollaborationInsightsOverview(ClientValue):
-
     def __init__(
         self,
         last_report_date: datetime = None,

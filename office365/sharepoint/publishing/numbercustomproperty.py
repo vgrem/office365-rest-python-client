@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class NumberCustomProperty(Entity):
-
     @property
     def value(self) -> Optional[float]:
         """Gets the Value property"""

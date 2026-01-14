@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ApprovalRequest(Entity):
-
     @property
     def actions(self) -> Optional[str]:
         """Gets the Actions property"""

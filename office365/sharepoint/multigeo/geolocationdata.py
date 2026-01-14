@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class GeoLocationData(Entity):
-
     @property
     def code(self) -> Optional[str]:
         """Gets the Code property"""

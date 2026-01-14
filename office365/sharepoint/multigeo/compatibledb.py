@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class CompatibleDB(Entity):
-
     @property
     def health_score(self) -> Optional[int]:
         """Gets the HealthScore property"""

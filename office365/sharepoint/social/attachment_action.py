@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SocialAttachmentAction(ClientValue):
-
     def __init__(
         self,
         action_kind: int = None,

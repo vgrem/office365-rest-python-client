@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class OrgAssetsLibraryConfigParam(ClientValue):
-
     def __init__(
         self,
         is_copilot_searchable: bool = None,

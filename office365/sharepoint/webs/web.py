@@ -335,7 +335,6 @@ class Web(SecurableObject):
         return_type = PushNotificationSubscriberCollection(self.context)
 
         def _create_and_add_query(login_name: str):
-
             qry = ServiceOperationQuery(
                 self,
                 "GetPushNotificationSubscribersByUser",

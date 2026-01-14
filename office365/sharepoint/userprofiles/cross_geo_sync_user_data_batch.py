@@ -6,7 +6,6 @@ from office365.sharepoint.multigeo.crossgeosyncuserproperty import (
 
 
 class CrossGeoSyncUserDataBatch(ClientValue):
-
     def __init__(
         self,
         last_event_id: int = None,

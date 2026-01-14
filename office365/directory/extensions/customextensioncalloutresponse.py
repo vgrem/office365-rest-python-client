@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomExtensionCalloutResponse(ClientValue):
-
     def __init__(self, data: CustomExtensionData = CustomExtensionData(), source: str = None, type_: str = None):
         self.data = data
         self.source = source

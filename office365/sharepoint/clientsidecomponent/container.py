@@ -4,7 +4,6 @@ from office365.sharepoint.clientsidecomponent.padding import Padding
 
 
 class Container(CardElement):
-
     def __init__(
         self,
         background_image: str = None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SmtpServer(ClientValue):
-
     def __init__(self, value=None, is_readonly=None, is_read_only: bool = None):
         """
         :param str value:

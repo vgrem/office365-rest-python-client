@@ -39,7 +39,6 @@ class TypeBuilder(ast.NodeTransformer):
         self._client_type: ODataType = ODataType(self._schema.FullName, self._schema.IsValueObject)
 
     def visit_ClassDef(self, node: ast.ClassDef):
-
         if self._schema:
             node.name = self.client_type_name
 
@@ -68,7 +67,6 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def visit_FunctionDef(self, node):
-
         if node.name == "__init__":
             return self.generic_visit(node)
 
@@ -98,7 +96,6 @@ class TypeBuilder(ast.NodeTransformer):
             and node.value.id == "self"
             and isinstance(node.attr, str)
         ):
-
             prop_name = node.attr
             matching_prop = next((prop for prop in self._properties if prop.name == prop_name), None)
             if matching_prop:
@@ -197,7 +194,6 @@ class TypeBuilder(ast.NodeTransformer):
         return init_method
 
     def _update_init_method(self, init_method: ast.FunctionDef):
-
         existing_params = {arg.arg for arg in init_method.args.args if arg.arg != "self"}
 
         for prop in self._properties:

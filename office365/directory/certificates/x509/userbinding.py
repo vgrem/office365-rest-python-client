@@ -3,7 +3,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class X509CertificateUserBinding(ClientValue):
-
     def __init__(
         self,
         priority: int = None,

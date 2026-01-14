@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class AgreementESignStatusUpdatedPayload(ClientValue):
-
     def __init__(
         self,
         agreement_id: str = None,

@@ -7,7 +7,6 @@ from office365.sharepoint.tenant.administration.copilot.reportrow import ReportR
 
 
 class ReportDetails(BaseRawDataSources):
-
     def __init__(
         self,
         headers: StringCollection = None,

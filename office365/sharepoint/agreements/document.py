@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class AgreementDocument(ClientValue):
-
     def __init__(
         self,
         document_type: str = None,

@@ -7,7 +7,6 @@ from office365.sharepoint.publishing.video.channel_collection import VideoChanne
 
 
 class VideoServiceManager(Entity):
-
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Publishing.VideoServiceManager"))
 

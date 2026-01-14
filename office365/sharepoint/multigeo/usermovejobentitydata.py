@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class UserMoveJobEntityData(Entity):
-
     @property
     def has_odb_in_source_data_location(self) -> Optional[bool]:
         """Gets the HasOdbInSourceDataLocation property"""

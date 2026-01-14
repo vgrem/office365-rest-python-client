@@ -4,7 +4,6 @@ from office365.sharepoint.documents.placeholder import Placeholder
 
 
 class TemplateMetaData(ClientValue):
-
     def __init__(
         self,
         placeholders: ClientValueCollection[Placeholder] = ClientValueCollection(Placeholder),

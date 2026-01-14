@@ -6,7 +6,6 @@ from office365.sharepoint.sites.manager.retirablepagemetadata import (
 
 
 class RetirablePagesQueryResult(ClientValue):
-
     def __init__(
         self,
         files: ClientValueCollection[RetirablePageMetadata] = ClientValueCollection(RetirablePageMetadata),

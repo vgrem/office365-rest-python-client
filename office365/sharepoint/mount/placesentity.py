@@ -5,7 +5,6 @@ from office365.sharepoint.mount.placesuserentity import PlacesUserEntity
 
 
 class PlacesEntity(Entity):
-
     @property
     def action_date(self) -> datetime:
         """Gets the actionDate property"""

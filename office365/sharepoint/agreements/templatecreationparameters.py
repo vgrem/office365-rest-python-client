@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class TemplateCreationParameters(ClientValue):
-
     def __init__(
         self,
         source_file_unique_id: str = None,

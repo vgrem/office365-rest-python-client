@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class LinkParameters(ClientValue):
-
     def __init__(self, nav: str = None):
         self.nav = nav
 

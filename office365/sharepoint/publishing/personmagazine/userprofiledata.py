@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.person.magazineuserprofile import (
 
 
 class PersonMagazineUserProfileData(ClientValue):
-
     def __init__(
         self,
         manager_chain: ClientValueCollection[PersonMagazineUserProfile] = ClientValueCollection(

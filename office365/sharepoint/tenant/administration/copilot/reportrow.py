@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class ReportRow(ClientValue):
-
     def __init__(self, row: StringCollection = StringCollection()):
         self.Row = row
 

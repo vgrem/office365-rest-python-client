@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ApprovalsCreateRequestParameters(ClientValue):
-
     def __init__(
         self,
         approvers: str = None,

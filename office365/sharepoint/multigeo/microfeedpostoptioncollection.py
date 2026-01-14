@@ -4,7 +4,6 @@ from office365.sharepoint.microfeed.posts.options import MicrofeedPostOptions
 
 
 class MicrofeedPostOptionCollection(Entity):
-
     @property
     def items(self) -> ClientValueCollection[MicrofeedPostOptions]:
         """Gets the Items property"""

@@ -3,7 +3,6 @@ from office365.sharepoint.tenant.administration.copilot.basemetadata import Base
 
 
 class BaseRawDataSources(ClientValue):
-
     def __init__(self, display_message: str = None, metadata: BaseMetadata = BaseMetadata()):
         self.DisplayMessage = display_message
         self.Metadata = metadata

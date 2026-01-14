@@ -4,7 +4,6 @@ from office365.sharepoint.entity import Entity
 
 
 class ContentDbSchemaVersion(Entity):
-
     @property
     def version(self) -> Optional[str]:
         """Gets the Version property"""

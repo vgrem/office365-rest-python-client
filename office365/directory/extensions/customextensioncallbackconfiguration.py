@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class CustomExtensionCallbackConfiguration(ClientValue):
-
     def __init__(self, timeout_duration: timedelta = None):
         self.timeoutDuration = timeout_duration
 

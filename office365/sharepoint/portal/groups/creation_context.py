@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class GroupCreationContext(ClientValue):
-
     def __init__(
         self,
         preferred_language=None,

@@ -6,7 +6,6 @@ from office365.sharepoint.activities.clientidentity import (
 
 
 class MentionFacet(ClientValue):
-
     def __init__(
         self,
         comment_content_id: str = None,

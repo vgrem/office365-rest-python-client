@@ -4,7 +4,6 @@ from office365.sharepoint.sitescripts.action_status import SiteScriptActionStatu
 
 
 class SPSiteScriptStatusAndSchema(ClientValue):
-
     def __init__(
         self,
         action_status: ClientValueCollection[SiteScriptActionStatus] = ClientValueCollection(SiteScriptActionStatus),

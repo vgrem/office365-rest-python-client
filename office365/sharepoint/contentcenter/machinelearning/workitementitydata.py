@@ -5,7 +5,6 @@ from office365.sharepoint.entity import Entity
 
 
 class SPMachineLearningWorkItemEntityData(Entity):
-
     @property
     def extra_property_list(self) -> Optional[str]:
         """Gets the ExtraPropertyList property"""

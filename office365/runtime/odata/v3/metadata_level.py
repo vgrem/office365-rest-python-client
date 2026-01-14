@@ -8,7 +8,7 @@ class ODataV3MetadataLevel(str, Enum):
     when making OData v3 requests. The level affects both client and server behavior.
 
     Usage:
-        >>> headers = {'Accept': f'application/json;odata={ODataV3MetadataLevel.MinimalMetadata}'}
+        >>> headers = {"Accept": f"application/json;odata={ODataV3MetadataLevel.MinimalMetadata}"}
     """
 
     Verbose = "verbose"

@@ -6,7 +6,6 @@ from office365.sharepoint.publishing.amplify.requestendpoint import (
 
 
 class AmplifyRequestParams(ClientValue):
-
     def __init__(
         self,
         endpoints: ClientValueCollection[AmplifyRequestEndpoint] = ClientValueCollection(AmplifyRequestEndpoint),

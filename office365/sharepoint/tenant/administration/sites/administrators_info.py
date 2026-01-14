@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SiteAdministratorsInfo(ClientValue):
-
     def __init__(self, email=None, login_name=None, name=None, user_principal_name: str = None):
         """
         :param str email:

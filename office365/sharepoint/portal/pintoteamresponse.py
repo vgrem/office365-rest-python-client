@@ -4,7 +4,6 @@ from office365.sharepoint.portal.m365tabitem import M365TabItem
 
 
 class PinToTeamResponse(ClientValue):
-
     def __init__(
         self,
         failed_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(M365TabItem),

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPTenantScopedPermissionInfo(ClientValue):
-
     def __init__(
         self,
         feature: str = None,

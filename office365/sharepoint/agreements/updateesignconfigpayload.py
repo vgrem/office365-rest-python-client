@@ -3,7 +3,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class UpdateAgreementESignConfigPayload(ClientValue):
-
     def __init__(
         self,
         agreement_id: str = None,

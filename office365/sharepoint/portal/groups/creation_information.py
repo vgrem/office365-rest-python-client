@@ -3,7 +3,6 @@ from office365.sharepoint.portal.groups.creation_params import GroupCreationPara
 
 
 class GroupCreationInformation(ClientValue):
-
     def __init__(
         self,
         display_name,

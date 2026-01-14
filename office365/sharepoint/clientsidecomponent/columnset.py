@@ -7,7 +7,6 @@ from office365.sharepoint.clientsidecomponent.padding import Padding
 
 
 class ColumnSet(ClientValue):
-
     def __init__(
         self,
         columns: ClientValueCollection[AdaptiveCardColumn] = ClientValueCollection(AdaptiveCardColumn),

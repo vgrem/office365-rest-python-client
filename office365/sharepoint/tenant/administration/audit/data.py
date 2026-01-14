@@ -11,7 +11,6 @@ from office365.sharepoint.tenant.administration.target_property import TargetPro
 
 
 class AuditData(ClientValue):
-
     def __init__(
         self,
         client_ip=None,

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ChangeLogItemQuery(ClientValue):
-
     def __init__(
         self,
         change_token: str = None,

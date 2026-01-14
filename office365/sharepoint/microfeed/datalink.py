@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class MicrofeedDataLink(ClientValue):
-
     def __init__(
         self,
         data_link_type: int = None,

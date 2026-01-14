@@ -3,7 +3,6 @@ from office365.sharepoint.workflow.exceptiondetails import ExceptionDetails
 
 
 class LabelAccessControlData(ClientValue):
-
     def __init__(
         self,
         error_details: ExceptionDetails = ExceptionDetails(),

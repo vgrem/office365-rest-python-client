@@ -3,7 +3,6 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 
 class RequestedTranslation(ClientValue):
-
     def __init__(
         self,
         language_code: str = None,

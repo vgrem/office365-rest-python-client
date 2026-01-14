@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class RunSummary(ClientValue):
-
     def __init__(
         self,
         failed_runs: int = None,

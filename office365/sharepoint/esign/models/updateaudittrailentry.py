@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UpdateAuditTrailEntryModel(ClientValue):
-
     def __init__(
         self,
         audit_trail_entry_id: str = None,

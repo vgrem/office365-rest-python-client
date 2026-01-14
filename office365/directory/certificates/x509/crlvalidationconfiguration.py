@@ -6,7 +6,6 @@ from office365.runtime.types.collections import StringCollection
 
 
 class X509CertificateCRLValidationConfiguration(ClientValue):
-
     def __init__(
         self,
         exempted_certificate_authorities_subject_key_identifiers: StringCollection = None,

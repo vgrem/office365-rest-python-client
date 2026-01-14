@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class PersonMagazineData(ClientValue):
-
     def __init__(
         self,
         about_me: str = None,

@@ -4,7 +4,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class SPORestrictedContentDiscoverabilitySiteDetails(ClientValue):
-
     def __init__(
         self,
         last_modified: datetime = None,

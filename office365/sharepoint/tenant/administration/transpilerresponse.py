@@ -5,7 +5,6 @@ from office365.sharepoint.tenant.administration.copilot.adaptive_card_config imp
 
 
 class TranspilerResponse(ClientValue):
-
     def __init__(
         self,
         config: AdaptiveCardConfig = AdaptiveCardConfig(),

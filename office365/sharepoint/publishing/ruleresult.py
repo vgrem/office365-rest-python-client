@@ -3,7 +3,6 @@ from office365.sharepoint.publishing.ruleerrordetails import RuleErrorDetails
 
 
 class RuleResult(ClientValue):
-
     def __init__(
         self,
         action_to_take: str = None,

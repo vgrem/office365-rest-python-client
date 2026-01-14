@@ -6,7 +6,6 @@ from office365.sharepoint.tenant.administration.container.properties import (
 
 
 class SPContainerCollection(ClientValue):
-
     def __init__(
         self,
         container_collection: ClientValueCollection[SPContainerProperties] = ClientValueCollection(

@@ -2,7 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class ShowNextGenerationSyncClientOnTeamSite(ClientValue):
-
     def __init__(
         self,
         is_hidden: bool = None,
