@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
@@ -19,7 +21,7 @@ class Drive(BaseItem):
     """The drive resource is the top level object representing a user's OneDrive or a document library in
     SharePoint."""
 
-    def create_bundle(self, name: str, children: Optional[list] = None) -> DriveItem:
+    def create_bundle(self, name: str, children: list | None = None) -> DriveItem:
         """
         Add a new bundle to the user's drive.
 
@@ -33,7 +35,7 @@ class Drive(BaseItem):
             "name": name,
             "@microsoft.graph.conflictBehavior": ConflictBehavior.Rename,
             "bundle": {},
-            "children": [{"id": item_id} for item_id in children],
+            "children": [{"id": item_id} for item_id in children or []],
         }
         qry = CreateEntityQuery(self.bundles, payload, return_type)
         self.context.add_query(qry)

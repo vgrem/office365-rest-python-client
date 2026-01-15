@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, AnyStr, Dict, Generic, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
@@ -10,8 +10,9 @@ if TYPE_CHECKING:
     from office365.runtime.client_result import ClientResult
     from office365.runtime.client_runtime_context import ClientRuntimeContext
     from office365.runtime.client_value import ClientValue
+    from office365.runtime.odata.query_options import QueryOptions
 
-T = TypeVar("T", bound=Union["ClientObject", "ClientResult"])
+T = TypeVar("T", bound="ClientObject | ClientResult")
 
 
 class ClientQuery(Generic[T]):
@@ -20,10 +21,10 @@ class ClientQuery(Generic[T]):
     def __init__(
         self,
         context: ClientRuntimeContext,
-        binding_type: Optional[ClientObject] = None,
-        parameters_type: Optional[Union[ClientObject, ClientValue, Dict, AnyStr]] = None,
-        parameters_name: Optional[str] = None,
-        return_type: Optional[T] = None,
+        binding_type: ClientObject | None = None,
+        parameters_type: ClientObject | ClientValue | dict | str | None = None,
+        parameters_name: str | None = None,
+        return_type: T | None = None,
     ) -> None:
         """
         Initialize a client query
@@ -45,7 +46,7 @@ class ClientQuery(Generic[T]):
         """Builds a request"""
         return self.context.build_request(self)
 
-    def execute_query(self) -> T:
+    def execute_query(self) -> T | None:
         """Executes the query and returns the result.
 
         Returns:
@@ -60,16 +61,16 @@ class ClientQuery(Generic[T]):
     @property
     def url(self) -> str:
         if self.binding_type is not None:
-            return self.binding_type.resource_url
+            return self.binding_type.resource_url or ""
         else:
             return self.context.service_root_url
 
     @property
-    def query_options(self):
-        return self.binding_type.query_options
+    def query_options(self) -> QueryOptions | None:
+        return self.binding_type.query_options if self.binding_type is not None else None
 
     @property
-    def path(self) -> Optional[ResourcePath]:
+    def path(self) -> ResourcePath | None:
         """The resource path for this query.
 
         Returns:
@@ -96,7 +97,7 @@ class ClientQuery(Generic[T]):
         return self._binding_type
 
     @property
-    def parameters_name(self) -> Optional[str]:
+    def parameters_name(self) -> str | None:
         """Name of the parameters collection."""
         return self._parameters_name
 
@@ -106,6 +107,6 @@ class ClientQuery(Generic[T]):
         return self._parameters_type
 
     @property
-    def return_type(self) -> Optional[T]:
+    def return_type(self) -> T | None:
         """Expected return type of this query."""
         return self._return_type

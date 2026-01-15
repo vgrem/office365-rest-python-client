@@ -23,26 +23,17 @@ jobs:
         with:
           args: "check --fix"
           version: ${{ env.RUFF_VERSION }}
-      # A proposal to replace black & pylint
-      # - uses: chartboost/ruff-action@v1
-      #   with:
-      #     args: "format --check"
-      #     version: ${{ env.RUFF_VERSION }}
-
-  black:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: chartboost/ruff-action@v1
         with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
-      - uses: psf/black@25.12.0
+          args: "format --check"
+          version: ${{ env.RUFF_VERSION }}
 
-  pylint:
+  pyright:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: Install uv
@@ -51,16 +42,14 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - name: Install Requirements
         run: uv sync --frozen --all-extras
-      - name: Run Pylint
-        run: |
-          uv run pylint office365
+      - name: Run pyright
+        run: uv run pyright
 
   pytest:
     runs-on: ubuntu-latest
     needs:
       - ruff
-      - black
-      - pylint
+      - pyright
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}

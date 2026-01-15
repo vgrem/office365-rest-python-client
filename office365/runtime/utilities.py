@@ -40,7 +40,7 @@ def parse_query_param(url: str, key: str) -> str:
     return parse_qs(parsed_url.query)[key][0]
 
 
-def get_mime_type(file_name: str) -> tuple[str, str]:
+def get_mime_type(file_name: str) -> tuple[str | None, str | None]:
     """Guess the MIME type and encoding for a filename.
 
     Returns:
@@ -168,7 +168,7 @@ def parse_key_value(value: Dict[str, Any]) -> Tuple[Optional[str], Any]:
         return key, raw_value
 
     try:
-        return key, conversions[value_type](raw_value)
+        return key, conversions[value_type](raw_value)  # type: ignore
     except (ValueError, AttributeError, TypeError) as e:
         warnings.warn(
             f"Failed to convert {key!r} (type {value_type}): {str(e)}",

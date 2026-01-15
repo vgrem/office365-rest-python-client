@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.entity import Entity
 from office365.onedrive.termstore.sets.collection import SetCollection
@@ -12,12 +12,12 @@ class Group(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """Name of the group."""
         return self.properties.get("displayName", None)
 
     @property
-    def parent_site_id(self) -> Optional[str]:
+    def parent_site_id(self) -> str | None:
         """ID of the parent site of this group."""
         return self.properties.get("parentSiteId", None)
 

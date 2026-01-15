@@ -14,6 +14,7 @@ maintainers = [
 authors = [
   { name = "Vladimir Kovalenko", email = "vvgrem@gmail.com" },
 ]
+# With Python 3.10 we get support for "Type | None", instaead of Optional[Type]
 requires-python = ">=3.8.0"
 
 classifiers = [
@@ -36,6 +37,7 @@ classifiers = [
 
 dependencies = [
   "msal>=1.28,<2",
+  "pyright>=1.1.408",
   "pytz>=2021.1",
   "requests>=2.32.4,<3",
   "typing-extensions>=4.5",
@@ -62,6 +64,7 @@ dev = [
   "pyproject-fmt",
   "pytest",
   "ruff",
+  "types-requests",
 ]
 
 [tool.uv.build-backend]
@@ -115,3 +118,6 @@ lint.per-file-ignores."tests/**/*.py" = [ "F401" ]
 lint.pylint.max-args = 50
 lint.pylint.max-branches = 16
 lint.pylint.max-statements = 60
+
+[tool.pyright]
+include = [ "office365/onedrive/driveitems" ]

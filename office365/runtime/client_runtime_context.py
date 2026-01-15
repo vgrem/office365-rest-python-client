@@ -118,7 +118,7 @@ class ClientRuntimeContext(ABC):
 
     def after_execute(
         self,
-        action: Callable[[Union[T, Response]], None],
+        action: Callable[[Response], None] | Callable[[Self], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:

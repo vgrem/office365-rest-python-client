@@ -26,8 +26,8 @@ class PermissionCollection(EntityCollection[Permission]):
     def add(
         self,
         roles: list[str],
-        identity: Union[Application, User, Group, Device, str] = None,
-        identity_type: str = None,
+        identity: Application | User | Group | Device | str | None = None,
+        identity_type: str | None = None,
     ) -> Permission:
         """
         Create a new permission object.

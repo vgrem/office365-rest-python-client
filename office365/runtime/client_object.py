@@ -156,7 +156,7 @@ class ClientObject:
 
     def after_execute(
         self,
-        action: Callable[[Self | Response], None],
+        action: Callable[[Self], None] | Callable[[Response], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:

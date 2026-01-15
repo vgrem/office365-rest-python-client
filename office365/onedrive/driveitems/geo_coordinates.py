@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,7 +10,7 @@ class GeoCoordinates(ClientValue):
     a known location associated with it.
     """
 
-    def __init__(self, altitude: float = None, latitude: float = None, longitude: float = None):
+    def __init__(self, altitude: float | None = None, latitude: float | None = None, longitude: float | None = None):
         """
         :param float altitude: The altitude (height), in feet, above sea level for the item.
         :param float latitude: The latitude, in decimal, for the item

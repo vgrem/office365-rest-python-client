@@ -19,16 +19,16 @@ class SitePageCollection(EntityCollection[SitePage]):
     def __init__(
         self,
         context: GraphClient,
-        resource_path: ResourcePath = None,
-        parent_list: List = None,
+        resource_path: ResourcePath | None = None,
+        parent_list: List | None = None,
     ) -> None:
         super().__init__(context, SitePage, resource_path, parent_list)
 
-    def get_by_name(self, name: str) -> SitePage:
+    def get_by_name(self, name: str) -> SitePage | None:
         """Get a sitePage by name."""
         return self.single(f"name eq '{name}'")
 
-    def get_by_title(self, title: str) -> SitePage:
+    def get_by_title(self, title: str) -> SitePage | None:
         """Get a sitePage by title."""
         return self.single(f"title eq '{title}'")
 

@@ -4,9 +4,10 @@ import os
 from datetime import datetime
 from functools import partial
 from os.path import isfile, join
-from typing import IO, AnyStr, Callable, Optional, Union
+from typing import IO, AnyStr, Callable
 
 import requests
+from requests import Response
 from typing_extensions import Self
 
 from office365.delta_path import DeltaPath
@@ -69,8 +70,8 @@ class DriveItem(BaseItem):
     def assign_sensitivity_label(
         self,
         sensitivity_label_id: str,
-        assignment_method: SensitivityLabelAssignmentMethod = None,
-        justification_text: str = None,
+        assignment_method: SensitivityLabelAssignmentMethod | None = None,
+        justification_text: str | None = None,
     ):
         """Asynchronously assign a sensitivity label to a driveItem.
 
@@ -89,7 +90,7 @@ class DriveItem(BaseItem):
             "assignmentMethod": assignment_method,
             "justificationText": justification_text,
         }
-        qry = ServiceOperationQuery(self, "assignSensitivityLabel", None, payload, None)
+        qry = ServiceOperationQuery[DriveItem](self, "assignSensitivityLabel", None, payload, None)
         self.context.add_query(qry)
         return self
 
@@ -101,7 +102,7 @@ class DriveItem(BaseItem):
         self.retention_label.update()
         return self
 
-    def get_files(self, recursive: bool = False, page_size: Optional[int] = None) -> EntityCollection[DriveItem]:
+    def get_files(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
         """Retrieves files
         :param bool recursive: Determines whether to enumerate folders recursively
         :param int page_size: Page size
@@ -125,7 +126,7 @@ class DriveItem(BaseItem):
         _get_files(self)
         return return_type
 
-    def get_folders(self, recursive: bool = False, page_size: Optional[int] = None) -> EntityCollection[DriveItem]:
+    def get_folders(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
         """Retrieves folders
         :param bool recursive: Determines whether to enumerate folders recursively
         :param int page_size: Page size
@@ -161,11 +162,11 @@ class DriveItem(BaseItem):
     def create_link(
         self,
         link_type: str,
-        scope: Optional[str] = None,
-        expiration_datetime: Optional[datetime] = None,
-        password: Optional[str] = None,
-        message: Optional[str] = None,
-        retain_inherited_permissions: Optional[bool] = None,
+        scope: str | None = None,
+        expiration_datetime: datetime | None = None,
+        password: str | None = None,
+        message: str | None = None,
+        retain_inherited_permissions: bool | None = None,
     ) -> Permission:
         """
         The createLink action will create a new sharing link if the specified link type doesn't already exist
@@ -203,7 +204,7 @@ class DriveItem(BaseItem):
 
         The same user that performed the checkout must discard it. Another alternative is to use application permissions
         """
-        qry = ServiceOperationQuery(self, "discardCheckout")
+        qry = ServiceOperationQuery[DriveItem](self, "discardCheckout")
         self.context.add_query(qry)
         return self
 
@@ -222,13 +223,13 @@ class DriveItem(BaseItem):
 
     def follow(self) -> Self:
         """Follow a driveItem."""
-        qry = ServiceOperationQuery(self, "follow")
+        qry = ServiceOperationQuery[DriveItem](self, "follow")
         self.context.add_query(qry)
         return self
 
     def unfollow(self) -> Self:
         """Unfollow a driveItem."""
-        qry = ServiceOperationQuery(self, "unfollow")
+        qry = ServiceOperationQuery[DriveItem](self, "unfollow")
         self.context.add_query(qry)
         return self
 
@@ -237,11 +238,11 @@ class DriveItem(BaseItem):
         Check out a driveItem resource to prevent others from editing the document, and prevent your changes
         from being visible until the documented is checked in.
         """
-        qry = ServiceOperationQuery(self, "checkout")
+        qry = ServiceOperationQuery[DriveItem](self, "checkout")
         self.context.add_query(qry)
         return self
 
-    def checkin(self, comment: str, checkin_as: Optional[str] = None) -> Self:
+    def checkin(self, comment: str, checkin_as: str | None = None) -> Self:
         """
         Check in a checked out driveItem resource, which makes the version of the document available to others.
 
@@ -249,7 +250,9 @@ class DriveItem(BaseItem):
         :param str checkin_as: The status of the document after the check-in operation is complete.
             Can be published or unspecified.
         """
-        qry = ServiceOperationQuery(self, "checkin", None, {"comment": comment, "checkInAs": checkin_as or ""})
+        qry = ServiceOperationQuery[DriveItem](
+            self, "checkin", None, {"comment": comment, "checkInAs": checkin_as or ""}
+        )
         self.context.add_query(qry)
         return self
 
@@ -257,7 +260,7 @@ class DriveItem(BaseItem):
         self,
         source_path: str,
         chunk_size: int = 2000000,
-        chunk_uploaded: Optional[Callable[[int], None]] = None,
+        chunk_uploaded: Callable[[int], None] | None = None,
     ) -> DriveItem:
         """
         Create an upload session to allow your app to upload files up to the maximum file size.
@@ -273,7 +276,7 @@ class DriveItem(BaseItem):
         :param int chunk_size: chunk size
         """
 
-        def _start_upload(result: ClientResult[UploadSession]) -> None:
+        def _start_upload(result: Response) -> None:
             with open(source_path, "rb") as local_file:
                 session_request = UploadSessionRequest(local_file, chunk_size, chunk_uploaded)
                 session_request.execute_query(qry)
@@ -293,7 +296,7 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return qry.return_type
 
-    def upload(self, name: str, content: Optional[bytes]):
+    def upload(self, name: str, content: bytes | None = None) -> DriveItem:
         """The simple upload API allows you to provide the contents of a new file or update the contents of an
         existing file in a single API call.
 
@@ -314,9 +317,9 @@ class DriveItem(BaseItem):
         self.context.add_query(qry).before_execute(_modify_query)
         return return_type
 
-    def upload_file(self, path_or_file: str | IO) -> "DriveItem":
+    def upload_file(self, path_or_file: str | IO) -> DriveItem:
         """Uploads a file"""
-        if hasattr(path_or_file, "read"):
+        if isinstance(path_or_file, IO):
             content = path_or_file.read()
             name = os.path.basename(path_or_file.name)
             return self.upload(name, content)
@@ -326,7 +329,7 @@ class DriveItem(BaseItem):
             name = os.path.basename(path_or_file)
             return self.upload(name, content)
 
-    def upload_folder(self, path: str, file_uploaded: Callable[["DriveItem"], None] = None) -> DriveItem:
+    def upload_folder(self, path: str, file_uploaded: Callable[["DriveItem"], None] | None = None) -> DriveItem:
         def _after_file_upload(return_type: DriveItem) -> None:
             if callable(file_uploaded):
                 file_uploaded(return_type)
@@ -344,14 +347,14 @@ class DriveItem(BaseItem):
         _upload_folder(path, self)
         return self
 
-    def get_content(self, format_name: Optional[str] = None) -> ClientResult[AnyStr]:
+    def get_content(self, format_name: str | None = None) -> ClientResult[AnyStr]:
         """
         Download the contents of the primary stream (file) of a DriveItem.
         Only driveItems with the file property can be downloaded.
 
         :type format_name: str or None
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[AnyStr](self.context)
         action_name = "content"
         if format_name is not None:
             action_name = action_name + rf"?format={format_name}"
@@ -374,7 +377,7 @@ class DriveItem(BaseItem):
     def download_folder(
         self,
         download_file: IO,
-        after_file_downloaded: Callable[[DriveItem], None] = None,
+        after_file_downloaded: Callable[[DriveItem], None] | None = None,
         recursive: bool = True,
     ) -> DriveItem:
         """
@@ -382,14 +385,14 @@ class DriveItem(BaseItem):
         """
         import zipfile
 
-        def _after_file_downloaded(drive_item: DriveItem, base_path: str, result: ClientResult[AnyStr]) -> None:
+        def _after_file_downloaded(drive_item: DriveItem, base_path: str | None, result: ClientResult[AnyStr]) -> None:
             with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
-                zip_path = "/".join([base_path, drive_item.name]) if base_path is not None else drive_item.name
+                zip_path = "/".join(filter(None, (base_path, drive_item.name)))
                 zf.writestr(zip_path, result.value)
                 if callable(after_file_downloaded):
                     after_file_downloaded(drive_item)
 
-        def _after_folder_downloaded(parent_item: "DriveItem", base_path: str = None) -> None:
+        def _after_folder_downloaded(parent_item: DriveItem, base_path: str | None = None) -> None:
             for drive_item in parent_item.children:
                 if drive_item.is_file:
                     drive_item.get_content().after_execute(partial(_after_file_downloaded, drive_item, base_path))
@@ -397,10 +400,10 @@ class DriveItem(BaseItem):
                     if base_path is None:
                         next_base_path = str(drive_item.name)
                     else:
-                        next_base_path = "/".join([base_path, drive_item.name])
+                        next_base_path = "/".join([base_path, drive_item.name or ""])
                     _download_folder(drive_item, next_base_path)
 
-        def _download_folder(drive_item: "DriveItem", prev_result: str = None) -> None:
+        def _download_folder(drive_item: "DriveItem", prev_result: str | None = None) -> None:
             drive_item.ensure_properties(
                 ["children", "name"],
                 partial(_after_folder_downloaded, drive_item, prev_result),
@@ -412,8 +415,8 @@ class DriveItem(BaseItem):
     def download_session(
         self,
         file_object: IO,
-        chunk_downloaded: Callable[[int], None] = None,
-        chunk_size: Optional[int] = 1024 * 1024,
+        chunk_downloaded: Callable[[int], None] | None = None,
+        chunk_size: int | None = 1024 * 1024,
     ) -> Self:
         """
         By default, file gets downloaded immediately.
@@ -443,7 +446,7 @@ class DriveItem(BaseItem):
     def create_folder(
         self,
         name: str,
-        conflict_behavior: Optional[ConflictBehavior] = ConflictBehavior.Rename,
+        conflict_behavior: ConflictBehavior = ConflictBehavior.Rename,
     ) -> DriveItem:
         """Create a new folder or DriveItem in a Drive with a specified parent item or path.
 
@@ -471,8 +474,8 @@ class DriveItem(BaseItem):
 
     def copy(
         self,
-        name: str = None,
-        parent: ItemReference | DriveItem = None,
+        name: str | None = None,
+        parent: ItemReference | DriveItem | None = None,
         conflict_behavior: ConflictBehavior = ConflictBehavior.Fail,
     ) -> ClientResult[str]:
         """Asynchronously creates a copy of an driveItem (including any children), under a new parent item or with a
@@ -511,14 +514,14 @@ class DriveItem(BaseItem):
                 _copy(parent_reference)
 
             parent.ensure_property("parentReference", _drive_item_loaded)
-        else:
+        elif parent is not None:
             _copy(parent)
         return return_type
 
     def move(
         self,
-        name: str = None,
-        parent: ItemReference | DriveItem = None,
+        name: str | None = None,
+        parent: ItemReference | DriveItem | None = None,
         conflict_behavior: ConflictBehavior = ConflictBehavior.Fail,
     ) -> DriveItem:
         """To move a DriveItem to a new parent item, your app requests to update the parentReference of the DriveItem
@@ -550,7 +553,7 @@ class DriveItem(BaseItem):
                 _move(ItemReference(id_=parent.id))
 
             parent.ensure_property("parentReference", _drive_item_loaded)
-        else:
+        elif parent is not None:
             _move(parent)
         return return_type
 
@@ -575,12 +578,12 @@ class DriveItem(BaseItem):
         self,
         recipients: list[str],
         message: str,
-        require_sign_in: Optional[bool] = True,
-        send_invitation: Optional[bool] = True,
-        roles: Optional[list[str]] = None,
-        expiration_datetime: Optional[datetime] = None,
-        password: Optional[str] = None,
-        retain_inherited_permissions: Optional[bool] = None,
+        require_sign_in: bool = True,
+        send_invitation: bool = True,
+        roles: list[str] | None = None,
+        expiration_datetime: datetime | None = None,
+        password: str | None = None,
+        retain_inherited_permissions: bool | None = None,
     ) -> PermissionCollection:
         """
         Sends a sharing invitation for a driveItem. A sharing invitation provides permissions to the recipients
@@ -651,7 +654,7 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
-    def restore(self, parent_reference: Optional[ItemReference] = None, name: str = None) -> DriveItem:
+    def restore(self, parent_reference: ItemReference | None = None, name: str | None = None) -> DriveItem:
         """
         Restore a driveItem that has been deleted and is currently in the recycle bin.
         NOTE: This functionality is currently only available for OneDrive Personal.
@@ -668,7 +671,7 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
-    def preview(self, page: Union[str, int], zoom: Optional[int] = None) -> ClientResult[ItemPreviewInfo]:
+    def preview(self, page: str | int, zoom: int | None = None) -> ClientResult[ItemPreviewInfo]:
         """
         This action allows you to obtain a short-lived embeddable URL for an item in order
         to render a temporary preview.
@@ -679,15 +682,15 @@ class DriveItem(BaseItem):
 
         """
         payload = {"page": page, "zoom": zoom}
-        return_type = ClientResult(self.context, ItemPreviewInfo())
+        return_type = ClientResult[ItemPreviewInfo](self.context, ItemPreviewInfo())
         qry = ServiceOperationQuery(self, "preview", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def validate_permission(self, challenge_token: Optional[str] = None, password: Optional[str] = None) -> Self:
+    def validate_permission(self, challenge_token: str | None = None, password: str | None = None) -> Self:
         """ """
         payload = {"challengeToken": challenge_token, "password": password}
-        qry = ServiceOperationQuery(self, "validatePermission", None, payload)
+        qry = ServiceOperationQuery[DriveItem](self, "validatePermission", None, payload)
         self.context.add_query(qry)
         return self
 
@@ -745,7 +748,7 @@ class DriveItem(BaseItem):
         return self.properties.get("shared", Shared())
 
     @property
-    def web_dav_url(self) -> Optional[str]:
+    def web_dav_url(self) -> str | None:
         """WebDAV compatible URL for the item."""
         return self.properties.get("webDavUrl", None)
 

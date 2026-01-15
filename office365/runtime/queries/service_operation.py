@@ -1,4 +1,6 @@
-from typing import AnyStr, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import AnyStr
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
@@ -15,11 +17,11 @@ class ServiceOperationQuery(ClientQuery[T]):
     def __init__(
         self,
         binding_type: ClientObject,
-        method_name: str = None,
-        method_params: Optional[Union[List, Dict, ClientValue]] = None,
-        parameters_type: Optional[Union[ClientObject, ClientValue, Dict, AnyStr]] = None,
-        parameters_name: Optional[str] = None,
-        return_type: Optional[T] = None,
+        method_name: str | None = None,
+        method_params: list | dict | ClientValue | None = None,
+        parameters_type: ClientObject | ClientValue | dict | AnyStr | None = None,
+        parameters_name: str | None = None,
+        return_type: T | None = None,
         is_static: bool = False,
     ):
         super().__init__(
@@ -55,6 +57,6 @@ class ServiceOperationQuery(ClientQuery[T]):
             return "/".join([orig_url, self.path.segment])
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Gets the name of the method being called."""
         return self._method_name
