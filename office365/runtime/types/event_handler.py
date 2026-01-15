@@ -43,7 +43,7 @@ class EventHandler(Generic[F]):
     def __iter__(self) -> Iterator[F]:
         return iter(self._listeners)
 
-    def __iadd__(self, listener: Union[F, Callable[..., Any]]) -> Self:
+    def __iadd__(self, listener: F) -> Self:
         """Add listener with += operator."""
         if not callable(listener):
             raise TypeError("Listener must be callable")

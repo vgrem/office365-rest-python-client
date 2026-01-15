@@ -90,7 +90,7 @@ class View(Entity):
         return self.properties.get("ColumnWidth", None)
 
     @property
-    def parent_list(self) -> List | None:
+    def parent_list(self) -> Optional[List]:
         """Returns parent List"""
         return self._parent_list
 

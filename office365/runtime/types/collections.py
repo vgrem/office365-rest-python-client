@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 from typing import List
 
@@ -7,7 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class StringCollection(ClientValueCollection[str]):
     """A type-safe collection of string values with OData serialization support."""
 
-    def __init__(self, initial_values: List[str] = None) -> None:
+    def __init__(self, initial_values: List[str] | None = None) -> None:
         """Initialize a string collection.
 
         Args:
@@ -23,7 +25,7 @@ class StringCollection(ClientValueCollection[str]):
 class GuidCollection(ClientValueCollection):
     """A collection of UUID values with proper OData serialization."""
 
-    def __init__(self, initial_values: List[uuid] = None) -> None:
+    def __init__(self, initial_values: List[uuid.UUID] | None = None) -> None:
         """Initialize a GUID collection.
 
         Args:

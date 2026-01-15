@@ -25,3 +25,9 @@ repos:
         entry: uv run ruff format --exit-non-zero-on-fix
         language: system
         pass_filenames: false
+
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+        language: system
+        pass_filenames: false

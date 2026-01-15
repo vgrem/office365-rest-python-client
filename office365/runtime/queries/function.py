@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from __future__ import annotations
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
@@ -12,9 +12,9 @@ class FunctionQuery(ClientQuery[T]):
     def __init__(
         self,
         binding_type: ClientObject,
-        method_name: Optional[str] = None,
-        method_params: Optional[Union[List, Dict, ClientValue]] = None,
-        return_type: T = None,
+        method_name: str | None = None,
+        method_params: list | dict | ClientValue | None = None,
+        return_type: T | None = None,
     ) -> None:
         """Initialize a function query.
 
@@ -42,6 +42,6 @@ class FunctionQuery(ClientQuery[T]):
         return f"{orig_url}/{self.path.segment}"
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Gets the name of the method being called."""
         return self._path.name

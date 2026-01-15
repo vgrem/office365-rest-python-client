@@ -17,7 +17,7 @@ class UploadSessionRequest(ClientRequest):
         self,
         file_object: BinaryIO,
         chunk_size: int,
-        chunk_uploaded: Callable[[int], None] = None,
+        chunk_uploaded: Callable[[int], None] | None = None,
     ) -> None:
         """Initialize an upload session request.
 

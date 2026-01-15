@@ -34,7 +34,7 @@ class ClientResult(Generic[ClientValueT]):
 
     def after_execute(
         self,
-        action: Callable[[Union[Self, Response]], None],
+        action: Callable[[Self], None] | Callable[[Response], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:

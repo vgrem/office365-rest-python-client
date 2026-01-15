@@ -134,13 +134,13 @@ class WorkbookRange(Entity):
         )
 
     @property
-    def values(self) -> List:
+    def values(self) -> list | None:
         """Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contains an error returns the error string."""
         return self.properties.get("values", None)
 
     @property
-    def value_types(self) -> List:
+    def value_types(self) -> list | None:
         """Represents the type of data of each cell. The possible values are:
         Unknown, Empty, String, Integer, Double, Boolean, Error."""
         return self.properties.get("valueTypes", None)

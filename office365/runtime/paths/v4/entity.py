@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from office365.runtime.paths.resource_path import ResourcePath
 
 
 class EntityPath(ResourcePath):
-    def __init__(self, key=None, parent=None, collection=None):
-        # type: (Optional[str], Optional[ResourcePath], Optional[ResourcePath]) -> None
+    def __init__(
+        self, key: str | None = None, parent: ResourcePath | None = None, collection: ResourcePath | None = None
+    ) -> None:
         super().__init__(key, parent)
         self._collection = collection
 

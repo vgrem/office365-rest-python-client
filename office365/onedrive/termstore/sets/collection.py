@@ -20,11 +20,11 @@ class SetCollection(EntityCollection[Set]):
         super().__init__(context, Set, resource_path)
         self._parent_group = parent_group
 
-    def get_by_name(self, name: str) -> Set:
+    def get_by_name(self, name: str) -> Set | None:
         """Returns the TermSet specified by its name."""
         return self.single(f"displayName eq '{name}'")
 
-    def add(self, name: str, parent_group: Group = None) -> Set:
+    def add(self, name: str, parent_group: Group | None = None) -> Set:
         """Create a new set object.
 
         :param office365.onedrive.termstore.group.Group parent_group: The parent group that contains the set.

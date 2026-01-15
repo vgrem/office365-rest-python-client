@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import uuid
-from typing import List
 
 from typing_extensions import Self
 
@@ -21,10 +22,10 @@ def create_boundary(prefix: str, compact: bool = False) -> str:
         return prefix + str(uuid.uuid4())
 
 
-class BatchQuery(ClientQuery):
+class BatchQuery(ClientQuery[T]):
     """Client query collection for batch requests."""
 
-    def __init__(self, context: ClientRuntimeContext, queries: List[ClientQuery] = None) -> None:
+    def __init__(self, context: ClientRuntimeContext, queries: list[ClientQuery] | None = None) -> None:
         """
         Initialize a batch query collection.
 
@@ -48,7 +49,7 @@ class BatchQuery(ClientQuery):
         return self
 
     @property
-    def ordered_queries(self) -> List[ClientQuery]:
+    def ordered_queries(self) -> list[ClientQuery]:
         """Returns all queries in execution order (change sets first, then GET queries)."""
         return self.change_sets + self.get_queries
 
@@ -58,17 +59,17 @@ class BatchQuery(ClientQuery):
         return self._current_boundary
 
     @property
-    def change_sets(self) -> List[ClientQuery]:
+    def change_sets(self) -> list[ClientQuery]:
         """Gets all queries that modify data (non-GET operations)."""
         return [qry for qry in self._queries if not isinstance(qry, ReadEntityQuery)]
 
     @property
-    def queries(self) -> List[ClientQuery]:
+    def queries(self) -> list[ClientQuery]:
         """Gets all queries in the batch."""
         return self._queries
 
     @property
-    def get_queries(self) -> List[ClientQuery]:
+    def get_queries(self) -> list[ClientQuery]:
         """Gets all read-only (GET) queries in the batch."""
         return [qry for qry in self._queries if isinstance(qry, ReadEntityQuery)]
 
@@ -83,6 +84,6 @@ class BatchQuery(ClientQuery):
         return f"{self.context.service_root_url}/$batch"
 
     @property
-    def return_type(self) -> List[T]:
+    def return_type(self) -> list[T]:  # type:ignore
         """Gets the return types of all queries in the batch."""
-        return [q.return_type for q in self._queries]
+        return [q.return_type for q in self._queries if q.return_type]

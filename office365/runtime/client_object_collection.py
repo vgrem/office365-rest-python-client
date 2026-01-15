@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type, Union
 
 from typing_extensions import Self
@@ -41,10 +43,10 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         super().__init__(context, resource_path)
         self._data: list[T] = []
         self._item_type: Type[T] = item_type
-        self._page_loaded = EventHandler(False)
+        self._page_loaded: EventHandler = EventHandler(False)
         self._paged_mode: bool = False
-        self._current_pos: Optional[int] = None
-        self._next_request_url: Optional[str] = None
+        self._current_pos: int | None = None
+        self._next_request_url: str | None = None
         self._parent = parent
 
     def clear_state(self) -> Self:
@@ -262,7 +264,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.context.load(self).after_execute(_loaded)
         return self
 
-    def get_all(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:
+    def get_all(self, page_size: int | None = None, page_loaded: Callable[[Self], None] | None = None) -> Self:
         """
         Load all items in the collection, automatically handling paging.
 
@@ -314,7 +316,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
-    def single(self, expression: str) -> Optional[T]:
+    def single(self, expression: str) -> T | None:
         """
         Get exactly one item matching the filter criteria.
 

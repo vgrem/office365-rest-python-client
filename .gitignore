@@ -16,6 +16,10 @@ venv.bak/
 # C extensions
 *.so
 
+# Cache
+.mypy_cache/
+.ruff_cache/
+
 # Distribution / packaging
 .Python
 build/

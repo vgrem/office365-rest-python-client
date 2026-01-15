@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
@@ -19,7 +21,7 @@ class RemoteItem(ClientValue):
 
     def __init__(
         self,
-        id_: str = None,
+        id_: str | None = None,
         created_by=IdentitySet(),
         created_datetime=datetime.min,
         file=File(),

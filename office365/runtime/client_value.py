@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Union
 
@@ -16,7 +18,8 @@ class ClientValue:
     containing entity or as a temporary value
     """
 
-    def set_property(self, k: Union[str, int], v: Any, persist_changes: bool = True) -> Self:
+    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
+        k = str(k)
         prop_val = getattr(self, k, None)
         if isinstance(prop_val, ClientValue) and v is not None:
             if isinstance(v, list):
