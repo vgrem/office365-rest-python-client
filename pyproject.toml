@@ -105,7 +105,7 @@ lint.ignore = [
   "E203",
   "E501",
   "PLC0415", # `import` should be at the top-level of a file
-  "PLE0307", # `__str__` does not return `str`
+  #"PLE0307", # `__str__` does not return `str`
   "PLR1714", # merge multiple comparisons
   "PLR2004", # Magic value used in comparison, consider replacing `2` with a constant variable
   "PLW1641", # Object does not implement `__hash__` method
