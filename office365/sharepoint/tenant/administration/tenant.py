@@ -8,6 +8,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.administration.archiving.file_size_metric import (
     ArchiveFileSizeMetric,
 )
@@ -613,14 +614,36 @@ class Tenant(Entity):
     def set_site_secondary_administrators(self, site_id: str, emails: List[str] = None, names: List[str] = None) -> Self:
         """
         Sets site collection administrators
-
-        :type names: list[str] or None
-        :type emails: list[str]
-        :type site_id: str
         """
-        payload = {"secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(site_id, emails, names)}
+        payload = {
+            "secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(
+                site_id, StringCollection(emails), StringCollection(names)
+            )
+        }
         qry = ServiceOperationQuery(self, "SetSiteSecondaryAdministrators", None, payload, None, None)
         self.context.add_query(qry)
+        return self
+
+    def set_site_secondary_administrators_by_site_url(
+        self, site_url: str, emails: List[str] = None, names: List[str] = None
+    ) -> Self:
+        """
+        Sets site collection administrators
+        """
+
+        def _set_site_secondary_administrators_by_site_url(site_props: SiteProperties) -> None:
+            self.set_site_secondary_administrators(site_props.get_property("SiteId"), emails, names)
+
+        self.get_site_properties_by_url(site_url).after_execute(_set_site_secondary_administrators_by_site_url)
+        return self
+
+    def clear_site_secondary_administrators(self, site_url: str) -> Self:
+        """Clears site collection administrators"""
+
+        def _clear_site_secondary_administrators(site_props: SiteProperties):
+            self.set_site_secondary_administrators(site_props.get_property("SiteId"), emails=[])
+
+        self.get_site_properties_by_url(site_url).after_execute(_clear_site_secondary_administrators)
         return self
 
     def register_hub_site(self, site_url: str) -> HubSiteProperties:

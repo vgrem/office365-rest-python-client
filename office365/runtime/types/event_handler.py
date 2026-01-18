@@ -1,5 +1,5 @@
 import types
-from typing import Any, Callable, Generic, Iterator, List, TypeVar, Union
+from typing import Any, Callable, Generic, Iterator, List, TypeVar
 
 from typing_extensions import Self
 

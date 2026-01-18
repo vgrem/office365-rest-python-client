@@ -6,8 +6,6 @@ class SecondaryAdministratorsFieldsData(ClientValue):
     def __init__(
         self,
         site_id=None,
-        emails=None,
-        names=None,
         secondary_administrator_emails: StringCollection = None,
         secondary_administrator_login_names: StringCollection = None,
     ):
@@ -17,8 +15,6 @@ class SecondaryAdministratorsFieldsData(ClientValue):
         :type site_id: str or None
         """
         super().__init__()
-        self.secondaryAdministratorEmails = StringCollection(emails)
-        self.secondaryAdministratorLoginNames = StringCollection(names)
         self.siteId = site_id
         self.secondaryAdministratorEmails = secondary_administrator_emails
         self.secondaryAdministratorLoginNames = secondary_administrator_login_names
