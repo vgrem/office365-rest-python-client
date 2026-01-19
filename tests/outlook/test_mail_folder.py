@@ -1,4 +1,5 @@
 from office365.outlook.mail.folders.folder import MailFolder
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 

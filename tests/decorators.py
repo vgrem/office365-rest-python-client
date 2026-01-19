@@ -7,6 +7,7 @@ from office365.directory.rolemanagement.role import DirectoryRole
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
 from office365.runtime.types.collections import StringCollection
+
 from tests import test_client_id
 
 T = TypeVar("T", bound=Callable[..., Any])

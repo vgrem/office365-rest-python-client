@@ -1,4 +1,5 @@
 from office365.sharepoint.sharing.role_type import RoleType
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

@@ -1,14 +1,12 @@
 from unittest import TestCase
 
 from office365.graph_client import GraphClient
+
 from tests import test_client_id, test_client_secret, test_tenant
+from tests.graph_case import GraphSecretTestCase
 
 
-class TestOrganization(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-
+class TestOrganization(GraphSecretTestCase):
     def test1_list(self):
         org = self.client.organization.get().execute_query()
         self.assertIsNotNone(org.resource_path)

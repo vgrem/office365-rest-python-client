@@ -10,9 +10,8 @@ https://learn.microsoft.com/en-us/microsoft-365/enterprise/
 diagnosing-performance-issues-with-sharepoint-online?view=o365-worldwide
 """
 
-from requests import Response
-
 from office365.sharepoint.client_context import ClientContext
+from requests import Response
 from tests import test_client_credentials, test_site_url
 
 

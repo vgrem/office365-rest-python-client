@@ -1,6 +1,7 @@
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.outlook.mail.attachments.type import AttachmentType
 from office365.outlook.mail.messages.message import Message
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 

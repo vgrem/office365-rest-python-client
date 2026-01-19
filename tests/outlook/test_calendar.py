@@ -3,6 +3,7 @@ from typing import Optional
 
 from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.email_address import EmailAddress
+
 from tests import create_unique_name, test_user_principal_name
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase

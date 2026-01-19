@@ -8,6 +8,7 @@ from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.webs.creation_information import WebCreationInformation
 from office365.sharepoint.webs.subweb_query import SubwebQuery
 from office365.sharepoint.webs.web import Web
+
 from tests import test_site_url
 from tests.sharepoint.sharepoint_case import SPTestCase
 

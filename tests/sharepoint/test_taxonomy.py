@@ -4,6 +4,7 @@ from office365.sharepoint.taxonomy.groups.group import TermGroup
 from office365.sharepoint.taxonomy.sets.set import TermSet
 from office365.sharepoint.taxonomy.stores.store import TermStore
 from office365.sharepoint.taxonomy.terms.term import Term
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

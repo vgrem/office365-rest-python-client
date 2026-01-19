@@ -14,6 +14,7 @@ from office365.sharepoint.tenant.administration.sites.properties_collection impo
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from office365.sharepoint.tenant.management.office365_tenant import Office365Tenant
 from office365.sharepoint.tenant.settings import TenantSettings
+
 from tests import (
     test_admin_credentials,
     test_admin_site_url,
@@ -22,9 +23,10 @@ from tests import (
     test_team_site_url,
     test_tenant,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestTenant(TestCase):
+class TestTenant(SPTestCase):
     target_site_props: SiteProperties = None
     target_site: Site = None
 

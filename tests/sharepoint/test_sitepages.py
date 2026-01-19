@@ -1,5 +1,6 @@
 from office365.sharepoint.publishing.pages.collection import SitePageCollection
 from office365.sharepoint.publishing.pages.page import SitePage
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

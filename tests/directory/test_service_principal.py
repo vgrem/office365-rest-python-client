@@ -1,6 +1,7 @@
 from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
+
 from tests import create_unique_name
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase

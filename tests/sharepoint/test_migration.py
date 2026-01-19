@@ -1,6 +1,7 @@
 from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

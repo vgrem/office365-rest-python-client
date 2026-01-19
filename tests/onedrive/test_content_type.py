@@ -5,17 +5,11 @@ from office365.graph_client import GraphClient
 from office365.onedrive.contenttypes.content_type import ContentType
 from tests import test_client_id, test_password, test_tenant, test_username
 from tests.decorators import requires_delegated_permission
+from tests.graph_case import GraphTestCase
 
 
-class TestContentType(TestCase):
+class TestContentType(GraphTestCase):
     target_ct: ContentType = None
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.client = GraphClient(tenant=test_tenant).with_username_and_password(
-            test_client_id, test_username, test_password
-        )
 
     @classmethod
     def tearDownClass(cls):

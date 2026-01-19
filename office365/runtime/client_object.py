@@ -171,7 +171,7 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.context.after_execute(action, execute_first, include_response)
+        self.context.after_execute(action, execute_first, include_response)  # type: ignore[arg-type]
         return self
 
     def get(self) -> Self:
@@ -240,7 +240,7 @@ class ClientObject:
             default_value = getattr(self, normalized_name, None)
         return self._properties.get(name, default_value)
 
-    def set_property(self, name: Union[str, int], value: Any, persist_changes: bool = True) -> Self:
+    def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """
         Sets the value of a property.
 
@@ -258,7 +258,7 @@ class ClientObject:
         typed_value = self.get_property(name)
         if isinstance(typed_value, (ClientObject, ClientValue)):
             if isinstance(value, list):
-                [typed_value.set_property(i, v, persist_changes) for i, v in enumerate(value)]
+                [typed_value.set_property(str(i), v, persist_changes) for i, v in enumerate(value)]
                 self._properties[name] = typed_value
             elif isinstance(value, dict):
                 [typed_value.set_property(k, v, persist_changes) for k, v in value.items()]
@@ -308,7 +308,7 @@ class ClientObject:
         if len(names_to_include) > 0:
             from office365.runtime.queries.read_entity import ReadEntityQuery
 
-            qry = ReadEntityQuery(self, names_to_include)
+            qry = ReadEntityQuery[ClientObject](self, names_to_include)
 
             def _after_loaded(return_type):
                 action(*args, **kwargs)

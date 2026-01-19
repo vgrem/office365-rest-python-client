@@ -16,6 +16,7 @@ from office365.sharepoint.sharing.site_sharing_report_helper import (
     SiteSharingReportHelper,
 )
 from office365.sharepoint.webs.web import Web
+
 from tests import (
     test_client_id,
     test_password,
@@ -23,9 +24,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestSharePointSharing(TestCase):
+class TestSharePointSharing(SPTestCase):
     target_user: User = None
     target_file_url = urljoin(test_site_url, "/SitePages/Home.aspx")
 

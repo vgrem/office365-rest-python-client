@@ -3,10 +3,12 @@ from unittest import TestCase
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.webparts.definitions.definition import WebPartDefinition
+
 from tests import test_client_credentials, test_site_url
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestWebPart(TestCase):
+class TestWebPart(SPTestCase):
     client: ClientContext = None
     target_web_part: WebPartDefinition = None
 

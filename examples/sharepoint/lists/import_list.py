@@ -1,7 +1,6 @@
 from typing import List
 
 from faker import Faker
-
 from office365.runtime.client_object import ClientObject
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem

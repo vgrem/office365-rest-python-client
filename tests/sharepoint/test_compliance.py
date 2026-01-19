@@ -1,5 +1,6 @@
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

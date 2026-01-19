@@ -6,6 +6,7 @@ from office365.sharepoint.marketplace.app_metadata import CorporateCatalogAppMet
 from office365.sharepoint.marketplace.tenant.appcatalog.accessor import (
     TenantCorporateCatalogAccessor,
 )
+
 from tests import (
     test_admin_site_url,
     test_client_id,
@@ -14,9 +15,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestApp(TestCase):
+class TestApp(SPTestCase):
     tenant_app_catalog: TenantCorporateCatalogAccessor = None
     admin_client: ClientContext = None
     app: CorporateCatalogAppMetadata = None

@@ -1,5 +1,6 @@
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.teams.channel_manager import TeamChannelManager
+
 from tests import (
     test_client_id,
     test_password,

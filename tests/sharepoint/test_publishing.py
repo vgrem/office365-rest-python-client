@@ -2,6 +2,7 @@ from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.publishing.video.service_discoverer import (
     VideoServiceDiscoverer,
 )
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

@@ -10,8 +10,9 @@ from typing import TYPE_CHECKING, List, Optional
 from office365.runtime.odata.type import ODataType
 
 if TYPE_CHECKING:
-    from generator.builders.template_context import TemplateContext
     from office365.runtime.odata.property import PropertyInformation
+
+    from generator.builders.template_context import TemplateContext
 
 
 class PropertyBuilder:

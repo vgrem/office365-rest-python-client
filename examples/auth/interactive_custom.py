@@ -12,7 +12,6 @@ https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentica
 """
 
 import msal
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_tenant
 

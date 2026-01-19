@@ -9,7 +9,6 @@ https://learn.microsoft.com/en-us/entra/identity-platform/msal-authentication-fl
 """
 
 import msal
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 

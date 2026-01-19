@@ -1,5 +1,6 @@
 from office365.teams.chats.chat import Chat
 from office365.teams.chats.type import ChatType
+
 from tests import test_user_principal_name
 from tests.graph_case import GraphTestCase
 

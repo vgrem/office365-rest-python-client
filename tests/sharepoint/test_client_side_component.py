@@ -1,5 +1,6 @@
 from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.webs.web import Web
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

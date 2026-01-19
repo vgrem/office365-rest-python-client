@@ -2,9 +2,8 @@
 
 import asyncio
 
-from requests import Response
-
 from office365.sharepoint.client_context import ClientContext
+from requests import Response
 from tests import test_client_credentials, test_site_url
 
 

@@ -1,4 +1,5 @@
 from office365.sharepoint.features.feature import Feature
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

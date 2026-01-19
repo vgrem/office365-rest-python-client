@@ -50,7 +50,7 @@ class EntityCollection(ClientObjectCollection[T]):
         else:
             raise ValueError("Invalid key: expected either an entity index [int] or identifier [str]")
 
-    def add(self, **kwargs: Any) -> T:
+    def add(self, *args: Any, **kwargs: Any) -> T:
         """Creates an entity and prepares the query"""
         return_type = self.create_typed_object(kwargs, EntityPath(None, self.resource_path))
         self.add_child(return_type)
@@ -67,11 +67,11 @@ class EntityCollection(ClientObjectCollection[T]):
             resource_path = EntityPath(None, self.resource_path)
         return super().create_typed_object(initial_properties, resource_path)
 
-    def set_property(self, key: str, value: Any, persist_changes: bool = False) -> Self:
-        if key == self.context.pending_request().json_format.collection_delta:
+    def set_property(self, name: str, value: Any, persist_changes: bool = False) -> Self:
+        if name == self.context.pending_request().json_format.collection_delta:
             self._delta_request_url = value
         else:
-            super().set_property(key, value, persist_changes)
+            super().set_property(name, value, persist_changes)
         return self
 
     @property

@@ -5,7 +5,6 @@ https://github.com/AzureAD/microsoft-authentication-library-for-python/wiki/User
 """
 
 import msal
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_tenant, test_user_credentials
 
