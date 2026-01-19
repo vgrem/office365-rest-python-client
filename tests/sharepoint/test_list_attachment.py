@@ -3,6 +3,7 @@ from io import BytesIO
 
 from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.listitems.listitem import ListItem
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

@@ -1,4 +1,5 @@
 from office365.sharepoint.webs.templates.type import WebTemplateType
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

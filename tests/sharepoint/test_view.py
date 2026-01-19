@@ -4,6 +4,7 @@ from office365.sharepoint.lists.list import List
 from office365.sharepoint.views.create_information import ViewCreationInformation
 from office365.sharepoint.views.field_collection import ViewFieldCollection
 from office365.sharepoint.views.view import View
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

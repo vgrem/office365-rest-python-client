@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type, Union
+from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
@@ -92,7 +92,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             [client_object.set_property(k, v) for k, v in initial_properties.items() if v is not None]
         return client_object
 
-    def set_property(self, key: Union[str, int], value: Dict[str, Any], persist_changes: bool = False) -> Self:
+    def set_property(self, name: str, value: Dict[str, Any], persist_changes: bool = False) -> Self:
         """
         Set a property on the collection or handle special properties.
 
@@ -107,8 +107,11 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         Returns:
             self: Supports fluent method chaining
         """
-        if key == "__nextLinkUrl":
-            self._next_request_url = value
+        if name == "__nextLinkUrl":
+            if isinstance(value, str):
+                self._next_request_url = value
+            else:
+                raise ValueError(f"Invalid value for __nextLinkUrl: expected a string {value}")
         else:
             client_object = self.create_typed_object()
             self.add_child(client_object)
@@ -165,7 +168,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Get an item by its index position."""
         return self._data[index]
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> List[Dict[str, Any]]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> list[dict[str, Any]]:  # type: ignore[override]
         """
         Serialize the collection to JSON format.
 
@@ -232,7 +235,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.query_options.top = value
         return self
 
-    def paged(self, page_size: int = None, page_loaded: Callable[[Self], None] = None) -> Self:
+    def paged(self, page_size: int | None = None, page_loaded: Callable[[Self], None] | None = None) -> Self:
         """
         Enable server-driven paging mode.
 
@@ -258,7 +261,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self: Supports fluent method chaining
         """
 
-        def _loaded(col: Self) -> None:
+        def _loaded(col: Any) -> None:
             self._page_loaded(self)
 
         self.context.load(self).after_execute(_loaded)
@@ -287,8 +290,10 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Submit a request to retrieve next collection of items"""
 
         def _construct_request(request: RequestOptions) -> None:
-            request.url = self._next_request_url
+            request.url = self._next_request_url  # type: ignore[assignment]
 
+        if self._next_request_url is None:
+            raise ValueError("Next page not available")
         return self.get().before_execute(_construct_request)
 
     def first(self, expression: str) -> Optional[T]:
@@ -345,7 +350,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         return return_type
 
     @property
-    def parent(self) -> ClientObject:
+    def parent(self) -> ClientObject | None:
         """Get the parent object that owns this collection."""
         return self._parent
 

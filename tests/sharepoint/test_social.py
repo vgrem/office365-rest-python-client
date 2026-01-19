@@ -3,6 +3,7 @@ from office365.sharepoint.social.following.rest_manager import (
     SocialRestFollowingManager,
 )
 from office365.sharepoint.social.switch import SPSocialSwitch
+
 from tests import (
     test_client_id,
     test_password,

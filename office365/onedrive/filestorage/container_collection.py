@@ -11,7 +11,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, FileStorageContainer, resource_path)
 
-    def add(self, display_name: str, container_type_id=uuid.uuid4()):
+    def add(self, display_name: str, container_type_id: uuid.UUID | None = None) -> FileStorageContainer:
         """
         Create a new fileStorageContainer object.
 
@@ -24,6 +24,8 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         :param str display_name: The display name of the container.
         :param str container_type_id: The identifier of the container type.
         """
+        if container_type_id is None:
+            container_type_id = uuid.uuid4()
         return_type = FileStorageContainer(self.context)
         self.add_child(return_type)
         payload = {

@@ -4,6 +4,7 @@ from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
+
 from tests import test_admin_credentials, test_site_url, test_user_principal_name_alt
 from tests.sharepoint.sharepoint_case import SPTestCase
 

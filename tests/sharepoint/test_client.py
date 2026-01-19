@@ -13,6 +13,7 @@ from office365.sharepoint.tenant.administration.secondary_administrators_fields_
     SecondaryAdministratorsFieldsData,
 )
 from office365.sharepoint.webs.web import Web
+
 from tests import (
     create_unique_file_name,
     create_unique_name,
@@ -26,9 +27,10 @@ from tests import (
     test_user_credentials,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestSharePointClient(TestCase):
+class TestSharePointClient(SPTestCase):
     def test1_connect_with_app_principal(self):
         ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
         result = Web.get_context_web_information(ctx).execute_query()

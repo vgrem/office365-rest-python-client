@@ -4,6 +4,7 @@ import string
 
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.user_credential import UserCredential
+
 from tests.config import load_config
 
 

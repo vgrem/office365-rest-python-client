@@ -3,6 +3,7 @@ from office365.sharepoint.lists.currency import CurrencyList
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions.base_permissions import BasePermissions
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

@@ -6,6 +6,7 @@ from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
+
 from tests import (
     test_client_id,
     test_password,
@@ -13,9 +14,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestSearch(TestCase):
+class TestSearch(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSearch, cls).setUpClass()

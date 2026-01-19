@@ -73,9 +73,10 @@ module-root = ""
 
 [tool.ruff]
 line-length = 121
+src = [ "examples", "generator", "office365", "tests" ]
+
 format.line-ending = "lf"
 format.docstring-code-format = true
-
 lint.select = [
   "A",     # flake8-builtins
   "ASYNC", # flake8-async
@@ -120,4 +121,9 @@ lint.pylint.max-branches = 16
 lint.pylint.max-statements = 60
 
 [tool.pyright]
-include = [ "office365/onedrive/driveitems" ]
+include = [
+  "office365/onedrive/driveitems",
+  "office365/onedrive/filestorage",
+  "office365/entity*",
+  "office365/runtime/client_object*",
+]

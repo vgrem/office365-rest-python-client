@@ -1,10 +1,12 @@
 from unittest import TestCase
 
 from office365.sharepoint.tenant.administration.tenant import Tenant
+
 from tests import test_admin_site_url, test_client_credentials
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestReports(TestCase):
+class TestReports(SPTestCase):
     tenant: Tenant = None
 
     @classmethod

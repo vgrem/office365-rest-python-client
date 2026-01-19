@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import Self
 
@@ -70,7 +70,7 @@ class Entity(ClientObject):
         return self._entity_type_name
 
     @property
-    def id(self) -> Optional[str]:
+    def id(self) -> str | None:
         """Gets the unique identifier of the entity.
 
         Returns:
@@ -101,7 +101,9 @@ class Entity(ClientObject):
         super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self._resource_path is None:
-                if isinstance(self.parent_collection.resource_path, EntityPath):
+                if self.parent_collection is None:
+                    self._resource_path = ResourcePath(value)
+                elif isinstance(self.parent_collection.resource_path, EntityPath):
                     self._resource_path = self.parent_collection.resource_path.patch(value)
                 else:
                     self._resource_path = ResourcePath(value, self.parent_collection.resource_path)

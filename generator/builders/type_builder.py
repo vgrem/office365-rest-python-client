@@ -5,14 +5,14 @@ from _ast import Module
 from os.path import abspath
 from typing import Dict, List, Optional
 
+from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.type_information import TypeInformation
 from typing_extensions import Self
 
 from generator.builders.member_builder import MemberBuilder
 from generator.builders.property_builder import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from generator.documentation.baseservice import BaseDocumentationService
-from office365.runtime.odata.type import ODataType
-from office365.runtime.odata.type_information import TypeInformation
 
 
 class TypeBuilder(ast.NodeTransformer):

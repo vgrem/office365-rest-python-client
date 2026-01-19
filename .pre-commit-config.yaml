@@ -31,3 +31,9 @@ repos:
         entry: uv run pyright
         language: system
         pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: uv run pytest --offline
+        language: system
+        pass_filenames: false

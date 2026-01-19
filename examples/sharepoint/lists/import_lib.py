@@ -3,7 +3,6 @@
 from random import randrange
 
 from faker import Faker
-
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List

@@ -3,6 +3,7 @@ import uuid
 from office365.onedrive.internal.paths.url import UrlPath
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
+
 from tests import test_team_site_url
 from tests.graph_case import GraphTestCase
 

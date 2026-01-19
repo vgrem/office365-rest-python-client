@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.directory.session import DirectorySession
+
 from tests import (
     test_client_id,
     test_password,
@@ -9,9 +10,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestDirectorySession(TestCase):
+class TestDirectorySession(SPTestCase):
     client: ClientContext = None
 
     @classmethod

@@ -4,6 +4,7 @@ from unittest import TestCase
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
+
 from tests import (
     test_client_id,
     test_password,
@@ -11,9 +12,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestTeamSite(TestCase):
+class TestTeamSite(SPTestCase):
     target_site: Site = None
 
     @classmethod

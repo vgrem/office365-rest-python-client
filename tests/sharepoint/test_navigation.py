@@ -4,6 +4,7 @@ from office365.sharepoint.navigation.nodes.creationinformation import (
 )
 from office365.sharepoint.navigation.nodes.node import NavigationNode
 from office365.sharepoint.navigation.publishing_navigation_provider_type import PublishingNavigationProviderType
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

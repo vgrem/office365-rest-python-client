@@ -1,5 +1,6 @@
 from office365.sharepoint.files.file import File
 from office365.sharepoint.lists.list import List
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 

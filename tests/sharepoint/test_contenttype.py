@@ -6,6 +6,7 @@ from office365.sharepoint.contenttypes.content_type import ContentType
 from office365.sharepoint.contenttypes.creation_information import (
     ContentTypeCreationInformation,
 )
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

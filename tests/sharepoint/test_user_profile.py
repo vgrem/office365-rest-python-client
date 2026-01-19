@@ -5,6 +5,7 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
 from office365.sharepoint.userprofiles.people_manager import PeopleManager
 from office365.sharepoint.webparts.tile_data import TileData
+
 from tests import (
     test_client_id,
     test_password,
@@ -13,9 +14,10 @@ from tests import (
     test_user_principal_name,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestUserProfile(TestCase):
+class TestUserProfile(SPTestCase):
     promoted_links: ClientValueCollection[TileData] = ClientValueCollection(TileData)
 
     @classmethod

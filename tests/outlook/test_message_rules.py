@@ -2,6 +2,7 @@ from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
 from office365.outlook.mail.recipient import Recipient
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 

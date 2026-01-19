@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
+
 from tests import (
     test_admin_site_url,
     test_client_id,
@@ -9,9 +10,10 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestHomeSites(TestCase):
+class TestHomeSites(SPTestCase):
     @classmethod
     def setUpClass(cls):
         client = ClientContext(test_admin_site_url).with_username_and_password(
