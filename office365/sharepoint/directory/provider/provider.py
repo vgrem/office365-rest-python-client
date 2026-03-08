@@ -11,7 +11,7 @@ class SharePointDirectoryProvider(Entity):
             resource_path = StaticPath("SP.Directory.Provider.SharePointDirectoryProvider")
         super().__init__(context, resource_path)
 
-    def check_site_availability(self, site_url):
+    def check_site_availability(self, site_url: str):
         """"""
         from office365.sharepoint.directory.helper import SPHelper
 

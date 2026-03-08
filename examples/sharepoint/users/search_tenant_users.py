@@ -2,16 +2,9 @@
 Search tenant users.
 """
 
-import json
-
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
-    ClientPeoplePickerWebServiceInterface,
-)
-from tests import test_client_credentials, test_team_site_url
+from tests import test_admin_site_url, test_client_credentials
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-result = ClientPeoplePickerWebServiceInterface.client_people_picker_search_user(ctx, "Jon").execute_query()
-entries = json.loads(result.value)
-for entry in entries:
-    print(entry.get("DisplayText", None))
+ctx = ClientContext(test_admin_site_url).with_credentials(test_client_credentials)
+result = ctx.search_user("SharePoint Service Administrator").execute_query()
+print(result.value)

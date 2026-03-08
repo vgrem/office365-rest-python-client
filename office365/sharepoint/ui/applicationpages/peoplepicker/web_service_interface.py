@@ -109,7 +109,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return return_type
 
     @staticmethod
-    def get_picker_entity_information(context, email_address):
+    def get_picker_entity_information(context, email_address: str):
         """
         Gets information of the specified principal.
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context

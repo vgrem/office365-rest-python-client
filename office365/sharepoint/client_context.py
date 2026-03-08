@@ -39,6 +39,7 @@ from office365.sharepoint.tenant.administration.hubsites.collection import (
     HubSiteCollection,
 )
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
+    ClientPeoplePickerWebServiceInterface,
     PeoplePickerWebServiceInterface,
 )
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
@@ -361,6 +362,23 @@ class ClientContext(ClientRuntimeContext):
                 return_type.set_property("__siteUrl", result.value.SiteUrl)
 
         self.site_pages.communication_site.create(title, site_url).after_execute(_after_site_created)
+        return return_type
+
+    def search_user(self, query: str) -> ClientResult[dict[str, str]]:
+        """Search/resolve user by email or display name"""
+
+        return_type = ClientResult(self)
+
+        def _search_user(result: ClientResult[str]) -> None:
+            import json
+
+            entries = json.loads(result.value)
+            if not entries or not entries[0].get("IsResolved", False):
+                raise Exception(f"User '{query}' not found or could not be resolved")
+
+            return_type.set_property("__value", entries)
+
+        ClientPeoplePickerWebServiceInterface.client_people_picker_search_user(self, query).after_execute(_search_user)
         return return_type
 
     @property

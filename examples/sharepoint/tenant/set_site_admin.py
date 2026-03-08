@@ -11,5 +11,7 @@ tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_client_crede
 result = tenant.get_site_secondary_administrators_by_site_url(test_team_site_url).execute_query()
 # tenant.clear_site_secondary_administrators(test_team_site_url).execute_query()
 
-emails = [admin.email for admin in result.value] + [test_user_principal_name_alt]
-tenant.set_site_secondary_administrators_by_site_url(site_url=test_team_site_url, emails=emails).execute_query()
+
+user_result = tenant.context.search_user("SharePoint Service Administrator").execute_query()
+names = [admin.loginName for admin in result.value] + [user_result.value.get("loginName")]
+tenant.set_site_secondary_administrators_by_site_url(site_url=test_team_site_url, names=names).execute_query()
