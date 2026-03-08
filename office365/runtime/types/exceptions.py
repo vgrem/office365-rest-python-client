@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class NotFoundException(Exception):
     """Exception raised when a requested entity is not found."""
 
-    def __init__(self, entity: ClientObject = None, query: str = None):
+    def __init__(self, entity: ClientObject | None = None, query: str | None = None):
         """
         Initialize a new instance of NotFoundException.
 

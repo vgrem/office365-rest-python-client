@@ -97,8 +97,8 @@ class SharepointSettings(Entity):
         return self.properties.get("tenantDefaultTimezone", None)
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return None  # type: ignore
 
     def get_property(self, name, default_value=None):
         if default_value is None:

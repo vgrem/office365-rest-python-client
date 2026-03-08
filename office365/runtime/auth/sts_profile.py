@@ -16,7 +16,7 @@ class STSProfile:
     TOKEN_ISSUER: str = "urn:federation:MicrosoftOnline"
     DEFAULT_TOKEN_LIFETIME: timedelta = timedelta(minutes=30)
 
-    def __init__(self, site_url: str, environment: AzureEnvironment = None) -> None:
+    def __init__(self, site_url: str, environment: AzureEnvironment = AzureEnvironment.Global) -> None:
         """Initialize STS profile.
 
         Args:

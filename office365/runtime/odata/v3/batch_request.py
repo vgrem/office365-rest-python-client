@@ -2,7 +2,7 @@ import json
 import re
 from email import message_from_bytes
 from email.message import Message
-from typing import AnyStr, Iterator, List, Tuple
+from typing import Iterator, List, Tuple
 
 import requests
 from requests import Response
@@ -72,7 +72,7 @@ class ODataBatchV3Request(ODataRequest):
                 query_id += 1
                 yield qry, self._deserialize_response(raw_response)
 
-    def _prepare_payload(self, query: BatchQuery) -> AnyStr:
+    def _prepare_payload(self, query: BatchQuery) -> bytes:
         """Prepare the multipart payload for a batch request.
 
         Args:

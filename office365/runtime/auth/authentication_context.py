@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Union
 
 from typing_extensions import Self
 
@@ -102,7 +102,7 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_interactive(self, tenant: str, client_id: str, scopes: List[str] = None) -> Self:
+    def with_interactive(self, tenant: str, client_id: str, scopes: List[str] | None = None) -> Self:
         """
         Authenticate interactively via browser
 

@@ -20,7 +20,6 @@ class ReadEntityQuery(ClientQuery[T]):
 
     @property
     def query_options(self) -> QueryOptions:
-        from office365.runtime.odata.query_options import QueryOptions
         from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
 
         if self._query_options is None:

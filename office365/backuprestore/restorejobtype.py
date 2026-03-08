@@ -7,5 +7,5 @@ class RestoreJobType(Enum):
     unknownFutureValue = "2"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.RestoreJobType"
