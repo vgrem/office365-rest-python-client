@@ -19,7 +19,7 @@ class ACSTokenProvider(AuthenticationProvider):
         self,
         url: str,
         credential: ClientCredential,
-        environment: AzureEnvironment = None,
+        environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """Initialize ACS token provider.
 
@@ -55,7 +55,7 @@ class ACSTokenProvider(AuthenticationProvider):
             self._last_error = e.response.text if e.response is not None else "Acquire app-only access token failed."
             raise ValueError(self._last_error) from e
 
-    def _get_app_only_access_token(self, target_host: str, target_realm: str) -> TokenResponse:
+    def _get_app_only_access_token(self, target_host: str | None, target_realm: str | None) -> TokenResponse:
         """Retrieve app-only access token for target principal.
 
         Args:
@@ -80,7 +80,7 @@ class ACSTokenProvider(AuthenticationProvider):
         response.raise_for_status()
         return TokenResponse.from_json(response.json())
 
-    def _get_realm_from_target_url(self) -> Optional[str]:
+    def _get_realm_from_target_url(self) -> str | None:
         """Get the realm for the target URL."""
         response = requests.head(url=self.url, headers={"Authorization": "Bearer"})
         header_key = "WWW-Authenticate"
@@ -95,7 +95,7 @@ class ACSTokenProvider(AuthenticationProvider):
         """Format principal name for token request."""
         return f"{principal}/{host}@{realm}" if host else f"{principal}@{realm}"
 
-    def get_security_token_service_url(self, realm: str) -> str:
+    def get_security_token_service_url(self, realm: str | None) -> str:
         """Get security token service URL."""
         if self._environment:
             base_url = get_login_authority(self._environment)

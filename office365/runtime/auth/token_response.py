@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 class TokenResponse:
@@ -10,7 +10,7 @@ class TokenResponse:
     - Additional token metadata
     """
 
-    def __init__(self, access_token: str = None, token_type: str = None, **kwargs: Any) -> None:
+    def __init__(self, access_token: Optional[str] = None, token_type: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize a token response.
 
         Args:
@@ -42,7 +42,7 @@ class TokenResponse:
         return f"Bearer {self.accessToken}"
 
     @staticmethod
-    def from_json(value: Dict[str, Any]) -> "TokenResponse":
+    def from_json(value: Optional[Dict[str, Any]]) -> "TokenResponse":
         """Create a TokenResponse from JSON data.
 
         Args:
@@ -54,6 +54,8 @@ class TokenResponse:
         Raises:
             ValueError: If the JSON contains an error field
         """
+        if value is None:
+            return TokenResponse()
         error = value.get("error", None)
         if error:
             raise ValueError(value)

@@ -6,10 +6,11 @@ from office365.runtime.queries.client_query import ClientQuery, T
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.runtime.odata.query_options import QueryOptions
 
 
 class ReadEntityQuery(ClientQuery[T]):
-    def __init__(self, return_type: ClientObject, properties_to_include: List[str] = None) -> None:
+    def __init__(self, return_type: ClientObject, properties_to_include: List[str] | None = None) -> None:
         """
         Read client object query
         """
@@ -18,7 +19,8 @@ class ReadEntityQuery(ClientQuery[T]):
         self._properties_to_include = properties_to_include
 
     @property
-    def query_options(self):
+    def query_options(self) -> QueryOptions:
+        from office365.runtime.odata.query_options import QueryOptions
         from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
 
         if self._query_options is None:
@@ -26,9 +28,9 @@ class ReadEntityQuery(ClientQuery[T]):
         return self._query_options
 
     @property
-    def url(self):
+    def url(self) -> str:
         if self.query_options.is_empty:
-            return self.binding_type.resource_url
+            return self.binding_type.resource_url or ""
 
         delimiter = "?"
         from office365.runtime.client_value import ClientValue

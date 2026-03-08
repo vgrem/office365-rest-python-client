@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
 
@@ -15,8 +15,8 @@ class AuthenticationContext:
 
     def __init__(
         self,
-        tenant: str = None,
-        scopes: List[str] = None,
+        tenant: str | None = None,
+        scopes: List[str] | None = None,
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
@@ -42,7 +42,7 @@ class AuthenticationContext:
         token = TokenResponse.from_json(token_resp)
         return token
 
-    def with_access_token(self, token_callback) -> Self:
+    def with_access_token(self, token_callback: Callable[[], Optional[Dict[str, Any]]]) -> Self:
         """"""
         self._token_callback = token_callback
         return self

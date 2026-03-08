@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Type
 
-from requests import RequestException, Response
+from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.client_request import ClientRequest
@@ -16,7 +16,7 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 if TYPE_CHECKING:
-    from office365.runtime.client_object import ClientObject, T
+    from office365.runtime.client_object import T
 
 
 class ClientRuntimeContext(ABC):
@@ -30,7 +30,7 @@ class ClientRuntimeContext(ABC):
         self._current_query = None
 
     @property
-    def current_query(self) -> ClientQuery:
+    def current_query(self) -> ClientQuery | None:
         return self._current_query
 
     @property
@@ -56,8 +56,8 @@ class ClientRuntimeContext(ABC):
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
-        success_callback: Optional[Callable[[ClientObject], None]] = None,
-        failure_callback: Optional[Callable[[int, RequestException], None]] = None,
+        success_callback: Optional[Callable[[T | None], None]] = None,
+        failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
     ):
         """Executes pending queries with retry logic.
@@ -73,7 +73,7 @@ class ClientRuntimeContext(ABC):
         for retry in range(1, max_retry + 1):
             try:
                 self.execute_query()
-                if callable(success_callback):
+                if callable(success_callback) and self.current_query is not None:
                     success_callback(self.current_query.return_type)
                 break
             except exceptions as e:
@@ -91,7 +91,7 @@ class ClientRuntimeContext(ABC):
     def service_root_url(self) -> str:
         """Gets the service root URL."""
 
-    def load(self, client_object: T, properties_to_retrieve: List[str] = None) -> Self:
+    def load(self, client_object: T, properties_to_retrieve: List[str] | None = None) -> Self:
         """Prepares retrieval query for the specified client object.
 
         Args:
@@ -138,7 +138,8 @@ class ClientRuntimeContext(ABC):
 
         def _process_response(resp: Response) -> None:
             resp.raise_for_status()
-            action(resp if include_response else query.return_type)
+            if callable(action):
+                action(resp if include_response else query.return_type)
 
         self.pending_request().after_execute(
             _process_response, once=True, condition=lambda: self.current_query.id == query.id

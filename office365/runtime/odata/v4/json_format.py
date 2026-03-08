@@ -5,7 +5,7 @@ from office365.runtime.odata.v4.metadata_level import ODataV4MetadataLevel
 class V4JsonFormat(ODataJsonFormat):
     """JSON format (V4)"""
 
-    def __init__(self, metadata_level=ODataV4MetadataLevel.Minimal):
+    def __init__(self, metadata_level: ODataV4MetadataLevel = ODataV4MetadataLevel.Minimal):
         super().__init__(metadata_level)
         """The IEEE754Compatible format parameter indicates that the service MUST serialize Edm.Int64 and
         Edm.Decimal numbers as strings."""
@@ -13,38 +13,38 @@ class V4JsonFormat(ODataJsonFormat):
         self.streaming = False
 
     @property
-    def metadata_type(self):
+    def metadata_type(self) -> str:
         """The OData entity type in Microsoft Graph that describes the represented object."""
         return "@odata.type"
 
     @property
-    def value_tag(self):
+    def value_tag(self) -> str:
         """The OData entity type in Microsoft Graph that describes the represented object."""
         return "@odata.value"
 
     @property
-    def collection(self):
+    def collection(self) -> str:
         return "value"
 
     @property
-    def collection_next(self):
+    def collection_next(self) -> str:
         """
         Property name for a reference to the next page of results
         """
         return "@odata.nextLink"
 
     @property
-    def collection_delta(self):
+    def collection_delta(self) -> str:
         """ """
         return "@odata.deltaLink"
 
     @property
-    def etag(self):
+    def etag(self) -> str:
         """The entity tag that represents the version of the object."""
         return "@odata.etag"
 
     @property
-    def media_type(self):
+    def media_type(self) -> str:
         return (
             f"application/json;odata.metadata={self.metadata_level};"
             f"odata.streaming={self.streaming};"
@@ -52,5 +52,5 @@ class V4JsonFormat(ODataJsonFormat):
         )
 
     @property
-    def include_control_information(self):
+    def include_control_information(self) -> bool:
         return self.metadata_level == ODataV4MetadataLevel.Minimal or self.metadata_level == ODataV4MetadataLevel.Full

@@ -1,6 +1,11 @@
-from abc import ABC, abstractmethod
+from __future__ import annotations
 
-from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
+    from office365.runtime.odata.v4.metadata_level import ODataV4MetadataLevel
 
 
 class ODataJsonFormat(ABC):
@@ -11,7 +16,7 @@ class ODataJsonFormat(ABC):
     ensuring they provide all required format properties and metadata handling.
     """
 
-    def __init__(self, metadata_level: ODataV3MetadataLevel = None):
+    def __init__(self, metadata_level: Optional[Union[ODataV3MetadataLevel, ODataV4MetadataLevel]] = None):
         """
         Initialize the OData JSON format handler.
 

@@ -92,7 +92,7 @@ class ClientQuery(Generic[T]):
         return id(self)
 
     @property
-    def binding_type(self):
+    def binding_type(self) -> ClientObject | None:
         """The object this query is bound to."""
         return self._binding_type
 
@@ -102,7 +102,7 @@ class ClientQuery(Generic[T]):
         return self._parameters_name
 
     @property
-    def parameters_type(self):
+    def parameters_type(self) -> ClientObject | ClientValue | dict | str | None:
         """Type of parameters for this query."""
         return self._parameters_type
 

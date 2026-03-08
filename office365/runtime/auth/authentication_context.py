@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 from typing_extensions import Self
 
@@ -27,7 +27,7 @@ class AuthenticationContext:
     def __init__(
         self,
         url: str,
-        environment: AzureEnvironment = None,
+        environment: AzureEnvironment = AzureEnvironment.Global,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ):
@@ -53,11 +53,11 @@ class AuthenticationContext:
         tenant: str,
         client_id: str,
         thumbprint: str,
-        cert_path: str = None,
-        private_key: str = None,
-        scopes: List[str] = None,
-        passphrase: str = None,
-    ):
+        cert_path: str | None = None,
+        private_key: str | None = None,
+        scopes: List[str] | None = None,
+        passphrase: str | None = None,
+    ) -> Self:
         """
         Authenticate using client certificate
 
@@ -132,7 +132,7 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_device_flow(self, tenant: str, client_id: str, scopes: List[str] = None):
+    def with_device_flow(self, tenant: str, client_id: str, scopes: List[str] | None = None) -> Self:
         """
         Authenticate using device flow
 
@@ -170,7 +170,7 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
+    def with_access_token(self, token_func: Callable[[], TokenResponse | Dict[str, Any] | None]) -> Self:
         """
         Initialize with token callback function
 
@@ -181,13 +181,19 @@ class AuthenticationContext:
             Self: Supports method chaining
         """
 
-        def _authenticate(request: RequestOptions) -> Self:
+        def _authenticate(request: RequestOptions) -> None:
             request_time = datetime.now(timezone.utc)
 
             if self._cached_token is None or request_time > self._token_expires:
-                self._cached_token = token_func()
+                token_res = token_func()
+                if isinstance(token_res, TokenResponse):
+                    self._cached_token = token_res
+                else:
+                    self._cached_token = TokenResponse.from_json(token_res)
+
                 if hasattr(self._cached_token, "expiresIn"):
-                    self._token_expires = request_time + timedelta(seconds=self._cached_token.expiresIn)
+                    expires_in = self._cached_token.expiresIn
+                    self._token_expires = request_time + timedelta(seconds=int(expires_in))
             request.set_header("Authorization", _get_authorization_header(self._cached_token))
 
         self._authenticate = _authenticate
@@ -199,7 +205,7 @@ class AuthenticationContext:
         client_id: str,
         username: str,
         password: str,
-        scopes: List[str] = None,
+        scopes: List[str] | None = None,
     ) -> Self:
         """
         Initializes Username and password authentication flow
@@ -236,7 +242,7 @@ class AuthenticationContext:
 
         return self.with_access_token(_acquire_token)
 
-    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> AuthenticationContext:
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
         Initialize authentication with user or client credentials
 
@@ -294,7 +300,7 @@ class AuthenticationContext:
         self._authenticate = provider.authenticate_request
         return self
 
-    def acquire_token_for_app(self, client_id, client_secret) -> Self:
+    def acquire_token_for_app(self, client_id: str, client_secret: str) -> Self:
         """
         Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
