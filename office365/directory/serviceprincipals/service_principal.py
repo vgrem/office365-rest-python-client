@@ -63,7 +63,7 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_password(self, display_name: str = None):
+    def add_password(self, display_name: str | None = None) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
         :param str display_name: App display name
@@ -74,7 +74,9 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def add_token_signing_certificate(self, display_name: str, end_datetime: str = None):
+    def add_token_signing_certificate(
+        self, display_name: str, end_datetime: str | None = None
+    ) -> ClientResult[SelfSignedCertificate]:
         """
         Create a self-signed signing certificate and return a selfSignedCertificate object, which is the public part
         of the generated certificate.
@@ -106,7 +108,7 @@ class ServicePrincipal(DirectoryObject):
         return return_type
 
     def get_delegated_permissions(
-        self, app: Application | str, principal: User | str = None
+        self, app: Application | str, principal: User | str | None = None
     ) -> ClientResult[StringCollection]:
         """Gets a delegated API permission"""
 
@@ -187,8 +189,8 @@ class ServicePrincipal(DirectoryObject):
     def revoke_delegated_permissions(
         self,
         app: Application | str,
-        principal: User | str = None,
-        scope: AppRole | str = None,
+        principal: User | str | None = None,
+        scope: AppRole | str | None = None,
     ) -> Self:
         """"""
 

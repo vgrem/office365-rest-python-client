@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.applications.preauthorized import PreAuthorizedApplication
 from office365.directory.permissions.scope import PermissionScope
 from office365.runtime.client_value import ClientValue
@@ -10,13 +12,13 @@ class ApiApplication(ClientValue):
 
     def __init__(
         self,
-        accept_mapped_claims=None,
-        known_client_applications=None,
-        oauth2_permission_scopes=None,
+        accept_mapped_claims: bool | None = None,
+        known_client_applications: list[str] | None = None,
+        oauth2_permission_scopes: list[PermissionScope] | None = None,
         pre_authorized_applications: ClientValueCollection[PreAuthorizedApplication] = ClientValueCollection(
             PreAuthorizedApplication
         ),
-        requested_access_token_version: int = None,
+        requested_access_token_version: int | None = None,
     ):
         """
         :param str accept_mapped_claims: When true, allows an application to use claims mapping without specifying

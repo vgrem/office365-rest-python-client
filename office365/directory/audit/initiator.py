@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from office365.directory.audit.initiatortype import InitiatorType
 from office365.runtime.client_value import ClientValue
 
 
 class Initiator(ClientValue):
-    def __init__(self, initiator_type: InitiatorType = None):
+    def __init__(self, initiator_type: InitiatorType | None = None):
         self.initiatorType = initiator_type
 
     @property

@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from office365.directory.authentication.methods.targettype import AuthenticationMethodTargetType
 from office365.runtime.client_value import ClientValue
 
 
 class ExcludeTarget(ClientValue):
     def __init__(
-        self, id_: str = None, target_type: AuthenticationMethodTargetType = AuthenticationMethodTargetType.none
+        self,
+        id_: str | None = None,
+        target_type: AuthenticationMethodTargetType = AuthenticationMethodTargetType.none,
     ):
         self.id = id_
         self.targetType = target_type

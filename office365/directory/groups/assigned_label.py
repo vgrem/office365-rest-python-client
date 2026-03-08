@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -10,7 +12,7 @@ class AssignedLabel(ClientValue):
     sensitivity labels, see Sensitivity labels overview.
     """
 
-    def __init__(self, display_name: str = None, label_id: str = None):
+    def __init__(self, display_name: str | None = None, label_id: str | None = None):
         self.displayName = display_name
         self.labelId = label_id
 

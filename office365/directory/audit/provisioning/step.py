@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.audit.provisioning.detailsinfo import DetailsInfo
 from office365.directory.audit.provisioning.result import ProvisioningResult
 from office365.directory.audit.provisioning.steptype import ProvisioningStepType
@@ -7,9 +9,9 @@ from office365.runtime.client_value import ClientValue
 class ProvisioningStep(ClientValue):
     def __init__(
         self,
-        description: str = None,
+        description: str | None = None,
         details: DetailsInfo = DetailsInfo(),
-        name: str = None,
+        name: str | None = None,
         provisioning_step_type: ProvisioningStepType = ProvisioningStepType.none,
         status: ProvisioningResult = ProvisioningResult.none,
     ):

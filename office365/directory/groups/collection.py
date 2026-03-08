@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from office365.count_collection import CountCollection
 from office365.directory.groups.group import Group
@@ -30,9 +30,9 @@ class GroupCollection(CountCollection[Group]):
     def create_m365(
         self,
         name: str,
-        description: str = None,
-        owners: List[str] = None,
-        members: List[str] = None,
+        description: str | None = None,
+        owners: list[str] | None = None,
+        members: list[str] | None = None,
     ) -> Group:
         """
         Creates a Microsoft 365 group.
@@ -45,7 +45,7 @@ class GroupCollection(CountCollection[Group]):
         params = GroupProfile(name, description, True, False, ["Unified"], owners, members)
         return self.add(params)
 
-    def create_security(self, name: str, description: str = None) -> Group:
+    def create_security(self, name: str, description: str | None = None) -> Group:
         """
         Creates a Security group
         :param str name: The display name for the group
@@ -70,6 +70,6 @@ class GroupCollection(CountCollection[Group]):
 
         return self.create_m365(group_name).after_execute(_after_group_created)
 
-    def get_by_name(self, name: str) -> Group:
+    def get_by_name(self, name: str) -> Group | None:
         """Retrieves group by displayName"""
         return self.single(f"displayName eq '{name}'")

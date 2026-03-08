@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -8,11 +10,11 @@ class Certification(ClientValue):
 
     def __init__(
         self,
-        certification_details_url: str = None,
-        certification_expiration_date_time: datetime = None,
-        is_certified_by_microsoft: bool = None,
-        is_publisher_attested: bool = None,
-        last_certification_date_time: datetime = None,
+        certification_details_url: str | None = None,
+        certification_expiration_date_time: datetime | None = None,
+        is_certified_by_microsoft: bool | None = None,
+        is_publisher_attested: bool | None = None,
+        last_certification_date_time: datetime | None = None,
     ):
         """
         :param str certification_details_url:

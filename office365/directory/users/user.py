@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Any, List, Optional, Union
+from typing import Any, Optional
 
 from typing_extensions import Self
 
@@ -99,8 +99,8 @@ class User(DirectoryObject):
         status: str,
         scheduled_start_datetime: datetime,
         scheduled_end_datetime: datetime,
-        internal_reply_message: str = None,
-        external_reply_message: str = None,
+        internal_reply_message: str | None = None,
+        external_reply_message: str | None = None,
     ) -> Self:
         """
         Enable, configure, automatic replies (notify people automatically upon receipt of their email)
@@ -162,7 +162,11 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def assign_license(self, add_licenses: List[str], remove_licenses: List[str]) -> Self:
+    def assign_license(
+        self,
+        add_licenses: list[str] | list[AssignedLicense],
+        remove_licenses: list[str] | None = None,
+    ) -> Self:
         """
         Add or remove licenses on the user.
 
@@ -170,15 +174,23 @@ class User(DirectoryObject):
         :param list[AssignedLicense] add_licenses: A collection of assignedLicense objects that specify
              the licenses to add.
         """
+        from office365.directory.licenses.assigned_license import AssignedLicense
+
         params = {
-            "addLicenses": ClientValueCollection(AssignedLicense, add_licenses),
+            "addLicenses": ClientValueCollection(
+                AssignedLicense,
+                [
+                    (AssignedLicense(sku_id=sku_id) if not isinstance(sku_id, AssignedLicense) else sku_id)
+                    for sku_id in add_licenses
+                ],
+            ),
             "removeLicenses": StringCollection(remove_licenses),
         }
         qry = ServiceOperationQuery(self, "assignLicense", None, params, None, self)
         self.context.add_query(qry)
         return self
 
-    def assign_manager(self, user: Union[str, User, OrgContact]):
+    def assign_manager(self, user: str | User | OrgContact) -> DirectoryObject:
         """
         Assign a user's manager.
 
@@ -192,19 +204,19 @@ class User(DirectoryObject):
             request.set_header("Accept", "application/json")
             request.data = json.dumps(request.data)
 
-        def _assign_manager(user_id: str) -> None:
+        def _assign_manager(user_id: str | None) -> None:
+            if user_id is None:
+                return
             payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
             self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(user, User):
-
-            def _user_loaded():
-                _assign_manager(user.id)
-
-            user.ensure_property("id", _user_loaded)
+            user.ensure_property("id", lambda: _assign_manager(user.id))
+        elif hasattr(user, "id"):
+            _assign_manager(user.id)
         else:
-            _assign_manager(user)
+            _assign_manager(str(user))
         return self.manager
 
     def remove_manager(self) -> Self:
@@ -234,10 +246,12 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def follow_site(self, site: Union[str, Site]) -> Self:
+    def follow_site(self, site: str | Site) -> Self:
         """follow a site"""
 
-        def _follow_site(site_id: str) -> None:
+        def _follow_site(site_id: str | None) -> None:
+            if site_id is None:
+                return
             payload = {
                 "value": [
                     {
@@ -249,19 +263,17 @@ class User(DirectoryObject):
             self.context.add_query(query)
 
         if isinstance(site, Site):
-
-            def _user_loaded():
-                _follow_site(site.id)
-
-            site.ensure_property("id", _user_loaded)
+            site.ensure_property("id", lambda: _follow_site(site.id))
         else:
-            _follow_site(site)
+            _follow_site(str(site))
         return self
 
-    def unfollow_site(self, site: Union[str, Site]) -> Self:
+    def unfollow_site(self, site: str | Site) -> Self:
         """Unfollow a user's site or multiple sites."""
 
-        def _unfollow_site(site_id: str) -> None:
+        def _unfollow_site(site_id: str | None) -> None:
+            if site_id is None:
+                return
             payload = {
                 "value": [
                     {
@@ -273,13 +285,9 @@ class User(DirectoryObject):
             self.context.add_query(query)
 
         if isinstance(site, Site):
-
-            def _user_loaded():
-                _unfollow_site(site.id)
-
-            site.ensure_property("id", _user_loaded)
+            site.ensure_property("id", lambda: _unfollow_site(site.id))
         else:
-            _unfollow_site(site)
+            _unfollow_site(str(site))
 
         return self
 
@@ -295,10 +303,10 @@ class User(DirectoryObject):
         """
         return_type = EntityCollection(self.context, DirectoryRole)
 
-        def _directory_roles_loaded(directory_roles: List[DirectoryRole]):
+        def _directory_roles_loaded(directory_roles: DeltaCollection[DirectoryRole]):
             role_template_map = {role.role_template_id: role for role in directory_roles}
 
-            def _memberships_loaded(memberships: DirectoryObjectCollection):
+            def _memberships_loaded(memberships: EntityCollection[DirectoryObject]):
                 for item in memberships:
                     role_id = item.properties.get("roleTemplateId")
                     if role_id in role_template_map:
@@ -311,7 +319,7 @@ class User(DirectoryObject):
         return return_type
 
     def get_mail_tips(
-        self, email_addresses: List[str], mail_tips_options: str = None
+        self, email_addresses: list[str], mail_tips_options: str | None = None
     ) -> ClientResult[ClientValueCollection[MailTips]]:
         """Get the MailTips of one or more recipients as available to the signed-in user.
         :param list[str] email_addresses: A collection of SMTP addresses of recipients to get MailTips for.
@@ -347,11 +355,11 @@ class User(DirectoryObject):
     def send_mail(
         self,
         subject: str,
-        body: Union[str, ItemBody],
-        to_recipients: List[str],
-        cc_recipients: List[str] = None,
-        bcc_recipients: List[str] = None,
-        reply_to: List[str] = None,
+        body: str | ItemBody,
+        to_recipients: list[str],
+        cc_recipients: list[str] | None = None,
+        bcc_recipients: list[str] | None = None,
+        reply_to: list[str] | None = None,
         save_to_sent_items: bool = False,
         body_type: str = "Text",
     ) -> Message:
@@ -409,14 +417,14 @@ class User(DirectoryObject):
 
     def find_meeting_times(
         self,
-        attendees: List[AttendeeBase] = None,
-        location_constraint: LocationConstraint = None,
-        time_constraint: TimeConstraint = None,
-        meeting_duration: str = None,
-        max_candidates: int = None,
-        is_organizer_optional=None,
-        return_suggestion_reasons=None,
-        minimum_attendee_percentage=None,
+        attendees: list[AttendeeBase] | None = None,
+        location_constraint: LocationConstraint | None = None,
+        time_constraint: TimeConstraint | None = None,
+        meeting_duration: str | None = None,
+        max_candidates: int | None = None,
+        is_organizer_optional: bool | None = None,
+        return_suggestion_reasons: bool | None = None,
+        minimum_attendee_percentage: float | None = None,
     ) -> ClientResult[MeetingTimeSuggestionsResult]:
         """
         Suggest meeting times and locations based on organizer and attendees availability, and time or location
@@ -578,9 +586,9 @@ class User(DirectoryObject):
 
     def translate_exchange_ids(
         self,
-        input_ids: List[str],
-        source_id_type: ExchangeIdFormat = None,
-        target_id_type: ExchangeIdFormat = None,
+        input_ids: list[str],
+        source_id_type: ExchangeIdFormat | None = None,
+        target_id_type: ExchangeIdFormat | None = None,
     ) -> ClientResult[ConvertIdResult]:
         """
         Translate identifiers of Outlook-related resources between formats.
@@ -635,12 +643,12 @@ class User(DirectoryObject):
         return self.properties.get("signInActivity", SignInActivity())
 
     @property
-    def account_enabled(self) -> Optional[bool]:
+    def account_enabled(self) -> bool | None:
         """True if the account is enabled; otherwise, false. This property is required when a user is created."""
         return self.properties.get("accountEnabled", None)
 
     @property
-    def age_group(self) -> Optional[str]:
+    def age_group(self) -> str | None:
         """Gets the age group of the user"""
         return self.properties.get("ageGroup", None)
 

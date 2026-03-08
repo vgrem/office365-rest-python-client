@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.directory.groups.grouptype import GroupType
@@ -11,12 +13,12 @@ class TargetResource(ClientValue):
 
     def __init__(
         self,
-        display_name: str = None,
-        modified_properties: List[ModifiedProperty] = None,
-        user_principal_name: str = None,
+        display_name: str | None = None,
+        modified_properties: list[ModifiedProperty] | None = None,
+        user_principal_name: str | None = None,
         group_type: GroupType = GroupType.none,
-        id_: str = None,
-        type_: str = None,
+        id_: str | None = None,
+        type_: str | None = None,
     ):
         self.displayName = display_name
         self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)

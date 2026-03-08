@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import datetime
 from typing import Optional
@@ -53,8 +55,8 @@ class Application(DirectoryObject):
         self,
         cert_data: bytes,
         display_name: str,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        start_datetime: datetime.datetime | None = None,
+        end_datetime: datetime.datetime | None = None,
     ) -> Self:
         """Adds a certificate to an application.
 
@@ -152,7 +154,7 @@ class Application(DirectoryObject):
         key_credential: KeyCredential,
         password_credential: PasswordCredential,
         proof: str,
-    ) -> Self:
+    ) -> ClientResult[KeyCredential]:
         """
         Add a key credential to an application. This method, along with removeKey can be used by an application
         to automate rolling its expiring keys.

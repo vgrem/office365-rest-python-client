@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -8,12 +8,12 @@ class GroupProfile(ClientValue):
     def __init__(
         self,
         name: str,
-        description: str = None,
+        description: str | None = None,
         mail_enabled: bool = False,
         security_enabled: bool = True,
-        group_types: List[str] = None,
-        owners: List[str] = None,
-        members: List[str] = None,
+        group_types: list[str] | None = None,
+        owners: list[str] | None = None,
+        members: list[str] | None = None,
     ):
         """
         :param str name: The display name for the group

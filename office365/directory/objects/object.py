@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import List
 
 from typing_extensions import Self
 
@@ -13,7 +14,7 @@ class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
     directory entity types."""
 
-    def check_member_objects(self, ids: List[str] = None) -> ClientResult[StringCollection]:
+    def check_member_objects(self, ids: list[str] | None = None) -> ClientResult[StringCollection]:
         """
         Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
         the specified user, group, service principal, organizational contact, device, or directory object.
@@ -52,7 +53,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def check_member_groups(self, group_ids: List[str] = None) -> ClientResult[StringCollection]:
+    def check_member_groups(self, group_ids: list[str] | None = None) -> ClientResult[StringCollection]:
         """Check for membership in the specified list of groups. Returns from the list those groups of which
         the specified group has a direct or transitive membership.
 
@@ -82,6 +83,6 @@ class DirectoryObject(Entity):
         return self
 
     @property
-    def deleted_datetime(self) -> datetime:
+    def deleted_datetime(self) -> datetime | None:
         """Date and time when this object was deleted. Always null when the object hasn't been deleted."""
-        return self.properties.get("deletedDateTime", datetime.min)
+        return self.properties.get("deletedDateTime", None)

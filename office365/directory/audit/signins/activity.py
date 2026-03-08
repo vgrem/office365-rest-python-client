@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -10,14 +12,14 @@ class SignInActivity(ClientValue):
 
     def __init__(
         self,
-        last_non_interactive_sign_in_datetime=None,
-        last_non_interactive_sign_in_request_id=None,
-        last_sign_in_datetime=None,
-        last_sign_in_request_id=None,
-        last_non_interactive_sign_in_date_time: datetime = None,
-        last_sign_in_date_time: datetime = None,
-        last_successful_sign_in_date_time: datetime = None,
-        last_successful_sign_in_request_id: str = None,
+        last_non_interactive_sign_in_datetime: datetime | str | None = None,
+        last_non_interactive_sign_in_request_id: str | None = None,
+        last_sign_in_datetime: datetime | str | None = None,
+        last_sign_in_request_id: str | None = None,
+        last_non_interactive_sign_in_date_time: datetime | None = None,
+        last_sign_in_date_time: datetime | None = None,
+        last_successful_sign_in_date_time: datetime | None = None,
+        last_successful_sign_in_request_id: str | None = None,
     ):
         """
         :param datetime.datetime last_non_interactive_sign_in_datetime: The last non-interactive sign-in date for a

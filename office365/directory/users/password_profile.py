@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,9 +9,9 @@ class PasswordProfile(ClientValue):
 
     def __init__(
         self,
-        password: str = None,
-        force_change_password_next_sign_in: bool = None,
-        force_change_password_next_sign_in_with_mfa: bool = None,
+        password: str | None = None,
+        force_change_password_next_sign_in: bool | None = None,
+        force_change_password_next_sign_in_with_mfa: bool | None = None,
     ):
         """
         :param str password: The password for the user. This property is required when a user is created.

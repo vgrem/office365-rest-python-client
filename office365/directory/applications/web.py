@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from office365.directory.applications.implicitgrantsettings import ImplicitGrantSettings
 from office365.directory.applications.redirecturisettings import RedirectUriSettings
@@ -12,9 +12,9 @@ class WebApplication(ClientValue):
 
     def __init__(
         self,
-        home_page_url: str = None,
-        logout_url: str = None,
-        redirect_uris: List[str] = None,
+        home_page_url: str | None = None,
+        logout_url: str | None = None,
+        redirect_uris: list[str] | None = None,
         implicit_grant_settings: ImplicitGrantSettings = ImplicitGrantSettings(),
         redirect_uri_settings: ClientValueCollection[RedirectUriSettings] = ClientValueCollection(RedirectUriSettings),
     ):

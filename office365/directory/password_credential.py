@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -10,15 +12,15 @@ class PasswordCredential(ClientValue):
 
     def __init__(
         self,
-        display_name: str = None,
-        secret_text: str = None,
-        key_id: str = None,
-        start_datetime: datetime = None,
-        end_datetime: datetime = None,
-        custom_key_identifier: bytes = None,
-        end_date_time: datetime = None,
-        hint: str = None,
-        start_date_time: datetime = None,
+        display_name: str | None = None,
+        secret_text: str | None = None,
+        key_id: str | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
+        custom_key_identifier: bytes | None = None,
+        end_date_time: datetime | None = None,
+        hint: str | None = None,
+        start_date_time: datetime | None = None,
     ):
         """
         :param str display_name: Friendly name for the password. Optional.

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.identitygovernance.lifecycleworkflows.category import LifecycleWorkflowCategory
 from office365.runtime.client_value import ClientValue
 
@@ -5,16 +7,16 @@ from office365.runtime.client_value import ClientValue
 class TopWorkflowsInsightsSummary(ClientValue):
     def __init__(
         self,
-        failed_runs: int = None,
-        failed_users: int = None,
-        successful_runs: int = None,
-        successful_users: int = None,
-        total_runs: int = None,
-        total_users: int = None,
-        workflow_category: LifecycleWorkflowCategory = None,
-        workflow_display_name: str = None,
-        workflow_id: str = None,
-        workflow_version: int = None,
+        failed_runs: int | None = None,
+        failed_users: int | None = None,
+        successful_runs: int | None = None,
+        successful_users: int | None = None,
+        total_runs: int | None = None,
+        total_users: int | None = None,
+        workflow_category: LifecycleWorkflowCategory | None = None,
+        workflow_display_name: str | None = None,
+        workflow_id: str | None = None,
+        workflow_version: int | None = None,
     ):
         self.failedRuns = failed_runs
         self.failedUsers = failed_users

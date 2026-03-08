@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.authentication.fido2restrictionenforcementtype import Fido2RestrictionEnforcementType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -6,9 +8,9 @@ from office365.runtime.types.collections import StringCollection
 class Fido2KeyRestrictions(ClientValue):
     def __init__(
         self,
-        aa_guids: StringCollection = None,
+        aa_guids: StringCollection | None = None,
         enforcement_type: Fido2RestrictionEnforcementType = Fido2RestrictionEnforcementType.none,
-        is_enforced: bool = None,
+        is_enforced: bool | None = None,
     ):
         self.aaGuids = aa_guids
         self.enforcementType = enforcement_type

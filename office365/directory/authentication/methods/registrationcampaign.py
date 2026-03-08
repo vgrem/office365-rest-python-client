@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.authentication.advancedconfigstate import AdvancedConfigState
 from office365.directory.authentication.methods.excludetarget import ExcludeTarget
 from office365.directory.authentication.methods.registrationcampaignincludetarget import (
@@ -14,7 +16,7 @@ class AuthenticationMethodsRegistrationCampaign(ClientValue):
         include_targets: ClientValueCollection[
             AuthenticationMethodsRegistrationCampaignIncludeTarget
         ] = ClientValueCollection(AuthenticationMethodsRegistrationCampaignIncludeTarget),
-        snooze_duration_in_days: int = None,
+        snooze_duration_in_days: int | None = None,
         state: AdvancedConfigState = AdvancedConfigState.none,
     ):
         self.excludeTargets = exclude_targets

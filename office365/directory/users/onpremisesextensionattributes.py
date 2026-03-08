@@ -1,24 +1,26 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
 class OnPremisesExtensionAttributes(ClientValue):
     def __init__(
         self,
-        extension_attribute1: str = None,
-        extension_attribute10: str = None,
-        extension_attribute11: str = None,
-        extension_attribute12: str = None,
-        extension_attribute13: str = None,
-        extension_attribute14: str = None,
-        extension_attribute15: str = None,
-        extension_attribute2: str = None,
-        extension_attribute3: str = None,
-        extension_attribute4: str = None,
-        extension_attribute5: str = None,
-        extension_attribute6: str = None,
-        extension_attribute7: str = None,
-        extension_attribute8: str = None,
-        extension_attribute9: str = None,
+        extension_attribute1: str | None = None,
+        extension_attribute10: str | None = None,
+        extension_attribute11: str | None = None,
+        extension_attribute12: str | None = None,
+        extension_attribute13: str | None = None,
+        extension_attribute14: str | None = None,
+        extension_attribute15: str | None = None,
+        extension_attribute2: str | None = None,
+        extension_attribute3: str | None = None,
+        extension_attribute4: str | None = None,
+        extension_attribute5: str | None = None,
+        extension_attribute6: str | None = None,
+        extension_attribute7: str | None = None,
+        extension_attribute8: str | None = None,
+        extension_attribute9: str | None = None,
     ):
         self.extensionAttribute1 = extension_attribute1
         self.extensionAttribute10 = extension_attribute10

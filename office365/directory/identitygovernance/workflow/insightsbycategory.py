@@ -1,18 +1,20 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
 class WorkflowsInsightsByCategory(ClientValue):
     def __init__(
         self,
-        failed_joiner_runs: int = None,
-        failed_leaver_runs: int = None,
-        failed_mover_runs: int = None,
-        successful_joiner_runs: int = None,
-        successful_leaver_runs: int = None,
-        successful_mover_runs: int = None,
-        total_joiner_runs: int = None,
-        total_leaver_runs: int = None,
-        total_mover_runs: int = None,
+        failed_joiner_runs: int | None = None,
+        failed_leaver_runs: int | None = None,
+        failed_mover_runs: int | None = None,
+        successful_joiner_runs: int | None = None,
+        successful_leaver_runs: int | None = None,
+        successful_mover_runs: int | None = None,
+        total_joiner_runs: int | None = None,
+        total_leaver_runs: int | None = None,
+        total_mover_runs: int | None = None,
     ):
         self.failedJoinerRuns = failed_joiner_runs
         self.failedLeaverRuns = failed_leaver_runs

@@ -126,4 +126,5 @@ include = [
   "office365/onedrive/filestorage",
   "office365/entity*",
   "office365/runtime/*",
+  "office365/directory/*",
 ]

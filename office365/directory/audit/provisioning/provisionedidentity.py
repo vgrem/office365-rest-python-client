@@ -3,7 +3,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class ProvisionedIdentity(ClientValue):
-    def __init__(self, details: DetailsInfo = DetailsInfo(), identity_type: str = None):
+    def __init__(self, details: DetailsInfo = DetailsInfo(), identity_type: str | None = None):
         self.details = details
         self.identityType = identity_type
 
