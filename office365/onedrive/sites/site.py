@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from typing_extensions import Self
 
@@ -63,7 +63,9 @@ class Site(BaseItem):
         """
         return_type = ContentTypeCollection(self.context, self.content_types.resource_path)
 
-        def _get_applicable_content_types_for_list(list_id: str) -> None:
+        def _get_applicable_content_types_for_list(list_id: str | None) -> None:
+            if list_id is None:
+                return
             params = {"listId": list_id}
             qry = FunctionQuery(self, "getApplicableContentTypesForList", params, return_type)
             self.context.add_query(qry)
@@ -80,9 +82,9 @@ class Site(BaseItem):
 
     def get_activities_by_interval(
         self,
-        start_dt: Optional[datetime] = None,
-        end_dt: Optional[datetime] = None,
-        interval: str = None,
+        start_dt: datetime | None = None,
+        end_dt: datetime | None = None,
+        interval: str | None = None,
     ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
@@ -218,7 +220,7 @@ class Site(BaseItem):
         )
 
     @property
-    def pages_list(self):
+    def pages_list(self) -> List:
         """The list that contains the site pages."""
         return self.lists.get_by_name("Site Pages")
 

@@ -26,5 +26,6 @@ class TermCollection(EntityCollection[Term]):
             qry = CreateEntityQuery(self, term_create_info, return_type)
             self.context.add_query(qry)
 
-        self._parent_set.ensure_property("id", _set_loaded)
+        if self._parent_set is not None:
+            self._parent_set.ensure_property("id", _set_loaded)
         return return_type

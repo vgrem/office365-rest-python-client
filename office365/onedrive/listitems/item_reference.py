@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.runtime.client_value import ClientValue
 
@@ -7,14 +9,14 @@ class ItemReference(ClientValue):
 
     def __init__(
         self,
-        id_=None,
-        name=None,
-        path=None,
-        drive_id=None,
-        drive_type=None,
-        site_id=None,
-        sharepoint_ids=SharePointIds(),
-        share_id=None,
+        id_: str | None = None,
+        name: str | None = None,
+        path: str | None = None,
+        drive_id: str | None = None,
+        drive_type: str | None = None,
+        site_id: str | None = None,
+        sharepoint_ids: SharePointIds | None = SharePointIds(),
+        share_id: str | None = None,
     ):
         """
         :param str id_: Unique identifier of the driveItem in the drive or a listItem in a list. Read-only.

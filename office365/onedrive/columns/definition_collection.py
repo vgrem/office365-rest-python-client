@@ -16,7 +16,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
     def __init__(self, context, resource_path, parent):
         super().__init__(context, ColumnDefinition, resource_path, parent)
 
-    def add_number(self, name, minimum=None, maximum=None):
+    def add_number(self, name: str, minimum: float | None = None, maximum: float | None = None):
         """
         Creates a number column
         :param str name: The API-facing name of the column as it appears in the fields on a listItem
@@ -27,7 +27,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, number=NumberColumn(minimum, maximum))
 
-    def add_text(self, name: str, max_length: int = None, text_type: str = None):
+    def add_text(self, name: str, max_length: int | None = None, text_type: str | None = None):
         """
         Creates a text column
 
@@ -39,7 +39,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, text=TextColumn(max_length=max_length, text_type=text_type))
 
-    def add_hyperlink_or_picture(self, name: str, is_picture: bool = None):
+    def add_hyperlink_or_picture(self, name: str, is_picture: bool | None = None):
         """
         Creates a hyperlink or picture column
 

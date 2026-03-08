@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.runtime.client_value import ClientValue
 
@@ -7,9 +9,9 @@ class DocumentSetContent(ClientValue):
 
     def __init__(
         self,
-        content_type: ContentTypeInfo = None,
-        file_name: str = None,
-        folder_name: str = None,
+        content_type: ContentTypeInfo | None = None,
+        file_name: str | None = None,
+        folder_name: str | None = None,
     ):
         """
         :param ContentTypeInfo content_type: Content type information of the file.

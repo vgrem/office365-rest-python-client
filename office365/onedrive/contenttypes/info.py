@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
 class ContentTypeInfo(ClientValue):
-    def __init__(self, id_: str = None, name: str = None):
+    def __init__(self, id_: str | None = None, name: str | None = None):
         """
         The contentTypeInfo resource indicates the SharePoint content type of an item.
 

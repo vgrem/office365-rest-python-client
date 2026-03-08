@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.onedrive.columns.display_name_localization import DisplayNameLocalization
@@ -10,9 +12,9 @@ class ColumnValidation(ClientValue):
 
     def __init__(
         self,
-        formula: str = None,
-        descriptions: List[DisplayNameLocalization] = None,
-        default_language: str = None,
+        formula: str | None = None,
+        descriptions: List[DisplayNameLocalization] | None = None,
+        default_language: str | None = None,
     ):
         """
         :param str formula: The formula to validate column value.

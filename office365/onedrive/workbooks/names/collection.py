@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.names.named_item import WorkbookNamedItem
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -7,7 +9,7 @@ class WorkbookNamedItemCollection(EntityCollection[WorkbookNamedItem]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, WorkbookNamedItem, resource_path)
 
-    def add(self, name: str, reference: str, comment: str = None) -> WorkbookNamedItem:
+    def add(self, name: str, reference: str, comment: str | None = None) -> WorkbookNamedItem:
         """
         Adds a new name to the collection of the given scope using the user's locale for the formula.
 

@@ -19,8 +19,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self,
         name: str,
         parent: Union[str, ContentType],
-        description: str = None,
-        group: str = None,
+        description: str | None = None,
+        group: str | None = None,
     ) -> ContentType:
         """Create a new contentType
 
@@ -33,7 +33,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return_type = ContentType(self.context)
         self.add_child(return_type)
 
-        def _create(parent_id: str):
+        def _create(parent_id: str | None):
             payload = {
                 "name": name,
                 "base": {"id": parent_id},

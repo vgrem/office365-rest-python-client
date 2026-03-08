@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict
 
 from typing_extensions import Self
@@ -18,7 +20,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WorkbookChart(Entity):
     """Represents a chart object in a workbook."""
 
-    def image(self, width: int = None, height: int = None) -> ClientResult[str]:
+    def image(self, width: int | None = None, height: int | None = None) -> ClientResult[str]:
         """Renders the chart as a base64-encoded image by scaling the chart to fit the specified dimensions.
 
         :param int width: Specifies the width of the rendered image in pixels.

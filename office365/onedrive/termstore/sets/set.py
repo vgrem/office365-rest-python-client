@@ -70,5 +70,5 @@ class Set(Entity):
         return super().get_property(name, default_value)
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.termStore.set"

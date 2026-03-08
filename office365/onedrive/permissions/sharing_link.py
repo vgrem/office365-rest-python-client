@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.permissions.identity import Identity
 from office365.runtime.client_value import ClientValue
 
@@ -7,12 +9,12 @@ class SharingLink(ClientValue):
 
     def __init__(
         self,
-        _type: str = None,
-        scope: str = None,
-        web_html: str = None,
-        web_url: str = None,
-        prevents_download: bool = None,
-        application=Identity(),
+        _type: str | None = None,
+        scope: str | None = None,
+        web_html: str | None = None,
+        web_url: str | None = None,
+        prevents_download: bool | None = None,
+        application: Identity | None = Identity(),
     ):
         """
         :param str _type: The type of the link created.

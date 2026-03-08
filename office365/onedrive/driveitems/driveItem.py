@@ -116,7 +116,7 @@ class DriveItem(BaseItem):
 
                 for drive_item in col:
                     if drive_item.is_folder:
-                        if recursive and drive_item.folder.childCount > 0:
+                        if recursive and drive_item.folder.childCount is not None and drive_item.folder.childCount > 0:
                             _get_files(drive_item)
                     else:
                         return_type.add_child(drive_item)
@@ -139,7 +139,7 @@ class DriveItem(BaseItem):
                     return
 
                 for drive_item in col:
-                    if recursive and drive_item.folder.childCount > 0:
+                    if recursive and drive_item.folder.childCount is not None and drive_item.folder.childCount > 0:
                         _get_folders(drive_item)
                     return_type.add_child(drive_item)
 
@@ -623,7 +623,12 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
-    def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
+    def get_activities_by_interval(
+        self,
+        start_dt: datetime | None = None,
+        end_dt: datetime | None = None,
+        interval: str | None = None,
+    ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
@@ -851,8 +856,7 @@ class DriveItem(BaseItem):
             ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path)),
         )
 
-    @property
-    def delta(self) -> EntityCollection[DriveItem]:
+    def delta(self, token: str | None = None) -> EntityCollection["DriveItem"]:
         """This method allows your app to track changes to a drive item and its children over time."""
         return self.properties.get(
             "delta",

@@ -8,8 +8,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 class Group(Entity):
     """Term Group"""
 
-    def __str__(self):
-        return self.display_name or self.entity_type_name
+    def __str__(self) -> str:
+        return self.display_name or ""
 
     @property
     def display_name(self) -> str | None:
@@ -30,5 +30,5 @@ class Group(Entity):
         )
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return None  # type: ignore

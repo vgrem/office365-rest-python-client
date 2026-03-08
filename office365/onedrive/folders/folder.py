@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.onedrive.folders.view import FolderView
 from office365.runtime.client_value import ClientValue
 
@@ -8,7 +10,7 @@ class Folder(ClientValue):
     DriveItems with a non-null folder facet are containers for other DriveItems.
     """
 
-    def __init__(self, child_count: int = None, view=FolderView()):
+    def __init__(self, child_count: int | None = None, view: FolderView | None = None):
         """
         :param int child_count: Number of children contained immediately within this container.
         :param FolderView view: A collection of properties defining the recommended view for the folder.

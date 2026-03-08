@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.entity_collection import EntityCollection
@@ -7,9 +9,9 @@ from office365.runtime.queries.function import FunctionQuery
 
 def build_get_activities_by_interval_query(
     binding_type,
-    start_dt: datetime = None,
-    end_dt: datetime = None,
-    interval: str = None,
+    start_dt: datetime | None = None,
+    end_dt: datetime | None = None,
+    interval: str | None = None,
 ) -> FunctionQuery:
     """
     :param Entity binding_type: Binding type

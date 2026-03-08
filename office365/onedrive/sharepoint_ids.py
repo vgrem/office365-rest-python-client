@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,13 +9,13 @@ class SharePointIds(ClientValue):
 
     def __init__(
         self,
-        list_id: str = None,
-        list_item_id: str = None,
-        list_item_unique_id: str = None,
-        site_id: str = None,
-        site_url: str = None,
-        tenant_id: str = None,
-        web_id: str = None,
+        list_id: str | None = None,
+        list_item_id: str | None = None,
+        list_item_unique_id: str | None = None,
+        site_id: str | None = None,
+        site_url: str | None = None,
+        tenant_id: str | None = None,
+        web_id: str | None = None,
     ):
         """
         :param str list_id: The unique identifier (guid) for the item's list in SharePoint.

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
@@ -7,10 +9,10 @@ from office365.runtime.client_value import ClientValue
 class Shared(ClientValue):
     def __init__(
         self,
-        owner: IdentitySet = IdentitySet(),
-        scope: str = None,
-        shared_by=IdentitySet(),
-        shared_datetime: datetime = None,
+        owner: IdentitySet | None = IdentitySet(),
+        scope: str | None = None,
+        shared_by: IdentitySet | None = IdentitySet(),
+        shared_datetime: datetime | None = None,
     ):
         """
         Represents a DriveItem that has been shared with others.

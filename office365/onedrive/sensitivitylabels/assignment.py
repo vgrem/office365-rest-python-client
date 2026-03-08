@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.onedrive.sensitivitylabels.assignment_method import (
     SensitivityLabelAssignmentMethod,
 )
@@ -9,9 +11,9 @@ class SensitivityLabelAssignment(ClientValue):
 
     def __init__(
         self,
-        assignment_method: SensitivityLabelAssignmentMethod = None,
-        sensitivity_label_id: str = None,
-        tenant_id: str = None,
+        assignment_method: SensitivityLabelAssignmentMethod | None = None,
+        sensitivity_label_id: str | None = None,
+        tenant_id: str | None = None,
     ):
         """
         :param str assignment_method: Indicates whether the label assignment is done automatically, as a standard,

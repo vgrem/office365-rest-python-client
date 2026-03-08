@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,7 +9,12 @@ class DriveRecipient(ClientValue):
     share with using the invite action.
     """
 
-    def __init__(self, alias: str = None, email: str = None, object_id: str = None):
+    def __init__(
+        self,
+        alias: str | None = None,
+        email: str | None = None,
+        object_id: str | None = None,
+    ):
         """
         :param str alias: The alias of the domain object, for cases where an email address is unavailable
             (e.g. security groups).

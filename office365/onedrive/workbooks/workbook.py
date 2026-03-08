@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing_extensions import Self
 
 from office365.entity import Entity
@@ -28,7 +30,7 @@ class Workbook(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_session(self, persist_changes: bool = None):
+    def create_session(self, persist_changes: bool | None = None) -> ClientResult[WorkbookSessionInfo]:
         """
         Create a new workbook session.
 

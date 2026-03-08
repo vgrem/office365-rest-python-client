@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Any, Optional
+
+from typing_extensions import Self
 
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.columns.boolean import BooleanColumn
@@ -32,8 +34,8 @@ class ColumnDefinition(BaseItem):
     To list hidden field values on listItems, include the desired columns by name in your $select statement.
     """
 
-    def __str__(self):
-        return self.name
+    def __str__(self) -> str:
+        return self.name or ""
 
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
@@ -168,7 +170,7 @@ class ColumnDefinition(BaseItem):
         """The source column for the content type column."""
         return self.properties.get(
             "sourceColumn",
-            ColumnDefinition(self.context, ResourcePath(self.resource_path)),
+            ColumnDefinition(self.context, ResourcePath("sourceColumn", self.resource_path)),
         )
 
     @property
@@ -186,7 +188,7 @@ class ColumnDefinition(BaseItem):
         """For site columns, the type of column."""
         return self.properties.get("type", None)
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "contentApprovalStatus": self.content_approval_status,

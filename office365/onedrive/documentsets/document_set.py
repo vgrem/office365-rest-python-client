@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.onedrive.contenttypes.info import ContentTypeInfo
@@ -11,11 +13,11 @@ class DocumentSet(ClientValue):
 
     def __init__(
         self,
-        welcome_page_url: str = None,
-        allowed_content_types: List[ContentTypeInfo] = None,
-        default_contents: List[DocumentSetContent] = None,
-        propagate_welcome_page_changes: bool = None,
-        should_prefix_name_to_file: bool = None,
+        welcome_page_url: str | None = None,
+        allowed_content_types: List[ContentTypeInfo] | None = None,
+        default_contents: List[DocumentSetContent] | None = None,
+        propagate_welcome_page_changes: bool | None = None,
+        should_prefix_name_to_file: bool | None = None,
     ):
         """
         :param str welcome_page_url:  Welcome page absolute URL.

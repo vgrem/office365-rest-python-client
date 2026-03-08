@@ -27,7 +27,10 @@ class ListItem(BaseItem):
     dictionary."""
 
     def get_activities_by_interval(
-        self, start_dt: datetime = None, end_dt: datetime = None, interval: str = None
+        self,
+        start_dt: datetime | None = None,
+        end_dt: datetime | None = None,
+        interval: str | None = None,
     ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
@@ -39,7 +42,7 @@ class ListItem(BaseItem):
         """
         qry = build_get_activities_by_interval_query(self, start_dt, end_dt, interval)
         self.context.add_query(qry)
-        return qry.return_type
+        return qry.return_type  # type: ignore
 
     @property
     def fields(self) -> FieldValueSet:

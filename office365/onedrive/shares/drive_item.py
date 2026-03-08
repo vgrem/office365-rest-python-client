@@ -1,3 +1,9 @@
+from __future__ import annotations
+
+from typing import Any
+
+from typing_extensions import Self
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
@@ -70,11 +76,11 @@ class SharedDriveItem(BaseItem):
             Permission(self.context, ResourcePath("permission", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "driveItem": self.drive_item,
                 "listItem": self.list_item,
             }
             default_value = property_mapping.get(name, None)
-        super().get_property(name, default_value)
+        return super().get_property(name, default_value)

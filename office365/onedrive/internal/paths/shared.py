@@ -18,7 +18,7 @@ class SharedPath(EntityPath):
     def patch(self, key):
         self._key = "items"
         self._parent = ResourcePath(key, ResourcePath("drives"))
-        self.__class__ = ResourcePath
+        self.__class__ = ResourcePath  # type: ignore
         return self
 
     @property

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.runtime.client_value import ClientValue
@@ -12,9 +14,9 @@ class ChoiceColumn(ClientValue):
 
     def __init__(
         self,
-        allow_text_entry: bool = True,
-        choices: List[str] = None,
-        display_as: str = None,
+        allow_text_entry: bool | None = True,
+        choices: List[str] | None = None,
+        display_as: str | None = None,
     ):
         """
         :param bool allow_text_entry: If true, allows custom values that aren't in the configured choices.

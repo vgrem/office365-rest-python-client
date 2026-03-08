@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from typing_extensions import Self
 
@@ -77,7 +77,7 @@ class ListItemCollection(EntityCollection[ListItem]):
         Returns:
             ListItem: The requested list item (not yet executed)
         """
-        return self.single(f"fields/FileLeafRef eq '{name}'")
+        return cast(ListItem, self.single(f"fields/FileLeafRef eq '{name}'"))
 
     def get_by_path(self, path: str) -> ListItem:
         """Gets a list item by its server-relative path.
@@ -88,4 +88,4 @@ class ListItemCollection(EntityCollection[ListItem]):
         Returns:
             ListItem: The requested list item (not yet executed)
         """
-        return self.single(f"fields/FileRef eq '{path}'")
+        return cast(ListItem, self.single(f"fields/FileRef eq '{path}'"))

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,9 +8,9 @@ class TextColumn(ClientValue):
 
     def __init__(
         self,
-        max_length: int = None,
-        allow_multiple_lines: bool = None,
-        text_type: str = None,
+        max_length: int | None = None,
+        allow_multiple_lines: bool | None = None,
+        text_type: str | None = None,
     ):
         """
         :param int max_length: The maximum number of characters for the value.

@@ -30,6 +30,8 @@ class Term(Entity):
     @property
     def children(self):
         """Children of current term."""
+        if self.resource_path is None or self.resource_path.parent is None:
+            return None
         return self.properties.get(
             "children",
             EntityCollection(
@@ -57,5 +59,5 @@ class Term(Entity):
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.termStore.term"

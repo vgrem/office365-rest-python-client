@@ -92,10 +92,20 @@ class ContentType(BaseItem):
         """The name of the content type."""
         return self.properties.get("name", None)
 
+    @name.setter
+    def name(self, value: str) -> None:
+        """Sets the name of the content type."""
+        self.set_property("name", value)
+
     @property
     def description(self) -> Optional[str]:
         """The descriptive text for the item."""
         return self.properties.get("description", None)
+
+    @description.setter
+    def description(self, value: str) -> None:
+        """Sets the descriptive text for the item."""
+        self.set_property("description", value)
 
     @property
     def parent_id(self) -> Optional[str]:
@@ -133,9 +143,12 @@ class ContentType(BaseItem):
         )
 
     @property
-    def base(self) -> ContentType:
+    def base(self) -> "ContentType":
         """Parent contentType from which this content type is derived."""
-        return self.properties.get("base", ContentType(self.context, ResourcePath(self.resource_path)))
+        return self.properties.get(
+            "base",
+            ContentType(self.context, ResourcePath("base", self.resource_path)),
+        )
 
     @property
     def base_types(self) -> EntityCollection[ContentType]:

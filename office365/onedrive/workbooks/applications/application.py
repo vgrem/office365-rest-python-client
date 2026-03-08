@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from typing_extensions import Self
@@ -9,7 +11,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WorkbookApplication(Entity):
     """Represents the Excel application that manages the workbook."""
 
-    def calculate(self, calculation_type: str = None) -> Self:
+    def calculate(self, calculation_type: str | None = None) -> Self:
         """Recalculate all currently opened workbooks in Excel.
 
         :param str calculation_type: Specifies the calculation type to use. Possible values are: Recalculate, Full,

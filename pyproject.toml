@@ -12,9 +12,9 @@ maintainers = [
   { name = "Domenico Di Nicola", email = "dom.dinicola@gmail.com" },
 ]
 authors = [
-  { name = "Vladimir Kovalenko", email = "vvgrem@gmail.com" },
+  { name = "Vadim Gremyachev", email = "vvgrem@gmail.com" },
 ]
-# With Python 3.10 we get support for "Type | None", instaead of Optional[Type]
+# With Python 3.10 we get support for "Type | None", instead of Optional[Type]
 requires-python = ">=3.8.0"
 
 classifiers = [
@@ -122,8 +122,7 @@ lint.pylint.max-statements = 60
 
 [tool.pyright]
 include = [
-  "office365/onedrive/driveitems",
-  "office365/onedrive/filestorage",
+  "office365/onedrive/*",
   "office365/entity*",
   "office365/runtime/*",
   "office365/directory/*",

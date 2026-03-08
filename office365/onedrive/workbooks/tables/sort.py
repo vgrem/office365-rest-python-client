@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from typing_extensions import Self
@@ -14,8 +16,8 @@ class WorkbookTableSort(Entity):
     def apply(
         self,
         fields: List[WorkbookSortField],
-        match_case: bool = None,
-        method: str = None,
+        match_case: bool | None = None,
+        method: str | None = None,
     ) -> Self:
         """Perform a sort operation.
 

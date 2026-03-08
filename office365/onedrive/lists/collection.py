@@ -25,7 +25,7 @@ class ListCollection(EntityCollection[List]):
         >>> new_list = lists.add("Project Tasks", ListTemplateType.tasks).execute_query()
     """
 
-    def __init__(self, context: "GraphClient", resource_path: ResourcePath = None):
+    def __init__(self, context: "GraphClient", resource_path: ResourcePath | None = None):
         super().__init__(context, List, resource_path)
 
     def add(

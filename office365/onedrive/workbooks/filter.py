@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from typing_extensions import Self
@@ -10,7 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class WorkbookFilter(Entity):
     """Manages the filtering of a table's column."""
 
-    def apply_bottom_items_filter(self, count: int = None) -> Self:
+    def apply_bottom_items_filter(self, count: int | None = None) -> Self:
         """Perform a sort operation.
 
         :param int count: The number of items to apply the filter to.

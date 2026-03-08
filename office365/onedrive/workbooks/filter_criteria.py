@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.runtime.client_value import ClientValue
@@ -6,7 +8,13 @@ from office365.runtime.client_value import ClientValue
 class WorkbookFilterCriteria(ClientValue):
     """Represents the filtering criteria applied to a column."""
 
-    def __init__(self, color: str = None, dynamic_criteria: str = None, operator: str = None, values: List = None):
+    def __init__(
+        self,
+        color: str | None = None,
+        dynamic_criteria: str | None = None,
+        operator: str | None = None,
+        values: List | None = None,
+    ):
         """
         :param str color:  The color applied to the cell.
         :param str dynamic_criteria:  A dynamic formula specified in a custom filter.

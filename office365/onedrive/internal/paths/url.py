@@ -32,5 +32,5 @@ class UrlPath(EntityPath):
         return f":/{self._key}:/"
 
     @property
-    def delimiter(self):
-        return None
+    def delimiter(self) -> str:
+        return ""

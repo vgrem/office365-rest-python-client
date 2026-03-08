@@ -52,8 +52,9 @@ class SitePage(BaseSitePage):
         of this API, the page is automatically checked in and then published."""
 
         def _page_loaded():
-            list_item = self._pages_list.items.get_by_name(self.name)
-            list_item.drive_item.checkin(message)
+            if self.name is not None:
+                list_item = self._pages_list.items.get_by_name(self.name)
+                list_item.drive_item.checkin(message)
 
         self.ensure_property("name", _page_loaded)
         return self
@@ -73,6 +74,8 @@ class SitePage(BaseSitePage):
 
     @property
     def _pages_list(self) -> List:
+        if self.parent_collection is None:
+            raise ValueError("Parent collection is not set")
         return cast(List, self.parent_collection.parent)
 
     @property

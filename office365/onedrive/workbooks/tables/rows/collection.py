@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.tables.rows.row import WorkbookTableRow
 from office365.runtime.client_result import ClientResult
@@ -8,7 +10,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, WorkbookTableRow, resource_path)
 
-    def add(self, values, index: int = None):
+    def add(self, values: list, index: int | None = None) -> WorkbookTableRow:
         """
         Adds rows to the end of a table.
         Note that this API can accept multiple rows of data. Adding one row at a time can affect performance.

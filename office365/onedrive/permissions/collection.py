@@ -60,13 +60,23 @@ class PermissionCollection(EntityCollection[Permission]):
         def _add():
             payload = {
                 "roles": roles,
-                "grantedToIdentities": [{identity_type: Identity(display_name=identity.display_name, _id=identity.id)}],
+                "grantedToIdentities": [
+                    {
+                        identity_type: Identity(
+                            display_name=getattr(identity, "display_name", str(identity)),
+                            _id=getattr(identity, "id", str(identity)),
+                        )
+                    }
+                ],
             }
 
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)
 
-        identity.ensure_properties(["displayName"], _add)
+        if isinstance(identity, Entity):
+            identity.ensure_properties(["displayName"], _add)
+        else:
+            _add()
         return return_type
 
     def delete_all(self) -> Self:
