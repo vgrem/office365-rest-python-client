@@ -11,7 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 class Attachment(Entity):
     """A file or item (contact, event or message) attached to an event or message."""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.name or self.id
 
     def download(self, file_object: IO) -> Self:

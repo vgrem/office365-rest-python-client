@@ -6569,6 +6569,18 @@
          <Annotations Target="microsoft.graph.certification/isCertifiedByMicrosoft">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
+         <Annotations Target="microsoft.graph.agentIdentity/agentIdentityBlueprintId">
+            <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.agentIdentity/createdByAppId">
+            <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.agentIdentityBlueprint/createdByAppId">
+            <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.agentIdentityBlueprintPrincipal/createdByAppId">
+            <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
+         </Annotations>
          <Annotations Target="microsoft.graph.certificateAuthorityDetail">
             <Annotation Term="Org.OData.Capabilities.V1.CountRestrictions">
                <Record>
@@ -16310,6 +16322,36 @@
          <Annotations Target="microsoft.graph.sharingDetail/sharingReference">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
+         <Annotations Target="microsoft.graph.sharedInsight">
+            <Annotation Term="Org.OData.Core.V1.Revisions">
+               <Collection>
+                  <Record>
+                     <PropertyValue Property="Date" Date="2026-01-28"/>
+                     <PropertyValue Property="Description" String="This API is deprecated and will stop returning data after January, 2028."/>
+                     <PropertyValue Property="Kind">
+                        <EnumMember>Org.OData.Core.V1.RevisionKind/Deprecated</EnumMember>
+                     </PropertyValue>
+                     <PropertyValue Property="RemovalDate" Date="2028-01-01"/>
+                     <PropertyValue Property="Version" String="2026-01/Removal"/>
+                  </Record>
+               </Collection>
+            </Annotation>
+         </Annotations>
+         <Annotations Target="microsoft.graph.usedInsight">
+            <Annotation Term="Org.OData.Core.V1.Revisions">
+               <Collection>
+                  <Record>
+                     <PropertyValue Property="Date" Date="2026-01-28"/>
+                     <PropertyValue Property="Description" String="This API is deprecated and will stop returning data after January, 2028."/>
+                     <PropertyValue Property="Kind">
+                        <EnumMember>Org.OData.Core.V1.RevisionKind/Deprecated</EnumMember>
+                     </PropertyValue>
+                     <PropertyValue Property="RemovalDate" Date="2028-01-01"/>
+                     <PropertyValue Property="Version" String="2026-01/Removal"/>
+                  </Record>
+               </Collection>
+            </Annotation>
+         </Annotations>
          <Annotations Target="microsoft.graph.sharedInsight/resourceReference">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
@@ -17968,6 +18010,11 @@ within the time frame of their original request."/>
             <Member Name="disabled" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
          </EnumType>
+         <EnumType Name="attestationEnforcement">
+            <Member Name="disabled" Value="0"/>
+            <Member Name="registrationOnly" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
+         </EnumType>
          <EnumType Name="authenticationMethodModes" IsFlags="true">
             <Member Name="password" Value="1"/>
             <Member Name="voice" Value="2"/>
@@ -18051,6 +18098,11 @@ within the time frame of their original request."/>
             <Member Name="push" Value="1"/>
             <Member Name="any" Value="2"/>
          </EnumType>
+         <EnumType Name="passkeyTypes" IsFlags="true">
+            <Member Name="deviceBound" Value="1"/>
+            <Member Name="synced" Value="2"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
          <EnumType Name="x509CertificateAffinityLevel">
             <Member Name="low" Value="0"/>
             <Member Name="high" Value="1"/>
@@ -18062,6 +18114,11 @@ within the time frame of their original request."/>
             <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
          <EnumType Name="x509CertificateCRLValidationConfigurationState">
+            <Member Name="disabled" Value="0"/>
+            <Member Name="enabled" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
+         </EnumType>
+         <EnumType Name="x509CertificateIssuerHintsState">
             <Member Name="disabled" Value="0"/>
             <Member Name="enabled" Value="1"/>
             <Member Name="unknownFutureValue" Value="2"/>
@@ -18750,6 +18807,13 @@ within the time frame of their original request."/>
             <Member Name="nativeSupport" Value="1"/>
             <Member Name="disabled" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
+         <EnumType Name="scopeCollectionKind">
+            <Member Name="allAllowed" Value="0"/>
+            <Member Name="enumerated" Value="1"/>
+            <Member Name="none" Value="2"/>
+            <Member Name="scopeKindNotSet" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
          </EnumType>
          <EnumType Name="templateApplicationLevel" IsFlags="true">
             <Member Name="none" Value="0"/>
@@ -23328,6 +23392,11 @@ within the time frame of their original request."/>
             <Member Name="h" Value="4"/>
             <Member Name="unknownFutureValue" Value="5"/>
          </EnumType>
+         <EnumType Name="passkeyType">
+            <Member Name="deviceBound" Value="0"/>
+            <Member Name="synced" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
+         </EnumType>
          <EnumType Name="lifecycleEventType">
             <Member Name="missed" Value="0"/>
             <Member Name="subscriptionRemoved" Value="1"/>
@@ -24408,6 +24477,7 @@ within the time frame of their original request."/>
             <Property Name="faxNumber" Type="Edm.String"/>
             <Property Name="givenName" Type="Edm.String"/>
             <Property Name="identities" Type="Collection(graph.objectIdentity)"/>
+            <Property Name="identityParentId" Type="Edm.String"/>
             <Property Name="imAddresses" Type="Collection(Edm.String)"/>
             <Property Name="isManagementRestricted" Type="Edm.Boolean"/>
             <Property Name="isResourceAccount" Type="Edm.Boolean"/>
@@ -24684,9 +24754,12 @@ within the time frame of their original request."/>
             <Property Name="otherAddress" Type="graph.physicalAddress"/>
             <Property Name="parentFolderId" Type="Edm.String"/>
             <Property Name="personalNotes" Type="Edm.String"/>
+            <Property Name="primaryEmailAddress" Type="graph.emailAddress"/>
             <Property Name="profession" Type="Edm.String"/>
+            <Property Name="secondaryEmailAddress" Type="graph.emailAddress"/>
             <Property Name="spouseName" Type="Edm.String"/>
             <Property Name="surname" Type="Edm.String"/>
+            <Property Name="tertiaryEmailAddress" Type="graph.emailAddress"/>
             <Property Name="title" Type="Edm.String"/>
             <Property Name="yomiCompanyName" Type="Edm.String"/>
             <Property Name="yomiGivenName" Type="Edm.String"/>
@@ -25442,6 +25515,10 @@ within the time frame of their original request."/>
             <Property Name="enforcementType" Type="graph.fido2RestrictionEnforcementType"/>
             <Property Name="isEnforced" Type="Edm.Boolean"/>
          </ComplexType>
+         <ComplexType Name="includeTarget">
+            <Property Name="id" Type="Edm.String" Nullable="false"/>
+            <Property Name="targetType" Type="graph.authenticationMethodTargetType" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="microsoftAuthenticatorFeatureSettings">
             <Property Name="displayAppInformationRequiredState" Type="graph.authenticationMethodFeatureConfiguration"/>
             <Property Name="displayLocationInformationRequiredState" Type="graph.authenticationMethodFeatureConfiguration"/>
@@ -25472,9 +25549,17 @@ within the time frame of their original request."/>
             <Property Name="x509CertificateRequiredAffinityLevel" Type="graph.x509CertificateAffinityLevel"/>
             <Property Name="x509CertificateRuleType" Type="graph.x509CertificateRuleType"/>
          </ComplexType>
+         <ComplexType Name="x509CertificateAuthorityScope">
+            <Property Name="includeTargets" Type="Collection(graph.includeTarget)"/>
+            <Property Name="publicKeyInfrastructureIdentifier" Type="Edm.String"/>
+            <Property Name="subjectKeyIdentifier" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="x509CertificateCRLValidationConfiguration">
             <Property Name="exemptedCertificateAuthoritiesSubjectKeyIdentifiers" Type="Collection(Edm.String)"/>
             <Property Name="state" Type="graph.x509CertificateCRLValidationConfigurationState" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="x509CertificateIssuerHintsConfiguration">
+            <Property Name="state" Type="graph.x509CertificateIssuerHintsState"/>
          </ComplexType>
          <ComplexType Name="x509CertificateUserBinding">
             <Property Name="priority" Type="Edm.Int32" Nullable="false"/>
@@ -25567,10 +25652,21 @@ within the time frame of their original request."/>
             <NavigationProperty Name="includeTargets" Type="Collection(graph.authenticationMethodTarget)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="fido2AuthenticationMethodConfiguration" BaseType="graph.authenticationMethodConfiguration">
+            <Property Name="defaultPasskeyProfile" Type="Edm.String"/>
             <Property Name="isAttestationEnforced" Type="Edm.Boolean"/>
             <Property Name="isSelfServiceRegistrationAllowed" Type="Edm.Boolean"/>
             <Property Name="keyRestrictions" Type="graph.fido2KeyRestrictions"/>
-            <NavigationProperty Name="includeTargets" Type="Collection(graph.authenticationMethodTarget)" ContainsTarget="true"/>
+            <NavigationProperty Name="includeTargets" Type="Collection(graph.passkeyAuthenticationMethodTarget)" ContainsTarget="true"/>
+            <NavigationProperty Name="passkeyProfiles" Type="Collection(graph.passkeyProfile)"/>
+         </EntityType>
+         <EntityType Name="passkeyAuthenticationMethodTarget" BaseType="graph.authenticationMethodTarget">
+            <Property Name="allowedPasskeyProfiles" Type="Collection(Edm.Guid)"/>
+         </EntityType>
+         <EntityType Name="passkeyProfile" BaseType="graph.entity">
+            <Property Name="attestationEnforcement" Type="graph.attestationEnforcement" Nullable="false"/>
+            <Property Name="keyRestrictions" Type="graph.fido2KeyRestrictions"/>
+            <Property Name="name" Type="Edm.String"/>
+            <Property Name="passkeyTypes" Type="graph.passkeyTypes"/>
          </EntityType>
          <EntityType Name="fido2CombinationConfiguration" BaseType="graph.authenticationCombinationConfiguration">
             <Property Name="allowedAAGUIDs" Type="Collection(Edm.String)" Nullable="false"/>
@@ -25710,8 +25806,10 @@ within the time frame of their original request."/>
          </EntityType>
          <EntityType Name="x509CertificateAuthenticationMethodConfiguration" BaseType="graph.authenticationMethodConfiguration">
             <Property Name="authenticationModeConfiguration" Type="graph.x509CertificateAuthenticationModeConfiguration"/>
+            <Property Name="certificateAuthorityScopes" Type="Collection(graph.x509CertificateAuthorityScope)"/>
             <Property Name="certificateUserBindings" Type="Collection(graph.x509CertificateUserBinding)"/>
             <Property Name="crlValidationConfiguration" Type="graph.x509CertificateCRLValidationConfiguration" Nullable="false"/>
+            <Property Name="issuerHintsConfiguration" Type="graph.x509CertificateIssuerHintsConfiguration"/>
             <NavigationProperty Name="includeTargets" Type="Collection(graph.authenticationMethodTarget)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="x509CertificateCombinationConfiguration" BaseType="graph.authenticationCombinationConfiguration">
@@ -26106,6 +26204,8 @@ within the time frame of their original request."/>
             <Property Name="operatingSystem" Type="Edm.String"/>
             <Property Name="osBuildNumber" Type="Edm.String"/>
             <Property Name="osStatus" Type="graph.cloudPcDeviceImageOsStatus"/>
+            <Property Name="osVersionNumber" Type="Edm.String"/>
+            <Property Name="sizeInGB" Type="Edm.Int32"/>
             <Property Name="sourceImageResourceId" Type="Edm.String"/>
             <Property Name="status" Type="graph.cloudPcDeviceImageStatus"/>
             <Property Name="version" Type="Edm.String"/>
@@ -26115,6 +26215,7 @@ within the time frame of their original request."/>
             <Property Name="endDate" Type="Edm.Date"/>
             <Property Name="expirationDate" Type="Edm.Date"/>
             <Property Name="offerName" Type="Edm.String"/>
+            <Property Name="osVersionNumber" Type="Edm.String"/>
             <Property Name="publisherName" Type="Edm.String"/>
             <Property Name="sizeInGB" Type="Edm.Int32"/>
             <Property Name="skuName" Type="Edm.String"/>
@@ -27052,6 +27153,7 @@ within the time frame of their original request."/>
             <Property Name="tenantId" Type="Edm.String"/>
             <Property Name="webUrl" Type="Edm.String"/>
             <NavigationProperty Name="allMembers" Type="Collection(graph.conversationMember)" ContainsTarget="true"/>
+            <NavigationProperty Name="enabledApps" Type="Collection(graph.teamsApp)"/>
             <NavigationProperty Name="filesFolder" Type="graph.driveItem" ContainsTarget="true"/>
             <NavigationProperty Name="members" Type="Collection(graph.conversationMember)" ContainsTarget="true"/>
             <NavigationProperty Name="messages" Type="Collection(graph.chatMessage)" ContainsTarget="true"/>
@@ -27446,6 +27548,13 @@ within the time frame of their original request."/>
             <NavigationProperty Name="customExtension" Type="graph.onOtpSendCustomExtension"/>
          </ComplexType>
          <EntityType Name="onOtpSendCustomExtension" BaseType="graph.customAuthenticationExtension"/>
+         <ComplexType Name="onPasswordSubmitHandler" Abstract="true"/>
+         <ComplexType Name="onPasswordMigrationCustomExtensionHandler" BaseType="graph.onPasswordSubmitHandler">
+            <Property Name="configuration" Type="graph.customExtensionOverwriteConfiguration"/>
+            <Property Name="migrationPropertyId" Type="Edm.String" Nullable="false"/>
+            <NavigationProperty Name="customExtension" Type="graph.onPasswordSubmitCustomExtension"/>
+         </ComplexType>
+         <EntityType Name="onPasswordSubmitCustomExtension" BaseType="graph.customAuthenticationExtension"/>
          <ComplexType Name="onTokenIssuanceStartHandler" Abstract="true"/>
          <ComplexType Name="onTokenIssuanceStartCustomExtensionHandler" BaseType="graph.onTokenIssuanceStartHandler">
             <Property Name="configuration" Type="graph.customExtensionOverwriteConfiguration"/>
@@ -27623,6 +27732,9 @@ within the time frame of their original request."/>
          </EntityType>
          <EntityType Name="onInteractiveAuthFlowStartListener" BaseType="graph.authenticationEventListener">
             <Property Name="handler" Type="graph.onInteractiveAuthFlowStartHandler"/>
+         </EntityType>
+         <EntityType Name="onPasswordSubmitListener" BaseType="graph.authenticationEventListener">
+            <Property Name="handler" Type="graph.onPasswordSubmitHandler"/>
          </EntityType>
          <EntityType Name="onTokenIssuanceStartListener" BaseType="graph.authenticationEventListener">
             <Property Name="handler" Type="graph.onTokenIssuanceStartHandler"/>
@@ -27942,6 +28054,10 @@ within the time frame of their original request."/>
             <Property Name="isEnabled" Type="Edm.Boolean"/>
          </ComplexType>
          <ComplexType Name="noDeviceRegistrationMembership" BaseType="graph.deviceRegistrationMembership"/>
+         <ComplexType Name="inheritableScopes" Abstract="true">
+            <Property Name="kind" Type="graph.scopeCollectionKind" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="allAllowedScopes" BaseType="graph.inheritableScopes"/>
          <ComplexType Name="alternativeSecurityId">
             <Property Name="identityProvider" Type="Edm.String"/>
             <Property Name="key" Type="Edm.Binary"/>
@@ -28030,6 +28146,9 @@ within the time frame of their original request."/>
             <Property Name="operation" Type="Edm.String"/>
             <Property Name="status" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="enumeratedScopes" BaseType="graph.inheritableScopes">
+            <Property Name="scopes" Type="Collection(Edm.String)" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="implicitGrantSettings">
             <Property Name="enableAccessTokenIssuance" Type="Edm.Boolean"/>
             <Property Name="enableIdTokenIssuance" Type="Edm.Boolean"/>
@@ -28076,6 +28195,7 @@ within the time frame of their original request."/>
             <Property Name="details" Type="Edm.String"/>
             <Property Name="status" Type="graph.multiTenantOrganizationMemberProcessingStatus"/>
          </ComplexType>
+         <ComplexType Name="noScopes" BaseType="graph.inheritableScopes"/>
          <ComplexType Name="onPremisesAccidentalDeletionPrevention">
             <Property Name="alertThreshold" Type="Edm.Int32"/>
             <Property Name="synchronizationPreventionType" Type="graph.onPremisesDirectorySynchronizationDeletionPreventionType"/>
@@ -28182,6 +28302,29 @@ within the time frame of their original request."/>
             <Property Name="name" Type="Edm.String"/>
             <Property Name="type" Type="Edm.String"/>
          </ComplexType>
+         <EntityType Name="agentIdentity" BaseType="graph.servicePrincipal" OpenType="true">
+            <Property Name="agentIdentityBlueprintId" Type="Edm.String" Nullable="false"/>
+            <Property Name="createdByAppId" Type="Edm.String"/>
+            <Property Name="createdDateTime" Type="Edm.DateTimeOffset"/>
+            <NavigationProperty Name="sponsors" Type="Collection(graph.directoryObject)"/>
+         </EntityType>
+         <EntityType Name="agentIdentityBlueprint" BaseType="graph.application" OpenType="true">
+            <Property Name="createdByAppId" Type="Edm.String"/>
+            <NavigationProperty Name="inheritablePermissions" Type="Collection(graph.inheritablePermission)" ContainsTarget="true"/>
+            <NavigationProperty Name="sponsors" Type="Collection(graph.directoryObject)"/>
+         </EntityType>
+         <EntityType Name="inheritablePermission">
+            <Key>
+               <PropertyRef Name="resourceAppId"/>
+            </Key>
+            <Property Name="inheritableScopes" Type="graph.inheritableScopes"/>
+            <Property Name="resourceAppId" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+         <EntityType Name="agentIdentityBlueprintPrincipal" BaseType="graph.servicePrincipal" OpenType="true">
+            <Property Name="createdByAppId" Type="Edm.String"/>
+            <NavigationProperty Name="sponsors" Type="Collection(graph.directoryObject)"/>
+         </EntityType>
+         <EntityType Name="agentUser" BaseType="graph.user" OpenType="true"/>
          <EntityType Name="allowedValue" BaseType="graph.entity">
             <Property Name="isActive" Type="Edm.Boolean"/>
          </EntityType>
@@ -28780,6 +28923,7 @@ within the time frame of their original request."/>
          </EntityType>
          <EntityType Name="peopleAdminSettings" BaseType="graph.entity">
             <NavigationProperty Name="profileCardProperties" Type="Collection(graph.profileCardProperty)" ContainsTarget="true"/>
+            <NavigationProperty Name="profileSources" Type="Collection(graph.profileSource)" ContainsTarget="true"/>
             <NavigationProperty Name="pronouns" Type="graph.pronounsSettings" ContainsTarget="true"/>
             <NavigationProperty Name="itemInsights" Type="graph.insightsSettings" ContainsTarget="true"/>
          </EntityType>
@@ -35435,9 +35579,35 @@ within the time frame of their original request."/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="localizations" Type="Collection(graph.displayNameLocalization)"/>
          </ComplexType>
+         <ComplexType Name="profileSourceLocalization">
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="languageTag" Type="Edm.String"/>
+            <Property Name="webUrl" Type="Edm.String"/>
+         </ComplexType>
          <EntityType Name="profileCardProperty" BaseType="graph.entity">
             <Property Name="annotations" Type="Collection(graph.profileCardAnnotation)"/>
             <Property Name="directoryPropertyName" Type="Edm.String"/>
+         </EntityType>
+         <EntityType Name="profileSource" BaseType="graph.entity">
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="kind" Type="Edm.String"/>
+            <Property Name="localizations" Type="Collection(graph.profileSourceLocalization)" Nullable="false"/>
+            <Property Name="sourceId" Type="Edm.String"/>
+            <Property Name="webUrl" Type="Edm.String"/>
+            <Annotation Term="Org.OData.Core.V1.AlternateKeys">
+               <Collection>
+                  <Record Type="Org.OData.Core.V1.AlternateKey">
+                     <PropertyValue Property="Key">
+                        <Collection>
+                           <Record Type="Org.OData.Core.V1.PropertyRef">
+                              <PropertyValue Property="Alias" String="sourceId"/>
+                              <PropertyValue Property="Name" PropertyPath="sourceId"/>
+                           </Record>
+                        </Collection>
+                     </PropertyValue>
+                  </Record>
+               </Collection>
+            </Annotation>
          </EntityType>
          <EntityType Name="pronounsSettings" BaseType="graph.entity">
             <Property Name="isEnabledInOrganization" Type="Edm.Boolean" Nullable="false"/>
@@ -36738,6 +36908,7 @@ within the time frame of their original request."/>
             <Property Name="attestationLevel" Type="graph.attestationLevel"/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="model" Type="Edm.String"/>
+            <Property Name="passkeyType" Type="graph.passkeyType"/>
          </EntityType>
          <EntityType Name="microsoftAuthenticatorAuthenticationMethod" BaseType="graph.authenticationMethod">
             <Property Name="deviceTag" Type="Edm.String"/>
@@ -43898,6 +44069,7 @@ within the time frame of their original request."/>
             <EntitySet Name="applications" EntityType="microsoft.graph.application">
                <NavigationPropertyBinding Path="appManagementPolicies" Target="policies/appManagementPolicies"/>
                <NavigationPropertyBinding Path="createdOnBehalfOf" Target="directoryObjects"/>
+               <NavigationPropertyBinding Path="microsoft.graph.agentIdentityBlueprint/sponsors" Target="directoryObjects"/>
                <NavigationPropertyBinding Path="owners" Target="directoryObjects"/>
             </EntitySet>
             <EntitySet Name="appRoleAssignments" EntityType="microsoft.graph.appRoleAssignment"/>
@@ -43943,6 +44115,8 @@ within the time frame of their original request."/>
                <NavigationPropertyBinding Path="appManagementPolicies" Target="policies/appManagementPolicies"/>
                <NavigationPropertyBinding Path="createdObjects" Target="directoryObjects"/>
                <NavigationPropertyBinding Path="memberOf" Target="directoryObjects"/>
+               <NavigationPropertyBinding Path="microsoft.graph.agentIdentity/sponsors" Target="directoryObjects"/>
+               <NavigationPropertyBinding Path="microsoft.graph.agentIdentityBlueprintPrincipal/sponsors" Target="directoryObjects"/>
                <NavigationPropertyBinding Path="oauth2PermissionGrants" Target="oauth2PermissionGrants"/>
                <NavigationPropertyBinding Path="ownedObjects" Target="directoryObjects"/>
                <NavigationPropertyBinding Path="owners" Target="directoryObjects"/>

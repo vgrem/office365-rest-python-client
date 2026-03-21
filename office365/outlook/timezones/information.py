@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,7 +8,7 @@ class TimeZoneInformation(ClientValue):
     time zone (also known as Olson time zone) format as well when the current known problem is fixed.
     """
 
-    def __init__(self, alias: str = None, display_name: str = None):
+    def __init__(self, alias: str | None = None, display_name: str | None = None):
         """
         :param str alias: An identifier for the time zone.
         :param str display_name: A display string that represents the time zone.
@@ -14,5 +16,5 @@ class TimeZoneInformation(ClientValue):
         self.alias = alias
         self.displayName = display_name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.displayName

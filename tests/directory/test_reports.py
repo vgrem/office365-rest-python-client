@@ -17,3 +17,8 @@ class TestReports(GraphTestCase):
     def test3_list_users_registered_by_method(self):
         result = self.client.reports.authentication_methods.users_registered_by_method().execute_query()
         self.assertIsNotNone(result.value)
+
+    @requires_delegated_permission("AuditLog.Read.All")
+    def test4_users_registered_by_feature(self):
+        result = self.client.reports.authentication_methods.users_registered_by_feature().execute_query()
+        self.assertIsNotNone(result.value)

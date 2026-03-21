@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointfrequencytype import (
     CloudPcRestorePointFrequencyType,
 )
@@ -8,7 +10,7 @@ class CloudPcRestorePointSetting(ClientValue):
     def __init__(
         self,
         frequency_type: CloudPcRestorePointFrequencyType = CloudPcRestorePointFrequencyType.none,
-        user_restore_enabled: bool = None,
+        user_restore_enabled: bool | None = None,
     ):
         self.frequencyType = frequency_type
         self.userRestoreEnabled = user_restore_enabled

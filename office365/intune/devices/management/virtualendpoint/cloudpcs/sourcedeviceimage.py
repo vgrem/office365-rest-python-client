@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
 class CloudPcSourceDeviceImage(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        resource_id: str = None,
-        subscription_display_name: str = None,
-        subscription_id: str = None,
+        display_name: str | None = None,
+        resource_id: str | None = None,
+        subscription_display_name: str | None = None,
+        subscription_id: str | None = None,
     ):
         self.displayName = display_name
         self.resourceId = resource_id

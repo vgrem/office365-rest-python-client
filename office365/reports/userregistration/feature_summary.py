@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.reports.userregistration.feature_count import UserRegistrationFeatureCount
@@ -16,7 +18,7 @@ class UserRegistrationFeatureSummary(ClientValue):
     def __init__(
         self,
         total_user_count: int = None,
-        user_registration_feature_counts: List[UserRegistrationFeatureCount] = None,
+        user_registration_feature_counts: List[UserRegistrationFeatureCount] | None = None,
         user_roles: IncludedUserRoles = IncludedUserRoles.none,
         user_types: IncludedUserTypes = IncludedUserTypes.none,
     ):

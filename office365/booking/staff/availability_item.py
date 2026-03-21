@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.booking.availabilityitem import AvailabilityItem
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,7 +9,7 @@ class StaffAvailabilityItem(ClientValue):
     def __init__(
         self,
         availability_items: ClientValueCollection[AvailabilityItem] = ClientValueCollection(AvailabilityItem),
-        staff_id: str = None,
+        staff_id: str | None = None,
     ):
         self.availabilityItems = availability_items
         self.staffId = staff_id

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,13 +10,13 @@ class RecurrencePattern(ClientValue):
 
     def __init__(
         self,
-        day_of_month=None,
-        days_of_week: DayOfWeek = None,
-        first_day_of_week=None,
-        index: int = None,
-        interval: int = None,
-        month: int = None,
-        pattern_type: str = None,
+        day_of_month: int | None = None,
+        days_of_week: list[DayOfWeek] | None = None,
+        first_day_of_week: DayOfWeek | None = None,
+        index: int | None = None,
+        interval: int | None = None,
+        month: int | None = None,
+        pattern_type: str | None = None,
     ):
         """
         :param int day_of_month: The day of the month on which the event occurs. Required if type is absoluteMonthly

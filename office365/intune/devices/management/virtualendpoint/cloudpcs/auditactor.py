@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.intune.devices.management.virtualendpoint.cloudpcs.userrolescopetaginfo import CloudPcUserRoleScopeTagInfo
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,15 +9,15 @@ from office365.runtime.types.collections import StringCollection
 class CloudPcAuditActor(ClientValue):
     def __init__(
         self,
-        application_display_name: str = None,
-        application_id: str = None,
-        ip_address: str = None,
-        remote_tenant_id: str = None,
-        remote_user_id: str = None,
-        service_principal_name: str = None,
-        user_id: str = None,
-        user_permissions: StringCollection = None,
-        user_principal_name: str = None,
+        application_display_name: str | None = None,
+        application_id: str | None = None,
+        ip_address: str | None = None,
+        remote_tenant_id: str | None = None,
+        remote_user_id: str | None = None,
+        service_principal_name: str | None = None,
+        user_id: str | None = None,
+        user_permissions: StringCollection = StringCollection(),
+        user_principal_name: str | None = None,
         user_role_scope_tags: ClientValueCollection[CloudPcUserRoleScopeTagInfo] = ClientValueCollection(
             CloudPcUserRoleScopeTagInfo
         ),

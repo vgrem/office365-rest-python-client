@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 import string
 import uuid
@@ -21,8 +23,8 @@ class DeviceCollection(DeltaCollection[Device]):
         operating_system: str,
         operating_system_version: str,
         account_enabled: bool = False,
-        alternative_security_id: AlternativeSecurityId = None,
-        device_id: str = None,
+        alternative_security_id: AlternativeSecurityId | None = None,
+        device_id: str | None = None,
     ):
         """Create and register a new device in the organization.
         :param str display_name: The display name for the device

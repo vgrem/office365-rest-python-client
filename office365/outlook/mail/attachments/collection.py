@@ -26,7 +26,13 @@ class AttachmentCollection(EntityCollection[Attachment]):
     def __init__(self, context: GraphClient, resource_path: ResourcePath = None) -> None:
         super().__init__(context, Attachment, resource_path)
 
-    def add_file(self, name, content=None, content_type=None, base64_content=None):
+    def add_file(
+        self,
+        name: str,
+        content: bytes | str | None = None,
+        content_type: str | None = None,
+        base64_content: bytes | None = None,
+    ):
         """
         Attach a file to message
 
@@ -55,7 +61,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self,
         source_path: str,
         chunk_size: int = 1000000,
-        chunk_uploaded: Callable[[int], None] = None,
+        chunk_uploaded: Callable[[int], None] | None = None,
     ):
         """
         Create an upload session to allow your app to upload files up to the maximum file size.

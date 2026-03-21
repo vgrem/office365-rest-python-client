@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.booking.savailabilitystatus import BookingsAvailabilityStatus
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_value import ClientValue
@@ -7,7 +9,7 @@ class AvailabilityItem(ClientValue):
     def __init__(
         self,
         end_date_time: DateTimeTimeZone = DateTimeTimeZone(),
-        service_id: str = None,
+        service_id: str | None = None,
         start_date_time: DateTimeTimeZone = DateTimeTimeZone(),
         status: BookingsAvailabilityStatus = BookingsAvailabilityStatus.none,
     ):
