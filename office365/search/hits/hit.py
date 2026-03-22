@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity import Entity
 from office365.runtime.client_value import ClientValue
 
@@ -5,10 +7,10 @@ from office365.runtime.client_value import ClientValue
 class SearchHit(ClientValue):
     def __init__(
         self,
-        content_source: str = None,
-        summary: str = None,
-        resource: Entity = None,
-        result_template_id: str = None,
+        content_source: str | None = None,
+        summary: str | None = None,
+        resource: Entity | None = None,
+        result_template_id: str | None = None,
     ):
         """
         Represents a single result within the list of search results.

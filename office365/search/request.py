@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict, List, Optional
 
 from office365.runtime.client_value import ClientValue
@@ -16,15 +18,15 @@ class SearchRequest(ClientValue):
     def __init__(
         self,
         query: SearchQuery,
-        aggregation_filters: List[str] = None,
-        aggregations=None,
+        aggregation_filters: List[str] | None = None,
+        aggregations: list[str] | None = None,
         enable_top_results=None,
-        size: int = None,
-        region: str = None,
+        size: int | None = None,
+        region: str | None = None,
         entity_types=None,
         fields=None,
         page_from=None,
-        sort_properties=None,
+        sort_properties: list[SortProperty] | None = None,
         content_sources=None,
         sharepoint_onedrive_options=SharePointOneDriveOptions(),
     ):

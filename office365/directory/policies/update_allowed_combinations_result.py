@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.authentication.methods.modes import AuthenticationMethodModes
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,7 +9,7 @@ from office365.runtime.types.collections import StringCollection
 class UpdateAllowedCombinationsResult(ClientValue):
     def __init__(
         self,
-        additional_information: str = None,
+        additional_information: str | None = None,
         conditional_access_references: StringCollection = StringCollection(),
         current_combinations: ClientValueCollection[AuthenticationMethodModes] = ClientValueCollection(
             AuthenticationMethodModes

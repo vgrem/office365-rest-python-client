@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.runtime.client_value import ClientValue
@@ -9,10 +11,10 @@ from office365.search.hits.hit import SearchHit
 class SearchHitsContainer(ClientValue):
     def __init__(
         self,
-        hits: List[SearchHit] = None,
-        more_results_available: bool = None,
-        total: int = None,
-        aggregations: List[SearchAggregation] = None,
+        hits: List[SearchHit] | None = None,
+        more_results_available: bool | None = None,
+        total: int | None = None,
+        aggregations: List[SearchAggregation] | None = None,
     ):
         """
         Represent the list of search results.

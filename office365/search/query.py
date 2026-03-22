@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
 class SearchQuery(ClientValue):
-    def __init__(self, query_string: str = None, query_template: str = None):
+    def __init__(self, query_string: str | None = None, query_template: str | None = None):
         """
         Represents a search query that contains search terms and optional filters.
 

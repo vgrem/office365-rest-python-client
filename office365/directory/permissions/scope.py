@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -13,15 +15,15 @@ class PermissionScope(ClientValue):
 
     def __init__(
         self,
-        admin_consent_display_name: str = None,
-        admin_consent_description: str = None,
-        id_: str = None,
-        is_enabled: bool = None,
-        origin=None,
+        admin_consent_display_name: str | None = None,
+        admin_consent_description: str | None = None,
+        id_: str | None = None,
+        is_enabled: bool | None = None,
+        origin: str | None = None,
         type_=None,
-        user_consent_description=None,
-        user_consent_display_name=None,
-        value=None,
+        user_consent_description: str = None,
+        user_consent_display_name: str = None,
+        value: str = None,
     ):
         """
         :param str admin_consent_display_name: The permission's title, intended to be read by an administrator granting

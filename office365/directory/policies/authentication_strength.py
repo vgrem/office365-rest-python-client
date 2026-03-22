@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from office365.directory.authentication.strength.usage import (
@@ -34,7 +36,7 @@ class AuthenticationStrengthPolicy(Entity):
         return return_type
 
     def update_allowed_combinations(
-        self, allowed_combinations: List[str] = None
+        self, allowed_combinations: List[str] | None = None
     ) -> ClientResult[UpdateAllowedCombinationsResult]:
         """
         Update the allowedCombinations property of an authenticationStrengthPolicy object.
