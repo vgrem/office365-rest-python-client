@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
@@ -22,8 +24,8 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
     def create(
         self,
         subject: str,
-        start_datetime: datetime = None,
-        end_datetime: datetime = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
     ):
         """
         Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
@@ -45,12 +47,12 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
 
     def create_or_get(
         self,
-        external_id: str = None,
-        start_datetime: datetime = None,
-        end_datetime: datetime = None,
-        subject: str = None,
-        participants: MeetingParticipants = None,
-        chat_info: ChatInfo = None,
+        external_id: str | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
+        subject: str | None = None,
+        participants: MeetingParticipants | None = None,
+        chat_info: ChatInfo | None = None,
     ) -> OnlineMeeting:
         """Create an onlineMeeting object with a custom specified external ID. If the external ID already exists,
         this API will return the onlineMeeting object with that external ID.
@@ -81,8 +83,8 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
     def get_all_recordings(
         self,
         meeting_organizer_user_id: str,
-        start_datetime: datetime = None,
-        end_datetime: datetime = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
     ) -> EntityCollection[CallRecording]:
         """
         Get all recordings from scheduled onlineMeeting instances for which the specified user is the organizer.

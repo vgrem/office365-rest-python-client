@@ -17,7 +17,7 @@ class UserRegistrationFeatureSummary(ClientValue):
 
     def __init__(
         self,
-        total_user_count: int = None,
+        total_user_count: int | None = None,
         user_registration_feature_counts: List[UserRegistrationFeatureCount] | None = None,
         user_roles: IncludedUserRoles = IncludedUserRoles.none,
         user_types: IncludedUserTypes = IncludedUserTypes.none,

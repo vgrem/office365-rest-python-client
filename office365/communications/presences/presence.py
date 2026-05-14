@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
@@ -13,7 +15,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
-    def clear_presence(self, session_id: str = None) -> Self:
+    def clear_presence(self, session_id: str | None = None) -> Self:
         """
         Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.

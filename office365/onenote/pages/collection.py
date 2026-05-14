@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from email.message import Message
 from typing import IO, BinaryIO, Dict
 
@@ -25,7 +27,7 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, OnenotePage, resource_path)
 
-    def add(self, presentation_file: IO, attachment_files: Dict[str, BinaryIO] = None) -> OnenotePage:
+    def add(self, presentation_file: IO, attachment_files: Dict[str, BinaryIO] | None = None) -> OnenotePage:
         """
         Create a new OneNote page.
         """

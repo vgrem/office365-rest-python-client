@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
 
 from office365.communications.callrecords.call_record import CallRecord
@@ -18,7 +20,7 @@ class CallRecordCollection(EntityCollection[CallRecord]):
         super().__init__(context, CallRecord, resource_path)
 
     def get_direct_routing_calls(
-        self, from_datetime: datetime = None, to_datetime: datetime = None
+        self, from_datetime: datetime | None = None, to_datetime: datetime | None = None
     ) -> ClientResult[ClientValueCollection[DirectRoutingLogRow]]:
         """
         Get a log of direct routing calls as a collection of directRoutingLogRow entries.

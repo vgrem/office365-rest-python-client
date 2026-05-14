@@ -621,6 +621,12 @@
          <ComplexType Name="EncryptionOption">
             <Property Name="AES256CBCKey" Type="Edm.Binary"/>
          </ComplexType>
+         <ComplexType Name="EngageDistributionInfo">
+            <Property Name="DestinationId" Type="Edm.String"/>
+            <Property Name="RawThreadId" Type="Edm.String"/>
+            <Property Name="ThreadId" Type="Edm.String"/>
+            <Property Name="ThreadStarterId" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="ExceptionDetails">
             <Property Name="ErrorCode" Type="Edm.String"/>
             <Property Name="IsExpectedException" Type="Edm.Boolean" Nullable="false"/>
@@ -9450,7 +9456,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.CampaignPublication"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -9734,7 +9740,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.FeedVideoPage"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.FeedVideoPage"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -10017,7 +10023,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.RepostPage"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.RepostPage"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -10277,7 +10283,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.SitePage3D"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.SitePage3D"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -10515,7 +10521,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.SitePage"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.SitePage"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -10799,7 +10805,7 @@
             <FunctionImport Name="DiscardPage" ReturnType="SP.Publishing.SitePage" IsBindable="true" EntitySet="SitePageMetadatas">
                <Parameter Name="this" Type="SP.Publishing.TopicSitePage"/>
             </FunctionImport>
-            <FunctionImport Name="Distribute" ReturnType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults" IsBindable="true">
+            <FunctionImport Name="Distribute" ReturnType="SP.Publishing.DistributeResponse" IsBindable="true">
                <Parameter Name="this" Type="SP.Publishing.TopicSitePage"/>
                <Parameter Name="request" Type="SP.Publishing.ContentDistributionRequestParams"/>
             </FunctionImport>
@@ -20082,6 +20088,9 @@
                <Parameter Name="modelName" Type="Edm.String"/>
                <Parameter Name="maxTokenSize" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
+            <FunctionImport Name="TestResyncToADLS" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+            </FunctionImport>
             <FunctionImport Name="TestUploadFileToADLS" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="uploadToADLSType" Type="Edm.String"/>
@@ -20146,9 +20155,6 @@
                <Parameter Name="columnValues" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminListItemColumnValue)"/>
                <Parameter Name="forceResolveActivity" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="category" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="UpdateSiteActivityData" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
             </FunctionImport>
             <FunctionImport Name="UpdateSPOContainerUserRole" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -23911,6 +23917,15 @@
          <Annotations Target="SP.Publishing.DateTimeCustomProperty">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Publishing.DistributeResponse">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Publishing.EngageDistributionInfo">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.Publishing.GettyImage">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -24065,9 +24080,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Publishing.Campaigns.Models.SharePointIds">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyAnywhereResults">
@@ -25289,6 +25301,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.CurrencyInformation">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.EngageDistributionInfo">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.GridInitInfoType">
@@ -37591,6 +37606,16 @@
          <ComplexType Name="DateTimeCustomProperty" BaseType="SP.Publishing.ProfileDateTime">
             <Property Name="CustomPropertyName" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="DistributeResponse" BaseType="Microsoft.SharePoint.Publishing.Amplify.Client.ClientAmplifyResults">
+            <Property Name="engage" Type="SP.Publishing.EngageDistributionInfo"/>
+         </ComplexType>
+         <ComplexType Name="EngageDistributionInfo">
+            <Property Name="DestinationId" Type="Edm.String"/>
+            <Property Name="DestinationType" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="RawThreadId" Type="Edm.String"/>
+            <Property Name="ThreadId" Type="Edm.String"/>
+            <Property Name="ThreadStarterId" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="Error">
             <Property Name="Details" Type="Collection(Edm.String)"/>
          </ComplexType>
@@ -40048,6 +40073,7 @@
          <ComplexType Name="SPAccessRequestRefreshStatus">
             <Property Name="hasprofilepicture" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="isAutoInvoke" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="partnerModel" Type="Edm.String"/>
             <Property Name="replyMessage" Type="Edm.String"/>
             <Property Name="roletype" Type="Edm.String"/>
             <Property Name="signature" Type="Edm.String"/>
@@ -41971,10 +41997,13 @@
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models">
          <ComplexType Name="DatasetMetadataInfo">
             <Property Name="createdDate" Type="Edm.String"/>
+            <Property Name="createdInADLSDate" Type="Edm.String"/>
             <Property Name="downloadUrl" Type="Edm.String"/>
             <Property Name="id" Type="Edm.String"/>
             <Property Name="lastSyncedDate" Type="Edm.String"/>
+            <Property Name="lastSyncedInADLSDate" Type="Edm.String"/>
             <Property Name="subType" Type="Edm.String"/>
+            <Property Name="uploadFileToADLSProgressStatus" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="DatasetMetadataRequestInfo">
             <Property Name="feature" Type="Edm.String"/>
@@ -41986,12 +42015,10 @@
             <Property Name="TenantAdminSiteLifeCycle" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo)"/>
          </ComplexType>
          <ComplexType Name="DatasetPolicyMetadataInfo" BaseType="Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo">
-            <Property Name="createdInADLSDate" Type="Edm.String"/>
             <Property Name="feature" Type="Edm.String"/>
             <Property Name="featureId" Type="Edm.String"/>
-            <Property Name="lastSyncedInADLSDate" Type="Edm.String"/>
             <Property Name="policyName" Type="Edm.String"/>
-            <Property Name="uploadFileToADLSProgressStatus" Type="Edm.String"/>
+            <Property Name="totalSites" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="ReportQueryResponse">
             <Property Name="reportData" Type="Edm.String"/>

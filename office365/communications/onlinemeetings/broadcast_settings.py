@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.communications.broadcastmeetingaudience import BroadcastMeetingAudience
 from office365.runtime.client_value import ClientValue
 
@@ -7,11 +9,11 @@ class BroadcastMeetingSettings(ClientValue):
 
     def __init__(
         self,
-        allowed_audience: BroadcastMeetingAudience = None,
-        is_attendee_report_enabled: bool = None,
-        is_question_and_answer_enabled: bool = None,
-        is_recording_enabled: bool = None,
-        is_video_on_demand_enabled: bool = None,
+        allowed_audience: BroadcastMeetingAudience | None = None,
+        is_attendee_report_enabled: bool | None = None,
+        is_question_and_answer_enabled: bool | None = None,
+        is_recording_enabled: bool | None = None,
+        is_video_on_demand_enabled: bool | None = None,
     ):
         self.allowedAudience = allowed_audience
         self.isAttendeeReportEnabled = is_attendee_report_enabled

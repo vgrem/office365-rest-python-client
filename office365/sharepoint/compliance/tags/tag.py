@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -23,7 +25,7 @@ class ComplianceTag(ClientValue):
         notes: str = None,
         require_sender_authentication_enabled: bool = None,
         reviewer_email: str = None,
-        sharing_capabilities: str = None,
+        sharing_capabilities: str | None = None,
         super_lock: bool = None,
         tag_duration: int = None,
         tag_id: str = None,
@@ -31,10 +33,7 @@ class ComplianceTag(ClientValue):
         tag_retention_based_on: str = None,
         unlocked_as_default: bool = None,
     ):
-        """
-        :param bool accept_messages_only_from_senders_or_members:
-        :param str access_type:
-        """
+        """ """
         self.AcceptMessagesOnlyFromSendersOrMembers = accept_messages_only_from_senders_or_members
         self.AccessType = access_type
         self.AllowAccessFromUnmanagedDevice = allow_access_from_unmanaged_device

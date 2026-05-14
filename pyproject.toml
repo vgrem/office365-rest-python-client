@@ -122,8 +122,8 @@ lint.pylint.max-statements = 60
 
 [tool.pyright]
 include = [
-  "office365/onedrive/*",
-  "office365/entity*",
-  "office365/runtime/*",
-  "office365/directory/*",
+    "office365/onedrive/*",
+    "office365/entity*",
+    "office365/runtime/*",
+    "office365/directory/*"
 ]

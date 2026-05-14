@@ -21,9 +21,9 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         self,
         group_id: str,
         id_: str,
-        rename_as: str = None,
-        site_collection_id: str = None,
-        site_id: str = None,
+        rename_as: str | None = None,
+        site_collection_id: str | None = None,
+        site_id: str | None = None,
     ) -> OnenoteOperation:
         """For Copy operations, you follow an asynchronous calling pattern: First call the Copy action,
         and then poll the operation endpoint for the result.

@@ -287,7 +287,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_activity_user_counts(self, period):
+    def get_sharepoint_activity_user_counts(self, period: str):
         """
         Get the trend in the number of active users. A user is considered active if he or she has executed a
         file activity (save, sync, modify, or share) or visited a page within the specified time period.
@@ -300,7 +300,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_activity_user_detail(self, period):
+    def get_sharepoint_activity_user_detail(self, period: str):
         """
         Get details about SharePoint activity by user.
 
@@ -312,7 +312,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_sharepoint_site_usage_detail(self, period):
+    def get_sharepoint_site_usage_detail(self, period: str) -> ClientResult[Report]:
         """
         Get details about SharePoint site usage.
 
