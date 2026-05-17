@@ -1,10 +1,7 @@
 """
-How to grant and revoke delegated permissions for an app using Microsoft Graph.
-Delegated permissions, also called scopes or OAuth2 permissions, allow an app to call an API
-on behalf of a signed-in user.
+List application permissions granted to the client app.
 
-
-https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions
+https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-application-permissions
 """
 
 from office365.graph_client import GraphClient

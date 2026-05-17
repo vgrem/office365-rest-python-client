@@ -2,6 +2,8 @@
 Update users
 
 https://learn.microsoft.com/en-us/graph/api/user-update
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient

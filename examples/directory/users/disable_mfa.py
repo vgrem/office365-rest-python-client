@@ -1,5 +1,7 @@
 """
-Disable MFA
+Disable Microsoft Authenticator MFA methods for the signed-in user.
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient

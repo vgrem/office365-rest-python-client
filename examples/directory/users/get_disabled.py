@@ -1,5 +1,7 @@
 """
 Retrieve and display disabled Azure AD users using Microsoft Graph API.
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient

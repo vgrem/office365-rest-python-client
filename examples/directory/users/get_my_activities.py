@@ -1,6 +1,8 @@
 """
 Get activities for a given user
 https://learn.microsoft.com/en-us/graph/api/projectrome-get-activities?view=graph-rest-1.0
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient

@@ -1,7 +1,9 @@
 """
-List groups
+List groups.
 
-https://learn.microsoft.com/en-us/graph/api/user-list?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+
+https://learn.microsoft.com/en-us/graph/api/resources/group
 """
 
 from office365.graph_client import GraphClient

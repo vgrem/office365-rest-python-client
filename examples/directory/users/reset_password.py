@@ -1,5 +1,7 @@
 """
-Reset user password (requires admin privileges)
+Reset user password (requires admin privileges).
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 import getpass

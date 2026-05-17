@@ -2,6 +2,8 @@
 Create group and team.
 
 https://learn.microsoft.com/en-us/graph/teams-create-group-and-team
+
+https://learn.microsoft.com/en-us/graph/api/resources/group
 """
 
 from office365.graph_client import GraphClient

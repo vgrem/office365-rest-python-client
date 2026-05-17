@@ -2,6 +2,8 @@
 Export personal data
 
 https://learn.microsoft.com/en-us/graph/api/user-exportpersonaldata?view=graph-rest-1.0
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient

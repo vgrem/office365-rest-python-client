@@ -1,3 +1,9 @@
+"""
+Demonstrates how to bulk import users using the Microsoft Graph API.
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
+"""
+
 from faker import Faker
 from office365.directory.users.profile import UserProfile
 from office365.graph_client import GraphClient

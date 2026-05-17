@@ -1,5 +1,7 @@
 """
-Print users with expired passwords based on password policy
+Print users with expired passwords based on password policy.
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from datetime import datetime

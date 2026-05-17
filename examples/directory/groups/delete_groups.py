@@ -7,6 +7,8 @@ Notes:
     - Group.delete_object(permanent_delete=True) Microsoft 365 permanently deleted
 
 https://learn.microsoft.com/en-us/graph/api/group-delete?view=graph-rest-1.0
+
+https://learn.microsoft.com/en-us/graph/api/resources/group
 """
 
 from office365.graph_client import GraphClient

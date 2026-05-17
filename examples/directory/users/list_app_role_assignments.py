@@ -1,5 +1,7 @@
 """
-Example shows a request to retrieve all app role assignments granted to the user
+Retrieve all app role assignments granted to the signed-in user.
+
+https://learn.microsoft.com/en-us/graph/api/resources/user
 """
 
 from office365.graph_client import GraphClient
