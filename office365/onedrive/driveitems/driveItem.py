@@ -309,7 +309,7 @@ class DriveItem(BaseItem):
         """
         return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
         self.children.add_child(return_type)
-        qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)
+        qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)  # type: ignore[reportArgumentType]
 
         def _modify_query(request: RequestOptions) -> None:
             request.method = HttpMethod.Put
