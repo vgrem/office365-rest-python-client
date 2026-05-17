@@ -48,7 +48,7 @@ ctx = ClientContext('{site_url}').with_client_certificate(tenant, client_id, thu
 
 [Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/modern/with_certificate.py)
 
-### Username & password (MSAL ROPC) — RECOMMENDED for user auth
+### Username & password (MSAL ROPC) - RECOMMENDED for user auth
 
 Uses the OAuth 2.0 Resource Owner Password Credentials grant via MSAL.
 
@@ -119,7 +119,7 @@ ctx = ClientContext('{site_url}').with_credentials(ClientCredential('{client_id}
 
 ---
 
-## GraphClient — Microsoft Graph
+## GraphClient - Microsoft Graph
 
 ### Client secret
 

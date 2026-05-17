@@ -1,5 +1,6 @@
 """
-Send a new message in the specified channel or a chat.
+Send a new message in a channel.
+
 https://learn.microsoft.com/en-us/graph/api/chatmessage-post?view=graph-rest-1.0&tabs=http
 """
 

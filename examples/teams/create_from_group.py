@@ -1,5 +1,5 @@
 """
-Create team from group
+Create a team from an existing Microsoft 365 group.
 
 https://learn.microsoft.com/en-us/graph/api/team-put-teams?view=graph-rest-1.0
 """

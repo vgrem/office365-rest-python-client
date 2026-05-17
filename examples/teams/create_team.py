@@ -1,8 +1,7 @@
 """
 Create a new team.
 
-
-Since `TeamCollection.create` is an async operation, execute_query_and_wait is called to ensure teams gets created
+Since `TeamCollection.create` is an async operation, execute_query_and_wait is called to ensure the team gets created.
 
 https://learn.microsoft.com/en-us/graph/api/team-post?view=graph-rest-1.0
 """
