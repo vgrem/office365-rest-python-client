@@ -11,7 +11,7 @@ def ensure_debug_secrets():
         def _log_secrets(self, *args, **kwargs):
             self.log(LOGGING_SECRET_LVL, *args, **kwargs)
 
-        logging.Logger.debug_secrets = _log_secrets
+        logging.Logger.debug_secrets = _log_secrets  # type: ignore[attr-defined]
 
 
 # noinspection PyClassHasNoInit

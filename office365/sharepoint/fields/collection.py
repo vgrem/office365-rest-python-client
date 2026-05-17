@@ -153,6 +153,8 @@ class FieldCollection(EntityCollection[Field]):
                     return_type=return_type,
                 )
 
+        from office365.sharepoint.lists.list import List
+
         if isinstance(lookup_list, List):
 
             def _lookup_list_loaded():
