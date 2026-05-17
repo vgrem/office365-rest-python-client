@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -15,7 +15,7 @@ class PolicyLicenseUtilities(Entity):
 
     @staticmethod
     def check_tenant_m365_copilot_business_chat_license(
-        context: ClientContext, return_type: ClientResult[bool] = None
+        context: ClientContext, return_type: Optional[ClientResult[bool]] = None
     ) -> ClientResult[bool]:
         """"""
         if return_type is None:

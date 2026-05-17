@@ -1,11 +1,13 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class PageImpressionClient(ClientValue):
     def __init__(
         self,
-        base_page_correlation_id: str = None,
-        client_id_to_click_info_map: dict = None,
+        base_page_correlation_id: Optional[str] = None,
+        client_id_to_click_info_map: Optional[dict] = None,
     ):
         self.BasePageCorrelationId = base_page_correlation_id
         self.ClientIdToClickInfoMap = client_id_to_click_info_map

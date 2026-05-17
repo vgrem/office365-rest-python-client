@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -12,7 +14,7 @@ class Reputation(Entity):
         list_id: str,
         item_id: int,
         rating: int,
-        return_type: ClientResult[float] = None,
+        return_type: Optional[ClientResult[float]] = None,
     ) -> ClientResult[float]:
         """
         The SetRating static method rates an item within the specified list.
@@ -41,7 +43,7 @@ class Reputation(Entity):
         list_id: str,
         item_id: int,
         like: bool,
-        return_type: ClientResult[int] = None,
+        return_type: Optional[ClientResult[int]] = None,
     ) -> ClientResult[int]:
         """
         The SetLike static method sets or unsets the like quality for the current user for an item within

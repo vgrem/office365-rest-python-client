@@ -28,7 +28,7 @@ class LimitedWebPartManager(Entity):
         if isinstance(web_part, WebPartDefinition):
 
             def _web_part_loaded():
-                _export_web_part(web_part.id)
+                _export_web_part(web_part.id or "")
 
             web_part.ensure_property("Id", _web_part_loaded)
         else:

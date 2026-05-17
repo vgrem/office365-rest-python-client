@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from typing_extensions import Self
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
     """Represents a collection of View resources."""
 
-    def __init__(self, context: "ClientContext", resource_path: ResourcePath = None):
+    def __init__(self, context: "ClientContext", resource_path: Optional[ResourcePath] = None):
         super().__init__(context, RecycleBinItem, resource_path)
 
     def delete_all_second_stage_items(self) -> Self:

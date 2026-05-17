@@ -31,9 +31,11 @@ class FeatureCollection(EntityCollection[Feature]):
         return_type = Feature(self.context)
         self.add_child(return_type)
 
+        fid = feature_id.value if isinstance(feature_id, KnownFeaturesList) else feature_id
+
         def _create_query():
             payload = {
-                "featureId": (feature_id.value if isinstance(feature_id, KnownFeaturesList) else feature_id),
+                "featureId": fid,
                 "force": force,
                 "featdefScope": featdef_scope,
             }
@@ -44,7 +46,7 @@ class FeatureCollection(EntityCollection[Feature]):
                 self.context.add_query(_create_query())
 
         if verify_if_activated:
-            self.get_by_id(feature_id.value if isinstance(feature_id, KnownFeaturesList) else feature_id).get().after_execute(_create_if_not_activated)
+            self.get_by_id(fid).get().after_execute(_create_if_not_activated)
         else:
             self.context.add_query(_create_query())
 

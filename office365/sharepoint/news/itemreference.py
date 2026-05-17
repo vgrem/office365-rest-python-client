@@ -1,17 +1,14 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
-class ItemReference(ClientValue):
-    def __init__(
-        self,
-        exchange_id: str = None,
-        site_id: str = None,
-        type_: str = None,
-        web_id: str = None,
-    ):
-        self.exchangeId = exchange_id
-        self.siteId = site_id
-        self.Type = type_
+class NewsItemReference(ClientValue):
+    def __init__(self, item_id: Optional[int] = None, library_id: Optional[str] = None, site_id: Optional[str] = None, web_id: Optional[str] = None):
+        super().__init__()
+        self.ItemId = item_id
+        self.LibraryId = library_id
+        self.SiteId = site_id
         self.WebId = web_id
 
     @property

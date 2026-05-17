@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SerializableType(ClientValue):
-    def __init__(self, type_: str = None):
+    def __init__(self, type_: Optional[str] = None):
         self.type = type_
 
     @property

@@ -37,10 +37,12 @@ class DocumentSet(Folder):
 
         def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
+            assert parent_folder.server_relative_url is not None
             folder_url = parent_folder.server_relative_url + "/" + name
             return_type.set_property("ServerRelativeUrl", folder_url)
 
             def _construct_request(request: RequestOptions) -> None:
+                assert target_list.title is not None
                 list_name = target_list.title.replace(" ", "")
                 request.url = rf"{context.base_url}/_vti_bin/listdata.svc/{list_name}"
                 request.set_header("Slug", f"{folder_url}|{ct_id}")

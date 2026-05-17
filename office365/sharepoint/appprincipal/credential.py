@@ -19,7 +19,7 @@ class AppPrincipalCredential(Entity):
         payload = {
             "symmetricKey": symmetric_key,
             "notBefore": not_before.isoformat(),
-            "notAfter": not_after.isoformat(),
+            "notAfter": not_after.isoformat() if not_after else None,
         }
         qry = ServiceOperationQuery(return_type, "CreateFromSymmetricKey", None, payload, None, return_type)
         qry.static = True

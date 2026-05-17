@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.identity.defaultdocumentlibrary import (
@@ -9,14 +10,14 @@ from office365.sharepoint.identity.defaultdocumentlibrary import (
 class SPRubySite(ClientValue):
     def __init__(
         self,
-        channel_group_id: str = None,
-        created_date_time: datetime = None,
+        channel_group_id: Optional[str] = None,
+        created_date_time: Optional[datetime] = None,
         default_document_library: SPDefaultDocumentLibrary = SPDefaultDocumentLibrary(),
-        description: str = None,
-        id_: str = None,
-        last_modified_date_time: datetime = None,
-        name: str = None,
-        web_url: str = None,
+        description: Optional[str] = None,
+        id_: Optional[str] = None,
+        last_modified_date_time: Optional[datetime] = None,
+        name: Optional[str] = None,
+        web_url: Optional[str] = None,
     ):
         self.channelGroupId = channel_group_id
         self.createdDateTime = created_date_time

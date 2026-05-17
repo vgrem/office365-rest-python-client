@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class RecycleBinQueryInformation(ClientValue):
     def __init__(
         self,
-        is_ascending: bool = None,
-        item_state: int = None,
-        order_by: int = None,
-        paging_info: str = None,
-        row_limit: int = None,
-        show_only_my_items: bool = None,
+        is_ascending: Optional[bool] = None,
+        item_state: Optional[int] = None,
+        order_by: Optional[int] = None,
+        paging_info: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        show_only_my_items: Optional[bool] = None,
     ):
         """
         Represents information for the recycle bin query.

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -7,11 +9,11 @@ class SPACSServicePrincipalInfo(ClientValue):
         self,
         application_endpoint_authorities=None,
         display_name=None,
-        app_domains: StringCollection = None,
-        app_id: str = None,
-        app_identifier: str = None,
-        redirect_uri: str = None,
-        title: str = None,
+        app_domains: Optional[StringCollection] = None,
+        app_id: Optional[str] = None,
+        app_identifier: Optional[str] = None,
+        redirect_uri: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.ApplicationEndpointAuthorities = StringCollection(application_endpoint_authorities)
         self.DisplayName = display_name

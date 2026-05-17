@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -11,16 +12,16 @@ class AlertCreationInformation(ClientValue):
         alert_frequency,
         template_name,
         alert_type,
-        alert_template_name: str = None,
+        alert_template_name: Optional[str] = None,
         alert_time: datetime = datetime.min,
-        always_notify: bool = None,
-        delivery_channels: int = None,
-        event_type: int = None,
-        event_type_bitmask: int = None,
-        filter_: str = None,
-        properties: dict = None,
-        status: int = None,
-        title: str = None,
+        always_notify: Optional[bool] = None,
+        delivery_channels: Optional[int] = None,
+        event_type: Optional[int] = None,
+        event_type_bitmask: Optional[int] = None,
+        filter_: Optional[str] = None,
+        properties: Optional[dict] = None,
+        status: Optional[int] = None,
+        title: Optional[str] = None,
     ):
         """
         :param int alert_frequency: Gets or sets the time interval for sending the alert.

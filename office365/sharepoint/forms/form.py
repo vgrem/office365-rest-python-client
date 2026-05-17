@@ -22,7 +22,7 @@ class Form(Entity):
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def resource_path(self) -> SPResPath:
+    def resource_path(self) -> SPResPath:  # type: ignore[override]
         """
         Gets the Web site–relative Path of the form
         """

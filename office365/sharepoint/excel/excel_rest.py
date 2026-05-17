@@ -27,7 +27,7 @@ class ExcelService(ClientRuntimeContext):
         return "{0}/_vti_bin/ExcelRest.aspx"
 
     def pending_request(self):
-        pass
+        raise NotImplementedError("pending_request")
 
     def get_workbook(self, list_name: str, file_name: str):
         raise NotImplementedError("get_workbook")

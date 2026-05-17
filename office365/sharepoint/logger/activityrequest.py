@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class LogActivityRequest(ClientValue):
-    def __init__(self, last_access_time: str = None, list_item_unique_id: str = None):
+    def __init__(self, last_access_time: Optional[str] = None, list_item_unique_id: Optional[str] = None):
         self.LastAccessTime = last_access_time
         self.ListItemUniqueId = list_item_unique_id
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -14,11 +16,11 @@ class TileData(ClientValue):
         description=None,
         hover_disabled=None,
         id_=None,
-        is_wide: bool = None,
-        link_location: str = None,
-        tile_order: int = None,
-        title: str = None,
-        transparent_overlay: bool = None,
+        is_wide: Optional[bool] = None,
+        link_location: Optional[str] = None,
+        tile_order: Optional[int] = None,
+        title: Optional[str] = None,
+        transparent_overlay: Optional[bool] = None,
     ):
         self.BackgroundCollageImageLocations = StringCollection(background_collage_image_locations)
         self.BackgroundImageLocation = background_image_location

@@ -9,11 +9,13 @@ class WebPath(ResourcePath):
 
     @property
     def web_path(self):
-        if is_absolute_url(self._key):
-            url_parts = urlparse(self._key)
+        assert self._key is not None
+        key = str(self._key)
+        if is_absolute_url(key):
+            url_parts = urlparse(key)
             return url_parts.path
         else:
-            return self._key
+            return key
 
     @property
     def parent(self):

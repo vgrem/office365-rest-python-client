@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.paths.v3.static import StaticPath
@@ -29,7 +31,7 @@ class DocumentId(Entity):
         self.context.add_query(qry)
         return self
 
-    def reset_doc_ids_in_library(self, decoded_url: str, content_type_id: str = None) -> Self:
+    def reset_doc_ids_in_library(self, decoded_url: str, content_type_id: Optional[str] = None) -> Self:
         """
         Performs the same function as ResetDocIdByServerRelativePath (section 3.1.5.10.2.1.1), but for every
         document in the specified document library.

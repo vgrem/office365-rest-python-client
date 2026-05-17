@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
@@ -7,21 +9,20 @@ class CustomActionElement(ClientValue):
 
     def __init__(
         self,
-        clientside_component_id=None,
-        client_side_component_properties=None,
-        command_ui_extension=None,
-        enabled_script=None,
-        host_properties=None,
-        image_url=None,
-        client_side_component_id: str = None,
-        id_: str = None,
-        location: str = None,
-        registration_id: str = None,
-        registration_type: int = None,
-        require_site_administrator: bool = None,
+        clientside_component_id: Optional[str] = None,
+        client_side_component_properties: Optional[str] = None,
+        command_ui_extension: Optional[str] = None,
+        enabled_script: Optional[str] = None,
+        host_properties: Optional[str] = None,
+        image_url: Optional[str] = None,
+        id_: Optional[str] = None,
+        location: Optional[str] = None,
+        registration_id: Optional[str] = None,
+        registration_type: Optional[int] = None,
+        require_site_administrator: Optional[bool] = None,
         rights: BasePermissions = BasePermissions(),
-        title: str = None,
-        url_action: str = None,
+        title: Optional[str] = None,
+        url_action: Optional[str] = None,
     ):
         """
         :param str clientside_component_id: The unique identifier of the client-side component associated
@@ -38,7 +39,6 @@ class CustomActionElement(ClientValue):
         self.EnabledScript = enabled_script
         self.HostProperties = host_properties
         self.ImageUrl = image_url
-        self.ClientSideComponentId = client_side_component_id
         self.Id = id_
         self.Location = location
         self.RegistrationId = registration_id
