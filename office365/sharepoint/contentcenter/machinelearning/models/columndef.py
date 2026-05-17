@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ColumnDef(ClientValue):
     def __init__(
         self,
-        custom_formatter: str = None,
-        id_: str = None,
-        name: str = None,
-        type_: str = None,
+        custom_formatter: Optional[str] = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
+        type_: Optional[str] = None,
     ):
         self.CustomFormatter = custom_formatter
         self.Id = id_

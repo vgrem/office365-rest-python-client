@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,9 +7,9 @@ from office365.runtime.client_value import ClientValue
 class SPDependentModel(ClientValue):
     def __init__(
         self,
-        last_refereshed_time_utc: datetime = None,
-        model_id: str = None,
-        model_type: str = None,
+        last_refereshed_time_utc: Optional[datetime] = None,
+        model_id: Optional[str] = None,
+        model_type: Optional[str] = None,
     ):
         self.LastRefereshedTimeUtc = last_refereshed_time_utc
         self.ModelId = model_id
