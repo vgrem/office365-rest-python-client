@@ -19,18 +19,14 @@ Microsoft 365 & Microsoft Graph library for Python
 [![Build Status](https://travis-ci.com/vgrem/office365-rest-python-client.svg?branch=master)](https://travis-ci.com/vgrem/office365-rest-python-client)
 
 
-> **📌 Python Requirement**: This package requires Python 3.6 or newer.
+> **📌 Python Requirement**: This package requires Python 3.8 or newer.
 
 # Installation
 
 Use pip:
 
 ```
-# For Python 3.6+ (current version)
 pip install office365-rest-python-client
-
-# For Python 2.7 (legacy)
-pip install "office365-rest-python-client<3.0.0"
 ```
 
 ### Note 
