@@ -165,7 +165,8 @@ class Office365Tenant(Entity):
         # IncludeFileExtensions
         # ExcludeRestrictedSiteClassifications
         # ExcludeIfNoScriptDisabled
-                :param str policy_value: A String representing the value of the policy type defined by the PolicyType parameter.
+                :param str policy_value: A String representing the value of the policy type
+                    defined by the PolicyType parameter.
         """
         payload = {"cdnType": cdn_type, "policy": policy, "policyValue": policy_value}
         qry = ServiceOperationQuery(self, "SetTenantCdnPolicy", None, payload)

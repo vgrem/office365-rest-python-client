@@ -14,7 +14,9 @@ class X509CertificateAuthenticationModeConfiguration(ClientValue):
         x509_certificate_authentication_default_mode: X509CertificateAuthenticationMode = (
             X509CertificateAuthenticationMode.none
         ),
-        x509_certificate_default_required_affinity_level: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none,
+        x509_certificate_default_required_affinity_level: X509CertificateAffinityLevel = (
+            X509CertificateAffinityLevel.none
+        ),
     ):
         self.rules = rules
         self.x509CertificateAuthenticationDefaultMode = authentication_default_mode
