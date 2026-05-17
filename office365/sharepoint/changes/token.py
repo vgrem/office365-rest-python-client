@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -5,7 +7,7 @@ class ChangeToken(ClientValue):
     """Represents the unique sequential location of a change within the change log. Client applications can use the
     change token as a starting point for retrieving changes."""
 
-    def __init__(self, string_value: str = None):
+    def __init__(self, string_value: Optional[str] = None):
         """
         :param str string_value: Contains the serialized representation of the change token generated
             by the protocol server. When setting StringValue, the protocol client MUST use a value previously returned

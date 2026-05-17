@@ -9,6 +9,6 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 folder_path = "Shared Documents"
 folder = ctx.web.get_folder_by_server_relative_url(folder_path).select(["Exists"]).get().execute_query()
 if folder.exists:
-    print("Folder '{0}' is found".format(folder_path))
+    print(f"Folder '{folder_path}' is found")
 else:
-    print("Folder '{0}' not found".format(folder_path))
+    print(f"Folder '{folder_path}' not found")

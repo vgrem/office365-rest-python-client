@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -12,16 +12,16 @@ class MenuState(ClientValue):
     def __init__(
         self,
         audience_ids: GuidCollection = GuidCollection(),
-        friendly_url_prefix: str = None,
-        nodes: List[MenuNode] = None,
-        simple_url: str = None,
-        site_prefix: str = None,
-        is_audience_target_enabled_for_global_nav: bool = None,
-        sp_site_prefix: str = None,
-        sp_web_prefix: str = None,
-        starting_node_key: str = None,
-        starting_node_title: str = None,
-        version: str = None,
+        friendly_url_prefix: Optional[str] = None,
+        nodes: Optional[List[MenuNode]] = None,
+        simple_url: Optional[str] = None,
+        site_prefix: Optional[str] = None,
+        is_audience_target_enabled_for_global_nav: Optional[bool] = None,
+        sp_site_prefix: Optional[str] = None,
+        sp_web_prefix: Optional[str] = None,
+        starting_node_key: Optional[str] = None,
+        starting_node_title: Optional[str] = None,
+        version: Optional[str] = None,
     ):
         """
         :param list[uuid] audience_ids:

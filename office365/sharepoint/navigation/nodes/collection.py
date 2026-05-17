@@ -21,8 +21,8 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         Creates a navigation node object and adds it to the collection.
         """
         return_type = NavigationNode(self.context)
-        return_type.title = create_node_info.Title
-        return_type.url = create_node_info.Url
+        return_type.title = create_node_info.Title  # type: ignore[assignment]
+        return_type.url = create_node_info.Url  # type: ignore[assignment]
         self.add_child(return_type)
         qry = CreateEntityQuery(self, return_type, return_type)
         self.context.add_query(qry)

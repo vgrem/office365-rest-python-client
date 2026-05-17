@@ -27,22 +27,25 @@ class View(Entity):
     def __init__(
         self,
         context: ClientContext,
-        resource_path: ResourcePath = None,
-        parent_list: List = None,
+        resource_path: Optional[ResourcePath] = None,
+        parent_list: Optional[List] = None,
     ):
         super().__init__(context, resource_path)
         self._parent_list = parent_list
 
     def get_items(self) -> ListItemCollection:
         """Get list items per a view"""
+        assert self.parent_list is not None
         return_type = ListItemCollection(self.context, self.parent_list.items.resource_path)
 
         def _get_items():
+            assert self.parent_list is not None
+            assert self.view_query is not None
             caml_query = CamlQuery.parse(self.view_query)
             qry = ServiceOperationQuery(self.parent_list, "GetItems", None, caml_query, "query", return_type)
             self.context.add_query(qry)
 
-        self.ensure_properties(["ViewQuery", "ViewFields"], _get_items)
+        self.ensure_properties(["ViewQuery", "ViewFields"], _get_items)  # type: ignore[arg-type]
         return return_type
 
     def render_as_html(self) -> ClientResult[str]:
@@ -203,7 +206,7 @@ class View(Entity):
         """Specifies how the view is layed out."""
         return self.properties.get("VisualizationInfo", Visualization())
 
-    def get_property(self, name: str, default_value: Any = None) -> Self:
+    def get_property(self, name: str, default_value: Any = None) -> Self:  # type: ignore[override]
         property_mapping = {
             "ContentTypeId": self.content_type_id,
             "ViewFields": self.view_fields,

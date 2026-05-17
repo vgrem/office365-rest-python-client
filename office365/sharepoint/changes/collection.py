@@ -14,9 +14,10 @@ class ChangeCollection(EntityCollection[Change]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Change, resource_path)
 
-    def set_property(self, key: str, value: Dict, persist_changes: bool = False) -> Self:
+    def set_property(self, key: str, value: Dict, persist_changes: bool = False) -> Self:  # type: ignore[override]
         self._resolve_change_type(value)
         super().set_property(key, value)
+        return self
 
     def _resolve_change_type(self, properties: Dict) -> None:
         """Dynamically resolves the appropriate Change type based on properties.

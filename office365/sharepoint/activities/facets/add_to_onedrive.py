@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -9,8 +11,8 @@ class AddToOneDriveFacet(ClientValue):
         added_datetime=None,
         mount_point_name=None,
         removed_datetime=None,
-        added_date_time: str = None,
-        removed_date_time: str = None,
+        added_date_time: Optional[str] = None,
+        removed_date_time: Optional[str] = None,
     ):
         """
         :param str added_datetime:

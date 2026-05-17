@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.activities.clientidentity import (
@@ -8,7 +10,7 @@ from office365.sharepoint.activities.clientidentity import (
 class CommentFacet(ClientValue):
     def __init__(
         self,
-        comment_text: str = None,
+        comment_text: Optional[str] = None,
         parent_author: ActivityClientIdentity = ActivityClientIdentity(),
         participants: ClientValueCollection[ActivityClientIdentity] = ClientValueCollection(ActivityClientIdentity),
     ):

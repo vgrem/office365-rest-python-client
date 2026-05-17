@@ -37,8 +37,10 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         else:
 
             def _parent_loaded():
+                assert self._parent is not None
                 _create_and_add_query(SubscriptionInformation(parameters, self._parent.properties["Id"]))
 
+            assert self._parent is not None
             self._parent.ensure_property("Id", _parent_loaded)
         return return_type
 

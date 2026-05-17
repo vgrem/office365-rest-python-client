@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.activities.identity_item import ActivityIdentityItem
 
@@ -8,10 +10,10 @@ class ActivityIdentity(ClientValue):
         client_id=None,
         group=ActivityIdentityItem(),
         user=ActivityIdentityItem(),
-        client_id_provider: str = None,
-        email: str = None,
-        name: str = None,
-        user_principal_name: str = None,
+        client_id_provider: Optional[str] = None,
+        email: Optional[str] = None,
+        name: Optional[str] = None,
+        user_principal_name: Optional[str] = None,
     ):
         """
         :param str client_id:

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.activities.clientidentity import (
@@ -8,7 +10,7 @@ from office365.sharepoint.activities.clientidentity import (
 class MentionFacet(ClientValue):
     def __init__(
         self,
-        comment_content_id: str = None,
+        comment_content_id: Optional[str] = None,
         mentionees: ClientValueCollection[ActivityClientIdentity] = ClientValueCollection(ActivityClientIdentity),
     ):
         self.commentContentId = comment_content_id

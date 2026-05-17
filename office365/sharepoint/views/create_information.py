@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -9,21 +9,21 @@ class ViewCreationInformation(ClientValue):
 
     def __init__(
         self,
-        title: str = None,
-        view_type_kind: int = None,
-        view_fields: List[str] = None,
-        view_data: str = None,
-        row_limit: int = None,
-        query: str = None,
-        personal_view: bool = None,
-        paged: bool = None,
-        associated_content_type_id: str = None,
-        base_view_id: int = None,
-        calendar_view_styles: str = None,
-        column_width: str = None,
-        custom_formatter: str = None,
-        set_as_default_view: bool = None,
-        view_type2: str = None,
+        title: Optional[str] = None,
+        view_type_kind: Optional[int] = None,
+        view_fields: Optional[List[str]] = None,
+        view_data: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        query: Optional[str] = None,
+        personal_view: Optional[bool] = None,
+        paged: Optional[bool] = None,
+        associated_content_type_id: Optional[str] = None,
+        base_view_id: Optional[int] = None,
+        calendar_view_styles: Optional[str] = None,
+        column_width: Optional[str] = None,
+        custom_formatter: Optional[str] = None,
+        set_as_default_view: Optional[bool] = None,
+        view_type2: Optional[str] = None,
     ):
         """
         :param str title: Specifies the display name of the new list view. Its length MUST be equal to or less than 255.

@@ -181,4 +181,13 @@ include = [
     "office365/sharepoint/documentmanagement/*",
     "office365/sharepoint/reputationmodel/*",
     "office365/sharepoint/pageinstrumentation/*",
+    "office365/sharepoint/changes/*",
+    "office365/sharepoint/navigation/*",
+    "office365/sharepoint/activities/*",
+    "office365/sharepoint/views/*",
+    "office365/sharepoint/deployment/*",
+    "office365/sharepoint/webhooks/*",
+    "office365/sharepoint/teams/*",
+    "office365/sharepoint/yammer/*",
+    "office365/sharepoint/authpolicy/*",
 ]

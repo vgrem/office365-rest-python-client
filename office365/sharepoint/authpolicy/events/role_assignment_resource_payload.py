@@ -1,12 +1,14 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class RoleAssignmentResourcePayload(ClientValue):
     def __init__(
         self,
-        directory_scope_id: str = None,
-        principal_id: str = None,
-        role_definition_id: str = None,
+        directory_scope_id: Optional[str] = None,
+        principal_id: Optional[str] = None,
+        role_definition_id: Optional[str] = None,
     ):
         self.directoryScopeId = directory_scope_id
         self.principalId = principal_id

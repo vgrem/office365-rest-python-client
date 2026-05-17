@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -11,20 +11,20 @@ class MenuNode(ClientValue):
 
     def __init__(
         self,
-        audience_ids: List[str] = None,
-        current_lcid: int = None,
-        title: str = None,
-        is_deleted: bool = None,
-        is_hidden: bool = None,
+        audience_ids: Optional[List[str]] = None,
+        current_lcid: Optional[int] = None,
+        title: Optional[str] = None,
+        is_deleted: Optional[bool] = None,
+        is_hidden: Optional[bool] = None,
         key=None,
         nodes=None,
         node_type=None,
         open_in_new_window=None,
-        simple_url: str = None,
+        simple_url: Optional[str] = None,
         translations=None,
-        custom_properties: dict = None,
-        friendly_url_segment: str = None,
-        is_title_for_existing_language: bool = None,
+        custom_properties: Optional[dict] = None,
+        friendly_url_segment: Optional[str] = None,
+        is_title_for_existing_language: Optional[bool] = None,
     ):
         """
         :param list[str] audience_ids:

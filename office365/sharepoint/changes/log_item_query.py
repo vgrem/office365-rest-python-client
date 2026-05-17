@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ChangeLogItemQuery(ClientValue):
     def __init__(
         self,
-        change_token: str = None,
-        query: str = None,
-        query_options: str = None,
-        contains: str = None,
-        row_limit: int = None,
-        view_fields: str = None,
-        view_name: str = None,
+        change_token: Optional[str] = None,
+        query: Optional[str] = None,
+        query_options: Optional[str] = None,
+        contains: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        view_fields: Optional[str] = None,
+        view_name: Optional[str] = None,
     ):
         """
         Specifies an object that is used as the input parameter of

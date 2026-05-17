@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.teams.publishingstatus import TeamsPublishingStatus
 
@@ -5,7 +7,7 @@ from office365.sharepoint.teams.publishingstatus import TeamsPublishingStatus
 class TeamsPublishingStatusResponse(ClientValue):
     def __init__(
         self,
-        audience_id: str = None,
+        audience_id: Optional[str] = None,
         status: TeamsPublishingStatus = TeamsPublishingStatus(),
     ):
         self.AudienceId = audience_id

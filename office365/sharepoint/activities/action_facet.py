@@ -77,8 +77,8 @@ class ActionFacet(ClientValue):
         self.taskReassigned = task_reassigned
         self.taskReopened = task_reopened
 
-    def __repr__(self):
-        return self.facet_type
+    def __repr__(self):  # type: ignore[override]
+        return self.facet_type or ""
 
     @property
     def facet_type(self):

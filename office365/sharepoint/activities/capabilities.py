@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,9 +8,9 @@ class ActivityCapabilities(ClientValue):
 
     def __init__(
         self,
-        client_activities_enabled: bool = None,
-        client_activities_notification_enabled: bool = None,
-        enabled: bool = None,
+        client_activities_enabled: Optional[bool] = None,
+        client_activities_notification_enabled: Optional[bool] = None,
+        enabled: Optional[bool] = None,
     ) -> None:
         """ """
         self.clientActivitiesEnabled = client_activities_enabled

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.views.visualization.style_set import VisualizationStyleSet
 from office365.sharepoint.viva.visualizationappinfo import VisualizationAppInfo
@@ -11,7 +13,7 @@ class Visualization(ClientValue):
         medium_screen: VisualizationStyleSet = VisualizationStyleSet(),
         small_screen: VisualizationStyleSet = VisualizationStyleSet(),
         visualization_app_info: VisualizationAppInfo = VisualizationAppInfo(),
-        visualization_type: int = None,
+        visualization_type: Optional[int] = None,
     ):
         """ """
         self.DefaultScreen = default_screen

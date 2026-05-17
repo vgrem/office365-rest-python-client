@@ -31,7 +31,7 @@ class ViewCollection(EntityCollection):
 
         :type information: office365.sharepoint.views.create_information.ViewCreationInformation
         """
-        return_type = View(self.context, None, self.parent_list)
+        return_type = View(self.context, None, self.parent_list)  # type: ignore[arg-type]
         self.add_child(return_type)
         payload = {"parameters": information}
         qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)
@@ -48,7 +48,7 @@ class ViewCollection(EntityCollection):
         return View(
             self.context,
             ServiceOperationPath("GetByTitle", [view_title], self.resource_path),
-            self._parent,
+            self._parent,  # type: ignore[arg-type]
         )
 
     def get_by_id(self, view_id: str) -> View:
@@ -59,7 +59,7 @@ class ViewCollection(EntityCollection):
         return View(
             self.context,
             ServiceOperationPath("GetById", [view_id], self.resource_path),
-            self._parent,
+            self._parent,  # type: ignore[arg-type]
         )
 
     @property

@@ -1,10 +1,12 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class DeleteFacet(ClientValue):
     """"""
 
-    def __init__(self, name: str = None) -> None:
+    def __init__(self, name: Optional[str] = None) -> None:
         self.name = name
 
     @property

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -27,22 +29,22 @@ class ChangeQuery(ClientValue):
         change_token_start=None,
         change_token_end=None,
         fetch_limit=None,
-        app_consent_principal: bool = None,
-        field: bool = None,
-        group_membership_add: bool = None,
-        group_membership_delete: bool = None,
-        ignore_start_token_not_found_error: bool = None,
-        latest_first: bool = None,
-        move: bool = None,
-        navigation: bool = None,
-        recursive_all: bool = None,
-        rename: bool = None,
-        require_security_trim: bool = None,
-        restore: bool = None,
-        role_definition_add: bool = None,
-        role_definition_delete: bool = None,
-        role_definition_update: bool = None,
-        security_policy: bool = None,
+        app_consent_principal: Optional[bool] = None,
+        field: Optional[bool] = None,
+        group_membership_add: Optional[bool] = None,
+        group_membership_delete: Optional[bool] = None,
+        ignore_start_token_not_found_error: Optional[bool] = None,
+        latest_first: Optional[bool] = None,
+        move: Optional[bool] = None,
+        navigation: Optional[bool] = None,
+        recursive_all: Optional[bool] = None,
+        rename: Optional[bool] = None,
+        require_security_trim: Optional[bool] = None,
+        restore: Optional[bool] = None,
+        role_definition_add: Optional[bool] = None,
+        role_definition_delete: Optional[bool] = None,
+        role_definition_update: Optional[bool] = None,
+        security_policy: Optional[bool] = None,
     ):
         """
         :param int fetch_limit:

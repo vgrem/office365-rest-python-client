@@ -23,7 +23,7 @@ def mapped_property(name: str) -> Callable:
                 self._properties[name] = value
             return value
 
-        setattr(wrapper, "_serialized", True)
+        wrapper._serialized = True  # type: ignore[attr-defined]
         return property(wrapper)
 
     return decorator

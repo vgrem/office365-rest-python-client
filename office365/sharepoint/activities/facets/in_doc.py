@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,8 +10,8 @@ class InDocFacet(ClientValue):
         self,
         contentId=None,
         navigationId=None,
-        content_id: str = None,
-        navigation_id: str = None,
+        content_id: Optional[str] = None,
+        navigation_id: Optional[str] = None,
     ):
         self.contentId = contentId
         self.navigationId = navigationId

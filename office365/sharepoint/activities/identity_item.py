@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -9,9 +11,9 @@ class ActivityIdentityItem(ClientValue):
         displayName=None,
         email=None,
         userPrincipalName=None,
-        client_id_provider: str = None,
-        display_name: str = None,
-        user_principal_name: str = None,
+        client_id_provider: Optional[str] = None,
+        display_name: Optional[str] = None,
+        user_principal_name: Optional[str] = None,
     ):
         """
         :param str client_id:

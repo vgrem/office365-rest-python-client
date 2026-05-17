@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -12,9 +13,9 @@ class SubscriptionInformation(ClientValue):
         notification_url,
         resource,
         expiration_datetime=None,
-        client_state: str = None,
-        expiration_date_time: datetime = None,
-        resource_data: str = None,
+        client_state: Optional[str] = None,
+        expiration_date_time: Optional[datetime] = None,
+        resource_data: Optional[str] = None,
         scenarios: StringCollection = StringCollection(),
     ):
         """

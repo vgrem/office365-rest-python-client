@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,12 +7,12 @@ from office365.runtime.client_value import ClientValue
 class ShortcutInformation(ClientValue):
     def __init__(
         self,
-        added_by_id: int = None,
-        id_: str = None,
-        name: str = None,
-        scenario: int = None,
-        time_created: datetime = None,
-        time_last_modified: datetime = None,
+        added_by_id: Optional[int] = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
+        scenario: Optional[int] = None,
+        time_created: Optional[datetime] = None,
+        time_last_modified: Optional[datetime] = None,
     ):
         self.AddedById = added_by_id
         self.Id = id_

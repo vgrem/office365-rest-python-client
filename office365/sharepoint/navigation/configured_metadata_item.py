@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,14 +8,14 @@ class ConfiguredMetadataNavigationItem(ClientValue):
 
     def __init__(
         self,
-        field_display_name: str = None,
-        field_title: str = None,
-        field_type_as_string: str = None,
-        is_content_type_field: bool = None,
-        is_folder_hierarchy: bool = None,
-        is_hierarchy: bool = None,
-        is_multi_value_lookup: bool = None,
-        is_taxonomy_field: bool = None,
+        field_display_name: Optional[str] = None,
+        field_title: Optional[str] = None,
+        field_type_as_string: Optional[str] = None,
+        is_content_type_field: Optional[bool] = None,
+        is_folder_hierarchy: Optional[bool] = None,
+        is_hierarchy: Optional[bool] = None,
+        is_multi_value_lookup: Optional[bool] = None,
+        is_taxonomy_field: Optional[bool] = None,
     ):
         """
         :param str field_display_name: The display name of the field that this item refers to.

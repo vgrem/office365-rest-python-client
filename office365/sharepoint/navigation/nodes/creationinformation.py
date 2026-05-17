@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class NavigationNodeCreationInformation(ClientValue):
     def __init__(
         self,
-        title: str = None,
-        url: str = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
         is_external: bool = False,
         as_last_node: bool = False,
-        previous_node: "NavigationNodeCreationInformation" = None,
+        previous_node: Optional["NavigationNodeCreationInformation"] = None,
     ):
         """
         Describes a new navigation node to be created.

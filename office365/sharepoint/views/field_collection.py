@@ -15,11 +15,15 @@ class ViewFieldCollection(Entity):
     """Represents a collection of Field resources."""
 
     def __len__(self):
-        return len(self.items)
+        items = self.items
+        return len(items) if items else 0
 
     def __getitem__(self, index: int) -> str:
         """Gets view field by index"""
-        return self.items[index]
+        items = self.items
+        if items is None:
+            raise IndexError("view field items is None")
+        return items[index]
 
     def __repr__(self):
         return repr(self.items)
@@ -47,7 +51,7 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _add_view_field(field_name: str) -> Self:
+        def _add_view_field(field_name: str) -> None:
             """
             Adds the field with the specified field internal name or display name to the collection.
             """
@@ -55,7 +59,7 @@ class ViewFieldCollection(Entity):
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property("InternalName", lambda: _add_view_field(field.internal_name))
+            field.ensure_property("InternalName", lambda: _add_view_field(field.internal_name))  # type: ignore[arg-type]
         else:
             _add_view_field(field)
         return self
@@ -68,13 +72,13 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _move_view_field_to(field_name: str) -> Self:
+        def _move_view_field_to(field_name: str) -> None:
             params = {"field": field_name, "index": index}
             qry = ServiceOperationQuery(self, "MoveViewFieldTo", None, params)
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property("InternalName", lambda: _move_view_field_to(field.internal_name))
+            field.ensure_property("InternalName", lambda: _move_view_field_to(field.internal_name))  # type: ignore[arg-type]
         else:
             _move_view_field_to(field)
 
@@ -93,12 +97,12 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _remove_view_field(field_name: str) -> Self:
+        def _remove_view_field(field_name: str) -> None:
             qry = ServiceOperationQuery(self, "RemoveViewField", [field_name])
             self.context.add_query(qry)
 
         if isinstance(field, Field):
-            field.ensure_property("InternalName", lambda: _remove_view_field(field.internal_name))
+            field.ensure_property("InternalName", lambda: _remove_view_field(field.internal_name))  # type: ignore[arg-type]
         else:
             _remove_view_field(field)
 

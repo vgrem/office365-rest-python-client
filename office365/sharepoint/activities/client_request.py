@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -11,13 +12,13 @@ class ActivityClientRequest(ClientValue):
         self,
         revision_set=RevisionSetFacet(),
         comment: CommentFacet = CommentFacet(),
-        content_action: str = None,
-        content_id: str = None,
-        content_origin: str = None,
-        created: str = None,
-        id_: UUID = None,
+        content_action: Optional[str] = None,
+        content_id: Optional[str] = None,
+        content_origin: Optional[str] = None,
+        created: Optional[str] = None,
+        id_: Optional[UUID] = None,
         mention: MentionFacet = MentionFacet(),
-        navigation_id: str = None,
+        navigation_id: Optional[str] = None,
     ):
         self.revisionSet = revision_set
         self.comment = comment
