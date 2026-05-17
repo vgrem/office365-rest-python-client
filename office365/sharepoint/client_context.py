@@ -171,9 +171,17 @@ class ClientContext(ClientRuntimeContext):
         Initializes a client to acquire a token via user credentials.
         :param str username: Typically, a UPN in the form of an email address
         :param str password: The password
+
+        Note: This method uses the legacy SAML/ACS auth flow which Microsoft has
+        retired for SharePoint Online. Use with_username_and_password instead.
+        For on-premises SharePoint, use allow_ntlm=True.
         """
-        self.authentication_context.with_credentials(UserCredential(username, password))
-        return self
+        raise RuntimeError(
+            "with_user_credentials uses the legacy SAML/ACS auth flow which "
+            "Microsoft has retired for SharePoint Online. "
+            "Use with_username_and_password(tenant, client_id, username, password) instead. "
+            "For on-premises SharePoint, use allow_ntlm=True."
+        )
 
     def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
         """

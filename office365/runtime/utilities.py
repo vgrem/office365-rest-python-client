@@ -62,7 +62,7 @@ def deprecated(reason: str, version: str = "next"):
         def wrapper(*args, **kwargs):
             warnings.warn(
                 f"{func.__name__} is deprecated and will be removed in v{version}. {reason}",
-                category=DeprecationWarning,
+                category=FutureWarning,
                 stacklevel=2,
             )
             return func(*args, **kwargs)

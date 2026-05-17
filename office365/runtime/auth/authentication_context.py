@@ -264,20 +264,11 @@ class AuthenticationContext:
 
                 provider = NtlmProvider(credentials)
             else:
-                import warnings
-
-                warnings.warn(
-                    "Use with_username_and_password instead. Microsoft 365 solutions we will be "
-                    "retiring the use of Azure ACS (Access Control Services) for SharePoint Online auth.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-
-                provider = SamlTokenProvider(
-                    self.url,
-                    credentials,
-                    self._browser_mode,
-                    self._environment,
+                raise RuntimeError(
+                    "with_user_credentials uses the legacy SAML/ACS auth flow which "
+                    "Microsoft has retired for SharePoint Online. "
+                    "Use with_username_and_password(tenant, client_id, username, password) instead. "
+                    "For on-premises SharePoint, use allow_ntlm=True."
                 )
         else:
             raise ValueError("Unknown credential type")
