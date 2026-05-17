@@ -132,8 +132,8 @@ class ODataRequest(ClientRequest):
             if isinstance(json, list):
                 for index, item in enumerate(json):
                     if isinstance(item, dict):
-                        item = {k: v for k, v in self._next_property(item, json_format)}
-                    yield index, item
+                        transformed = {k: v for k, v in self._next_property(item, json_format)}
+                    yield index, transformed if isinstance(item, dict) else item
             elif isinstance(json, dict):
                 for name, value in json.items():
                     if isinstance(json_format, JsonLightFormat):
@@ -145,8 +145,8 @@ class ODataRequest(ClientRequest):
 
                     if is_valid:
                         if isinstance(value, dict):
-                            value = {k: v for k, v in self._next_property(value, json_format)}
-                        yield name, value
+                            transformed = {k: v for k, v in self._next_property(value, json_format)}
+                        yield name, transformed if isinstance(value, dict) else value
                     elif name == "@odata.etag":
                         yield "__etag", value
             else:
