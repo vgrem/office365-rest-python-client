@@ -194,4 +194,5 @@ include = [
     "office365/sharepoint/workflow/*",
     "office365/sharepoint/campaigns/*",
     "office365/sharepoint/copilot/*",
+    "office365/sharepoint/containers/*",
 ]

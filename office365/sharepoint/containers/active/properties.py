@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.containers.active.memberproperties import (
@@ -8,37 +10,34 @@ from office365.sharepoint.containers.active.memberproperties import (
 class SPActiveContainerProperties(ClientValue):
     def __init__(
         self,
-        application_name: str = None,
-        archived_by: str = None,
-        archive_status: str = None,
-        container_api_url: str = None,
-        container_id: str = None,
-        container_name: str = None,
-        container_site_url: str = None,
-        container_type_id: str = None,
-        created_by: str = None,
-        created_on: str = None,
-        deleted_on: str = None,
-        description: str = None,
-        last_archived_date_time: str = None,
-        optical_character_recognition_enabled: bool = None,
+        application_name: Optional[str] = None,
+        archived_by: Optional[str] = None,
+        archive_status: Optional[str] = None,
+        container_api_url: Optional[str] = None,
+        container_id: Optional[str] = None,
+        container_name: Optional[str] = None,
+        container_site_url: Optional[str] = None,
+        container_type_id: Optional[str] = None,
+        created_by: Optional[str] = None,
+        created_on: Optional[str] = None,
+        deleted_on: Optional[str] = None,
+        description: Optional[str] = None,
+        last_archived_date_time: Optional[str] = None,
+        optical_character_recognition_enabled: Optional[bool] = None,
         owners: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
             SPActiveContainerMemberProperties
         ),
-        owners_count: int = None,
-        ownership_type: str = None,
-        owning_application_id: str = None,
-        principal_owner_identifier: str = None,
-        publisher_name: str = None,
+        owners_count: Optional[int] = None,
+        ownership_type: Optional[str] = None,
+        owning_application_id: Optional[str] = None,
+        principal_owner_identifier: Optional[str] = None,
+        publisher_name: Optional[str] = None,
         readers: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
             SPActiveContainerMemberProperties
         ),
-        sensitivity_label: str = None,
-        status: str = None,
-        storage_used: int = None,
-        writers: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
-            SPActiveContainerMemberProperties
-        ),
+        sensitivity_label: Optional[str] = None,
+        status: Optional[str] = None,
+        storage_used: Optional[int] = None,
     ):
         self.ApplicationName = application_name
         self.ArchivedBy = archived_by
