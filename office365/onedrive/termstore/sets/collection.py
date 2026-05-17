@@ -20,7 +20,7 @@ class SetCollection(EntityCollection[Set]):
         super().__init__(context, Set, resource_path)
         self._parent_group = parent_group
 
-    def get_by_name(self, name: str) -> Set | None:
+    def get_by_name(self, name: str) -> Set:
         """Returns the TermSet specified by its name."""
         return self.single(f"displayName eq '{name}'")
 

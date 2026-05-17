@@ -2,10 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union, cast
 
-from office365.sharepoint.fields.field import Field
-
-T = TypeVar("T", bound=Field)
-
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -27,6 +23,8 @@ from office365.sharepoint.fields.xmlSchemaFieldCreationInformation import (
 from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.sets.set import TermSet
 from office365.sharepoint.taxonomy.stores.store import TermStore
+
+T = TypeVar("T", bound=Field)
 
 if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List

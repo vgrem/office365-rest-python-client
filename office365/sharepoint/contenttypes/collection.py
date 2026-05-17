@@ -17,7 +17,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ContentType, resource_path, parent)
 
-    def get_by_name(self, name: str) -> Optional[ContentType]:
+    def get_by_name(self, name: str) -> ContentType:
         """
         Returns the content type with the given name from the collection.
 

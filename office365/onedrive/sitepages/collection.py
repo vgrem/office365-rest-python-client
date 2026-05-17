@@ -24,11 +24,11 @@ class SitePageCollection(EntityCollection[SitePage]):
     ) -> None:
         super().__init__(context, SitePage, resource_path, parent_list)
 
-    def get_by_name(self, name: str) -> SitePage | None:
+    def get_by_name(self, name: str) -> SitePage:
         """Get a sitePage by name."""
         return self.single(f"name eq '{name}'")
 
-    def get_by_title(self, title: str) -> SitePage | None:
+    def get_by_title(self, title: str) -> SitePage:
         """Get a sitePage by title."""
         return self.single(f"title eq '{title}'")
 

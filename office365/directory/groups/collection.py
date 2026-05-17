@@ -70,6 +70,6 @@ class GroupCollection(CountCollection[Group]):
 
         return self.create_m365(group_name).after_execute(_after_group_created)
 
-    def get_by_name(self, name: str) -> Group | None:
+    def get_by_name(self, name: str) -> Group:
         """Retrieves group by displayName"""
         return self.single(f"displayName eq '{name}'")
