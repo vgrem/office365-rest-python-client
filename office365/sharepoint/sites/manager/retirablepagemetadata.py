@@ -1,16 +1,17 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class RetirablePageMetadata(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        last_activity_timestamp: datetime = None,
-        path: str = None,
-        picture_thumbnail_url: str = None,
-        title: str = None,
+        description: Optional[str] = None,
+        last_activity_timestamp: Optional[datetime] = None,
+        path: Optional[str] = None,
+        picture_thumbnail_url: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.Description = description
         self.LastActivityTimestamp = last_activity_timestamp

@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class BaseGptResponse(ClientValue):
     def __init__(
         self,
-        created: int = None,
-        id_: str = None,
-        model: str = None,
-        object_type: str = None,
+        created: Optional[int] = None,
+        id_: Optional[str] = None,
+        model: Optional[str] = None,
+        object_type: Optional[str] = None,
     ):
         self.Created = created
         self.Id = id_

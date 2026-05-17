@@ -36,5 +36,5 @@ class ImportProfilePropertiesJobInfo(Entity):
         return self.properties.get("State", None)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantManagement.ImportProfilePropertiesJobInfo"

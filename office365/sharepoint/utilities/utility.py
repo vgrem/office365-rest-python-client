@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import Optional, TYPE_CHECKING, List
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -84,7 +84,7 @@ class Utility(Entity):
         sources: str,
         scopes: int,
         max_count: int,
-        group_name: str = None,
+        group_name: Optional[str] = None,
     ) -> ClientResult[StringCollection]:
         """
         Returns the collection of principals that partially or uniquely matches the specified search criteria in the
@@ -116,7 +116,7 @@ class Utility(Entity):
     def create_wiki_page_in_context_web(
         context: ClientContext,
         parameters: WikiPageCreationInformation,
-        return_type: File = None,
+        return_type: Optional[File] = None,
     ) -> File:
         """
         Creates a wiki page.
@@ -168,8 +168,8 @@ class Utility(Entity):
     def expand_groups_to_principals(
         context: ClientContext,
         inputs: List[str],
-        max_count: int = None,
-        return_type: ClientResult[ClientValueCollection[PrincipalInfo]] = None,
+        max_count: Optional[int] = None,
+        return_type: Optional[ClientResult[ClientValueCollection[PrincipalInfo]]] = None,
     ):
         """
         Expands groups to a collection of principals.
@@ -210,11 +210,11 @@ class Utility(Entity):
     def resolve_principal_in_current_context(
         context: ClientContext,
         string_input: str,
-        scopes: int = None,
-        sources: str = None,
-        input_is_email_only: bool = None,
-        add_to_user_info_list: bool = None,
-        match_user_info_list: bool = None,
+        scopes: Optional[int] = None,
+        sources: Optional[str] = None,
+        input_is_email_only: Optional[bool] = None,
+        add_to_user_info_list: Optional[bool] = None,
+        match_user_info_list: Optional[bool] = None,
     ) -> ClientResult[PrincipalInfo]:
         """
         Returns information about a principal that matches the specified search criteria in the context of the current

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPClientSideComponentQueryResult(ClientValue):
@@ -9,13 +10,13 @@ class SPClientSideComponentQueryResult(ClientValue):
 
     def __init__(
         self,
-        component_type: str = None,
-        manifest: str = None,
-        manifest_type: str = None,
-        id_: str = None,
-        manifest_activated_time: datetime = None,
-        name: str = None,
-        status: int = None,
+        component_type: Optional[str] = None,
+        manifest: Optional[str] = None,
+        manifest_type: Optional[str] = None,
+        id_: Optional[str] = None,
+        manifest_activated_time: Optional[datetime] = None,
+        name: Optional[str] = None,
+        status: Optional[int] = None,
     ):
         """
         :param str component_type: Specifies the type of component.

@@ -12,5 +12,5 @@ class SyntexGetModifiedListResponse(ClientValue):
         self.ModifiedSelectedSitesList = modified_selected_sites_list
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SyntexGetModifiedListResponse"

@@ -1,15 +1,16 @@
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.clientsidecomponent.card_element import CardElement
 from office365.sharepoint.clientsidecomponent.padding import Padding
+from typing import Optional
 
 
 class Container(CardElement):
     def __init__(
         self,
-        background_image: str = None,
+        background_image: Optional[str] = None,
         items: ClientValueCollection[CardElement] = ClientValueCollection(CardElement),
         padding: Padding = Padding(),
-        vertical_content_alignment: str = None,
+        vertical_content_alignment: Optional[str] = None,
     ):
         """Container object"""
         super().__init__()

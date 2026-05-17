@@ -1,17 +1,18 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPDataGovernanceInsightExportedReport(ClientValue):
     def __init__(
         self,
-        created_date_time: str = None,
-        label_name: str = None,
-        report_content: str = None,
-        report_entity: str = None,
-        report_name_eeeu: str = None,
-        report_name_site_permissions: str = None,
-        report_name_user_permissions: str = None,
-        sharing_link_type: str = None,
+        created_date_time: Optional[str] = None,
+        label_name: Optional[str] = None,
+        report_content: Optional[str] = None,
+        report_entity: Optional[str] = None,
+        report_name_eeeu: Optional[str] = None,
+        report_name_site_permissions: Optional[str] = None,
+        report_name_user_permissions: Optional[str] = None,
+        sharing_link_type: Optional[str] = None,
     ):
         self.CreatedDateTime = created_date_time
         self.LabelName = label_name
@@ -23,5 +24,5 @@ class SPDataGovernanceInsightExportedReport(ClientValue):
         self.SharingLinkType = sharing_link_type
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightExportedReport"

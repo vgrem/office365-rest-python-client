@@ -13,5 +13,5 @@ class CopilotTranspilerPayload(ClientValue):
         self.StatementList = statement_list
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.CopilotTranspilerPayload"

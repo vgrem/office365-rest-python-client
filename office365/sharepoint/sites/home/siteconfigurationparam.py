@@ -1,23 +1,24 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from typing import Optional
 
 
 class HomeSiteConfigurationParam(ClientValue):
     def __init__(
         self,
         audiences: GuidCollection = GuidCollection(),
-        is_audiences_present: bool = None,
-        is_go_back_to_connections_button_disabled: bool = None,
-        is_in_draft_mode: bool = None,
-        is_in_draft_mode_present: bool = None,
-        is_order_present: bool = None,
-        is_targeted_license_type_present: bool = None,
-        is_viva_backend_site: bool = None,
-        is_viva_backend_site_present: bool = None,
-        is_viva_connections_default_start_present: bool = None,
-        order: int = None,
-        targeted_license_type: int = None,
-        viva_connections_default_start: bool = None,
+        is_audiences_present: Optional[bool] = None,
+        is_go_back_to_connections_button_disabled: Optional[bool] = None,
+        is_in_draft_mode: Optional[bool] = None,
+        is_in_draft_mode_present: Optional[bool] = None,
+        is_order_present: Optional[bool] = None,
+        is_targeted_license_type_present: Optional[bool] = None,
+        is_viva_backend_site: Optional[bool] = None,
+        is_viva_backend_site_present: Optional[bool] = None,
+        is_viva_connections_default_start_present: Optional[bool] = None,
+        order: Optional[int] = None,
+        targeted_license_type: Optional[int] = None,
+        viva_connections_default_start: Optional[bool] = None,
     ):
         self.Audiences = audiences
         self.IsAudiencesPresent = is_audiences_present

@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class WebPartModel(ClientValue):
     def __init__(
         self,
-        content: str = None,
-        index: int = None,
-        properties: dict = None,
-        section_index: int = None,
-        type_: str = None,
+        content: Optional[str] = None,
+        index: Optional[int] = None,
+        properties: Optional[dict] = None,
+        section_index: Optional[int] = None,
+        type_: Optional[str] = None,
     ):
         self.content = content
         self.index = index

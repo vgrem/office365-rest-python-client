@@ -4,13 +4,14 @@ from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources im
     BaseRawDataSources,
 )
 from office365.sharepoint.tenant.administration.copilot.reportrow import ReportRow
+from typing import Optional
 
 
 class ReportDetails(BaseRawDataSources):
     def __init__(
         self,
-        headers: StringCollection = None,
-        report_download_url: str = None,
+        headers: Optional[StringCollection] = None,
+        report_download_url: Optional[str] = None,
         report_rows: ClientValueCollection[ReportRow] = ClientValueCollection(ReportRow),
     ):
         super().__init__()
@@ -21,5 +22,5 @@ class ReportDetails(BaseRawDataSources):
     " "
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.ReportDetails"

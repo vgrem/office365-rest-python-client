@@ -1,8 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ModifiedProperty(ClientValue):
-    def __init__(self, name: str = None, new_value: str = None, old_value: str = None, display_name: str = None):
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        new_value: Optional[str] = None,
+        old_value: Optional[str] = None,
+        display_name: Optional[str] = None,
+    ):
         self.Name = name
         self.NewValue = new_value
         self.OldValue = old_value
@@ -11,5 +18,5 @@ class ModifiedProperty(ClientValue):
     ""
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.ModifiedProperty"

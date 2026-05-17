@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class MigrationTaskDefinition(ClientValue):
@@ -10,10 +11,10 @@ class MigrationTaskDefinition(ClientValue):
         source_uri=None,
         source_user_name=None,
         target_list_name=None,
-        target_list_relative_path: str = None,
-        target_site_url: str = None,
-        target_user_name: str = None,
-        type_: int = None,
+        target_list_relative_path: Optional[str] = None,
+        target_site_url: Optional[str] = None,
+        target_user_name: Optional[str] = None,
+        type_: Optional[int] = None,
     ):
         self.Name = name
         self.SourceListName = source_list_name

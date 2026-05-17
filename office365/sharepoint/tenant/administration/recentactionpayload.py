@@ -2,24 +2,25 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class TenantAdminRecentActionPayload(ClientValue):
     def __init__(
         self,
-        admin_action_id: str = None,
-        admin_action_source: str = None,
-        admin_action_status: str = None,
-        admin_action_type: str = None,
-        correlation_id: UUID = None,
-        created_time: datetime = None,
-        is_part_of_bulk_update: bool = None,
-        key: str = None,
-        name: str = None,
-        new_value: str = None,
-        old_value: str = None,
-        url: str = None,
-        user_email: str = None,
+        admin_action_id: Optional[str] = None,
+        admin_action_source: Optional[str] = None,
+        admin_action_status: Optional[str] = None,
+        admin_action_type: Optional[str] = None,
+        correlation_id: Optional[UUID] = None,
+        created_time: Optional[datetime] = None,
+        is_part_of_bulk_update: Optional[bool] = None,
+        key: Optional[str] = None,
+        name: Optional[str] = None,
+        new_value: Optional[str] = None,
+        old_value: Optional[str] = None,
+        url: Optional[str] = None,
+        user_email: Optional[str] = None,
     ):
         self.adminActionId = admin_action_id
         self.adminActionSource = admin_action_source
@@ -36,5 +37,5 @@ class TenantAdminRecentActionPayload(ClientValue):
         self.userEmail = user_email
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRecentActionPayload"

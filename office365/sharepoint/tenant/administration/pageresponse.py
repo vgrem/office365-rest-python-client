@@ -3,17 +3,18 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.audit.search_request_status import (
     AuditSearchRequestStatus,
 )
+from typing import Optional
 
 
 class PageResponse(ClientValue):
     def __init__(
         self,
-        continuation_token: str = None,
-        page_number: int = None,
+        continuation_token: Optional[str] = None,
+        page_number: Optional[int] = None,
         page_result: ClientValueCollection[AuditSearchRequestStatus] = ClientValueCollection(AuditSearchRequestStatus),
-        page_size: int = None,
-        total_count: int = None,
-        total_pages: int = None,
+        page_size: Optional[int] = None,
+        total_count: Optional[int] = None,
+        total_pages: Optional[int] = None,
     ):
         self.ContinuationToken = continuation_token
         self.PageNumber = page_number
@@ -23,5 +24,5 @@ class PageResponse(ClientValue):
         self.TotalPages = total_pages
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.PageResponse"

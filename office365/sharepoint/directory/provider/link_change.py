@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.directory.linktarget import LinkTarget
+from typing import Optional
 
 
 class LinkChange(ClientValue):
     def __init__(
         self,
         added: ClientValueCollection[LinkTarget] = ClientValueCollection(LinkTarget),
-        name: str = None,
+        name: Optional[str] = None,
         removed: ClientValueCollection[LinkTarget] = ClientValueCollection(LinkTarget),
     ):
         self.Added = added

@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class PropertyChange(ClientValue):
     def __init__(
         self,
-        name: str = None,
-        value: str = None,
+        name: Optional[str] = None,
+        value: Optional[str] = None,
         values: StringCollection = StringCollection(),
     ):
         self.Name = name

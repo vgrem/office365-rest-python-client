@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.gtp.chat.response import ChatGptResponse
+from typing import Optional
 
 
 class GptAsyncExecuteResponse(ClientValue):
     def __init__(
         self,
-        request_metadata: str = None,
+        request_metadata: Optional[str] = None,
         response: ChatGptResponse = ChatGptResponse(),
-        status: str = None,
+        status: Optional[str] = None,
     ):
         self.RequestMetadata = request_metadata
         self.Response = response

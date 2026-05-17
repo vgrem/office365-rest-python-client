@@ -16,12 +16,12 @@ class CrossGeoTenantCompatibility(Entity):
         return self.properties.get("BackupRestoreCompatibleDBSchemaVersion", None)
 
     @property
-    def db_extension_schema_names(self) -> StringCollection:
+    def db_extension_schema_names(self) -> Optional[StringCollection]:
         """Gets the DbExtensionSchemaNames property"""
         return self.properties.get("DbExtensionSchemaNames", None)
 
     @property
-    def db_extension_schema_versions(self) -> StringCollection:
+    def db_extension_schema_versions(self) -> Optional[StringCollection]:
         """Gets the DbExtensionSchemaVersions property"""
         return self.properties.get("DbExtensionSchemaVersions", None)
 

@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class LibraryDetails(ClientValue):
     def __init__(
         self,
-        base_template_type: int = None,
-        is_approvals_enabled: bool = None,
-        list_id: str = None,
-        list_item_entity_type_full_name: str = None,
-        list_name: str = None,
+        base_template_type: Optional[int] = None,
+        is_approvals_enabled: Optional[bool] = None,
+        list_id: Optional[str] = None,
+        list_item_entity_type_full_name: Optional[str] = None,
+        list_name: Optional[str] = None,
     ):
         self.BaseTemplateType = base_template_type
         self.IsApprovalsEnabled = is_approvals_enabled

@@ -1,27 +1,28 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class TenantAdminPolicyDefinition(ClientValue):
     def __init__(
         self,
-        created_by: str = None,
-        last_updated_time: datetime = None,
-        policy_created_time: datetime = None,
-        policy_custom_name: str = None,
-        policy_definition_details: str = None,
-        policy_delete_reason: str = None,
-        policy_description: str = None,
-        policy_frequency_unit: int = None,
-        policy_frequency_value: int = None,
-        policy_id: str = None,
-        policy_state: int = None,
-        policy_tags: str = None,
-        policy_template: int = None,
-        policy_type: int = None,
-        policy_version: int = None,
-        updated_by: str = None,
+        created_by: Optional[str] = None,
+        last_updated_time: Optional[datetime] = None,
+        policy_created_time: Optional[datetime] = None,
+        policy_custom_name: Optional[str] = None,
+        policy_definition_details: Optional[str] = None,
+        policy_delete_reason: Optional[str] = None,
+        policy_description: Optional[str] = None,
+        policy_frequency_unit: Optional[int] = None,
+        policy_frequency_value: Optional[int] = None,
+        policy_id: Optional[str] = None,
+        policy_state: Optional[int] = None,
+        policy_tags: Optional[str] = None,
+        policy_template: Optional[int] = None,
+        policy_type: Optional[int] = None,
+        policy_version: Optional[int] = None,
+        updated_by: Optional[str] = None,
     ):
         self.createdBy = created_by
         self.lastUpdatedTime = last_updated_time
@@ -43,5 +44,5 @@ class TenantAdminPolicyDefinition(ClientValue):
     " "
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminPolicyDefinition"

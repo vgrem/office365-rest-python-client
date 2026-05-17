@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteOwnerData(ClientValue):
     def __init__(
         self,
-        department: str = None,
-        job_title: str = None,
-        preferred_language: str = None,
-        user_principal_name: str = None,
+        department: Optional[str] = None,
+        job_title: Optional[str] = None,
+        preferred_language: Optional[str] = None,
+        user_principal_name: Optional[str] = None,
     ):
         self.department = department
         self.jobTitle = job_title
@@ -15,5 +16,5 @@ class SiteOwnerData(ClientValue):
         self.userPrincipalName = user_principal_name
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.SiteOwnerData"

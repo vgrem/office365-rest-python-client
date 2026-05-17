@@ -6,6 +6,7 @@ from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 from office365.sharepoint.sharing.inherited_from import InheritedFrom
 from office365.sharepoint.sharing.principal import Principal
+from typing import Optional
 
 
 class PrincipalInfo(ClientValue):
@@ -21,22 +22,22 @@ class PrincipalInfo(ClientValue):
 
     def __init__(
         self,
-        principal_id: str = None,
-        display_name: str = None,
-        email: str = None,
-        login_name: str = None,
-        department: str = None,
-        job_title: str = None,
-        principal_type: PrincipalType = None,
+        principal_id: Optional[str] = None,
+        display_name: Optional[str] = None,
+        email: Optional[str] = None,
+        login_name: Optional[str] = None,
+        department: Optional[str] = None,
+        job_title: Optional[str] = None,
+        principal_type: Optional[PrincipalType] = None,
         can_be_modified: SharingAbilityStatus = SharingAbilityStatus(),
-        expiration_date_time_on_ace: datetime = None,
+        expiration_date_time_on_ace: Optional[datetime] = None,
         inherited_from: InheritedFrom = InheritedFrom(),
-        is_inherited: bool = None,
+        is_inherited: Optional[bool] = None,
         members: ClientValueCollection[Principal] = ClientValueCollection(Principal),
         principal: Principal = Principal(),
-        role: int = None,
-        mobile: str = None,
-        sip_address: str = None,
+        role: Optional[int] = None,
+        mobile: Optional[str] = None,
+        sip_address: Optional[str] = None,
     ):
         """Initialize principal information.
 

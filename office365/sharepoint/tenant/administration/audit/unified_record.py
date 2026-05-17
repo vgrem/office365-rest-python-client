@@ -1,5 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.audit.data import AuditData
+from typing import Optional
 
 
 class UnifiedAuditRecord(ClientValue):
@@ -11,7 +12,7 @@ class UnifiedAuditRecord(ClientValue):
         record_id=None,
         record_type=None,
         user_id=None,
-        raw_audit_data: str = None,
+        raw_audit_data: Optional[str] = None,
     ):
         self.AuditData = audit_data
         self.CreationDate = creation_date
@@ -22,5 +23,5 @@ class UnifiedAuditRecord(ClientValue):
         self.RawAuditData = raw_audit_data
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.UnifiedAuditRecord"

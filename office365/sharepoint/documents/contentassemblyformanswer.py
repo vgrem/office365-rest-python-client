@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ContentAssemblyFormAnswer(ClientValue):
     def __init__(
         self,
-        additional_data: str = None,
-        answer: str = None,
-        content_control_tag_name: str = None,
+        additional_data: Optional[str] = None,
+        answer: Optional[str] = None,
+        content_control_tag_name: Optional[str] = None,
     ):
         self.additional_data = additional_data
         self.answer = answer

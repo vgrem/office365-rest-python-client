@@ -2,24 +2,25 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection, StringCollection
+from typing import Optional
 
 
 class SPContainerTypeConfigurationProperties(ClientValue):
     def __init__(
         self,
-        anonymous_link_expiration_in_days: int = None,
-        application_redirect_url: str = None,
-        classification: int = None,
-        container_type_id: UUID = None,
-        container_type_name: str = None,
+        anonymous_link_expiration_in_days: Optional[int] = None,
+        application_redirect_url: Optional[str] = None,
+        classification: Optional[int] = None,
+        container_type_id: Optional[UUID] = None,
+        container_type_name: Optional[str] = None,
         copilot_embedded_chat_hosts: StringCollection = StringCollection(),
-        is_discoverablility_disabled: int = None,
-        is_move_disabled: int = None,
-        is_rename_disabled: int = None,
-        is_sharing_restricted: int = None,
-        override_tenant_who_can_share_anonymous_allow_list: int = None,
-        override_tenant_who_can_share_authenticated_guest_allow_list: int = None,
-        owning_app_id: UUID = None,
+        is_discoverablility_disabled: Optional[int] = None,
+        is_move_disabled: Optional[int] = None,
+        is_rename_disabled: Optional[int] = None,
+        is_sharing_restricted: Optional[int] = None,
+        override_tenant_who_can_share_anonymous_allow_list: Optional[int] = None,
+        override_tenant_who_can_share_authenticated_guest_allow_list: Optional[int] = None,
+        owning_app_id: Optional[UUID] = None,
         who_can_share_anonymous_allow_list: GuidCollection = GuidCollection(),
         who_can_share_authenticated_guest_allow_list: GuidCollection = GuidCollection(),
     ):
@@ -42,5 +43,5 @@ class SPContainerTypeConfigurationProperties(ClientValue):
         self.WhoCanShareAuthenticatedGuestAllowList = who_can_share_authenticated_guest_allow_list
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeConfigurationProperties"

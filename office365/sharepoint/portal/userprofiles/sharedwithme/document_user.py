@@ -1,10 +1,11 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SharedWithMeDocumentUser(ClientValue):
     """Represents a user of a document that is shared with the current user."""
 
-    def __init__(self, _id=None, login_name=None, sip_address=None, title=None, id_: str = None):
+    def __init__(self, _id=None, login_name=None, sip_address=None, title=None, id_: Optional[str] = None):
         """
         :param str _id: Identifier
         :param str login_name: Specifies the login name of the user.

@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteDesignImage(ClientValue):
-    def __init__(self, display_name: str = None, image_url: str = None):
+    def __init__(self, display_name: Optional[str] = None, image_url: Optional[str] = None):
         self.DisplayName = display_name
         self.ImageUrl = image_url
 

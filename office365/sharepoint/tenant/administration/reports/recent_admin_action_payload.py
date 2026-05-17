@@ -1,18 +1,19 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class RecentAdminActionReportPayload(ClientValue):
     def __init__(
         self,
-        actions: str = None,
-        name: str = None,
-        query_end_date: datetime = None,
-        query_start_date: datetime = None,
-        report_type: int = None,
-        sites: str = None,
-        users: str = None,
+        actions: Optional[str] = None,
+        name: Optional[str] = None,
+        query_end_date: Optional[datetime] = None,
+        query_start_date: Optional[datetime] = None,
+        report_type: Optional[int] = None,
+        sites: Optional[str] = None,
+        users: Optional[str] = None,
     ):
         self.actions = actions
         self.name = name

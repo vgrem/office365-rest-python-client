@@ -1,9 +1,13 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.sites.status import SiteStatus
 
 
 class SPSiteCreationResponse(ClientValue):
-    def __init__(self, site_id: str = None, site_status: SiteStatus = SiteStatus.None_, site_url: str = None) -> None:
+    def __init__(
+        self, site_id: Optional[str] = None, site_status: SiteStatus = SiteStatus.None_, site_url: Optional[str] = None
+    ) -> None:
         super().__init__()
         self.SiteId = site_id
         self.SiteStatus = site_status

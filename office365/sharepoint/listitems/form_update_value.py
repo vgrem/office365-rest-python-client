@@ -2,6 +2,7 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
+from typing import Optional
 
 
 class ListItemFormUpdateValue(ClientValue):
@@ -9,14 +10,14 @@ class ListItemFormUpdateValue(ClientValue):
 
     def __init__(
         self,
-        name: str = None,
-        value: str = None,
-        has_exception: bool = None,
-        error_code: int = None,
-        error_message: str = None,
-        field_name: str = None,
-        field_value: str = None,
-        item_id: int = None,
+        name: Optional[str] = None,
+        value: Optional[str] = None,
+        has_exception: Optional[bool] = None,
+        error_code: Optional[int] = None,
+        error_message: Optional[str] = None,
+        field_name: Optional[str] = None,
+        field_value: Optional[str] = None,
+        item_id: Optional[int] = None,
     ):
         """
         :param str name: Specifies the field internal name for a field.

@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ResourceData(ClientValue):
     def __init__(
         self,
-        error_code: int = None,
-        error_message: str = None,
-        resource_action: int = None,
-        state: int = None,
-        value: bytes = None,
-        value_json_string: str = None,
+        error_code: Optional[int] = None,
+        error_message: Optional[str] = None,
+        resource_action: Optional[int] = None,
+        state: Optional[int] = None,
+        value: Optional[bytes] = None,
+        value_json_string: Optional[str] = None,
     ):
         self.ErrorCode = error_code
         self.ErrorMessage = error_message

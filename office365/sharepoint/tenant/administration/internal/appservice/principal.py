@@ -84,7 +84,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal"
 
     def get_property(self, name, default_value=None):

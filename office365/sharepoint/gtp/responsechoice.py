@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GptResponseChoice(ClientValue):
-    def __init__(self, finish_reason: str = None, index: int = None, text: str = None):
+    def __init__(self, finish_reason: Optional[str] = None, index: Optional[int] = None, text: Optional[str] = None):
         self.FinishReason = finish_reason
         self.Index = index
         self.Text = text

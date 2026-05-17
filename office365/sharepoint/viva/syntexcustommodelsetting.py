@@ -1,3 +1,5 @@
+from typing import Optional
+
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -9,17 +11,17 @@ from office365.sharepoint.viva.syntexcustommodeldeploymentproperties import (
 class SyntexCustomModelSetting(ClientValue):
     def __init__(
         self,
-        analyzer_id: str = None,
-        azure_resource_id: str = None,
-        deployment_name: str = None,
+        analyzer_id: Optional[str] = None,
+        azure_resource_id: Optional[str] = None,
+        deployment_name: Optional[str] = None,
         deployment_properties: SyntexCustomModelDeploymentProperties = SyntexCustomModelDeploymentProperties(),
-        endpoint: str = None,
-        endpoint_type: int = None,
-        is_disabled: bool = None,
-        task_type: int = None,
-        unique_id: str = None,
-        unique_name: str = None,
-        updated: datetime = None,
+        endpoint: Optional[str] = None,
+        endpoint_type: Optional[int] = None,
+        is_disabled: Optional[bool] = None,
+        task_type: Optional[int] = None,
+        unique_id: Optional[str] = None,
+        unique_name: Optional[str] = None,
+        updated: Optional[datetime] = None,
     ):
         self.analyzer_id = analyzer_id
         self.azure_resource_id = azure_resource_id

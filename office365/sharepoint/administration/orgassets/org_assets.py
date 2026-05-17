@@ -3,6 +3,7 @@ from office365.sharepoint.administration.orgassets.library_collection import (
     OrgAssetsLibraryCollection,
 )
 from office365.sharepoint.types.resource_path import ResourcePath
+from typing import Optional
 
 
 class OrgAssets(ClientValue):
@@ -11,9 +12,9 @@ class OrgAssets(ClientValue):
         central_asset_repository_libraries: OrgAssetsLibraryCollection = OrgAssetsLibraryCollection(),
         domain: ResourcePath = ResourcePath(),
         org_assets_libraries: OrgAssetsLibraryCollection = OrgAssetsLibraryCollection(),
-        site_id: str = None,
+        site_id: Optional[str] = None,
         url: ResourcePath = ResourcePath(),
-        web_id: str = None,
+        web_id: Optional[str] = None,
     ):
         self.OrgAssetsLibraries = OrgAssetsLibraryCollection()
         self.CentralAssetRepositoryLibraries = central_asset_repository_libraries

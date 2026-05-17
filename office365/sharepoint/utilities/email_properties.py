@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Optional, Dict, List
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -10,11 +10,11 @@ class EmailProperties(ClientValue):
         body: str,
         subject: str,
         to: List[str],
-        from_address: str = None,
-        cc: List[str] = None,
-        bcc: List[str] = None,
-        additional_headers: Dict = None,
-        from_: str = None,
+        from_address: Optional[str] = None,
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None,
+        additional_headers: Optional[Dict] = None,
+        from_: Optional[str] = None,
     ):
         """
         Specifies the definition of the email to send which includes both the message fields and body

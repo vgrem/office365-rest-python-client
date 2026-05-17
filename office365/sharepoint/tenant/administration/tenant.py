@@ -347,10 +347,10 @@ class Tenant(Entity):
 
     def export_to_csv(
         self,
-        view_xml: str = None,
-        time_zone_id: int = None,
+        view_xml: Optional[str] = None,
+        time_zone_id: Optional[int] = None,
         columns_info=None,
-        list_name: str = None,
+        list_name: Optional[str] = None,
     ):
         """
         Exports tenant-level data to a CSV file.
@@ -483,7 +483,7 @@ class Tenant(Entity):
         return return_type
 
     def get_spo_all_web_templates(
-        self, culture_name: str = None, compatibility_level: int = None
+        self, culture_name: Optional[str] = None, compatibility_level: Optional[int] = None
     ) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
@@ -517,7 +517,7 @@ class Tenant(Entity):
     def get_site(self, site_url: str) -> ListItem:
         return self._aggregated_site_collections_list.items.single(f"SiteUrl eq '{site_url.rstrip('/')}'").get()
 
-    def get_sites_by_state(self, states: List[int] = None):
+    def get_sites_by_state(self, states: Optional[List[int]] = None):
         """
         :param list[int] states:
         """
@@ -530,7 +530,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def _poll_site_status(self, site_url: str, polling_interval_secs: int) -> None:
+    def _poll_site_status(self, site_url: str, polling_interval_secs: float) -> None:
         states = [0, 1, 2]
         time.sleep(polling_interval_secs)
 
@@ -555,7 +555,7 @@ class Tenant(Entity):
     def get_site_administrators(
         self,
         site_id: str,
-        return_type: ClientResult[ClientValueCollection[SiteAdministratorsInfo]] = None,
+        return_type: Optional[ClientResult[ClientValueCollection[SiteAdministratorsInfo]]] = None,
     ):
         """
         Gets site collection administrators
@@ -585,7 +585,9 @@ class Tenant(Entity):
         return return_type
 
     def get_site_secondary_administrators(
-        self, site_id: str, return_type: ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]] = None
+        self,
+        site_id: str,
+        return_type: Optional[ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]] = None,
     ) -> ClientResult[ClientValueCollection[SecondaryAdministratorsInfo]]:
         """
         Gets site collection administrators
@@ -611,7 +613,9 @@ class Tenant(Entity):
         self.get_site_properties_by_url(site_url).after_execute(_get_site_secondary_administrators_by_site_url)
         return return_type
 
-    def set_site_secondary_administrators(self, site_id: str, emails: List[str] = None, names: List[str] = None) -> Self:
+    def set_site_secondary_administrators(
+        self, site_id: str, emails: Optional[List[str]] = None, names: Optional[List[str]] = None
+    ) -> Self:
         """
         Sets site collection administrators
         """
@@ -625,7 +629,7 @@ class Tenant(Entity):
         return self
 
     def set_site_secondary_administrators_by_site_url(
-        self, site_url: str, emails: List[str] = None, names: List[str] = None
+        self, site_url: str, emails: Optional[List[str]] = None, names: Optional[List[str]] = None
     ) -> Self:
         """
         Sets site collection administrators
@@ -669,7 +673,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_site(self, url: str, owner: str, title: str = None) -> SpoOperation:
+    def create_site(self, url: str, owner: str, title: Optional[str] = None) -> SpoOperation:
         """Queues a site collection for creation with the specified properties.
 
         :param str title: Sets the new site’s title.
@@ -682,7 +686,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_site_sync(self, url: str, owner: str, title: str = None) -> Site:
+    def create_site_sync(self, url: str, owner: str, title: Optional[str] = None) -> Site:
         """Creates a site collection
 
         :param str title: Sets the new site’s title.
@@ -694,7 +698,7 @@ class Tenant(Entity):
 
         def _ensure_status(op: SpoOperation) -> None:
             if not op.is_complete:
-                self._poll_site_status(url, op.polling_interval_secs)
+                self._poll_site_status(url, op.polling_interval_secs or 0)
 
         self.create_site(url, owner, title).after_execute(_ensure_status)
         return return_type
@@ -713,7 +717,7 @@ class Tenant(Entity):
     def remove_sites(
         self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
     ) -> Self:
-        def _remove_next_site(op: SpoOperation = None):
+        def _remove_next_site(op: Optional[SpoOperation] = None):
             if site_urls:
                 site_url = site_urls.pop(0)
                 if op and success_callback:
@@ -737,7 +741,7 @@ class Tenant(Entity):
     def remove_deleted_sites(
         self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
     ) -> Self:
-        def _remove_next_deleted_site(op: SpoOperation = None):
+        def _remove_next_deleted_site(op: Optional[SpoOperation] = None):
             if site_urls:
                 site_url = site_urls.pop(0)
                 if op and success_callback:
@@ -839,8 +843,8 @@ class Tenant(Entity):
 
     def get_site_properties_from_sharepoint_by_filters(
         self,
-        filter_text: str = None,
-        start_index: str = None,
+        filter_text: Optional[str] = None,
+        start_index: Optional[str] = None,
         include_detail: bool = False,
     ) -> SitePropertiesCollection:
         """ """
@@ -857,7 +861,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_deleted_site_properties(self, start_index: int = None) -> EntityCollection[DeletedSiteProperties]:
+    def get_deleted_site_properties(self, start_index: Optional[int] = None) -> EntityCollection[DeletedSiteProperties]:
         """ """
         return_type = EntityCollection(self.context, DeletedSiteProperties)
         payload = {"startIndex": start_index}
@@ -971,7 +975,11 @@ class Tenant(Entity):
         return self
 
     def update_group_site_properties(
-        self, group_id: str, site_id: str, update_type: str, parameters: UpdateGroupSitePropertiesParameters = None
+        self,
+        group_id: str,
+        site_id: str,
+        update_type: str,
+        parameters: Optional[UpdateGroupSitePropertiesParameters] = None,
     ):
         """ """
         return_type = ClientResult(self.context, str())
@@ -1211,5 +1219,5 @@ class Tenant(Entity):
         return TenantAdminEndpoints(self.context)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.Tenant"

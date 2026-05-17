@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteCreationDefaultStorageQuota(ClientValue):
     def __init__(
         self,
-        IsReadOnly: bool = None,
-        Value: int = None,
-        is_read_only: bool = None,
-        value: int = None,
+        IsReadOnly: Optional[bool] = None,
+        Value: Optional[int] = None,
+        is_read_only: Optional[bool] = None,
+        value: Optional[int] = None,
     ) -> None:
         self.IsReadOnly = IsReadOnly
         self.Value = Value
@@ -15,5 +16,5 @@ class SiteCreationDefaultStorageQuota(ClientValue):
         self.Value = value
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCreationDefaultStorageQuota"

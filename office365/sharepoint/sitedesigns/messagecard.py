@@ -4,6 +4,7 @@ from office365.sharepoint.sitedesigns.autoinvokeaction import AutoInvokeAction
 from office365.sharepoint.sitedesigns.autoinvokeoptions import AutoInvokeOptions
 from office365.sharepoint.sitedesigns.potentialaction import PotentialAction
 from office365.sharepoint.sitedesigns.section import Section
+from typing import Optional
 
 
 class MessageCard(ClientValue):
@@ -11,15 +12,15 @@ class MessageCard(ClientValue):
         self,
         auto_invoke_action: AutoInvokeAction = AutoInvokeAction(),
         auto_invoke_options: AutoInvokeOptions = AutoInvokeOptions(),
-        context: str = None,
-        hide_original_body: str = None,
-        originator: str = None,
+        context: Optional[str] = None,
+        hide_original_body: Optional[str] = None,
+        originator: Optional[str] = None,
         potential_action: ClientValueCollection[PotentialAction] = ClientValueCollection(PotentialAction),
         sections: ClientValueCollection[Section] = ClientValueCollection(Section),
-        text: str = None,
-        theme_color: str = None,
-        title: str = None,
-        type_: str = None,
+        text: Optional[str] = None,
+        theme_color: Optional[str] = None,
+        title: Optional[str] = None,
+        type_: Optional[str] = None,
     ):
         self.autoInvokeAction = auto_invoke_action
         self.autoInvokeOptions = auto_invoke_options

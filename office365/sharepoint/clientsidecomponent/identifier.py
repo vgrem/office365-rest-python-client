@@ -1,10 +1,11 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPClientSideComponentIdentifier(ClientValue):
     """This identifier uniquely identifies a component."""
 
-    def __init__(self, _id=None, version=None, id_: str = None):
+    def __init__(self, _id=None, version=None, id_: Optional[str] = None):
         self.id = _id
         self.version = version
         self.id = id_

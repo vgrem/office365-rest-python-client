@@ -1,11 +1,12 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SyntexCheckManagementAllowedResponse(ClientValue):
-    def __init__(self, allowed_billing_only: bool = None, allowed_license_or_billing: bool = None):
+    def __init__(self, allowed_billing_only: Optional[bool] = None, allowed_license_or_billing: Optional[bool] = None):
         self.allowedBillingOnly = allowed_billing_only
         self.allowedLicenseOrBilling = allowed_license_or_billing
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SyntexCheckManagementAllowedResponse"

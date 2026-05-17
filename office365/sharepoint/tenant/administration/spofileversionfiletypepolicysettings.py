@@ -2,17 +2,18 @@ from datetime import time
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class SPOFileVersionFileTypePolicySettings(ClientValue):
     def __init__(
         self,
-        enable_auto_expiration_version_trim: bool = None,
-        expire_versions_after: time = None,
+        enable_auto_expiration_version_trim: Optional[bool] = None,
+        expire_versions_after: Optional[time] = None,
         extensions: StringCollection = StringCollection(),
-        major_version_limit: int = None,
-        major_with_minor_versions_limit: int = None,
-        name: str = None,
+        major_version_limit: Optional[int] = None,
+        major_with_minor_versions_limit: Optional[int] = None,
+        name: Optional[str] = None,
     ):
         self.EnableAutoExpirationVersionTrim = enable_auto_expiration_version_trim
         self.ExpireVersionsAfter = expire_versions_after
@@ -22,5 +23,5 @@ class SPOFileVersionFileTypePolicySettings(ClientValue):
         self.Name = name
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOFileVersionFileTypePolicySettings"

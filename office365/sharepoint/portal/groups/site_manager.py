@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -43,7 +43,11 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def create_group_for_site(
-        self, display_name: str, alias: str, is_public: bool = None, optional_params: GroupCreationParams = None
+        self,
+        display_name: str,
+        alias: str,
+        is_public: Optional[bool] = None,
+        optional_params: Optional[GroupCreationParams] = None,
     ):
         """
         Create a modern site
@@ -69,7 +73,7 @@ class GroupSiteManager(ClientObject):
         display_name: str,
         alias: str,
         is_public: bool,
-        optional_params: GroupCreationParams = None,
+        optional_params: Optional[GroupCreationParams] = None,
     ):
         """
         Creates a modern site
@@ -123,7 +127,7 @@ class GroupSiteManager(ClientObject):
         if isinstance(group, Site):
 
             def _site_loaded():
-                _get_status(group.group_id)
+                _get_status(group.group_id)  # type: ignore[arg-type]
 
             group.ensure_property("GroupId", _site_loaded)
         else:
@@ -209,10 +213,10 @@ class GroupSiteManager(ClientObject):
 
     def recent_and_joined_teams(
         self,
-        include_recent: bool = None,
-        include_teams: bool = None,
-        include_pinned: bool = None,
-        existing_joined_teams_data: str = None,
+        include_recent: Optional[bool] = None,
+        include_teams: Optional[bool] = None,
+        include_pinned: Optional[bool] = None,
+        existing_joined_teams_data: Optional[str] = None,
     ) -> ClientResult[RecentAndJoinedTeamsResponse]:
         """
         Retrieves a list of teams that a user has recently accessed or joined

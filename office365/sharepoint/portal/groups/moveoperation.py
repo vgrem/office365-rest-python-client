@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GroupMoveOperation(ClientValue):
-    def __init__(self, source_group: str = None, target_group: str = None):
+    def __init__(self, source_group: Optional[str] = None, target_group: Optional[str] = None):
         self.SourceGroup = source_group
         self.TargetGroup = target_group
 

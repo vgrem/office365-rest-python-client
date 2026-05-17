@@ -1,22 +1,23 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class PersonalCacheItem(ClientValue):
     def __init__(
         self,
-        alt_title: str = None,
-        cache_key: str = None,
-        cache_name: str = None,
-        cache_value: str = None,
-        cache_value_hash: str = None,
-        cache_value_html: str = None,
-        cache_version: str = None,
-        container_url: str = None,
-        list_item_id: int = None,
-        list_item_unique_id: str = None,
-        modified_time_utc: datetime = None,
+        alt_title: Optional[str] = None,
+        cache_key: Optional[str] = None,
+        cache_name: Optional[str] = None,
+        cache_value: Optional[str] = None,
+        cache_value_hash: Optional[str] = None,
+        cache_value_html: Optional[str] = None,
+        cache_version: Optional[str] = None,
+        container_url: Optional[str] = None,
+        list_item_id: Optional[int] = None,
+        list_item_unique_id: Optional[str] = None,
+        modified_time_utc: Optional[datetime] = None,
     ):
         """Object representing a PersonalCache item, returned from ReadCache methods of the PersonalCache."""
         self.AltTitle = alt_title

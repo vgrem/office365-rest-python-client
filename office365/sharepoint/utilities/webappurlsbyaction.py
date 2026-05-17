@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.utilities.webappexturlpair import WebAppExtUrlPair
+from typing import Optional
 
 
 class WebAppUrlsByAction(ClientValue):
     def __init__(
         self,
-        action: str = None,
+        action: Optional[str] = None,
         urls_by_ext: ClientValueCollection[WebAppExtUrlPair] = ClientValueCollection(WebAppExtUrlPair),
     ):
         self.Action = action

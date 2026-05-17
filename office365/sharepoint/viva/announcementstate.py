@@ -2,14 +2,15 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.announcementaction import AnnouncementAction
+from typing import Optional
 
 
 class AnnouncementState(ClientValue):
     def __init__(
         self,
         action: AnnouncementAction = AnnouncementAction(),
-        expires_on: datetime = None,
-        id_: str = None,
+        expires_on: Optional[datetime] = None,
+        id_: Optional[str] = None,
     ):
         self.Action = action
         self.ExpiresOn = expires_on

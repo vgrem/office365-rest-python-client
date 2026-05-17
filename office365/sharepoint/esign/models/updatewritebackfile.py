@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UpdateWriteBackFileModel(ClientValue):
     def __init__(
         self,
-        file_name: str = None,
-        list_item_id: str = None,
-        url: str = None,
-        work_item_id: str = None,
+        file_name: Optional[str] = None,
+        list_item_id: Optional[str] = None,
+        url: Optional[str] = None,
+        work_item_id: Optional[str] = None,
     ):
         self.fileName = file_name
         self.listItemId = list_item_id

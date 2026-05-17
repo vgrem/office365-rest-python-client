@@ -152,7 +152,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def create_preview_site(self, upgrade: bool = None, sendemail: str = None) -> Self:
+    def create_preview_site(self, upgrade: Optional[bool] = None, sendemail: Optional[str] = None) -> Self:
         """
         Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
         of the site collection to a newer version
@@ -173,9 +173,9 @@ class Site(Entity):
 
         def _delete_object():
             if self.group_id == "00000000-0000-0000-0000-000000000000":
-                self.context.site_manager.delete(self.id)
+                self.context.site_manager.delete(self.id)  # type: ignore[arg-type]
             else:
-                self.context.group_site_manager.delete(self.url)
+                self.context.group_site_manager.delete(self.url)  # type: ignore[arg-type]
 
         self.ensure_properties(["Url", "GroupId", "Id"], _delete_object)
         return self
@@ -185,7 +185,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, bool())
 
         def _check_is_deletable():
-            SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)
+            SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Id", _check_is_deletable)
         return return_type
@@ -215,7 +215,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
 
         def _site_loaded():
-            SPPolicyStoreProxy.get_available_tags_for_site(self.context, self.url, return_type)
+            SPPolicyStoreProxy.get_available_tags_for_site(self.context, self.url, return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Url", _site_loaded)
         return return_type
@@ -249,7 +249,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, bytes())
 
         def _get_site_logo():
-            self.context.site_icon_manager.get_site_logo(self.url, return_type=return_type)
+            self.context.site_icon_manager.get_site_logo(self.url, return_type=return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Url", _get_site_logo)
         return return_type
@@ -259,7 +259,7 @@ class Site(Entity):
         return_type = ClientResult(self.context)
 
         def _site_loaded():
-            self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)
+            self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)  # type: ignore[arg-type]
 
         self.ensure_property("GroupId", _site_loaded)
         return return_type
@@ -298,7 +298,7 @@ class Site(Entity):
         return_type = ClientResult(self.context)
 
         def _site_loaded():
-            self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)
+            self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)  # type: ignore[assignment]
 
         self.ensure_property("Url", _site_loaded)
         return return_type
@@ -337,7 +337,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
 
         def _site_loaded():
-            self.context.tenant.get_site_administrators(self.id, return_type)
+            self.context.tenant.get_site_administrators(self.id, return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Id", _site_loaded)
         return return_type
@@ -405,8 +405,8 @@ class Site(Entity):
     def join_hub_site(
         self,
         hub_site_id: str,
-        approval_token: str = None,
-        approval_correlation_id: str = None,
+        approval_token: Optional[str] = None,
+        approval_correlation_id: Optional[str] = None,
     ) -> Self:
         """
         Associates a site with an existing hub site.
@@ -472,7 +472,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, bool())
 
         def _is_site_deletable():
-            SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)
+            SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Url", _is_site_deletable)
         return return_type
@@ -526,7 +526,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def register_hub_site(self, create_info: HubSiteCreationInformation = None) -> Self:
+    def register_hub_site(self, create_info: Optional[HubSiteCreationInformation] = None) -> Self:
         """Registers an existing site as a hub site.
 
         :type create_info: HubSiteCreationInformation
@@ -535,7 +535,9 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def run_health_check(self, rule_id: str = None, repair: bool = None, run_always: bool = None) -> SiteHealthSummary:
+    def run_health_check(
+        self, rule_id: Optional[str] = None, repair: Optional[bool] = None, run_always: Optional[bool] = None
+    ) -> SiteHealthSummary:
         """
         Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
         on the health of a site collection.)

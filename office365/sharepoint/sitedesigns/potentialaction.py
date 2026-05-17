@@ -4,6 +4,7 @@ from office365.sharepoint.sitedesigns.messagecardactionbutton import (
     MessageCardActionButton,
 )
 from office365.sharepoint.sitedesigns.messagecardinput import MessageCardInput
+from typing import Optional
 
 
 class PotentialAction(ClientValue):
@@ -11,7 +12,7 @@ class PotentialAction(ClientValue):
         self,
         actions: ClientValueCollection[MessageCardActionButton] = ClientValueCollection(MessageCardActionButton),
         inputs: ClientValueCollection[MessageCardInput] = ClientValueCollection(MessageCardInput),
-        type_: str = None,
+        type_: Optional[str] = None,
     ):
         self.actions = actions
         self.inputs = inputs

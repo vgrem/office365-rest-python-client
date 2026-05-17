@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class EnsureTeamForGroupExResponse(ClientValue):
-    def __init__(self, teams_id: str = None, teams_url: str = None):
+    def __init__(self, teams_id: Optional[str] = None, teams_url: Optional[str] = None):
         self.teamsId = teams_id
         self.teamsUrl = teams_url
 

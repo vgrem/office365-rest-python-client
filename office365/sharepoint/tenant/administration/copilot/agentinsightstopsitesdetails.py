@@ -1,18 +1,19 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPOCopilotAgentInsightsTopSitesDetails(ClientValue):
     def __init__(
         self,
-        copilot_agents: int = None,
-        external_sharing: str = None,
-        restrict_site_access_enabled: str = None,
-        restrict_site_discovery_enabled: str = None,
-        sensitivity: str = None,
-        site_name: str = None,
-        site_owner: str = None,
-        template: str = None,
-        url: str = None,
+        copilot_agents: Optional[int] = None,
+        external_sharing: Optional[str] = None,
+        restrict_site_access_enabled: Optional[str] = None,
+        restrict_site_discovery_enabled: Optional[str] = None,
+        sensitivity: Optional[str] = None,
+        site_name: Optional[str] = None,
+        site_owner: Optional[str] = None,
+        template: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.CopilotAgents = copilot_agents
         self.ExternalSharing = external_sharing
@@ -25,5 +26,5 @@ class SPOCopilotAgentInsightsTopSitesDetails(ClientValue):
         self.URL = url
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOCopilotAgentInsightsTopSitesDetails"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -29,7 +29,9 @@ class SPSiteManager(Entity):
             resource_path = ResourcePath("SPSiteManager")
         super().__init__(context, resource_path)
 
-    def create(self, title: str, site_url: str, owner: Union[User, str] = None) -> ClientResult[SPSiteCreationResponse]:
+    def create(
+        self, title: str, site_url: str, owner: Optional[Union[User, str]] = None
+    ) -> ClientResult[SPSiteCreationResponse]:
         """
         When executing this method server MUST create a SharePoint site according to the parameters passed in the
         SPSiteCreationRequest and return the information about the site it created in the format of a
@@ -41,7 +43,7 @@ class SPSiteManager(Entity):
         """
         return_type = ClientResult(self.context, SPSiteCreationResponse())
 
-        def _create(owner_string: str = None):
+        def _create(owner_string: Optional[str] = None):
             request = SPSiteCreationRequest(title, site_url, owner_string)
             payload = {"request": request}
             qry = ServiceOperationQuery(self, "Create", None, payload, None, return_type)

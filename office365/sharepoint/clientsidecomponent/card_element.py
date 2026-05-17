@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CardElement(ClientValue):
     def __init__(
         self,
-        id_: str = None,
-        is_visible: bool = None,
-        separator: bool = None,
-        spacing: str = None,
-        type_: str = None,
+        id_: Optional[str] = None,
+        is_visible: Optional[bool] = None,
+        separator: Optional[bool] = None,
+        spacing: Optional[str] = None,
+        type_: Optional[str] = None,
     ):
         self.id = id_
         self.isVisible = is_visible

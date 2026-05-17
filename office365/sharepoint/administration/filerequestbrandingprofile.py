@@ -1,18 +1,19 @@
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class FileRequestBrandingProfile(ClientValue):
     def __init__(
         self,
-        background_file_id: UUID = None,
-        background_file_name: str = None,
-        background_file_url: str = None,
-        logo_file_id: UUID = None,
-        logo_file_name: str = None,
-        logo_file_url: str = None,
-        profile_type: int = None,
+        background_file_id: Optional[UUID] = None,
+        background_file_name: Optional[str] = None,
+        background_file_url: Optional[str] = None,
+        logo_file_id: Optional[UUID] = None,
+        logo_file_name: Optional[str] = None,
+        logo_file_url: Optional[str] = None,
+        profile_type: Optional[int] = None,
     ):
         self.BackgroundFileId = background_file_id
         self.BackgroundFileName = background_file_name

@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GroupNameValidationResultErrorParams(ClientValue):
     def __init__(
         self,
-        blocked_word: str = None,
-        prefix: str = None,
-        suffix: str = None,
-        validation_error_code: str = None,
-        validation_error_message: str = None,
-        validation_property_name: str = None,
+        blocked_word: Optional[str] = None,
+        prefix: Optional[str] = None,
+        suffix: Optional[str] = None,
+        validation_error_code: Optional[str] = None,
+        validation_error_message: Optional[str] = None,
+        validation_property_name: Optional[str] = None,
     ):
         self.BlockedWord = blocked_word
         self.Prefix = prefix

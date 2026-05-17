@@ -3,6 +3,7 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class SPContainerProperties(ClientValue):
@@ -10,43 +11,43 @@ class SPContainerProperties(ClientValue):
 
     def __init__(
         self,
-        allow_editing: bool = None,
-        archived_by: str = None,
-        archive_status: int = None,
-        authentication_context_name: str = None,
-        block_download_policy: bool = None,
-        conditional_access_policy: int = None,
-        container_api_url: str = None,
-        container_id: str = None,
-        container_name: str = None,
-        container_site_url: str = None,
-        container_type_id: UUID = None,
-        created_by: str = None,
-        created_on: datetime = None,
-        description: str = None,
-        exclude_block_download_policy_container_owners: bool = None,
-        last_archived_date_time: datetime = None,
-        limited_access_file_type: int = None,
-        managers: StringCollection = None,
-        new_principal_owner_identifier: str = None,
-        owners: StringCollection = None,
-        owners_count: int = None,
-        ownership_type: str = None,
-        owning_application_id: UUID = None,
-        owning_application_name: str = None,
-        principal_owner_identifier: str = None,
-        readers: StringCollection = None,
-        read_only_for_block_download_policy: bool = None,
-        read_only_for_unmanaged_devices: bool = None,
-        sensitivity_label: str = None,
-        sharing_allowed_domain_list: str = None,
-        sharing_blocked_domain_list: str = None,
-        sharing_domain_restriction_mode: int = None,
-        status: str = None,
-        storage_used: int = None,
-        transfer_from_principal_owner_identifier: str = None,
+        allow_editing: Optional[bool] = None,
+        archived_by: Optional[str] = None,
+        archive_status: Optional[int] = None,
+        authentication_context_name: Optional[str] = None,
+        block_download_policy: Optional[bool] = None,
+        conditional_access_policy: Optional[int] = None,
+        container_api_url: Optional[str] = None,
+        container_id: Optional[str] = None,
+        container_name: Optional[str] = None,
+        container_site_url: Optional[str] = None,
+        container_type_id: Optional[UUID] = None,
+        created_by: Optional[str] = None,
+        created_on: Optional[datetime] = None,
+        description: Optional[str] = None,
+        exclude_block_download_policy_container_owners: Optional[bool] = None,
+        last_archived_date_time: Optional[datetime] = None,
+        limited_access_file_type: Optional[int] = None,
+        managers: Optional[StringCollection] = None,
+        new_principal_owner_identifier: Optional[str] = None,
+        owners: Optional[StringCollection] = None,
+        owners_count: Optional[int] = None,
+        ownership_type: Optional[str] = None,
+        owning_application_id: Optional[UUID] = None,
+        owning_application_name: Optional[str] = None,
+        principal_owner_identifier: Optional[str] = None,
+        readers: Optional[StringCollection] = None,
+        read_only_for_block_download_policy: Optional[bool] = None,
+        read_only_for_unmanaged_devices: Optional[bool] = None,
+        sensitivity_label: Optional[str] = None,
+        sharing_allowed_domain_list: Optional[str] = None,
+        sharing_blocked_domain_list: Optional[str] = None,
+        sharing_domain_restriction_mode: Optional[int] = None,
+        status: Optional[str] = None,
+        storage_used: Optional[int] = None,
+        transfer_from_principal_owner_identifier: Optional[str] = None,
         writers: StringCollection = StringCollection(),
-        restrict_content_org_wide_search: bool = None,
+        restrict_content_org_wide_search: Optional[bool] = None,
     ):
         self.AllowEditing = allow_editing
         self.ArchivedBy = archived_by
@@ -87,5 +88,5 @@ class SPContainerProperties(ClientValue):
         self.RestrictContentOrgWideSearch = restrict_content_org_wide_search
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerProperties"

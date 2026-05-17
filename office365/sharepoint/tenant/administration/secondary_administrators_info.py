@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SecondaryAdministratorsInfo(ClientValue):
@@ -7,9 +8,9 @@ class SecondaryAdministratorsInfo(ClientValue):
         email=None,
         loginName=None,
         userPrincipalName=None,
-        login_name: str = None,
-        name: str = None,
-        user_principal_name: str = None,
+        login_name: Optional[str] = None,
+        name: Optional[str] = None,
+        user_principal_name: Optional[str] = None,
     ):
         """
 

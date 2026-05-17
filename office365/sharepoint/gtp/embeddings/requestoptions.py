@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GptEmbeddingsRequestOptions(ClientValue):
-    def __init__(self, input_: str = None):
+    def __init__(self, input_: Optional[str] = None):
         self.Input = input_
 
     @property

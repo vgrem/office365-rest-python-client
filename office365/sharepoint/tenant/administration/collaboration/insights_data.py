@@ -26,5 +26,5 @@ class CollaborationInsightsData(ClientValue):
         self.collaborativeOneDriveUsers = collaborative_one_drive_users
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.CollaborationInsightsData"

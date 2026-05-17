@@ -6,6 +6,7 @@ from office365.sharepoint.tenant.administration.container.filterorder import (
 from office365.sharepoint.tenant.administration.container.sortorder import (
     SPContainerSortOrder,
 )
+from typing import Optional
 
 
 class SPOContainerQueryParams(ClientValue):
@@ -15,12 +16,12 @@ class SPOContainerQueryParams(ClientValue):
             SPContainerFilterOrder
         ),
         order_by_columns_list: ClientValueCollection[SPContainerSortOrder] = ClientValueCollection(SPContainerSortOrder),
-        paging_token: str = None,
+        paging_token: Optional[str] = None,
     ):
         self.FilterByColumnsList = filter_by_columns_list
         self.OrderByColumnsList = order_by_columns_list
         self.PagingToken = paging_token
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOContainerQueryParams"

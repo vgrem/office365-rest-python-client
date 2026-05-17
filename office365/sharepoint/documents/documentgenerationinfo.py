@@ -5,6 +5,7 @@ from office365.sharepoint.documents.contentassemblyformanswer import (
     ContentAssemblyFormAnswer,
 )
 from office365.sharepoint.documents.location import DocumentLocation
+from typing import Optional
 
 
 class DocumentGenerationInfo(ClientValue):
@@ -14,13 +15,13 @@ class DocumentGenerationInfo(ClientValue):
         content_assembly_form_answers: ClientValueCollection[ContentAssemblyFormAnswer] = ClientValueCollection(
             ContentAssemblyFormAnswer
         ),
-        copy_fields_from_existing_document: bool = None,
-        file_name: str = None,
-        folder_url: str = None,
-        format_: int = None,
-        is_temp_file: bool = None,
-        temp_file_url: str = None,
-        update_folder_permissions: bool = None,
+        copy_fields_from_existing_document: Optional[bool] = None,
+        file_name: Optional[str] = None,
+        folder_url: Optional[str] = None,
+        format_: Optional[int] = None,
+        is_temp_file: Optional[bool] = None,
+        temp_file_url: Optional[str] = None,
+        update_folder_permissions: Optional[bool] = None,
         document_location: DocumentLocation = DocumentLocation(),
     ):
         self.conditional_fields_to_be_deleted = conditional_fields_to_be_deleted

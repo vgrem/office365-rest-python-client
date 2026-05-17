@@ -1,18 +1,19 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class InsightsQueueItem(ClientValue):
     def __init__(
         self,
-        insights_completion_time: datetime = None,
-        insights_scenario: int = None,
-        item_id: int = None,
-        report_creation_time: datetime = None,
-        report_data_file_name: str = None,
-        report_id: str = None,
-        status: int = None,
+        insights_completion_time: Optional[datetime] = None,
+        insights_scenario: Optional[int] = None,
+        item_id: Optional[int] = None,
+        report_creation_time: Optional[datetime] = None,
+        report_data_file_name: Optional[str] = None,
+        report_id: Optional[str] = None,
+        status: Optional[int] = None,
     ):
         self.insightsCompletionTime = insights_completion_time
         self.insightsScenario = insights_scenario
@@ -23,5 +24,5 @@ class InsightsQueueItem(ClientValue):
         self.status = status
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.InsightsQueueItem"

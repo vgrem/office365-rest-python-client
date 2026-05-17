@@ -1,16 +1,17 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
+from typing import Optional
 
 
 class Snippet(ClientValue):
     def __init__(
         self,
-        id_: str = None,
-        name: str = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
         placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
-        snippet_library_mapped_id: str = None,
-        snippet_library_mapped_version: str = None,
+        snippet_library_mapped_id: Optional[str] = None,
+        snippet_library_mapped_version: Optional[str] = None,
     ):
         self.Id = id_
         self.Name = name

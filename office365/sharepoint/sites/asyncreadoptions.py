@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class AsyncReadOptions(ClientValue):
     def __init__(
         self,
-        include_direct_descendants_only: bool = None,
-        include_extended_metadata: bool = None,
-        include_permission: bool = None,
-        include_security: bool = None,
-        include_versions: bool = None,
-        start_change_token: str = None,
+        include_direct_descendants_only: Optional[bool] = None,
+        include_extended_metadata: Optional[bool] = None,
+        include_permission: Optional[bool] = None,
+        include_security: Optional[bool] = None,
+        include_versions: Optional[bool] = None,
+        start_change_token: Optional[str] = None,
     ):
         self.IncludeDirectDescendantsOnly = include_direct_descendants_only
         self.IncludeExtendedMetadata = include_extended_metadata

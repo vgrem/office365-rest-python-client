@@ -9,5 +9,5 @@ class SPTenantIBInsightsReportSharePoint(Entity):
         return self.properties.get("Implicit", StringCollection())
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Insights.SPTenantIBInsightsReportSharePoint"

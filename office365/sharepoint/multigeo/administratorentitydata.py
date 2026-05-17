@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GeoAdministratorEntityData(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        login_name: str = None,
-        member_type: int = None,
-        object_id: str = None,
+        display_name: Optional[str] = None,
+        login_name: Optional[str] = None,
+        member_type: Optional[int] = None,
+        object_id: Optional[str] = None,
     ):
         self.DisplayName = display_name
         self.LoginName = login_name

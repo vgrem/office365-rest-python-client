@@ -3,6 +3,7 @@ from datetime import datetime
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.viva.dashboard.carddetails import DashboardCardDetails
+from typing import Optional
 
 
 class DashboardContent(ClientValue):
@@ -11,9 +12,9 @@ class DashboardContent(ClientValue):
         dashboard_card_details: ClientValueCollection[DashboardCardDetails] = ClientValueCollection(
             DashboardCardDetails
         ),
-        dashboard_form_factor: str = None,
-        dashboard_id: str = None,
-        last_modified_date: datetime = None,
+        dashboard_form_factor: Optional[str] = None,
+        dashboard_id: Optional[str] = None,
+        last_modified_date: Optional[datetime] = None,
     ):
         self.DashboardCardDetails = dashboard_card_details
         self.DashboardFormFactor = dashboard_form_factor

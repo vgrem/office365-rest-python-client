@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -9,8 +9,8 @@ class ListItemCreationInformationUsingPath(ClientValue):
         self,
         leaf_name: str,
         object_type: int,
-        folder_path: Union[str, SPResPath] = None,
-        underlying_object_type: int = None,
+        folder_path: Optional[Union[str, SPResPath]] = None,
+        underlying_object_type: Optional[int] = None,
     ):
         """
         Specifies the properties of the new list item.

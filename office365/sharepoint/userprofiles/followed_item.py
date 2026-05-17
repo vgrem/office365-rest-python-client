@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class FollowedItem(ClientValue):
@@ -8,25 +9,25 @@ class FollowedItem(ClientValue):
     def __init__(
         self,
         file_type=None,
-        data: dict = None,
-        file_type_progid: str = None,
-        flags: str = None,
-        group_id: str = None,
-        has_feed: bool = None,
-        hidden: bool = None,
-        icon_url: str = None,
-        item_id: int = None,
-        item_type: int = None,
-        list_id: str = None,
-        parent_url: str = None,
-        pinned: int = None,
-        server_url_progid: str = None,
-        site_id: str = None,
-        subtype: int = None,
-        title: str = None,
-        unique_id: str = None,
-        url: str = None,
-        web_id: str = None,
+        data: Optional[dict] = None,
+        file_type_progid: Optional[str] = None,
+        flags: Optional[str] = None,
+        group_id: Optional[str] = None,
+        has_feed: Optional[bool] = None,
+        hidden: Optional[bool] = None,
+        icon_url: Optional[str] = None,
+        item_id: Optional[int] = None,
+        item_type: Optional[int] = None,
+        list_id: Optional[str] = None,
+        parent_url: Optional[str] = None,
+        pinned: Optional[int] = None,
+        server_url_progid: Optional[str] = None,
+        site_id: Optional[str] = None,
+        subtype: Optional[int] = None,
+        title: Optional[str] = None,
+        unique_id: Optional[str] = None,
+        url: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         """
         :param int file_type:

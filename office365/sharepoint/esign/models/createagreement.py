@@ -1,21 +1,22 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CreateAgreementModel(ClientValue):
     def __init__(
         self,
-        agreement_id: str = None,
-        agreement_source: str = None,
-        documents: str = None,
-        expiration_date_time: datetime = None,
-        form_field_sets: str = None,
-        locale: str = None,
-        message: str = None,
-        name: str = None,
-        recipient_sets: str = None,
-        signing_mode: str = None,
+        agreement_id: Optional[str] = None,
+        agreement_source: Optional[str] = None,
+        documents: Optional[str] = None,
+        expiration_date_time: Optional[datetime] = None,
+        form_field_sets: Optional[str] = None,
+        locale: Optional[str] = None,
+        message: Optional[str] = None,
+        name: Optional[str] = None,
+        recipient_sets: Optional[str] = None,
+        signing_mode: Optional[str] = None,
     ):
         self.agreementId = agreement_id
         self.agreementSource = agreement_source

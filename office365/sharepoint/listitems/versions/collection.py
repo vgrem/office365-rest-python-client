@@ -5,6 +5,7 @@ from office365.sharepoint.listitems.versions.get_parameters import (
     GetListItemVersionsParameters,
 )
 from office365.sharepoint.listitems.versions.version import ListItemVersion
+from typing import Optional
 
 
 class ListItemVersionCollection(EntityCollection[ListItemVersion]):
@@ -20,7 +21,9 @@ class ListItemVersionCollection(EntityCollection[ListItemVersion]):
         """
         return ListItemVersion(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
-    def get_versions(self, row_limit: int = None, sort_descending: bool = None) -> "ListItemVersionCollection":
+    def get_versions(
+        self, row_limit: Optional[int] = None, sort_descending: Optional[bool] = None
+    ) -> "ListItemVersionCollection":
         """
         :param int row_limit: The number of return results
         :param bool sort_descending:

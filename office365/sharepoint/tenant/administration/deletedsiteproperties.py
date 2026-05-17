@@ -17,7 +17,7 @@ class DeletedSiteProperties(Entity):
         return self.properties.get("DaysRemaining", None)
 
     @property
-    def deletion_time(self) -> datetime:
+    def deletion_time(self) -> Optional[datetime]:
         """Gets the DeletionTime property"""
         return self.properties.get("DeletionTime", None)
 
@@ -47,5 +47,5 @@ class DeletedSiteProperties(Entity):
         return self.properties.get("UserCodeMaximumLevel", None)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.DeletedSiteProperties"

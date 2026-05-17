@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class WriteBackLocationModel(ClientValue):
-    def __init__(self, title: str = None, uri: str = None):
+    def __init__(self, title: Optional[str] = None, uri: Optional[str] = None):
         self.title = title
         self.uri = uri
 

@@ -11,12 +11,12 @@ class GroupMoveJob(Entity):
         return self.properties.get("IsContentMoved", None)
 
     @property
-    def last_modified(self) -> datetime:
+    def last_modified(self) -> Optional[datetime]:
         """Gets the LastModified property"""
         return self.properties.get("LastModified", None)
 
     @property
-    def started_date_in_utc(self) -> datetime:
+    def started_date_in_utc(self) -> Optional[datetime]:
         """Gets the StartedDateInUtc property"""
         return self.properties.get("StartedDateInUtc", None)
 

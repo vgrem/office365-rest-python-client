@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class AnnouncementAction(ClientValue):
-    def __init__(self, type_: str = None, value: bool = None):
+    def __init__(self, type_: Optional[str] = None, value: Optional[bool] = None):
         self.Type = type_
         self.value = value
 

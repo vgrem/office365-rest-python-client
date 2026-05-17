@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class WikiPageCreationInformation(ClientValue):
-    def __init__(self, server_relative_url, content, wiki_html_content: str = None):
+    def __init__(self, server_relative_url, content, wiki_html_content: Optional[str] = None):
         """
         Specifies wiki page creation information
 

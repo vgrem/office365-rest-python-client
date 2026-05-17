@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class InitializeWriteBackModel(ClientValue):
     def __init__(
         self,
-        documents: str = None,
-        provider_name: str = None,
-        scheduled_clean_up: int = None,
-        selected_location: str = None,
+        documents: Optional[str] = None,
+        provider_name: Optional[str] = None,
+        scheduled_clean_up: Optional[int] = None,
+        selected_location: Optional[str] = None,
     ):
         self.documents = documents
         self.providerName = provider_name

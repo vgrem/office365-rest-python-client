@@ -4,13 +4,14 @@ from office365.sharepoint.clientsidecomponent.adaptivecardcolumn import (
     AdaptiveCardColumn,
 )
 from office365.sharepoint.clientsidecomponent.padding import Padding
+from typing import Optional
 
 
 class ColumnSet(ClientValue):
     def __init__(
         self,
         columns: ClientValueCollection[AdaptiveCardColumn] = ClientValueCollection(AdaptiveCardColumn),
-        horizontal_alignment: str = None,
+        horizontal_alignment: Optional[str] = None,
         padding: Padding = Padding(),
     ):
         self.columns = columns

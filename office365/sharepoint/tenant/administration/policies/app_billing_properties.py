@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPOAppBillingProperties(ClientValue):
@@ -11,10 +12,10 @@ class SPOAppBillingProperties(ClientValue):
         application_id=None,
         azure_region=None,
         is_activated=None,
-        resource_group: str = None,
-        subscription_id: UUID = None,
-        subscription_state: str = None,
-        usage_charges: str = None,
+        resource_group: Optional[str] = None,
+        subscription_id: Optional[UUID] = None,
+        subscription_state: Optional[str] = None,
+        usage_charges: Optional[str] = None,
     ):
         """
         :param str application_id: The application ID.
@@ -30,5 +31,5 @@ class SPOAppBillingProperties(ClientValue):
         self.UsageCharges = usage_charges
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOAppBillingProperties"

@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.utilities.webappurlsbyaction import WebAppUrlsByAction
+from typing import Optional
 
 
 class WopiWebAppProperties(ClientValue):
     def __init__(
         self,
-        app: str = None,
-        bootstrapper_url: str = None,
+        app: Optional[str] = None,
+        bootstrapper_url: Optional[str] = None,
         list_by_action: ClientValueCollection[WebAppUrlsByAction] = ClientValueCollection(WebAppUrlsByAction),
     ):
         self.App = app

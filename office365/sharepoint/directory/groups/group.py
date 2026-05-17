@@ -60,7 +60,7 @@ class Group(Entity):
         return_type = EntityCollection(self.context, User)
 
         def _get_owners():
-            SPHelper.get_owners(self.context, self.properties["Id"], return_type)
+            SPHelper.get_owners(self.context, self.properties["Id"], return_type)  # type: ignore[arg-type]
 
         self.ensure_property("Id", _get_owners)
         return return_type

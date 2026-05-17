@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Dict
+from typing import Optional, TYPE_CHECKING, Dict
 
 from typing_extensions import Self
 
@@ -94,6 +94,8 @@ class ListItem(SecurableObject):
         from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
         def _lock_record_item():
+            assert list_folder.server_relative_url is not None
+            assert self.id is not None
             SPPolicyStoreProxy.lock_record_item(
                 self.context,
                 list_folder.server_relative_url,
@@ -107,9 +109,9 @@ class ListItem(SecurableObject):
     def share_link(
         self,
         link_kind: int,
-        expiration: Optional[datetime.datetime] = None,
-        role: Optional[int] = None,
-        password: Optional[str] = None,
+        expiration: Optional[Optional[datetime.datetime]] = None,
+        role: Optional[Optional[int]] = None,
+        password: Optional[Optional[str]] = None,
     ) -> ClientResult[ShareLinkResponse]:
         """Creates a tokenized sharing link for a list item based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
@@ -130,6 +132,7 @@ class ListItem(SecurableObject):
             settings=ShareLinkSettings(link_kind=link_kind, expiration=expiration, role=role, password=password)
         )
         if password:
+            assert request.settings is not None
             request.settings.allowAnonymousAccess = True
             request.settings.updatePassword = True
 
@@ -138,7 +141,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def unshare_link(self, link_kind: int, share_id: str = None) -> Self:
+    def unshare_link(self, link_kind: int, share_id: Optional[str] = None) -> Self:
         """
         Removes the specified tokenized sharing link of the list item.
 
@@ -176,6 +179,8 @@ class ListItem(SecurableObject):
         return_value = ClientResult(self.context)
 
         def _list_item_loaded():
+            assert self.parent_list.id is not None
+            assert self.id is not None
             Reputation.set_rating(self.context, self.parent_list.id, self.id, value, return_value)
 
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
@@ -192,6 +197,8 @@ class ListItem(SecurableObject):
         return_value = ClientResult(self.context)
 
         def _list_item_loaded():
+            assert self.parent_list.id is not None
+            assert self.id is not None
             Reputation.set_like(self.context, self.parent_list.id, self.id, value, return_value)
 
         self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
@@ -236,8 +243,8 @@ class ListItem(SecurableObject):
         user_principal_name: str,
         share_option=ExternalSharingSiteOption.View,
         send_email: bool = True,
-        email_subject: str = None,
-        email_body: str = None,
+        email_subject: Optional[str] = None,
+        email_body: Optional[str] = None,
     ) -> SharingResult:
         """
         Share a ListItem (file or folder facet)
@@ -302,6 +309,8 @@ class ListItem(SecurableObject):
         return_type = ObjectSharingInformation(self.context)
 
         def _item_resolved():
+            assert self.parent_list.id is not None
+            assert self.id is not None
             ObjectSharingInformation.get_list_item_sharing_information(
                 self.context, self.parent_list.id, self.id, return_type=return_type
             )
@@ -313,8 +322,8 @@ class ListItem(SecurableObject):
         self,
         form_values: Dict,
         new_document_update: bool = False,
-        checkin_comment: str = None,
-        dates_in_utc: bool = None,
+        checkin_comment: Optional[str] = None,
+        dates_in_utc: Optional[bool] = None,
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """Validates and sets the values of the specified collection of fields for the list item.
 
@@ -335,7 +344,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def update(self) -> Self:
+    def update(self) -> Self:  # type: ignore[override]
         """
         Updates the item without creating another version of the item.
         Exceptions:
@@ -348,7 +357,7 @@ class ListItem(SecurableObject):
         super().update()
         return self
 
-    def update_ex(self, bypass_quota_check: bool = None, bypass_shared_lock: bool = None):
+    def update_ex(self, bypass_quota_check: Optional[bool] = None, bypass_shared_lock: Optional[bool] = None):
         """
 
         :param bool bypass_quota_check:
@@ -367,7 +376,7 @@ class ListItem(SecurableObject):
         def _after_system_update(
             result: ClientResult[ClientValueCollection[ListItemFormUpdateValue]],
         ) -> None:
-            has_any_error = any(item.HasException for item in result.value)
+            has_any_error = any(item.HasException for item in result.value)  # type: ignore[attr-defined]
             if has_any_error:
                 raise ValueError("Update ListItem failed")
 
@@ -379,7 +388,9 @@ class ListItem(SecurableObject):
                 if n == "Id":
                     pass
                 elif n.endswith("Id"):
-                    user = self.context.web.site_users.get_by_id(self.get_property(n))
+                    user_id = self.get_property(n)
+                    assert isinstance(user_id, int)
+                    user = self.context.web.site_users.get_by_id(str(user_id))
                     form_values[n[:-2]] = FieldUserValue.from_user(user)
                 else:
                     form_values[n] = self.get_property(n)
@@ -676,9 +687,9 @@ class ListItem(SecurableObject):
         # fallback: create a new resource path
         if name == "Id":
             if self._resource_path is None and self.parent_collection is not None:
-                self._resource_path = EntityPath(value, self.parent_collection.resource_path)
+                self._resource_path = EntityPath(value, self.parent_collection.resource_path)  # type: ignore[arg-type]
             else:
-                self._resource_path.patch(value)
+                self._resource_path.patch(value)  # type: ignore[arg-type]
         return self
 
     def _set_taxonomy_field_value(self, name: str, value: TaxonomyFieldValueCollection) -> None:

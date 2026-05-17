@@ -1,16 +1,17 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SettingDataProperty(ClientValue):
     def __init__(
         self,
-        available_in_graph: bool = None,
-        available_in_power_shell: bool = None,
-        available_in_share_point_admin_center: bool = None,
-        category: int = None,
-        description: str = None,
-        setting_name: str = None,
-        setting_value: str = None,
+        available_in_graph: Optional[bool] = None,
+        available_in_power_shell: Optional[bool] = None,
+        available_in_share_point_admin_center: Optional[bool] = None,
+        category: Optional[int] = None,
+        description: Optional[str] = None,
+        setting_name: Optional[str] = None,
+        setting_value: Optional[str] = None,
     ):
         self.AvailableInGraph = available_in_graph
         self.AvailableInPowerShell = available_in_power_shell
@@ -21,5 +22,5 @@ class SettingDataProperty(ClientValue):
         self.SettingValue = setting_value
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SettingDataProperty"

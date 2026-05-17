@@ -91,7 +91,9 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def get_available_tags_for_site(
-        context: ClientContext, site_url: str, return_type: ClientResult[ClientValueCollection[ComplianceTag]] = None
+        context: ClientContext,
+        site_url: str,
+        return_type: Optional[ClientResult[ClientValueCollection[ComplianceTag]]] = None,
     ) -> ClientResult[ClientValueCollection[ComplianceTag]]:
         """
         Retrieves all available compliance tags that can be applied to a site.
@@ -147,7 +149,7 @@ class SPPolicyStoreProxy(Entity):
     def get_list_compliance_tag(
         context: ClientContext,
         list_url: str,
-        return_type: ClientResult[ComplianceTag] = None,
+        return_type: Optional[ClientResult[ComplianceTag]] = None,
     ) -> ClientResult[ComplianceTag]:
         """
         Gets the compliance tag currently applied to a list or document library.
@@ -177,7 +179,7 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def register_site_hold_event_receiver(
-        context: ClientContext, site_url: str = None, site_id: str = None
+        context: ClientContext, site_url: Optional[str] = None, site_id: Optional[str] = None
     ) -> SPPolicyStoreProxy:
         """
         Registers an event receiver for site hold operations.
@@ -213,9 +215,9 @@ class SPPolicyStoreProxy(Entity):
         context: ClientContext,
         list_url: str,
         compliance_tag_value: str,
-        block_delete: bool = None,
-        block_edit: bool = None,
-        sync_to_items: bool = None,
+        block_delete: Optional[bool] = None,
+        block_edit: Optional[bool] = None,
+        sync_to_items: Optional[bool] = None,
     ) -> SPPolicyStoreProxy:
         """Apply a retention label ("compliance tag") to a list or document library."""
         payload = {
@@ -243,8 +245,8 @@ class SPPolicyStoreProxy(Entity):
         context: ClientContext,
         list_url: str,
         item_id: int,
-        refresh_labeled_time: bool = None,
-        return_type: ClientResult[int] = None,
+        refresh_labeled_time: Optional[bool] = None,
+        return_type: Optional[ClientResult[int]] = None,
     ) -> ClientResult[int]:
         """
         Locks a record item to prevent modifications.

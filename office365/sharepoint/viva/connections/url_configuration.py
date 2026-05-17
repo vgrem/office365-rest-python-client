@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class VivaConnectionsUrlConfiguration(ClientValue):
@@ -6,9 +7,9 @@ class VivaConnectionsUrlConfiguration(ClientValue):
         self,
         content_url=None,
         dashboard_not_configured_warning=None,
-        global_nav_not_configured_warning: str = None,
-        not_home_site_url_warning: str = None,
-        search_url: str = None,
+        global_nav_not_configured_warning: Optional[str] = None,
+        not_home_site_url_warning: Optional[str] = None,
+        search_url: Optional[str] = None,
     ):
         """
         :param str content_url:

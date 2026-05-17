@@ -23,7 +23,7 @@ class ArchiveFileSizeMetric(Entity):
         return self.properties.get("InactiveStorageInGB", None)
 
     @property
-    def last_refresh_on(self) -> datetime:
+    def last_refresh_on(self) -> Optional[datetime]:
         """Gets the LastRefreshOn property"""
         return self.properties.get("LastRefreshOn", None)
 

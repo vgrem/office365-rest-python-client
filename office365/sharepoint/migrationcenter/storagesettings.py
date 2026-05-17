@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class MigrationStorageSettings(ClientValue):
-    def __init__(self, encrypted_certificate: str = None, encryption_key: str = None):
+    def __init__(self, encrypted_certificate: Optional[str] = None, encryption_key: Optional[str] = None):
         self.EncryptedCertificate = encrypted_certificate
         self.EncryptionKey = encryption_key
 

@@ -4,19 +4,20 @@ from office365.sharepoint.clientsidecomponent.card_element import CardElement
 from office365.sharepoint.clientsidecomponent.padding import Padding
 from office365.sharepoint.sitedesigns.autoinvokeaction import AutoInvokeAction
 from office365.sharepoint.sitedesigns.autoinvokeoptions import AutoInvokeOptions
+from typing import Optional
 
 
 class AdaptiveCard(ClientValue):
     def __init__(
         self,
         body: ClientValueCollection[CardElement] = ClientValueCollection(CardElement),
-        correlation_id: str = None,
-        hide_original_body: bool = None,
-        originator: str = None,
-        padding: Padding = None,
-        rtl: bool = None,
-        type_: str = None,
-        version: str = None,
+        correlation_id: Optional[str] = None,
+        hide_original_body: Optional[bool] = None,
+        originator: Optional[str] = None,
+        padding: Optional[Padding] = None,
+        rtl: Optional[bool] = None,
+        type_: Optional[str] = None,
+        version: Optional[str] = None,
         auto_invoke_action: AutoInvokeAction = AutoInvokeAction(),
         auto_invoke_options: AutoInvokeOptions = AutoInvokeOptions(),
     ):

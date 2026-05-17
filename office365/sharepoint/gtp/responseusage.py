@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class GptResponseUsage(ClientValue):
     def __init__(
         self,
-        completion_tokens: int = None,
-        prompt_tokens: int = None,
-        total_tokens: int = None,
+        completion_tokens: Optional[int] = None,
+        prompt_tokens: Optional[int] = None,
+        total_tokens: Optional[int] = None,
     ):
         self.CompletionTokens = completion_tokens
         self.PromptTokens = prompt_tokens

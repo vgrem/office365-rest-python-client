@@ -3,12 +3,13 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.viva.home_title_region import VivaHomeTitleRegion
 from office365.sharepoint.viva.spotlightconfiguration import SpotlightConfiguration
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
+from typing import Optional
 
 
 class ConnectionsConfigurationAndData(ClientValue):
     def __init__(
         self,
-        is_configured: bool = None,
+        is_configured: Optional[bool] = None,
         spotlight_configuration: SpotlightConfiguration = SpotlightConfiguration(),
         spotlight_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(SpotlightNews),
         title_region: VivaHomeTitleRegion = VivaHomeTitleRegion(),

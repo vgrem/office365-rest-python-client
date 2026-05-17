@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sites.manager.missinglinkreferrer import MissingLinkReferrer
+from typing import Optional
 
 
 class MissingLink(ClientValue):
     def __init__(
         self,
-        hits: int = None,
-        not_found_url: str = None,
+        hits: Optional[int] = None,
+        not_found_url: Optional[str] = None,
         referrers: ClientValueCollection[MissingLinkReferrer] = ClientValueCollection(MissingLinkReferrer),
     ):
         self.Hits = hits

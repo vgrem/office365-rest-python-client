@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteCohortsSummary(ClientValue):
     def __init__(
         self,
-        externally_shared_sites_count: int = None,
-        group_connected_sites_count: int = None,
-        inactive_sites_count: int = None,
-        total_sites_count: int = None,
+        externally_shared_sites_count: Optional[int] = None,
+        group_connected_sites_count: Optional[int] = None,
+        inactive_sites_count: Optional[int] = None,
+        total_sites_count: Optional[int] = None,
     ):
         self.ExternallySharedSitesCount = externally_shared_sites_count
         self.GroupConnectedSitesCount = group_connected_sites_count
@@ -15,5 +16,5 @@ class SiteCohortsSummary(ClientValue):
         self.TotalSitesCount = total_sites_count
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCohortsSummary"

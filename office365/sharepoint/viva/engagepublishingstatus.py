@@ -1,16 +1,17 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
+from typing import Optional
 
 
 class VivaEngagePublishingStatus(ClientValue):
     def __init__(
         self,
-        destination_id: str = None,
-        error_code: int = None,
-        error_message: str = None,
+        destination_id: Optional[str] = None,
+        error_code: Optional[int] = None,
+        error_message: Optional[str] = None,
         errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
-        status: int = None,
+        status: Optional[int] = None,
     ):
         self.DestinationId = destination_id
         self.ErrorCode = error_code

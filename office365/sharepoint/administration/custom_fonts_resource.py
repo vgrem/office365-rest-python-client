@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CustomFontsResource(ClientValue):
     def __init__(
         self,
-        byte_array: bytes = None,
-        file_name: str = None,
-        full_path: str = None,
-        maj_ver: int = None,
-        type_: int = None,
+        byte_array: Optional[bytes] = None,
+        file_name: Optional[str] = None,
+        full_path: Optional[str] = None,
+        maj_ver: Optional[int] = None,
+        type_: Optional[int] = None,
     ):
         self.byteArray = byte_array
         self.fileName = file_name

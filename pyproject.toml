@@ -204,4 +204,5 @@ include = [
     "office365/sharepoint/principal/*",
     "office365/sharepoint/microservice/*",
     "office365/sharepoint/brandcenter/*",
+    "office365/sharepoint/agreements/*",
 ]

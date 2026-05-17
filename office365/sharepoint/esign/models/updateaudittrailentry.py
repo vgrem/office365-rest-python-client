@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UpdateAuditTrailEntryModel(ClientValue):
     def __init__(
         self,
-        audit_trail_entry_id: str = None,
-        document_id: str = None,
-        should_remove_entry: bool = None,
+        audit_trail_entry_id: Optional[str] = None,
+        document_id: Optional[str] = None,
+        should_remove_entry: Optional[bool] = None,
     ):
         self.auditTrailEntryId = audit_trail_entry_id
         self.documentId = document_id

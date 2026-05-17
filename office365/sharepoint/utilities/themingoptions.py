@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.utilities.jsontheme import JsonTheme
+from typing import Optional
 
 
 class ThemingOptions(ClientValue):
     def __init__(
         self,
-        hide_default_themes: bool = None,
+        hide_default_themes: Optional[bool] = None,
         theme_previews: ClientValueCollection[JsonTheme] = ClientValueCollection(JsonTheme),
     ):
         self.hideDefaultThemes = hide_default_themes

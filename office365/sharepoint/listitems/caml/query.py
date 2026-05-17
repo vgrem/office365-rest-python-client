@@ -6,17 +6,18 @@ from office365.sharepoint.listitems.collection_position import (
 )
 from office365.sharepoint.types.resource_path import ResourcePath
 from office365.sharepoint.views.scope import ViewScope
+from typing import Optional
 
 
 class CamlQuery(ClientValue):
     def __init__(
         self,
         dates_in_utc: bool = True,
-        view_xml: str = None,
-        list_item_collection_position: ListItemCollectionPosition = None,
-        folder_server_relative_url: str = None,
+        view_xml: Optional[str] = None,
+        list_item_collection_position: Optional[ListItemCollectionPosition] = None,
+        folder_server_relative_url: Optional[str] = None,
         allow_incremental_results: bool = True,
-        folder_server_relative_path: ResourcePath = None,
+        folder_server_relative_path: Optional[ResourcePath] = None,
     ):
         """
         Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
@@ -67,7 +68,7 @@ class CamlQuery(ClientValue):
         return CamlQuery.parse(qry_text, ViewScope.DefaultValue)
 
     def __repr__(self):
-        return self.ViewXml
+        return self.ViewXml or ""
 
     @property
     def entity_type_name(self):

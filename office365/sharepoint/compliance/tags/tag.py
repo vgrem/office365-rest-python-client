@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ComplianceTag(ClientValue):
@@ -8,30 +9,30 @@ class ComplianceTag(ClientValue):
 
     def __init__(
         self,
-        accept_messages_only_from_senders_or_members: bool = None,
-        access_type: str = None,
-        allow_access_from_unmanaged_device: bool = None,
-        auto_delete: bool = None,
-        block_delete: bool = None,
-        block_edit: bool = None,
-        compliance_flags: int = None,
-        contains_site_label: bool = None,
-        display_name: str = None,
-        encryption_rms_template_id: str = None,
-        has_retention_action: bool = None,
-        is_event_tag: bool = None,
-        multi_stage_reviewer_email: str = None,
-        next_stage_compliance_tag: str = None,
-        notes: str = None,
-        require_sender_authentication_enabled: bool = None,
-        reviewer_email: str = None,
+        accept_messages_only_from_senders_or_members: Optional[bool] = None,
+        access_type: Optional[str] = None,
+        allow_access_from_unmanaged_device: Optional[bool] = None,
+        auto_delete: Optional[bool] = None,
+        block_delete: Optional[bool] = None,
+        block_edit: Optional[bool] = None,
+        compliance_flags: Optional[int] = None,
+        contains_site_label: Optional[bool] = None,
+        display_name: Optional[str] = None,
+        encryption_rms_template_id: Optional[str] = None,
+        has_retention_action: Optional[bool] = None,
+        is_event_tag: Optional[bool] = None,
+        multi_stage_reviewer_email: Optional[str] = None,
+        next_stage_compliance_tag: Optional[str] = None,
+        notes: Optional[str] = None,
+        require_sender_authentication_enabled: Optional[bool] = None,
+        reviewer_email: Optional[str] = None,
         sharing_capabilities: str | None = None,
-        super_lock: bool = None,
-        tag_duration: int = None,
-        tag_id: str = None,
-        tag_name: str = None,
-        tag_retention_based_on: str = None,
-        unlocked_as_default: bool = None,
+        super_lock: Optional[bool] = None,
+        tag_duration: Optional[int] = None,
+        tag_id: Optional[str] = None,
+        tag_name: Optional[str] = None,
+        tag_retention_based_on: Optional[str] = None,
+        unlocked_as_default: Optional[bool] = None,
     ):
         """ """
         self.AcceptMessagesOnlyFromSendersOrMembers = accept_messages_only_from_senders_or_members

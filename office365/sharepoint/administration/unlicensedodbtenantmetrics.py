@@ -1,30 +1,31 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UnlicensedOdbTenantMetrics(ClientValue):
     def __init__(
         self,
-        admin_locked_count: int = None,
-        admin_locked_size_bytes: float = None,
-        billable_count: int = None,
-        billable_size_bytes: float = None,
-        compliance_hold_count: int = None,
-        compliance_hold_size_bytes: float = None,
-        count: int = None,
-        duplicate_site_count: int = None,
-        duplicate_site_size_bytes: float = None,
-        invalid_license_count: int = None,
-        invalid_license_size_bytes: float = None,
-        last_refresh_on: datetime = None,
-        restored_by_tenant_admin_count: int = None,
-        restored_by_tenant_admin_size_bytes: float = None,
-        retention_period_count: int = None,
-        retention_period_size_bytes: float = None,
-        size_bytes: float = None,
-        unknown_count: int = None,
-        unknown_size_bytes: float = None,
+        admin_locked_count: Optional[int] = None,
+        admin_locked_size_bytes: Optional[float] = None,
+        billable_count: Optional[int] = None,
+        billable_size_bytes: Optional[float] = None,
+        compliance_hold_count: Optional[int] = None,
+        compliance_hold_size_bytes: Optional[float] = None,
+        count: Optional[int] = None,
+        duplicate_site_count: Optional[int] = None,
+        duplicate_site_size_bytes: Optional[float] = None,
+        invalid_license_count: Optional[int] = None,
+        invalid_license_size_bytes: Optional[float] = None,
+        last_refresh_on: Optional[datetime] = None,
+        restored_by_tenant_admin_count: Optional[int] = None,
+        restored_by_tenant_admin_size_bytes: Optional[float] = None,
+        retention_period_count: Optional[int] = None,
+        retention_period_size_bytes: Optional[float] = None,
+        size_bytes: Optional[float] = None,
+        unknown_count: Optional[int] = None,
+        unknown_size_bytes: Optional[float] = None,
     ):
         self.adminLockedCount = admin_locked_count
         self.adminLockedSizeBytes = admin_locked_size_bytes

@@ -1,5 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.sites.status import SiteStatus
+from typing import Optional
 
 
 class GroupSiteInfo(ClientValue):
@@ -7,9 +8,9 @@ class GroupSiteInfo(ClientValue):
         self,
         site_url=None,
         site_status: SiteStatus = SiteStatus.None_,
-        documents_url: str = None,
-        error_message: str = None,
-        group_id: str = None,
+        documents_url: Optional[str] = None,
+        error_message: Optional[str] = None,
+        group_id: Optional[str] = None,
     ):
         """
         :param str site_url: Site url

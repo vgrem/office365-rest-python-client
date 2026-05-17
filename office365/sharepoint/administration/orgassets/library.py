@@ -1,18 +1,19 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.types.resource_path import ResourcePath
+from typing import Optional
 
 
 class OrgAssetsLibrary(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        file_type: str = None,
+        display_name: Optional[str] = None,
+        file_type: Optional[str] = None,
         library_url: ResourcePath = ResourcePath(),
-        list_id: str = None,
-        org_asset_flags: int = None,
-        org_asset_type: int = None,
+        list_id: Optional[str] = None,
+        org_asset_flags: Optional[int] = None,
+        org_asset_type: Optional[int] = None,
         thumbnail_url: ResourcePath = ResourcePath(),
-        unique_id: str = None,
+        unique_id: Optional[str] = None,
     ):
         self.DisplayName = display_name
         self.FileType = file_type

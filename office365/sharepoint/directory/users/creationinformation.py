@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UserCreationInformation(ClientValue):
-    def __init__(self, email: str = None, login_name: str = None, title: str = None):
+    def __init__(self, email: Optional[str] = None, login_name: Optional[str] = None, title: Optional[str] = None):
         self.email = email
         self.login_name = login_name
         self.title = title

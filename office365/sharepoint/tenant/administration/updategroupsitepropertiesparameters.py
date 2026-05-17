@@ -1,11 +1,12 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UpdateGroupSitePropertiesParameters(ClientValue):
-    def __init__(self, storage_maximum_level: int = None, storage_warning_level: int = None):
+    def __init__(self, storage_maximum_level: Optional[int] = None, storage_warning_level: Optional[int] = None):
         self.storageMaximumLevel = storage_maximum_level
         self.storageWarningLevel = storage_warning_level
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.UpdateGroupSitePropertiesParameters"

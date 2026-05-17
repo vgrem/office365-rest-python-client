@@ -155,8 +155,13 @@ class MoveCopyUtil(Entity):
         import zipfile
 
         def _get_relative_file_path(file: File) -> str:
+            parent_folder = file.parent_folder
+            assert parent_folder is not None
+            assert parent_folder.server_relative_url is not None
+            assert remove_folder.server_relative_url is not None
+            assert file.name is not None
             return os.path.join(
-                file.parent_folder.server_relative_url.replace(remove_folder.server_relative_url, ""),
+                parent_folder.server_relative_url.replace(remove_folder.server_relative_url, ""),
                 file.name,
             )
 

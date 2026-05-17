@@ -1,15 +1,16 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPDeletedContainerProperties(ClientValue):
     def __init__(
         self,
-        container_id: str = None,
-        container_name: str = None,
-        created_on: datetime = None,
-        deleted_on: datetime = None,
+        container_id: Optional[str] = None,
+        container_name: Optional[str] = None,
+        created_on: Optional[datetime] = None,
+        deleted_on: Optional[datetime] = None,
     ):
         self.ContainerId = container_id
         self.ContainerName = container_name
@@ -17,5 +18,5 @@ class SPDeletedContainerProperties(ClientValue):
         self.DeletedOn = deleted_on
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDeletedContainerProperties"

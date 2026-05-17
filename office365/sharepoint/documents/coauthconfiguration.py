@@ -1,14 +1,15 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CoAuthConfiguration(ClientValue):
     def __init__(
         self,
-        source_session_id: str = None,
+        source_session_id: Optional[str] = None,
         update_date: datetime = datetime.min,
-        update_reason: int = None,
+        update_reason: Optional[int] = None,
     ):
         self.source_session_id = source_session_id
         self.update_date = update_date

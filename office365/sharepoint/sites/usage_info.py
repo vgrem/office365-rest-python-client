@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UsageInfo(ClientValue):
@@ -8,12 +9,12 @@ class UsageInfo(ClientValue):
 
     def __init__(
         self,
-        bandwidth: int = None,
-        discussion_storage: int = None,
-        visits: int = None,
-        hits: int = None,
-        storage: int = None,
-        storage_percentage_used: float = None,
+        bandwidth: Optional[int] = None,
+        discussion_storage: Optional[int] = None,
+        visits: Optional[int] = None,
+        hits: Optional[int] = None,
+        storage: Optional[int] = None,
+        storage_percentage_used: Optional[float] = None,
     ):
         """
         :param long bandwidth: Contains the cumulative bandwidth used by the site collection on the previous day or

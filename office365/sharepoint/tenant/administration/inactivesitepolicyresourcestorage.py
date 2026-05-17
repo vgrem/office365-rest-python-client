@@ -2,23 +2,24 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
+from typing import Optional
 
 
 class InactiveSitePolicyResourceStorage(ClientValue):
     def __init__(
         self,
-        created_on: datetime = None,
-        last_scoped_on: datetime = None,
-        last_transitioned_on: datetime = None,
+        created_on: Optional[datetime] = None,
+        last_scoped_on: Optional[datetime] = None,
+        last_transitioned_on: Optional[datetime] = None,
         lookup_site_id: FieldLookupValue = FieldLookupValue(),
-        notification_data: str = None,
-        notification_status: int = None,
-        resource_id: str = None,
-        resource_state: int = None,
-        resource_state_transition_data: str = None,
-        resource_type: int = None,
-        updated_on: datetime = None,
-        user_responses: str = None,
+        notification_data: Optional[str] = None,
+        notification_status: Optional[int] = None,
+        resource_id: Optional[str] = None,
+        resource_state: Optional[int] = None,
+        resource_state_transition_data: Optional[str] = None,
+        resource_type: Optional[int] = None,
+        updated_on: Optional[datetime] = None,
+        user_responses: Optional[str] = None,
     ):
         self.createdOn = created_on
         self.lastScopedOn = last_scoped_on
@@ -34,5 +35,5 @@ class InactiveSitePolicyResourceStorage(ClientValue):
         self.userResponses = user_responses
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.InactiveSitePolicyResourceStorage"

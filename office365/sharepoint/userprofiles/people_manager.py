@@ -1,4 +1,4 @@
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -16,11 +16,13 @@ from office365.sharepoint.userprofiles.personal_site_creation_priority import (
 )
 
 
-def _ensure_user(user: Union[str, User], action: Callable[[str], None] = None) -> None:
+def _ensure_user(user: Union[str, User], action: Optional[Callable[[str], None]] = None) -> None:
     if isinstance(user, User):
-        user.ensure_property("LoginName", lambda: action(user.login_name))
+        login_name = user.login_name
+        assert login_name is not None
+        user.ensure_property("LoginName", lambda: action(login_name))  # type: ignore[arg-type]
     else:
-        action(user)
+        action(user)  # type: ignore[arg-type]
 
 
 class PeopleManager(Entity):
@@ -81,7 +83,9 @@ class PeopleManager(Entity):
         if isinstance(account, User):
 
             def _account_loaded():
-                _get_followers_for(account.login_name)
+                login_name = account.login_name
+                assert login_name is not None
+                _get_followers_for(login_name)
 
             account.ensure_property("LoginName", _account_loaded)
         else:

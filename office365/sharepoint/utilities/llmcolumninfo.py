@@ -1,16 +1,17 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class LLMColumnInfo(ClientValue):
     def __init__(
         self,
-        analyze_image_detail_level: str = None,
-        analyze_image_with_vision: bool = None,
-        autofill_column_type: str = None,
-        custom_model_id: str = None,
-        custom_parameters_json: str = None,
-        is_enabled: bool = None,
-        prompt: str = None,
+        analyze_image_detail_level: Optional[str] = None,
+        analyze_image_with_vision: Optional[bool] = None,
+        autofill_column_type: Optional[str] = None,
+        custom_model_id: Optional[str] = None,
+        custom_parameters_json: Optional[str] = None,
+        is_enabled: Optional[bool] = None,
+        prompt: Optional[str] = None,
     ):
         self.AnalyzeImageDetailLevel = analyze_image_detail_level
         self.AnalyzeImageWithVision = analyze_image_with_vision

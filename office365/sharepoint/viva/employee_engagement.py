@@ -7,6 +7,7 @@ from office365.sharepoint.viva.app_configuration import AppConfiguration
 from office365.sharepoint.viva.connections.page import VivaConnectionsPage
 from office365.sharepoint.viva.dashboard.configuration import DashboardConfiguration
 from office365.sharepoint.viva.home import VivaHome
+from typing import Optional
 
 
 class EmployeeEngagement(Entity):
@@ -15,7 +16,7 @@ class EmployeeEngagement(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.EmployeeEngagement"))
 
-    def dashboard_content(self, override_language_code: str = None) -> ClientResult[str]:
+    def dashboard_content(self, override_language_code: Optional[str] = None) -> ClientResult[str]:
         """
         :param str override_language_code:
         """
@@ -26,7 +27,7 @@ class EmployeeEngagement(Entity):
         return return_type
 
     def full_dashboard_content(
-        self, canvas_as_json: bool = None, include_personalization_data: bool = None
+        self, canvas_as_json: Optional[bool] = None, include_personalization_data: Optional[bool] = None
     ) -> ClientResult[DashboardConfiguration]:
         """
         :param bool canvas_as_json:

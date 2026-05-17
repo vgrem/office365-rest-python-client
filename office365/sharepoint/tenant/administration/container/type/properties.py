@@ -4,26 +4,27 @@ from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.container.type.billingproperties import (
     SPContainerTypeBillingProperties,
 )
+from typing import Optional
 
 
 class SPContainerTypeProperties(ClientValue):
     def __init__(
         self,
-        application_redirect_url: str = None,
-        azure_subscription_id: UUID = None,
+        application_redirect_url: Optional[str] = None,
+        azure_subscription_id: Optional[UUID] = None,
         billing_properties: SPContainerTypeBillingProperties = SPContainerTypeBillingProperties(),
-        container_type_id: UUID = None,
-        creation_date: str = None,
-        display_name: str = None,
-        expiry_date: str = None,
-        is_billing_profile_required: bool = None,
-        is_governable_by_admin: bool = None,
-        is_governable_by_admin_nullable: int = None,
-        owning_app_id: UUID = None,
-        owning_tenant_id: UUID = None,
-        region: str = None,
-        resource_group: str = None,
-        sp_container_type_billing_classification: int = None,
+        container_type_id: Optional[UUID] = None,
+        creation_date: Optional[str] = None,
+        display_name: Optional[str] = None,
+        expiry_date: Optional[str] = None,
+        is_billing_profile_required: Optional[bool] = None,
+        is_governable_by_admin: Optional[bool] = None,
+        is_governable_by_admin_nullable: Optional[int] = None,
+        owning_app_id: Optional[UUID] = None,
+        owning_tenant_id: Optional[UUID] = None,
+        region: Optional[str] = None,
+        resource_group: Optional[str] = None,
+        sp_container_type_billing_classification: Optional[int] = None,
     ):
         self.ApplicationRedirectUrl = application_redirect_url
         self.AzureSubscriptionId = azure_subscription_id
@@ -42,5 +43,5 @@ class SPContainerTypeProperties(ClientValue):
         self.SPContainerTypeBillingClassification = sp_container_type_billing_classification
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeProperties"

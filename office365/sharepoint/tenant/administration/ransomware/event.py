@@ -2,27 +2,28 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class TenantAdminRansomwareEvent(ClientValue):
     def __init__(
         self,
-        assigned_to: str = None,
-        category: int = None,
-        category_threshold_limit: int = None,
-        classification: int = None,
-        consolidated_report_location: str = None,
-        created_time: datetime = None,
-        event_id: UUID = None,
-        first_occurrence: datetime = None,
-        investigation_state: int = None,
-        last_occurrence: datetime = None,
-        last_updated_time: datetime = None,
-        severity: int = None,
-        status: int = None,
-        tag_id: str = None,
-        total_high_volume_component_activity_detection_count: int = None,
-        updated_by: str = None,
+        assigned_to: Optional[str] = None,
+        category: Optional[int] = None,
+        category_threshold_limit: Optional[int] = None,
+        classification: Optional[int] = None,
+        consolidated_report_location: Optional[str] = None,
+        created_time: Optional[datetime] = None,
+        event_id: Optional[UUID] = None,
+        first_occurrence: Optional[datetime] = None,
+        investigation_state: Optional[int] = None,
+        last_occurrence: Optional[datetime] = None,
+        last_updated_time: Optional[datetime] = None,
+        severity: Optional[int] = None,
+        status: Optional[int] = None,
+        tag_id: Optional[str] = None,
+        total_high_volume_component_activity_detection_count: Optional[int] = None,
+        updated_by: Optional[str] = None,
     ):
         self.assignedTo = assigned_to
         self.category = category
@@ -44,5 +45,5 @@ class TenantAdminRansomwareEvent(ClientValue):
     " "
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRansomwareEvent"

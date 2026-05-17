@@ -11,12 +11,12 @@ class SBSiteMoveJob(Entity):
         return self.properties.get("IsSiteInReadOnly", None)
 
     @property
-    def job_phase_created_at(self) -> datetime:
+    def job_phase_created_at(self) -> Optional[datetime]:
         """Gets the JobPhaseCreatedAt property"""
         return self.properties.get("JobPhaseCreatedAt", None)
 
     @property
-    def job_phase_finished_at(self) -> datetime:
+    def job_phase_finished_at(self) -> Optional[datetime]:
         """Gets the JobPhaseFinishedAt property"""
         return self.properties.get("JobPhaseFinishedAt", None)
 

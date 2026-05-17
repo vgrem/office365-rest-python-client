@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.directory.groups.namevalidationresulterrorparams import (
     GroupNameValidationResultErrorParams,
@@ -9,9 +11,9 @@ class GroupNameValidationResult(ClientValue):
         self,
         alias_error_details: GroupNameValidationResultErrorParams = GroupNameValidationResultErrorParams(),
         display_name_error_details: GroupNameValidationResultErrorParams = GroupNameValidationResultErrorParams(),
-        error_code: str = None,
-        error_message: str = None,
-        is_valid_name: bool = None,
+        error_code: Optional[str] = None,
+        error_message: Optional[str] = None,
+        is_valid_name: Optional[bool] = None,
     ):
         self.AliasErrorDetails = alias_error_details
         self.DisplayNameErrorDetails = display_name_error_details

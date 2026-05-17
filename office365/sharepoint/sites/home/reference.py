@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from typing import Optional
 
 
 class HomeSiteReference(ClientValue):
     def __init__(
         self,
         audiences: GuidCollection = GuidCollection(),
-        site_flags: int = None,
-        site_id: str = None,
-        web_id: str = None,
+        site_flags: Optional[int] = None,
+        site_id: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         self.audiences = audiences
         self.site_flags = site_flags

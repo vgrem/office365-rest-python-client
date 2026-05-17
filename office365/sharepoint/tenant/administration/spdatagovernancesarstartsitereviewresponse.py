@@ -3,19 +3,20 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.errorfacet import ErrorFacet
+from typing import Optional
 
 
 class SPDataGovernanceSARStartSiteReviewResponse(ClientValue):
     def __init__(
         self,
-        admin_comment: str = None,
+        admin_comment: Optional[str] = None,
         error: ErrorFacet = ErrorFacet(),
-        report_entity: int = None,
-        review_id: UUID = None,
-        review_initiated_date_time: datetime = None,
-        site_id: UUID = None,
-        site_name: str = None,
-        status: str = None,
+        report_entity: Optional[int] = None,
+        review_id: Optional[UUID] = None,
+        review_initiated_date_time: Optional[datetime] = None,
+        site_id: Optional[UUID] = None,
+        site_name: Optional[str] = None,
+        status: Optional[str] = None,
     ):
         self.AdminComment = admin_comment
         self.Error = error
@@ -27,5 +28,5 @@ class SPDataGovernanceSARStartSiteReviewResponse(ClientValue):
         self.Status = status
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceSARStartSiteReviewResponse"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -21,9 +21,9 @@ class SiteMoveService(Entity):
         self,
         context: ClientContext,
         site_id: str,
-        site_subscription_id: str = None,
-        source_database_id: str = None,
-        target_database_id: str = None,
+        site_subscription_id: Optional[str] = None,
+        source_database_id: Optional[str] = None,
+        target_database_id: Optional[str] = None,
     ) -> None:
         """"""
         static_path = ServiceOperationPath(

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.syntexcustommodeldeploymentmodelinfo import (
     SyntexCustomModelDeploymentModelInfo,
@@ -7,7 +9,7 @@ from office365.sharepoint.viva.syntexcustommodeldeploymentmodelinfo import (
 class SyntexCustomModelDeploymentProperties(ClientValue):
     def __init__(
         self,
-        capabilities: dict = None,
+        capabilities: Optional[dict] = None,
         model: SyntexCustomModelDeploymentModelInfo = SyntexCustomModelDeploymentModelInfo(),
     ):
         self.capabilities = capabilities

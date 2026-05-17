@@ -1,16 +1,17 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class VivaHomeTitleRegion(ClientValue):
     def __init__(
         self,
         image_url=None,
-        list_id: str = None,
-        site_id: str = None,
-        translate_x: float = None,
-        translate_y: float = None,
-        unique_id: str = None,
-        web_id: str = None,
+        list_id: Optional[str] = None,
+        site_id: Optional[str] = None,
+        translate_x: Optional[float] = None,
+        translate_y: Optional[float] = None,
+        unique_id: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         """
         :param str image_url:

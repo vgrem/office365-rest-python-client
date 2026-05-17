@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,7 +13,7 @@ class SiteManagerService(Entity):
     def __init__(self, context):
         super().__init__(context, StaticPath("Microsoft.SharePoint.SiteManager.SiteManagerService"))
 
-    def top_files(self, max_count: int = None) -> ClientResult[TopSiteFilesResult]:
+    def top_files(self, max_count: Optional[int] = None) -> ClientResult[TopSiteFilesResult]:
         """ """
         return_type = ClientResult(self.context, TopSiteFilesResult())
         payload = {"maxCount": max_count}

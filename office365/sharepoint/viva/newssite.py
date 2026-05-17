@@ -1,17 +1,18 @@
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.news.itemreference import ItemReference
+from office365.sharepoint.news.itemreference import NewsItemReference as ItemReference
+from typing import Optional
 
 
 class NewsSite(ClientValue):
     def __init__(
         self,
-        acronym: str = None,
-        banner_color: str = None,
-        banner_image_url: str = None,
+        acronym: Optional[str] = None,
+        banner_color: Optional[str] = None,
+        banner_image_url: Optional[str] = None,
         item_reference: ItemReference = ItemReference(),
-        title: str = None,
-        type_: str = None,
-        url: str = None,
+        title: Optional[str] = None,
+        type_: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.Acronym = acronym
         self.BannerColor = banner_color

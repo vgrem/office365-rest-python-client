@@ -6,35 +6,36 @@ from office365.sharepoint.documents.effectivebasepermissions import (
     EffectiveBasePermissions,
 )
 from office365.sharepoint.documents.librarydetails import LibraryDetails
+from typing import Optional
 
 
 class AgreementsSolutionFileContext(ClientValue):
     def __init__(
         self,
-        category_id: str = None,
-        category_term_set_id: str = None,
-        check_out_type: int = None,
-        current_version: str = None,
-        does_user_have_edit_permission_on_parent: bool = None,
+        category_id: Optional[str] = None,
+        category_term_set_id: Optional[str] = None,
+        check_out_type: Optional[int] = None,
+        current_version: Optional[str] = None,
+        does_user_have_edit_permission_on_parent: Optional[bool] = None,
         effective_base_permissions: EffectiveBasePermissions = EffectiveBasePermissions(),
         field_library: LibraryDetails = LibraryDetails(),
-        file_properties: dict = None,
-        file_relative_path: str = None,
-        folder_path_full_url: str = None,
-        is_agreements_solution_file: bool = None,
-        last_published_version: str = None,
-        list_id: str = None,
-        list_item_id: str = None,
-        list_item_properties: dict = None,
-        list_item_unique_id: str = None,
-        modern_template_library: LibraryDetails = None,
-        parent_library: LibraryDetails = None,
-        site_id: str = None,
-        snippet_library: LibraryDetails = None,
-        target_library: DestinationLibraryInfo = None,
-        web_id: str = None,
-        web_server_relative_url: str = None,
-        web_url: str = None,
+        file_properties: Optional[dict] = None,
+        file_relative_path: Optional[str] = None,
+        folder_path_full_url: Optional[str] = None,
+        is_agreements_solution_file: Optional[bool] = None,
+        last_published_version: Optional[str] = None,
+        list_id: Optional[str] = None,
+        list_item_id: Optional[str] = None,
+        list_item_properties: Optional[dict] = None,
+        list_item_unique_id: Optional[str] = None,
+        modern_template_library: Optional[LibraryDetails] = None,
+        parent_library: Optional[LibraryDetails] = None,
+        site_id: Optional[str] = None,
+        snippet_library: Optional[LibraryDetails] = None,
+        target_library: Optional[DestinationLibraryInfo] = None,
+        web_id: Optional[str] = None,
+        web_server_relative_url: Optional[str] = None,
+        web_url: Optional[str] = None,
     ):
         self.category_id = category_id
         self.category_term_set_id = category_term_set_id

@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteCreationProperties(ClientValue):
@@ -10,14 +11,14 @@ class SiteCreationProperties(ClientValue):
         owner_name=None,
         template=None,
         site_uni_name=None,
-        compatibility_level: int = None,
-        lcid: str = None,
-        time_zone_id: int = None,
-        enable_agreements_solution: bool = None,
-        storage_maximum_level: int = None,
-        storage_warning_level: int = None,
-        user_code_maximum_level: float = None,
-        user_code_warning_level: float = None,
+        compatibility_level: Optional[int] = None,
+        lcid: Optional[str] = None,
+        time_zone_id: Optional[int] = None,
+        enable_agreements_solution: Optional[bool] = None,
+        storage_maximum_level: Optional[int] = None,
+        storage_warning_level: Optional[int] = None,
+        user_code_maximum_level: Optional[float] = None,
+        user_code_warning_level: Optional[float] = None,
     ):
         """Sets the initial properties for a new site when it is created.
 
@@ -43,5 +44,5 @@ class SiteCreationProperties(ClientValue):
         self.UserCodeWarningLevel = user_code_warning_level
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCreationProperties"

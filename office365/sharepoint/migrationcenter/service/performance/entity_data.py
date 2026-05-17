@@ -69,7 +69,7 @@ class MigrationPerformanceEntityData(Entity):
         return self.properties.get("SPOProcessingSpeed", None)
 
     @property
-    def timestamp(self) -> datetime:
+    def timestamp(self) -> Optional[datetime]:
         """Gets the Timestamp property"""
         return self.properties.get("Timestamp", None)
 

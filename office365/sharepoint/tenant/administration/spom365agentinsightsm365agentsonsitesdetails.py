@@ -1,25 +1,26 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPOM365AgentInsightsM365AgentsOnSitesDetails(ClientValue):
     def __init__(
         self,
-        agent_id: str = None,
-        agent_name: str = None,
-        agent_type: str = None,
-        agent_version: str = None,
-        external_sharing: str = None,
-        request_volume: int = None,
-        restrict_site_access_enabled: str = None,
-        restrict_site_discovery_enabled: str = None,
-        sensitivity: str = None,
-        site_id: str = None,
-        site_name: str = None,
-        site_owner: str = None,
-        site_type: str = None,
-        site_url: str = None,
-        total_agents: int = None,
-        total_request_volume: int = None,
+        agent_id: Optional[str] = None,
+        agent_name: Optional[str] = None,
+        agent_type: Optional[str] = None,
+        agent_version: Optional[str] = None,
+        external_sharing: Optional[str] = None,
+        request_volume: Optional[int] = None,
+        restrict_site_access_enabled: Optional[str] = None,
+        restrict_site_discovery_enabled: Optional[str] = None,
+        sensitivity: Optional[str] = None,
+        site_id: Optional[str] = None,
+        site_name: Optional[str] = None,
+        site_owner: Optional[str] = None,
+        site_type: Optional[str] = None,
+        site_url: Optional[str] = None,
+        total_agents: Optional[int] = None,
+        total_request_volume: Optional[int] = None,
     ):
         self.AgentID = agent_id
         self.AgentName = agent_name
@@ -39,5 +40,5 @@ class SPOM365AgentInsightsM365AgentsOnSitesDetails(ClientValue):
         self.TotalRequestVolume = total_request_volume
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsM365AgentsOnSitesDetails"

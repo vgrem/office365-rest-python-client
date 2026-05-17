@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.listitems.versions.collection_position import (
     ListItemVersionCollectionPosition,
@@ -9,8 +11,8 @@ class GetListItemVersionsParameters(ClientValue):
 
     def __init__(
         self,
-        row_limit: int = None,
-        sort_descending: bool = None,
+        row_limit: Optional[int] = None,
+        sort_descending: Optional[bool] = None,
         list_item_version_collection_position: ListItemVersionCollectionPosition = ListItemVersionCollectionPosition(),
     ):
         """

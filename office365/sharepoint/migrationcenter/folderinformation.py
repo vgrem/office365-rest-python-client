@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPFolderInformation(ClientValue):
     def __init__(
         self,
-        depth: int = None,
-        is_specified: bool = None,
-        name: str = None,
-        server_relative_url: str = None,
-        web_relative_url: str = None,
+        depth: Optional[int] = None,
+        is_specified: Optional[bool] = None,
+        name: Optional[str] = None,
+        server_relative_url: Optional[str] = None,
+        web_relative_url: Optional[str] = None,
     ):
         self.Depth = depth
         self.IsSpecified = is_specified

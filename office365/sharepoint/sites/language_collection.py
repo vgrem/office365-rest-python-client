@@ -21,6 +21,6 @@ class LanguageCollection(Entity):
     def __repr__(self):
         return repr(self.items)
 
-    def set_property(self, name, value, persist_changes=True):
-        self.items.set_property(name, value, persist_changes)
+    def set_property(self, name, value, persist_changes=True):  # type: ignore[override]
+        self.items.set_property(name, value, persist_changes)  # type: ignore[arg-type]
         return self

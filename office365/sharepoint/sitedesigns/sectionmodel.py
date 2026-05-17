@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sitedesigns.webpartmodel import WebPartModel
+from typing import Optional
 
 
 class SectionModel(ClientValue):
     def __init__(
         self,
-        index: int = None,
+        index: Optional[int] = None,
         web_parts: ClientValueCollection[WebPartModel] = ClientValueCollection(WebPartModel),
     ):
         self.index = index

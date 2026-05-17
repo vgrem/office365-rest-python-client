@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteHealthResult(ClientValue):
@@ -11,10 +12,10 @@ class SiteHealthResult(ClientValue):
         message_as_text=None,
         rule_help_link=None,
         rule_id=None,
-        rule_is_repairable: bool = None,
-        rule_name: str = None,
-        status: int = None,
-        time_stamp: datetime = None,
+        rule_is_repairable: Optional[bool] = None,
+        rule_name: Optional[str] = None,
+        status: Optional[int] = None,
+        time_stamp: Optional[datetime] = None,
     ):
         """
         :param str message_as_text: Specifies a summary of the results of running a site collection sitehealth rule.

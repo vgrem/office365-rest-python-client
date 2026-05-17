@@ -1,22 +1,23 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class EventData(ClientValue):
     def __init__(
         self,
-        archive_url: str = None,
-        group: str = None,
-        hub_site_id: str = None,
-        identity: str = None,
-        is_hub_site: str = None,
-        new_site_url: str = None,
-        previous_hub_site_id: str = None,
-        source_site_url: str = None,
-        storage_maximum_level: int = None,
-        storage_previous_maximum_level: int = None,
-        storage_previous_warning_level: int = None,
-        storage_warning_level: int = None,
-        target_site_url: str = None,
+        archive_url: Optional[str] = None,
+        group: Optional[str] = None,
+        hub_site_id: Optional[str] = None,
+        identity: Optional[str] = None,
+        is_hub_site: Optional[str] = None,
+        new_site_url: Optional[str] = None,
+        previous_hub_site_id: Optional[str] = None,
+        source_site_url: Optional[str] = None,
+        storage_maximum_level: Optional[int] = None,
+        storage_previous_maximum_level: Optional[int] = None,
+        storage_previous_warning_level: Optional[int] = None,
+        storage_warning_level: Optional[int] = None,
+        target_site_url: Optional[str] = None,
     ):
         self.ArchiveUrl = archive_url
         self.Group = group
@@ -33,5 +34,5 @@ class EventData(ClientValue):
         self.TargetSiteUrl = target_site_url
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.EventData"

@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class MissingLinkReferrer(ClientValue):
-    def __init__(self, title: str = None, url: str = None):
+    def __init__(self, title: Optional[str] = None, url: Optional[str] = None):
         self.Title = title
         self.Url = url
 

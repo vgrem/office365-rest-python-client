@@ -1,5 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from typing import Optional
 
 
 class SPSiteCreationRequest(ClientValue):
@@ -12,18 +13,18 @@ class SPSiteCreationRequest(ClientValue):
         web_template="SITEPAGEPUBLISHING#0",
         additional_site_feature_ids: GuidCollection = GuidCollection(),
         additional_web_feature_ids: GuidCollection = GuidCollection(),
-        channel_group_id: str = None,
-        classification: str = None,
-        description: str = None,
-        hub_site_id: str = None,
-        related_group_id: str = None,
-        sensitivity_label: str = None,
-        sensitivity_label2: str = None,
-        share_by_email_enabled: bool = None,
-        site_design_id: str = None,
-        teams_channel_type: int = None,
-        time_zone_id: int = None,
-        web_template_extension_id: str = None,
+        channel_group_id: Optional[str] = None,
+        classification: Optional[str] = None,
+        description: Optional[str] = None,
+        hub_site_id: Optional[str] = None,
+        related_group_id: Optional[str] = None,
+        sensitivity_label: Optional[str] = None,
+        sensitivity_label2: Optional[str] = None,
+        share_by_email_enabled: Optional[bool] = None,
+        site_design_id: Optional[str] = None,
+        teams_channel_type: Optional[int] = None,
+        time_zone_id: Optional[int] = None,
+        web_template_extension_id: Optional[str] = None,
     ):
         """
         :param str title:

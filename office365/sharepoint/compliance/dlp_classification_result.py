@@ -1,8 +1,11 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class DlpClassificationResult(ClientValue):
-    def __init__(self, classification_id: str = None, confidence: int = None, count: int = None):
+    def __init__(
+        self, classification_id: Optional[str] = None, confidence: Optional[int] = None, count: Optional[int] = None
+    ):
         super().__init__()
         self.ClassificationId = classification_id
         self.Confidence = confidence

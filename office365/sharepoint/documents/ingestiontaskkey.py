@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class IngestionTaskKey(ClientValue):
     def __init__(
         self,
-        ingestion_table_account_key: str = None,
-        ingestion_table_account_name: str = None,
-        job_id: str = None,
-        task_id: str = None,
-        tenant_name: str = None,
+        ingestion_table_account_key: Optional[str] = None,
+        ingestion_table_account_name: Optional[str] = None,
+        job_id: Optional[str] = None,
+        task_id: Optional[str] = None,
+        tenant_name: Optional[str] = None,
     ):
         self.ingestion_table_account_key = ingestion_table_account_key
         self.ingestion_table_account_name = ingestion_table_account_name

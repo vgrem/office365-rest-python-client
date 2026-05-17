@@ -16,12 +16,12 @@ class TaxonomyReplicationParameters(Entity):
         return self.properties.get("IsReplicateAllGroups", None)
 
     @property
-    def replicated_content_types(self) -> StringCollection:
+    def replicated_content_types(self) -> Optional[StringCollection]:
         """Gets the ReplicatedContentTypes property"""
         return self.properties.get("ReplicatedContentTypes", None)
 
     @property
-    def replicated_groups(self) -> StringCollection:
+    def replicated_groups(self) -> Optional[StringCollection]:
         """Gets the ReplicatedGroups property"""
         return self.properties.get("ReplicatedGroups", None)
 

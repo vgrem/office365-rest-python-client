@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SiteInfoForSitePicker(ClientValue):
     def __init__(
         self,
-        Error: str = None,
-        site_id: str = None,
-        site_name: str = None,
-        Url: str = None,
-        error: str = None,
-        url: str = None,
+        Error: Optional[str] = None,
+        site_id: Optional[str] = None,
+        site_name: Optional[str] = None,
+        Url: Optional[str] = None,
+        error: Optional[str] = None,
+        url: Optional[str] = None,
     ) -> None:
         self.Error = Error
         self.SiteId = site_id
@@ -19,5 +20,5 @@ class SiteInfoForSitePicker(ClientValue):
         self.Url = url
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteInfoForSitePicker"

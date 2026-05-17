@@ -1,15 +1,16 @@
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPOCopilotAgentInsightsReportMetadata(ClientValue):
     def __init__(
         self,
-        created_date_time_in_utc: str = None,
-        id_: UUID = None,
-        report_period_in_days: int = None,
-        status: int = None,
+        created_date_time_in_utc: Optional[str] = None,
+        id_: Optional[UUID] = None,
+        report_period_in_days: Optional[int] = None,
+        status: Optional[int] = None,
     ):
         self.CreatedDateTimeInUtc = created_date_time_in_utc
         self.Id = id_
@@ -19,5 +20,5 @@ class SPOCopilotAgentInsightsReportMetadata(ClientValue):
     ""
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOCopilotAgentInsightsReportMetadata"

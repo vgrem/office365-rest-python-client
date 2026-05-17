@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CollaborationMailboxResponse(ClientValue):
     def __init__(
         self,
-        alternate_url: str = None,
-        correlation_id: str = None,
-        error_code: int = None,
-        status: int = None,
-        url: str = None,
+        alternate_url: Optional[str] = None,
+        correlation_id: Optional[str] = None,
+        error_code: Optional[int] = None,
+        status: Optional[int] = None,
+        url: Optional[str] = None,
     ):
         self.AlternateUrl = alternate_url
         self.CorrelationId = correlation_id

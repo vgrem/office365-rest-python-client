@@ -5,6 +5,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.sitedesigns.image import SiteDesignImage
 from office365.sharepoint.webs.teamappinfo import TeamAppInfo
+from typing import Optional
 
 
 class SiteDesignCreationInfo(ClientValue):
@@ -32,16 +33,16 @@ class SiteDesignCreationInfo(ClientValue):
         requires_yammer_connected=None,
         supported_web_templates=None,
         expanded_preview_images: ClientValueCollection[SiteDesignImage] = ClientValueCollection(SiteDesignImage),
-        supported_web_template_subtypes: StringCollection = None,
-        target_platforms: StringCollection = None,
-        team_channels: StringCollection = None,
-        team_image_alt_text: str = None,
-        team_image_url: str = None,
+        supported_web_template_subtypes: Optional[StringCollection] = None,
+        target_platforms: Optional[StringCollection] = None,
+        team_channels: Optional[StringCollection] = None,
+        team_image_alt_text: Optional[str] = None,
+        team_image_url: Optional[str] = None,
         team_installed_apps: ClientValueCollection[TeamAppInfo] = ClientValueCollection(TeamAppInfo),
-        team_template: str = None,
-        template_assets: StringCollection = None,
-        template_features: StringCollection = None,
-        thumbnail_url: str = None,
+        team_template: Optional[str] = None,
+        template_assets: Optional[StringCollection] = None,
+        template_features: Optional[StringCollection] = None,
+        thumbnail_url: Optional[str] = None,
     ):
         """
         :param str or None _id: The ID of the site design to apply.

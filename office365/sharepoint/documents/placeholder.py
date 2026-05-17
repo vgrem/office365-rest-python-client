@@ -1,17 +1,18 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class Placeholder(ClientValue):
     def __init__(
         self,
-        data_type: str = None,
-        end_position: int = None,
-        id_: str = None,
-        name: str = None,
-        paragraph_id: str = None,
-        question_title: str = None,
-        source: str = None,
-        start_position: int = None,
+        data_type: Optional[str] = None,
+        end_position: Optional[int] = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
+        paragraph_id: Optional[str] = None,
+        question_title: Optional[str] = None,
+        source: Optional[str] = None,
+        start_position: Optional[int] = None,
     ):
         self.data_type = data_type
         self.end_position = end_position

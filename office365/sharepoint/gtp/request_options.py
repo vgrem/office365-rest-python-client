@@ -14,5 +14,5 @@ class ChatGptRequestOptions(BaseGptRequestOptions):
         self.Messages = ClientValueCollection(MessageEntry, messages)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Internal.ChatGptRequestOptions"

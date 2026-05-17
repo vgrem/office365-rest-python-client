@@ -74,7 +74,7 @@ class TenantAdminSettingsService(Entity):
         return self.properties.get("TenantDefaultTimeZoneId", TenantDefaultTimeZoneId())
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.TenantAdminSettingsService"
 
     def get_property(self, name, default_value=None):

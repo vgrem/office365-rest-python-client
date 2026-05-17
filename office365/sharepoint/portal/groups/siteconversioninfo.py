@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class GroupSiteConversionInfo(ClientValue):
     def __init__(
         self,
-        group_type: int = None,
-        is_groupify_disabled: bool = None,
-        is_region_restricted: bool = None,
-        is_wrong_pdl: bool = None,
+        group_type: Optional[int] = None,
+        is_groupify_disabled: Optional[bool] = None,
+        is_region_restricted: Optional[bool] = None,
+        is_wrong_pdl: Optional[bool] = None,
         suggested_members: StringCollection = StringCollection(),
         suggested_owners: StringCollection = StringCollection(),
         unsuggestable_principals: StringCollection = StringCollection(),

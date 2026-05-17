@@ -2,13 +2,14 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.viva.newssite import NewsSite
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
+from typing import Optional
 
 
 class SpotlightConfiguration(ClientValue):
     def __init__(
         self,
-        is_hidden: bool = None,
-        news_source: int = None,
+        is_hidden: Optional[bool] = None,
+        news_source: Optional[int] = None,
         pinned_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(SpotlightNews),
         selected_sites: ClientValueCollection[NewsSite] = ClientValueCollection(NewsSite),
     ):

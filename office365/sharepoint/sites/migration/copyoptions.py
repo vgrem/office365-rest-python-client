@@ -1,6 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.sites.migration.moveandsharefileinfo import SPMoveAndShareFileInfo
+from typing import Optional
 
 
 class CopyMigrationOptions(ClientValue):
@@ -13,16 +14,16 @@ class CopyMigrationOptions(ClientValue):
         bypass_shared_lock=None,
         client_etags=None,
         customized_item_name: StringCollection = StringCollection(),
-        exclude_children: bool = None,
-        ignore_version_history: bool = None,
-        include_item_permissions: bool = None,
-        is_move_mode: bool = None,
-        merge_email_notifications: bool = None,
+        exclude_children: Optional[bool] = None,
+        ignore_version_history: Optional[bool] = None,
+        include_item_permissions: Optional[bool] = None,
+        is_move_mode: Optional[bool] = None,
+        merge_email_notifications: Optional[bool] = None,
         move_and_share_file_info: SPMoveAndShareFileInfo = SPMoveAndShareFileInfo(),
-        move_and_share_items: bool = None,
-        move_but_keep_source: bool = None,
-        name_conflict_behavior: int = None,
-        same_web_copy_move_optimization: bool = None,
+        move_and_share_items: Optional[bool] = None,
+        move_but_keep_source: Optional[bool] = None,
+        name_conflict_behavior: Optional[int] = None,
+        same_web_copy_move_optimization: Optional[bool] = None,
     ):
         self.AllowSchemaMismatch = allow_schema_mismatch
         self.AllowSmallerVersionLimitOnDestination = allow_smaller_version_limit_on_destination

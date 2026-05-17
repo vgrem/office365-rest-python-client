@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class NewsItem(ClientValue):
     def __init__(
         self,
-        backup_picture_url: str = None,
-        caption: str = None,
-        item_id: int = None,
-        picture_alt_text: str = None,
-        picture_url: str = None,
-        properties: str = None,
+        backup_picture_url: Optional[str] = None,
+        caption: Optional[str] = None,
+        item_id: Optional[int] = None,
+        picture_alt_text: Optional[str] = None,
+        picture_url: Optional[str] = None,
+        properties: Optional[str] = None,
     ):
         self.backupPictureUrl = backup_picture_url
         self.caption = caption

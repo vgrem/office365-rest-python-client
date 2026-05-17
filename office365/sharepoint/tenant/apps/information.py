@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class TenantAppInformation(ClientValue):
@@ -9,15 +10,15 @@ class TenantAppInformation(ClientValue):
         app_principal_id=None,
         app_web_full_url=None,
         creation_time=None,
-        icon_absolute_url: str = None,
-        icon_fallback_absolute_url: str = None,
-        id_: str = None,
-        launch_url: str = None,
-        package_fingerprint: bytes = None,
-        product_id: str = None,
-        remote_app_url: str = None,
-        status: int = None,
-        title: str = None,
+        icon_absolute_url: Optional[str] = None,
+        icon_fallback_absolute_url: Optional[str] = None,
+        id_: Optional[str] = None,
+        launch_url: Optional[str] = None,
+        package_fingerprint: Optional[bytes] = None,
+        product_id: Optional[str] = None,
+        remote_app_url: Optional[str] = None,
+        status: Optional[int] = None,
+        title: Optional[str] = None,
     ):
         """
         :param str app_principal_id: Specifies the OAuth Id for the tenant-scoped app.

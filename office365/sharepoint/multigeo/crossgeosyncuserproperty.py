@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class CrossGeoSyncUserProperty(ClientValue):
     def __init__(
         self,
-        ds_guid: str = None,
-        is_multivalue: bool = None,
-        privacy: int = None,
-        property_id: int = None,
-        property_val: str = None,
-        secondary_val: str = None,
+        ds_guid: Optional[str] = None,
+        is_multivalue: Optional[bool] = None,
+        privacy: Optional[int] = None,
+        property_id: Optional[int] = None,
+        property_val: Optional[str] = None,
+        secondary_val: Optional[str] = None,
     ):
         self.DsGuid = ds_guid
         self.IsMultivalue = is_multivalue

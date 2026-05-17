@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, List
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,17 +8,17 @@ from office365.sharepoint.sharing.audience import Audience
 class TargetedSiteDetails(ClientValue):
     def __init__(
         self,
-        audiences: List[Audience] = None,
-        is_in_draft_mode: bool = None,
-        is_viva_backend_site: bool = None,
-        site_id: str = None,
-        targeted_license_type: int = None,
-        title: str = None,
-        url: str = None,
-        viva_connections_default_start: bool = None,
-        web_id: str = None,
+        audiences: Optional[List[Audience]] = None,
+        is_in_draft_mode: Optional[bool] = None,
+        is_viva_backend_site: Optional[bool] = None,
+        site_id: Optional[str] = None,
+        targeted_license_type: Optional[int] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
+        viva_connections_default_start: Optional[bool] = None,
+        web_id: Optional[str] = None,
     ):
-        self.audiences = ClientValueCollection(audiences)
+        self.audiences = ClientValueCollection(Audience, audiences)
         self.is_in_draft_mode = is_in_draft_mode
         self.is_viva_backend_site = is_viva_backend_site
         self.site_id = site_id

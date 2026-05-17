@@ -1,15 +1,16 @@
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPContainerApplicationProperties(ClientValue):
     def __init__(
         self,
-        container_type_id: UUID = None,
-        is_governable_by_admin: bool = None,
-        owning_application_id: UUID = None,
-        owning_application_name: str = None,
+        container_type_id: Optional[UUID] = None,
+        is_governable_by_admin: Optional[bool] = None,
+        owning_application_id: Optional[UUID] = None,
+        owning_application_name: Optional[str] = None,
     ):
         self.ContainerTypeId = container_type_id
         self.IsGovernableByAdmin = is_governable_by_admin
@@ -17,5 +18,5 @@ class SPContainerApplicationProperties(ClientValue):
         self.OwningApplicationName = owning_application_name
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerApplicationProperties"

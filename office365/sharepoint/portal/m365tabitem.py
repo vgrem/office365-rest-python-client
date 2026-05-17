@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class M365TabItem(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        is_default: bool = None,
-        item_type: int = None,
-        url: str = None,
+        display_name: Optional[str] = None,
+        is_default: Optional[bool] = None,
+        item_type: Optional[int] = None,
+        url: Optional[str] = None,
     ):
         self.displayName = display_name
         self.isDefault = is_default

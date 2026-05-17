@@ -1,21 +1,22 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ClassificationResult(ClientValue):
     def __init__(
         self,
-        confidence_score: float = None,
-        content_type_id: str = None,
-        content_type_name: str = None,
-        error: str = None,
-        metas: dict = None,
-        model_id: str = None,
-        model_version: str = None,
-        retention_label_flags: int = None,
-        retention_label_name: str = None,
-        retry_count: int = None,
-        sensitivity_label: str = None,
-        table_metas: dict = None,
+        confidence_score: Optional[float] = None,
+        content_type_id: Optional[str] = None,
+        content_type_name: Optional[str] = None,
+        error: Optional[str] = None,
+        metas: Optional[dict] = None,
+        model_id: Optional[str] = None,
+        model_version: Optional[str] = None,
+        retention_label_flags: Optional[int] = None,
+        retention_label_name: Optional[str] = None,
+        retry_count: Optional[int] = None,
+        sensitivity_label: Optional[str] = None,
+        table_metas: Optional[dict] = None,
     ):
         self.confidence_score = confidence_score
         self.content_type_id = content_type_id

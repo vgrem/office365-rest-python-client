@@ -1,5 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
+from typing import Optional
 
 
 class GroupCreationInformation(ClientValue):
@@ -9,8 +10,8 @@ class GroupCreationInformation(ClientValue):
         alias,
         is_public,
         optional_params=None,
-        description: str = None,
-        title: str = None,
+        description: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         super().__init__()
         if optional_params is None:

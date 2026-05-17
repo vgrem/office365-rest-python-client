@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class SecondaryAdministratorsFieldsData(ClientValue):
     def __init__(
         self,
         site_id=None,
-        secondary_administrator_emails: StringCollection = None,
-        secondary_administrator_login_names: StringCollection = None,
+        secondary_administrator_emails: Optional[StringCollection] = None,
+        secondary_administrator_login_names: Optional[StringCollection] = None,
     ):
         """
         :type emails: List[str] or None
@@ -20,5 +21,5 @@ class SecondaryAdministratorsFieldsData(ClientValue):
         self.secondaryAdministratorLoginNames = secondary_administrator_login_names
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SecondaryAdministratorsFieldsData"

@@ -1,17 +1,18 @@
 from office365.sharepoint.clientsidecomponent.card_element import CardElement
+from typing import Optional
 
 
 class AdaptiveCardImage(CardElement):
     def __init__(
         self,
-        alt_text: str = None,
-        background_color: str = None,
-        height: str = None,
-        horizontal_alignment: str = None,
-        size: str = None,
-        style: str = None,
-        url: str = None,
-        width: str = None,
+        alt_text: Optional[str] = None,
+        background_color: Optional[str] = None,
+        height: Optional[str] = None,
+        horizontal_alignment: Optional[str] = None,
+        size: Optional[str] = None,
+        style: Optional[str] = None,
+        url: Optional[str] = None,
+        width: Optional[str] = None,
     ):
         """"""
         super().__init__()

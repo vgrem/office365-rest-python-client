@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class RelationData(ClientValue):
     def __init__(
         self,
-        attribute_data_source: int = None,
-        target_object_id: str = None,
-        target_object_subtype: int = None,
-        target_object_type: int = None,
-        value: bytes = None,
-        value_json_string: str = None,
+        attribute_data_source: Optional[int] = None,
+        target_object_id: Optional[str] = None,
+        target_object_subtype: Optional[int] = None,
+        target_object_type: Optional[int] = None,
+        value: Optional[bytes] = None,
+        value_json_string: Optional[str] = None,
     ):
         self.AttributeDataSource = attribute_data_source
         self.TargetObjectId = target_object_id

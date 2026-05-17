@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SMARetirePageMinimumAgeFeedbackSignal(ClientValue):
     def __init__(
         self,
-        default_age: int = None,
-        from_dismiss_action: int = None,
-        from_empty_state: int = None,
-        preferred_age: int = None,
+        default_age: Optional[int] = None,
+        from_dismiss_action: Optional[int] = None,
+        from_empty_state: Optional[int] = None,
+        preferred_age: Optional[int] = None,
     ):
         self.DefaultAge = default_age
         self.FromDismissAction = from_dismiss_action

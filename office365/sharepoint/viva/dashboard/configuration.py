@@ -4,16 +4,17 @@ from office365.sharepoint.clientsidecomponent.query_result import (
     SPClientSideComponentQueryResult,
 )
 from office365.sharepoint.viva.dashboard.content import DashboardContent
+from typing import Optional
 
 
 class DashboardConfiguration(ClientValue):
     def __init__(
         self,
-        canvas_content: str = None,
-        dashboard_item_id: str = None,
-        dashboard_list_id: str = None,
-        dashboard_unique_item_id: str = None,
-        dashboard_url: str = None,
+        canvas_content: Optional[str] = None,
+        dashboard_item_id: Optional[str] = None,
+        dashboard_list_id: Optional[str] = None,
+        dashboard_unique_item_id: Optional[str] = None,
+        dashboard_url: Optional[str] = None,
         extra_components: ClientValueCollection[SPClientSideComponentQueryResult] = ClientValueCollection(
             SPClientSideComponentQueryResult
         ),

@@ -1,10 +1,11 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class DisableGroupify(ClientValue):
     """ """
 
-    def __init__(self, is_read_only: bool = None, value: bool = None) -> None:
+    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
         self.IsReadOnly = is_read_only
         self.Value = value
 
@@ -12,14 +13,14 @@ class DisableGroupify(ClientValue):
         return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableGroupify"
 
 
 class EnableAutoNewsDigest(ClientValue):
     """ """
 
-    def __init__(self, is_read_only: bool = None, value: bool = None) -> None:
+    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
         self.IsReadOnly = is_read_only
         self.Value = value
 
@@ -27,14 +28,14 @@ class EnableAutoNewsDigest(ClientValue):
         return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.EnableAutoNewsDigest"
 
 
 class DisableSelfServiceSiteCreation(ClientValue):
     """ """
 
-    def __init__(self, is_read_only: bool = None, value: bool = None) -> None:
+    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
         self.IsReadOnly = is_read_only
         self.Value = value
 
@@ -42,7 +43,7 @@ class DisableSelfServiceSiteCreation(ClientValue):
         return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableSelfServiceSiteCreation"
 
 
@@ -57,5 +58,5 @@ class AutoQuotaEnabled(ClientValue):
         return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.AutoQuotaEnabled"

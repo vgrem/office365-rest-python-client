@@ -1,17 +1,18 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UploadDocumentInfo(ClientValue):
     def __init__(
         self,
-        agreement_library_id: str = None,
-        file_item_id: int = None,
-        file_name: str = None,
-        file_server_redirected_embed_url: str = None,
-        file_server_relative_url: str = None,
-        file_unique_id: str = None,
-        folder_item_id: int = None,
-        folder_server_relative_url: str = None,
+        agreement_library_id: Optional[str] = None,
+        file_item_id: Optional[int] = None,
+        file_name: Optional[str] = None,
+        file_server_redirected_embed_url: Optional[str] = None,
+        file_server_relative_url: Optional[str] = None,
+        file_unique_id: Optional[str] = None,
+        folder_item_id: Optional[int] = None,
+        folder_server_relative_url: Optional[str] = None,
     ):
         self.agreement_library_id = agreement_library_id
         self.file_item_id = file_item_id

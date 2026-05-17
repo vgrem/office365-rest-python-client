@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.gtp.message_entry import MessageEntry
+from typing import Optional
 
 
 class ChatGptResponseChoice(ClientValue):
     def __init__(
         self,
-        finish_reason: str = None,
-        index: int = None,
+        finish_reason: Optional[str] = None,
+        index: Optional[int] = None,
         message: MessageEntry = MessageEntry(),
     ):
         self.FinishReason = finish_reason

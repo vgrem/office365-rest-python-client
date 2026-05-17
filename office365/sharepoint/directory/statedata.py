@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class StateData(ClientValue):
     def __init__(
         self,
-        adapter_name: str = None,
-        value: bytes = None,
-        value_json_string: str = None,
+        adapter_name: Optional[str] = None,
+        value: Optional[bytes] = None,
+        value_json_string: Optional[str] = None,
     ):
         self.AdapterName = adapter_name
         self.Value = value

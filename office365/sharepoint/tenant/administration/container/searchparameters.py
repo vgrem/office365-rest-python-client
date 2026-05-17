@@ -1,10 +1,11 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPContainerSearchParameters(ClientValue):
-    def __init__(self, search_text: str = None):
+    def __init__(self, search_text: Optional[str] = None):
         self.SearchText = search_text
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerSearchParameters"

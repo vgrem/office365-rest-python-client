@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SharePointEmbeddedClientLogProperties(ClientValue):
     def __init__(
         self,
-        identifier: str = None,
-        log_message: str = None,
-        log_type: int = None,
-        operation: int = None,
-        operation_status: int = None,
+        identifier: Optional[str] = None,
+        log_message: Optional[str] = None,
+        log_type: Optional[int] = None,
+        operation: Optional[int] = None,
+        operation_status: Optional[int] = None,
     ):
         self.Identifier = identifier
         self.LogMessage = log_message
@@ -17,5 +18,5 @@ class SharePointEmbeddedClientLogProperties(ClientValue):
         self.OperationStatus = operation_status
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SharePointEmbeddedClientLogProperties"

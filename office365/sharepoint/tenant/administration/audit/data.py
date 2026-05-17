@@ -8,6 +8,7 @@ from office365.sharepoint.tenant.administration.modified_property import (
 )
 from office365.sharepoint.tenant.administration.parameter import Parameter
 from office365.sharepoint.tenant.administration.target_property import TargetProperty
+from typing import Optional
 
 
 class AuditData(ClientValue):
@@ -22,19 +23,19 @@ class AuditData(ClientValue):
         site=None,
         team_name=None,
         user_id=None,
-        creation_time: datetime = None,
-        event_data: str = None,
+        creation_time: Optional[datetime] = None,
+        event_data: Optional[str] = None,
         event_data_parsed: EventData = EventData(),
-        id_: str = None,
-        name: str = None,
-        new_value: str = None,
-        object_id: str = None,
-        old_value: str = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
+        new_value: Optional[str] = None,
+        object_id: Optional[str] = None,
+        old_value: Optional[str] = None,
         parameters: ClientValueCollection[Parameter] = ClientValueCollection(Parameter),
         target: ClientValueCollection[TargetProperty] = ClientValueCollection(TargetProperty),
-        target_user_or_group_name: str = None,
-        target_user_or_group_type: str = None,
-        user_type: int = None,
+        target_user_or_group_name: Optional[str] = None,
+        target_user_or_group_type: Optional[str] = None,
+        user_type: Optional[int] = None,
     ):
         self.ClientIP = client_ip
         self.CorrelationId = correlation_id
@@ -60,5 +61,5 @@ class AuditData(ClientValue):
         self.UserType = user_type
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.AuditData"

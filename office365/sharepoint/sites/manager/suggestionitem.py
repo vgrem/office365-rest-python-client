@@ -1,16 +1,17 @@
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SuggestionItem(ClientValue):
     def __init__(
         self,
-        dismissed_date: datetime = None,
-        identifier: str = None,
-        state: int = None,
-        suggestion_type: int = None,
-        metadata: str = None,
+        dismissed_date: Optional[datetime] = None,
+        identifier: Optional[str] = None,
+        state: Optional[int] = None,
+        suggestion_type: Optional[int] = None,
+        metadata: Optional[str] = None,
     ):
         self.DismissedDate = dismissed_date
         self.Identifier = identifier

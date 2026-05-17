@@ -1,17 +1,18 @@
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sitedesigns.heroimage import HeroImage
+from typing import Optional
 
 
 class Section(ClientValue):
     def __init__(
         self,
-        activity_image: str = None,
-        activity_image_style: str = None,
-        activity_text: str = None,
-        activity_title: str = None,
+        activity_image: Optional[str] = None,
+        activity_image_style: Optional[str] = None,
+        activity_text: Optional[str] = None,
+        activity_title: Optional[str] = None,
         hero_image: HeroImage = HeroImage(),
-        start_group: bool = None,
-        text: str = None,
+        start_group: Optional[bool] = None,
+        text: Optional[str] = None,
     ):
         self.activityImage = activity_image
         self.activityImageStyle = activity_image_style

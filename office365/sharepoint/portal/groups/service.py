@@ -1,5 +1,5 @@
 import random
-from typing import AnyStr
+from typing import AnyStr, Optional, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -12,9 +12,9 @@ class GroupService(Entity):
     def get_group_image(
         self,
         group_id: str,
-        image_hash: str = None,
-        image_color: str = None,
-        return_type: ClientResult = None,
+        image_hash: Optional[Union[str, int]] = None,
+        image_color: Optional[str] = None,
+        return_type: Optional[ClientResult] = None,
     ) -> ClientResult[AnyStr]:
         if return_type is None:
             return_type = ClientResult(self.context)

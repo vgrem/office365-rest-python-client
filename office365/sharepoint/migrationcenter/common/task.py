@@ -10,5 +10,5 @@ class MigrationTask(MigrationTaskEntityData):
         super().__init__(context, static_path)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationTask"

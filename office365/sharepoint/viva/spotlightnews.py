@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SpotlightNews(ClientValue):
     def __init__(
         self,
-        alt_text: str = None,
-        image_url: str = None,
-        is_boosted: bool = None,
-        order: int = None,
-        title: str = None,
-        url: str = None,
+        alt_text: Optional[str] = None,
+        image_url: Optional[str] = None,
+        is_boosted: Optional[bool] = None,
+        order: Optional[int] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.AltText = alt_text
         self.ImageUrl = image_url

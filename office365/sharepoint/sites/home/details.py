@@ -1,5 +1,6 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class HomeSitesDetails(ClientValue):
@@ -10,11 +11,11 @@ class HomeSitesDetails(ClientValue):
         title=None,
         url=None,
         web_id=None,
-        is_viva_backend_site: bool = None,
+        is_viva_backend_site: Optional[bool] = None,
         matching_audiences: StringCollection = StringCollection(),
-        site_id: str = None,
-        targeted_license_type: int = None,
-        viva_connections_default_start: bool = None,
+        site_id: Optional[str] = None,
+        targeted_license_type: Optional[int] = None,
+        viva_connections_default_start: Optional[bool] = None,
     ):
         """
         :param list[str] audiences:

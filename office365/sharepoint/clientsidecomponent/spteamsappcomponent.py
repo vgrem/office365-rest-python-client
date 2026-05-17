@@ -1,22 +1,23 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPTeamsAppComponent(ClientValue):
     def __init__(
         self,
-        app_description: str = None,
-        app_id: str = None,
-        app_name: str = None,
-        bot_id: str = None,
-        component_id: str = None,
-        default_size: str = None,
-        description: str = None,
-        external_app_id: str = None,
-        group_id: str = None,
-        icon_url: str = None,
-        name: str = None,
-        office_ui_fabric_icon_name: str = None,
-        version: str = None,
+        app_description: Optional[str] = None,
+        app_id: Optional[str] = None,
+        app_name: Optional[str] = None,
+        bot_id: Optional[str] = None,
+        component_id: Optional[str] = None,
+        default_size: Optional[str] = None,
+        description: Optional[str] = None,
+        external_app_id: Optional[str] = None,
+        group_id: Optional[str] = None,
+        icon_url: Optional[str] = None,
+        name: Optional[str] = None,
+        office_ui_fabric_icon_name: Optional[str] = None,
+        version: Optional[str] = None,
     ):
         self.appDescription = app_description
         self.appId = app_id

@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class UsageEntry(ClientValue):
     def __init__(
         self,
-        event_type_id: int = None,
-        item_id: str = None,
-        scope_id: str = None,
-        site: str = None,
-        user: str = None,
+        event_type_id: Optional[int] = None,
+        item_id: Optional[str] = None,
+        scope_id: Optional[str] = None,
+        site: Optional[str] = None,
+        user: Optional[str] = None,
     ):
         self.EventTypeId = event_type_id
         self.ItemId = item_id

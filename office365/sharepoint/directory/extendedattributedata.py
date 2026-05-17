@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ExtendedAttributeData(ClientValue):
-    def __init__(self, value: bytes = None, value_json_string: str = None):
+    def __init__(self, value: Optional[bytes] = None, value_json_string: Optional[str] = None):
         self.Value = value
         self.ValueJsonString = value_json_string
 

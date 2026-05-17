@@ -1,21 +1,22 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class PlaceholderV2(ClientValue):
     def __init__(
         self,
-        additional_fields_data: str = None,
-        column_id: str = None,
-        column_internal_name: str = None,
-        data_type: str = None,
-        field_library_mapped_id: str = None,
-        field_library_mapped_version: str = None,
-        id_: str = None,
-        is_column_mapping_active: bool = None,
-        is_mandatory: bool = None,
-        name: str = None,
-        question_title: str = None,
-        source: str = None,
+        additional_fields_data: Optional[str] = None,
+        column_id: Optional[str] = None,
+        column_internal_name: Optional[str] = None,
+        data_type: Optional[str] = None,
+        field_library_mapped_id: Optional[str] = None,
+        field_library_mapped_version: Optional[str] = None,
+        id_: Optional[str] = None,
+        is_column_mapping_active: Optional[bool] = None,
+        is_mandatory: Optional[bool] = None,
+        name: Optional[str] = None,
+        question_title: Optional[str] = None,
+        source: Optional[str] = None,
     ):
         self.AdditionalFieldsData = additional_fields_data
         self.ColumnId = column_id

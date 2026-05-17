@@ -1,15 +1,16 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class ChannelInfo(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        display_name: str = None,
-        files_folder_web_url: str = None,
-        id_: str = None,
-        member_ship_type: int = None,
-        web_url: str = None,
+        description: Optional[str] = None,
+        display_name: Optional[str] = None,
+        files_folder_web_url: Optional[str] = None,
+        id_: Optional[str] = None,
+        member_ship_type: Optional[int] = None,
+        web_url: Optional[str] = None,
     ):
         self.description = description
         self.displayName = display_name

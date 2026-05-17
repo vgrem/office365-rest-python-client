@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SPSensitivityLabelConfig(ClientValue):
-    def __init__(self, id_: str = None, name: str = None):
+    def __init__(self, id_: Optional[str] = None, name: Optional[str] = None):
         self.Id = id_
         self.Name = name
 

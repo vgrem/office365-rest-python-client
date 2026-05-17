@@ -1,12 +1,9 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from typing import Optional
 
 
 class HTMLFieldSecuritySetting(ClientValue):
-    def __init__(
-        self,
-        allowed_domains: StringCollection = StringCollection(),
-        allow_embedding: int = None,
-    ):
+    def __init__(self, allowed_domains: StringCollection = StringCollection(), allow_embedding: Optional[int] = None):
         self.allowedDomains = allowed_domains
         self.allowEmbedding = allow_embedding

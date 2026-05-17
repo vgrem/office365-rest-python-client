@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -9,11 +9,11 @@ class GroupCreationParams(ClientValue):
 
     def __init__(
         self,
-        creation_options: List[str] = None,
+        creation_options: Optional[List[str]] = None,
         classification: str = "",
         description: str = "",
-        owners: List[str] = None,
-        preferred_data_location: str = None,
+        owners: Optional[List[str]] = None,
+        preferred_data_location: Optional[str] = None,
     ):
         super().__init__()
         if creation_options is None:

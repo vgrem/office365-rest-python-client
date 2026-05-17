@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class PowerAppsEnvironment(ClientValue):
@@ -6,11 +7,11 @@ class PowerAppsEnvironment(ClientValue):
 
     def __init__(
         self,
-        allocated_ai_credits: float = None,
-        display_name: str = None,
-        is_default: bool = None,
-        name: str = None,
-        purchased_ai_credits: float = None,
+        allocated_ai_credits: Optional[float] = None,
+        display_name: Optional[str] = None,
+        is_default: Optional[bool] = None,
+        name: Optional[str] = None,
+        purchased_ai_credits: Optional[float] = None,
     ) -> None:
         self.AllocatedAICredits = allocated_ai_credits
         self.DisplayName = display_name

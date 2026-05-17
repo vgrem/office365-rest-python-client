@@ -1,13 +1,14 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class TopSiteFile(ClientValue):
     def __init__(
         self,
-        content_type_id: str = None,
-        list_id: str = None,
-        source: int = None,
-        unique_id: str = None,
+        content_type_id: Optional[str] = None,
+        list_id: Optional[str] = None,
+        source: Optional[int] = None,
+        unique_id: Optional[str] = None,
     ):
         self.ContentTypeId = content_type_id
         self.ListId = list_id

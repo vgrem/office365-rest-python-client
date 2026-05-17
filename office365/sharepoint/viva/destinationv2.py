@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class VivaEngageDestinationV2(ClientValue):
-    def __init__(self, destination_name: str = None, destination_type: int = None):
+    def __init__(self, destination_name: Optional[str] = None, destination_type: Optional[int] = None):
         self.DestinationName = destination_name
         self.DestinationType = destination_type
 

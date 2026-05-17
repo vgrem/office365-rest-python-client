@@ -13,5 +13,5 @@ class SyntexPowerAppsEnvironmentsContext(ClientValue):
         self.TimerJobSyncDisabled = timer_job_sync_disabled
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SyntexPowerAppsEnvironmentsContext"

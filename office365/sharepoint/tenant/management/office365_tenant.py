@@ -155,17 +155,17 @@ class Office365Tenant(Entity):
 
     def set_tenant_cdn_policy(self, cdn_type, policy, policy_value):
         """
-        Sets the content delivery network (CDN) policies at the tenant level.
+                Sets the content delivery network (CDN) policies at the tenant level.
 
-        Requires Tenant administrator permissions.
+                Requires Tenant administrator permissions.
 
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
-        :param int policy: The PolicyType specifies the type of policy to set.
-               Valid values:
-                  IncludeFileExtensions
-                  ExcludeRestrictedSiteClassifications
-                  ExcludeIfNoScriptDisabled
-        :param str policy_value: A String representing the value of the policy type defined by the PolicyType parameter.
+                :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
+                :param int policy: The PolicyType specifies the type of policy to set.
+                       Valid values:
+        # IncludeFileExtensions
+        # ExcludeRestrictedSiteClassifications
+        # ExcludeIfNoScriptDisabled
+                :param str policy_value: A String representing the value of the policy type defined by the PolicyType parameter.
         """
         payload = {"cdnType": cdn_type, "policy": policy, "policyValue": policy_value}
         qry = ServiceOperationQuery(self, "SetTenantCdnPolicy", None, payload)
@@ -193,7 +193,7 @@ class Office365Tenant(Entity):
         if isinstance(user, User):
 
             def _user_loaded():
-                _revoke_all_user_sessions(user.login_name)
+                _revoke_all_user_sessions(user.login_name or "")
 
             user.ensure_property("LoginName", _user_loaded)
         else:
@@ -219,7 +219,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def remove_external_users(self, unique_ids: List[str] = None) -> RemoveExternalUsersResults:
+    def remove_external_users(self, unique_ids: Optional[List[str]] = None) -> RemoveExternalUsersResults:
         """
         Removes a collection of external users from the tenancy's folder.
 
@@ -1231,5 +1231,5 @@ class Office365Tenant(Entity):
         return self.properties.get("Workflows2013State", None)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantManagement.Office365Tenant"

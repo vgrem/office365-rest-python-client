@@ -1,14 +1,15 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class SchemaData(ClientValue):
     def __init__(
         self,
-        attribute_data_source: int = None,
-        delay_load: bool = None,
-        is_initialized: bool = None,
-        name: str = None,
-        privacy: int = None,
+        attribute_data_source: Optional[int] = None,
+        delay_load: Optional[bool] = None,
+        is_initialized: Optional[bool] = None,
+        name: Optional[str] = None,
+        privacy: Optional[int] = None,
     ):
         self.AttributeDataSource = attribute_data_source
         self.DelayLoad = delay_load

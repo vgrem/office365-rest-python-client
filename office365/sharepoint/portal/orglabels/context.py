@@ -1,12 +1,13 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class OrgLabelsContext(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        label_applicable_to: str = None,
-        object_id: str = None,
+        display_name: Optional[str] = None,
+        label_applicable_to: Optional[str] = None,
+        object_id: Optional[str] = None,
     ):
         self.DisplayName = display_name
         self.LabelApplicableTo = label_applicable_to

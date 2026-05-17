@@ -1,8 +1,9 @@
 from office365.runtime.client_value import ClientValue
+from typing import Optional
 
 
 class DirectorySessionData(ClientValue):
-    def __init__(self, client_type: str = None, session_options: str = None):
+    def __init__(self, client_type: Optional[str] = None, session_options: Optional[str] = None):
         self.ClientType = client_type
         self.SessionOptions = session_options
 
