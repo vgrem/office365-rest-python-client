@@ -1,23 +1,25 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class AppProperties(ClientValue):
     def __init__(
         self,
-        app_settings_enabled: bool = None,
-        description: str = None,
-        eula_url: str = None,
-        is_anonymous: bool = None,
-        is_disabled: bool = None,
-        managed_deployment_enabled: bool = None,
-        manage_permissions_enabled: bool = None,
-        manage_seats_enabled: bool = None,
-        monitoring_enabled: bool = None,
-        publisher: str = None,
-        remove_enabled: bool = None,
-        side_load_enabled: bool = None,
-        support_url: str = None,
-        view_in_market_place_enabled: bool = None,
+        app_settings_enabled: Optional[bool] = None,
+        description: Optional[str] = None,
+        eula_url: Optional[str] = None,
+        is_anonymous: Optional[bool] = None,
+        is_disabled: Optional[bool] = None,
+        managed_deployment_enabled: Optional[bool] = None,
+        manage_permissions_enabled: Optional[bool] = None,
+        manage_seats_enabled: Optional[bool] = None,
+        monitoring_enabled: Optional[bool] = None,
+        publisher: Optional[str] = None,
+        remove_enabled: Optional[bool] = None,
+        side_load_enabled: Optional[bool] = None,
+        support_url: Optional[str] = None,
+        view_in_market_place_enabled: Optional[bool] = None,
     ):
         self.AppSettingsEnabled = app_settings_enabled
         self.Description = description

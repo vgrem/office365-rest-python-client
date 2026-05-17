@@ -197,4 +197,5 @@ include = [
     "office365/sharepoint/containers/*",
     "office365/sharepoint/contentcenter/*",
     "office365/sharepoint/listhome/*",
+    "office365/sharepoint/apps/*",
 ]
