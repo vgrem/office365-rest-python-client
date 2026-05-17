@@ -1,5 +1,7 @@
 """
-Demonstrates how to determine whether user has the permissions for a list
+Demonstrates how to determine whether a user has permissions for a file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

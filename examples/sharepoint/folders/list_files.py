@@ -1,6 +1,8 @@
 """
-Gets the files from the folder.
-If 'recursive' flag set to True, it traverses all sub folders
+Gets the files from a folder.
+If the 'recursive' flag is set to True, it traverses all sub folders.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

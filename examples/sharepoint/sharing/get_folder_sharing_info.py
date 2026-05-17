@@ -1,5 +1,7 @@
 """
-Gets the sharing information for a folder
+Gets the sharing information for a folder.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

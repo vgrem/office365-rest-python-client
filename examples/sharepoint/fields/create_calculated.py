@@ -1,5 +1,6 @@
-"""
-Creates calculated site field
+"""Demonstrates how to create a calculated site field
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext

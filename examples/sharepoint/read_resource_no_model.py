@@ -1,5 +1,7 @@
 """
-Demonstrates how to construct and submit requests without model involved
+Demonstrates how to construct and submit requests without a model involved.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 """
 
 import json
@@ -11,8 +13,8 @@ request = SharePointRequest(test_site_url).with_credentials(test_user_credential
 
 try:
     response = request.execute_request("web/currentUser")
-    json = json.loads(response.content)
-    prop_val = json["d"]["UserPrincipalName"]
+    parsed = json.loads(response.content)
+    prop_val = parsed["d"]["UserPrincipalName"]
     print("UserPrincipalName: {0}".format(prop_val))
 except Exception as e:
     print("An error occurred: {0}".format(e))

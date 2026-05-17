@@ -1,5 +1,7 @@
 """
-Retrieves sites in tenant
+Retrieves all SharePoint sites from a tenant.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

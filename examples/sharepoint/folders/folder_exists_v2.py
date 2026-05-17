@@ -1,5 +1,7 @@
 """
-How to determine whether folder exist?
+How to determine whether a folder exists.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from http import HTTPStatus

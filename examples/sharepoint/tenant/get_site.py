@@ -1,8 +1,7 @@
 """
-SharePoint Site Properties Retrieval Script
+Retrieves detailed properties for a specific SharePoint site.
 
-This script demonstrates how to connect to SharePoint Online and retrieve
-detailed properties for a specific site using library.
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

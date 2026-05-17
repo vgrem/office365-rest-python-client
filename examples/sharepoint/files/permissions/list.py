@@ -1,3 +1,9 @@
+"""
+Retrieves and prints the effective permission levels for a user on a file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
+
 from pprint import pprint
 
 from office365.sharepoint.client_context import ClientContext

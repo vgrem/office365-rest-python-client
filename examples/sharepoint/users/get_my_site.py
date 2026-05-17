@@ -1,6 +1,7 @@
 """
-Gets personal site for a user
+Gets the personal site for a user.
 
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

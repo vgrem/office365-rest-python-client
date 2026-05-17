@@ -1,5 +1,7 @@
 """
-Share a file with a password
+Shares a file with a password-protected sharing link.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,6 @@
-"""
-Deletes a SharePoint list
+"""Demonstrates how to delete a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

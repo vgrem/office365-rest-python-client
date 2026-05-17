@@ -1,5 +1,7 @@
 """
-Returns the user permissions for the file.
+Return effective user permissions for a file.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

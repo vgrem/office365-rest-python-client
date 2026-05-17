@@ -1,5 +1,7 @@
 """
-Get site page by name
+Get a site page by its file name.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

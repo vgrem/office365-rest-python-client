@@ -1,8 +1,6 @@
-"""
-This common way of retrieving List Items from a List, only the default properties are getting returned
+"""Demonstrates the standard way of retrieving list items with default properties
 
-Official documentation:
-https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest#working-with-list-items-by-using-rest
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

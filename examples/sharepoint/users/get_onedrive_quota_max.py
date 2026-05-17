@@ -1,5 +1,7 @@
 """
-Get OneDrive quota max for a user
+Gets the OneDrive quota maximum for a user.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

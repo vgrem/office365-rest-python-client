@@ -1,3 +1,9 @@
+"""
+Gets a term group by name from the term store.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url
 

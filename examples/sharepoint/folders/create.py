@@ -1,5 +1,7 @@
 """
-Creates a new folder
+Demonstrates how to create a new folder.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

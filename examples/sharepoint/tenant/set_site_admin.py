@@ -1,3 +1,9 @@
+"""
+Sets secondary site collection administrators on a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
+"""
+
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import (
     test_admin_site_url,

@@ -1,5 +1,7 @@
 """
-Revokes user access from web
+Revoke a user's access from a SharePoint web/site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

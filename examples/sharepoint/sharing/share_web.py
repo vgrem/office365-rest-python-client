@@ -1,5 +1,7 @@
 """
-Share a Web with user
+Shares a web with a user.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
 import sys

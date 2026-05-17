@@ -1,3 +1,9 @@
+"""
+Demonstrates how to create and delete a wiki page in the default document library.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.pages.template_file_type import TemplateFileType
 from tests import test_team_site_url, test_user_credentials

@@ -1,5 +1,7 @@
 """
-The example demonstrates how to assign a custom permissions on a file
+Demonstrates how to assign custom permissions on a file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

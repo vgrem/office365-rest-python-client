@@ -1,5 +1,7 @@
 """
-Demonstrates how to download a files from SharePoint library
+Demonstrates how to download files from a SharePoint library.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 import tempfile

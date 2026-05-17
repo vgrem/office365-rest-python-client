@@ -1,6 +1,7 @@
 """
-Create a modern site
+Creates a classic site collection (not group-connected).
 
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 import logging

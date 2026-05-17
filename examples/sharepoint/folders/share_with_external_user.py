@@ -1,5 +1,7 @@
 """
-Share a folder with a set of users
+Demonstrates how to share a folder with a set of users using role assignments.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

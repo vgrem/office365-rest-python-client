@@ -1,5 +1,7 @@
 """
-Configure and use push notifications in SharePoint apps
+Configure and use push notifications in SharePoint apps.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/push-notifications-in-sharepoint
 """
 
 from office365.sharepoint.client_context import ClientContext

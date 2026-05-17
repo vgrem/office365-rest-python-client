@@ -12,6 +12,8 @@ You must clear the group association first by calling:
     SiteProperties.set_property("ClearGroupId", True).update()
 
 before attempting to delete the site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

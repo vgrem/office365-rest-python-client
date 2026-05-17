@@ -1,6 +1,7 @@
 """
-Checks whether a tenant has the Intune license
+Checks whether the tenant has an Intune license.
 
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

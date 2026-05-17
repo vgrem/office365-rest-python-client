@@ -1,5 +1,7 @@
 """
-Export Term Store
+Exports the term store groups and term sets to JSON.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 import json

@@ -1,5 +1,7 @@
 """
-Resolves web from absolute resource (e.g. page) url
+Resolves a web from an absolute resource (e.g. page) URL.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

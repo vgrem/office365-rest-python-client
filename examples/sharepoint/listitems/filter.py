@@ -1,7 +1,6 @@
-"""
-Demonstrates how to apply filtering to list collection
+"""Demonstrates how to apply OData filtering to list items
 
-In the provided example only the user defined lists are getting returned
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

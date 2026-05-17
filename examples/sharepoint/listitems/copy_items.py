@@ -1,3 +1,8 @@
+"""Demonstrates how to copy list items from one site to another
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_site_url, test_team_site_url
 

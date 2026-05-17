@@ -1,5 +1,7 @@
 """
-Returns a folder from a given site relative path, and will create it if it does not exist
+Returns a folder from a given site-relative path, creating it if it does not exist.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

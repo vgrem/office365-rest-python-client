@@ -1,4 +1,8 @@
-""" """
+"""
+Exports the field mapping of a list view (field internal name to title).
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
+"""
 
 import json
 

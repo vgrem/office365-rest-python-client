@@ -1,5 +1,7 @@
 """
-Demonstrates how to get taxonomy field value
+Demonstrates how to get a taxonomy field value from a list item.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 import sys

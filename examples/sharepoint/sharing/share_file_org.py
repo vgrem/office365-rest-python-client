@@ -1,5 +1,7 @@
 """
-Creates a tokenized sharing link for a file
+Creates a tokenized organization sharing link for a file.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

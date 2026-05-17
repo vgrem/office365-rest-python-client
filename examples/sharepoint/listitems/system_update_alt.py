@@ -1,3 +1,8 @@
+"""Demonstrates how to update a list item using system update
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 import sys
 
 from office365.sharepoint.client_context import ClientContext

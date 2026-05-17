@@ -1,5 +1,7 @@
 """
-Retrieves site users
+Retrieves site users for the current web.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

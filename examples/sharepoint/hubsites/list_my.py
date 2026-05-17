@@ -1,5 +1,7 @@
 """
 Gets information about all hub sites that the current user can access.
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/hubsites
 """
 
 from office365.sharepoint.client_context import ClientContext

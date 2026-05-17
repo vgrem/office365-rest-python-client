@@ -1,3 +1,8 @@
+"""Demonstrates how to read list items using render_list_data with a CAML query
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 import json
 
 from office365.sharepoint.client_context import ClientContext
@@ -24,6 +29,7 @@ def create_paged_query(page_size: int):
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 target_list = ctx.web.lists.get_by_title("Contacts_Large")
 list_qry = create_paged_query(50)
+assert list_qry.ViewXml is not None
 result = target_list.render_list_data(list_qry.ViewXml).execute_query()
 data = json.loads(result.value)
 rows = data.get("Row", [])

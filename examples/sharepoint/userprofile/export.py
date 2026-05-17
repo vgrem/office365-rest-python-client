@@ -1,5 +1,7 @@
 """
-Exports user profile data.
+Exports user profile data from a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,7 @@
 """
-Retrieves versions of the file
+Retrieves a specific version of a file by version label.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

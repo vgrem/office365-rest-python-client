@@ -1,5 +1,7 @@
 """
-Gets site collection administrators
+Gets primary and secondary site collection administrators for a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from office365.sharepoint.tenant.administration.tenant import Tenant

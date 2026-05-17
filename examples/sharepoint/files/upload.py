@@ -1,5 +1,7 @@
 """
-Demonstrates how to upload a small files (up to 4MB in size)
+Demonstrates how to upload small files (up to 4MB in size).
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

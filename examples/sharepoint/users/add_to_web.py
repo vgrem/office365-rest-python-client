@@ -1,10 +1,7 @@
 """
+Ensures a user exists on a site web, adding them if necessary.
 
-If the specified login name belongs to a valid user of the site, returns the User object corresponding to that user.
-
-If the specified login name belongs to a valid user outside of the site, adds the user to the site and
-returns the User object corresponding to that user.
-
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

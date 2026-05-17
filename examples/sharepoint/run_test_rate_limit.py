@@ -1,4 +1,9 @@
-""" """
+"""
+Demonstrates rate limit handling with concurrent requests
+and incremental retry.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/general-development/how-to-avoid-getting-throttled-or-blocked-in-sharepoint-online
+"""
 
 import asyncio
 

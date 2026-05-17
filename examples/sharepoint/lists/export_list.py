@@ -1,3 +1,8 @@
+"""Demonstrates how to export a SharePoint list as a package (.zip)
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
+
 import os
 import tempfile
 

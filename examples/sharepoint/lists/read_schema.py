@@ -1,5 +1,6 @@
-"""
-Exports a SharePoint List schema
+"""Demonstrates how to export a SharePoint list schema
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

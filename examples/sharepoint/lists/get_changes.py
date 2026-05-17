@@ -1,5 +1,6 @@
-"""
-Gets site changes
+"""Demonstrates how to retrieve changes from a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from office365.sharepoint.changes.query import ChangeQuery

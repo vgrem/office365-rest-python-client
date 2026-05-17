@@ -1,3 +1,8 @@
+"""Demonstrates how to read list items in a paged manner
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.collection import ListItemCollection
 from tests import test_client_credentials, test_team_site_url

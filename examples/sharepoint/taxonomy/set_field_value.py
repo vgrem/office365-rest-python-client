@@ -1,5 +1,7 @@
 """
-Demonstrates how to set taxonomy field value
+Demonstrates how to set a taxonomy field value on a list item.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext

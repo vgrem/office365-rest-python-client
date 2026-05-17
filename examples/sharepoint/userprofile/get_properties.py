@@ -1,5 +1,7 @@
 """
-Gets user properties for the specified user
+Gets user profile properties for the specified user.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
 
 from pprint import pprint

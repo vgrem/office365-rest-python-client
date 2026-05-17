@@ -1,8 +1,8 @@
 """
-Controlling app access on a specific SharePoint site collection
+Controls app access on a specific SharePoint site collection.
 
-Refer:
 https://developer.microsoft.com/en-us/office/blogs/controlling-app-access-on-specific-sharepoint-site-collections/
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.graph_client import GraphClient

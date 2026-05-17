@@ -1,5 +1,7 @@
 """
-Search SharePoint sites the current user is member of
+Search SharePoint sites where the current user is a member.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """
 
 from office365.sharepoint.client_context import ClientContext

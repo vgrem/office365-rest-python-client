@@ -1,5 +1,6 @@
-"""
-Adds and removes site group
+"""Demonstrates how to add and remove a site group.
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
 """
 
 from office365.sharepoint.client_context import ClientContext

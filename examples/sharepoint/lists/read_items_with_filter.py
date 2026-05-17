@@ -1,3 +1,8 @@
+"""Demonstrates how to retrieve list items using OData filter queries
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
+
 import datetime
 
 from office365.sharepoint.client_context import ClientContext

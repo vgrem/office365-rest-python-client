@@ -1,5 +1,7 @@
 """
-Demonstrates how to enumerate a folder
+Demonstrates how to enumerate folders recursively using a custom callback.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from typing import Callable

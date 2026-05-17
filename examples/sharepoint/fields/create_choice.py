@@ -1,5 +1,6 @@
-"""
-Demonstrates how to create lookup field
+"""Demonstrates how to create a Choice field in a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext

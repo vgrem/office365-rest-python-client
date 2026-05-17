@@ -1,5 +1,6 @@
-"""
-Returns a SharePoint List data
+"""Demonstrates how to retrieve SharePoint list data as a stream using a CAML query
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

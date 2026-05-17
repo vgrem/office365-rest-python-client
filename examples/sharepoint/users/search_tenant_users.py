@@ -1,5 +1,7 @@
 """
-Search tenant users.
+Searches for tenant users by search term.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

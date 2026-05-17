@@ -1,5 +1,7 @@
 """
-Returns the folder object from the tokenized sharing link URL.
+Returns a folder object from a tokenized sharing link URL.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,3 +1,10 @@
+"""
+Demonstrates how to upload a file to SharePoint, create and verify
+anonymous sharing links, and retrieve sharing information.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
+"""
+
 import json
 
 from office365.sharepoint.client_context import ClientContext

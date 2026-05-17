@@ -1,5 +1,7 @@
 """
-Grants user access to web
+Grant a user access to a SharePoint web/site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

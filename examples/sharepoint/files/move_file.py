@@ -1,5 +1,7 @@
 """
-Demonstrates how to move a folder within a site
+Demonstrates how to move a file within a site.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,7 @@
 """
-This example enables legacy authentication protocols on the tenant
+Checks whether legacy authentication protocols are enabled on the tenant.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from pprint import pprint

@@ -1,3 +1,8 @@
+"""Demonstrates how to update multiple list items in batch mode
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 from random import randint
 
 from office365.sharepoint.client_context import ClientContext

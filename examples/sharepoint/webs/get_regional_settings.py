@@ -1,5 +1,7 @@
 """
-Retrieves the locale settings of a site
+Retrieves the locale settings of a site.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

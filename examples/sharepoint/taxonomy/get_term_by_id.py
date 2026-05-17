@@ -1,5 +1,7 @@
 """
-Gets Term by id
+Gets a term by its GUID from the TaxonomyHiddenList.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext

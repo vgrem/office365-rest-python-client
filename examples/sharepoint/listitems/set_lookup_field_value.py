@@ -1,3 +1,8 @@
+"""Demonstrates how to set a lookup field value on a list item
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 import sys
 
 from office365.sharepoint.client_context import ClientContext
@@ -13,6 +18,7 @@ if len(items) != min_items:
     sys.exit("Not enough items were found")
 
 task_id = items[0].get_property("Id")
+assert isinstance(task_id, int)
 lookup_field_value = FieldLookupValue(task_id)
 items[1].set_property("ParentTask", lookup_field_value).update().execute_query()
 

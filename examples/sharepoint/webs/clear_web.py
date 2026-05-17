@@ -1,4 +1,8 @@
-""" """
+"""
+Deletes all non-system lists from a site.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
+"""
 
 from typing import List
 

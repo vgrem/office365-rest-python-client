@@ -1,5 +1,7 @@
 """
-Demonstrates how to upload large file
+Demonstrates how to upload a large file using chunked upload session.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 import os

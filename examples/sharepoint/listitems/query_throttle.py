@@ -1,3 +1,8 @@
+"""Demonstrates how to use QueryThrottleMode override to bypass the list view threshold
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from tests import test_client_credentials, test_team_site_url

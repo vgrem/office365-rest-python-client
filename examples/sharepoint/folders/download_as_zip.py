@@ -1,5 +1,7 @@
 """
-Demonstrates how to download folders content into a zip file
+Demonstrates how to download folder content into a zip file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 import os

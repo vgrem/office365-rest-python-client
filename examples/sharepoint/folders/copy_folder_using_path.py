@@ -1,5 +1,7 @@
 """
-Demonstrates how to copy a folder using path
+Demonstrates how to copy a folder using a path.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

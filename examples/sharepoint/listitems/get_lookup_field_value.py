@@ -1,5 +1,6 @@
-"""
-Demonstrates how to retrieve a lookup field values from SharePoint List
+"""Demonstrates how to retrieve lookup field values from a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

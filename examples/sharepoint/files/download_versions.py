@@ -1,3 +1,9 @@
+"""
+Demonstrates how to download file versions from a SharePoint site.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
+
 import os
 import tempfile
 

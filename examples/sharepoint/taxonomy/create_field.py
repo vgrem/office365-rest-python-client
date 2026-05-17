@@ -1,5 +1,7 @@
 """
-Demonstrates how to create a taxonomy field on a list
+Demonstrates how to create a taxonomy field on a list.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext

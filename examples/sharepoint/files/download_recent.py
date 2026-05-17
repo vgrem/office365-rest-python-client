@@ -1,3 +1,9 @@
+"""
+Demonstrates how to download the most recently uploaded file from a document library.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
+
 import os
 import tempfile
 

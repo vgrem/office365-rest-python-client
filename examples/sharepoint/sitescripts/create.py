@@ -1,3 +1,12 @@
+"""
+Creates a site script that applies a custom theme.
+
+Site scripts are used with site designs to apply customizations
+to SharePoint sites.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
+"""
+
 import json
 
 from office365.sharepoint.client_context import ClientContext

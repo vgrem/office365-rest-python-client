@@ -1,5 +1,6 @@
-"""
-This example demonstrates how to retrieve all fields in a SharePoint site.
+"""Demonstrates how to retrieve all fields from a SharePoint site
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext

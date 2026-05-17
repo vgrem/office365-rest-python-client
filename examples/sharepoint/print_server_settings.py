@@ -1,5 +1,7 @@
 """
-Prints server settings
+Prints SharePoint server settings including SharePoint Online status and installed languages.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/server-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

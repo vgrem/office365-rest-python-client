@@ -1,3 +1,9 @@
+"""
+Run a site migration assessment scan using the SharePoint Migration API.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/migration-api-reference
+"""
+
 import logging
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,7 +1,8 @@
 """
-Creates a modern site
+Creates a modern communication site with a specified owner.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest#create-a-modern-site
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

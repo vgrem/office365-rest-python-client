@@ -1,5 +1,7 @@
 """
-Get the teams in Microsoft Teams that the current user is a direct member of
+Gets the Microsoft Teams that the current user is a direct member of.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations
 """
 
 import json

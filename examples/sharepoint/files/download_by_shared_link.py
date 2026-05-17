@@ -1,4 +1,8 @@
-""" """
+"""
+Demonstrates how to download a file using a sharing link (guest URL).
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
 
 import os
 import tempfile

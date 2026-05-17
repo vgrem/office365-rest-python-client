@@ -1,5 +1,5 @@
 """
-Demonstrates how to use the Search REST service in SharePoint
+Demonstrates how to sort search results using the SharePoint Search REST service.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """

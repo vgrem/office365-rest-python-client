@@ -1,5 +1,6 @@
-"""
-Creating a list in SharePoint site
+"""Demonstrates how to create a list in a SharePoint site
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from random import randint

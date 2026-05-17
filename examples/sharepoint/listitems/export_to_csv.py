@@ -1,5 +1,6 @@
-"""
-Demonstrates how to export a list items into csv file
+"""Demonstrates how to export list items to a CSV file
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 import csv

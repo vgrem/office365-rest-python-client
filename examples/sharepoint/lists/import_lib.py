@@ -1,6 +1,10 @@
-""" """
+"""Demonstrates how to upload files into a SharePoint document library
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
 
 from random import randrange
+from typing import Optional
 
 from faker import Faker
 from office365.sharepoint.client_context import ClientContext
@@ -9,16 +13,18 @@ from office365.sharepoint.lists.list import List
 from tests import test_team_site_url, test_user_credentials
 
 
-def import_files(target_folder: Folder, files_amount: int = None) -> None:
+def import_files(target_folder: Folder, files_amount: Optional[int] = None) -> None:
     fake = Faker()
     path = "../../../tests/data/SharePoint User Guide.docx"
-    for file_index in range(files_amount):
+    for file_index in range(files_amount or 0):
         file_name = fake.file_name(extension="docx")
         target_file = target_folder.files.upload(path, file_name).execute_query()
         print(f"({file_index} of {files_amount}) File '{target_file.server_relative_url}' has been uploaded")
 
 
-def import_folders(target_lib: List, folders_amount: int, include_files: bool = False, files_amount: int = None) -> None:
+def import_folders(
+    target_lib: List, folders_amount: int, include_files: bool = False, files_amount: Optional[int] = None
+) -> None:
     fake = Faker()
     for folder_index in range(folders_amount):
         # 1. Create a folder

@@ -1,3 +1,9 @@
+"""
+Demonstrates how to configure a proxy for SharePoint requests.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.webs.web import Web
 from tests import test_client_id, test_client_secret, test_site_url

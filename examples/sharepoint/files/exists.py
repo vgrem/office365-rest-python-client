@@ -1,3 +1,11 @@
+"""
+Demonstrates how to check if a file exists on a SharePoint site.
+
+Attempts to retrieve a file by its server-relative URL and returns None if not found.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
+"""
+
 from http import HTTPStatus
 from typing import Optional
 

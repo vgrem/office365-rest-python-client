@@ -1,3 +1,9 @@
+"""
+Demonstrates loading a SharePoint web using the fluent API.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_site_url
 

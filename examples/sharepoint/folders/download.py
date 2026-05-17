@@ -1,5 +1,7 @@
 """
-Demonstrates how to enumerate folder files and download file's content
+Demonstrates how to enumerate folder files and download their content.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 import os

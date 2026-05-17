@@ -1,6 +1,8 @@
 """
-Demonstrates how to download a file content.
-Intended for a 'small' files (with a size less than 4 Mb)
+Demonstrates how to download file content.
+Intended for small files (with a size less than 4 MB).
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

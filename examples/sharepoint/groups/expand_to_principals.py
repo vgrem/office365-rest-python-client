@@ -1,5 +1,6 @@
-"""
-Expands group to a collection of principals.
+"""Expands a SharePoint group into a collection of principal information objects.
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
 """
 
 from office365.sharepoint.client_context import ClientContext

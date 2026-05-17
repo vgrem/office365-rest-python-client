@@ -1,3 +1,8 @@
+"""Demonstrates how to set an image field value on a list item
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 import json
 import os
 import sys
