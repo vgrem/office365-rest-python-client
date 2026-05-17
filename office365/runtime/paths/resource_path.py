@@ -84,6 +84,8 @@ class ResourcePath:
             return NotImplemented
         return self.to_url() == other.to_url()
 
+    __hash__ = None
+
     def to_url(self) -> str:
         """
         Constructs the full URL path by combining all segments.

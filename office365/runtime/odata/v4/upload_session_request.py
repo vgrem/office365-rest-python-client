@@ -56,7 +56,8 @@ class UploadSessionRequest(ClientRequest):
 
     def execute_query(self, query: UploadSessionQuery) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Execute the upload query for each chunk."""
-        for self._range_data in self._read_next():
+        for chunk_data in self._read_next():
+            self._range_data = chunk_data
             super().execute_query(query)
         return self
 
