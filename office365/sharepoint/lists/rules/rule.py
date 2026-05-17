@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.lists.rules.userinfo import SPRuleUserInfo
@@ -7,19 +8,19 @@ from office365.sharepoint.lists.rules.userinfo import SPRuleUserInfo
 class SPListRule(ClientValue):
     def __init__(
         self,
-        action_params: str = None,
-        action_type: int = None,
-        condition: str = None,
-        create_date: datetime = None,
-        id_: str = None,
-        is_active: bool = None,
+        action_params: Optional[str] = None,
+        action_type: Optional[int] = None,
+        condition: Optional[str] = None,
+        create_date: Optional[datetime] = None,
+        id_: Optional[str] = None,
+        is_active: Optional[bool] = None,
         last_modified_by: SPRuleUserInfo = SPRuleUserInfo(),
-        last_modified_date: datetime = None,
-        outcome: str = None,
-        owner: str = None,
-        rule_template_id: str = None,
-        title: str = None,
-        trigger_type: int = None,
+        last_modified_date: Optional[datetime] = None,
+        outcome: Optional[str] = None,
+        owner: Optional[str] = None,
+        rule_template_id: Optional[str] = None,
+        title: Optional[str] = None,
+        trigger_type: Optional[int] = None,
     ):
         self.ActionParams = action_params
         self.ActionType = action_type

@@ -141,7 +141,7 @@ class ListCollection(EntityCollection[List]):
     def add_list(
         self,
         title: str,
-        description: str = None,
+        description: Optional[str] = None,
         template_type: ListTemplateType = ListTemplateType.GenericList,
         allow_content_types: bool = False,
     ) -> List:
@@ -158,7 +158,7 @@ class ListCollection(EntityCollection[List]):
     def add_library(
         self,
         title: str,
-        description: str = None,
+        description: Optional[str] = None,
         allow_content_types: bool = False,
     ) -> List:
         """Creates a document library
@@ -178,7 +178,7 @@ class ListCollection(EntityCollection[List]):
     def add_tasks(
         self,
         title: str,
-        description: str = None,
+        description: Optional[str] = None,
         allow_content_types: bool = False,
         with_timeline_and_hierarchy: bool = False,
     ) -> List:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import IO, TYPE_CHECKING, Callable, Union
+from typing import IO, TYPE_CHECKING, Callable, Optional, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.files.system_object_type import FileSystemObjectType
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class ExportListProgress:
     total_items: int = 0
     processed_items: int = 0
-    current_item: Union[File, Folder, ListItem] = None
+    current_item: Optional[Union[File, Folder, ListItem]] = None
 
 
 class ListExporter:
@@ -30,7 +30,7 @@ class ListExporter:
         source_list: List,
         destination_file: IO,
         include_content: bool = False,
-        item_exported: Callable[[ExportListProgress], None] = None,
+        item_exported: Optional[Callable[[ExportListProgress], None]] = None,
     ) -> List:
         """Exports SharePoint List"""
         import zipfile
@@ -65,6 +65,7 @@ class ListExporter:
                         item_exported(progress)
 
         def _get_items():
+            assert source_list.item_count is not None
             progress.total_items = source_list.item_count
             (
                 source_list.items.select(

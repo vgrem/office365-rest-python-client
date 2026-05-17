@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class RenderListFilterDataParameters(ClientValue):
     def __init__(
         self,
-        exclude_field_filtering_html: bool = None,
-        field_internal_name: str = None,
-        override_scope: str = None,
-        process_q_string_to_caml: str = None,
-        view_id: str = None,
-        view_xml: str = None,
+        exclude_field_filtering_html: Optional[bool] = None,
+        field_internal_name: Optional[str] = None,
+        override_scope: Optional[str] = None,
+        process_q_string_to_caml: Optional[str] = None,
+        view_id: Optional[str] = None,
+        view_xml: Optional[str] = None,
     ):
         self.ExcludeFieldFilteringHtml = exclude_field_filtering_html
         self.FieldInternalName = field_internal_name

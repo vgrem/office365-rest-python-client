@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -8,15 +9,15 @@ class DocumentLibraryInformation(ClientValue):
 
     def __init__(
         self,
-        title: str = None,
-        absolute_url: str = None,
-        server_relative_url: str = None,
-        drive_id: str = None,
-        from_cross_farm: bool = None,
-        is_default_document_library: bool = None,
-        id_: str = None,
+        title: Optional[str] = None,
+        absolute_url: Optional[str] = None,
+        server_relative_url: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        from_cross_farm: Optional[bool] = None,
+        is_default_document_library: Optional[bool] = None,
+        id_: Optional[str] = None,
         modified: datetime = datetime.min,
-        modified_friendly_display: str = None,
+        modified_friendly_display: Optional[str] = None,
     ):
         """
         :param str title:Identifies the title of the document library

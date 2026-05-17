@@ -1,12 +1,14 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class CreatableItemInfo(ClientValue):
     def __init__(
         self,
-        document_template: int = None,
-        file_extension: str = None,
-        item_type: str = None,
+        document_template: Optional[int] = None,
+        file_extension: Optional[str] = None,
+        item_type: Optional[str] = None,
     ):
         """
         Information on a creatable item: what the item is and where to go to create it. Alternatively, the information

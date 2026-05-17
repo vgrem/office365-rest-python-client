@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.documents.columntypeinfo import ColumnTypeInfo
@@ -11,7 +13,7 @@ class TemplatizationMetaData(ClientValue):
     def __init__(
         self,
         file_info: ContentAssemblyFileInfo = ContentAssemblyFileInfo(),
-        is_template_view_default: bool = None,
+        is_template_view_default: Optional[bool] = None,
         placeholder_column_type_info: ClientValueCollection[ColumnTypeInfo] = ClientValueCollection(ColumnTypeInfo),
         placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
     ):

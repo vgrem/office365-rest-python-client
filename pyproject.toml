@@ -157,4 +157,5 @@ include = [
     "office365/sharepoint/social/*",
     "office365/sharepoint/sharing/*",
     "office365/sharepoint/search/*",
+    "office365/sharepoint/lists/*",
 ]

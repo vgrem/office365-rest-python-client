@@ -90,12 +90,12 @@ class List(SecurableObject):
         self,
         local_file: IO,
         include_content: bool = False,
-        item_exported: Callable[[ExportListProgress], None] = None,
+        item_exported: Optional[Callable[[ExportListProgress], None]] = None,
     ) -> Self:
         """Exports SharePoint List"""
         from office365.sharepoint.lists.exporter import ListExporter
 
-        return ListExporter.export(self, local_file, include_content, item_exported)
+        return ListExporter.export(self, local_file, include_content, item_exported)  # type: ignore[override]
 
     def can_customize_forms(self) -> ConnectorResult:
         """"""
@@ -105,6 +105,7 @@ class List(SecurableObject):
         return_type = ConnectorResult(self.context)
 
         def _can_customize_forms():
+            assert self.title is not None
             FormsCustomization.can_customize_forms(self.context, self.title, return_type)
 
         self.ensure_property("Title", _can_customize_forms)
@@ -130,10 +131,10 @@ class List(SecurableObject):
 
     def create_document_and_get_edit_link(
         self,
-        file_name: str = None,
-        folder_path: str = None,
+        file_name: Optional[str] = None,
+        folder_path: Optional[str] = None,
         document_template_type: DocumentTemplateType = DocumentTemplateType.Word,
-        template_url: str = None,
+        template_url: Optional[str] = None,
     ):
         """
         Creates a document at the path and of the type specified within the current list.
@@ -171,7 +172,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_bloom_filter(self, start_item_id: int = None) -> ListBloomFilter:
+    def get_bloom_filter(self, start_item_id: Optional[int] = None) -> ListBloomFilter:
         """
         Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current list
 
@@ -191,6 +192,7 @@ class List(SecurableObject):
         list_folder = self.root_folder
 
         def _get_compliance_tag():
+            assert list_folder.server_relative_url is not None
             SPPolicyStoreProxy.get_list_compliance_tag(
                 self.context,
                 list_folder.server_relative_url,
@@ -203,9 +205,9 @@ class List(SecurableObject):
     def set_compliance_tag(
         self,
         compliance_tag_value: str,
-        block_delete: bool = None,
-        block_edit: bool = None,
-        sync_to_items: bool = None,
+        block_delete: Optional[bool] = None,
+        block_edit: Optional[bool] = None,
+        sync_to_items: Optional[bool] = None,
     ):
         """Apply a retention label ("compliance tag") to a list."""
         list_folder = self.root_folder
@@ -213,13 +215,14 @@ class List(SecurableObject):
         def _set_compliance_tag():
             from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
+            assert list_folder.server_relative_url is not None
             SPPolicyStoreProxy.set_list_compliance_tag(
                 self.context,
                 list_folder.server_relative_url,
                 compliance_tag_value,
-                block_delete,
-                block_edit,
-                sync_to_items,
+                block_delete,  # type: ignore[arg-type]
+                block_edit,  # type: ignore[arg-type]
+                sync_to_items,  # type: ignore[arg-type]
             )
 
         list_folder.ensure_property("ServerRelativeUrl", _set_compliance_tag)
@@ -236,6 +239,7 @@ class List(SecurableObject):
         return_type = ClientResult(self.context, ConfiguredMetadataNavigationItemCollection())
 
         def _loaded():
+            assert self.root_folder.server_relative_url is not None
             MetadataNavigationSettings.get_configured_settings(
                 self.context, self.root_folder.server_relative_url, return_type
             )
@@ -251,6 +255,7 @@ class List(SecurableObject):
         return_type = ConnectorResult(self.context)
 
         def _loaded():
+            assert self.title is not None
             FlowPermissions.get_flow_permission_level_on_list(self.context, self.title, return_type)
 
         self.ensure_property("Title", _loaded)
@@ -263,13 +268,14 @@ class List(SecurableObject):
         def _get_sharing_settings():
             from office365.sharepoint.webs.web import Web
 
+            assert self.root_folder.server_relative_url is not None
             list_abs_path = SPResPath.create_absolute(self.context.base_url, self.root_folder.server_relative_url)
             Web.get_object_sharing_settings(self.context, str(list_abs_path), return_type=return_type)
 
         self.ensure_property("RootFolder", _get_sharing_settings)
         return return_type
 
-    def get_site_script(self, options: Dict = None) -> ClientResult[str]:
+    def get_site_script(self, options: Optional[Dict] = None) -> ClientResult[str]:
         """Creates site script syntax
 
         :param dict or None options:
@@ -277,9 +283,13 @@ class List(SecurableObject):
         return_type = ClientResult(self.context)
 
         def _list_loaded():
+            assert self.root_folder.server_relative_url is not None
             list_abs_path = SPResPath.create_absolute(self.context.base_url, self.root_folder.server_relative_url)
             SiteScriptUtility.get_site_script_from_list(
-                self.context, str(list_abs_path), options, return_type=return_type
+                self.context,
+                str(list_abs_path),
+                options,  # type: ignore[arg-type]
+                return_type=return_type,
             )
 
         self.ensure_property("RootFolder", _list_loaded)
@@ -409,13 +419,13 @@ class List(SecurableObject):
     def get_list_data_as_stream(
         context: ClientContext,
         list_full_url: str,
-        parameters: RenderListDataParameters = None,
-        casc_del_warn_message=None,
-        custom_action: str = None,
-        drill_down: str = None,
-        field: str = None,
-        field_internal_name: str = None,
-        return_type=None,
+        parameters: Optional[RenderListDataParameters] = None,
+        casc_del_warn_message: Optional[str] = None,
+        custom_action: Optional[str] = None,
+        drill_down: Optional[str] = None,
+        field: Optional[str] = None,
+        field_internal_name: Optional[str] = None,
+        return_type: Optional[ClientResult[bytes]] = None,
     ) -> ClientResult[bytes]:
         """
         Returns list data from the specified list url and for the specified query parameters.
@@ -448,8 +458,8 @@ class List(SecurableObject):
     @staticmethod
     def get_onedrive_list_data_as_stream(
         context: ClientContext,
-        parameters: RenderListDataParameters = None,
-        return_type=None,
+        parameters: Optional[RenderListDataParameters] = None,
+        return_type: Optional[ClientResult[bytes]] = None,
     ) -> ClientResult[bytes]:
         """
         Returns list data from the specified list url and for the specified query parameters.
@@ -507,7 +517,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_lookup_field_choices(self, target_field_name: str, paging_info: str = None) -> ClientResult[str]:
+    def get_lookup_field_choices(self, target_field_name: str, paging_info: Optional[str] = None) -> ClientResult[str]:
         """
         Retrieves the possible choices or values for a lookup field in a SharePoint list
         :param str target_field_name:
@@ -528,7 +538,7 @@ class List(SecurableObject):
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getListItemChangesSinceToken", None, payload, None, return_type)
         self.context.add_query(qry)
-        return return_type
+        return return_type  # type: ignore[return-type]
 
     def save_as_new_view(self, old_name: str, new_name: str, private_view: bool, uri: str) -> ClientResult[str]:
         """
@@ -606,7 +616,7 @@ class List(SecurableObject):
         """Clears the broken taxonomy values"""
         raise NotImplementedError("validate_broken_taxonomy_values")
 
-    def get_items(self, caml_query: CamlQuery = None) -> ListItemCollection:
+    def get_items(self, caml_query: Optional[CamlQuery] = None) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query."""
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
@@ -630,6 +640,7 @@ class List(SecurableObject):
         else:
 
             def _add_item():
+                assert self.root_folder.server_relative_url is not None
                 creation_information.FolderUrl = self.context.base_url + self.root_folder.server_relative_url
                 payload = {"parameters": creation_information}
                 next_qry = ServiceOperationQuery(self, "addItem", None, payload, None, return_type)
@@ -648,6 +659,7 @@ class List(SecurableObject):
         self.root_folder.files.add_child(return_type)
 
         def _root_folder_loaded():
+            assert self.root_folder.server_relative_url is not None
             page_url = self.root_folder.server_relative_url + "/" + page_name
             wiki_props = WikiPageCreationInformation(page_url, page_content)
             Utility.create_wiki_page_in_context_web(self.context, wiki_props, return_type)
@@ -676,7 +688,7 @@ class List(SecurableObject):
         return return_type
 
     def add_validate_update_item(
-        self, create_info: ListItemCreationInformation, form_values: Dict = None
+        self, create_info: ListItemCreationInformation, form_values: Optional[Dict] = None
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """
         Adds an item to an existing list and validate the list item update values. If all fields validated successfully,
@@ -687,6 +699,7 @@ class List(SecurableObject):
         :param dict form_values: A collection of field internal names and values for the given field. If the collection
             is empty, no update will take place.
         """
+        assert form_values is not None
         payload = {
             "listItemCreateInfo": create_info,
             "formValues": [ListItemFormUpdateValue(k, v) for k, v in form_values.items()],
@@ -712,6 +725,7 @@ class List(SecurableObject):
             [return_type.set_property(k, v, False) for k, v in item.properties.items()]
 
         def _get_item_by_url():
+            assert self.root_folder.server_relative_url is not None
             path = os.path.join(self.root_folder.server_relative_url, url)
             self.items.get_by_url(path).after_execute(_after_loaded, execute_first=True)
 
@@ -728,7 +742,7 @@ class List(SecurableObject):
             self,
         )
 
-    def get_changes(self, query: ChangeQuery = None) -> ChangeCollection:
+    def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the list,
            based on the specified query.
 
@@ -754,9 +768,9 @@ class List(SecurableObject):
 
     def render_list_data_as_stream(
         self,
-        view_xml: str = None,
-        render_options: int = None,
-        expand_groups: bool = None,
+        view_xml: Optional[str] = None,
+        render_options: Optional[int] = None,
+        expand_groups: Optional[bool] = None,
     ) -> ClientResult[bytes]:
         """Returns the data for the specified query view.
 
@@ -824,6 +838,7 @@ class List(SecurableObject):
         from office365.sharepoint.documentmanagement.document_id import DocumentId
 
         def _reset_doc_ids():
+            assert self.root_folder.server_relative_url is not None
             doc_mng = DocumentId(self.context)
             doc_mng.reset_doc_ids_in_library(self.root_folder.server_relative_url)
 

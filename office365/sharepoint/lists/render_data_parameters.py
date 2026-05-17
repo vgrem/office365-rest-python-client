@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,30 +8,30 @@ class RenderListDataParameters(ClientValue):
 
     def __init__(
         self,
-        add_all_fields: bool = None,
-        add_all_view_fields: bool = None,
-        add_regional_settings: bool = None,
-        add_required_fields=None,
-        allow_multiple_value_filter_for_taxonomy_fields=None,
-        audience_target=None,
-        dates_in_utc=None,
-        expand_groups=None,
-        expand_user_field=None,
-        filter_out_channel_folders_in_default_doc_lib=None,
-        render_options=None,
-        require_folder_coloring_fields=None,
-        show_stub_file=None,
-        view_xml: str = None,
-        first_group_only: bool = None,
-        folder_server_relative_url: str = None,
-        image_fields_to_try_rewrite_to_cdn_urls: str = None,
-        merge_default_view: bool = None,
-        modern_list_boot: bool = None,
-        original_date: bool = None,
-        override_view_xml: str = None,
-        paging: str = None,
-        render_url_field_in_json: bool = None,
-        replace_group: bool = None,
+        add_all_fields: Optional[bool] = None,
+        add_all_view_fields: Optional[bool] = None,
+        add_regional_settings: Optional[bool] = None,
+        add_required_fields: Optional[bool] = None,
+        allow_multiple_value_filter_for_taxonomy_fields: Optional[bool] = None,
+        audience_target: Optional[bool] = None,
+        dates_in_utc: Optional[bool] = None,
+        expand_groups: Optional[bool] = None,
+        expand_user_field: Optional[bool] = None,
+        filter_out_channel_folders_in_default_doc_lib: Optional[bool] = None,
+        render_options: Optional[int] = None,
+        require_folder_coloring_fields: Optional[bool] = None,
+        show_stub_file: Optional[bool] = None,
+        view_xml: Optional[str] = None,
+        first_group_only: Optional[bool] = None,
+        folder_server_relative_url: Optional[str] = None,
+        image_fields_to_try_rewrite_to_cdn_urls: Optional[str] = None,
+        merge_default_view: Optional[bool] = None,
+        modern_list_boot: Optional[bool] = None,
+        original_date: Optional[bool] = None,
+        override_view_xml: Optional[str] = None,
+        paging: Optional[str] = None,
+        render_url_field_in_json: Optional[bool] = None,
+        replace_group: Optional[bool] = None,
     ):
         """
         :param bool add_all_fields:

@@ -19,7 +19,7 @@ class ListTemplate(Entity):
     """
 
     def __repr__(self):
-        return self.internal_name or self.entity_type_name
+        return self.internal_name or self.entity_type_name or ""
 
     def get_global_schema_xml(self) -> ClientResult[bytes]:
         """Retrieves the global schema.xml file."""
@@ -37,5 +37,6 @@ class ListTemplate(Entity):
         super().set_property(name, value, persist_changes)
         if self._resource_path is None:
             if name == "Name":
+                assert self._parent_collection is not None
                 self._resource_path = ServiceOperationPath("GetByName", [value], self._parent_collection.resource_path)
         return self

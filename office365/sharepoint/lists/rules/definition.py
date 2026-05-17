@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.lists.rules.properties import RulesProperties
@@ -7,19 +9,19 @@ from office365.sharepoint.lists.rules.reviewinfo import ReviewerInfo
 class RulesDefinition(ClientValue):
     def __init__(
         self,
-        action_for_invalid_rules: str = None,
-        category_id: str = None,
+        action_for_invalid_rules: Optional[str] = None,
+        category_id: Optional[str] = None,
         created_by_user: ReviewerInfo = ReviewerInfo(),
-        created_date_time: str = None,
-        is_active: bool = None,
-        is_manual: bool = None,
-        modified_by_user: ReviewerInfo = None,
-        modified_date_time: str = None,
+        created_date_time: Optional[str] = None,
+        is_active: Optional[bool] = None,
+        is_manual: Optional[bool] = None,
+        modified_by_user: Optional[ReviewerInfo] = None,
+        modified_date_time: Optional[str] = None,
         properties: ClientValueCollection[RulesProperties] = ClientValueCollection(RulesProperties),
-        risk: int = None,
-        rule_group: str = None,
-        rule_id: int = None,
-        rule_statement: str = None,
+        risk: Optional[int] = None,
+        rule_group: Optional[str] = None,
+        rule_id: Optional[int] = None,
+        rule_statement: Optional[str] = None,
     ):
         self.action_for_invalid_rules = action_for_invalid_rules
         self.category_id = category_id

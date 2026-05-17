@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ListDataValidationFailure(ClientValue):
     def __init__(
         self,
-        display_name: str = None,
-        message: str = None,
-        name: str = None,
-        reason: int = None,
-        validation_type: int = None,
+        display_name: Optional[str] = None,
+        message: Optional[str] = None,
+        name: Optional[str] = None,
+        reason: Optional[int] = None,
+        validation_type: Optional[int] = None,
     ):
         self.DisplayName = display_name
         self.Message = message

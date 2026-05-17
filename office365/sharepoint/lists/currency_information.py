@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,9 +8,9 @@ class CurrencyInformation(ClientValue):
 
     def __init__(
         self,
-        display_string: str = None,
-        language_culture_name: str = None,
-        lcid: int = None,
+        display_string: Optional[str] = None,
+        language_culture_name: Optional[str] = None,
+        lcid: Optional[int] = None,
     ):
         """
         :param str display_string: The Display String (ex: $123,456.00 (United States)) for a specific currency
