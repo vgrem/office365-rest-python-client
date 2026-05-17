@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from typing import Optional
 
 from office365.runtime.client_request_exception import ClientRequestException
@@ -11,7 +12,7 @@ def try_get_file(web: Web, url: str) -> Optional[File]:
     try:
         return web.get_file_by_server_relative_url(url).select(["Exists"]).get().execute_query()
     except ClientRequestException as e:
-        if e.response.status_code == 404:
+        if e.response.status_code == HTTPStatus.NOT_FOUND:
             return None
         else:
             raise ValueError(e.response.text) from e

@@ -7,6 +7,10 @@ from office365.sharepoint.permissions.kind import PermissionKind
 class BasePermissions(ClientValue):
     """Specifies a set of built-in permissions."""
 
+    _BITS_PER_INT = 32
+    _MAX_BITS = 64
+    _FULL_MASK = 0xFFFF
+
     def __init__(self, high: int = 0, low: int = 0):
         super().__init__()
         self.High = high
@@ -29,15 +33,15 @@ class BasePermissions(ClientValue):
         if isinstance(perm, int):
             perm = PermissionKind(perm)
         if perm == PermissionKind.FullMask:
-            self.Low = self.High = 0xFFFF
+            self.Low = self.High = self._FULL_MASK
         elif perm == PermissionKind.EmptyMask:
             self.Low = self.High = 0
         else:
             bit_pos = perm.value - 1
-            mask = 1 << (bit_pos % 32)
-            if bit_pos < 32:
+            mask = 1 << (bit_pos % self._BITS_PER_INT)
+            if bit_pos < self._BITS_PER_INT:
                 self.High |= mask
-            elif 32 <= bit_pos < 64:
+            elif self._BITS_PER_INT <= bit_pos < self._MAX_BITS:
                 self.Low |= mask
 
     def has(self, perm: Union[PermissionKind, int]) -> bool:
@@ -47,12 +51,12 @@ class BasePermissions(ClientValue):
         if perm == PermissionKind.EmptyMask:
             return True
         if perm == PermissionKind.FullMask:
-            return self.Low == 0xFFFF and self.High == 0xFFFF
+            return self.Low == self._FULL_MASK and self.High == self._FULL_MASK
         bit_pos = perm.value - 1
-        if not 0 <= bit_pos < 64:
+        if not 0 <= bit_pos < self._MAX_BITS:
             return False
-        mask = 1 << (bit_pos % 32)
-        return bool(self.High & mask) if bit_pos < 32 else bool(self.Low & mask)
+        mask = 1 << (bit_pos % self._BITS_PER_INT)
+        return bool(self.High & mask) if bit_pos < self._BITS_PER_INT else bool(self.Low & mask)
 
     def clear_all(self):
         """Clears all permissions for the current instance."""

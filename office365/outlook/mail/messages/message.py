@@ -272,8 +272,9 @@ class Message(OutlookItem):
     def body(self, value: Union[str, ItemBody, Tuple]) -> None:
         """Sets the body of the message. It can be in HTML or text format."""
         content_type = "Text"  # Default content type
+        TUPLE_SIZE = 2
         if isinstance(value, tuple):
-            if len(value) != 2:
+            if len(value) != TUPLE_SIZE:
                 raise ValueError("value must be a tuple of (content, content_type)")
             content, content_type = value
         else:

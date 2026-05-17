@@ -28,6 +28,7 @@ from office365.sharepoint.listitems.compliance_info import ListItemComplianceInf
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
 from office365.sharepoint.listitems.update_parameters import ListItemUpdateParameters
 from office365.sharepoint.listitems.versions.collection import ListItemVersionCollection
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.policy.dlp_policy_tip import DlpPolicyTip
 from office365.sharepoint.reputationmodel.reputation import Reputation
@@ -402,7 +403,7 @@ class ListItem(SecurableObject):
             ).after_execute(_after_system_update)
 
         def _list_loaded():
-            if self.parent_list.base_template == 101:
+            if self.parent_list.base_template == ListTemplateType.DocumentLibrary.value:
                 self.ensure_properties(sys_metadata, _system_update)
             else:
                 next_qry = ServiceOperationQuery(self, "SystemUpdate")

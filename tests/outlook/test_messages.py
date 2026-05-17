@@ -59,7 +59,9 @@ class TestOutlookMessages(GraphTestCase):
             .add_file_attachment("BinaryAttachment.txt", base64_content=content)
             .execute_query()
         )
-        assert len(self.client.me.messages[draft.id].attachments.get().execute_query()) == 2
+        expected_count = 2
+        attachments = self.client.me.messages[draft.id].attachments.get().execute_query()
+        assert len(attachments) == expected_count
         draft.delete_object().execute_query()
 
     @requires_delegated_permission("Mail.Send", "Mail.ReadWrite")

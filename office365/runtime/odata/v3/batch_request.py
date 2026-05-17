@@ -139,7 +139,8 @@ class ODataBatchV3Request(ODataRequest):
 
         resp = requests.Response()
         resp.status_code = int(status_info[0])
-        if status_info[1] == "No Content" or len(lines) < 3:
+        MIN_RESPONSE_LINES = 3
+        if status_info[1] == "No Content" or len(lines) < MIN_RESPONSE_LINES:
             resp.headers = self._normalize_headers(lines[1:])
             resp._content = bytes(str("").encode("utf-8"))
         else:

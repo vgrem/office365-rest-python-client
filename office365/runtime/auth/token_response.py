@@ -62,7 +62,8 @@ class TokenResponse:
 
         def _normalize_key(name: str) -> str:
             key_parts = name.split("_")
-            if len(key_parts) >= 2:
+            MIN_KEY_PARTS = 2
+            if len(key_parts) >= MIN_KEY_PARTS:
                 names = [n.title() for n in key_parts[1:]]
                 return key_parts[0] + "".join(names)
             return name

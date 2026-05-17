@@ -246,7 +246,8 @@ class TypeBuilder(ast.NodeTransformer):
             return
 
         parts = self._schema.FullName.split(".")
-        if len(parts) <= 2:
+        MIN_NAME_PARTS = 2
+        if len(parts) <= MIN_NAME_PARTS:
             return
 
         if not self._entity_type_name_exists:

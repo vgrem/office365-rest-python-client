@@ -39,9 +39,7 @@ class FieldCreationInformation(ClientValue):
         self.FieldTypeKind = field_type_kind
         self.Description = description
         self.Choices = (
-            StringCollection(choices)
-            if field_type_kind in {FieldType.MultiChoice, FieldType.Choice}
-            else None
+            StringCollection(choices) if field_type_kind in {FieldType.MultiChoice, FieldType.Choice} else None
         )
         self.LookupListId = lookup_list_id
         self.LookupFieldName = lookup_field_name

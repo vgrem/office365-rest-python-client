@@ -7,8 +7,9 @@ from tests import test_client_credentials, test_team_site_url
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 
 list_tasks = ctx.web.lists.get_by_title("Company Tasks")
-items = list_tasks.items.get().top(2).execute_query()
-if len(items) != 2:
+min_items = 2
+items = list_tasks.items.get().top(min_items).execute_query()
+if len(items) != min_items:
     sys.exit("Not enough items were found")
 
 task_id = items[0].get_property("Id")
