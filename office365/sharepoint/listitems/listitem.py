@@ -49,6 +49,12 @@ if TYPE_CHECKING:
     import datetime
     from typing import Optional
 
+    from office365.sharepoint.contenttypes.content_type import ContentType
+    from office365.sharepoint.files.file import File
+    from office365.sharepoint.folders.folder import Folder
+    from office365.sharepoint.lists.list import List
+    from office365.sharepoint.permissions.base_permissions import BasePermissions
+
 
 class ListItem(SecurableObject):
     """An individual entry within a SharePoint list. Each list item has a schema that maps to fields in the list
@@ -463,7 +469,7 @@ class ListItem(SecurableObject):
         return self.properties.get("DisplayName", None)
 
     @property
-    def parent_list(self):
+    def parent_list(self) -> List:
         """Get parent List"""
         from office365.sharepoint.lists.list import List
 
@@ -473,14 +479,14 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def file(self):
+    def file(self) -> File:
         """Get file"""
         from office365.sharepoint.files.file import File
 
         return self.properties.get("File", File(self.context, ResourcePath("File", self.resource_path)))
 
     @property
-    def folder(self):
+    def folder(self) -> Folder:
         """Get folder"""
         from office365.sharepoint.folders.folder import Folder
 
@@ -499,7 +505,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def content_type(self):
+    def content_type(self) -> ContentType:
         """Gets a value that specifies the content type of the list item."""
         from office365.sharepoint.contenttypes.content_type import ContentType
 
@@ -509,7 +515,7 @@ class ListItem(SecurableObject):
         )
 
     @property
-    def effective_base_permissions(self):
+    def effective_base_permissions(self) -> BasePermissions:
         """Gets a value that specifies the effective permissions on the list item that are assigned
         to the current user."""
         from office365.sharepoint.permissions.base_permissions import BasePermissions
@@ -517,7 +523,7 @@ class ListItem(SecurableObject):
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
     @property
-    def effective_base_permissions_for_ui(self):
+    def effective_base_permissions_for_ui(self) -> BasePermissions:
         """Specifies the effective base permissions for the current user, as they SHOULD be displayed in the user
         interface (UI). If the list is not in read-only UI mode, the value of EffectiveBasePermissionsForUI
         MUST be the same as the value of EffectiveBasePermissions (section 3.2.5.87.1.1.2).

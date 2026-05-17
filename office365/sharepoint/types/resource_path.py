@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.utilities import get_absolute_url, is_absolute_url, urlparse
 
 
 class ResourcePath(ClientValue):
-    def __init__(self, decoded_url=None):
+    def __init__(self, decoded_url: Optional[str] = None):
         """
         Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
         other artifacts in the database.
@@ -14,7 +18,7 @@ class ResourcePath(ClientValue):
         self.DecodedUrl = decoded_url
 
     @staticmethod
-    def create_absolute(site_url, path):
+    def create_absolute(site_url: str, path: str) -> ResourcePath:
         """
         Creates absolute path
         :param str site_url: Site url
@@ -27,7 +31,7 @@ class ResourcePath(ClientValue):
             return ResourcePath("".join([get_absolute_url(site_url), path]))
 
     @staticmethod
-    def create_relative(site_url, path):
+    def create_relative(site_url: str, path: str) -> ResourcePath:
         """
         Creates server relative path
         :param str site_url: Site url
@@ -40,11 +44,11 @@ class ResourcePath(ClientValue):
             return ResourcePath(path)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.ResourcePath"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.DecodedUrl or ""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.DecodedUrl or self.entity_type_name

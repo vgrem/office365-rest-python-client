@@ -142,7 +142,7 @@ def {method_name}(self) -> {type_annotation}:
             ),
             body=[ast.Return(value=ast.Constant(value=self._schema.FullName))],
             decorator_list=[ast.Name(id="property", ctx=ast.Load())],
-            returns=None,
+            returns=ast.Name(id="str", ctx=ast.Load()),
         )
 
         return node
