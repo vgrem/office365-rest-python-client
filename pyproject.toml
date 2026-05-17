@@ -58,7 +58,6 @@ urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 [dependency-groups]
 dev = [
   "adal~=1.2.4",
-  "astunparse~=1.6.3",
   "configparser~=5.0.2",
   "cryptography>=44.0.0",
   "faker~=4.1.2",
