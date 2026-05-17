@@ -1,4 +1,4 @@
-from typing import Self
+from typing_extensions import Self
 
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.lists.list import List
