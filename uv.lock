@@ -571,7 +571,7 @@ wheels = [
 
 [[package]]
 name = "office365-rest-python-client"
-version = "2.6.2"
+version = "3.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "msal" },
