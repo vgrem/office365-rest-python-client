@@ -1,7 +1,10 @@
 """
-Username Password Authentication flow
+Username/Password (Resource Owner Password Credentials) flow using the built-in method.
 
-https://github.com/AzureAD/microsoft-authentication-library-for-python/wiki/Username-Password-Authentication
+Uses GraphClient.with_username_and_password for direct token acquisition.
+
+https://learn.microsoft.com/en-us/graph/auth
+https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
 """
 
 from office365.graph_client import GraphClient

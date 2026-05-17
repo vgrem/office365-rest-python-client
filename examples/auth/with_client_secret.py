@@ -1,10 +1,11 @@
 """
-Acquires a token by using application secret
+Token acquisition via client secret using the built-in with_client_secret method.
 
 The following options are supported:
-   - utilize built in GraphClient(tenant=tenant).with_client_secret(client_id, client_secret) method
-   - or provide a custom callback function to GraphClient constructor as demonstrated below
+   - Use the built-in GraphClient(tenant=tenant).with_client_secret(client_id, client_secret) method
+   - Or provide a custom callback to the GraphClient constructor (see with_client_secret_custom.py)
 
+https://learn.microsoft.com/en-us/graph/auth
 https://learn.microsoft.com/en-us/entra/identity-platform/msal-authentication-flows#client-credentials
 """
 

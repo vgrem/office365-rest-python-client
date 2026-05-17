@@ -1,7 +1,10 @@
 """
-Connect via national clouds (Microsoft 365 GCC High environment)
+Connect via national clouds (Microsoft 365 GCC High environment).
 
 Microsoft Graph for US Government L4: https://graph.microsoft.us
+
+https://learn.microsoft.com/en-us/graph/auth
+https://learn.microsoft.com/en-us/graph/deployments
 """
 
 from office365.azure_env import AzureEnvironment

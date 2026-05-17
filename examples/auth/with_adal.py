@@ -1,8 +1,10 @@
 """
-Demonstrates how to acquire access token via ADAL library
+Token acquisition via the legacy ADAL library (username/password).
 
-Note: ADAL for Python is no longer receive new feature improvement. Its successor, MSAL for Python,
-are now generally available.
+Note: ADAL for Python is no longer receiving new feature improvements. Its successor, MSAL for Python,
+is now generally available. Prefer the MSAL-based examples (with_user_creds.py) instead.
+
+https://learn.microsoft.com/en-us/graph/auth
 """
 
 from office365.graph_client import GraphClient

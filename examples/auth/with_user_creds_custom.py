@@ -1,7 +1,11 @@
 """
-Username Password Authentication flow
+Username/Password (Resource Owner Password Credentials) flow via a custom callback.
 
-https://github.com/AzureAD/microsoft-authentication-library-for-python/wiki/Username-Password-Authentication
+Uses msal.PublicClientApplication.acquire_token_by_username_password directly
+instead of the built-in with_username_and_password method.
+
+https://learn.microsoft.com/en-us/graph/auth
+https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
 """
 
 import msal
