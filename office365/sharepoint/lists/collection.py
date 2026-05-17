@@ -16,7 +16,13 @@ if TYPE_CHECKING:
 
 
 class ListCollection(EntityCollection[List]):
-    """Represents a collection of SharePoint lists."""
+    """Represents a collection of SharePoint lists.
+
+    Example:
+        >>> ctx = ClientContext()
+        >>> from office365.sharepoint.lists.list import List
+        >>> lists = EntityCollection(ctx, List)
+    """
 
     def __init__(
         self,

@@ -19,11 +19,6 @@ class EntityCollection(ClientObjectCollection[T]):
     - Type-safe object creation
     - Fluent API patterns
     - Parent-child relationships
-
-    Example:
-        >>> ctx = ClientContext()
-        >>> from office365.sharepoint.lists.list import List
-        >>> lists = EntityCollection(ctx, List)
     """
 
     def __init__(

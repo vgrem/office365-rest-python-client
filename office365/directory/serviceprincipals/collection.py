@@ -37,6 +37,6 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
         else:
             return self.get_by_app_id(app)
 
-    def get_by_name(self, name: str) -> ServicePrincipal | None:
+    def get_by_name(self, name: str) -> ServicePrincipal:
         """Retrieves the service principal using displayName."""
         return self.single(f"displayName eq '{name}'")
