@@ -125,5 +125,14 @@ include = [
     "office365/onedrive/*",
     "office365/entity*",
     "office365/runtime/*",
-    "office365/directory/*"
+    "office365/directory/*",
+    "office365/admin/*",
+    "office365/education/*",
+    "office365/intune/*",
+    "office365/planner/*",
+    "office365/onenote/*",
+    "office365/subscriptions/*",
+    "office365/communications/*",
+    "office365/search/*",
+    "office365/teams/*",
 ]

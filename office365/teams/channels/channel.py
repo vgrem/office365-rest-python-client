@@ -25,9 +25,9 @@ class Channel(Entity):
 
     def does_user_have_access(
         self,
-        user_id: str = None,
-        tenant_id: str = None,
-        user_principal_name: str = None,
+        user_id: Optional[str] = None,
+        tenant_id: Optional[str] = None,
+        user_principal_name: Optional[str] = None,
     ) -> ClientResult[bool]:
         """Determine whether a user has access to a shared channel.
 
@@ -193,5 +193,6 @@ class Channel(Entity):
         super().set_property(name, value, persist_changes)
         # fallback: fix resource path
         if name == "id":
+            assert self.resource_path is not None
             self._resource_path = ResourcePath(quote(value), self.resource_path.parent)
         return self

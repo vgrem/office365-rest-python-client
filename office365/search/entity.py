@@ -63,8 +63,9 @@ class SearchEntity(Entity):
         def _process_response(
             result: ClientResult[ClientValueCollection[SearchResponse]],
         ) -> None:
-            for item in result.value:
-                for hcs in item.hitsContainers:
+            result_items = result.value  # type: ignore[attr-defined]
+            for item in result_items:
+                for hcs in item.hitsContainers:  # type: ignore[attr-defined]
                     [_patch_hit(hit) for hit in hcs.hits]
 
         payload = {"requests": ClientValueCollection(SearchRequest, [search_request])}
@@ -76,9 +77,9 @@ class SearchEntity(Entity):
     def query_messages(
         self,
         query_string: str,
-        page_from: int = None,
-        size: int = None,
-        enable_top_results: bool = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        enable_top_results: Optional[bool] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook messages. Alias to query method
         :param str query_string: Contains the query terms.
@@ -101,7 +102,7 @@ class SearchEntity(Entity):
         return self.query(query_string, entity_types=[EntityType.event])
 
     def query_drive_items(
-        self, query_string: str, page_from: int = None, size: int = None
+        self, query_string: str, page_from: Optional[int] = None, size: Optional[int] = None
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches OneDrive items. Alias to query method
         :param str query_string: Contains the query terms.
@@ -118,9 +119,9 @@ class SearchEntity(Entity):
     def query_list_items(
         self,
         query_string: str,
-        page_from: int = None,
-        size: int = None,
-        region: str = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches list items. Alias to query method
 
@@ -140,9 +141,9 @@ class SearchEntity(Entity):
     def query_peoples(
         self,
         query_string: str,
-        page_from: int = None,
-        size: int = None,
-        region: str = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches peoples. Alias to query method
 
@@ -162,9 +163,9 @@ class SearchEntity(Entity):
     def query_sites(
         self,
         query_string: str,
-        page_from: int = None,
-        size: int = None,
-        region: str = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches sites. Alias to query method
 
@@ -184,9 +185,9 @@ class SearchEntity(Entity):
     def query_chat_messages(
         self,
         query_string: str,
-        page_from: int = None,
-        size: int = None,
-        region: str = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Teams chat messages. Alias to query method
 

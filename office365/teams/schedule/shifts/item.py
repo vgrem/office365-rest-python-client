@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.teams.schedule.entity import ScheduleEntity
 from office365.teams.schedule.shifts.activity import ShiftActivity
@@ -8,8 +10,8 @@ class ShiftItem(ScheduleEntity):
 
     def __init__(
         self,
-        display_name: str = None,
-        activities: ClientValueCollection[ShiftActivity] = None,
+        display_name: Optional[str] = None,
+        activities: Optional[List[ShiftActivity]] = None,
     ):
         """
         :param str display_name: The shift label of the shiftItem.

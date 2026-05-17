@@ -52,6 +52,7 @@ class Team(Entity):
         """Deletes a team"""
 
         def _delete_object():
+            assert self.id is not None
             group = self.context.groups[self.id]
             self.context.groups.add_child(group)
             group.delete_object(permanent_delete)

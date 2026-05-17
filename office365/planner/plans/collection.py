@@ -29,6 +29,7 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
         if isinstance(container, Group):
 
             def _owner_loaded():
+                assert container.id is not None
                 _add(container.id)
 
             container.ensure_property("id", _owner_loaded)

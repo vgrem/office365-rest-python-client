@@ -45,21 +45,22 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
             main_message.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
             main_message.set_boundary(boundary)
 
-            c_type, _enc = get_mime_type(presentation_file.name)
+            c_type, _enc = get_mime_type(presentation_file.name or "")
             presentation_message = Message()
-            presentation_message.add_header("Content-Type", c_type)
+            presentation_message.add_header("Content-Type", c_type or "")
             presentation_message.add_header("Content-Disposition", 'form-data; name="Presentation"')
             presentation_message.set_payload(presentation_file.read())
             main_message.attach(presentation_message)
 
-            for name, file in attachment_files.items():
-                file_message = Message()
-                c_type, _enc = get_mime_type(file.name)
-                file_message.add_header("Content-Type", c_type)
-                file_message.add_header("Content-Disposition", f'form-data; name="{name}"')
-                file_content = file.read()
-                file_message.set_payload(file_content)
-                main_message.attach(file_message)
+            if attachment_files:
+                for name, file in attachment_files.items():
+                    file_message = Message()
+                    c_type, _enc = get_mime_type(file.name or "")
+                    file_message.add_header("Content-Type", c_type or "")
+                    file_message.add_header("Content-Disposition", f'form-data; name="{name}"')
+                    file_content = file.read()
+                    file_message.set_payload(file_content)
+                    main_message.attach(file_message)
 
             request.data = _message_to_payload(main_message)
 

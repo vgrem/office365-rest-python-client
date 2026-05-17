@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.communications.calls.call import Call
@@ -18,7 +20,7 @@ class CallCollection(EntityCollection):
         """
         return super().add(callbackUri=callback_uri)
 
-    def log_teleconference_device_quality(self, quality: TeleconferenceDeviceQuality = None) -> Self:
+    def log_teleconference_device_quality(self, quality: Optional[TeleconferenceDeviceQuality] = None) -> Self:
         """
         Log video teleconferencing device quality data.
         The Cloud Video Interop (CVI) bot represents video teleconferencing (VTC) devices and acts as a back-to-back

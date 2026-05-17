@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,7 +9,7 @@ class TeamMemberSettings(ClientValue):
 
     def __init__(
         self,
-        allow_create_update_channels: bool = None,
+        allow_create_update_channels: Optional[bool] = None,
         allow_delete_channels: bool = True,
         allow_add_remove_apps: bool = True,
         allow_create_update_remove_tabs: bool = True,

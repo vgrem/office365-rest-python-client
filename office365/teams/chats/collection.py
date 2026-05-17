@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -12,7 +12,7 @@ class ChatCollection(EntityCollection[Chat]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Chat, resource_path)
 
-    def add(self, chat_type: Union[str, ChatType], owner_ids: List[str] = None) -> Chat:
+    def add(self, chat_type: Union[str, ChatType], owner_ids: Optional[List[str]] = None) -> Chat:
         """
         Create a new chat object.
 

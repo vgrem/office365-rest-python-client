@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from office365.entity_collection import EntityCollection
 from office365.planner.buckets.bucket import PlannerBucket
@@ -15,7 +15,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         self,
         title: str,
         plan: Union[str, PlannerPlan],
-        bucket: Union[str, PlannerBucket] = None,
+        bucket: Optional[Union[str, PlannerBucket]] = None,
     ) -> PlannerTask:
         """
         Create a new plannerTask.
@@ -35,6 +35,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         if isinstance(plan, PlannerPlan):
 
             def _parent_loaded():
+                assert plan.id is not None
                 _add(plan.id)
 
             plan.ensure_property("id", _parent_loaded)

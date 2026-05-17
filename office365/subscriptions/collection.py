@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -18,11 +19,11 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         notification_url: str,
         resource_path: ResourcePath,
         expiration: datetime,
-        client_state: str = None,
-        latest_supported_tls_version: str = None,
-        include_resource_data: bool = None,
-        encryption_certificate: str = None,
-        encryption_certificate_id: str = None,
+        client_state: Optional[str] = None,
+        latest_supported_tls_version: Optional[str] = None,
+        include_resource_data: Optional[bool] = None,
+        encryption_certificate: Optional[str] = None,
+        encryption_certificate_id: Optional[str] = None,
     ):
         """
         Subscribes a listener application to receive change notifications when the requested type of changes occur

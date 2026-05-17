@@ -38,9 +38,9 @@ class Presence(Entity):
     def set_presence(
         self,
         session_id: str,
-        availability: str = None,
-        activity: str = None,
-        expiration_duration: str = None,
+        availability: Optional[str] = None,
+        activity: Optional[str] = None,
+        expiration_duration: Optional[str] = None,
     ):
         """
         Set the state of a user's presence session as an application.
@@ -62,7 +62,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_status_message(self, message: str, expiry: datetime = None):
+    def set_status_message(self, message: str | ItemBody, expiry: Optional[datetime] = None):
         """
         Set a presence status message for a user. An optional expiration date and time can be supplied.
         :param str or ItemBody message: Status message item.
@@ -72,8 +72,10 @@ class Presence(Entity):
         if not isinstance(message, ItemBody):
             message = ItemBody(message)
         if expiry:
-            expiry = DateTimeTimeZone.parse(expiry)
-        payload = {"statusMessage": PresenceStatusMessage(message=message, expiry_datetime=expiry)}
+            status_message = PresenceStatusMessage(message=message, expiry_datetime=DateTimeTimeZone.parse(expiry))
+        else:
+            status_message = PresenceStatusMessage(message=message)
+        payload = {"statusMessage": status_message}
         qry = ServiceOperationQuery(self, "setStatusMessage", None, payload)
         self.context.add_query(qry)
         return self

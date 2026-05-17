@@ -13,4 +13,4 @@ class ExternalLink(ClientValue):
         self.href = href
 
     def __repr__(self):
-        return self.href
+        return self.href or ""

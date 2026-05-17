@@ -34,7 +34,9 @@ class EntityType:
     @staticmethod
     def resolve(name: str) -> Type[Union[Event, List, Site, ListItem, Message, Drive, DriveItem]]:
         class_name = name.split(".")[-1]
-        return EntityType._types.get(class_name, None)
+        result = EntityType._types.get(class_name, None)
+        assert result is not None
+        return result
 
     event = "event"
     list = "list"

@@ -19,7 +19,7 @@ class SearchRequest(ClientValue):
         self,
         query: SearchQuery,
         aggregation_filters: List[str] | None = None,
-        aggregations: list[str] | None = None,
+        aggregations: Optional[List[AggregationOption]] = None,
         enable_top_results=None,
         size: int | None = None,
         region: str | None = None,

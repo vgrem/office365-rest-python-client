@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,9 +8,9 @@ class TeamSummary(ClientValue):
 
     def __init__(
         self,
-        guests_count: int = None,
-        members_count: int = None,
-        owners_count: int = None,
+        guests_count: Optional[int] = None,
+        members_count: Optional[int] = None,
+        owners_count: Optional[int] = None,
     ):
         """
         :param int guests_count: Count of guests in a team.

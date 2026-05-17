@@ -1,10 +1,12 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class OnenoteOperationError(ClientValue):
     """An error from a failed OneNote operation."""
 
-    def __init__(self, message: str = None, code: str = None):
+    def __init__(self, message: Optional[str] = None, code: Optional[str] = None):
         """
         :param str message: The error message.
         :param str code: The error code.

@@ -33,7 +33,9 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def start_hold_music(self, custom_prompt: str = None, client_context: str = None) -> StartHoldMusicOperation:
+    def start_hold_music(
+        self, custom_prompt: Optional[str] = None, client_context: Optional[str] = None
+    ) -> StartHoldMusicOperation:
         """
         Put a participant on hold and play music in the background.
 
@@ -46,7 +48,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def stop_hold_music(self, client_context: str = None) -> StopHoldMusicOperation:
+    def stop_hold_music(self, client_context: Optional[str] = None) -> StopHoldMusicOperation:
         """
         Reincorporate a participant previously put on hold to the call.
 
