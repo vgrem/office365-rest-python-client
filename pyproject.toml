@@ -37,7 +37,6 @@ classifiers = [
 
 dependencies = [
   "msal>=1.28,<2",
-  "pyright>=1.1.408",
   "pytz>=2021.1",
   "requests>=2.32.4,<3",
   "typing-extensions>=4.5",
@@ -62,6 +61,7 @@ dev = [
   "cryptography>=44.0.0",
   "faker~=4.1.2",
   "pyproject-fmt",
+  "pyright>=1.1.408",
   "pytest",
   "ruff",
   "types-requests",
