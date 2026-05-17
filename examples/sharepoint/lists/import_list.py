@@ -15,7 +15,7 @@ def print_progress(return_types: List[ClientObject]) -> None:
 def load_data_source(amount=1000):
     fake = Faker()
     contacts = []
-    for idx in range(amount):
+    for _ in range(amount):
         contact = {
             "Title": fake.name(),
             "FullName": fake.name(),
@@ -36,7 +36,7 @@ def load_data_source(amount=1000):
 def run(context: ClientContext) -> None:
     contacts_data = load_data_source()
     contacts_list = context.web.lists.get_by_title("Contacts_Large")
-    for idx, contact in enumerate(contacts_data):
+    for _, contact in enumerate(contacts_data):
         # contact_item = contacts_list.add_item(contact).execute_query()
         contacts_list.add_item(contact)
         # print(

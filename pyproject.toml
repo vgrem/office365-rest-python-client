@@ -95,7 +95,6 @@ lint.select = [
   "W", # pycodestyle
 ]
 lint.ignore = [
-  "B007",    # Loop control var not used in the loop body
   "B008",    # Do not perform function call in argument defaults
   "B020",    # Loop control variable `self` overrides iterable
   "B904",    # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
