@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class CopilotTransitiveSharingStatusItem(ClientValue):
     def __init__(
         self,
-        list_id: str = None,
-        site_id: str = None,
-        status: int = None,
-        unique_id: str = None,
-        url: str = None,
-        web_id: str = None,
+        list_id: Optional[str] = None,
+        site_id: Optional[str] = None,
+        status: Optional[int] = None,
+        unique_id: Optional[str] = None,
+        url: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         self.ListId = list_id
         self.SiteId = site_id

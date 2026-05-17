@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.copilot.files.user_relationship import (
     CopilotFileUserRelationship,
@@ -8,18 +10,18 @@ from office365.sharepoint.copilot.useridentity import UserIdentity
 class CopilotFileMetadata(ClientValue):
     def __init__(
         self,
-        container_url: str = None,
+        container_url: Optional[str] = None,
         created_by: UserIdentity = UserIdentity(),
-        file_name: str = None,
-        file_url: str = None,
+        file_name: Optional[str] = None,
+        file_url: Optional[str] = None,
         last_modified_by: UserIdentity = UserIdentity(),
-        list_id: str = None,
-        list_item_id: str = None,
-        site_id: str = None,
-        site_path: str = None,
-        unique_id: str = None,
+        list_id: Optional[str] = None,
+        list_item_id: Optional[str] = None,
+        site_id: Optional[str] = None,
+        site_path: Optional[str] = None,
+        unique_id: Optional[str] = None,
         user_relationship: CopilotFileUserRelationship = CopilotFileUserRelationship(),
-        web_id: str = None,
+        web_id: Optional[str] = None,
     ):
         self.ContainerUrl = container_url
         self.CreatedBy = created_by
