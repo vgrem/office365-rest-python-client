@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.microfeed.datalinkcollection import (
@@ -9,19 +11,19 @@ from office365.sharepoint.microfeed.link import MicrofeedLink
 class MicrofeedPostOptions(ClientValue):
     def __init__(
         self,
-        content: str = None,
-        content_formatting_option: int = None,
+        content: Optional[str] = None,
+        content_formatting_option: Optional[int] = None,
         data_links: MicrofeedDataLinkCollection = MicrofeedDataLinkCollection(),
-        definition_name: str = None,
+        definition_name: Optional[str] = None,
         media_link: MicrofeedLink = MicrofeedLink(),
         people_list: StringCollection = StringCollection(),
-        post_source: str = None,
-        post_source_uri: str = None,
-        ref_thread__reference_id: str = None,
-        ref_thread__ref_reply: str = None,
-        ref_thread__ref_root: str = None,
-        target_actor: str = None,
-        update_status_text: bool = None,
+        post_source: Optional[str] = None,
+        post_source_uri: Optional[str] = None,
+        ref_thread__reference_id: Optional[str] = None,
+        ref_thread__ref_reply: Optional[str] = None,
+        ref_thread__ref_root: Optional[str] = None,
+        target_actor: Optional[str] = None,
+        update_status_text: Optional[bool] = None,
     ):
         self.Content = content
         self.ContentFormattingOption = content_formatting_option

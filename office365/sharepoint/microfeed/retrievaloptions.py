@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -7,16 +8,16 @@ from office365.runtime.types.collections import StringCollection
 class MicrofeedRetrievalOptions(ClientValue):
     def __init__(
         self,
-        content_formatting_option: int = None,
-        content_only: bool = None,
-        drop_all_security_trimmable_posts: bool = None,
-        gather_unread_mention_count_for_user: bool = None,
-        included_types: int = None,
-        newer_than: datetime = None,
-        older_than: datetime = None,
+        content_formatting_option: Optional[int] = None,
+        content_only: Optional[bool] = None,
+        drop_all_security_trimmable_posts: Optional[bool] = None,
+        gather_unread_mention_count_for_user: Optional[bool] = None,
+        included_types: Optional[int] = None,
+        newer_than: Optional[datetime] = None,
+        older_than: Optional[datetime] = None,
         post_definition_filter: StringCollection = StringCollection(),
-        result_sort_order: int = None,
-        thread_count: int = None,
+        result_sort_order: Optional[int] = None,
+        thread_count: Optional[int] = None,
     ):
         self.ContentFormattingOption = content_formatting_option
         self.ContentOnly = content_only

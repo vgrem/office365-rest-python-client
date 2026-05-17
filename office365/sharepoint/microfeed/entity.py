@@ -1,26 +1,28 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class MicroBlogEntity(ClientValue):
     def __init__(
         self,
-        account_name: str = None,
-        can_follow: bool = None,
-        description: str = None,
-        display_name: str = None,
-        email: str = None,
-        entity_type: int = None,
-        entity_uri: str = None,
-        followed_content_uri: str = None,
-        identifier: str = None,
-        is_followed_by_me: bool = None,
-        latest_post: str = None,
-        library_name: str = None,
-        library_uri: str = None,
-        personal_uri: str = None,
-        picture_uri: str = None,
-        status: int = None,
-        title: str = None,
+        account_name: Optional[str] = None,
+        can_follow: Optional[bool] = None,
+        description: Optional[str] = None,
+        display_name: Optional[str] = None,
+        email: Optional[str] = None,
+        entity_type: Optional[int] = None,
+        entity_uri: Optional[str] = None,
+        followed_content_uri: Optional[str] = None,
+        identifier: Optional[str] = None,
+        is_followed_by_me: Optional[bool] = None,
+        latest_post: Optional[str] = None,
+        library_name: Optional[str] = None,
+        library_uri: Optional[str] = None,
+        personal_uri: Optional[str] = None,
+        picture_uri: Optional[str] = None,
+        status: Optional[int] = None,
+        title: Optional[str] = None,
     ):
         self.AccountName = account_name
         self.CanFollow = can_follow

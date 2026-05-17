@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.microfeed.linkaction import MicrofeedLinkAction
 
@@ -6,18 +8,18 @@ class MicrofeedLink(ClientValue):
     def __init__(
         self,
         click_action: MicrofeedLinkAction = MicrofeedLinkAction(),
-        content_uri: str = None,
-        description: str = None,
-        height: int = None,
-        href: str = None,
-        length: int = None,
-        link_type: int = None,
-        name: str = None,
-        preview_height: int = None,
-        preview_picture_url: str = None,
-        preview_width: int = None,
-        status: int = None,
-        width: int = None,
+        content_uri: Optional[str] = None,
+        description: Optional[str] = None,
+        height: Optional[int] = None,
+        href: Optional[str] = None,
+        length: Optional[int] = None,
+        link_type: Optional[int] = None,
+        name: Optional[str] = None,
+        preview_height: Optional[int] = None,
+        preview_picture_url: Optional[str] = None,
+        preview_width: Optional[int] = None,
+        status: Optional[int] = None,
+        width: Optional[int] = None,
     ):
         self.ClickAction = click_action
         self.ContentUri = content_uri

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,13 +7,13 @@ from office365.runtime.client_value import ClientValue
 class MicrofeedDataLink(ClientValue):
     def __init__(
         self,
-        data_link_type: int = None,
-        date_time_value: datetime = None,
-        name: str = None,
-        place_holder_name: str = None,
-        string_value: str = None,
-        unique_id: str = None,
-        uri_value: str = None,
+        data_link_type: Optional[int] = None,
+        date_time_value: Optional[datetime] = None,
+        name: Optional[str] = None,
+        place_holder_name: Optional[str] = None,
+        string_value: Optional[str] = None,
+        unique_id: Optional[str] = None,
+        uri_value: Optional[str] = None,
     ):
         self.DataLinkType = data_link_type
         self.DateTimeValue = date_time_value

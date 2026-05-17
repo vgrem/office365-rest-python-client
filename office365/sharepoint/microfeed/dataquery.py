@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,10 +7,10 @@ from office365.runtime.types.collections import StringCollection
 class MicrofeedDataQuery(ClientValue):
     def __init__(
         self,
-        item_limit: int = None,
-        query: str = None,
+        item_limit: Optional[int] = None,
+        query: Optional[str] = None,
         view_fields: StringCollection = StringCollection(),
-        view_fields_only: bool = None,
+        view_fields_only: Optional[bool] = None,
     ):
         self.ItemLimit = item_limit
         self.Query = query
