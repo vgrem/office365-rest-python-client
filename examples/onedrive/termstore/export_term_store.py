@@ -1,5 +1,7 @@
 """
 Demonstrates how to retrieve a flat list of all TermSet objects
+
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

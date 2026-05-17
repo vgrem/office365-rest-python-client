@@ -2,6 +2,7 @@
 Search across a SharePoint tenant for sites that match keywords provided.
 
 https://learn.microsoft.com/en-us/onedrive/developer/rest-api/api/site_search?view=odsp-graph-online
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

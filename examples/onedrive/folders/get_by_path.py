@@ -2,6 +2,7 @@
 Retrieve the metadata for a driveItem (folder facet) in a drive
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-get?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

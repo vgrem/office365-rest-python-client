@@ -1,5 +1,7 @@
 """
-Get term sets in Group
+Get term sets in a Group
+
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

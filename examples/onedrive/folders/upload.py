@@ -1,5 +1,7 @@
 """
-Demonstrates how to upload files from a local folder into OneDrive drive
+Demonstrates how to upload a folder into OneDrive drive
+
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

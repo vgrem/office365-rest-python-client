@@ -1,6 +1,8 @@
 """
 List site permissions
+
 https://learn.microsoft.com/en-us/graph/api/site-list-permissions?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

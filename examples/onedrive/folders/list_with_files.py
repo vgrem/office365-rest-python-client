@@ -1,4 +1,8 @@
-""" """
+"""
+Enumerate all folders and files recursively from the root of a drive
+
+https://learn.microsoft.com/en-us/graph/api/resources/drive
+"""
 
 from office365.graph_client import GraphClient
 from office365.onedrive.driveitems.driveItem import DriveItem

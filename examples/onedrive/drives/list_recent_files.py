@@ -2,6 +2,7 @@
 List recent files
 
 https://learn.microsoft.com/en-us/graph/api/drive-recent?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

@@ -1,3 +1,9 @@
+"""
+Delete all sites from the tenant
+
+https://learn.microsoft.com/en-us/graph/api/resources/drive
+"""
+
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from tests import test_client_id, test_client_secret, test_tenant

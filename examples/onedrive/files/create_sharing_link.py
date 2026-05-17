@@ -6,6 +6,7 @@ The sharing link is configured to be read-only and usable by anyone with the lin
 All existing permissions are removed when sharing for the first time if retainInheritedPermissions is false.
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-createlink?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient

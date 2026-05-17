@@ -2,6 +2,7 @@
 Demonstrates how to populate Excel template
 
 https://learn.microsoft.com/en-us/graph/api/resources/excel?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient
