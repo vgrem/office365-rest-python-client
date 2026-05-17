@@ -2,6 +2,7 @@
 Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel, PowerPoint,
 OneNote, and Teams) in your organization.
 
+https://learn.microsoft.com/en-us/graph/api/resources/report
 https://learn.microsoft.com/en-us/graph/api/reportroot-getm365appusercounts?view=graph-rest-1.0
 """
 

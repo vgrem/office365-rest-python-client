@@ -1,6 +1,7 @@
 """
 Retrieve a list of notebook objects.
 
+https://learn.microsoft.com/en-us/graph/api/resources/onenote
 https://learn.microsoft.com/en-us/graph/api/onenote-list-notebooks?view=graph-rest-1.0
 """
 

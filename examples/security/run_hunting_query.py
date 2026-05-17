@@ -7,6 +7,8 @@ This example specifies a KQL query which does the following:
    - Sorts the output by the Timestamp value.
    - Limits the output to 2 records (2 rows)
 
+https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview
+https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0
 """
 
 from office365.graph_client import GraphClient

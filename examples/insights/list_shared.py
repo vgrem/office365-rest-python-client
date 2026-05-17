@@ -4,6 +4,7 @@ Calculated insight that includes the list of documents shared with a user.
 This insight includes documents hosted on OneDrive/SharePoint in the user's Microsoft 365 tenant that are shared with
 the user, and documents that are attached as files and sent to the user.
 
+https://learn.microsoft.com/en-us/graph/api/resources/insights
 https://learn.microsoft.com/en-us/graph/api/insights-list-shared?view=graph-rest-1.0
 """
 

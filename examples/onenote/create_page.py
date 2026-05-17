@@ -1,6 +1,7 @@
 """
 Create OneNote pages
 
+https://learn.microsoft.com/en-us/graph/api/resources/onenote
 https://learn.microsoft.com/en-us/graph/onenote-create-page
 """
 

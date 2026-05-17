@@ -2,6 +2,8 @@
 Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object.
 This method doesn't work for disabled users.
 
+https://learn.microsoft.com/en-us/graph/api/resources/report
+https://learn.microsoft.com/en-us/graph/api/authenticationmethods-list-userregistrationdetails?view=graph-rest-1.0
 """
 
 from office365.graph_client import GraphClient

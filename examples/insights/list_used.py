@@ -1,6 +1,7 @@
 """
 Calculate and list the documents that a user has viewed or modified.
 
+https://learn.microsoft.com/en-us/graph/api/resources/insights
 https://learn.microsoft.com/en-us/graph/api/insights-list-used?view=graph-rest-1.0
 """
 

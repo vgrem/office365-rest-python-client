@@ -1,6 +1,7 @@
 """
 Demonstrates how to create a new OneNote notebook
 
+https://learn.microsoft.com/en-us/graph/api/resources/onenote
 https://learn.microsoft.com/en-us/graph/api/onenote-post-notebooks?view=graph-rest-1.0
 """
 

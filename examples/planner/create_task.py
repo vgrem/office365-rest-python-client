@@ -1,5 +1,7 @@
 """
 Create a new plannerTask.
+
+https://learn.microsoft.com/en-us/graph/api/resources/planner
 https://learn.microsoft.com/en-us/graph/api/planner-post-tasks?view=graph-rest-1.0
 """
 
