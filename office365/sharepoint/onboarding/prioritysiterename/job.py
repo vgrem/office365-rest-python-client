@@ -17,7 +17,7 @@ class PrioritySiteRenameJob(Entity):
         return self.properties.get("PrioritizedSiteCount", None)
 
     @property
-    def response_messages(self) -> StringCollection:
+    def response_messages(self) -> Optional[StringCollection]:
         """Gets the ResponseMessages property"""
         return self.properties.get("ResponseMessages", None)
 

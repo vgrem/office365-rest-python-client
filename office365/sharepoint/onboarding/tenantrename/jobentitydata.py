@@ -17,7 +17,7 @@ class TenantRenameJobEntityData(Entity):
         return self.properties.get("JobId", None)
 
     @property
-    def scheduled_date_time_in_utc(self) -> datetime:
+    def scheduled_date_time_in_utc(self) -> datetime | None:
         """Gets the ScheduledDateTimeInUtc property"""
         return self.properties.get("ScheduledDateTimeInUtc", None)
 
