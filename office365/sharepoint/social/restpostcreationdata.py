@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.social.posts.creation_data import SocialPostCreationData
 
@@ -5,7 +7,7 @@ from office365.sharepoint.social.posts.creation_data import SocialPostCreationDa
 class SocialRestPostCreationData(ClientValue):
     def __init__(
         self,
-        id_: str = None,
+        id_: Optional[str] = None,
         creation_data: SocialPostCreationData = SocialPostCreationData(),
     ):
         self.ID = id_

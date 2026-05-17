@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.social.actor import SocialActor
@@ -15,13 +17,13 @@ class SocialThread(ClientValue):
         replies=None,
         root_post=SocialPost(),
         post_reference=SocialPostReference(),
-        attributes: int = None,
-        id_: str = None,
-        owner_index: int = None,
-        permalink: str = None,
-        status: int = None,
-        thread_type: int = None,
-        total_reply_count: int = None,
+        attributes: Optional[int] = None,
+        id_: Optional[str] = None,
+        owner_index: Optional[int] = None,
+        permalink: Optional[str] = None,
+        status: Optional[int] = None,
+        thread_type: Optional[int] = None,
+        total_reply_count: Optional[int] = None,
     ):
         """
         :param str thread_id: The Id property specifies the unique identification of the thread.

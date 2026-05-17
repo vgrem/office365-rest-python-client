@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
@@ -6,10 +8,10 @@ class SocialDataOverlay(ClientValue):
     def __init__(
         self,
         actor_indexes: ClientValueCollection[int] = ClientValueCollection(int),
-        index: int = None,
-        length: int = None,
-        link_uri: str = None,
-        overlay_type: int = None,
+        index: Optional[int] = None,
+        length: Optional[int] = None,
+        link_uri: Optional[str] = None,
+        overlay_type: Optional[int] = None,
     ):
         """The SocialDataOverlay class provides information about an overlay. An overlay is a substring in a post that
         represents a user, document, site, tag, or link. The SocialPost class (see section 3.1.5.26) contains an array

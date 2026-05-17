@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.social.attachment_action import SocialAttachmentAction
 
@@ -5,18 +7,18 @@ from office365.sharepoint.social.attachment_action import SocialAttachmentAction
 class SocialAttachment(ClientValue):
     def __init__(
         self,
-        attachment_kind: int = None,
+        attachment_kind: Optional[int] = None,
         click_action: SocialAttachmentAction = SocialAttachmentAction(),
-        content_uri: str = None,
-        description: str = None,
-        height: int = None,
-        length: int = None,
-        name: str = None,
-        preview_height: int = None,
-        preview_uri: str = None,
-        preview_width: int = None,
-        uri: str = None,
-        width: int = None,
+        content_uri: Optional[str] = None,
+        description: Optional[str] = None,
+        height: Optional[int] = None,
+        length: Optional[int] = None,
+        name: Optional[str] = None,
+        preview_height: Optional[int] = None,
+        preview_uri: Optional[str] = None,
+        preview_width: Optional[int] = None,
+        uri: Optional[str] = None,
+        width: Optional[int] = None,
     ):
         """The SocialAttachment class represents an image, document preview, or video preview attachment."""
         self.AttachmentKind = attachment_kind

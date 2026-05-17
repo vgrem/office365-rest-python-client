@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SocialDataItem(ClientValue):
     def __init__(
         self,
-        account_name: str = None,
-        item_type: int = None,
-        tag_guid: str = None,
-        text: str = None,
-        uri: str = None,
+        account_name: Optional[str] = None,
+        item_type: Optional[int] = None,
+        tag_guid: Optional[str] = None,
+        text: Optional[str] = None,
+        uri: Optional[str] = None,
     ):
         self.AccountName = account_name
         self.ItemType = item_type

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.microfeed.datalink import MicrofeedDataLink
@@ -9,25 +11,25 @@ from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 class MicrofeedThread(ClientValue):
     def __init__(
         self,
-        can_follow_up: bool = None,
-        can_have_attachments: bool = None,
-        can_like: bool = None,
-        can_reply: bool = None,
+        can_follow_up: Optional[bool] = None,
+        can_have_attachments: Optional[bool] = None,
+        can_like: Optional[bool] = None,
+        can_reply: Optional[bool] = None,
         data_links: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(MicrofeedDataLink),
-        definition_id: int = None,
-        definition_name: str = None,
-        identifier: str = None,
-        locked: bool = None,
+        definition_id: Optional[int] = None,
+        definition_name: Optional[str] = None,
+        identifier: Optional[str] = None,
+        locked: Optional[bool] = None,
         microfeed_entities: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(MicroBlogEntity),
-        owner_index: int = None,
+        owner_index: Optional[int] = None,
         ref_reply: MicrofeedPost = MicrofeedPost(),
         ref_root: MicrofeedPost = MicrofeedPost(),
-        render_post_author_image: bool = None,
+        render_post_author_image: Optional[bool] = None,
         replies: MicrofeedPostCollection = MicrofeedPostCollection(),
-        reply_count: int = None,
+        reply_count: Optional[int] = None,
         root_post: MicrofeedPost = MicrofeedPost(),
-        small_image_size_preferred: bool = None,
-        status: int = None,
+        small_image_size_preferred: Optional[bool] = None,
+        status: Optional[int] = None,
     ):
         self.CanFollowUp = can_follow_up
         self.CanHaveAttachments = can_have_attachments

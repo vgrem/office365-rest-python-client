@@ -20,7 +20,7 @@ class SocialFeedManager(Entity):
             resource_path = ResourcePath("SP.Social.SocialFeedManager")
         super().__init__(context, resource_path)
 
-    def create_post(self, target_id: str = None, creation_data: SocialPostCreationData = None):
+    def create_post(self, target_id: Optional[str] = None, creation_data: Optional[SocialPostCreationData] = None):
         """
         The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
         the specified thread. This method returns a new or a modified thread.

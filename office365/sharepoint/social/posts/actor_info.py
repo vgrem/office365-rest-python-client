@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
@@ -5,9 +7,9 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class SocialPostActorInfo(ClientValue):
     def __init__(
         self,
-        includes_current_user: bool = None,
+        includes_current_user: Optional[bool] = None,
         indexes: ClientValueCollection[int] = ClientValueCollection(int),
-        total_count: int = None,
+        total_count: Optional[int] = None,
     ):
         """The SocialPostActorInfo class specifies a set of users, documents, sites, and tags by an index into the
         SocialThread Actors array (see section 3.1.5.42.1.1.1).

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -17,14 +18,14 @@ class SocialPost(ClientValue):
         overlays=None,
         source=SocialLink(),
         liker_info=SocialPostActorInfo(),
-        attributes: int = None,
-        author_index: int = None,
-        created_time: datetime = None,
-        id_: str = None,
-        modified_time: datetime = None,
-        post_type: int = None,
-        preferred_image_uri: str = None,
-        text: str = None,
+        attributes: Optional[int] = None,
+        author_index: Optional[int] = None,
+        created_time: Optional[datetime] = None,
+        id_: Optional[str] = None,
+        modified_time: Optional[datetime] = None,
+        post_type: Optional[int] = None,
+        preferred_image_uri: Optional[str] = None,
+        text: Optional[str] = None,
     ):
         """
         :param SocialAttachment attachment: The Attachment property specifies an image, document preview,

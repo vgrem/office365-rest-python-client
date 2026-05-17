@@ -1,27 +1,29 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SocialActor(ClientValue):
     def __init__(
         self,
-        account_name: str = None,
-        actor_type: int = None,
-        can_follow: bool = None,
-        content_uri: str = None,
-        email_address: str = None,
-        followed_content_uri: str = None,
-        group_id: str = None,
-        id_: str = None,
-        image_uri: str = None,
-        is_followed: bool = None,
-        library_uri: str = None,
-        name: str = None,
-        personal_site_uri: str = None,
-        status: int = None,
-        status_text: str = None,
-        tag_guid: str = None,
-        title: str = None,
-        uri: str = None,
+        account_name: Optional[str] = None,
+        actor_type: Optional[int] = None,
+        can_follow: Optional[bool] = None,
+        content_uri: Optional[str] = None,
+        email_address: Optional[str] = None,
+        followed_content_uri: Optional[str] = None,
+        group_id: Optional[str] = None,
+        id_: Optional[str] = None,
+        image_uri: Optional[str] = None,
+        is_followed: Optional[bool] = None,
+        library_uri: Optional[str] = None,
+        name: Optional[str] = None,
+        personal_site_uri: Optional[str] = None,
+        status: Optional[int] = None,
+        status_text: Optional[str] = None,
+        tag_guid: Optional[str] = None,
+        title: Optional[str] = None,
+        uri: Optional[str] = None,
     ):
         """The SocialActor type contains information about an actor retrieved from server. An actor is a user, document,
         site, or tag."""

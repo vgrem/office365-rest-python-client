@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,9 +9,9 @@ from office365.sharepoint.social.microfeed.thread import MicrofeedThread
 class MicrofeedThreadCollection(ClientValue):
     def __init__(
         self,
-        current_user_unread_mention_count: int = None,
-        newest_processed: datetime = None,
-        oldest_processed: datetime = None,
+        current_user_unread_mention_count: Optional[int] = None,
+        newest_processed: Optional[datetime] = None,
+        oldest_processed: Optional[datetime] = None,
         items: ClientValueCollection[MicrofeedThread] = ClientValueCollection(MicrofeedThread),
     ):
         self.CurrentUserUnreadMentionCount = current_user_unread_mention_count

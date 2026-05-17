@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -22,7 +24,7 @@ class SocialPostCreationData(ClientValue):
         definition_data: SocialPostDefinitionData = SocialPostDefinitionData(),
         security_uris: StringCollection = StringCollection(),
         source: SocialLink = SocialLink(),
-        update_status_text: bool = None,
+        update_status_text: Optional[bool] = None,
     ):
         """
         :param str content_text: The ContentText string contains the text body of the post. It can optionally contain

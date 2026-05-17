@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SocialPostDefinitionDataItem(ClientValue):
     def __init__(
         self,
-        account_name: str = None,
-        item_type: int = None,
-        placeholder_name: str = None,
-        tag_guid: str = None,
-        text: str = None,
-        uri: str = None,
+        account_name: Optional[str] = None,
+        item_type: Optional[int] = None,
+        placeholder_name: Optional[str] = None,
+        tag_guid: Optional[str] = None,
+        text: Optional[str] = None,
+        uri: Optional[str] = None,
     ):
         """The SocialPostDefinitionDataItem class specifies an item to be inserted in a post by replacing a token in
         the post definition. This type can only be specified in a server-to-server call.

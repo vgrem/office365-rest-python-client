@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SocialExceptionDetails(ClientValue):
     def __init__(
         self,
-        internal_error_code: int = None,
-        internal_message: str = None,
-        internal_stack_trace: str = None,
-        internal_type_name: str = None,
-        status: int = None,
+        internal_error_code: Optional[int] = None,
+        internal_message: Optional[str] = None,
+        internal_stack_trace: Optional[str] = None,
+        internal_type_name: Optional[str] = None,
+        status: Optional[int] = None,
     ):
         self.InternalErrorCode = internal_error_code
         self.InternalMessage = internal_message
