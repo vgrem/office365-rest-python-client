@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
-from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery, T
 
 if TYPE_CHECKING:
+    from office365.runtime.client_object import ClientObject
     from office365.runtime.odata.query_options import QueryOptions
 
 

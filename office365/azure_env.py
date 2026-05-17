@@ -33,8 +33,8 @@ _ENDPOINTS: Final[Dict[AzureEnvironment, EnvironmentEndpoints]] = {
         "login": "https://login.microsoftonline.com",
     },
     AzureEnvironment.USGovernment: {
-        "graph": "https://graph.microsoft.com",
-        "login": "https://login.microsoftonline.com",
+        "graph": "https://graph.microsoft.us",
+        "login": "https://login.microsoftonline.us",
     },
     AzureEnvironment.USGovernmentHigh: {
         "graph": "https://graph.microsoft.us",

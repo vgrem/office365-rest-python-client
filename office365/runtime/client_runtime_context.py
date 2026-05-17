@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import Any, AnyStr, Callable, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, AnyStr, Callable, List, Optional, Tuple, Type
 
 from requests import Response
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject
 from office365.runtime.client_request import ClientRequest
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
@@ -15,6 +14,9 @@ from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
+
+if TYPE_CHECKING:
+    from office365.runtime.client_object import ClientObject
 
 
 class ClientRuntimeContext(ABC):
