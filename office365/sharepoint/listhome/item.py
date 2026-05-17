@@ -1,24 +1,26 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ListHomeItem(ClientValue):
     def __init__(
         self,
-        color: str = None,
-        icon: str = None,
-        is_default_document_library: bool = None,
-        is_doc_lib: bool = None,
-        list_id: str = None,
-        list_url: str = None,
-        site_acronym: str = None,
-        site_color: str = None,
-        site_icon_url: str = None,
-        site_id: str = None,
-        site_title: str = None,
-        site_url: str = None,
-        title: str = None,
-        web_id: str = None,
-        web_template_configuration: str = None,
+        color: Optional[str] = None,
+        icon: Optional[str] = None,
+        is_default_document_library: Optional[bool] = None,
+        is_doc_lib: Optional[bool] = None,
+        list_id: Optional[str] = None,
+        list_url: Optional[str] = None,
+        site_acronym: Optional[str] = None,
+        site_color: Optional[str] = None,
+        site_icon_url: Optional[str] = None,
+        site_id: Optional[str] = None,
+        site_title: Optional[str] = None,
+        site_url: Optional[str] = None,
+        title: Optional[str] = None,
+        web_id: Optional[str] = None,
+        web_template_configuration: Optional[str] = None,
     ):
         self.color = color
         self.icon = icon
