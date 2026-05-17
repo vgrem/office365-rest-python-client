@@ -10,8 +10,8 @@ from office365.todo.tasks.task import TodoTask
 class TodoTaskList(Entity):
     """A list in Microsoft To Do that contains one or more todoTask resources."""
 
-    def __str__(self):
-        return self.display_name or self.entity_type_name
+    def __str__(self) -> str:
+        return self.display_name or "" or self.entity_type_name
 
     @property
     def display_name(self) -> Optional[str]:
@@ -35,5 +35,5 @@ class TodoTaskList(Entity):
         )
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.taskList"

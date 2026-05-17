@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.entity import Entity
 from office365.partners.billing.operation import Operation
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -6,7 +8,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class BilledUsage(Entity):
     """Represents details for billed Azure usage data."""
 
-    def export(self, invoice_id: str, attribute_set: str = None) -> Operation:
+    def export(self, invoice_id: str, attribute_set: Optional[str] = None) -> Operation:
         """Export the billed Azure usage data.
 
         :param invoice_id: 	The invoice ID for which the partner requested to export data. Required.

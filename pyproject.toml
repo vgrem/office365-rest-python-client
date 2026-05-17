@@ -137,4 +137,10 @@ include = [
     "office365/teams/*",
     "office365/outlook/*",
     "office365/booking/*",
+    "office365/backuprestore/*",
+    "office365/copilot/*",
+    "office365/project/*",
+    "office365/externalconnectors/*",
+    "office365/partners/*",
+    "office365/todo/*",
 ]

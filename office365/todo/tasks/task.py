@@ -13,8 +13,8 @@ from office365.todo.linked_resource import LinkedResource
 class TodoTask(Entity):
     """A todoTask represents a task, such as a piece of work or personal item, that can be tracked and completed."""
 
-    def __str__(self):
-        return self.title or self.entity_type_name
+    def __str__(self) -> str:
+        return self.title or "" or self.entity_type_name
 
     @property
     def body(self):
@@ -71,8 +71,8 @@ class TodoTask(Entity):
         )
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.task"
 
     def get_property(self, name, default_value=None):
         if default_value is None:
