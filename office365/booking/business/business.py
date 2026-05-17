@@ -23,7 +23,10 @@ class BookingBusiness(Entity):
     and staff members."""
 
     def get_staff_availability(
-        self, staff_ids: List[str] = None, start_datetime: datetime = None, end_datetime: datetime = None
+        self,
+        staff_ids: Optional[List[str]] = None,
+        start_datetime: Optional[datetime] = None,
+        end_datetime: Optional[datetime] = None,
     ) -> ClientResult[ClientValueCollection[StaffAvailabilityItem]]:
         """
         Get the availability information of staff members of a Microsoft Bookings calendar.

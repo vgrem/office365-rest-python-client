@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.booking.customers.answerinputtype import AnswerInputType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -6,13 +8,13 @@ from office365.runtime.types.collections import StringCollection
 class BookingQuestionAnswer(ClientValue):
     def __init__(
         self,
-        answer: str = None,
-        answer_input_type: AnswerInputType = AnswerInputType.none,
-        answer_options: StringCollection = None,
-        is_required: bool = None,
-        question: str = None,
-        question_id: str = None,
-        selected_options: StringCollection = None,
+        answer: Optional[str] = None,
+        answer_input_type: Optional[AnswerInputType] = None,
+        answer_options: Optional[StringCollection] = None,
+        is_required: Optional[bool] = None,
+        question: Optional[str] = None,
+        question_id: Optional[str] = None,
+        selected_options: Optional[StringCollection] = None,
     ):
         self.answer = answer
         self.answerInputType = answer_input_type

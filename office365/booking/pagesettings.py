@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.booking.pageaccesscontrol import BookingPageAccessControl
 from office365.runtime.client_value import ClientValue
 
@@ -5,17 +7,17 @@ from office365.runtime.client_value import ClientValue
 class BookingPageSettings(ClientValue):
     def __init__(
         self,
-        access_control: BookingPageAccessControl = BookingPageAccessControl.none,
-        booking_page_color_code: str = None,
-        business_time_zone: str = None,
-        customer_consent_message: str = None,
-        enforce_one_time_password: bool = None,
-        is_business_logo_display_enabled: bool = None,
-        is_customer_consent_enabled: bool = None,
-        is_search_engine_indexability_disabled: bool = None,
-        is_time_slot_time_zone_set_to_business_time_zone: bool = None,
-        privacy_policy_web_url: str = None,
-        terms_and_conditions_web_url: str = None,
+        access_control: Optional[BookingPageAccessControl] = None,
+        booking_page_color_code: Optional[str] = None,
+        business_time_zone: Optional[str] = None,
+        customer_consent_message: Optional[str] = None,
+        enforce_one_time_password: Optional[bool] = None,
+        is_business_logo_display_enabled: Optional[bool] = None,
+        is_customer_consent_enabled: Optional[bool] = None,
+        is_search_engine_indexability_disabled: Optional[bool] = None,
+        is_time_slot_time_zone_set_to_business_time_zone: Optional[bool] = None,
+        privacy_policy_web_url: Optional[str] = None,
+        terms_and_conditions_web_url: Optional[str] = None,
     ):
         self.accessControl = access_control
         self.bookingPageColorCode = booking_page_color_code

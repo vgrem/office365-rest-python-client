@@ -136,4 +136,5 @@ include = [
     "office365/search/*",
     "office365/teams/*",
     "office365/outlook/*",
+    "office365/booking/*",
 ]

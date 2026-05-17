@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 from office365.booking.availability import BookingsAvailability
 from office365.booking.availabilitywindow import BookingsAvailabilityWindow
@@ -9,16 +10,14 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class BookingSchedulingPolicy(ClientValue):
     def __init__(
         self,
-        allow_staff_selection: bool = None,
-        custom_availabilities: ClientValueCollection[BookingsAvailabilityWindow] = ClientValueCollection(
-            BookingsAvailabilityWindow
-        ),
-        general_availability: BookingsAvailability = BookingsAvailability(),
-        is_meeting_invite_to_customers_enabled: bool = None,
-        maximum_advance: timedelta = None,
-        minimum_lead_time: timedelta = None,
-        send_confirmations_to_owner: bool = None,
-        time_slot_interval: timedelta = None,
+        allow_staff_selection: Optional[bool] = None,
+        custom_availabilities: Optional[ClientValueCollection[BookingsAvailabilityWindow]] = None,
+        general_availability: Optional[BookingsAvailability] = None,
+        is_meeting_invite_to_customers_enabled: Optional[bool] = None,
+        maximum_advance: Optional[timedelta] = None,
+        minimum_lead_time: Optional[timedelta] = None,
+        send_confirmations_to_owner: Optional[bool] = None,
+        time_slot_interval: Optional[timedelta] = None,
     ):
         self.allowStaffSelection = allow_staff_selection
         self.customAvailabilities = custom_availabilities
