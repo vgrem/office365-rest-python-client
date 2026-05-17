@@ -229,7 +229,7 @@ client.me.send_mail(
 
 [Send email](examples/outlook/messages/send.py) | [List messages](examples/outlook/messages/list_all.py) | [Download](examples/outlook/messages/download.py) | [Search](examples/outlook/messages/search.py)
 
-More [Outlook examples](examples/outlook/).
+More [Outlook examples](examples/outlook/README.md).
 
 ## OneDrive
 
@@ -243,7 +243,7 @@ for drive in drives:
 
 [Download files](examples/onedrive/files/download.py) | [Upload files](examples/onedrive/folders/upload.py) | [List drives](examples/onedrive/drives/list.py)
 
-More [OneDrive examples](examples/onedrive/).
+More [OneDrive examples](examples/onedrive/README.md).
 
 ## Teams
 
@@ -255,7 +255,7 @@ new_team = client.groups["{group_id}"].add_team().execute_query()
 
 [Create a team](examples/teams/create_team.py) | [List teams](examples/teams/list_all.py) | [Send messages](examples/teams/send_message.py)
 
-More [Teams examples](examples/teams/).
+More [Teams examples](examples/teams/README.md).
 
 ## OneNote
 
