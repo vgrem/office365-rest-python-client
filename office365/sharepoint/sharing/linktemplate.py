@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SharingLinkTemplate(ClientValue):
     def __init__(
         self,
-        password_protected: bool = None,
-        role: int = None,
-        scope: int = None,
-        variant: int = None,
+        password_protected: Optional[bool] = None,
+        role: Optional[int] = None,
+        scope: Optional[int] = None,
+        variant: Optional[int] = None,
     ):
         self.passwordProtected = password_protected
         self.role = role

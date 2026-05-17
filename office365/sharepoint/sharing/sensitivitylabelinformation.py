@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SensitivityLabelInformation(ClientValue):
     def __init__(
         self,
-        color: str = None,
-        display_name: str = None,
-        has_irm_protection: bool = None,
-        id_: str = None,
-        sensitivity_label_protection_type: str = None,
-        tooltip: str = None,
+        color: Optional[str] = None,
+        display_name: Optional[str] = None,
+        has_irm_protection: Optional[bool] = None,
+        id_: Optional[str] = None,
+        sensitivity_label_protection_type: Optional[str] = None,
+        tooltip: Optional[str] = None,
     ):
         self.color = color
         self.displayName = display_name

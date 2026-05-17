@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -12,17 +12,17 @@ class UserSharingResult(ClientValue):
 
     def __init__(
         self,
-        allowed_roles: List[Role] = None,
-        current_role: Role = None,
-        display_name: str = None,
-        email: str = None,
-        invitation_link: str = None,
-        is_user_known: bool = None,
-        message: str = None,
-        status: bool = None,
-        user: str = None,
-        expiration_date_time_on_ace: datetime = None,
-        other_mails: str = None,
+        allowed_roles: Optional[List[Role]] = None,
+        current_role: Optional[Role] = None,
+        display_name: Optional[str] = None,
+        email: Optional[str] = None,
+        invitation_link: Optional[str] = None,
+        is_user_known: Optional[bool] = None,
+        message: Optional[str] = None,
+        status: Optional[bool] = None,
+        user: Optional[str] = None,
+        expiration_date_time_on_ace: Optional[datetime] = None,
+        other_mails: Optional[str] = None,
     ):
         """
         :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.

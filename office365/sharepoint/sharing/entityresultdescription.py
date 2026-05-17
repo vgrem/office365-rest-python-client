@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SharingEntityResultDescription(ClientValue):
-    def __init__(self, result: int = None, result_string: str = None):
+    def __init__(self, result: Optional[int] = None, result_string: Optional[str] = None):
         self.Result = result
         self.ResultString = result_string
 

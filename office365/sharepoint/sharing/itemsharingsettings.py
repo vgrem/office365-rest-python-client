@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ItemSharingSettings(ClientValue):
     def __init__(
         self,
-        block_sharing_push_down: bool = None,
-        item_id: str = None,
-        item_members_can_share: bool = None,
-        item_name: str = None,
-        item_type: int = None,
-        parent_id: str = None,
+        block_sharing_push_down: Optional[bool] = None,
+        item_id: Optional[str] = None,
+        item_members_can_share: Optional[bool] = None,
+        item_name: Optional[str] = None,
+        item_type: Optional[int] = None,
+        parent_id: Optional[str] = None,
     ):
         self.blockSharingPushDown = block_sharing_push_down
         self.itemId = item_id

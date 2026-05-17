@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -9,10 +10,10 @@ class MainLinkInfo(ClientValue):
     def __init__(
         self,
         accessors: ClientValueCollection[Principal] = ClientValueCollection(Principal),
-        audience: int = None,
-        role: int = None,
-        share_id: UUID = None,
-        url: str = None,
+        audience: Optional[int] = None,
+        role: Optional[int] = None,
+        share_id: Optional[UUID] = None,
+        url: Optional[str] = None,
     ):
         self.accessors = accessors
         self.audience = audience

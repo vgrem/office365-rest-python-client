@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,10 +8,10 @@ class SPInvitationCreationResult(ClientValue):
 
     def __init__(
         self,
-        email: str = None,
-        error: str = None,
-        invitation_link: str = None,
-        succeeded: bool = None,
+        email: Optional[str] = None,
+        error: Optional[str] = None,
+        invitation_link: Optional[str] = None,
+        succeeded: Optional[bool] = None,
     ):
         super().__init__()
         self.Email = None

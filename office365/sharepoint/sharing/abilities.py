@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.direct_abilities import DirectSharingAbilities
 from office365.sharepoint.sharing.link_abilities import SharingLinkAbilities
@@ -20,7 +22,7 @@ class SharingAbilities(ClientValue):
         direct_sharing_abilities=DirectSharingAbilities(),
         organization_link_abilities=SharingLinkAbilities(),
         people_sharing_link_abilities=SharingLinkAbilities(),
-        can_stop_sharing: bool = None,
+        can_stop_sharing: Optional[bool] = None,
         main_link_abilities: MainLinkAbilities = MainLinkAbilities(),
         sharing_settings_abilities: SharingSettingsAbilities = SharingSettingsAbilities(),
     ):

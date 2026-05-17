@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.itemsharingsettings import ItemSharingSettings
 from office365.sharepoint.sharing.mainlinkinfo import MainLinkInfo
@@ -6,7 +8,7 @@ from office365.sharepoint.sharing.mainlinkinfo import MainLinkInfo
 class MainAccessInformation(ClientValue):
     def __init__(
         self,
-        default_main_link_role: int = None,
+        default_main_link_role: Optional[int] = None,
         main_link: MainLinkInfo = MainLinkInfo(),
         sharing_settings: ItemSharingSettings = ItemSharingSettings(),
     ):

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.sitesharingreportjobdata import (
     SiteSharingReportJobData,
@@ -7,10 +9,10 @@ from office365.sharepoint.sharing.sitesharingreportjobdata import (
 class SiteSharingReportStatus(ClientValue):
     def __init__(
         self,
-        error_code: int = None,
+        error_code: Optional[int] = None,
         job_data: SiteSharingReportJobData = SiteSharingReportJobData(),
-        message: str = None,
-        success: bool = None,
+        message: Optional[str] = None,
+        success: Optional[bool] = None,
     ):
         self.errorCode = error_code
         self.jobData = job_data

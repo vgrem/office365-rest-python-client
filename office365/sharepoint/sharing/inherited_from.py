@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharepointids import SharePointIds
 
@@ -5,14 +7,14 @@ from office365.sharepoint.sharepointids import SharePointIds
 class InheritedFrom(ClientValue):
     def __init__(
         self,
-        direct_url: str = None,
-        drive_id: str = None,
-        drive_type: str = None,
-        id_: str = None,
-        item_type: str = None,
-        name: str = None,
-        path: str = None,
-        share_id: str = None,
+        direct_url: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        drive_type: Optional[str] = None,
+        id_: Optional[str] = None,
+        item_type: Optional[str] = None,
+        name: Optional[str] = None,
+        path: Optional[str] = None,
+        share_id: Optional[str] = None,
         sharepoint_ids: SharePointIds = SharePointIds(),
     ):
         self.directUrl = direct_url

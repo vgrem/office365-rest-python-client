@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SharingInformationRequest(ClientValue):
     def __init__(
         self,
-        client_supported_features: str = None,
-        max_link_members_to_return: int = None,
-        max_principals_to_return: int = None,
-        populate_inherited_links: bool = None,
+        client_supported_features: Optional[str] = None,
+        max_link_members_to_return: Optional[int] = None,
+        max_principals_to_return: Optional[int] = None,
+        populate_inherited_links: Optional[bool] = None,
     ):
         self.clientSupportedFeatures = client_supported_features
         self.maxLinkMembersToReturn = max_link_members_to_return
