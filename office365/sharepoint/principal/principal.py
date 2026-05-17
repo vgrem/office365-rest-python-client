@@ -11,8 +11,8 @@ class Principal(Entity):
     def __str__(self):
         return self.title or self.entity_type_name
 
-    def __repr__(self):
-        return self.user_principal_name or self.login_name or self.id or self.entity_type_name
+    def __repr__(self) -> str:
+        return self.user_principal_name or self.login_name or str(self.id or "") or self.entity_type_name
 
     @property
     def id(self) -> Optional[int]:
@@ -51,7 +51,7 @@ class Principal(Entity):
 
     @property
     def principal_type_name(self) -> str:
-        return self.principal_type.name
+        return self.principal_type.name  # type: ignore[return-value]
 
     @property
     def property_ref_name(self):
@@ -70,5 +70,5 @@ class Principal(Entity):
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "LoginName":
-                self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)
+                self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)  # type: ignore[arg-type]
         return self

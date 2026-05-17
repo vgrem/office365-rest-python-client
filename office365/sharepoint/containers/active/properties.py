@@ -38,6 +38,9 @@ class SPActiveContainerProperties(ClientValue):
         sensitivity_label: Optional[str] = None,
         status: Optional[str] = None,
         storage_used: Optional[int] = None,
+        writers: ClientValueCollection[SPActiveContainerMemberProperties] = ClientValueCollection(
+            SPActiveContainerMemberProperties
+        ),
     ):
         self.ApplicationName = application_name
         self.ArchivedBy = archived_by

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -26,10 +26,10 @@ class ClientPeoplePickerWebServiceInterface(Entity):
     @staticmethod
     def get_search_results_by_hierarchy(
         context: ClientContext,
-        provider_id: str = None,
-        hierarchy_node_id: str = None,
-        entity_types: str = None,
-        context_url: str = None,
+        provider_id: Optional[str] = None,
+        hierarchy_node_id: Optional[str] = None,
+        entity_types: Optional[str] = None,
+        context_url: Optional[str] = None,
     ):
         """
         Specifies a JSON formatted CSOM String of principals found in the search grouped by hierarchy.

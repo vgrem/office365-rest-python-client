@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.principal.type import PrincipalType
 
@@ -7,9 +9,9 @@ class PickerEntityInformationRequest(ClientValue):
 
     def __init__(
         self,
-        email_address: str = None,
-        group_id: str = None,
-        key: str = None,
+        email_address: Optional[str] = None,
+        group_id: Optional[str] = None,
+        key: Optional[str] = None,
         principal_type: PrincipalType = PrincipalType.None_,
     ):
         """

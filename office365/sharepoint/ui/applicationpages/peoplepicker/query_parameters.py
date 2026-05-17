@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -24,12 +25,12 @@ class ClientPeoplePickerQueryParameters(ClientValue):
         url_zone: int = 0,
         url_zone_specified: bool = False,
         sharepoint_group_id: int = 0,
-        allow_email_addresses: bool = None,
+        allow_email_addresses: Optional[bool] = None,
         query_settings: PeoplePickerQuerySettings = PeoplePickerQuerySettings(),
-        required: bool = None,
-        share_point_group_id: int = None,
-        use_substrate_search: bool = None,
-        web_application_id: UUID = None,
+        required: Optional[bool] = None,
+        share_point_group_id: Optional[int] = None,
+        use_substrate_search: Optional[bool] = None,
+        web_application_id: Optional[UUID] = None,
     ):
         """
         Specifies the properties of a principal query

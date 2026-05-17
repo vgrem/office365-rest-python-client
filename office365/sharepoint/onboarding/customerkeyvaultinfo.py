@@ -6,12 +6,12 @@ from office365.runtime.client_value import ClientValue
 class CustomerKeyVaultInfo(ClientValue):
     def __init__(
         self,
-        key_vault_name: Optional[str] = None,
-        key_vault_resource_group_name: Optional[str] = None,
-        key_vault_subscription_id: Optional[str] = None,
-        key_vault_url: Optional[str] = None,
-        key_vault_resource_name: Optional[str] = None,
-        key_vault_resource_group_location: Optional[str] = None,
+        key_name: Optional[str] = None,
+        key_version: Optional[str] = None,
+        resource_group_name: Optional[str] = None,
+        subscription_id: Optional[str] = None,
+        uri: Optional[str] = None,
+        vault_name: Optional[str] = None,
     ):
         self.KeyName = key_name
         self.KeyVersion = key_version
