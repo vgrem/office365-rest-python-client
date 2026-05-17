@@ -192,4 +192,5 @@ include = [
     "office365/sharepoint/authpolicy/*",
     "office365/sharepoint/sitescripts/*",
     "office365/sharepoint/workflow/*",
+    "office365/sharepoint/campaigns/*",
 ]

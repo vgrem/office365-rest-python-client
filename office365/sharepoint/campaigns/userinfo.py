@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.principal.users.id_info import UserIdInfo
 
@@ -5,14 +7,14 @@ from office365.sharepoint.principal.users.id_info import UserIdInfo
 class CampaignUserInfo(ClientValue):
     def __init__(
         self,
-        email: str = None,
-        id_: int = None,
-        is_external: bool = None,
-        login_name: str = None,
-        name: str = None,
-        principal_type: int = None,
+        email: Optional[str] = None,
+        id_: Optional[int] = None,
+        is_external: Optional[bool] = None,
+        login_name: Optional[str] = None,
+        name: Optional[str] = None,
+        principal_type: Optional[int] = None,
         user_id: UserIdInfo = UserIdInfo(),
-        user_principal_name: str = None,
+        user_principal_name: Optional[str] = None,
     ):
         self.email = email
         self.id = id_

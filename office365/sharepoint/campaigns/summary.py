@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -8,13 +9,13 @@ from office365.sharepoint.campaigns.userinfo import CampaignUserInfo
 class CampaignSummary(ClientValue):
     def __init__(
         self,
-        campaign_id: str = None,
-        end_date: datetime = None,
+        campaign_id: Optional[str] = None,
+        end_date: Optional[datetime] = None,
         owner: CampaignUserInfo = CampaignUserInfo(),
-        start_date: datetime = None,
-        status: str = None,
+        start_date: Optional[datetime] = None,
+        status: Optional[str] = None,
         tags: StringCollection = StringCollection(),
-        title: str = None,
+        title: Optional[str] = None,
     ):
         self.campaignId = campaign_id
         self.endDate = end_date
