@@ -57,7 +57,7 @@ class Field(Entity):
             if type_enum is not None:
                 return field_known_types.get(type_enum, Field)  # type: ignore[arg-type]
             return Field
-        elif type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
+        elif type_id_or_name in {"TaxonomyFieldType", "TaxonomyFieldTypeMulti"}:
             return TaxonomyField
         elif type_id_or_name == "Thumbnail":
             from office365.sharepoint.fields.thumbnail import FieldThumbnail

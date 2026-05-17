@@ -55,6 +55,5 @@ class JsonLightFormat(ODataJsonFormat):
     @property
     def include_control_information(self):
         return (
-            self.metadata_level == ODataV3MetadataLevel.Verbose
-            or self.metadata_level == ODataV3MetadataLevel.MinimalMetadata
+            self.metadata_level in {ODataV3MetadataLevel.Verbose, ODataV3MetadataLevel.MinimalMetadata}
         )

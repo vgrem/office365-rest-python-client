@@ -1228,7 +1228,7 @@ class User(DirectoryObject):
         super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
-            if name == "id" or name == "userPrincipalName":
+            if name in {"id", "userPrincipalName"}:
                 assert self.parent_collection is not None
                 self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
         return self

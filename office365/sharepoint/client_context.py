@@ -266,7 +266,7 @@ class ClientContext(ClientRuntimeContext):
             check if request was throttled - http status code 429
             or check is request failed due to server unavailable - http status code 503
             """
-            if ex.response.status_code == 429 or ex.response.status_code == 503:
+            if ex.response.status_code in {429, 503}:
                 retry_after = ex.response.headers.get("Retry-After", None)
                 if retry_after is not None:
                     settings["timeout"] = int(retry_after)

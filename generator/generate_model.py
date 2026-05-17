@@ -55,7 +55,7 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
             type_schema = model.types[name]
             builder = TypeBuilder(type_schema, options, docs_service)
             builder.build()
-            if builder.status == "created" or builder.status == "updated":
+            if builder.status in {"created", "updated"}:
                 builder.save()
 
             processed_types.add(name)

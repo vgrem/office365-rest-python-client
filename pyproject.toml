@@ -97,7 +97,6 @@ lint.select = [
 lint.ignore = [
   "B008",    # Do not perform function call in argument defaults
   "PLC0415", # `import` should be at the top-level of a file (circular import workaround)
-  "PLR1714", # merge multiple comparisons
 ]
 
 lint.pylint.max-args = 50

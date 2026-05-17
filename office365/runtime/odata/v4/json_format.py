@@ -53,4 +53,4 @@ class V4JsonFormat(ODataJsonFormat):
 
     @property
     def include_control_information(self) -> bool:
-        return self.metadata_level == ODataV4MetadataLevel.Minimal or self.metadata_level == ODataV4MetadataLevel.Full
+        return self.metadata_level in {ODataV4MetadataLevel.Minimal, ODataV4MetadataLevel.Full}
