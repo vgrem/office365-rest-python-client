@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, Set, cast
 
 from office365.runtime.odata.type_information import TypeInformation
 
-from generator.builders.member_builder import MemberBuilder
-from generator.builders.property_builder import PropertyBuilder
+from generator.builders.member import MemberBuilder
+from generator.builders.property import PropertyBuilder
 
 if TYPE_CHECKING:
-    from generator.builders.type_builder import TypeBuilder
+    from generator.builders.type import TypeBuilder
 
 
 class TemplateContext:

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from generator.builders.type_builder import TypeBuilder
+    from generator.builders.type import TypeBuilder
 
 
 class BaseDocumentationService(ABC):
