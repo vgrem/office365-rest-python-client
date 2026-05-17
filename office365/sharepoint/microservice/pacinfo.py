@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class PacInfo(ClientValue):
     def __init__(
         self,
-        endpoint: str = None,
-        is_app_only: bool = None,
-        scenario: str = None,
-        token: str = None,
-        version: int = None,
+        endpoint: Optional[str] = None,
+        is_app_only: Optional[bool] = None,
+        scenario: Optional[str] = None,
+        token: Optional[str] = None,
+        version: Optional[int] = None,
     ):
         self.Endpoint = endpoint
         self.IsAppOnly = is_app_only

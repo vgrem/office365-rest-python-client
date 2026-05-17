@@ -199,4 +199,9 @@ include = [
     "office365/sharepoint/listhome/*",
     "office365/sharepoint/apps/*",
     "office365/sharepoint/onboarding/*",
+    "office365/sharepoint/mount/*",
+    "office365/sharepoint/ui/*",
+    "office365/sharepoint/principal/*",
+    "office365/sharepoint/microservice/*",
+    "office365/sharepoint/brandcenter/*",
 ]

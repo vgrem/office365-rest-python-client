@@ -45,6 +45,7 @@ class Group(Principal):
         def _expand_to_principals():
             from office365.sharepoint.utilities.utility import Utility
 
+            assert self.login_name is not None
             Utility.expand_groups_to_principals(self.context, [self.login_name], max_count, return_type)
 
         self.ensure_property("LoginName", _expand_to_principals)
@@ -63,6 +64,7 @@ class Group(Principal):
         if isinstance(user, Principal):
 
             def _user_loaded():
+                assert user.id is not None
                 _set_user_as_owner(user.id)
 
             user.ensure_property("Id", _user_loaded)

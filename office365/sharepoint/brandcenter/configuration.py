@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 from office365.sharepoint.types.resource_path import ResourcePath
@@ -10,13 +12,13 @@ class BrandCenterConfiguration(ClientValue):
         self,
         brand_colors_list_id=None,
         brand_colors_list_url=None,
-        brand_font_library_id: str = None,
+        brand_font_library_id: Optional[str] = None,
         brand_font_library_url: ResourcePath = ResourcePath(),
-        is_brand_center_site_feature_enabled: bool = None,
-        is_public_cdn_enabled: bool = None,
+        is_brand_center_site_feature_enabled: Optional[bool] = None,
+        is_public_cdn_enabled: Optional[bool] = None,
         org_assets: OrgAssets = OrgAssets(),
-        site_id: str = None,
-        site_url: str = None,
+        site_id: Optional[str] = None,
+        site_url: Optional[str] = None,
     ):
         self.BrandColorsListId = brand_colors_list_id
         self.BrandColorsListUrl = brand_colors_list_url

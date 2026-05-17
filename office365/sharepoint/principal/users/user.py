@@ -30,6 +30,7 @@ class User(Principal):
             return_type.set_property("__siteUrl", person_props.personal_url)
 
         def _get_properties_for():
+            assert self.login_name is not None
             self.context.people_manager.get_properties_for(self.login_name).after_execute(_person_props_loaded)
 
         self.ensure_property("LoginName", _get_properties_for)
@@ -42,7 +43,7 @@ class User(Principal):
         return_type = RecentFileCollection.get_recent_files(self.context, top)
         return return_type
 
-    def get_user_profile_properties(self, property_names: List[str] = None):
+    def get_user_profile_properties(self, property_names: Optional[List[str]] = None):
         """
         :param list[str] property_names:
         """

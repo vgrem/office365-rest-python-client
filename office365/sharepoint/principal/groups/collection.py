@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -30,7 +32,7 @@ class GroupCollection(EntityCollection[Group]):
             return_type = cur_grp.expand_to_principals(max_count)
         return return_type
 
-    def add(self, title: str, description: str = None) -> Group:
+    def add(self, title: str, description: Optional[str] = None) -> Group:
         """
         Adds a group to the collection. A reference to the SP.Group that was added is returned.
 

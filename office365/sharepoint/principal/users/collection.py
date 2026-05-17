@@ -42,6 +42,7 @@ class UserCollection(EntityCollection[User]):
         if isinstance(user, User):
 
             def _user_loaded():
+                assert user.login_name is not None
                 _add_user(user.login_name)
 
             user.ensure_property("LoginName", _user_loaded)

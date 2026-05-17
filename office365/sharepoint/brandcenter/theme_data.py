@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -10,8 +12,8 @@ class ThemeData(ClientValue):
         source=None,
         is_themes_v2=None,
         theme_json=None,
-        id_: int = None,
-        is_visible: bool = None,
+        id_: Optional[int] = None,
+        is_visible: Optional[bool] = None,
     ):
         self.name = name
         self.source = source
