@@ -11,11 +11,17 @@ Microsoft 365 & Microsoft Graph library for Python
 
 # Installation
 
-```
+```bash
 pip install office365-rest-python-client
 ```
 
-Or the latest version from GitHub:
+Or with uv:
+
+```bash
+uv pip install office365-rest-python-client
+```
+
+The latest version from GitHub can be installed directly:
 
 ```
 pip install git+https://github.com/vgrem/office365-rest-python-client.git
