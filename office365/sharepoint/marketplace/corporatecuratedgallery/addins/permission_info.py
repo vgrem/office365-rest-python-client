@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.marketplace.corporatecuratedgallery.spsitecollectionscopedpermissioninfo import (
@@ -14,9 +16,9 @@ class SPAddinPermissionInfo(ClientValue):
     def __init__(
         self,
         absolute_url=None,
-        allow_app_only: bool = None,
-        app_identifier: str = None,
-        server_relative_url: str = None,
+        allow_app_only: Optional[bool] = None,
+        app_identifier: Optional[str] = None,
+        server_relative_url: Optional[str] = None,
         site_collection_scoped_permissions: ClientValueCollection[
             SPSiteCollectionScopedPermissionInfo
         ] = ClientValueCollection(SPSiteCollectionScopedPermissionInfo),

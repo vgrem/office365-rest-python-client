@@ -19,7 +19,7 @@ class ServiceOperationQuery(ClientQuery[ReturnT]):
         binding_type: ClientObject,
         method_name: str | None = None,
         method_params: list | dict | ClientValue | None = None,
-        parameters_type: ClientObject | ClientValue | dict | str | None = None,
+        parameters_type: ClientObject | ClientValue | dict | str | bytes | None = None,
         parameters_name: str | None = None,
         return_type: ReturnT | None = None,
         is_static: bool = False,

@@ -154,7 +154,7 @@ class ODataRequest(ClientRequest):
         elif json is not None:
             yield "__value", json
 
-    def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any], str]:
+    def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any], str, bytes]:
         """
         Normalizes OData request payload.
 
@@ -165,7 +165,9 @@ class ODataRequest(ClientRequest):
             Normalized payload dictionary or list
         """
 
-        def _normalize_payload(payload: ClientObject | ClientValue | dict | list | str | None) -> dict | list | str:
+        def _normalize_payload(
+            payload: ClientObject | ClientValue | dict | list | str | bytes | None,
+        ) -> dict | list | str | bytes:
             if isinstance(payload, (ClientObject, ClientValue)):
                 return payload.to_json(self._default_json_format)
             elif isinstance(payload, dict):

@@ -1,5 +1,7 @@
 import os
 
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -35,7 +37,7 @@ from office365.sharepoint.marketplace.sitecollection.appcatalog.allowed_items im
 class TenantCorporateCatalogAccessor(Entity):
     """Accessor for the tenant corporate catalog."""
 
-    def add(self, content: bytes, overwrite: bool, url: str = None) -> File:
+    def add(self, content: bytes, overwrite: bool, url: Optional[str] = None) -> File:
         """
         Adds a file to the corporate catalog.
 

@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class StoreAppCreationInformation(ClientValue):
     def __init__(
         self,
-        icon_url: str = None,
-        publisher: str = None,
-        short_description: str = None,
-        store_asset_id: str = None,
+        icon_url: Optional[str] = None,
+        publisher: Optional[str] = None,
+        short_description: Optional[str] = None,
+        store_asset_id: Optional[str] = None,
     ):
         self.IconUrl = icon_url
         self.Publisher = publisher

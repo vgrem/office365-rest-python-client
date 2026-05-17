@@ -22,7 +22,7 @@ class ClientQuery(Generic[ReturnT]):
         self,
         context: ClientRuntimeContext,
         binding_type: ClientObject | None = None,
-        parameters_type: ClientObject | ClientValue | dict | str | None = None,
+        parameters_type: ClientObject | ClientValue | dict | str | bytes | None = None,
         parameters_name: str | None = None,
         return_type: ReturnT | None = None,
     ) -> None:
@@ -102,7 +102,7 @@ class ClientQuery(Generic[ReturnT]):
         return self._parameters_name
 
     @property
-    def parameters_type(self) -> ClientObject | ClientValue | dict | str | None:
+    def parameters_type(self) -> ClientObject | ClientValue | dict | str | bytes | None:
         """Type of parameters for this query."""
         return self._parameters_type
 

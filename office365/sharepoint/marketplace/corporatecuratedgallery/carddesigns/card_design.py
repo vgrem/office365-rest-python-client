@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class CardDesign(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        id_: str = None,
-        serialized_properties: str = None,
-        show_in_toolbox: bool = None,
-        title: str = None,
+        description: Optional[str] = None,
+        id_: Optional[str] = None,
+        serialized_properties: Optional[str] = None,
+        show_in_toolbox: Optional[bool] = None,
+        title: Optional[str] = None,
     ):
         self.description = description
         self.id = id_
