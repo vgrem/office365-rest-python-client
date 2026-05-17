@@ -86,6 +86,25 @@ ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/with_device_flow.py)
 
+### Legacy — SAML User Auth ⚠️
+
+> **Deprecated**: `with_user_credentials` uses the legacy SAML-based auth flow
+> which is being phased out by Microsoft. Use `with_username_and_password`
+> (MSAL ROPC OAuth 2.0) instead.
+
+```python
+from office365.sharepoint.client_context import ClientContext
+ctx = ClientContext('{site_url}').with_user_credentials('{username}', '{password}')
+```
+
+Replaced by:
+
+```python
+ctx.with_username_and_password(tenant='{tenant}', client_id='{client_id}', username='{username}', password='{password}')
+```
+
+[Docs](https://learn.microsoft.com/en-us/microsoft-365/enterprise/modern-auth-for-office-2013-and-2016)
+
 ### Legacy — ACS App-Only ⚠️
 
 > **Deprecated**: Azure ACS is being retired. Use Azure AD certificate auth instead.
