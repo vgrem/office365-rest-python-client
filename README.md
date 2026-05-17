@@ -33,39 +33,39 @@ pip install git+https://github.com/vgrem/office365-rest-python-client.git
 
 The library provides two clients: **`ClientContext`** for SharePoint REST API and **`GraphClient`** for Microsoft Graph API.
 
+> **📌 ACS Retirement Notice**: Azure Access Control Service (ACS) for SharePoint
+> is being retired. ACS stopped working for **new tenants** on November 1, 2024,
+> and will be **fully retired on April 2, 2026**. Use Azure AD-based authentication instead.
+> [Learn more](https://aka.ms/retirement/acs/support)
+
 ## ClientContext — SharePoint
 
-### App-Only (client credentials)
-
-Compatible with SharePoint on-premises and Online.
-
-```python
-from office365.runtime.auth.client_credential import ClientCredential
-from office365.sharepoint.client_context import ClientContext
-ctx = ClientContext('{site_url}').with_credentials(ClientCredential('{client_id}', '{client_secret}'))
-```
-
-[Docs](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs) | [Example](examples/sharepoint/auth/with_app_only.py)
-
-### Username & password
-
-```python
-from office365.runtime.auth.user_credential import UserCredential
-from office365.sharepoint.client_context import ClientContext
-ctx = ClientContext('{site_url}').with_credentials(UserCredential('{username}', '{password}'))
-```
-
-[Example](examples/sharepoint/auth/with_user_credential.py)
-
-### Certificate credentials
+### Azure AD App-Only (certificate) — RECOMMENDED
 
 ```python
 ctx = ClientContext('{site_url}').with_client_certificate(tenant, client_id, thumbprint, cert_path)
 ```
 
-[Docs](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/with_certificate.py)
+[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/with_certificate.py)
+
+### Username & password (MSAL ROPC) — RECOMMENDED for user auth
+
+Uses the OAuth 2.0 Resource Owner Password Credentials grant via MSAL.
+
+```python
+from office365.sharepoint.client_context import ClientContext
+
+ctx = ClientContext('{site_url}').with_username_and_password(
+    tenant='{tenant}', client_id='{client_id}',
+    username='{username}', password='{password}'
+)
+```
+
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) | [Example](examples/sharepoint/auth/with_user_credential.py)
 
 ### Interactive
+
+Opens a browser for user login.
 
 ```python
 from office365.sharepoint.client_context import ClientContext
@@ -74,30 +74,70 @@ ctx = ClientContext('{site_url}').with_interactive('{tenant}', '{client_id}')
 
 > Prerequisite: configure Redirect URI as `http://localhost` in Azure Portal.
 
-[Example](examples/sharepoint/auth/with_interactive.py)
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication) | [Example](examples/sharepoint/auth/with_interactive.py)
+
+### Device code
+
+User authenticates on another device via a displayed code.
+
+```python
+ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
+```
+
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/with_device_flow.py)
+
+### Legacy — ACS App-Only ⚠️
+
+> **Deprecated**: Azure ACS is being retired. Use Azure AD certificate auth instead.
+
+```python
+from office365.runtime.auth.client_credential import ClientCredential
+from office365.sharepoint.client_context import ClientContext
+ctx = ClientContext('{site_url}').with_credentials(ClientCredential('{client_id}', '{client_secret}'))
+```
+
+[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs) | [Example](examples/sharepoint/auth/with_app_only.py)
+
+---
 
 ## GraphClient — Microsoft Graph
 
 ### Client secret
+
+Uses the OAuth 2.0 Client Credentials grant via MSAL.
 
 ```python
 from office365.graph_client import GraphClient
 client = GraphClient(tenant='{tenant}').with_client_secret(client_id='{client_id}', client_secret='{client_secret}')
 ```
 
-[Example](examples/auth/with_client_secret.py)
+[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_client_secret.py)
 
 ### Certificate
 
 ```python
-client = GraphClient(tenant='{tenant}').with_client_certificate(client_id, thumbprint, cert_path)
+client = GraphClient(tenant='{tenant}').with_client_certificate(client_id, thumbprint, private_key)
 ```
 
-### Username & password
+[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_client_secret.py)
+
+### Interactive
+
+Opens a browser for user login.
+
+```python
+client = GraphClient(tenant='{tenant}').with_token_interactive(client_id='{client_id}')
+```
+
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication)
+
+### Username & password (MSAL ROPC)
 
 ```python
 client = GraphClient(tenant='{tenant}').with_username_and_password('{client_id}', '{username}', '{password}')
 ```
+
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc)
 
 ### Custom token acquisition
 
@@ -105,7 +145,7 @@ Any OAuth2-compliant library (MSAL, ADAL, etc.):
 
 ```python
 def acquire_token():
-    # your token acquisition logic, e.g. via msal
+    # your token acquisition logic
     return token
 
 client = GraphClient(acquire_token)
@@ -118,11 +158,13 @@ client = GraphClient(acquire_token)
 ## Quick start
 
 ```python
-from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.client_context import ClientContext
 
 site_url = "https://{tenant}.sharepoint.com"
-ctx = ClientContext(site_url).with_credentials(UserCredential("{username}", "{password}"))
+ctx = ClientContext(site_url).with_username_and_password(
+    tenant="{tenant}", client_id="{client_id}",
+    username="{username}", password="{password}",
+)
 web = ctx.web.get().execute_query()
 print(f"Web title: {web.title}")
 ```
