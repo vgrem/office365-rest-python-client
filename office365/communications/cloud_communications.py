@@ -1,3 +1,5 @@
+from typing import List
+
 from office365.communications.callrecords.collection import CallRecordCollection
 from office365.communications.calls.collection import CallCollection
 from office365.communications.onlinemeetings.collection import OnlineMeetingCollection
@@ -9,23 +11,21 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class CloudCommunications(Entity):
-    def get_presences_by_user_id(self, ids):
+    """ """
+
+    def get_presences_by_user_id(self, ids: List[str]) -> EntityCollection[Presence]:
         """
         Get the presence information for multiple users.
 
         :param list[str] ids: The user object IDs.
         """
-        return_type = EntityCollection(
-            self.context, Presence, ResourcePath("presences", self.resource_path)
-        )
-        qry = ServiceOperationQuery(
-            self, "getPresencesByUserId", None, {"ids": ids}, None, return_type
-        )
+        return_type = EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path))
+        qry = ServiceOperationQuery(self, "getPresencesByUserId", None, {"ids": ids}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def calls(self):
+    def calls(self) -> CallCollection:
         """ " """
         return self.properties.get(
             "calls",
@@ -33,7 +33,7 @@ class CloudCommunications(Entity):
         )
 
     @property
-    def call_records(self):
+    def call_records(self) -> CallRecordCollection:
         """ " """
         return self.properties.get(
             "callRecords",
@@ -44,23 +44,19 @@ class CloudCommunications(Entity):
         )
 
     @property
-    def online_meetings(self):
+    def online_meetings(self) -> OnlineMeetingCollection:
         """ " """
         return self.properties.get(
             "onlineMeetings",
-            OnlineMeetingCollection(
-                self.context, ResourcePath("onlineMeetings", self.resource_path)
-            ),
+            OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path)),
         )
 
     @property
-    def presences(self):
+    def presences(self) -> EntityCollection[Presence]:
         """ " """
         return self.properties.get(
             "presences",
-            EntityCollection(
-                self.context, Presence, ResourcePath("presences", self.resource_path)
-            ),
+            EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -70,4 +66,4 @@ class CloudCommunications(Entity):
                 "onlineMeetings": self.online_meetings,
             }
             default_value = property_mapping.get(name, None)
-        return super(CloudCommunications, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

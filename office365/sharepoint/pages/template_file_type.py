@@ -1,8 +1,8 @@
-class TemplateFileType:
-    """Specifies the type of ghosted file template to use"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class TemplateFileType(Enum):
+    """Specifies the type of ghosted file template to use"""
 
     StandardPage = 0
     """A standard page uses the default view template. Value is 0."""

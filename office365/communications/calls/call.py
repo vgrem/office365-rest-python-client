@@ -41,9 +41,7 @@ class Call(Entity):
         payload = {
             "clientContext": client_context,
         }
-        qry = ServiceOperationQuery(
-            self, "cancelMediaProcessing", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "cancelMediaProcessing", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -72,7 +70,7 @@ class Call(Entity):
         """
         Delete or hang up an active call. For group calls, this will only delete your call leg and the underlying
         group call will still continue."""
-        return super(Call, self).delete_object()
+        return super().delete_object()
 
     def update_recording_status(self, status, client_context):
         """
@@ -84,9 +82,7 @@ class Call(Entity):
         """
         return_type = UpdateRecordingStatusOperation(self.context)
         payload = {"status": status, "clientContext": client_context}
-        qry = ServiceOperationQuery(
-            self, "updateRecordingStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "updateRecordingStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

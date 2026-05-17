@@ -4,7 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.sharepoint.compliance.tag import ComplianceTag
+from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.contentcenter.machinelearning.enabled import (
     SPMachineLearningEnabled,
 )
@@ -23,15 +23,13 @@ from office365.sharepoint.entity import Entity
 class SPMachineLearningHub(Entity):
     """ """
 
-    def get_by_content_type_id(self, content_type_id):
+    def get_by_content_type_id(self, content_type_id: str) -> SyntexModelsLandingInfo:
         """
         :param str content_type_id:
         """
         return_type = SyntexModelsLandingInfo(self.context)
         payload = {"contentTypeId": content_type_id}
-        qry = ServiceOperationQuery(
-            self, "GetByContentTypeId", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetByContentTypeId", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -62,9 +60,7 @@ class SPMachineLearningHub(Entity):
     def get_retention_labels(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
-        qry = ServiceOperationQuery(
-            self, "GetRetentionLabels", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetRetentionLabels", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -74,48 +70,40 @@ class SPMachineLearningHub(Entity):
                 "MachineLearningEnabled": self.machine_learning_enabled,
             }
             default_value = property_mapping.get(name, None)
-        return super(SPMachineLearningHub, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
-    def is_default_content_center(self):
-        # type: () -> Optional[bool]
+    def is_default_content_center(self) -> Optional[bool]:
         """ """
         return self.properties.get("IsDefaultContentCenter", None)
 
     @property
-    def machine_learning_capture_enabled(self):
-        # type: () -> Optional[bool]
+    def machine_learning_capture_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
     @property
-    def machine_learning_enabled(self):
+    def machine_learning_enabled(self) -> SPMachineLearningEnabled:
         """ """
         return self.properties.get(
             "MachineLearningEnabled",
-            SPMachineLearningEnabled(
-                self.context, ResourcePath("MachineLearningEnabled", self.resource_path)
-            ),
+            SPMachineLearningEnabled(self.context, ResourcePath("MachineLearningEnabled", self.resource_path)),
         )
 
     @property
-    def models(self):
+    def models(self) -> SPMachineLearningModelCollection:
         """ """
         return self.properties.get(
             "Models",
-            SPMachineLearningModelCollection(
-                self.context, ResourcePath("Models", self.resource_path)
-            ),
+            SPMachineLearningModelCollection(self.context, ResourcePath("Models", self.resource_path)),
         )
 
     @property
-    def samples(self):
+    def samples(self) -> SPMachineLearningSampleCollection:
         """ """
         return self.properties.get(
             "Samples",
-            SPMachineLearningSampleCollection(
-                self.context, ResourcePath("Samples", self.resource_path)
-            ),
+            SPMachineLearningSampleCollection(self.context, ResourcePath("Samples", self.resource_path)),
         )
 
     @property

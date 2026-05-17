@@ -5,3 +5,7 @@ class CommunicationSiteCreationResponse(ClientValue):
     def __init__(self, site_status=None, site_url=None):
         self.SiteStatus = site_status
         self.SiteUrl = site_url
+
+    @property
+    def entity_type_name(self):
+        return "SP.Publishing.CommunicationSiteCreationResponse"

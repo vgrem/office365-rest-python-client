@@ -10,13 +10,10 @@ from office365.sharepoint.tenant.administration.hubsites.permission import (
 class HubSiteProperties(Entity):
     @property
     def permissions(self):
-        return self.properties.get(
-            "Permissions", ClientValueCollection(HubSitePermission)
-        )
+        return self.properties.get("Permissions", ClientValueCollection(HubSitePermission))
 
     @property
-    def site_id(self):
-        # type: () -> Optional[str]
+    def site_id(self) -> Optional[str]:
         """Returns the Site identifier"""
         return self.properties.get("SiteId", None)
 
@@ -25,5 +22,5 @@ class HubSiteProperties(Entity):
         return "SiteId"
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.HubSiteProperties"

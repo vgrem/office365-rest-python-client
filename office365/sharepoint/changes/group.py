@@ -7,7 +7,6 @@ class ChangeGroup(Change):
     """Specifies a change on a group."""
 
     @property
-    def group_id(self):
-        # type: () -> Optional[int]
+    def group_id(self) -> Optional[int]:
         """Identifies the changed group."""
         return self.properties.get("GroupId", None)

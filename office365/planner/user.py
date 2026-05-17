@@ -15,18 +15,13 @@ class PlannerUser(Entity):
 
         return self.properties.get(
             "plans",
-            PlannerPlanCollection(
-                self.context, ResourcePath("plans", self.resource_path)
-            ),
+            PlannerPlanCollection(self.context, ResourcePath("plans", self.resource_path)),
         )
 
     @property
-    def tasks(self):
-        # type: () -> EntityCollection[PlannerTask]
+    def tasks(self) -> EntityCollection[PlannerTask]:
         """Returns the plannerTasks assigned to the user."""
         return self.properties.get(
             "tasks",
-            EntityCollection(
-                self.context, PlannerTask, ResourcePath("tasks", self.resource_path)
-            ),
+            EntityCollection(self.context, PlannerTask, ResourcePath("tasks", self.resource_path)),
         )

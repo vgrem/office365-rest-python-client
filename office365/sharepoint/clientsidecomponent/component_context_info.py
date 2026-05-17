@@ -7,8 +7,7 @@ class ComponentContextInfo(Entity):
     """This class functions as a wrapper of the ContextInfo object. Reserved for internal use only."""
 
     @property
-    def serialized_data(self):
-        # type: () -> Optional[str]
+    def serialized_data(self) -> Optional[str]:
         """"""
         return self.properties.get("SerializedData", None)
 

@@ -7,19 +7,16 @@ class ChangeView(Change):
     """Specifies a change on a view."""
 
     @property
-    def view_id(self):
-        # type: () -> Optional[str]
+    def view_id(self) -> Optional[str]:
         """Identifies the changed view."""
         return self.properties.get("ViewId", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """Identifies the list that contains the changed view."""
         return self.properties.get("ListId", None)
 
     @property
-    def web_id(self):
-        # type: () -> Optional[str]
+    def web_id(self) -> Optional[str]:
         """Identifies the site that contains the changed view."""
         return self.properties.get("WebId", None)

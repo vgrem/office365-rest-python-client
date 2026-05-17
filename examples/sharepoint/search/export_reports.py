@@ -1,3 +1,9 @@
+"""
+Exports SharePoint search reports for a tenant.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url, test_user_credentials
 

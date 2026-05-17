@@ -1,25 +1,24 @@
 from office365.directory.administrative_unit import AdministrativeUnit
 from office365.runtime.client_value_collection import ClientValueCollection
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestDirectory(GraphTestCase):
-    administrative_unit = None  # type: AdministrativeUnit
+    administrative_unit: AdministrativeUnit = None
 
     def test2_get_deleted_groups(self):
-        deleted_groups = self.client.directory.deleted_groups.get().execute_query()
-        self.assertEqual(deleted_groups.resource_path.segment, "microsoft.graph.group")
+        result = self.client.directory.deleted_groups.get().execute_query()
+        self.assertEqual(result.resource_path.segment, "microsoft.graph.group")
 
     def test3_get_deleted_users(self):
-        deleted_users = self.client.directory.deleted_users.get().execute_query()
-        self.assertEqual(deleted_users.resource_path.segment, "microsoft.graph.user")
+        result = self.client.directory.deleted_users.get().execute_query()
+        self.assertEqual(result.resource_path.segment, "microsoft.graph.user")
 
     def test4_get_deleted_applications(self):
-        deleted_apps = self.client.directory.deleted_applications.get().execute_query()
-        self.assertEqual(
-            deleted_apps.resource_path.segment, "microsoft.graph.application"
-        )
+        result = self.client.directory.deleted_applications.get().execute_query()
+        self.assertEqual(result.resource_path.segment, "microsoft.graph.application")
 
     def test5_get_member_objects(self):
         result = self.client.me.get_member_objects().execute_query()

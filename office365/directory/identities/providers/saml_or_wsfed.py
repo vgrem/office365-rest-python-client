@@ -8,7 +8,6 @@ class SamlOrWsFedProvider(IdentityProviderBase):
     identity provider (IdP)."""
 
     @property
-    def issuer_uri(self):
-        # type: () -> Optional[str]
+    def issuer_uri(self) -> Optional[str]:
         """Issuer URI of the federation server."""
         return self.properties.get("issuerUri", None)

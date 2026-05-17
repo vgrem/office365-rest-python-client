@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -5,7 +7,11 @@ class NumberColumn(ClientValue):
     """The numberColumn on a columnDefinition resource indicates that the column's values are numbers."""
 
     def __init__(
-        self, minimum=None, maximum=None, display_as=None, decimal_places=None
+        self,
+        minimum: float | None = None,
+        maximum: float | None = None,
+        display_as: str | None = None,
+        decimal_places: str | None = None,
     ):
         """
         :param float minimum: The minimum permitted value.

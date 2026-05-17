@@ -1,0 +1,16 @@
+from typing import Optional
+
+from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.contentcenter.machinelearning.dependentmodel import (
+    SPDependentModel,
+)
+
+
+class SPModelDependencies(ClientValue):
+    def __init__(self, dependent_models: Optional[ClientValueCollection[SPDependentModel]] = None):
+        self.DependentModels = dependent_models
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.Office.Server.ContentCenter.SPModelDependencies"

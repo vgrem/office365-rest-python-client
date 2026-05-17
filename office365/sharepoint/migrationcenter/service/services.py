@@ -11,31 +11,23 @@ class MigrationCenterServices(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterServices"
-            )
-        super(MigrationCenterServices, self).__init__(context, resource_path)
+            resource_path = ResourcePath("Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterServices")
+        super().__init__(context, resource_path)
 
     @property
-    def performance_data(self):
-        # type: () -> PerformanceDataCollection
+    def performance_data(self) -> PerformanceDataCollection:
         """"""
         return self.properties.get(
             "PerformanceData",
-            PerformanceDataCollection(
-                self.context, ResourcePath("PerformanceData", self.resource_path)
-            ),
+            PerformanceDataCollection(self.context, ResourcePath("PerformanceData", self.resource_path)),
         )
 
     @property
-    def teams(self):
-        # type: () -> PerformanceDataCollection
+    def teams(self) -> MigrationCenterTeams:
         """"""
         return self.properties.get(
             "Teams",
-            MigrationCenterTeams(
-                self.context, ResourcePath("Teams", self.resource_path)
-            ),
+            MigrationCenterTeams(self.context, ResourcePath("Teams", self.resource_path)),
         )
 
     @property

@@ -1,5 +1,8 @@
+from typing import Optional
+
 from office365.outlook.calendar.attendees.base import AttendeeBase
 from office365.outlook.calendar.email_address import EmailAddress
+from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 
 
 class Attendee(AttendeeBase):
@@ -9,9 +12,9 @@ class Attendee(AttendeeBase):
     def __init__(
         self,
         email_address=EmailAddress(),
-        attendee_type=None,
-        proposed_new_time=None,
-        status=None,
+        attendee_type: Optional[str] = None,
+        proposed_new_time: Optional[TimeSlot] = None,
+        status: Optional[str] = None,
     ):
         """
 
@@ -20,6 +23,6 @@ class Attendee(AttendeeBase):
         :param str status: The attendees's response (none, accepted, declined, etc.) for the event and date-time
             that the response was sent.
         """
-        super(Attendee, self).__init__(email_address, attendee_type)
+        super().__init__(email_address, attendee_type)
         self.proposedNewTime = proposed_new_time
         self.status = status

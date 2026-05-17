@@ -7,7 +7,7 @@ from office365.sharepoint.search.query.sort.sort import Sort
 class SortCollection(Entity):
     """Contains information about how to sort the search results."""
 
-    def add(self, property_name, direction):
+    def add(self, property_name: str, direction: int):
         """
         Adds a new element of type Microsoft.SharePoint.Client.Search.Query.Sort to the collection and returns
         a reference to the added Microsoft.SharePoint.Client.Search.Query.Sort.
@@ -34,7 +34,7 @@ class SortCollection(Entity):
         return self
 
     @property
-    def items(self):
+    def items(self) -> ClientValueCollection[Sort]:
         return self.properties.get("Items", ClientValueCollection(Sort))
 
     @property

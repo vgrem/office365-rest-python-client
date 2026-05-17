@@ -13,7 +13,5 @@ class TestIntuneReports(GraphTestCase):
 
     @requires_delegated_permission("DeviceManagementConfiguration.Read.All")
     def test1_device_configuration_user_activity(self):
-        result = (
-            self.client.reports.device_configuration_user_activity().execute_query()
-        )
+        result = self.client.reports.device_configuration_user_activity().execute_query()
         self.assertIsNotNone(result.value)

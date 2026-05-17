@@ -1,5 +1,5 @@
 """
-Demonstrates how send e message with large attachment to Outlook message
+Send a message with a large attachment using an upload session
 
 https://learn.microsoft.com/en-us/graph/api/attachment-createuploadsession?view=graph-rest-1.0
 """
@@ -14,14 +14,11 @@ from tests import (
 )
 
 
-def print_progress(range_pos):
-    # type: (int) -> None
-    print("{0} bytes uploaded".format(range_pos))
+def print_progress(range_pos: int) -> None:
+    print(f"{range_pos} bytes uploaded")
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 local_path = "../../../tests/data/big_buck_bunny.mp4"
 message = (
     (

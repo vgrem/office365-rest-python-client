@@ -1,14 +1,19 @@
-class ExternalSharingSiteOption:
-    """Defines the options for Sharing Site"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class ExternalSharingSiteOption(Enum):
+    """Defines the options for sharing a site with external users."""
 
     View = "View"
-    """Provides sharing to AssociatedVisitorGroup"""
-
     Edit = "Edit"
-    """Provides sharing to AssociatedMemberGroup"""
-
     Owner = "Owner"
-    """Provides sharing to AssociatedOwnerGroup"""
+
+    @property
+    def description(self) -> str:
+        """Human-readable description of the sharing option."""
+        descriptions = {
+            ExternalSharingSiteOption.View: "Provides sharing to AssociatedVisitorGroup",
+            ExternalSharingSiteOption.Edit: "Provides sharing to AssociatedMemberGroup",
+            ExternalSharingSiteOption.Owner: "Provides sharing to AssociatedOwnerGroup",
+        }
+        return descriptions[self]

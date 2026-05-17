@@ -7,11 +7,9 @@ from office365.runtime.types.collections import StringCollection
 
 class IdentityProviderCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
-        super(IdentityProviderCollection, self).__init__(
-            context, IdentityProvider, resource_path
-        )
+        super().__init__(context, IdentityProvider, resource_path)
 
-    def available_provider_types(self):
+    def available_provider_types(self) -> ClientResult[StringCollection]:
         """
         Get all identity providers supported in a directory.
 

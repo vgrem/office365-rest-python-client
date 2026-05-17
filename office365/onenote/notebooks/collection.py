@@ -10,18 +10,18 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class NotebookCollection(EntityCollection[Notebook]):
     def __init__(self, context, resource_path=None):
-        super(NotebookCollection, self).__init__(context, Notebook, resource_path)
+        super().__init__(context, Notebook, resource_path)
 
-    def add(self, display_name):
+    def add(self, display_name: str) -> Notebook:
         """
         Create a new OneNote notebook.
 
         :param str display_name: Name for the notebook. Notebook names must be unique. The name cannot contain more
             than 128 characters or contain the following characters: ?*/:<>|'"
         """
-        return super(NotebookCollection, self).add(displayName=display_name)
+        return super().add(displayName=display_name)
 
-    def get_notebook_from_web_url(self, web_url):
+    def get_notebook_from_web_url(self, web_url: str) -> ClientResult[CopyNotebookModel]:
         """
         Retrieve the properties and relationships of a notebook object by using its URL path.
         The location can be user notebooks on Microsoft 365, group notebooks,
@@ -31,13 +31,13 @@ class NotebookCollection(EntityCollection[Notebook]):
         """
         return_type = ClientResult(self.context, CopyNotebookModel())
         params = {"webUrl": web_url}
-        qry = ServiceOperationQuery(
-            self, "getNotebookFromWebUrl", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getNotebookFromWebUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_recent_notebooks(self, include_personal_notebooks=True):
+    def get_recent_notebooks(
+        self, include_personal_notebooks: bool = True
+    ) -> ClientResult[ClientValueCollection[RecentNotebook]]:
         """Get a list of recentNotebook instances that have been accessed by the signed-in user.
 
         :param bool include_personal_notebooks: Include notebooks owned by the user. Set to true to include notebooks

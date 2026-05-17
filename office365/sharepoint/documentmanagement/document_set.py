@@ -1,13 +1,26 @@
+from __future__ import annotations
+
+from typing import Union
+
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
 
 
 class DocumentSet(Folder):
+    """Represents a set of documents."""
+
     @staticmethod
-    def create(context, parent_folder, name, ct_id="0x0120D520"):
+    def create(
+        context: ClientContext,
+        parent_folder: Folder,
+        name: str,
+        ct_id: Union[ContentTypeId, str] = "0x0120D520",
+    ) -> DocumentSet:
         """
         Creates a DocumentSet (section 3.1.5.3) object on the server.
 
@@ -20,23 +33,22 @@ class DocumentSet(Folder):
         """
 
         return_type = DocumentSet(context)
+        parent_folder.folders.add_child(return_type)
 
-        def _create(target_list):
-            # type: (List) -> None
+        def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
-            folder_url = parent_folder.serverRelativeUrl + "/" + name
+            assert parent_folder.server_relative_url is not None
+            folder_url = parent_folder.server_relative_url + "/" + name
             return_type.set_property("ServerRelativeUrl", folder_url)
 
-            def _construct_request(request):
-                # type: (RequestOptions) -> None
+            def _construct_request(request: RequestOptions) -> None:
+                assert target_list.title is not None
                 list_name = target_list.title.replace(" ", "")
-                request.url = r"{0}/_vti_bin/listdata.svc/{1}".format(
-                    context.base_url, list_name
-                )
-                request.set_header("Slug", "{0}|{1}".format(folder_url, ct_id))
+                request.url = rf"{context.base_url}/_vti_bin/listdata.svc/{list_name}"
+                request.set_header("Slug", f"{folder_url}|{ct_id}")
                 request.method = HttpMethod.Post
 
-            context.add_query(qry).before_query_execute(_construct_request)
+            context.add_query(qry).before_execute(_construct_request)
 
         def _parent_folder_loaded():
             custom_props = parent_folder.get_property("Properties")
@@ -44,13 +56,11 @@ class DocumentSet(Folder):
             target_list = context.web.lists.get_by_id(list_id)
             target_list.ensure_property("Title", _create, target_list=target_list)
 
-        parent_folder.ensure_properties(
-            ["UniqueId", "Properties", "ServerRelativeUrl"], _parent_folder_loaded
-        )
+        parent_folder.ensure_properties(["UniqueId", "Properties", "ServerRelativeUrl"], _parent_folder_loaded)
         return return_type
 
     @staticmethod
-    def get_document_set(context, folder):
+    def get_document_set(context: ClientContext, folder: Folder) -> DocumentSet:
         """Retrieves the document set object from a specified folder object.
 
         :type context: office365.sharepoint.client_context.ClientContext

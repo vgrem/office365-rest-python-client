@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -15,11 +18,11 @@ class MessageRuleActions(ClientValue):
         forward_as_attachment_to=None,
         forward_to=None,
         mark_as_read=None,
-        mark_importance=None,
+        mark_importance: Importance | None = None,
         move_to_folder=None,
-        permanent_delete=None,
+        permanent_delete: bool | None = None,
         redirect_to=None,
-        stop_processing_rules=None,
+        stop_processing_rules: bool | None = None,
     ):
         """
         :param list[str] assign_categories: A list of categories to be assigned to a message.
@@ -39,9 +42,7 @@ class MessageRuleActions(ClientValue):
         self.assignCategories = StringCollection(assign_categories)
         self.copyToFolder = copy_to_folder
         self.delete = delete
-        self.forwardAsAttachmentTo = ClientValueCollection(
-            Recipient, forward_as_attachment_to
-        )
+        self.forwardAsAttachmentTo = ClientValueCollection(Recipient, forward_as_attachment_to)
         self.forwardTo = ClientValueCollection(Recipient, forward_to)
         self.markAsRead = mark_as_read
         self.markImportance = mark_importance

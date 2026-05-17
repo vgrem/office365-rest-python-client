@@ -1,17 +1,25 @@
+from typing import Union
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.feature import Feature
+from office365.sharepoint.features.known_list import KnownFeaturesList
 
 
 class FeatureCollection(EntityCollection[Feature]):
     """Represents a collection of Feature resources."""
 
     def __init__(self, context, resource_path=None, parent=None):
-        super(FeatureCollection, self).__init__(context, Feature, resource_path, parent)
+        super().__init__(context, Feature, resource_path, parent)
 
-    def add(self, feature_id, force, featdef_scope, verify_if_activated=False):
-        # type: (str, bool, int, bool) -> Feature
+    def add(
+        self,
+        feature_id: Union[KnownFeaturesList, str],
+        force: bool,
+        featdef_scope: int,
+        verify_if_activated: bool = False,
+    ) -> Feature:
         """
         Adds the feature to the collection of activated features and returns the added feature.
 
@@ -23,28 +31,28 @@ class FeatureCollection(EntityCollection[Feature]):
         return_type = Feature(self.context)
         self.add_child(return_type)
 
+        fid = feature_id.value if isinstance(feature_id, KnownFeaturesList) else feature_id
+
         def _create_query():
             payload = {
-                "featureId": feature_id,
+                "featureId": fid,
                 "force": force,
                 "featdefScope": featdef_scope,
             }
             return ServiceOperationQuery(self, "Add", None, payload, None, return_type)
 
-        def _create_if_not_activated(f):
-            # type: (Feature) -> None
+        def _create_if_not_activated(f: Feature) -> None:
             if not f.properties:
                 self.context.add_query(_create_query())
 
         if verify_if_activated:
-            self.get_by_id(feature_id).get().after_execute(_create_if_not_activated)
+            self.get_by_id(fid).get().after_execute(_create_if_not_activated)
         else:
             self.context.add_query(_create_query())
 
         return return_type
 
-    def get_by_id(self, feature_id):
-        # type: (str) -> Feature
+    def get_by_id(self, feature_id: str) -> Feature:
         """Returns the feature for the given feature identifier. Returns NULL if no feature is available for the given
             feature identifier.
 

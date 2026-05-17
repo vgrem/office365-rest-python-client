@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,7 +10,12 @@ class Thumbnail(ClientValue):
     """
 
     def __init__(
-        self, content=None, height=None, source_item_id=None, url=None, width=None
+        self,
+        content: str | None = None,
+        height: int | None = None,
+        source_item_id: str | None = None,
+        url: str | None = None,
+        width: int | None = None,
     ):
         """
         :param str content: The content stream for the thumbnail.

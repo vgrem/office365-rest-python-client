@@ -1,8 +1,8 @@
-class ViewScope:
-    """Specifies the scope for returning list items and list folders in a list view."""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class ViewScope(Enum):
+    """Specifies the scope for returning list items and list folders in a list view."""
 
     DefaultValue = "DefaultValue"
 

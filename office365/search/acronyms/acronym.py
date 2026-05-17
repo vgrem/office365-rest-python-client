@@ -1,4 +1,4 @@
-from office365.search.answer import SearchAnswer
+from office365.search.answers.answer import SearchAnswer
 
 
 class Acronym(SearchAnswer):
@@ -6,5 +6,5 @@ class Acronym(SearchAnswer):
     acronyms in an organization."""
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "microsoft.graph.search.acronym"

@@ -1,3 +1,7 @@
+from typing import Optional
+
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
@@ -14,7 +18,9 @@ from office365.sharepoint.publishing.sites.communication.creation_response impor
 class CommunicationSite(Entity):
     """Represents a Communication Site."""
 
-    def create(self, title, site_url, description=None):
+    def create(
+        self, title: str, site_url: str, description: Optional[str] = None
+    ) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Initiates creation of a Communication Site.
 
@@ -34,13 +40,11 @@ class CommunicationSite(Entity):
         """
         request = CommunicationSiteCreationRequest(title, site_url, description)
         return_type = ClientResult(self.context, CommunicationSiteCreationResponse())
-        qry = ServiceOperationQuery(
-            self, "Create", None, {"request": request}, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "Create", None, {"request": request}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_status(self, site_url):
+    def get_status(self, site_url: str) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Retrieves the status of creation of a Communication site.
 
@@ -59,22 +63,17 @@ class CommunicationSite(Entity):
         If the SiteStatus returns 3 or 0, the Communication site failed to be created.
         """
         response = ClientResult(self.context, CommunicationSiteCreationResponse())
-        qry = ServiceOperationQuery(
-            self, "Status", None, {"url": site_url}, None, response
-        )
+        qry = ServiceOperationQuery(self, "Status", None, {"url": site_url}, None, response)
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.method = HttpMethod.Get
-            request.url += "?url='{0}'".format(site_url)
+            request.url += f"?url='{site_url}'"
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+        self.context.add_query(qry).before_execute(_construct_request)
         return response
 
-    def enable(self, design_package_id):
-        qry = ServiceOperationQuery(
-            self, "Enable", None, {"designPackageId": design_package_id}
-        )
+    def enable(self, design_package_id) -> Self:
+        qry = ServiceOperationQuery(self, "Enable", None, {"designPackageId": design_package_id})
         self.context.add_query(qry)
         return self
 

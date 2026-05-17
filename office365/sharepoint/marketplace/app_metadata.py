@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -10,7 +12,7 @@ class CorporateCatalogAppMetadata(Entity):
     def __str__(self):
         return self.title or self.entity_type_name
 
-    def deploy(self, skip_feature_deployment):
+    def deploy(self, skip_feature_deployment: bool) -> Self:
         """This method deploys an app on the app catalog.  It MUST be called in the context of the tenant app
         catalog web or it will fail.
 
@@ -21,58 +23,52 @@ class CorporateCatalogAppMetadata(Entity):
         self.context.add_query(qry)
         return self
 
-    def remove(self):
+    def remove(self) -> Self:
         """This is the inverse of the add step above. One removed from the app catalog,
         the solution can't be deployed."""
         qry = ServiceOperationQuery(self, "Remove")
         self.context.add_query(qry)
         return self
 
-    def install(self):
+    def install(self) -> Self:
         """This method allows an app which is already deployed to be installed on a web."""
         qry = ServiceOperationQuery(self, "Install")
         self.context.add_query(qry)
         return self
 
-    def uninstall(self):
+    def uninstall(self) -> Self:
         """This method uninstalls an app from a web."""
         qry = ServiceOperationQuery(self, "Uninstall")
         self.context.add_query(qry)
         return self
 
     @property
-    def aad_permissions(self):
-        # type: () -> Optional[str]
+    def aad_permissions(self) -> Optional[str]:
         """ """
         return self.properties.get("AadPermissions", None)
 
     @property
-    def app_catalog_version(self):
-        # type: () -> Optional[str]
+    def app_catalog_version(self) -> Optional[str]:
         """The version of the app stored in the corporate catalog."""
         return self.properties.get("AppCatalogVersion", None)
 
     @property
-    def can_upgrade(self):
-        # type: () -> Optional[bool]
+    def can_upgrade(self) -> Optional[bool]:
         """Whether an existing instance of an app can be upgraded."""
         return self.properties.get("CanUpgrade", None)
 
     @property
-    def is_client_side_solution(self):
-        # type: () -> Optional[bool]
+    def is_client_side_solution(self) -> Optional[bool]:
         """Whether the app is a client-side solution."""
         return self.properties.get("IsClientSideSolution", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """The title of the app."""
         return self.properties.get("Title", None)
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """The identifier of the app."""
         return self.properties.get("ID", None)
 

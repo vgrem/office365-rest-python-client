@@ -1,12 +1,14 @@
 """
-Demonstrates how to set taxonomy field value
+Demonstrates how to set a taxonomy field value on a list item.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.taxonomy.field_value import (
     TaxonomyFieldValue,
-    TaxonomyFieldValueCollection,
 )
+from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
 from tests import test_client_credentials, test_team_site_url
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

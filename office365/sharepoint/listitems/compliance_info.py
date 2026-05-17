@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ListItemComplianceInfo(ClientValue):
     def __init__(
         self,
-        compliance_tag=None,
-        tag_policy_event_based=None,
-        tag_policy_hold=None,
-        tag_policy_record=None,
+        compliance_tag: Optional[str] = None,
+        tag_policy_event_based: Optional[bool] = None,
+        tag_policy_hold: Optional[bool] = None,
+        tag_policy_record: Optional[bool] = None,
     ):
         """
         :param str compliance_tag:

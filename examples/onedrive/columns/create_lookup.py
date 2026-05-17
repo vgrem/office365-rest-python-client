@@ -2,6 +2,7 @@
 Creates a lookup column in a list
 
 https://learn.microsoft.com/en-us/graph/api/list-post-columns?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient
@@ -13,9 +14,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 lib = client.sites.root.lists["Documents"]
 
 column_name = create_unique_name("LookupColumn")

@@ -1,0 +1,14 @@
+from enum import Enum
+
+
+class WorkbookOperationStatus(Enum):
+    """"""
+
+    notStarted = "0"
+    running = "1"
+    succeeded = "2"
+    failed = "3"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.WorkbookOperationStatus"

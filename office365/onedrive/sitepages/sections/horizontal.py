@@ -10,8 +10,7 @@ class HorizontalSection(Entity):
     """Represents a horizontal section in a given SharePoint page."""
 
     @property
-    def columns(self):
-        # type: () -> EntityCollection[HorizontalSectionColumn]
+    def columns(self) -> EntityCollection[HorizontalSectionColumn]:
         """The set of vertical columns in this section."""
         return self.properties.get(
             "columns",

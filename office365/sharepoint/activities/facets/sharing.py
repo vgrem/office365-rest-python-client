@@ -11,3 +11,7 @@ class SharingFacet(ClientValue):
         """
         self.recipients = ClientValueCollection(ActivityIdentity, recipients)
         self.sharingType = sharing_type
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Activities.SharingFacet"

@@ -7,7 +7,7 @@ class Storage(Entity):
     """Facilitates the structures of fileStorageContainers."""
 
     @property
-    def file_storage(self):
+    def file_storage(self) -> FileStorage:
         """FileStorageContainer"""
         return self.properties.get(
             "fileStorage",

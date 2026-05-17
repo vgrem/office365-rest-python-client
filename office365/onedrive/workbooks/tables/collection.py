@@ -5,11 +5,9 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 class WorkbookTableCollection(EntityCollection[WorkbookTable]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookTableCollection, self).__init__(
-            context, WorkbookTable, resource_path
-        )
+        super().__init__(context, WorkbookTable, resource_path)
 
-    def add(self, address, has_headers):
+    def add(self, address, has_headers) -> WorkbookTable:
         """
         Create a new table. The range source address determines the worksheet under which the table will be added.
         If the table cannot be added (e.g., because the address is invalid, or the table would overlap with

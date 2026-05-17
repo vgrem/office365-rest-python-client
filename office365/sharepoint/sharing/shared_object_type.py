@@ -1,5 +1,5 @@
-class SharedObjectType:
-    """Identifies the type of object that is shared"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class SharedObjectType(Enum):
+    """Identifies the type of object that is shared"""

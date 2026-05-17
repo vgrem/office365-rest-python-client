@@ -1,6 +1,7 @@
 """
-Search for document files
+Search for document files in a SharePoint tenant.
 
+https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """
 
 from office365.sharepoint.client_context import ClientContext

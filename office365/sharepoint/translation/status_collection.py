@@ -10,7 +10,7 @@ from office365.sharepoint.translation.status_set_request import (
 
 class TranslationStatusCollection(Entity):
     def __init__(self, context, resource_path=None):
-        super(TranslationStatusCollection, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
     def set(self):
         return_type = TranslationStatusCollection(self.context)

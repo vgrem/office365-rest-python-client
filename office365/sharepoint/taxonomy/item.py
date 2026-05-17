@@ -10,29 +10,25 @@ class TaxonomyItem(ClientObject):
     when the item is last modified."""
 
     @property
-    def id(self):
-        # type: () -> Optional[str]
+    def id(self) -> Optional[str]:
         """Gets the Id of the current TaxonomyItem"""
         return self.properties.get("id", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Gets the name of the current TaxonomyItem object"""
         return self.properties.get("name", None)
 
     @property
-    def property_ref_name(self):
-        # type: () -> str
+    def property_ref_name(self) -> str:
         return "id"
 
     def set_property(self, name, value, persist_changes=True):
-        super(TaxonomyItem, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
+            assert self.parent_collection is not None
             if self._resource_path is None:
-                self._resource_path = ResourcePath(
-                    value, self.parent_collection.resource_path
-                )
+                self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

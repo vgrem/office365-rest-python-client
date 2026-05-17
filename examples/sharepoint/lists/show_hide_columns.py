@@ -1,3 +1,8 @@
+"""Demonstrates how to show or hide list columns and manage view fields
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
+
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url
 

@@ -1,3 +1,9 @@
+"""
+Exports list view items to a CSV file.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
+"""
+
 import csv
 import os
 import tempfile

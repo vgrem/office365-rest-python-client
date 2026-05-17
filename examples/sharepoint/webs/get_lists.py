@@ -1,5 +1,7 @@
 """
-Enumerate across all lists in a site
+Enumerate all lists in a site.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -6,6 +6,5 @@ class CaseOperation(Entity):
     It contains a common set of properties that are shared among inheriting entities"""
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "microsoft.graph.security.caseOperation"

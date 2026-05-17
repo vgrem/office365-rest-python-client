@@ -7,7 +7,7 @@ class Billing(Entity):
     """Represents billing details for billed and unbilled data."""
 
     @property
-    def usage(self):
+    def usage(self) -> AzureUsage:
         """
         Represents details for billed and unbilled Azure usage data.
         """

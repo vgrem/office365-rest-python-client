@@ -1,8 +1,8 @@
-class ConflictBehavior:
-    """"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class ConflictBehavior(Enum):
+    """"""
 
     Rename = "rename"
 

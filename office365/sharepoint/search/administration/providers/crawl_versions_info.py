@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
@@ -12,55 +14,43 @@ class TenantCrawlVersionsInfoProvider(Entity):
     """Retrieves information about crawl versions for a tenant in SharePoint"""
 
     @staticmethod
-    def create(context):
-        # type: (ClientContext) -> TenantCrawlVersionsInfoProvider
+    def create(context: ClientContext) -> TenantCrawlVersionsInfoProvider:
         return_type = TenantCrawlVersionsInfoProvider(context)
-        qry = ServiceOperationQuery(
-            return_type, "Create", None, None, None, return_type
-        )
-        qry.static = True
+        qry = ServiceOperationQuery(return_type, "Create", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
-    def disable_crawl_versions(self, site_id):
+    def disable_crawl_versions(self, site_id: str) -> ClientResult[bool]:
         """
         :param str site_id:
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "DisableCrawlVersions", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DisableCrawlVersions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def disable_crawl_versions_for_tenant(self):
+    def disable_crawl_versions_for_tenant(self) -> ClientResult[bool]:
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "DisableCrawlVersionsForTenant", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "DisableCrawlVersionsForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def is_crawl_versions_enabled(self, site_id):
+    def is_crawl_versions_enabled(self, site_id: str):
         """
         :param str site_id:
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
-        qry = ServiceOperationQuery(
-            self, "IsCrawlVersionsEnabled", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabled", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_crawl_versions_enabled_for_tenant(self):
         """ """
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "IsCrawlVersionsEnabledForTenant", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "IsCrawlVersionsEnabledForTenant", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

@@ -5,8 +5,7 @@ from office365.sharepoint.entity import Entity
 
 class SiteDesignRun(Entity):
     @property
-    def site_design_id(self):
-        # type: () -> Optional[str]
+    def site_design_id(self) -> Optional[str]:
         """"""
         return self.properties.get("SiteDesignID", None)
 

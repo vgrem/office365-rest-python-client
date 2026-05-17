@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.tables.rows.row import WorkbookTableRow
 from office365.runtime.client_result import ClientResult
@@ -6,11 +8,9 @@ from office365.runtime.queries.function import FunctionQuery
 
 class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookTableRowCollection, self).__init__(
-            context, WorkbookTableRow, resource_path
-        )
+        super().__init__(context, WorkbookTableRow, resource_path)
 
-    def add(self, values, index=None):
+    def add(self, values: list, index: int | None = None) -> WorkbookTableRow:
         """
         Adds rows to the end of a table.
         Note that this API can accept multiple rows of data. Adding one row at a time can affect performance.
@@ -26,17 +26,16 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         :param int index: Specifies the relative position of the new row. If null, the addition happens at the end.
              Any rows below the inserted row are shifted downwards. Zero-indexed.
         """
-        return super(WorkbookTableRowCollection, self).add(values=values, index=index)
+        return super().add(values=values, index=index)
 
-    def count(self):
+    def count(self) -> ClientResult[int]:
         """"""
         return_type = ClientResult(self.context, int())
         qry = FunctionQuery(self, "count", None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def item_at(self, index):
-        # type: (int) -> WorkbookTableRow
+    def item_at(self, index: int) -> WorkbookTableRow:
         """Gets a row based on its position in the collection.
         :param int index: Index value of the object to be retrieved. Zero-indexed.
         """

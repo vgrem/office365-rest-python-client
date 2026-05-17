@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,7 +15,9 @@ class PromotedSites(Entity):
     """
 
     @staticmethod
-    def add_site_link(context, url, title, description=None, image_url=None):
+    def add_site_link(
+        context, url: str, title: str, description: Optional[str] = None, image_url: Optional[str] = None
+    ) -> PromotedSites:
         """
         Creates a new site link in the collection of promoted sites.
 
@@ -28,14 +34,12 @@ class PromotedSites(Entity):
             "imageUrl": image_url,
         }
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "AddSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "AddSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 
     @staticmethod
-    def delete_site_link(context, item_id):
+    def delete_site_link(context, item_id: int) -> PromotedSites:
         """
         Removes the promoted site with the specified identifier from the collection.
 
@@ -44,14 +48,14 @@ class PromotedSites(Entity):
         """
         payload = {"itemID": item_id}
         binding_type = PromotedSites(context)
-        qry = ServiceOperationQuery(
-            binding_type, "DeleteSiteLink", None, payload, is_static=True
-        )
+        qry = ServiceOperationQuery(binding_type, "DeleteSiteLink", None, payload, is_static=True)
         context.add_query(qry)
         return binding_type
 
     @staticmethod
-    def get_promoted_links_as_tiles(context):
+    def get_promoted_links_as_tiles(
+        context,
+    ) -> ClientResult[ClientValueCollection[TileData]]:
         """
         Retrieves the collection of promoted site links.
         """

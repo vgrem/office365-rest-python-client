@@ -1,4 +1,7 @@
-class CheckinType:
+from enum import Enum
+
+
+class CheckinType(Enum):
     """Specifies the type of check in for a file."""
 
     MinorCheckIn = 0

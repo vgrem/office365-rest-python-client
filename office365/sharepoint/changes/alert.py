@@ -7,7 +7,6 @@ class ChangeAlert(Change):
     """Specifies a change from an alert."""
 
     @property
-    def alert_id(self):
-        # type: () -> Optional[str]
+    def alert_id(self) -> Optional[str]:
         """Identifies the changed alert."""
         return self.properties.get("AlertId", None)

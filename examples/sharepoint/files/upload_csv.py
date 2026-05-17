@@ -15,4 +15,4 @@ path = "../../data/Financial Sample.csv"
 with open(path, "r") as content_file:
     file_content = content_file.read().encode("utf-8-sig")
 file = folder.upload_file(os.path.basename(path), file_content).execute_query()
-print("File has been uploaded into: {0}".format(file.serverRelativeUrl))
+print("File has been uploaded into: {0}".format(file.server_relative_url))

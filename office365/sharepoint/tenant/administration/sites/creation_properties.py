@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -10,6 +12,14 @@ class SiteCreationProperties(ClientValue):
         owner_name=None,
         template=None,
         site_uni_name=None,
+        compatibility_level: Optional[int] = None,
+        lcid: Optional[str] = None,
+        time_zone_id: Optional[int] = None,
+        enable_agreements_solution: Optional[bool] = None,
+        storage_maximum_level: Optional[int] = None,
+        storage_warning_level: Optional[int] = None,
+        user_code_maximum_level: Optional[float] = None,
+        user_code_warning_level: Optional[float] = None,
     ):
         """Sets the initial properties for a new site when it is created.
 
@@ -18,14 +28,22 @@ class SiteCreationProperties(ClientValue):
         :param str template: Gets or sets the web template name of the new site.
         :param str site_uni_name:
         """
-        super(SiteCreationProperties, self).__init__()
+        super().__init__()
         self.Url = url
         self.Owner = owner
         self.OwnerName = owner_name
         self.Title = title
         self.Template = template
         self.SiteUniName = site_uni_name
+        self.CompatibilityLevel = compatibility_level
+        self.Lcid = lcid
+        self.TimeZoneId = time_zone_id
+        self.EnableAgreementsSolution = enable_agreements_solution
+        self.StorageMaximumLevel = storage_maximum_level
+        self.StorageWarningLevel = storage_warning_level
+        self.UserCodeMaximumLevel = user_code_maximum_level
+        self.UserCodeWarningLevel = user_code_warning_level
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCreationProperties"

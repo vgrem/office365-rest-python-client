@@ -14,7 +14,7 @@ class TimeZoneInformation(ClientValue):
         :param standard_bias: Gets the bias in the number of minutes that standard time for the time zone differs
              from coordinated universal time (UTC).
         """
-        super(TimeZoneInformation, self).__init__()
+        super().__init__()
         self.Bias = bias
         self.DaylightBias = daylight_bias
         self.StandardBias = standard_bias

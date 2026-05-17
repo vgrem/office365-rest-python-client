@@ -1,5 +1,7 @@
 """
-Retrieves the current user details
+Retrieves the current user details.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

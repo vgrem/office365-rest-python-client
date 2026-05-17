@@ -1,5 +1,7 @@
 """
-Downloads a site logo
+Downloads a site logo to a temporary file.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 import os

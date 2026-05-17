@@ -19,7 +19,7 @@ class DriveItemUploadableProperties(ClientValue):
         :param int file_size: 	Provides an expected file size to perform a quota check prior to upload.
              Only on OneDrive Personal.
         """
-        super(DriveItemUploadableProperties, self).__init__()
+        super().__init__()
         self.fileSystemInfo = file_system_info
         self.name = name
         self.description = description

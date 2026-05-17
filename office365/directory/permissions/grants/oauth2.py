@@ -14,8 +14,7 @@ class OAuth2PermissionGrant(Entity):
     """
 
     @property
-    def client_id(self):
-        # type: () -> Optional[str]
+    def client_id(self) -> Optional[str]:
         """
         The id of the client service principal for the application which is authorized to act on behalf of a signed-in
         user when accessing an API. Required. Supports $filter (eq only).
@@ -23,8 +22,7 @@ class OAuth2PermissionGrant(Entity):
         return self.properties.get("clientId", None)
 
     @property
-    def consent_type(self):
-        # type: () -> Optional[str]
+    def consent_type(self) -> Optional[str]:
         """
         Indicates if authorization is granted for the client application to impersonate all users or only a
         specific user. AllPrincipals indicates authorization to impersonate all users.
@@ -35,8 +33,7 @@ class OAuth2PermissionGrant(Entity):
         return self.properties.get("consentType", None)
 
     @property
-    def principal_id(self):
-        # type: () -> Optional[str]
+    def principal_id(self) -> Optional[str]:
         """
         The id of the user on behalf of whom the client is authorized to access the resource, when consentType is
         Principal. If consentType is AllPrincipals this value is null. Required when consentType is Principal.
@@ -45,8 +42,7 @@ class OAuth2PermissionGrant(Entity):
         return self.properties.get("principalId", None)
 
     @property
-    def resource_id(self):
-        # type: () -> Optional[str]
+    def resource_id(self) -> Optional[str]:
         """
         The id of the resource service principal to which access is authorized. This identifies the API which the
         client is authorized to attempt to call on behalf of a signed-in user. Supports $filter (eq only).
@@ -54,8 +50,7 @@ class OAuth2PermissionGrant(Entity):
         return self.properties.get("resourceId", None)
 
     @property
-    def scope(self):
-        # type: () -> Optional[str]
+    def scope(self) -> Optional[str]:
         """
         A space-separated list of the claim values for delegated permissions which should be included in access tokens
         for the resource application (the API). For example, openid User.Read GroupMember.Read.All. Each claim value

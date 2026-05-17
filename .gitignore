@@ -16,9 +16,9 @@ venv.bak/
 # C extensions
 *.so
 
-# Caches
-.mypy_cache
-.ruff_cache
+# Cache
+.mypy_cache/
+.ruff_cache/
 
 # Distribution / packaging
 .Python
@@ -87,8 +87,5 @@ Pipfile.lock
 # Self signed certificates
 examples/*.pem
 
-# Playwright
-storage_state.json
-
-# Cursor
-.cursorignore
+# Checkpoint files
+.checkpoints/

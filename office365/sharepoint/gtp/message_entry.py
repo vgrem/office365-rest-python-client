@@ -1,14 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class MessageEntry(ClientValue):
     """"""
 
-    def __init__(self, content=None):
+    def __init__(self, content=None, role: Optional[str] = None):
         """
         :param str content:
         """
         self.content = content
+        self.Role = role
 
     @property
     def entity_type_name(self):

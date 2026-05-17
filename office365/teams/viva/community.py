@@ -18,13 +18,11 @@ class Community(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The name of the community. The maximum length is 255 characters."""
         return self.properties.get("displayName", None)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """The description of the community. The maximum length is 1,024 characters."""
         return self.properties.get("description", None)

@@ -1,6 +1,7 @@
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.link_info import LinkInfo
+from office365.sharepoint.sharing.mainaccessinformation import MainAccessInformation
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
 
 
@@ -20,6 +21,7 @@ class PermissionCollection(ClientValue):
         principals=None,
         site_admins=None,
         total_number_of_principals=None,
+        main_access: MainAccessInformation = MainAccessInformation(),
     ):
         """
         :param bool has_inherited_links:
@@ -29,14 +31,13 @@ class PermissionCollection(ClientValue):
             only if the caller is an Auditor.
         :param int total_number_of_principals:
         """
-        self.appConsentPrincipals = ClientValueCollection(
-            PrincipalInfo, app_consent_principals
-        )
+        self.appConsentPrincipals = ClientValueCollection(PrincipalInfo, app_consent_principals)
         self.hasInheritedLinks = has_inherited_links
         self.links = ClientValueCollection(LinkInfo, links)
         self.principals = ClientValueCollection(PrincipalInfo, principals)
         self.siteAdmins = ClientValueCollection(PrincipalInfo, site_admins)
         self.totalNumberOfPrincipals = total_number_of_principals
+        self.mainAccess = main_access
 
     @property
     def entity_type_name(self):

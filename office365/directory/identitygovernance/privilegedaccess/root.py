@@ -13,7 +13,5 @@ class PrivilegedAccessRoot(Entity):
         """A list of pending user consent requests."""
         return self.properties.get(
             "group",
-            PrivilegedAccessGroup(
-                self.context, ResourcePath("group", self.resource_path)
-            ),
+            PrivilegedAccessGroup(self.context, ResourcePath("group", self.resource_path)),
         )

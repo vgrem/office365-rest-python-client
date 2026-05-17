@@ -28,33 +28,26 @@ class AppConsentRequest(Entity):
         return self.app_id or self.entity_type_name
 
     @property
-    def app_display_name(self):
-        # type: () -> Optional[str]
+    def app_display_name(self) -> Optional[str]:
         """Display name of the application object on which this extension property is defined. Read-only"""
         return self.properties.get("appDisplayName", None)
 
     @property
-    def app_id(self):
-        # type: () -> Optional[str]
+    def app_id(self) -> Optional[str]:
         """The identifier of the application"""
         return self.properties.get("appId", None)
 
     @property
-    def pending_scopes(self):
-        # type: () -> ClientValueCollection[AppConsentRequestScope]
+    def pending_scopes(self) -> ClientValueCollection[AppConsentRequestScope]:
         """A list of pending scopes waiting for approval. Required."""
-        return self.properties.get(
-            "pendingScopes", ClientValueCollection(AppConsentRequestScope)
-        )
+        return self.properties.get("pendingScopes", ClientValueCollection(AppConsentRequestScope))
 
     @property
-    def user_consent_requests(self):
+    def user_consent_requests(self) -> UserConsentRequestCollection:
         """A list of pending user consent requests."""
         return self.properties.get(
             "userConsentRequests",
-            UserConsentRequestCollection(
-                self.context, ResourcePath("userConsentRequests", self.resource_path)
-            ),
+            UserConsentRequestCollection(self.context, ResourcePath("userConsentRequests", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -64,4 +57,4 @@ class AppConsentRequest(Entity):
                 "userConsentRequests": self.user_consent_requests,
             }
             default_value = property_mapping.get(name, None)
-        return super(AppConsentRequest, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

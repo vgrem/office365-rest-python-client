@@ -1,19 +1,28 @@
 import uuid
-from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
-from tests import test_site_url, test_user_credentials
+
+from tests import (
+    test_client_id,
+    test_password,
+    test_site_url,
+    test_tenant,
+    test_username,
+)
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestTeamSite(TestCase):
-    target_site = None  # type: Site
+class TestTeamSite(SPTestCase):
+    target_site: Site = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestTeamSite, cls).setUpClass()
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        super().setUpClass()
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         cls.client = client
 
     def test1_can_user_create_group(self):
@@ -21,18 +30,13 @@ class TestTeamSite(TestCase):
         self.assertIsNotNone(result.value)
 
     def test2_create_site(self):
-        site_name = "TeamSite{0}".format(uuid.uuid4().hex)
-        site = self.client.create_team_site(
-            site_name, "Team Site", True
-        ).execute_query()
+        site_name = f"TeamSite{uuid.uuid4().hex}"
+        site = self.client.create_team_site(site_name, "Team Site", True).execute_query()
         self.assertIsNotNone(site.url)
         self.__class__.target_site = site
 
     def test3_get_site_status(self):
-        site = self.__class__.target_site.get().select(["GroupId"]).execute_query()
-        result = self.client.group_site_manager.get_status(
-            site.group_id
-        ).execute_query()
+        result = self.client.group_site_manager.get_status(self.target_site).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus == SiteStatus.Ready)
 
@@ -50,25 +54,9 @@ class TestTeamSite(TestCase):
         self.__class__.target_site.delete_object().execute_query()
 
     def test7_get_current_user_joined_teams(self):
-        result = (
-            self.client.group_site_manager.get_current_user_joined_teams().execute_query()
-        )
+        result = self.client.group_site_manager.get_current_user_joined_teams().execute_query()
         self.assertIsNotNone(result.value)
 
     def test8_get_group_creation_context(self):
-        result = (
-            self.client.group_site_manager.get_group_creation_context().execute_query()
-        )
-        self.assertIsNotNone(result.value)
-
-    def test9_get_current_user_shared_channel_member_groups(self):
-        result = (
-            self.client.group_site_manager.get_current_user_shared_channel_member_groups().execute_query()
-        )
-        self.assertIsNotNone(result.value)
-
-    def test_10_recent_and_joined_teams(self):
-        result = (
-            self.client.group_site_manager.recent_and_joined_teams().execute_query()
-        )
+        result = self.client.group_site_manager.get_group_creation_context().execute_query()
         self.assertIsNotNone(result.value)

@@ -13,12 +13,9 @@ class DeletedTeam(Entity):
     """
 
     @property
-    def channels(self):
-        # type: () -> ChannelCollection
+    def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""
         return self.properties.get(
             "channels",
-            ChannelCollection(
-                self.context, ResourcePath("channels", self.resource_path)
-            ),
+            ChannelCollection(self.context, ResourcePath("channels", self.resource_path)),
         )

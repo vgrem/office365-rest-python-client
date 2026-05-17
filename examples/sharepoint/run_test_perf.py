@@ -10,9 +10,8 @@ https://learn.microsoft.com/en-us/microsoft-365/enterprise/
 diagnosing-performance-issues-with-sharepoint-online?view=o365-worldwide
 """
 
-from requests import Response
-
 from office365.sharepoint.client_context import ClientContext
+from requests import Response
 from tests import test_client_credentials, test_site_url
 
 
@@ -24,11 +23,7 @@ def do_work(client: ClientContext):
             print("SPRequestDuration: {0}".format(duration))
 
     def _execute(iteration: int):
-        web = (
-            client.web.get()
-            .after_execute(_after_execute, include_response=True)
-            .execute_query()
-        )
+        web = client.web.get().after_execute(_after_execute, include_response=True).execute_query()
         print("Iteration: {0}, result: {1}".format(iteration, web.title))
 
     for i in range(10):

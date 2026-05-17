@@ -10,8 +10,7 @@ class AuditEvent(Entity):
     """A class containing the properties for Audit Event."""
 
     @property
-    def activity(self):
-        # type: () -> Optional[str]
+    def activity(self) -> Optional[str]:
         """Friendly name of the activity."""
         return self.properties.get("activity", None)
 

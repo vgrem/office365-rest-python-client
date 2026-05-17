@@ -1,7 +1,6 @@
-"""
-Demonstrates how to return distinct values from a List for the specific column, where:
- - render_list_data is used to returns the data for the specified query view
+"""Demonstrates how to retrieve grouped values from a list using render_list_data
 
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 import json

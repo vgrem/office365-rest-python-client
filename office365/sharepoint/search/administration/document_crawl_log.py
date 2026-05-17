@@ -1,7 +1,9 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
@@ -15,19 +17,14 @@ class DocumentCrawlLog(Entity):
     about items that were crawled."""
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
-        )
-        super(DocumentCrawlLog, self).__init__(context, static_path)
+        static_path = StaticPath("Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog")
+        super().__init__(context, static_path)
 
     @staticmethod
-    def create(context):
-        # type: (ClientContext) -> "DocumentCrawlLog"
+    def create(context: ClientContext) -> DocumentCrawlLog:
         """"""
         return_type = DocumentCrawlLog(context)
-        qry = ServiceOperationQuery(
-            return_type, "Create", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "Create", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -54,13 +51,11 @@ class DocumentCrawlLog(Entity):
             "queryString": query_string,
             "contentSourceID": content_source_id,
         }
-        qry = ServiceOperationQuery(
-            self, "GetCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_unsuccesful_crawled_urls(self, display_url=None):
+    def get_unsuccesful_crawled_urls(self, display_url: Optional[str] = None) -> ClientResult[SimpleDataTable]:
         """
         Retrieves information about the contents that failed crawling.
 
@@ -68,9 +63,7 @@ class DocumentCrawlLog(Entity):
         """
         return_type = ClientResult(self.context, SimpleDataTable())
         payload = {"displayUrl": display_url}
-        qry = ServiceOperationQuery(
-            self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUnsuccesfulCrawledUrls", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

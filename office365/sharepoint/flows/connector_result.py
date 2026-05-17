@@ -7,11 +7,9 @@ class ConnectorResult(Entity):
     """ """
 
     @property
-    def context_data(self):
-        # type: () -> Optional[str]
+    def context_data(self) -> Optional[str]:
         return self.properties.get("ContextData", None)
 
     @property
-    def value(self):
-        # type: () -> Optional[str]
+    def value(self) -> Optional[str]:
         return self.properties.get("Value", None)

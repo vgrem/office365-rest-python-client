@@ -1,4 +1,5 @@
 from office365.runtime.client_value import ClientValue
+from office365.sharepoint.sharing.emaildata import EmailData
 
 
 class ShareLinkRequest(ClientValue):
@@ -11,6 +12,7 @@ class ShareLinkRequest(ClientValue):
         people_picker_input=None,
         settings=None,
         create_link=True,
+        email_data: EmailData = EmailData(),
     ):
         """
         :param int or None link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
@@ -33,12 +35,13 @@ class ShareLinkRequest(ClientValue):
             requested settings. If false, the operation will attempt to retrieve an existing tokenized sharing link
             that matches the requested settings and failing that will terminate the operation.
         """
+        super().__init__()
         self.linkKind = link_kind
         self.expiration = expiration
         self.peoplePickerInput = people_picker_input
         self.settings = settings
         self.createLink = create_link
-        super(ShareLinkRequest, self).__init__()
+        self.emailData = email_data
 
     @property
     def entity_type_name(self):

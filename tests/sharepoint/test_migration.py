@@ -1,11 +1,12 @@
 from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestMigration(SPTestCase):
-    azure_container_info = None  # type: ProvisionedTemporaryAzureContainerInfo
+    azure_container_info: ProvisionedTemporaryAzureContainerInfo = None
 
     def test1_provision_temporary_azure_container(self):
         result = self.client.site.provision_temporary_azure_container().execute_query()

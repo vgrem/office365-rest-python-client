@@ -4,9 +4,7 @@ from office365.sharepoint.entity import Entity
 
 
 class VideoItem(Entity):
-    def get_video_embed_code(
-        self, width, height, autoplay=True, show_info=True, make_responsive=True
-    ):
+    def get_video_embed_code(self, width, height, autoplay=True, show_info=True, make_responsive=True):
         """
 
         :type width: int
@@ -23,9 +21,7 @@ class VideoItem(Entity):
             "showInfo": show_info,
             "makeResponsive": make_responsive,
         }
-        qry = ServiceOperationQuery(
-            self, "GetVideoEmbedCode", params, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetVideoEmbedCode", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

@@ -6,7 +6,7 @@ from office365.directory.custom_security_attribute_definition import (
     CustomSecurityAttributeDefinition,
 )
 from office365.directory.device_local_credential_info import DeviceLocalCredentialInfo
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.subscriptions.company import CompanySubscription
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -19,7 +19,7 @@ class Directory(Entity):
     permanently deleted."""
 
     @property
-    def device_local_credentials(self):
+    def device_local_credentials(self) -> EntityCollection[DeviceLocalCredentialInfo]:
         """Conceptual container for user and group directory objects."""
         return self.properties.get(
             "deviceLocalCredentials",
@@ -66,7 +66,7 @@ class Directory(Entity):
         )
 
     @property
-    def subscriptions(self):
+    def subscriptions(self) -> EntityCollection[CompanySubscription]:
         """List of commercial subscriptions that an organization acquired."""
         return self.properties.get(
             "subscriptions",
@@ -80,18 +80,17 @@ class Directory(Entity):
     def deleted_items(self, entity_type=None):
         """Recently deleted items. Read-only. Nullable."""
         if entity_type:
-            return DirectoryObjectCollection(
-                self.context,
-                ResourcePath(
-                    entity_type, ResourcePath("deletedItems", self.resource_path)
+            return self.properties.get(
+                "deletedItems",
+                DirectoryObjectCollection(
+                    self.context,
+                    ResourcePath(entity_type, ResourcePath("deletedItems", self.resource_path)),
                 ),
             )
         else:
             return self.properties.get(
                 "deletedItems",
-                DirectoryObjectCollection(
-                    self.context, ResourcePath("deletedItems", self.resource_path)
-                ),
+                DirectoryObjectCollection(self.context, ResourcePath("deletedItems", self.resource_path)),
             )
 
     @property
@@ -121,4 +120,4 @@ class Directory(Entity):
                 "publicKeyInfrastructure": self.public_key_infrastructure,
             }
             default_value = property_mapping.get(name, None)
-        return super(Directory, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

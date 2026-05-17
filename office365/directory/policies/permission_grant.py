@@ -16,8 +16,7 @@ class PermissionGrantPolicy(PolicyBase):
     """
 
     @property
-    def excludes(self):
-        # type: () -> EntityCollection[PermissionGrantConditionSet]
+    def excludes(self) -> EntityCollection[PermissionGrantConditionSet]:
         """
         Condition sets which are excluded in this permission grant policy.
         This navigation is automatically expanded on GET.
@@ -32,8 +31,7 @@ class PermissionGrantPolicy(PolicyBase):
         )
 
     @property
-    def includes(self):
-        # type: () -> EntityCollection[PermissionGrantConditionSet]
+    def includes(self) -> EntityCollection[PermissionGrantConditionSet]:
         """
         Condition sets which are included in this permission grant policy.
         This navigation is automatically expanded on GET.

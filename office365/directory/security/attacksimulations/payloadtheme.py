@@ -1,0 +1,40 @@
+from enum import Enum
+
+
+class PayloadTheme(Enum):
+    unknown = "0"
+    other = "1"
+    accountActivation = "2"
+    accountVerification = "3"
+    billing = "4"
+    cleanUpMail = "5"
+    controversial = "6"
+    documentReceived = "7"
+    expense = "8"
+    fax = "9"
+    financeReport = "10"
+    incomingMessages = "11"
+    invoice = "12"
+    itemReceived = "13"
+    loginAlert = "14"
+    mailReceived = "15"
+    password = "16"
+    payment = "17"
+    payroll = "18"
+    personalizedOffer = "19"
+    quarantine = "20"
+    remoteWork = "21"
+    reviewMessage = "22"
+    securityUpdate = "23"
+    serviceSuspended = "24"
+    signatureRequired = "25"
+    upgradeMailboxStorage = "26"
+    verifyMailbox = "27"
+    voicemail = "28"
+    advertisement = "29"
+    employeeEngagement = "30"
+    unknownFutureValue = "31"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PayloadTheme"

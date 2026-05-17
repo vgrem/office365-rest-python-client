@@ -9,8 +9,7 @@ from office365.sharepoint.entity import Entity
 
 class TrackedItemService(Entity):
     @staticmethod
-    def get_tracked_item_updates_for_user(context):
-        # type: (ClientContext) -> ClientResult[str]
+    def get_tracked_item_updates_for_user(context: ClientContext) -> ClientResult[str]:
         return_type = ClientResult(context)
         payload = {"request": TrackedItemUpdatesRequest()}
         qry = ServiceOperationQuery(

@@ -1,4 +1,7 @@
-class DateTimeFormat:
+from enum import Enum
+
+
+class DateTimeFormat(Enum):
     """Specifies the date and time format."""
 
     DateTime = 0

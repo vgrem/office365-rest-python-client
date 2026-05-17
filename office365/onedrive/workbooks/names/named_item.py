@@ -14,28 +14,23 @@ class WorkbookNamedItem(Entity):
     def range(self):
         """Returns the range object that is associated with the name. Throws an exception if the named item's type
         isn't a range."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         qry = FunctionQuery(self, "range", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The name of the object."""
         return self.properties.get("name", None)
 
     @property
-    def comment(self):
-        # type: () -> Optional[str]
+    def comment(self) -> Optional[str]:
         """Represents the comment associated with this name."""
         return self.properties.get("comment", None)
 
     @property
-    def scope(self):
-        # type: () -> Optional[str]
+    def scope(self) -> Optional[str]:
         """Indicates whether the name is scoped to the workbook or to a specific worksheet."""
         return self.properties.get("scope", None)
 
@@ -47,12 +42,9 @@ class WorkbookNamedItem(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
     @property
-    def property_ref_name(self):
-        # type: () -> str
+    def property_ref_name(self) -> str:
         return "name"

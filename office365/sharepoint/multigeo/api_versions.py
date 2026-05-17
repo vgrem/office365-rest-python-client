@@ -8,13 +8,11 @@ class MultiGeoApiVersions(Entity):
 
     def __init__(self, context, resource_path=None):
         if resource_path is None:
-            resource_path = ResourcePath(
-                "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions"
-            )
-        super(MultiGeoApiVersions, self).__init__(context, resource_path)
+            resource_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions")
+        super().__init__(context, resource_path)
 
     @property
-    def supported_versions(self):
+    def supported_versions(self) -> StringCollection:
         return self.properties.get("SupportedVersions", StringCollection())
 
     @property
@@ -25,4 +23,4 @@ class MultiGeoApiVersions(Entity):
         if default_value is None:
             property_mapping = {"SupportedVersions": self.supported_versions}
             default_value = property_mapping.get(name, None)
-        return super(MultiGeoApiVersions, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

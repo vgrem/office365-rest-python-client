@@ -1,5 +1,7 @@
 """
-Demonstrates how to download folders content into a zip file
+Demonstrates how to download folder content into a zip file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 import os
@@ -10,9 +12,8 @@ from office365.sharepoint.files.file import File
 from tests import test_client_credentials, test_team_site_url
 
 
-def print_progress(file):
-    # type: (File) -> None
-    print("File {0} has been  downloaded".format(file.serverRelativeUrl))
+def print_progress(file: File) -> None:
+    print(f"File {file.server_relative_url} has been  downloaded")
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
@@ -20,4 +21,4 @@ from_folder = ctx.web.lists.get_by_title("Documents").root_folder
 zip_path = os.path.join(tempfile.mkdtemp(), "download.zip")
 with open(zip_path, "wb") as to_file:
     from_folder.download_folder(to_file, print_progress).execute_query()
-    print("Files has been downloaded: {0}".format(zip_path))
+    print(f"Files has been downloaded: {zip_path}")

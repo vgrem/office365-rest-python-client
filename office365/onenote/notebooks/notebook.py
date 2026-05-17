@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.sections.section import OnenoteSection
@@ -10,8 +8,7 @@ class Notebook(OnenoteEntityHierarchyModel):
     """A OneNote notebook."""
 
     @property
-    def sections(self):
-        # type: () -> EntityCollection[OnenoteSection]
+    def sections(self) -> EntityCollection[OnenoteSection]:
         """
         Retrieve a list of onenoteSection objects from the specified notebook.
         """
@@ -45,4 +42,4 @@ class Notebook(OnenoteEntityHierarchyModel):
         if default_value is None:
             property_mapping = {"sectionGroups": self.section_groups}
             default_value = property_mapping.get(name, None)
-        return super(Notebook, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

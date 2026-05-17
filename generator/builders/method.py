@@ -1,0 +1,2 @@
+class MethodBuilder:
+    pass

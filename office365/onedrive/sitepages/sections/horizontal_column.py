@@ -8,14 +8,11 @@ class HorizontalSectionColumn(Entity):
     """Represents a vertical column in a given horizontal section."""
 
     @property
-    def web_parts(self):
-        # type: () -> EntityCollection[WebPart]
+    def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this section."""
         return self.properties.get(
             "webParts",
-            EntityCollection(
-                self.context, WebPart, ResourcePath("webParts", self.resource_path)
-            ),
+            EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -24,4 +21,4 @@ class HorizontalSectionColumn(Entity):
                 "webParts": self.web_parts,
             }
             default_value = property_mapping.get(name, None)
-        return super(HorizontalSectionColumn, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -1,4 +1,7 @@
-class SPWOPIFrameAction:
+from enum import Enum
+
+
+class SPWOPIFrameAction(Enum):
     """
     Specifies distinct operations that are available for the list item.
     """

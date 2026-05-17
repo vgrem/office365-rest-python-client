@@ -1,5 +1,6 @@
-"""
-Demonstrates how to retrieve deleted items (of File type)
+"""Demonstrates how to retrieve deleted items from the recycle bin
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

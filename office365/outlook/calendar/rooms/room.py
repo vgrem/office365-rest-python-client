@@ -10,13 +10,11 @@ class Room(Place):
     """
 
     @property
-    def audio_device_name(self):
-        # type: () -> Optional[str]
+    def audio_device_name(self) -> Optional[str]:
         """Specifies the name of the audio device in the room."""
         return self.properties.get("audioDeviceName", None)
 
     @property
-    def building(self):
-        # type: () -> Optional[str]
+    def building(self) -> Optional[str]:
         """Specifies the building name or building number that the room is in."""
         return self.properties.get("building", None)

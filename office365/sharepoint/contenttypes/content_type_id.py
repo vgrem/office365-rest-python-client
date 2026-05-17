@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -10,14 +12,14 @@ class ContentTypeId(ClientValue):
     ContentTypeId MUST follow the XSD pattern specified in [MS-WSSCAML] section 2.3.1.4.
     """
 
-    def __init__(self, string_value=None):
+    def __init__(self, string_value: Optional[str] = None):
         """
         Represents the content type identifier (ID) of a content type.
 
         :param str string_value: Hexadecimal string value of content type identifier. String value MUST start with "0x".
         """
-        super(ContentTypeId, self).__init__()
+        super().__init__()
         self.StringValue = string_value
 
-    def __repr__(self):
-        return self.StringValue or self.entity_type_name
+    def __repr__(self) -> str:
+        return str(self.StringValue or self.entity_type_name)

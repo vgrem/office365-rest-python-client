@@ -11,14 +11,11 @@ class SolutionsRoot(Entity):
     """The entry point for Microsoft Bookings, virtual event, and business scenario APIs."""
 
     @property
-    def booking_businesses(self):
-        # type: () -> BookingBusinessCollection
+    def booking_businesses(self) -> BookingBusinessCollection:
         """Get a collection of bookingBusiness objects that has been created for the tenant."""
         return self.properties.get(
             "bookingBusinesses",
-            BookingBusinessCollection(
-                self.context, ResourcePath("bookingBusinesses", self.resource_path)
-            ),
+            BookingBusinessCollection(self.context, ResourcePath("bookingBusinesses", self.resource_path)),
         )
 
     @property
@@ -34,19 +31,15 @@ class SolutionsRoot(Entity):
         )
 
     @property
-    def backup_restore(self):
-        # type: () -> BackupRestoreRoot
+    def backup_restore(self) -> BackupRestoreRoot:
         """Get a Microsoft 365 Backup Storage service in a tenant"""
         return self.properties.get(
             "backupRestore",
-            BackupRestoreRoot(
-                self.context, ResourcePath("backupRestore", self.resource_path)
-            ),
+            BackupRestoreRoot(self.context, ResourcePath("backupRestore", self.resource_path)),
         )
 
     @property
-    def virtual_events(self):
-        # type: () -> VirtualEventsRoot
+    def virtual_events(self) -> VirtualEventsRoot:
         """A collection of virtual events."""
         return self.properties.get(
             "virtualEvents",
@@ -65,4 +58,4 @@ class SolutionsRoot(Entity):
                 "virtualEvents": self.virtual_events,
             }
             default_value = property_mapping.get(name, None)
-        return super(SolutionsRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

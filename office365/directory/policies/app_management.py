@@ -1,4 +1,4 @@
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.policies.base import PolicyBase
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -11,13 +11,11 @@ class AppManagementPolicy(PolicyBase):
     """
 
     @property
-    def applies_to(self):
+    def applies_to(self) -> DirectoryObjectCollection:
         """Collection of applications and service principals to which the policy is applied."""
         return self.properties.get(
             "appliesTo",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("appliesTo", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("appliesTo", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -26,4 +24,4 @@ class AppManagementPolicy(PolicyBase):
                 "appliesTo": self.applies_to,
             }
             default_value = property_mapping.get(name, None)
-        return super(AppManagementPolicy, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

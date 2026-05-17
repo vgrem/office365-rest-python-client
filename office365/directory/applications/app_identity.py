@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,10 +10,10 @@ class AppIdentity(ClientValue):
 
     def __init__(
         self,
-        app_id=None,
-        display_name=None,
-        service_principal_id=None,
-        service_principal_name=None,
+        app_id: str | None = None,
+        display_name: str | None = None,
+        service_principal_id: str | None = None,
+        service_principal_name: str | None = None,
     ):
         """
         :param str app_id: Refers to the Unique GUID representing Application Id in the Azure Active Directory.
@@ -24,3 +26,7 @@ class AppIdentity(ClientValue):
         self.displayName = display_name
         self.servicePrincipalId = service_principal_id
         self.servicePrincipalName = service_principal_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AppIdentity"

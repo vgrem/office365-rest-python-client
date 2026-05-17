@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Callable, List
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -9,6 +11,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.utilities import get_absolute_url
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -17,60 +20,144 @@ if TYPE_CHECKING:
 class Entity(ClientObject):
     """SharePoint specific entity"""
 
-    def execute_query_with_incremental_retry(self, max_retry=5):
-        """Handles throttling requests."""
+    def execute_query_with_incremental_retry(self, max_retry: int = 5) -> Self:
+        """
+        Execute query with incremental retry handling for throttling requests
+
+        Args:
+            max_retry: Maximum number of retry attempts (default: 5)
+
+        Returns:
+            self: Supports method chaining
+        """
         self.context.execute_query_with_incremental_retry(max_retry)
         return self
 
-    def execute_batch(self, items_per_batch=100, success_callback=None):
-        # type: (int, Callable[[List[ClientObject|ClientResult]], None]) -> Self
-        """Construct and submit to a server a batch request"""
-        return self.context.execute_batch(items_per_batch, success_callback)
+    def execute_batch(
+        self,
+        items_per_batch: int = 100,
+        success_callback: Optional[Callable[[List[Union[ClientObject, ClientResult]]], None]] = None,
+    ) -> Self:
+        """
+        Construct and submit a batch request to the server
 
-    def with_credentials(self, credentials):
-        # type: (UserCredential|ClientCredential) -> Self
-        """Initializes a client to acquire a token via user or client credentials"""
+        Args:
+            items_per_batch: Number of items per batch (default: 100)
+            success_callback: Callback function for successful batch execution
+
+        Returns:
+            self: Supports method chaining
+        """
+        return cast(Self, self.context.execute_batch(items_per_batch, success_callback))  # type: ignore[arg-type]
+
+    def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
+        """
+        Initialize authentication with user or client credentials
+
+        Args:
+            credentials: Authentication credentials
+
+        Returns:
+            self: Supports method chaining
+        """
         self.context.with_credentials(credentials)
         return self
 
-    def delete_object(self):
-        # type: () -> Self
-        """The recommended way to delete a SharePoint entity"""
+    def with_client_certificate(
+        self,
+        tenant: str,
+        client_id: str,
+        thumbprint: str,
+        cert_path: Optional[str] = None,
+        private_key: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        passphrase: Optional[str] = None,
+    ) -> Self:
+        """
+        Creates authenticated SharePoint context via certificate credentials
+
+        :param str tenant: Tenant name
+        :param str or None cert_path: Path to A PEM encoded certificate private key.
+        :param str or None private_key: A PEM encoded certificate private key.
+        :param str thumbprint: Hex encoded thumbprint of the certificate.
+        :param str client_id: The OAuth client id of the calling application.
+        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        :param str passphrase: Passphrase if the private_key is encrypted
+        """
+        self.context.with_client_certificate(tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase)
+        return self
+
+    def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
+        """
+        Initializes a client to acquire a token via Username and password authentication flow.
+        :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
+        :param str client_id: The OAuth client id of the calling application.
+        :param str username: Typically, a UPN in the form of an email address
+        :param str password: The password
+        """
+        resource = get_absolute_url(self.context.base_url)
+        scopes = [f"{resource}/.default"]
+        self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
+        return self
+
+    def delete_object(self) -> Self:
+        """
+        Delete the SharePoint entity
+
+        Returns:
+            self: Supports method chaining
+        """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
         self.remove_from_parent_collection()
         return self
 
-    def update(self, *args):
-        """The recommended way to update a SharePoint entity"""
+    def update(self, *args: Any) -> Self:
+        """
+        Update the SharePoint entity
+
+        Returns:
+            self: Supports method chaining
+        """
         qry = UpdateEntityQuery(self)
         self.context.add_query(qry)
         return self
 
     @property
-    def context(self):
-        # type: () -> ClientContext
-        return self._context
+    def context(self) -> ClientContext:
+        """Gets the client context associated with this object."""
+        from office365.sharepoint.client_context import ClientContext
+
+        return cast(ClientContext, self._context)
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
+        """Get the entity type name"""
         if self._entity_type_name is None:
             self._entity_type_name = ".".join(["SP", type(self).__name__])
         return self._entity_type_name
 
     @property
-    def property_ref_name(self):
+    def property_ref_name(self) -> str:
         return "Id"
 
-    def set_property(self, name, value, persist_changes=True):
-        super(Entity, self).set_property(name, value, persist_changes)
+    def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
+        """
+        Set a property value
+
+        Args:
+            name: Property name
+            value: Property value
+            persist_changes: Whether to persist changes
+
+        Returns:
+            self: Supports method chaining
+        """
+        super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
             if self.resource_path is None:
                 if self.parent_collection:
-                    self._resource_path = EntityPath(
-                        value, self.parent_collection.resource_path
-                    )
+                    self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
                 self._resource_path.patch(value)
         return self

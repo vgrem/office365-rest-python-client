@@ -1,10 +1,12 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class LocaleInfo(ClientValue):
     """Information about the locale, including the preferred language and country/region, of the signed-in user."""
 
-    def __init__(self, display_name=None, locale=None):
+    def __init__(self, display_name: Optional[str] = None, locale: Optional[str] = None):
         """
         :param str display_name: A name representing the user's locale in natural language,
             for example, "English (United States)".
@@ -16,4 +18,4 @@ class LocaleInfo(ClientValue):
         self.locale = locale
 
     def __repr__(self):
-        return self.locale
+        return self.locale or ""

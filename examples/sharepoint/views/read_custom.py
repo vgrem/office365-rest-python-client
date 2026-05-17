@@ -1,5 +1,7 @@
 """
-Reads custom List View items
+Reads list items from a custom list view.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

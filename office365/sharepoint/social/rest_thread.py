@@ -1,4 +1,8 @@
-from office365.runtime.paths.resource_path import ResourcePath
+from typing import Optional
+
+from typing_extensions import Self
+
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.thread import SocialThread
@@ -12,11 +16,9 @@ class SocialRestThread(Entity):
     """
 
     def __init__(self, context):
-        super(SocialRestThread, self).__init__(
-            context, ResourcePath("SP.Social.SocialRestThread")
-        )
+        super().__init__(context, StaticPath("SP.Social.SocialRestThread"))
 
-    def like(self, post_id):
+    def like(self, post_id: str) -> Self:
         """
         The Like method makes the current user a liker of the specified post.
 
@@ -27,7 +29,7 @@ class SocialRestThread(Entity):
         self.context.add_query(qry)
         return self
 
-    def unlike(self, post_id):
+    def unlike(self, post_id: str) -> Self:
         """
         The Unlike method removes the current user from the list of likers for the specified post.
         If the current is not a liker of the post, this method has no effect.
@@ -40,7 +42,7 @@ class SocialRestThread(Entity):
         return self
 
     @property
-    def social_thread(self):
+    def social_thread(self) -> SocialThread:
         """The SocialThread property provides the object that contains the thread"""
         return self.properties.get("SocialThread", SocialThread())
 
@@ -48,4 +50,13 @@ class SocialRestThread(Entity):
         if default_value is None:
             property_mapping = {"SocialThread": self.social_thread}
             default_value = property_mapping.get(name, None)
-        return super(SocialRestThread, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
+
+    @property
+    def id_(self) -> Optional[str]:
+        """Gets the ID property"""
+        return self.properties.get("ID", None)
+
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialRestThread"

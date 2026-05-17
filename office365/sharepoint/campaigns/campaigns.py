@@ -5,15 +5,13 @@ from office365.sharepoint.entity import Entity
 
 class Campaigns(Entity):
     @staticmethod
-    def get_campaign(context, campaign_id):
+    def get_campaign(context, campaign_id: str) -> ClientResult[str]:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         :param str campaign_id:  The campaign identifier.
         """
         return_type = ClientResult(context)
         payload = {"campaignId": campaign_id}
-        qry = ServiceOperationQuery(
-            Campaigns(context), "GetCampaign", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(Campaigns(context), "GetCampaign", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type

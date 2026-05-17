@@ -1,4 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.sharing.principal import Principal
 
 
 class ShareLinkSettings(ClientValue):
@@ -16,6 +20,15 @@ class ShareLinkSettings(ClientValue):
         track_link_users=None,
         share_id=None,
         update_password=None,
+        description: Optional[str] = None,
+        embeddable: Optional[bool] = None,
+        invitees_to_remove: ClientValueCollection[Principal] = ClientValueCollection(Principal),
+        limit_use_to_application: Optional[bool] = None,
+        nav: Optional[str] = None,
+        non_default_link: Optional[bool] = None,
+        restrict_share_membership: Optional[bool] = None,
+        restrict_to_existing_relationships: Optional[bool] = None,
+        scope: Optional[int] = None,
     ):
         """
         :param bool allow_anonymous_access: Indicates if the tokenized sharing link supports anonymous access.
@@ -46,6 +59,15 @@ class ShareLinkSettings(ClientValue):
         self.shareId = share_id
         self.trackLinkUsers = track_link_users
         self.updatePassword = update_password
+        self.description = description
+        self.embeddable = embeddable
+        self.inviteesToRemove = invitees_to_remove
+        self.limitUseToApplication = limit_use_to_application
+        self.nav = nav
+        self.nonDefaultLink = non_default_link
+        self.restrictShareMembership = restrict_share_membership
+        self.restrictToExistingRelationships = restrict_to_existing_relationships
+        self.scope = scope
 
     @property
     def entity_type_name(self):

@@ -92,8 +92,7 @@ class Authentication(Entity):
         )
 
     @property
-    def methods(self):
-        # type: () -> EntityCollection[AuthenticationMethod]
+    def methods(self) -> EntityCollection[AuthenticationMethod]:
         """Represents all authentication methods registered to a user."""
         return self.properties.get(
             "methods",
@@ -114,4 +113,4 @@ class Authentication(Entity):
                 "phoneMethods": self.phone_methods,
             }
             default_value = property_mapping.get(name, None)
-        return super(Authentication, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

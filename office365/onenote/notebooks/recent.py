@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.onenote.notebooks.recent_links import RecentNotebookLinks
 from office365.runtime.client_value import ClientValue
 
@@ -7,7 +9,7 @@ class RecentNotebook(ClientValue):
 
     def __init__(
         self,
-        display_name=None,
+        display_name: Optional[str] = None,
         last_accessed_time=None,
         links=RecentNotebookLinks(),
         source_service=None,

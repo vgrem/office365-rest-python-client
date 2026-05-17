@@ -1,4 +1,7 @@
-class ListTemplateType:
+from enum import Enum
+
+
+class ListTemplateType(Enum):
     """Specifies the base list template type to use when creating a list."""
 
     genericList = "genericList"
@@ -26,3 +29,6 @@ class ListTemplateType:
     webTemplateCatalog = "webTemplateCatalog"
 
     userInformation = "userInformation"
+
+    def __str__(self):
+        return self.value

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import List
+
 from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.onedrive.documentsets.content import DocumentSetContent
 from office365.runtime.client_value import ClientValue
@@ -9,11 +13,11 @@ class DocumentSet(ClientValue):
 
     def __init__(
         self,
-        welcome_page_url=None,
-        allowed_content_types=None,
-        default_contents=None,
-        propagate_welcome_page_changes=None,
-        should_prefix_name_to_file=None,
+        welcome_page_url: str | None = None,
+        allowed_content_types: List[ContentTypeInfo] | None = None,
+        default_contents: List[DocumentSetContent] | None = None,
+        propagate_welcome_page_changes: bool | None = None,
+        should_prefix_name_to_file: bool | None = None,
     ):
         """
         :param str welcome_page_url:  Welcome page absolute URL.
@@ -24,11 +28,7 @@ class DocumentSet(ClientValue):
         :param bool should_prefix_name_to_file:  Indicates whether to add the name of the document set to each file name.
         """
         self.welcomePageUrl = welcome_page_url
-        self.allowedContentTypes = ClientValueCollection(
-            ContentTypeInfo, allowed_content_types
-        )
-        self.defaultContents = ClientValueCollection(
-            DocumentSetContent, default_contents
-        )
+        self.allowedContentTypes = ClientValueCollection(ContentTypeInfo, allowed_content_types)
+        self.defaultContents = ClientValueCollection(DocumentSetContent, default_contents)
         self.propagateWelcomePageChanges = propagate_welcome_page_changes
         self.shouldPrefixNameToFile = should_prefix_name_to_file

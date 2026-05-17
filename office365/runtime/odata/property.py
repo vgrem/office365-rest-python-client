@@ -1,4 +1,19 @@
-class ODataProperty(object):
-    def __init__(self, name=None, read_only=None):
-        self.name = name
-        self.ReadOnly = read_only
+from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
+class PropertyInformation:
+    """Represents a property in an OData entity model.
+
+    Attributes:
+        Name: The name of the property
+        ReadOnly: Whether the property is read-only
+    """
+
+    Name: str = ""
+    TypeName: Optional[str] = None
+    ReadOnly: Optional[bool] = None
+    IsBeta: Optional[bool] = None
+    ExcludeFromDefaultRetrieval: Optional[bool] = None
+    IsNavigation: Optional[bool] = False

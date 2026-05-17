@@ -10,6 +10,4 @@ class ItemAttachment(Attachment):
         """The attached message or event."""
         from office365.outlook.item import OutlookItem
 
-        return self.properties.get(
-            "item", OutlookItem(self.context, ResourcePath("item", self.resource_path))
-        )
+        return self.properties.get("item", OutlookItem(self.context, ResourcePath("item", self.resource_path)))

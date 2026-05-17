@@ -8,7 +8,7 @@ from office365.sharepoint.publishing.diagnostics.page_diagnostics import PageDia
 class PageDiagnosticsController(Entity):
     def __init__(self, context):
         static_path = ResourcePath("SP.Publishing.PageDiagnosticsController")
-        super(PageDiagnosticsController, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def by_page(self, page_relative_file_path):
         """

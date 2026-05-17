@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class RecycleBinQueryInformation(ClientValue):
     def __init__(
         self,
-        is_ascending,
-        item_state,
-        order_by,
-        paging_info,
-        row_limit,
-        show_only_my_items,
+        is_ascending: Optional[bool] = None,
+        item_state: Optional[int] = None,
+        order_by: Optional[int] = None,
+        paging_info: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        show_only_my_items: Optional[bool] = None,
     ):
         """
         Represents information for the recycle bin query.
@@ -22,7 +24,7 @@ class RecycleBinQueryInformation(ClientValue):
         :param int item_state: Gets or sets the Recycle Bin state of items to return in the query.
         :param bool is_ascending: Gets or sets a Boolean value that specifies whether to sort in ascending order.
         """
-        super(RecycleBinQueryInformation, self).__init__()
+        super().__init__()
         self.IsAscending = is_ascending
         self.ItemState = item_state
         self.OrderBy = order_by

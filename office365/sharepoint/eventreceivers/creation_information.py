@@ -1,17 +1,27 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
-class EventReceiverDefinitionCreationInformation(ClientValue):
-    """Represents the properties that can be set when creating a client-side event receiver definition."""
-
+class EventReceiverCreationInformation(ClientValue):
     def __init__(
-        self, receiver_assembly=None, receiver_class=None, sequence_number=None
+        self,
+        receiver_name: Optional[str] = None,
+        receiver_assembly: Optional[str] = None,
+        receiver_class: Optional[str] = None,
+        receiver_url: Optional[str] = None,
+        event_type: Optional[int] = None,
+        receiver_id: Optional[int] = None,
+        synchronization: Optional[str] = None,
+        sequence_number: int = 0,
     ):
-        """
-        :param str receiver_assembly: Specifies the strong name of the assembly that is used for receiving events.
-        :param str receiver_class: Specifies a string that represents the class that is used for receiving events.
-        :param str sequence_number: Specifies an integer that represents the relative sequence of the event.
-        """
+        """Event receiver creation information"""
+        super().__init__()
+        self.ReceiverName = receiver_name
         self.ReceiverAssembly = receiver_assembly
         self.ReceiverClass = receiver_class
+        self.ReceiverUrl = receiver_url
+        self.EventType = event_type
+        self.ReceiverId = receiver_id
+        self.Synchronization = synchronization
         self.SequenceNumber = sequence_number

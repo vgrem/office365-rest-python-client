@@ -1,18 +1,25 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sharing.user_directory_info import UserDirectoryInfo
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class SharingUtility(Entity):
     """Provides sharing related utility methods."""
 
     def __init__(self, context):
-        super(SharingUtility, self).__init__(context, ResourcePath("SharingUtility"))
+        super().__init__(context, ResourcePath("SharingUtility"))
 
     @staticmethod
-    def get_user_directory_info_by_email(context, email):
+    def get_user_directory_info_by_email(context: ClientContext, email: str) -> ClientResult[UserDirectoryInfo]:
         """
         Get user information by the user’s email address in directory.
 
@@ -22,15 +29,15 @@ class SharingUtility(Entity):
         return_type = ClientResult(context, UserDirectoryInfo())
         payload = {"email": email}
         utility = SharingUtility(context)
-        qry = ServiceOperationQuery(
-            utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(utility, "GetUserDirectoryInfoByEmail", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def validate_same_user_emails(context, primary_email, other_email, principal_name):
+    def validate_same_user_emails(
+        context, primary_email: str, other_email: str, principal_name: str
+    ) -> ClientResult[bool]:
         """
         Validate the primary email/principal name and other email are of the same user.
 
@@ -45,10 +52,7 @@ class SharingUtility(Entity):
             "otherEmail": other_email,
             "principalName": principal_name,
         }
-        result = ClientResult(context)
-        qry = ServiceOperationQuery(
-            utility, "ValidateSameUserEmails", None, payload, None, result
-        )
-        qry.static = True
+        return_type = ClientResult(context, bool())
+        qry = ServiceOperationQuery(utility, "ValidateSameUserEmails", None, payload, None, return_type, True)
         context.add_query(qry)
-        return result
+        return return_type

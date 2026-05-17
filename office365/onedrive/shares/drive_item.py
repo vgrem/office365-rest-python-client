@@ -1,3 +1,9 @@
+from __future__ import annotations
+
+from typing import Any
+
+from typing_extensions import Self
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
@@ -14,19 +20,15 @@ class SharedDriveItem(BaseItem):
     """The sharedDriveItem resource is returned when using the Shares API to access a shared driveItem."""
 
     @property
-    def items(self):
-        # type: () -> EntityCollection[DriveItem]
+    def items(self) -> EntityCollection[DriveItem]:
         """All driveItems contained in the sharing root. This collection cannot be enumerated."""
         return self.properties.get(
             "items",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("items", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path)),
         )
 
     @property
-    def list_item(self):
-        # type: () -> ListItem
+    def list_item(self) -> ListItem:
         """Used to access the underlying listItem"""
         return self.properties.get(
             "listItem",
@@ -34,16 +36,12 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def list(self):
-        # type: () -> List
+    def list(self) -> List:
         """Used to access the underlying list"""
-        return self.properties.get(
-            "list", List(self.context, ResourcePath("list", self.resource_path))
-        )
+        return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
     @property
-    def drive_item(self):
-        # type: () -> DriveItem
+    def drive_item(self) -> DriveItem:
         """Used to access the underlying driveItem"""
         return self.properties.get(
             "driveItem",
@@ -51,42 +49,38 @@ class SharedDriveItem(BaseItem):
         )
 
     @property
-    def owner(self):
+    def owner(self) -> IdentitySet:
         """Information about the owner of the shared item being referenced."""
         return self.properties.get("owner", IdentitySet())
 
     @property
-    def root(self):
+    def root(self) -> DriveItem:
         """Used to access the underlying driveItem.
         Deprecated -- use driveItem instead.
         """
         return self.properties.get(
             "root",
-            DriveItem(
-                self.context, RootPath(self.resource_path, self.items.resource_path)
-            ),
+            DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path)),
         )
 
     @property
-    def site(self):
+    def site(self) -> Site:
         """Used to access the underlying site"""
-        return self.properties.get(
-            "site", Site(self.context, ResourcePath("site", self.resource_path))
-        )
+        return self.properties.get("site", Site(self.context, ResourcePath("site", self.resource_path)))
 
     @property
-    def permission(self):
+    def permission(self) -> Permission:
         """Used to access the permission representing the underlying sharing link"""
         return self.properties.get(
             "permission",
             Permission(self.context, ResourcePath("permission", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "driveItem": self.drive_item,
                 "listItem": self.list_item,
             }
             default_value = property_mapping.get(name, None)
-        super(SharedDriveItem, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

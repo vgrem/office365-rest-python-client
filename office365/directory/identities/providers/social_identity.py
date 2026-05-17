@@ -10,16 +10,14 @@ class SocialIdentityProvider(IdentityProviderBase):
     """
 
     @property
-    def client_id(self):
-        # type: () -> Optional[str]
+    def client_id(self) -> Optional[str]:
         """
         The client identifier for the application obtained when registering the application with the identity provider.
         """
         return self.properties.get("clientId", None)
 
     @property
-    def client_secret(self):
-        # type: () -> Optional[str]
+    def client_secret(self) -> Optional[str]:
         """
         The client secret for the application that is obtained when the application is registered
         with the identity provider. This is write-only. A read operation returns ****.
@@ -27,8 +25,7 @@ class SocialIdentityProvider(IdentityProviderBase):
         return self.properties.get("clientSecret", None)
 
     @property
-    def identity_provider_type(self):
-        # type: () -> Optional[str]
+    def identity_provider_type(self) -> Optional[str]:
         """
         For a B2B scenario, possible values: Google, Facebook.
         For a B2C scenario, possible values: Microsoft, Google, Amazon, LinkedIn, Facebook, GitHub, Twitter, Weibo,

@@ -10,14 +10,12 @@ class AppBdcCatalog(Entity):
     types provisioned by the application.
     """
 
-    def get_permissible_connections(self):
+    def get_permissible_connections(self) -> ClientResult[StringCollection]:
         """
         Gets the list of external connections that the application has permissions to use.
         """
         return_type = ClientResult(self.context, StringCollection())
-        qry = ServiceOperationQuery(
-            self, "GetPermissibleConnections", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetPermissibleConnections", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

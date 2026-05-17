@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -11,6 +13,7 @@ class SiteScriptSerializationInfo(ClientValue):
         include_regional_settings=None,
         include_site_external_sharing_capability=None,
         include_theme=None,
+        included_pages: Optional[StringCollection] = None,
     ):
         """
         :param bool include_branding:
@@ -22,10 +25,9 @@ class SiteScriptSerializationInfo(ClientValue):
         self.IncludedLists = StringCollection(included_lists)
         self.IncludeLinksToExportedItems = include_links_to_exported_items
         self.IncludeRegionalSettings = include_regional_settings
-        self.IncludeSiteExternalSharingCapability = (
-            include_site_external_sharing_capability
-        )
+        self.IncludeSiteExternalSharingCapability = include_site_external_sharing_capability
         self.IncludeTheme = include_theme
+        self.IncludedPages = included_pages
 
     @property
     def entity_type_name(self):

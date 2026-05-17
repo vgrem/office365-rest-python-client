@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -13,15 +15,15 @@ class PermissionScope(ClientValue):
 
     def __init__(
         self,
-        admin_consent_display_name=None,
-        admin_consent_description=None,
-        id_=None,
-        is_enabled=None,
-        origin=None,
+        admin_consent_display_name: str | None = None,
+        admin_consent_description: str | None = None,
+        id_: str | None = None,
+        is_enabled: bool | None = None,
+        origin: str | None = None,
         type_=None,
-        user_consent_description=None,
-        user_consent_display_name=None,
-        value=None,
+        user_consent_description: str | None = None,
+        user_consent_display_name: str | None = None,
+        value: str | None = None,
     ):
         """
         :param str admin_consent_display_name: The permission's title, intended to be read by an administrator granting
@@ -46,3 +48,7 @@ class PermissionScope(ClientValue):
         self.userConsentDescription = user_consent_description
         self.userConsentDisplayName = user_consent_display_name
         self.value = value
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PermissionScope"

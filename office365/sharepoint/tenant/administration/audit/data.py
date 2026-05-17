@@ -1,8 +1,14 @@
+from datetime import datetime
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.sharepoint.tenant.administration.eventdata import EventData
 from office365.sharepoint.tenant.administration.modified_property import (
     ModifiedProperty,
 )
+from office365.sharepoint.tenant.administration.parameter import Parameter
+from office365.sharepoint.tenant.administration.target_property import TargetProperty
 
 
 class AuditData(ClientValue):
@@ -17,19 +23,43 @@ class AuditData(ClientValue):
         site=None,
         team_name=None,
         user_id=None,
+        creation_time: Optional[datetime] = None,
+        event_data: Optional[str] = None,
+        event_data_parsed: EventData = EventData(),
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
+        new_value: Optional[str] = None,
+        object_id: Optional[str] = None,
+        old_value: Optional[str] = None,
+        parameters: ClientValueCollection[Parameter] = ClientValueCollection(Parameter),
+        target: ClientValueCollection[TargetProperty] = ClientValueCollection(TargetProperty),
+        target_user_or_group_name: Optional[str] = None,
+        target_user_or_group_type: Optional[str] = None,
+        user_type: Optional[int] = None,
     ):
         self.ClientIP = client_ip
         self.CorrelationId = correlation_id
         self.EventSource = event_source
         self.ItemType = item_type
         self.ListItemUniqueId = list_item_unique_id
-        self.ModifiedProperties = ClientValueCollection(
-            ModifiedProperty, modified_properties
-        )
+        self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)
         self.Site = site
         self.TeamName = team_name
         self.UserId = user_id
+        self.CreationTime = creation_time
+        self.EventData = event_data
+        self.EventDataParsed = event_data_parsed
+        self.Id = id_
+        self.Name = name
+        self.NewValue = new_value
+        self.ObjectId = object_id
+        self.OldValue = old_value
+        self.Parameters = parameters
+        self.Target = target
+        self.TargetUserOrGroupName = target_user_or_group_name
+        self.TargetUserOrGroupType = target_user_or_group_type
+        self.UserType = user_type
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.SharePoint.Administration.TenantAdmin.AuditData"

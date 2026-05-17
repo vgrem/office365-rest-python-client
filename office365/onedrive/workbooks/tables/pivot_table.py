@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,21 +13,20 @@ class WorkbookPivotTable(Entity):
     def __str__(self):
         return self.name or self.entity_type_name
 
-    def refresh(self):
+    def refresh(self) -> Self:
         """Refreshes the PivotTable."""
         qry = ServiceOperationQuery(self, "refresh")
         self.context.add_query(qry)
         return self
 
-    def refresh_all(self):
+    def refresh_all(self) -> Self:
         """Refreshes the PivotTable within a given worksheet."""
         qry = ServiceOperationQuery(self, "refreshAll")
         self.context.add_query(qry)
         return self
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Name of the PivotTable."""
         return self.properties.get("Name", None)
 
@@ -36,7 +37,5 @@ class WorkbookPivotTable(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )

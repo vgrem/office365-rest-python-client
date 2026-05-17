@@ -15,42 +15,36 @@ class WorkbookRangeFormat(Entity):
     """A format object encapsulating the range's font, fill, borders, alignment, and other properties."""
 
     @property
-    def column_width(self):
-        # type: () -> Optional[float]
+    def column_width(self) -> Optional[float]:
         """Gets or sets the width of all columns within the range. If the column widths aren't uniform,
         null will be returned."""
         return self.properties.get("columnWidth", None)
 
     @property
-    def horizontal_alignment(self):
-        # type: () -> Optional[str]
+    def horizontal_alignment(self) -> Optional[str]:
         """Represents the horizontal alignment for the specified object"""
         return self.properties.get("horizontalAlignment", None)
 
     @property
-    def row_height(self):
-        # type: () -> Optional[float]
+    def row_height(self) -> Optional[float]:
         """Gets or sets the height of all rows in the range. If the row heights aren't uniform null will be returned."""
         return self.properties.get("rowHeight", None)
 
     @property
-    def vertical_alignment(self):
-        # type: () -> Optional[str]
+    def vertical_alignment(self) -> Optional[str]:
         """Represents the vertical alignment for the specified object.
         Possible values are: Top, Center, Bottom, Justify, Distributed."""
         return self.properties.get("verticalAlignment", None)
 
     @property
-    def wrap_text(self):
-        # type: () -> Optional[bool]
+    def wrap_text(self) -> Optional[bool]:
         """Indicates if Excel wraps the text in the object.
         A null value indicates that the entire range doesn't have uniform wrap setting
         """
         return self.properties.get("wrapText", None)
 
     @property
-    def borders(self):
-        # type: () -> EntityCollection[WorkbookRangeBorder]
+    def borders(self) -> EntityCollection[WorkbookRangeBorder]:
         """Collection of border objects that apply to the overall range selected."""
         return self.properties.get(
             "borders",
@@ -62,7 +56,7 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def fill(self):
+    def fill(self) -> WorkbookRangeFill:
         """Returns the fill object defined on the overall range"""
         return self.properties.get(
             "fill",
@@ -70,7 +64,7 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def font(self):
+    def font(self) -> WorkbookRangeFont:
         """Returns the font object defined on the overall range selected"""
         return self.properties.get(
             "font",
@@ -78,11 +72,9 @@ class WorkbookRangeFormat(Entity):
         )
 
     @property
-    def protection(self):
+    def protection(self) -> WorkbookFormatProtection:
         """Returns the format protection object for a range"""
         return self.properties.get(
             "protection",
-            WorkbookFormatProtection(
-                self.context, ResourcePath("protection", self.resource_path)
-            ),
+            WorkbookFormatProtection(self.context, ResourcePath("protection", self.resource_path)),
         )

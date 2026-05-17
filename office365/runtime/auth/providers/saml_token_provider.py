@@ -1,23 +1,27 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Dict, Optional
 from xml.dom import minidom
 from xml.etree import ElementTree
 
 import requests
 import requests.utils
+from requests import Response
 
 import office365.logger
+from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.auth_cookies import AuthCookies
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
 from office365.runtime.auth.sts_profile import STSProfile
+from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.auth.user_realm_info import UserRealmInfo
+from office365.runtime.http.request_options import RequestOptions
 
 office365.logger.ensure_debug_secrets()
 
 
-def string_escape(value):
+def string_escape(value: str) -> str:
     value = value.replace("&", "&amp;")
     value = value.replace("<", "&lt;")
     value = value.replace(">", "&gt;")
@@ -26,30 +30,36 @@ def string_escape(value):
     return value
 
 
-def datetime_escape(value):
+def datetime_escape(value: datetime) -> str:
     return value.isoformat("T")[:-9] + "Z"
 
 
 class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
-    def __init__(self, url, username, password, browser_mode, environment=None):
+    """SAML Security Token Service provider (claims-based authentication)"""
+
+    def __init__(
+        self,
+        url,
+        credential: UserCredential,
+        browser_mode: bool,
+        environment: Optional[AzureEnvironment] = None,
+    ):
         """
         SAML Security Token Service provider (claims-based authentication)
 
         :param str url: Site or Web absolute url
-        :param str username: Typically a UPN in the form of an email address
-        :param str password: The password
+        :param UserCredential credential: User credentials
         :param bool browser_mode:
-        :param str environment: The Office 365 Cloud Environment endpoint used for authentication.
+        :param AzureEnvironment environment: The Office 365 Cloud Environment endpoint used for authentication.
         """
         # Security Token Service info
-        self._sts_profile = STSProfile(url, environment)
+        self._sts_profile = STSProfile(url, environment or AzureEnvironment.Global)
         # Obtain authentication cookies, using the browser mode
         self._browser_mode = browser_mode
         # Last occurred error
         self.error = ""
-        self._username = username
-        self._password = password
-        self._cached_auth_cookies = None  # type: Optional[AuthCookies]
+        self._credential = credential
+        self._cached_auth_cookies: Optional[AuthCookies] = None
         self.__ns_prefixes = {
             "S": "{http://www.w3.org/2003/05/soap-envelope}",
             "s": "{http://www.w3.org/2003/05/soap-envelope}",
@@ -63,26 +73,23 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             "ps": "{http://schemas.microsoft.com/LiveID/SoapServices/v1}",
             "ds": "{http://www.w3.org/2000/09/xmldsig#}",
         }
-        for key in self.__ns_prefixes.keys():
-            ElementTree.register_namespace(key, self.__ns_prefixes[key][1:-1])
+        for key, prefix in self.__ns_prefixes.items():
+            ElementTree.register_namespace(key, prefix[1:-1])
 
-    def authenticate_request(self, request):
+    def authenticate_request(self, request: RequestOptions) -> None:
         """
         Authenticate request handler
         """
         logger = self.logger(self.authenticate_request.__name__)
 
         request_time = datetime.now(timezone.utc)
-        if (
-            self._cached_auth_cookies is None
-            or request_time >= self._sts_profile.expires
-        ):
+        if self._cached_auth_cookies is None or request_time >= self._sts_profile.expires:
             self._sts_profile.reset()
             self._cached_auth_cookies = self.get_authentication_cookie()
-        logger.debug_secrets(self._cached_auth_cookies)
+        logger.debug_secrets(self._cached_auth_cookies)  # type: ignore[reportAttributeAccessIssue]
         request.set_header("Cookie", self._cached_auth_cookies.cookie_header)
 
-    def get_authentication_cookie(self):
+    def get_authentication_cookie(self) -> AuthCookies:
         """Acquire authentication cookie"""
         logger = self.logger(self.get_authentication_cookie.__name__)
         logger.debug("get_authentication_cookie called")
@@ -90,34 +97,39 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         try:
             logger.debug("Acquiring Access Token..")
             user_realm = self._get_user_realm()
-            if user_realm.IsFederated:
-                token = self._acquire_service_token_from_adfs(user_realm.STSAuthUrl)
+            if user_realm is None:
+                raise ValueError("Failed to retrieve user realm information")
+            if user_realm.is_federated:
+                token = self._acquire_service_token_from_adfs(user_realm.sts_auth_url)  # type: ignore[reportOptionalMemberAccess]
             else:
                 token = self._acquire_service_token()
-            return self._get_authentication_cookie(token, user_realm.IsFederated)
+            assert token is not None
+            return self._get_authentication_cookie(token, user_realm.is_federated)
         except requests.exceptions.RequestException as e:
-            logger.error(e.response.text)
-            self.error = "Error: {}".format(e)
-            raise ValueError(e.response.text)
+            logger.error(e.response.text)  # type: ignore[reportOptionalMemberAccess]
+            self.error = f"Error: {e}"
+            raise ValueError(e.response.text) from e  # type: ignore[reportOptionalMemberAccess]
 
-    def _get_user_realm(self):
+    def _get_user_realm(self) -> Optional[UserRealmInfo]:
         """Get User Realm"""
         resp = requests.post(
             self._sts_profile.user_realm_service_url,
-            data="login={0}&xml=1".format(self._username),
+            data=f"login={self._credential.userName}&xml=1",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         xml = ElementTree.fromstring(resp.content)
         node = xml.find("NameSpaceType")
         if node is not None:
             if node.text == "Federated":
-                info = UserRealmInfo(xml.find("STSAuthURL").text, True)
+                sts_auth_url_node = xml.find("STSAuthURL")
+                assert sts_auth_url_node is not None and sts_auth_url_node.text is not None
+                info = UserRealmInfo(sts_auth_url_node.text, True)
             else:
                 info = UserRealmInfo(None, False)
             return info
         return None
 
-    def _acquire_service_token_from_adfs(self, adfs_url):
+    def _acquire_service_token_from_adfs(self, adfs_url: str) -> Optional[str]:
         logger = self.logger(self._acquire_service_token_from_adfs.__name__)
 
         payload = self._prepare_request_from_template(
@@ -125,8 +137,8 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             {
                 "auth_url": adfs_url,
                 "message_id": str(uuid.uuid4()),
-                "username": string_escape(self._username),
-                "password": string_escape(self._password),
+                "username": string_escape(self._credential.userName),
+                "password": string_escape(self._credential.password),
                 "created": datetime_escape(self._sts_profile.created),
                 "expires": datetime_escape(self._sts_profile.expires),
                 "issuer": self._sts_profile.token_issuer,
@@ -139,9 +151,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             headers={"Content-Type": "application/soap+xml; charset=utf-8"},
         )
         dom = minidom.parseString(response.content.decode())
-        assertion_node = dom.getElementsByTagNameNS(
-            "urn:oasis:names:tc:SAML:1.0:assertion", "Assertion"
-        )[0].toxml()
+        assertion_node = dom.getElementsByTagNameNS("urn:oasis:names:tc:SAML:1.0:assertion", "Assertion")[0].toxml()
 
         try:
             payload = self._prepare_request_from_template(
@@ -160,16 +170,14 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
                 headers={"Content-Type": "application/soap+xml"},
             )
             token = self._process_service_token_response(response)
-            logger.debug_secrets("security token: %s", token)
+            logger.debug_secrets("security token: %s", token)  # type: ignore[reportAttributeAccessIssue]
             return token
         except ElementTree.ParseError as e:
-            self.error = (
-                "An error occurred while parsing the server response: {}".format(e)
-            )
+            self.error = f"An error occurred while parsing the server response: {e}"
             logger.error(self.error)
             return None
 
-    def _acquire_service_token(self):
+    def _acquire_service_token(self) -> Optional[str]:
         """Retrieve service token"""
         logger = self.logger(self._acquire_service_token.__name__)
 
@@ -177,75 +185,69 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
             "SAML.xml",
             {
                 "auth_url": self._sts_profile.site_url,
-                "username": string_escape(self._username),
-                "password": string_escape(self._password),
+                "username": string_escape(self._credential.userName),
+                "password": string_escape(self._credential.password),
                 "message_id": str(uuid.uuid4()),
                 "created": datetime_escape(self._sts_profile.created),
                 "expires": datetime_escape(self._sts_profile.expires),
                 "issuer": self._sts_profile.token_issuer,
             },
         )
-        logger.debug_secrets("options: %s", payload)
+        logger.debug_secrets("options: %s", payload)  # type: ignore[reportAttributeAccessIssue]
         response = requests.post(
             self._sts_profile.security_token_service_url,
             data=payload,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         token = self._process_service_token_response(response)
-        logger.debug_secrets("security token: %s", token)
+        logger.debug_secrets("security token: %s", token)  # type: ignore[reportAttributeAccessIssue]
         return token
 
-    def _process_service_token_response(self, response):
+    def _process_service_token_response(self, response: Response):
         logger = self.logger(self._process_service_token_response.__name__)
-        logger.debug_secrets(
-            "response: %s\nresponse.content: %s", response, response.content
-        )
+        logger.debug_secrets("response: %s\nresponse.content: %s", response, response.content)  # type: ignore[reportAttributeAccessIssue]
 
         try:
             xml = ElementTree.fromstring(response.content)
         except ElementTree.ParseError as e:
-            self.error = (
-                "An error occurred while parsing the server response: {}".format(e)
-            )
+            self.error = f"An error occurred while parsing the server response: {e}"
             logger.error(self.error)
             return None
 
         # check for errors
-        if xml.find("{0}Body/{0}Fault".format(self.__ns_prefixes["s"])) is not None:
+        if xml.find(f"{self.__ns_prefixes['s']}Body/{self.__ns_prefixes['s']}Fault") is not None:
             error = xml.find(
-                "{0}Body/{0}Fault/{0}Detail/{1}error/{1}internalerror/{1}text".format(
-                    self.__ns_prefixes["s"], self.__ns_prefixes["psf"]
-                )
+                f"{self.__ns_prefixes['s']}Body/"
+                f"{self.__ns_prefixes['s']}Fault/"
+                f"{self.__ns_prefixes['s']}Detail/"
+                f"{self.__ns_prefixes['psf']}error/"
+                f"{self.__ns_prefixes['psf']}internalerror/"
+                f"{self.__ns_prefixes['psf']}text"
             )
+
             if error is None:
-                self.error = (
-                    "An error occurred while retrieving token from XML response."
-                )
+                self.error = "An error occurred while retrieving token from XML response."
             else:
-                self.error = "An error occurred while retrieving token from XML response: {0}".format(
-                    error.text
-                )
+                self.error = f"An error occurred while retrieving token from XML response: {error.text}"
             logger.error(self.error)
             raise ValueError(self.error)
 
         # extract token
         token = xml.find(
-            "{0}Body/{1}RequestSecurityTokenResponse/{1}RequestedSecurityToken/{2}BinarySecurityToken".format(
-                self.__ns_prefixes["s"],
-                self.__ns_prefixes["wst"],
-                self.__ns_prefixes["wsse"],
-            )
+            f"{self.__ns_prefixes['s']}Body/"
+            f"{self.__ns_prefixes['wst']}RequestSecurityTokenResponse/"
+            f"{self.__ns_prefixes['wst']}RequestedSecurityToken/"
+            f"{self.__ns_prefixes['wsse']}BinarySecurityToken"
         )
+
         if token is None:
-            self.error = "Cannot get binary security token for from {0}".format(
-                self._sts_profile.security_token_service_url
-            )
+            self.error = f"Cannot get binary security token for from {self._sts_profile.security_token_service_url}"
             logger.error(self.error)
             raise ValueError(self.error)
-        logger.debug_secrets("token: %s", token)
+        logger.debug_secrets("token: %s", token)  # type: ignore[reportAttributeAccessIssue]
         return token.text
 
-    def _get_authentication_cookie(self, security_token, federated=False):
+    def _get_authentication_cookie(self, security_token: str, federated: bool = False) -> AuthCookies:
         """Retrieve auth cookie from STS
 
         :type federated: bool
@@ -254,7 +256,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         logger = self.logger(self._get_authentication_cookie.__name__)
 
         session = requests.session()
-        logger.debug_secrets(
+        logger.debug_secrets(  # type: ignore[reportAttributeAccessIssue]
             "session: %s\nsession.post(%s, data=%s)",
             session,
             self._sts_profile.signin_page_url,
@@ -263,45 +265,33 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         if not federated or self._browser_mode:
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             if self._browser_mode:
-                headers["User-Agent"] = (
-                    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
-                )
-            session.post(
-                self._sts_profile.signin_page_url, data=security_token, headers=headers
-            )
+                headers["User-Agent"] = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
+            session.post(self._sts_profile.signin_page_url, data=security_token, headers=headers)
         else:
-            idcrl_endpoint = "https://{}/_vti_bin/idcrl.svc/".format(
-                self._sts_profile.tenant
-            )
+            idcrl_endpoint = f"https://{self._sts_profile.tenant}/_vti_bin/idcrl.svc/"
             session.get(
                 idcrl_endpoint,
                 headers={
                     "User-Agent": "Office365 Python Client",
                     "X-IDCRL_ACCEPTED": "t",
-                    "Authorization": "BPOSIDCRL {0}".format(security_token),
+                    "Authorization": f"BPOSIDCRL {security_token}",
                 },
             )
-        logger.debug_secrets("session.cookies: %s", session.cookies)
+        logger.debug_secrets("session.cookies: %s", session.cookies)  # type: ignore[reportAttributeAccessIssue]
         cookies = AuthCookies(requests.utils.dict_from_cookiejar(session.cookies))
-        logger.debug_secrets("cookies: %s", cookies)
+        logger.debug_secrets("cookies: %s", cookies)  # type: ignore[reportAttributeAccessIssue]
         if not cookies.is_valid:
-            self.error = (
-                "An error occurred while retrieving auth cookies from {0}".format(
-                    self._sts_profile.signin_page_url
-                )
-            )
+            self.error = f"An error occurred while retrieving auth cookies from {self._sts_profile.signin_page_url}"
             logger.error(self.error)
             raise ValueError(self.error)
         return cookies
 
-    def _prepare_request_from_template(self, template_name, params):
+    def _prepare_request_from_template(self, template_name: str, params: Dict[str, str]) -> str:
         """Construct the request body to acquire security token from STS endpoint"""
         logger = self.logger(self._prepare_request_from_template.__name__)
-        logger.debug_secrets("params: %s", params)
+        logger.debug_secrets("params: %s", params)  # type: ignore[reportAttributeAccessIssue]
 
-        template_path = os.path.join(
-            os.path.dirname(__file__), "templates", template_name
-        )
+        template_path = os.path.join(os.path.dirname(__file__), "templates", template_name)
 
         with open(template_path, encoding="utf8") as f:
             data = f.read()

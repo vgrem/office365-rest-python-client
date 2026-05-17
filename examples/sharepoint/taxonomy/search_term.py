@@ -1,5 +1,7 @@
 """
-Search term by name
+Searches for taxonomy terms by name.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext

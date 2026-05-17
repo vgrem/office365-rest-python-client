@@ -1,5 +1,7 @@
 """
-Prints metadata about the site
+Prints SharePoint site metadata including the LibraryVersion.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

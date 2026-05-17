@@ -1,7 +1,8 @@
-class FieldType:
-    def __init__(self):
-        """Specifies the type of the field (2), as specified in [MS-WSSTS] section 2.3.1."""
-        pass
+from enum import Enum
+
+
+class FieldType(Enum):
+    """Specifies the type of the field (2), as specified in [MS-WSSTS] section 2.3.1."""
 
     Invalid = 0
     """It MUST NOT be used."""

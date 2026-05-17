@@ -21,23 +21,20 @@ class RoleDefinition(Entity):
         return self.properties.get("BasePermissions", BasePermissions())
 
     @property
-    def id(self):
-        # type: () -> Optional[int]
+    def id(self) -> Optional[int]:
         """Specifies the identifier of the role definition.
         Its value MUST be equal to or greater than 1073741824."""
         return self.properties.get("Id", None)
 
     @property
-    def role_type_kind(self):
-        # type: () -> Optional[int]
+    def role_type_kind(self) -> Optional[int]:
         """Specifies the type of the role definition.
         Its value MUST be equal to or greater than 0. Its value MUST be equal to or less than 5.
         """
         return self.properties.get("RoleTypeKind", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Gets a value that specifies the role definition name."""
         return self.properties.get("Name", None)
 
@@ -47,8 +44,7 @@ class RoleDefinition(Entity):
         self.set_property("Name", value)
 
     @property
-    def description(self):
-        # type: () -> Optional[str]
+    def description(self) -> Optional[str]:
         """Gets or sets a value that specifies the description of the role definition."""
         return self.properties.get("Description", None)
 
@@ -63,12 +59,10 @@ class RoleDefinition(Entity):
                 "BasePermissions": self.base_permissions,
             }
             default_value = property_mapping.get(name, None)
-        return super(RoleDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if self.resource_path is None:
-            if name == "Id":
-                self._resource_path = ServiceOperationPath(
-                    "GetById", [value], self.parent_collection.resource_path
-                )
-        return super(RoleDefinition, self).set_property(name, value, persist_changes)
+            if name == "Id" and self.parent_collection is not None:
+                self._resource_path = ServiceOperationPath("GetById", [value], self.parent_collection.resource_path)
+        return super().set_property(name, value, persist_changes)

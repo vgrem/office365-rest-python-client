@@ -1,4 +1,8 @@
-from office365.directory.authentication.strength_usage import (
+from __future__ import annotations
+
+from typing import List
+
+from office365.directory.authentication.strength.usage import (
     AuthenticationStrengthUsage,
 )
 from office365.directory.policies.update_allowed_combinations_result import (
@@ -18,7 +22,7 @@ class AuthenticationStrengthPolicy(Entity):
     may be built-in or custom (defined by the tenant) and may or may not fulfill the requirements to grant an MFA claim.
     """
 
-    def usage(self):
+    def usage(self) -> ClientResult[AuthenticationStrengthUsage]:
         """
         Allows the caller to see which Conditional Access policies reference a specified authentication strength policy.
         The policies are returned in two collections, one containing Conditional Access policies that require an
@@ -31,7 +35,9 @@ class AuthenticationStrengthPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def update_allowed_combinations(self, allowed_combinations=None):
+    def update_allowed_combinations(
+        self, allowed_combinations: List[str] | None = None
+    ) -> ClientResult[UpdateAllowedCombinationsResult]:
         """
         Update the allowedCombinations property of an authenticationStrengthPolicy object.
         To update other properties of an authenticationStrengthPolicy object,
@@ -42,8 +48,6 @@ class AuthenticationStrengthPolicy(Entity):
         """
         return_type = ClientResult(self.context, UpdateAllowedCombinationsResult())
         payload = {"allowedCombinations": allowed_combinations}
-        qry = ServiceOperationQuery(
-            self, "updateAllowedCombinations", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "updateAllowedCombinations", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

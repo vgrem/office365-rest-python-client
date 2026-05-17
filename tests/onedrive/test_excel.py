@@ -6,17 +6,16 @@ from office365.onedrive.workbooks.tables.table import WorkbookTable
 from tests.graph_case import GraphTestCase
 
 
-def upload_excel(target_drive):
-    # type: (Drive) -> DriveItem
-    path = "{0}/../data/Financial Sample.xlsx".format(os.path.dirname(__file__))
+def upload_excel(target_drive: Drive) -> DriveItem:
+    path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
     return target_drive.root.upload_file(path).execute_query()
 
 
 class TestExcel(GraphTestCase):
     """OneDrive specific test case base class"""
 
-    target_item = None  # type: DriveItem
-    table = None  # type: WorkbookTable
+    target_item: DriveItem = None
+    table: WorkbookTable = None
 
     @classmethod
     def setUpClass(cls):
@@ -33,9 +32,7 @@ class TestExcel(GraphTestCase):
         self.assertIsNotNone(workbook.resource_path)
 
     def test2_create_workbook_table(self):
-        table = self.__class__.target_item.workbook.tables.add(
-            "A10000:C10002", True
-        ).execute_query()
+        table = self.__class__.target_item.workbook.tables.add("A10000:C10002", True).execute_query()
         self.assertIsNotNone(table.resource_path)
         self.__class__.table = table
 
@@ -65,9 +62,7 @@ class TestExcel(GraphTestCase):
         self.assertIsNotNone(rows.resource_path)
 
     def test9_create_table_rows(self):
-        row = self.__class__.table.rows.add(
-            [["Val11", "Val12", "Val13", "Val14"]]
-        ).execute_query()
+        row = self.__class__.table.rows.add([["Val11", "Val12", "Val13", "Val14"]]).execute_query()
         self.assertIsNotNone(row.resource_path)
         self.assertIsNotNone(row.index)
         self.assertIsNotNone(row.values)

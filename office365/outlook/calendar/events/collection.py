@@ -1,5 +1,7 @@
-import datetime
-from typing import List
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, List, Optional
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
@@ -12,12 +14,17 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 class EventCollection(DeltaCollection[Event]):
     def __init__(self, context, resource_path=None):
-        super(EventCollection, self).__init__(context, Event, resource_path)
+        super().__init__(context, Event, resource_path)
 
     def add(
-        self, subject=None, body=None, start=None, end=None, attendees=None, **kwargs
-    ):
-        # type: (str, str|ItemBody, datetime.datetime, datetime.datetime, List[str], ...) -> Event
+        self,
+        subject: Optional[str] = None,
+        body: Optional[str | ItemBody] = None,
+        start: Optional[datetime] = None,
+        end: Optional[datetime] = None,
+        attendees: Optional[List[str]] = None,
+        **kwargs: Any,
+    ) -> Event:
         """
         Create an event in the user's default calendar or specified calendar.
 
@@ -46,10 +53,7 @@ class EventCollection(DeltaCollection[Event]):
         if attendees is not None:
             kwargs["attendees"] = ClientValueCollection(
                 Attendee,
-                [
-                    Attendee(EmailAddress(v), attendee_type="required")
-                    for v in attendees
-                ],
+                [Attendee(EmailAddress(v), attendee_type="required") for v in attendees],
             )
 
-        return super(EventCollection, self).add(**kwargs)
+        return super().add(**kwargs)

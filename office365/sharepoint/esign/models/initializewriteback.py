@@ -1,0 +1,21 @@
+from typing import Optional
+
+from office365.runtime.client_value import ClientValue
+
+
+class InitializeWriteBackModel(ClientValue):
+    def __init__(
+        self,
+        documents: Optional[str] = None,
+        provider_name: Optional[str] = None,
+        scheduled_clean_up: Optional[int] = None,
+        selected_location: Optional[str] = None,
+    ):
+        self.documents = documents
+        self.providerName = provider_name
+        self.scheduledCleanUp = scheduled_clean_up
+        self.selectedLocation = selected_location
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.ESign.Models.Requests.InitializeWriteBackModel"

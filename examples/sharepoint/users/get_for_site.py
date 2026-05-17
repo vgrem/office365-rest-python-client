@@ -1,5 +1,7 @@
 """
-Demonstrates how to retrieve site groups along with users
+Demonstrates how to retrieve site groups along with their users.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/user-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

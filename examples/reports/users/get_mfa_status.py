@@ -1,0 +1,16 @@
+"""
+Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object.
+This method doesn't work for disabled users.
+
+https://learn.microsoft.com/en-us/graph/api/resources/report
+https://learn.microsoft.com/en-us/graph/api/authenticationmethods-list-userregistrationdetails?view=graph-rest-1.0
+"""
+
+from office365.graph_client import GraphClient
+from tests import test_client_id, test_client_secret, test_tenant
+
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+
+result = client.reports.authentication_methods.user_registration_details.get().execute_query()
+for details in result:
+    print(f"{details.user_principal_name}: {details.is_mfa_registered}")

@@ -11,4 +11,4 @@ file = ctx.web.get_file_by_server_relative_url(file_url).get().execute_query()
 
 print("File size: ", file.length)
 print("File name: ", file.name)
-print("File url: ", file.serverRelativeUrl)
+print("File url: ", file.server_relative_url)

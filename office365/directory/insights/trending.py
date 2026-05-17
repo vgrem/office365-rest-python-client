@@ -13,19 +13,17 @@ class Trending(Entity):
     """
 
     @property
-    def last_modified_datetime(self):
-        # type: () -> Optional[datetime]
+    def last_modified_datetime(self) -> Optional[datetime]:
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
-    def resource_reference(self):
-        # type: () -> ResourceReference
+    def resource_reference(self) -> ResourceReference:
         """Reference properties of the trending document, such as the url and type of the document."""
         return self.properties.get("resourceReference", ResourceReference())
 
     @property
-    def resource(self):
+    def resource(self) -> Entity:
         """Used for navigating to the trending document."""
         return self.properties.get(
             "resource",
@@ -39,4 +37,4 @@ class Trending(Entity):
                 "resourceReference": self.resource_reference,
             }
             default_value = property_mapping.get(name, None)
-        return super(Trending, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

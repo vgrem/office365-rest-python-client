@@ -1,8 +1,10 @@
-class SharingCapabilities:
+from enum import Enum
+
+
+class SharingCapabilities(Enum):
     """External sharing settings on a SharePoint site collection in Office 365"""
 
-    def __init__(self):
-        pass
+    None_ = -1
 
     Disabled = 0
     """External user sharing (share by email) and guest link sharing are both disabled."""

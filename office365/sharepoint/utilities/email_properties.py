@@ -1,17 +1,20 @@
+from typing import Dict, List, Optional
+
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.collections import StringCollection
 
 
 class EmailProperties(ClientValue):
     def __init__(
         self,
-        body,
-        subject,
-        to,
-        from_address=None,
-        cc=None,
-        bcc=None,
-        additional_headers=None,
+        body: str,
+        subject: str,
+        to: List[str],
+        from_address: Optional[str] = None,
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None,
+        additional_headers: Optional[Dict] = None,
+        from_: Optional[str] = None,
     ):
         """
         Specifies the definition of the email to send which includes both the message fields and body
@@ -24,14 +27,15 @@ class EmailProperties(ClientValue):
         :param list[str] or None bcc: Specifies the blind carbon copy (bcc) recipients of the email
         :param dict or None additional_headers:
         """
-        super(EmailProperties, self).__init__()
+        super().__init__()
         self.Body = body
         self.Subject = subject
         self.From = from_address
-        self.To = ClientValueCollection(str, to)
-        self.CC = ClientValueCollection(str, cc)
-        self.BCC = ClientValueCollection(str, bcc)
+        self.To = StringCollection(to)
+        self.CC = StringCollection(cc)
+        self.BCC = StringCollection(bcc)
         self.AdditionalHeaders = additional_headers
+        self.From = from_
 
     @property
     def entity_type_name(self):

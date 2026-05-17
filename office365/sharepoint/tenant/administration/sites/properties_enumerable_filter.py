@@ -22,7 +22,7 @@ class SitePropertiesEnumerableFilter(ClientValue):
         :param int group_id_defined:
         :param str template:
         """
-        super(SitePropertiesEnumerableFilter, self).__init__()
+        super().__init__()
         self.ArchivedBy = archived_by
         self.Filter = _filter
         self.GroupIdDefined = group_id_defined
@@ -34,5 +34,5 @@ class SitePropertiesEnumerableFilter(ClientValue):
         self.ArchiveStatus = archive_status
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOSitePropertiesEnumerableFilter"

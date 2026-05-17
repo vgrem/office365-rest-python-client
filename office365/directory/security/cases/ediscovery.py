@@ -9,8 +9,7 @@ class EdiscoveryCase(Entity):
     Microsoft Purview eDiscovery (Premium)."""
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[CaseOperation]
+    def operations(self) -> EntityCollection[CaseOperation]:
         """Returns a list of case caseOperation objects for this case."""
         return self.properties.get(
             "operations",

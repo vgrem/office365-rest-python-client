@@ -8,8 +8,7 @@ class EmployeeExperienceUser(Entity):
     """"""
 
     @property
-    def learning_course_activities(self):
-        # type: () -> EntityCollection[LearningCourseActivity]
+    def learning_course_activities(self) -> EntityCollection[LearningCourseActivity]:
         """Get a list of the learningCourseActivity objects (assigned or self-initiated) for a user."""
         return self.properties.get(
             "learningCourseActivities",

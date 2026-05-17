@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+from typing import Any, Union
+
+from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
@@ -10,11 +14,12 @@ from office365.onedrive.contenttypes.collection import ContentTypeCollection
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.listitems.list_item import ListItem
 from office365.onedrive.lists.collection import ListCollection
+from office365.onedrive.lists.list import List
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.onedrive.sitepages.collection import SitePageCollection
-from office365.onedrive.sites.site_collection import SiteCollection
+from office365.onedrive.sites.collection import SiteCollection
 from office365.onedrive.termstore.store import Store
 from office365.onenote.onenote import Onenote
 from office365.runtime.paths.resource_path import ResourcePath
@@ -31,8 +36,7 @@ class Site(BaseItem):
     def __repr__(self):
         return self.name or self.web_url or self.id or self.entity_type_name
 
-    def get_by_path(self, path):
-        # type: (str) -> Site
+    def get_by_path(self, path: str) -> Site:
         """
         Retrieve properties and relationships for a site resource. A site resource represents a team site in SharePoint.
 
@@ -51,25 +55,37 @@ class Site(BaseItem):
         self.context.add_query(qry)
         return return_type
 
-    def get_applicable_content_types_for_list(self, list_id):
-        # type: (str) -> ContentTypeCollection
+    def get_applicable_content_types_for_list(self, list_or_id: Union[List, str]) -> ContentTypeCollection:
         """
         Get site contentTypes that can be added to a list.
 
-        :param str list_id: GUID of the list for which the applicable content types need to be fetched.
+        :param str|List list_or_id: GUID of the list for which the applicable content types need to be fetched.
         """
-        return_type = ContentTypeCollection(
-            self.context, self.content_types.resource_path
-        )
-        params = {"listId": list_id}
-        qry = FunctionQuery(
-            self, "getApplicableContentTypesForList", params, return_type
-        )
-        self.context.add_query(qry)
+        return_type = ContentTypeCollection(self.context, self.content_types.resource_path)
+
+        def _get_applicable_content_types_for_list(list_id: str | None) -> None:
+            if list_id is None:
+                return
+            params = {"listId": list_id}
+            qry = FunctionQuery(self, "getApplicableContentTypesForList", params, return_type)
+            self.context.add_query(qry)
+
+        if isinstance(list_or_id, List):
+            list_or_id.ensure_property(
+                "id",
+                lambda: _get_applicable_content_types_for_list(list_or_id.id),
+            )
+        else:
+            _get_applicable_content_types_for_list(list_or_id)
+
         return return_type
 
-    def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
-        # type: (Optional[datetime], Optional[datetime], str) -> EntityCollection[ItemActivityStat]
+    def get_activities_by_interval(
+        self,
+        start_dt: datetime | None = None,
+        end_dt: datetime | None = None,
+        interval: str | None = None,
+    ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
@@ -89,64 +105,49 @@ class Site(BaseItem):
         return return_type
 
     @property
-    def site_collection(self):
-        # type: () -> SiteCollection
+    def site_collection(self) -> SiteCollection:
         """Provides details about the site's site collection. Available only on the root site."""
         return self.properties.get("siteCollection", SiteCollection())
 
     @property
-    def sharepoint_ids(self):
-        # type: () -> SharePointIds
+    def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""
         return self.properties.get("sharepointIds", SharePointIds())
 
     @property
-    def items(self):
-        # type: () -> EntityCollection[ListItem]
+    def items(self) -> EntityCollection[ListItem]:
         """Used to address any item contained in this site. This collection cannot be enumerated."""
         return self.properties.get(
             "items",
-            EntityCollection(
-                self.context, ListItem, ResourcePath("items", self.resource_path)
-            ),
+            EntityCollection(self.context, ListItem, ResourcePath("items", self.resource_path)),
         )
 
     @property
-    def columns(self):
-        # type: () -> ColumnDefinitionCollection
+    def columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
         return self.properties.get(
             "columns",
-            ColumnDefinitionCollection(
-                self.context, ResourcePath("columns", self.resource_path), self
-            ),
+            ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
         )
 
     @property
-    def external_columns(self):
-        # type: () -> ColumnDefinitionCollection
+    def external_columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
         return self.properties.get(
             "externalColumns",
-            ColumnDefinitionCollection(
-                self.context, ResourcePath("externalColumns", self.resource_path), self
-            ),
+            ColumnDefinitionCollection(self.context, ResourcePath("externalColumns", self.resource_path), self),
         )
 
     @property
-    def content_types(self):
-        # type: () -> ContentTypeCollection
+    def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
         return self.properties.get(
             "contentTypes",
-            ContentTypeCollection(
-                self.context, ResourcePath("contentTypes", self.resource_path)
-            ),
+            ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path)),
         )
 
     @property
-    def lists(self):
-        # type: () -> ListCollection
+    def lists(self) -> ListCollection:
         """The collection of lists under this site."""
         return self.properties.get(
             "lists",
@@ -154,8 +155,7 @@ class Site(BaseItem):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[RichLongRunningOperation]
+    def operations(self) -> EntityCollection[RichLongRunningOperation]:
         """The collection of long-running operations on the site."""
         return self.properties.get(
             "operations",
@@ -167,49 +167,36 @@ class Site(BaseItem):
         )
 
     @property
-    def permissions(self):
-        # type: () -> PermissionCollection
+    def permissions(self) -> PermissionCollection:
         """The permissions associated with the site."""
         return self.properties.get(
             "permissions",
-            PermissionCollection(
-                self.context, ResourcePath("permissions", self.resource_path)
-            ),
+            PermissionCollection(self.context, ResourcePath("permissions", self.resource_path)),
         )
 
     @property
-    def drive(self):
-        # type: () -> Drive
+    def drive(self) -> Drive:
         """The default drive (document library) for this site."""
-        return self.properties.get(
-            "drive", Drive(self.context, ResourcePath("drive", self.resource_path))
-        )
+        return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
     @property
-    def drives(self):
-        # type: () -> EntityCollection[Drive]
+    def drives(self) -> EntityCollection[Drive]:
         """The collection of drives under this site."""
         return self.properties.get(
             "drives",
-            EntityCollection(
-                self.context, Drive, ResourcePath("drives", self.resource_path)
-            ),
+            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path), self),
         )
 
     @property
-    def sites(self):
-        # type: () -> EntityCollection[Site]
+    def sites(self) -> EntityCollection[Site]:
         """The collection of sites under this site."""
         return self.properties.get(
             "sites",
-            EntityCollection(
-                self.context, Site, ResourcePath("sites", self.resource_path)
-            ),
+            EntityCollection(self.context, Site, ResourcePath("sites", self.resource_path)),
         )
 
     @property
-    def analytics(self):
-        # type: () -> ItemAnalytics
+    def analytics(self) -> ItemAnalytics:
         """Analytics about the view activities that took place on this site."""
         return self.properties.get(
             "analytics",
@@ -217,8 +204,7 @@ class Site(BaseItem):
         )
 
     @property
-    def onenote(self):
-        # type: () -> Onenote
+    def onenote(self) -> Onenote:
         """Represents the Onenote services available to a site."""
         return self.properties.get(
             "onenote",
@@ -226,24 +212,20 @@ class Site(BaseItem):
         )
 
     @property
-    def pages(self):
-        # type: () -> SitePageCollection
+    def pages(self) -> SitePageCollection:
         """The collection of site pages under this site."""
         return self.properties.get(
             "pages",
-            SitePageCollection(
-                self.context, ResourcePath("pages", self.resource_path), self.pages_list
-            ),
+            SitePageCollection(self.context, ResourcePath("pages", self.resource_path), self.pages_list),
         )
 
     @property
-    def pages_list(self):
+    def pages_list(self) -> List:
         """The list that contains the site pages."""
         return self.lists.get_by_name("Site Pages")
 
     @property
-    def term_store(self):
-        # type: () -> Store
+    def term_store(self) -> Store:
         """The default termStore under this site."""
         return self.properties.get(
             "termStore",
@@ -251,17 +233,14 @@ class Site(BaseItem):
         )
 
     @property
-    def term_stores(self):
-        # type: () -> EntityCollection[Store]
+    def term_stores(self) -> EntityCollection[Store]:
         """The collection of termStores under this site."""
         return self.properties.get(
             "termStores",
-            EntityCollection(
-                self.context, Store, ResourcePath("termStores", self.resource_path)
-            ),
+            EntityCollection(self.context, Store, ResourcePath("termStores", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "contentTypes": self.content_types,
@@ -271,4 +250,4 @@ class Site(BaseItem):
                 "termStores": self.term_stores,
             }
             default_value = property_mapping.get(name, None)
-        return super(Site, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

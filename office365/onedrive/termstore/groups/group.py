@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.entity import Entity
 from office365.onedrive.termstore.sets.collection import SetCollection
@@ -8,24 +8,21 @@ from office365.runtime.paths.resource_path import ResourcePath
 class Group(Entity):
     """Term Group"""
 
-    def __str__(self):
-        return self.display_name
+    def __str__(self) -> str:
+        return self.display_name or ""
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> str | None:
         """Name of the group."""
         return self.properties.get("displayName", None)
 
     @property
-    def parent_site_id(self):
-        # type: () -> Optional[str]
+    def parent_site_id(self) -> str | None:
         """ID of the parent site of this group."""
         return self.properties.get("parentSiteId", None)
 
     @property
-    def sets(self):
-        # type: () -> SetCollection
+    def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""
         return self.properties.get(
             "sets",
@@ -33,5 +30,5 @@ class Group(Entity):
         )
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return None  # type: ignore

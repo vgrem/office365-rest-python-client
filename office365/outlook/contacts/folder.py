@@ -17,14 +17,11 @@ class ContactFolder(Entity):
 
         return self.properties.get(
             "contacts",
-            EntityCollection(
-                self.context, Contact, ResourcePath("contacts", self.resource_path)
-            ),
+            EntityCollection(self.context, Contact, ResourcePath("contacts", self.resource_path)),
         )
 
     @property
-    def child_folders(self):
-        # type: () -> EntityCollection["ContactFolder"]
+    def child_folders(self) -> EntityCollection["ContactFolder"]:
         """The collection of child folders in the folder. Navigation property. Read-only. Nullable."""
         return self.properties.get(
             "childFolders",
@@ -36,8 +33,9 @@ class ContactFolder(Entity):
         )
 
     @property
-    def multi_value_extended_properties(self):
-        # type: () -> EntityCollection[MultiValueLegacyExtendedProperty]
+    def multi_value_extended_properties(
+        self,
+    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the Contact folder."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -49,8 +47,9 @@ class ContactFolder(Entity):
         )
 
     @property
-    def single_value_extended_properties(self):
-        # type: () -> EntityCollection[SingleValueLegacyExtendedProperty]
+    def single_value_extended_properties(
+        self,
+    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the Contact folder."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -69,4 +68,4 @@ class ContactFolder(Entity):
                 "singleValueExtendedProperties": self.single_value_extended_properties,
             }
             default_value = property_mapping.get(name, None)
-        return super(ContactFolder, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

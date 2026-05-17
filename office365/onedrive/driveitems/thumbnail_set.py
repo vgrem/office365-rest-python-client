@@ -7,21 +7,21 @@ class ThumbnailSet(Entity):
     It is used to represent a set of thumbnails associated with a DriveItem."""
 
     @property
-    def large(self):
+    def large(self) -> Thumbnail:
         """A 1920x1920 scaled thumbnail."""
-        return self.properties.get("drive", Thumbnail())
+        return self.properties.get("large", Thumbnail())
 
     @property
-    def medium(self):
+    def medium(self) -> Thumbnail:
         """A 176x176 scaled thumbnail."""
         return self.properties.get("medium", Thumbnail())
 
     @property
-    def small(self):
+    def small(self) -> Thumbnail:
         """A 48x48 cropped thumbnail."""
         return self.properties.get("small", Thumbnail())
 
     @property
-    def source(self):
+    def source(self) -> Thumbnail:
         """A custom thumbnail image or the original image used to generate other thumbnails."""
         return self.properties.get("source", Thumbnail())

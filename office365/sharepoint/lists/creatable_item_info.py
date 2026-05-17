@@ -1,21 +1,23 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class CreatableItemInfo(ClientValue):
-    """
-    Information on a creatable item: what the item is and where to go to create it. Alternatively, the information
-    provided here can be used to call CreateDocument (section 3.2.5.79.2.2.9) or
-    CreateDocumentAndGetEditLink (section 3.2.5.79.2.1.13).
-    """
-
-
-class CreatableItemInfoCollection(ClientValue):
-    """Represents a collection of CreatableItemInfo (section 3.2.5.283) objects."""
-
-    def __init__(self, items=None):
+    def __init__(
+        self,
+        document_template: Optional[int] = None,
+        file_extension: Optional[str] = None,
+        item_type: Optional[str] = None,
+    ):
         """
-        :param list[CreatableItemInfo] items:
+        Information on a creatable item: what the item is and where to go to create it. Alternatively, the information
+        provided here can be used to call CreateDocument (section 3.2.5.79.2.2.9) or
+        CreateDocumentAndGetEditLink (section 3.2.5.79.2.1.13)
+        :param document_template:
+        :param file_extension:
+        :param item_type:
         """
-        super(CreatableItemInfoCollection, self).__init__()
-        self.Items = ClientValueCollection(CreatableItemInfo, items)
+        self.DocumentTemplate = document_template
+        self.FileExtension = file_extension
+        self.ItemType = item_type

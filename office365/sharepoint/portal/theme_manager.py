@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -11,7 +13,7 @@ class ThemeManager(Entity):
     def entity_type_name(self):
         return "SP.Utilities.ThemeManager"
 
-    def add_tenant_theme(self, name, theme_json):
+    def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """
         Adds a new theme to a tenant.
 
@@ -23,13 +25,11 @@ class ThemeManager(Entity):
             "name": name,
             "themeJson": theme_json,
         }
-        qry = ServiceOperationQuery(
-            self, "AddTenantTheme", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddTenantTheme", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def delete_tenant_theme(self, name):
+    def delete_tenant_theme(self, name: str) -> Self:
         """
         Removes a theme.
         """

@@ -7,7 +7,6 @@ class ModernizeHomepageResult(Entity):
     """"""
 
     @property
-    def can_modernize_homepage(self):
-        # type: () -> Optional[bool]
+    def can_modernize_homepage(self) -> Optional[bool]:
         """"""
         return self.properties.get("CanModernizeHomepage", None)

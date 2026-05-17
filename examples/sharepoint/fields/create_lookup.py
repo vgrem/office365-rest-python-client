@@ -1,5 +1,6 @@
-"""
-Demonstrates how to create lookup field
+"""Demonstrates how to create a lookup field in a SharePoint site
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext
@@ -15,5 +16,5 @@ field = client.web.fields.add_lookup_field(
     lookup_field_name="Title",
     allow_multiple_values=True,
 ).execute_query()
-print("Field  {0} has been created", field_name)
+print(f"Field  {field_name} has been created")
 field.delete_object().execute_query()  # clean up

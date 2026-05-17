@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import os
-from typing import IO, TYPE_CHECKING, AnyStr, Callable
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -62,9 +64,7 @@ class MoveCopyUtil(Entity):
             "destUrl": str(SPResPath.create_absolute(context.base_url, dest_url)),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "CopyFolder", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "CopyFolder", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
@@ -113,9 +113,7 @@ class MoveCopyUtil(Entity):
             "destUrl": str(SPResPath.create_absolute(context.base_url, dest_url)),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "MoveFolder", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(binding_type, "MoveFolder", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
@@ -136,17 +134,17 @@ class MoveCopyUtil(Entity):
             "destPath": SPResPath.create_absolute(context.base_url, dest_path),
             "options": options,
         }
-        qry = ServiceOperationQuery(
-            binding_type, "MoveFolderByPath", None, payload, None, None, True
-        )
+        qry = ServiceOperationQuery(binding_type, "MoveFolderByPath", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
     @staticmethod
     def download_folder(
-        remove_folder, download_file, after_file_downloaded=None, recursive=True
-    ):
-        # type: (Folder, IO, Callable[[File], None], bool) -> Folder
+        remove_folder: Folder,
+        download_file: IO,
+        after_file_downloaded: Optional[Callable[[File], None]] = None,
+        recursive: bool = True,
+    ) -> Folder:
         """
         Downloads a folder into a zip file
         :param office365.sharepoint.folders.folder.Folder remove_folder: Parent folder
@@ -156,33 +154,28 @@ class MoveCopyUtil(Entity):
         """
         import zipfile
 
-        def _get_relative_file_path(file):
-            # type: (File) -> str
+        def _get_relative_file_path(file: File) -> str:
+            parent_folder = file.parent_folder
+            assert parent_folder is not None
+            assert parent_folder.server_relative_url is not None
+            assert remove_folder.server_relative_url is not None
+            assert file.name is not None
             return os.path.join(
-                file.parent_folder.serverRelativeUrl.replace(
-                    remove_folder.serverRelativeUrl, ""
-                ),
+                parent_folder.server_relative_url.replace(remove_folder.server_relative_url, ""),
                 file.name,
             )
 
-        def _download_file(file):
-            # type: (File) -> None
-
-            def _after_downloaded(result):
-                # type: (ClientResult[AnyStr]) -> None
+        def _download_file(file: File) -> None:
+            def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
                     after_file_downloaded(file)
-                with zipfile.ZipFile(
-                    download_file.name, "a", zipfile.ZIP_DEFLATED
-                ) as zf:
+                with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(filename, result.value)
 
             file.get_content().after_execute(_after_downloaded)
 
-        def _download_folder(folder):
-            # type: (Folder) -> None
-
+        def _download_folder(folder: Folder) -> None:
             def _download_files(rt):
                 [_download_file(file) for file in folder.files]
                 if recursive:

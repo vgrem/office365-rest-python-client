@@ -1,5 +1,7 @@
 """
-Prints tenant settings
+Prints all tenant settings.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
 from pprint import pprint

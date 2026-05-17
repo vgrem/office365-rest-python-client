@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,12 +9,15 @@ class DocumentLibraryInformation(ClientValue):
 
     def __init__(
         self,
-        title=None,
-        absolute_url=None,
-        server_relative_url=None,
-        drive_id=None,
-        from_cross_farm=None,
-        is_default_document_library=None,
+        title: Optional[str] = None,
+        absolute_url: Optional[str] = None,
+        server_relative_url: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        from_cross_farm: Optional[bool] = None,
+        is_default_document_library: Optional[bool] = None,
+        id_: Optional[str] = None,
+        modified: datetime = datetime.min,
+        modified_friendly_display: Optional[str] = None,
     ):
         """
         :param str title:Identifies the title of the document library
@@ -27,3 +33,6 @@ class DocumentLibraryInformation(ClientValue):
         self.DriveId = drive_id
         self.FromCrossFarm = from_cross_farm
         self.IsDefaultDocumentLibrary = is_default_document_library
+        self.Id = id_
+        self.Modified = modified
+        self.ModifiedFriendlyDisplay = modified_friendly_display

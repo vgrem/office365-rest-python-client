@@ -1,10 +1,14 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class Sort(ClientValue):
     """Contains information about the property to sort the search results on, and how to sort on the property."""
 
-    def __init__(self, property_name=None, direction=None):
+    def __init__(
+        self, property_name: Optional[str] = None, direction: Optional[int] = None, property_: Optional[str] = None
+    ):
         """
         :param str property_name: If direction is equal to SortDirection.Ascending or SortDirection.Descending,
             then this element specifies the name of the managed property to sort the search results on
@@ -12,9 +16,10 @@ class Sort(ClientValue):
         """
         self.Direction = direction
         self.Property = property_name
+        self.Property = property_
 
     def __str__(self):
-        return "{0}:{1}".format(self.Property, self.Direction)
+        return f"{self.Property}:{self.Direction}"
 
     @property
     def entity_type_name(self):

@@ -1,4 +1,4 @@
-from office365.directory.security.attacksimulations.report import SimulationReport
+from office365.directory.security.attacksimulations.reports.report import SimulationReport
 from office365.entity import Entity
 
 

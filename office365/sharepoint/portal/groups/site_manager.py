@@ -1,3 +1,9 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional, Union
+
+from typing_extensions import Self
+
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -9,10 +15,14 @@ from office365.sharepoint.portal.groups.creation_context import GroupCreationCon
 from office365.sharepoint.portal.groups.creation_information import (
     GroupCreationInformation,
 )
+from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.teams.recent_and_joined_response import (
     RecentAndJoinedTeamsResponse,
 )
+
+if TYPE_CHECKING:
+    from office365.sharepoint.sites.site import Site
 
 
 class GroupSiteManager(ClientObject):
@@ -23,19 +33,21 @@ class GroupSiteManager(ClientObject):
     def __init__(self, context, resource_path=None):
         if resource_path is None:
             resource_path = ResourcePath("GroupSiteManager")
-        super(GroupSiteManager, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def can_user_create_group(self):
+    def can_user_create_group(self) -> ClientResult[bool]:
         """Determines if the current user can create group site"""
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CanUserCreateGroup", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CanUserCreateGroup", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def create_group_for_site(
-        self, display_name, alias, is_public=None, optional_params=None
+        self,
+        display_name: str,
+        alias: str,
+        is_public: Optional[bool] = None,
+        optional_params: Optional[GroupCreationParams] = None,
     ):
         """
         Create a modern site
@@ -52,32 +64,27 @@ class GroupSiteManager(ClientObject):
             "optionalParams": optional_params,
         }
         return_type = ClientResult(self.context, GroupSiteInfo())
-        qry = ServiceOperationQuery(
-            self, "CreateGroupForSite", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateGroupForSite", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_group_ex(self, display_name, alias, is_public, optional_params=None):
+    def create_group_ex(
+        self,
+        display_name: str,
+        alias: str,
+        is_public: bool,
+        optional_params: Optional[GroupCreationParams] = None,
+    ):
         """
         Creates a modern site
-
-        :param str display_name:
-        :param str alias:
-        :param bool is_public:
-        :param office365.sharepoint.portal.group_creation_params.GroupCreationParams or None optional_params:
         """
-        payload = GroupCreationInformation(
-            display_name, alias, is_public, optional_params
-        )
+        payload = GroupCreationInformation(display_name, alias, is_public, optional_params)
         return_type = ClientResult(self.context, GroupSiteInfo())
-        qry = ServiceOperationQuery(
-            self, "CreateGroupEx", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateGroupEx", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def delete(self, site_url):
+    def delete(self, site_url: str) -> Self:
         """
         Deletes a SharePoint Team site
 
@@ -91,40 +98,46 @@ class GroupSiteManager(ClientObject):
     def ensure_team_for_group(self):
         """ """
         return_type = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "EnsureTeamForGroup", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "EnsureTeamForGroup", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_group_creation_context(self):
         """ """
         return_type = ClientResult(self.context, GroupCreationContext())
-        qry = ServiceOperationQuery(
-            self, "GetGroupCreationContext", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetGroupCreationContext", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_status(self, group_id):
-        # type: (str) -> ClientResult[GroupSiteInfo]
+    def get_status(self, group: Union[str, Site]) -> ClientResult[GroupSiteInfo]:
         """Get the status of a SharePoint site"""
+        from office365.sharepoint.sites.site import Site
+
         return_type = ClientResult(self.context, GroupSiteInfo())
-        qry = ServiceOperationQuery(
-            self, "GetSiteStatus", None, {"groupId": group_id}, None, return_type
-        )
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
-            request.method = HttpMethod.Get
-            request.url += "?groupId='{0}'".format(group_id)
+        def _get_status(group_id: str):
+            qry = ServiceOperationQuery(self, "GetSiteStatus", None, {"groupId": group_id}, None, return_type)
 
-        self.context.add_query(qry).before_query_execute(_construct_request)
+            def _construct_request(request: RequestOptions) -> None:
+                request.method = HttpMethod.Get
+                request.url += f"?groupId='{group_id}'"
+
+            self.context.add_query(qry).before_execute(_construct_request)
+
+        if isinstance(group, Site):
+
+            def _site_loaded():
+                _get_status(group.group_id)  # type: ignore[arg-type]
+
+            group.ensure_property("GroupId", _site_loaded)
+        else:
+            _get_status(group)
+
         return return_type
 
     def get_current_user_joined_teams(
-        self, get_logo_data=False, force_cache_update=False
-    ):
+        self, get_logo_data: bool = False, force_cache_update: bool = False
+    ) -> ClientResult[str]:
         """
         Get the teams in Microsoft Teams that the current user is a direct member of.
         :type get_logo_data: bool
@@ -132,13 +145,11 @@ class GroupSiteManager(ClientObject):
         """
         result = ClientResult(self.context, str())
         payload = {"getLogoData": get_logo_data, "forceCacheUpdate": force_cache_update}
-        qry = ServiceOperationQuery(
-            self, "GetCurrentUserJoinedTeams", None, payload, None, result
-        )
+        qry = ServiceOperationQuery(self, "GetCurrentUserJoinedTeams", None, payload, None, result)
         self.context.add_query(qry)
         return result
 
-    def get_current_user_shared_channel_member_groups(self):
+    def get_current_user_shared_channel_member_groups(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(
@@ -152,7 +163,7 @@ class GroupSiteManager(ClientObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels(self, team_id, use_staging_endpoint=False):
+    def get_team_channels(self, team_id: str, use_staging_endpoint: bool = False) -> ClientResult[bytes]:
         """
         Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
 
@@ -161,13 +172,11 @@ class GroupSiteManager(ClientObject):
         """
         return_type = ClientResult(self.context)
         payload = {"teamId": team_id, "useStagingEndpoint": use_staging_endpoint}
-        qry = ServiceOperationQuery(
-            self, "GetTeamChannels", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTeamChannels", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels_direct(self, team_id):
+    def get_team_channels_direct(self, team_id: str) -> ClientResult[str]:
         """
         :param str team_id:
         """
@@ -175,13 +184,11 @@ class GroupSiteManager(ClientObject):
         payload = {
             "teamId": team_id,
         }
-        qry = ServiceOperationQuery(
-            self, "GetTeamChannelsDirect", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTeamChannelsDirect", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_team_channels_with_site_url(self, site_url):
+    def get_team_channels_with_site_url(self, site_url: str) -> ClientResult[ChannelInfoCollection]:
         """
         Returns a list of team channels associated with a Microsoft 365 Group.
         :param str site_url:
@@ -190,13 +197,11 @@ class GroupSiteManager(ClientObject):
         payload = {
             "siteUrl": site_url,
         }
-        qry = ServiceOperationQuery(
-            self, "GetTeamChannelsWithSiteUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetTeamChannelsWithSiteUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def notebook(self, group_id):
+    def notebook(self, group_id: str) -> ClientResult[str]:
         """
         :param str group_id:
         """
@@ -208,11 +213,11 @@ class GroupSiteManager(ClientObject):
 
     def recent_and_joined_teams(
         self,
-        include_recent=None,
-        include_teams=None,
-        include_pinned=None,
-        existing_joined_teams_data=None,
-    ):
+        include_recent: Optional[bool] = None,
+        include_teams: Optional[bool] = None,
+        include_pinned: Optional[bool] = None,
+        existing_joined_teams_data: Optional[str] = None,
+    ) -> ClientResult[RecentAndJoinedTeamsResponse]:
         """
         Retrieves a list of teams that a user has recently accessed or joined
 
@@ -228,9 +233,7 @@ class GroupSiteManager(ClientObject):
             "includePinned": include_pinned,
             "existingJoinedTeamsData": existing_joined_teams_data,
         }
-        qry = ServiceOperationQuery(
-            self, "RecentAndJoinedTeams", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "RecentAndJoinedTeams", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
@@ -19,7 +21,7 @@ class Drive(BaseItem):
     """The drive resource is the top level object representing a user's OneDrive or a document library in
     SharePoint."""
 
-    def create_bundle(self, name, children=None):
+    def create_bundle(self, name: str, children: list | None = None) -> DriveItem:
         """
         Add a new bundle to the user's drive.
 
@@ -33,49 +35,42 @@ class Drive(BaseItem):
             "name": name,
             "@microsoft.graph.conflictBehavior": ConflictBehavior.Rename,
             "bundle": {},
-            "children": [{"id": item_id} for item_id in children],
+            "children": [{"id": item_id} for item_id in children or []],
         }
         qry = CreateEntityQuery(self.bundles, payload, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def search(self, query_text):
+    def search(self, query_text: str) -> EntityCollection[DriveItem]:
         """Search the hierarchy of items for items matching a query.
 
         :type query_text: str
         """
-        return_type = EntityCollection(
-            self.context, DriveItem, self.items.resource_path
-        )
+        return_type = EntityCollection(self.context, DriveItem, self.items.resource_path)
         qry = FunctionQuery(self, "search", {"q": query_text}, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def recent(self):
+    def recent(self) -> EntityCollection[DriveItem]:
         """
         List a set of items that have been recently used by the signed in user.
         This collection includes items that are in the user's drive as well as items
         they have access to from other drives.
         """
-        return_type = EntityCollection(
-            self.context, DriveItem, self.items.resource_path
-        )
+        return_type = EntityCollection(self.context, DriveItem, self.items.resource_path)
         qry = FunctionQuery(self, "recent", None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def shared_with_me(self):
+    def shared_with_me(self) -> EntityCollection[DriveItem]:
         """Retrieve a collection of DriveItem resources that have been shared with the owner of the Drive."""
-        return_type = EntityCollection(
-            self.context, DriveItem, self.items.resource_path
-        )
+        return_type = EntityCollection(self.context, DriveItem, self.items.resource_path)
         qry = FunctionQuery(self, "sharedWithMe", None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def drive_type(self):
-        # type: () -> Optional[str]
+    def drive_type(self) -> Optional[str]:
         """
         Describes the type of drive represented by this resource. OneDrive personal drives will return personal.
         OneDrive for Business will return business. SharePoint document libraries will return documentLibrary.
@@ -83,87 +78,66 @@ class Drive(BaseItem):
         return self.properties.get("driveType", None)
 
     @property
-    def sharepoint_ids(self):
+    def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""
         return self.properties.get("sharepointIds", SharePointIds())
 
     @property
-    def system(self):
+    def system(self) -> SystemFacet:
         """Optional. The user account that owns the drive. Read-only."""
         return self.properties.get("system", SystemFacet())
 
     @property
-    def owner(self):
+    def owner(self) -> IdentitySet:
         """If present, indicates that this is a system-managed drive. Read-only."""
         return self.properties.get("owner", IdentitySet())
 
     @property
-    def root(self):
-        # type: () -> DriveItem
+    def root(self) -> DriveItem:
         """The root folder of the drive."""
         return self.properties.get(
             "root",
-            DriveItem(
-                self.context, RootPath(self.resource_path, self.items.resource_path)
-            ),
+            DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path)),
         )
 
     @property
-    def list(self):
-        # type: () -> List
+    def list(self) -> List:
         """For drives in SharePoint, the underlying document library list."""
-        return self.properties.get(
-            "list", List(self.context, ResourcePath("list", self.resource_path))
-        )
+        return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
     @property
-    def bundles(self):
-        # type: () -> EntityCollection[DriveItem]
+    def bundles(self) -> EntityCollection[DriveItem]:
         """Bundle metadata, if the item is a bundle."""
         return self.properties.get(
             "bundles",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("bundles", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("bundles", self.resource_path)),
         )
 
     @property
-    def items(self):
-        # type: () -> EntityCollection[DriveItem]
+    def items(self) -> EntityCollection[DriveItem]:
         """All items contained in the drive."""
         return self.properties.get(
             "items",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("items", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path)),
         )
 
     @property
-    def following(self):
-        # type: () -> EntityCollection[DriveItem]
+    def following(self) -> EntityCollection[DriveItem]:
         """The list of items the user is following. Only in OneDrive for Business."""
         return self.properties.get(
             "following",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("following", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("following", self.resource_path)),
         )
 
     @property
-    def quota(self):
+    def quota(self) -> Quota:
         """Optional. Information about the drive's storage space quota. Read-only."""
         return self.properties.get("quota", Quota())
 
     @property
-    def special(self):
-        # type: () -> EntityCollection[DriveItem]
+    def special(self) -> EntityCollection[DriveItem]:
         """Collection of auth folders available in OneDrive. Read-only. Nullable."""
         return self.properties.get(
             "special",
-            EntityCollection(
-                self.context, DriveItem, ResourcePath("special", self.resource_path)
-            ),
+            EntityCollection(self.context, DriveItem, ResourcePath("special", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        return super(Drive, self).get_property(name, default_value)

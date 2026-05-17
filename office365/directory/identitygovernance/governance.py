@@ -27,60 +27,50 @@ class IdentityGovernance(Entity):
     """
 
     @property
-    def app_consent(self):
+    def app_consent(self) -> AppConsentApprovalRoute:
         """
         Container for base resources that expose the app consent request API and features.
         Currently, exposes only the appConsentRequests resource.
         """
         return self.properties.get(
             "appConsent",
-            AppConsentApprovalRoute(
-                self.context, ResourcePath("appConsent", self.resource_path)
-            ),
+            AppConsentApprovalRoute(self.context, ResourcePath("appConsent", self.resource_path)),
         )
 
     @property
-    def access_reviews(self):
+    def access_reviews(self) -> AccessReviewSet:
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "accessReviews",
-            AccessReviewSet(
-                self.context, ResourcePath("accessReviews", self.resource_path)
-            ),
+            AccessReviewSet(self.context, ResourcePath("accessReviews", self.resource_path)),
         )
 
     @property
-    def privileged_access(self):
+    def privileged_access(self) -> PrivilegedAccessRoot:
         """Container for the base resources that expose the access reviews API and features."""
         return self.properties.get(
             "privilegedAccess",
-            PrivilegedAccessRoot(
-                self.context, ResourcePath("privilegedAccess", self.resource_path)
-            ),
+            PrivilegedAccessRoot(self.context, ResourcePath("privilegedAccess", self.resource_path)),
         )
 
     @property
-    def terms_of_use(self):
+    def terms_of_use(self) -> TermsOfUseContainer:
         """
         Container for the resources that expose the terms of use API and its features, including agreements
         and agreementAcceptances.
         """
         return self.properties.get(
             "termsOfUse",
-            TermsOfUseContainer(
-                self.context, ResourcePath("termsOfUse", self.resource_path)
-            ),
+            TermsOfUseContainer(self.context, ResourcePath("termsOfUse", self.resource_path)),
         )
 
     @property
-    def entitlement_management(self):
+    def entitlement_management(self) -> EntitlementManagement:
         """
         Container for entitlement management resources, including accessPackageCatalog, connectedOrganization,
         and entitlementManagementSettings.
         """
         return self.properties.get(
             "entitlementManagement",
-            EntitlementManagement(
-                self.context, ResourcePath("entitlementManagement", self.resource_path)
-            ),
+            EntitlementManagement(self.context, ResourcePath("entitlementManagement", self.resource_path)),
         )

@@ -9,8 +9,7 @@ class BuiltInIdentityProvider(IdentityProviderBase):
     """
 
     @property
-    def identity_provider_type(self):
-        # type: () -> Optional[str]
+    def identity_provider_type(self) -> Optional[str]:
         """
         The identity provider type. For a B2B scenario, possible values: AADSignup, MicrosoftAccount, EmailOTP.
         """

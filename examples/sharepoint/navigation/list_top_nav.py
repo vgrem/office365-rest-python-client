@@ -1,5 +1,7 @@
 """
-Prints the top navigation
+Print the top navigation bar of a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

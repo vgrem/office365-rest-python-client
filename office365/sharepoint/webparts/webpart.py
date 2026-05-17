@@ -13,16 +13,14 @@ class WebPart(Entity):
         return self.title or self.entity_type_name
 
     @property
-    def export_mode(self):
-        # type: () -> Optional[int]
+    def export_mode(self) -> Optional[int]:
         """
         Gets or sets the export mode of a Web Part.
         """
         return self.properties.get("ExportMode", None)
 
     @property
-    def hidden(self):
-        # type: () -> Optional[bool]
+    def hidden(self) -> Optional[bool]:
         """
         Specifies whether a Web Part is displayed on a Web Part Page.
 
@@ -32,8 +30,7 @@ class WebPart(Entity):
         return self.properties.get("Hidden", None)
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """
         Specifies the title of a Web Part.
 
@@ -43,8 +40,7 @@ class WebPart(Entity):
         return self.properties.get("Title", None)
 
     @property
-    def title_url(self):
-        # type: () -> Optional[str]
+    def title_url(self) -> Optional[str]:
         """
         Specifies a URL to the supplemental information about a Web Part.
 
@@ -57,8 +53,7 @@ class WebPart(Entity):
         return self.properties.get("TitleUrl", None)
 
     @property
-    def zone_index(self):
-        # type: () -> Optional[int]
+    def zone_index(self) -> Optional[int]:
         """
         An integer that specifies the relative position of a Web Part in a Web Part zone.
         Web Parts are positioned from the smallest to the largest zone index. If two or more Web Parts have the

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -6,15 +10,19 @@ from office365.sharepoint.permissions.roles.definitions.definition import RoleDe
 from office365.sharepoint.portal.userprofiles.sharedwithme.view_item_removal_result import (
     SharedWithMeViewItemRemovalResult,
 )
+from office365.sharepoint.sharing.role_type import RoleType
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
+
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
 
 
 class DocumentSharingManager(Entity):
     """Specifies document sharing related methods."""
 
     @staticmethod
-    def get_role_definition(context, role):
+    def get_role_definition(context: ClientContext, role: RoleType):
         """This method returns a role definition in the current web that is associated with a given Role
         (section 3.2.5.188) value.
 
@@ -25,13 +33,21 @@ class DocumentSharingManager(Entity):
         context.web.role_definitions.add_child(return_type)
         binding_type = DocumentSharingManager(context)
         qry = ServiceOperationQuery(
-            binding_type, "GetRoleDefinition", [role], None, None, return_type, True
+            binding_type,
+            "GetRoleDefinition",
+            [role.value],
+            None,
+            None,
+            return_type,
+            True,
         )
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def remove_items_from_shared_with_me_view(context, item_urls):
+    def remove_items_from_shared_with_me_view(
+        context: ClientContext, item_urls: List[str]
+    ) -> ClientResult[ClientValueCollection[SharedWithMeViewItemRemovalResult]]:
         """
         Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
             does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.
@@ -42,9 +58,7 @@ class DocumentSharingManager(Entity):
         :param list[str] item_urls: A list of absolute URLs of the items to be removed from the view.
             These items might belong to any site or site collection in the tenant.
         """
-        return_type = ClientResult(
-            context, ClientValueCollection(SharedWithMeViewItemRemovalResult)
-        )
+        return_type = ClientResult(context, ClientValueCollection(SharedWithMeViewItemRemovalResult))
         binding_type = DocumentSharingManager(context)
         qry = ServiceOperationQuery(
             binding_type,
@@ -60,11 +74,11 @@ class DocumentSharingManager(Entity):
 
     @staticmethod
     def update_document_sharing_info(
-        context,
-        resource_address,
-        user_role_assignments,
-        validate_existing_permissions=None,
-        additive_mode=None,
+        context: ClientContext,
+        resource_address: str,
+        user_role_assignments: List[UserRoleAssignment],
+        validate_existing_permissions: Optional[bool] = None,
+        additive_mode: Optional[bool] = None,
         send_server_managed_notification=None,
         custom_message=None,
         include_anonymous_links_in_notification=None,
@@ -104,9 +118,7 @@ class DocumentSharingManager(Entity):
         :param ClientResult return_type:
         """
         if return_type is None:
-            return_type = ClientResult(
-                context, ClientValueCollection(UserSharingResult)
-            )
+            return_type = ClientResult(context, ClientValueCollection(UserSharingResult))
         payload = {
             "resourceAddress": resource_address,
             "userRoleAssignments": user_role_assignments,

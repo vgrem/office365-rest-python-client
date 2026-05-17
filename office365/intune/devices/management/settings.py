@@ -17,8 +17,6 @@ class DeviceManagementSettings(ClientValue):
         :param bool secure_by_default: Device should be noncompliant when there is no compliance policy targeted when
             this is true
         """
-        self.deviceComplianceCheckinThresholdDays = (
-            device_compliance_checkin_threshold_days
-        )
+        self.deviceComplianceCheckinThresholdDays = device_compliance_checkin_threshold_days
         self.isScheduledActionEnabled = is_scheduled_action_enabled
         self.secureByDefault = secure_by_default

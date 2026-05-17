@@ -1,17 +1,8 @@
-from unittest import TestCase
-
-from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
 from tests.decorators import requires_app_permission
+from tests.graph_case import GraphSecretTestCase
 
 
-class TestSecurity(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(
-            test_client_id, test_client_secret
-        )
-
+class TestSecurity(GraphSecretTestCase):
     # def test1_create_alert(self):
     #    result = self.client.security.alerts.add(
     #        "Simulated Phishing Alert",
@@ -34,9 +25,7 @@ class TestSecurity(TestCase):
             "status": "scheduled",
             "startDateTime": "2023-12-01T08:00:00Z",
         }
-        result = self.client.security.attack_simulation.simulations.add(
-            **simulation
-        ).execute_query()
+        result = self.client.security.attack_simulation.simulations.add(**simulation).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     # @requires_app_permission("SecurityIncident.Read.All")

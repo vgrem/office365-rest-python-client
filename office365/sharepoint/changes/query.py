@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,8 +8,8 @@ class ChangeQuery(ClientValue):
 
     def __init__(
         self,
-        alert=False,
-        site=False,
+        alert: bool = False,
+        site: bool = False,
         web=False,
         list_=False,
         item=False,
@@ -27,6 +29,22 @@ class ChangeQuery(ClientValue):
         change_token_start=None,
         change_token_end=None,
         fetch_limit=None,
+        app_consent_principal: Optional[bool] = None,
+        field: Optional[bool] = None,
+        group_membership_add: Optional[bool] = None,
+        group_membership_delete: Optional[bool] = None,
+        ignore_start_token_not_found_error: Optional[bool] = None,
+        latest_first: Optional[bool] = None,
+        move: Optional[bool] = None,
+        navigation: Optional[bool] = None,
+        recursive_all: Optional[bool] = None,
+        rename: Optional[bool] = None,
+        require_security_trim: Optional[bool] = None,
+        restore: Optional[bool] = None,
+        role_definition_add: Optional[bool] = None,
+        role_definition_delete: Optional[bool] = None,
+        role_definition_update: Optional[bool] = None,
+        security_policy: Optional[bool] = None,
     ):
         """
         :param int fetch_limit:
@@ -54,7 +72,7 @@ class ChangeQuery(ClientValue):
         :param bool web: Gets or sets a value that specifies whether changes to Web sites are included in the query.
         :param bool list_: Gets or sets a value that specifies whether changes to lists are included in the query.
         """
-        super(ChangeQuery, self).__init__()
+        super().__init__()
         self.Item = item
         self.Alert = alert
         self.ContentType = content_type
@@ -76,6 +94,22 @@ class ChangeQuery(ClientValue):
         self.RoleAssignmentAdd = role_assignment_add
         self.RoleAssignmentDelete = role_assignment_delete
         self.FetchLimit = str(fetch_limit) if fetch_limit else None
+        self.AppConsentPrincipal = app_consent_principal
+        self.Field = field
+        self.GroupMembershipAdd = group_membership_add
+        self.GroupMembershipDelete = group_membership_delete
+        self.IgnoreStartTokenNotFoundError = ignore_start_token_not_found_error
+        self.LatestFirst = latest_first
+        self.Move = move
+        self.Navigation = navigation
+        self.RecursiveAll = recursive_all
+        self.Rename = rename
+        self.RequireSecurityTrim = require_security_trim
+        self.Restore = restore
+        self.RoleDefinitionAdd = role_definition_add
+        self.RoleDefinitionDelete = role_definition_delete
+        self.RoleDefinitionUpdate = role_definition_update
+        self.SecurityPolicy = security_policy
 
     @property
     def entity_type_name(self):

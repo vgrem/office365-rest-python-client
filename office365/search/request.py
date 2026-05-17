@@ -1,10 +1,13 @@
-from typing import Dict, Optional
+from __future__ import annotations
+
+from typing import Dict, List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.types.collections import StringCollection
 from office365.search.aggregation_option import AggregationOption
+from office365.search.query import SearchQuery
 from office365.search.sharepoint_onedrive_options import SharePointOneDriveOptions
 from office365.search.sort_property import SortProperty
 
@@ -14,16 +17,16 @@ class SearchRequest(ClientValue):
 
     def __init__(
         self,
-        query,
-        aggregation_filters=None,
-        aggregations=None,
+        query: SearchQuery,
+        aggregation_filters: List[str] | None = None,
+        aggregations: Optional[List[AggregationOption]] = None,
         enable_top_results=None,
-        size=None,
-        region=None,
+        size: int | None = None,
+        region: str | None = None,
         entity_types=None,
         fields=None,
         page_from=None,
-        sort_properties=None,
+        sort_properties: list[SortProperty] | None = None,
         content_sources=None,
         sharepoint_onedrive_options=SharePointOneDriveOptions(),
     ):
@@ -53,7 +56,7 @@ class SearchRequest(ClientValue):
             sort results. There can be at most 5 sort properties in the collection.
         :param list[str] content_sources: Contains the connection to be targeted.
         """
-        super(SearchRequest, self).__init__()
+        super().__init__()
         self.query = query
         self.aggregationFilters = StringCollection(aggregation_filters)
         self.aggregations = ClientValueCollection(AggregationOption, aggregations)
@@ -67,8 +70,7 @@ class SearchRequest(ClientValue):
         self.contentSources = StringCollection(content_sources)
         self.sharePointOneDriveOptions = sharepoint_onedrive_options
 
-    def to_json(self, json_format=None):
-        # type: (Optional[ODataJsonFormat]) -> Dict
-        json_value = super(SearchRequest, self).to_json(json_format)
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict:
+        json_value = super().to_json(json_format)
         json_value["from"] = json_value.pop("page_from", None)
         return json_value

@@ -1,4 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
+from office365.sharepoint.principal.users.id_info import UserIdInfo
 
 
 class Principal(ClientValue):
@@ -15,6 +18,9 @@ class Principal(ClientValue):
         job_title=None,
         login_name=None,
         name=None,
+        principal_type: Optional[int] = None,
+        user_id: UserIdInfo = UserIdInfo(),
+        user_principal_name: Optional[str] = None,
     ):
         """
         :param int id_: Id of the Principal in SharePoint's UserInfo List.
@@ -36,6 +42,9 @@ class Principal(ClientValue):
         self.jobTitle = job_title
         self.loginName = login_name
         self.name = name
+        self.principalType = principal_type
+        self.userId = user_id
+        self.userPrincipalName = user_principal_name
 
     @property
     def entity_type_name(self):

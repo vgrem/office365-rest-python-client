@@ -13,13 +13,11 @@ class WorkbookOperation(Entity):
         return self.properties.get("error", WorkbookOperationError())
 
     @property
-    def resource_location(self):
-        # type: () -> Optional[str]
+    def resource_location(self) -> Optional[str]:
         """The resource URI for the result."""
         return self.properties.get("resourceLocation", None)
 
     @property
-    def status(self):
-        # type: () -> Optional[str]
+    def status(self) -> Optional[str]:
         """The current status of the operation. Possible values are: NotStarted, Running, Completed, Failed."""
         return self.properties.get("status", None)

@@ -9,12 +9,11 @@ class RiskyUserHistoryItem(RiskyUser):
     by Azure AD Identity Protection."""
 
     @property
-    def activity(self):
+    def activity(self) -> RiskUserActivity:
         """The activity related to user risk level change."""
         return self.properties.get("activity", RiskUserActivity())
 
     @property
-    def initiated_by(self):
-        # type: () -> Optional[str]
+    def initiated_by(self) -> Optional[str]:
         """The ID of actor that does the operation."""
         return self.properties.get("initiatedBy", None)

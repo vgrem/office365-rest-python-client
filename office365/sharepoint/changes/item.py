@@ -10,8 +10,7 @@ class ChangeItem(Change):
     """A change on an item."""
 
     @property
-    def activity_type(self):
-        # type: () -> Optional[str]
+    def activity_type(self) -> Optional[str]:
         """Returns activity type defined in ChangeActivityType"""
         return self.properties.get("ActivityType", None)
 
@@ -36,25 +35,21 @@ class ChangeItem(Change):
         return self.properties.get("EditorLoginName", None)
 
     @property
-    def file_type(self):
-        # type: () -> Optional[str]
+    def file_type(self) -> Optional[str]:
         """Returns the list item’s file type."""
         return self.properties.get("FileType", None)
 
     @property
-    def item_id(self):
-        # type: () -> Optional[int]
+    def item_id(self) -> Optional[int]:
         """Identifies the changed item."""
         return self.properties.get("ItemId", None)
 
     @property
-    def is_recycle_bin_operation(self):
-        # type: () -> Optional[bool]
+    def is_recycle_bin_operation(self) -> Optional[bool]:
         return self.properties.get("IsRecycleBinOperation", None)
 
     @property
-    def server_relative_url(self):
-        # type: () -> Optional[str]
+    def server_relative_url(self) -> Optional[str]:
         """Specifies the server-relative URL of the item."""
         return self.properties.get("ServerRelativeUrl", None)
 
@@ -66,13 +61,10 @@ class ChangeItem(Change):
     @property
     def shared_with_users(self):
         """Returns the array of users that have been shared in sharing action for the change log."""
-        return self.properties.get(
-            "SharedWithUsers", ClientValueCollection(SharedWithUser)
-        )
+        return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 
     @property
-    def unique_id(self):
-        # type: () -> Optional[str]
+    def unique_id(self) -> Optional[str]:
         """The Document identifier of the item."""
         return self.properties.get("UniqueId", None)
 
@@ -84,4 +76,4 @@ class ChangeItem(Change):
                 "SharedWithUsers": self.shared_with_users,
             }
             default_value = property_mapping.get(name, None)
-        return super(ChangeItem, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -1,9 +1,9 @@
-"""
-Creates a list item in a List
+"""Demonstrates how to create a list item in a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.fields.user_value import FieldUserValue
 from tests import test_client_credentials, test_team_site_url, test_user_principal_name
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

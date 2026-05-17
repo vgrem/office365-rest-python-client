@@ -9,29 +9,24 @@ class FileVersionEvent(Entity):
     """Represents an event object happened on a Microsoft.SharePoint.SPFile."""
 
     @property
-    def event_type(self):
-        # type: () -> Optional[str]
+    def event_type(self) -> Optional[str]:
         """Returns the type of the event."""
         return self.properties.get("EventType", None)
 
     @property
-    def editor(self):
-        # type: () -> Optional[str]
+    def editor(self) -> Optional[str]:
         """Returns the name of the user who initiated the event."""
         return self.properties.get("Editor", None)
 
     @property
-    def shared_by_user(self):
+    def shared_by_user(self) -> SharedWithUser:
         """Returns the shared by user Information in sharing action for change log."""
         return self.properties.get("SharedByUser", SharedWithUser())
 
     @property
-    def shared_with_users(self):
-        # type: () -> ClientValueCollection[SharedWithUser]
+    def shared_with_users(self) -> ClientValueCollection[SharedWithUser]:
         """Returns the array of users that have been shared in sharing action for the change log."""
-        return self.properties.get(
-            "SharedWithUsers", ClientValueCollection(SharedWithUser)
-        )
+        return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -40,4 +35,4 @@ class FileVersionEvent(Entity):
                 "SharedWithUsers": self.shared_with_users,
             }
             default_value = property_mapping.get(name, None)
-        return super(FileVersionEvent, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

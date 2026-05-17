@@ -13,8 +13,8 @@ from office365.todo.linked_resource import LinkedResource
 class TodoTask(Entity):
     """A todoTask represents a task, such as a piece of work or personal item, that can be tracked and completed."""
 
-    def __str__(self):
-        return self.title or self.entity_type_name
+    def __str__(self) -> str:
+        return self.title or "" or self.entity_type_name
 
     @property
     def body(self):
@@ -22,14 +22,12 @@ class TodoTask(Entity):
         return self.properties.get("body", ItemBody())
 
     @property
-    def title(self):
-        # type: () -> Optional[str]
+    def title(self) -> Optional[str]:
         """A brief description of the task."""
         return self.properties.get("title", None)
 
     @property
-    def attachments(self):
-        # type: () -> EntityCollection[AttachmentBase]
+    def attachments(self) -> EntityCollection[AttachmentBase]:
         """A collection of file attachments for the task."""
         return self.properties.get(
             "attachments",
@@ -41,19 +39,15 @@ class TodoTask(Entity):
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the task."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
     @property
-    def checklist_items(self):
-        # type: () -> EntityCollection[ChecklistItem]
+    def checklist_items(self) -> EntityCollection[ChecklistItem]:
         """A collection of checklistItems linked to a task."""
         return self.properties.get(
             "checklistItems",
@@ -65,8 +59,7 @@ class TodoTask(Entity):
         )
 
     @property
-    def linked_resources(self):
-        # type: () -> EntityCollection[LinkedResource]
+    def linked_resources(self) -> EntityCollection[LinkedResource]:
         """A collection of resources linked to the task."""
         return self.properties.get(
             "linkedResources",
@@ -78,8 +71,8 @@ class TodoTask(Entity):
         )
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.task"
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -88,4 +81,4 @@ class TodoTask(Entity):
                 "linked_resources": self.linked_resources,
             }
             default_value = property_mapping.get(name, None)
-        return super(TodoTask, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

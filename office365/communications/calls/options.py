@@ -15,6 +15,4 @@ class CallOptions(ClientValue):
            enabled for the call.
         """
         self.hideBotAfterEscalation = hide_bot_after_escalation
-        self.isContentSharingNotificationEnabled = (
-            is_content_sharing_notification_enabled
-        )
+        self.isContentSharingNotificationEnabled = is_content_sharing_notification_enabled

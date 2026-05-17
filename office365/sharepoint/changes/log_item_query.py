@@ -1,14 +1,18 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ChangeLogItemQuery(ClientValue):
     def __init__(
         self,
-        change_token=None,
-        query=None,
-        query_options=None,
-        contains=None,
-        row_limit=None,
+        change_token: Optional[str] = None,
+        query: Optional[str] = None,
+        query_options: Optional[str] = None,
+        contains: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        view_fields: Optional[str] = None,
+        view_name: Optional[str] = None,
     ):
         """
         Specifies an object that is used as the input parameter of
@@ -23,12 +27,14 @@ class ChangeLogItemQuery(ClientValue):
             for the query. See [MS-LISTSWS] section 2.2.4.3.
         :param int row_limit: Specifies a limit for the number of items in the query that are returned per page.
         """
-        super(ChangeLogItemQuery, self).__init__()
+        super().__init__()
         self.Query = query
         self.QueryOptions = query_options
         self.ChangeToken = change_token
         self.Contains = contains
         self.RowLimit = str(row_limit) if row_limit else None
+        self.ViewFields = view_fields
+        self.ViewName = view_name
 
     @property
     def entity_type_name(self):

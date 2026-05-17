@@ -15,7 +15,12 @@ from office365.sharepoint.activities.facets.point_in_time_restore import (
 from office365.sharepoint.activities.facets.rename import RenameFacet
 from office365.sharepoint.activities.facets.sharing import SharingFacet
 from office365.sharepoint.activities.facets.task_completed import TaskCompletedFacet
+from office365.sharepoint.activities.facets.taskcreated import TaskCreatedFacet
+from office365.sharepoint.activities.facets.taskreopened import TaskReopenedFacet
 from office365.sharepoint.activities.facets.version import VersionFacet
+from office365.sharepoint.activities.taskreassignedfacet import TaskReassignedFacet
+from office365.sharepoint.sharing.restorefacet import RestoreFacet
+from office365.sharepoint.sharing.restoreversionfacet import RestoreVersionFacet
 
 
 class ActionFacet(ClientValue):
@@ -31,11 +36,16 @@ class ActionFacet(ClientValue):
         edit=EditFacet(),
         mention=GetMentionFacet(),
         move=MoveFacet(),
-        pointInTimeRestore=PointInTimeRestoreFacet(),
+        point_in_time_restore=PointInTimeRestoreFacet(),
         rename=RenameFacet(),
         share=SharingFacet(),
-        taskCompleted=TaskCompletedFacet(),
+        task_completed=TaskCompletedFacet(),
         version=VersionFacet(),
+        restore: RestoreFacet = RestoreFacet(),
+        restore_version: RestoreVersionFacet = RestoreVersionFacet(),
+        task_created: TaskCreatedFacet = TaskCreatedFacet(),
+        task_reassigned: TaskReassignedFacet = TaskReassignedFacet(),
+        task_reopened: TaskReopenedFacet = TaskReopenedFacet(),
     ):
         """
         :param AddToOneDriveFacet add_to_one_drive:
@@ -56,14 +66,19 @@ class ActionFacet(ClientValue):
         self.edit = edit
         self.mention = mention
         self.move = move
-        self.pointInTimeRestore = pointInTimeRestore
+        self.pointInTimeRestore = point_in_time_restore
         self.rename = rename
         self.share = share
-        self.taskCompleted = taskCompleted
+        self.taskCompleted = task_completed
         self.version = version
+        self.restore = restore
+        self.restoreVersion = restore_version
+        self.taskCreated = task_created
+        self.taskReassigned = task_reassigned
+        self.taskReopened = task_reopened
 
-    def __repr__(self):
-        return self.facet_type
+    def __repr__(self):  # type: ignore[override]
+        return self.facet_type or ""
 
     @property
     def facet_type(self):

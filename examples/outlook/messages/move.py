@@ -8,9 +8,7 @@ https://learn.microsoft.com/en-us/graph/api/message-move?view=graph-rest-1.0
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 folder_name = "Archive"
 to_folder = client.me.mail_folders[folder_name]
 
@@ -20,4 +18,4 @@ message = client.me.messages.add(
     to_recipients=["fannyd@contoso.onmicrosoft.com"],
 )
 message.move(to_folder).execute_query()
-print("Draft message is created && moved into {0} folder".format(folder_name))
+print(f"Draft message is created and moved into {folder_name} folder")

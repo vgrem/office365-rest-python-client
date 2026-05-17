@@ -6,11 +6,9 @@ from office365.runtime.queries.function import FunctionQuery
 
 class WorkbookTableColumnCollection(EntityCollection[WorkbookTableColumn]):
     def __init__(self, context, resource_path=None):
-        super(WorkbookTableColumnCollection, self).__init__(
-            context, WorkbookTableColumn, resource_path
-        )
+        super().__init__(context, WorkbookTableColumn, resource_path)
 
-    def add(self, index, name, values=None):
+    def add(self, index: int, name: str, values=None):
         """
         Adds a new column to the table.
 
@@ -20,13 +18,11 @@ class WorkbookTableColumnCollection(EntityCollection[WorkbookTableColumn]):
         :param list values: A 2-dimensional array of unformatted values of the table column.
         :param str name: Name
         """
-        return super(WorkbookTableColumnCollection, self).add(
-            index=index, values=values, name=name
-        )
+        return super().add(index=index, values=values, name=name)
 
-    def count(self):
+    def count(self) -> ClientResult[int]:
         """"""
-        return_type = ClientResult[int](self.context)
+        return_type = ClientResult(self.context)
         qry = FunctionQuery(self, "count", None, return_type)
         self.context.add_query(qry)
         return return_type

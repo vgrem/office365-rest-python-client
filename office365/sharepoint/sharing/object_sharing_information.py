@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -12,8 +14,6 @@ from office365.sharepoint.sharing.object_sharing_information_user import (
 )
 
 if TYPE_CHECKING:
-    from typing import Optional  # noqa
-
     from office365.sharepoint.client_context import ClientContext  # noqa
 
 
@@ -21,7 +21,7 @@ class ObjectSharingInformation(Entity):
     """Provides information about the sharing state of a securable object."""
 
     @staticmethod
-    def can_current_user_share(context, doc_id):
+    def can_current_user_share(context: ClientContext, doc_id: str) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -30,14 +30,12 @@ class ObjectSharingInformation(Entity):
         binding_type = ObjectSharingInformation(context)
         payload = {"docId": doc_id}
         return_type = ClientResult(context, int())
-        qry = ServiceOperationQuery(
-            binding_type, "CanCurrentUserShare", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "CanCurrentUserShare", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def can_current_user_share_remote(context, doc_id):
+    def can_current_user_share_remote(context: ClientContext, doc_id: str) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId, from a remote context.
 
         :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
@@ -60,7 +58,7 @@ class ObjectSharingInformation(Entity):
 
     @staticmethod
     def get_web_sharing_information(
-        context,
+        context: ClientContext,
         exclude_current_user=None,
         exclude_site_admin=None,
         exclude_security_groups=None,
@@ -111,26 +109,23 @@ class ObjectSharingInformation(Entity):
     def get_shared_with_users(self):
         """Returns an array that contains the users with whom a securable object is shared."""
         return_type = EntityCollection(self.context, ObjectSharingInformationUser)
-        qry = ServiceOperationQuery(
-            self, "GetSharedWithUsers", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSharedWithUsers", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @staticmethod
     def get_list_item_sharing_information(
-        context,
-        list_id,
-        item_id,
-        exclude_current_user=True,
-        exclude_site_admin=True,
-        exclude_security_groups=True,
-        retrieve_anonymous_links=False,
-        retrieve_user_info_details=False,
-        check_for_access_requests=False,
-        return_type=None,
-    ):
-        # type: (ClientContext, str, int, Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[bool], Optional[ObjectSharingInformation]) -> ObjectSharingInformation
+        context: ClientContext,
+        list_id: str,
+        item_id: int,
+        exclude_current_user: Optional[bool] = True,
+        exclude_site_admin: Optional[bool] = True,
+        exclude_security_groups: Optional[bool] = True,
+        retrieve_anonymous_links: Optional[bool] = False,
+        retrieve_user_info_details: Optional[bool] = False,
+        check_for_access_requests: Optional[bool] = False,
+        return_type: Optional[ObjectSharingInformation] = None,
+    ) -> ObjectSharingInformation:
         """
         Retrieves information about the sharing state for a given list.
 
@@ -178,8 +173,7 @@ class ObjectSharingInformation(Entity):
         return return_type
 
     @property
-    def anonymous_edit_link(self):
-        # type: () -> Optional[str]
+    def anonymous_edit_link(self) -> Optional[str]:
         """
         Provides the URL that allows an anonymous user to edit the securable object.
         If such a URL is not available, this property will provide an empty string.
@@ -187,8 +181,7 @@ class ObjectSharingInformation(Entity):
         return self.properties.get("AnonymousEditLink", None)
 
     @property
-    def anonymous_view_link(self):
-        # type: () -> Optional[str]
+    def anonymous_view_link(self) -> Optional[str]:
         """
         Provides the URL that allows an anonymous user to view the securable object.
         If such a URL is not available, this property will provide an empty string.
@@ -196,32 +189,28 @@ class ObjectSharingInformation(Entity):
         return self.properties.get("AnonymousViewLink", None)
 
     @property
-    def can_be_shared(self):
-        # type: () -> Optional[bool]
+    def can_be_shared(self) -> Optional[bool]:
         """
         Indicates whether the current securable object can be shared.
         """
         return self.properties.get("CanBeShared", None)
 
     @property
-    def can_be_unshared(self):
-        # type: () -> Optional[bool]
+    def can_be_unshared(self) -> Optional[bool]:
         """
         Indicates whether the current securable object can be unshared.
         """
         return self.properties.get("CanBeUnshared", None)
 
     @property
-    def can_manage_permissions(self):
-        # type: () -> Optional[bool]
+    def can_manage_permissions(self) -> Optional[bool]:
         """
         Specifies whether the current user is allowed to change the permissions of the securable object.
         """
         return self.properties.get("CanManagePermissions", None)
 
     @property
-    def has_pending_access_requests(self):
-        # type: () -> Optional[bool]
+    def has_pending_access_requests(self) -> Optional[bool]:
         """
         Provides information about whether there are any pending access requests for the securable object.
 
@@ -231,8 +220,7 @@ class ObjectSharingInformation(Entity):
         return self.properties.get("HasPendingAccessRequests", None)
 
     @property
-    def has_permission_levels(self):
-        # type: () -> Optional[bool]
+    def has_permission_levels(self) -> Optional[bool]:
         """
         Indicates whether the object sharing information contains permissions information in addition to the identities
         of the users who have access to the securable object.
@@ -240,16 +228,14 @@ class ObjectSharingInformation(Entity):
         return self.properties.get("HasPermissionLevels", None)
 
     @property
-    def sharing_links(self):
-        # type: () -> ClientValueCollection[SharingLinkInfo]
+    def sharing_links(self) -> ClientValueCollection[SharingLinkInfo]:
         """Indicates the collection of all available sharing links for the securable object."""
-        return self.properties.get(
-            "SharingLinks", ClientValueCollection(SharingLinkInfo)
-        )
+        return self.properties.get("SharingLinks", ClientValueCollection(SharingLinkInfo))
 
     @property
-    def shared_with_users_collection(self):
-        # type: () -> EntityCollection[ObjectSharingInformationUser]
+    def shared_with_users_collection(
+        self,
+    ) -> EntityCollection[ObjectSharingInformationUser]:
         """A collection of shared with users."""
         return self.properties.get(
             "SharedWithUsersCollection",
@@ -265,10 +251,10 @@ class ObjectSharingInformation(Entity):
             default_value = self.shared_with_users_collection
         elif name == "SharingLinks":
             default_value = self.sharing_links
-        return super(ObjectSharingInformation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(ObjectSharingInformation, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "AnonymousEditLink" and self._resource_path is None:
             self._resource_path = None

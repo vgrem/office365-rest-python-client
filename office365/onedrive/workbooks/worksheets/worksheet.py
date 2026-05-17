@@ -27,15 +27,13 @@ class WorkbookWorksheet(Entity):
     def __str__(self):
         return self.name or self.entity_type_name
 
-    def cell(self, row, column):
+    def cell(self, row: int, column: int) -> WorkbookRange:
         """Gets the range object containing the single cell based on row and column numbers.
         The cell can be outside the bounds of its parent range, so long as it's stays within the worksheet grid.
         :param int row: Row number of the cell to be retrieved. Zero-indexed.
         :param int column: Column number of the cell to be retrieved. Zero-indexed.
         """
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         params = {"row": row, "column": column}
         qry = FunctionQuery(self, "cell", method_params=params, return_type=return_type)
         self.context.add_query(qry)
@@ -43,17 +41,13 @@ class WorkbookWorksheet(Entity):
 
     def range(self, address=None):
         """Gets the range object specified by the address or name."""
-        return_type = WorkbookRange(
-            self.context, ResourcePath("range", self.resource_path)
-        )
+        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         params = {"address": address}
-        qry = FunctionQuery(
-            self, "range", method_params=params, return_type=return_type
-        )
+        qry = FunctionQuery(self, "range", method_params=params, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def used_range(self, values_only=False):
+    def used_range(self, values_only: bool = False) -> WorkbookRange:
         """Return the used range of the given range object.
 
         :param bool values_only: Optional. Considers only cells with values as used cells.
@@ -65,25 +59,20 @@ class WorkbookWorksheet(Entity):
         return return_type
 
     @property
-    def charts(self):
-        # type: () -> EntityCollection[WorkbookChart]
+    def charts(self) -> EntityCollection[WorkbookChart]:
         """Returns collection of charts that are part of the worksheet"""
         return self.properties.get(
             "charts",
-            EntityCollection(
-                self.context, WorkbookChart, ResourcePath("charts", self.resource_path)
-            ),
+            EntityCollection(self.context, WorkbookChart, ResourcePath("charts", self.resource_path)),
         )
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The display name of the worksheet."""
         return self.properties.get("name", None)
 
     @property
-    def names(self):
-        # type: () -> EntityCollection[WorkbookNamedItem]
+    def names(self) -> EntityCollection[WorkbookNamedItem]:
         """Returns collection of names that are associated with the worksheet"""
         return self.properties.get(
             "names",
@@ -95,19 +84,15 @@ class WorkbookWorksheet(Entity):
         )
 
     @property
-    def tables(self):
-        # type: () -> WorkbookTableCollection
+    def tables(self) -> WorkbookTableCollection:
         """Collection of tables that are part of the worksheet."""
         return self.properties.get(
             "tables",
-            WorkbookTableCollection(
-                self.context, ResourcePath("tables", self.resource_path)
-            ),
+            WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
     @property
-    def pivot_tables(self):
-        # type: () -> WorkbookPivotTableCollection
+    def pivot_tables(self) -> WorkbookPivotTableCollection:
         """Collection of PivotTables that are part of the worksheet."""
         return self.properties.get(
             "pivotTables",
@@ -118,14 +103,11 @@ class WorkbookWorksheet(Entity):
         )
 
     @property
-    def protection(self):
-        # type: () -> WorkbookWorksheetProtection
+    def protection(self) -> WorkbookWorksheetProtection:
         """Returns sheet protection object for a worksheet."""
         return self.properties.get(
             "protection",
-            WorkbookWorksheetProtection(
-                self.context, ResourcePath("protection", self.resource_path)
-            ),
+            WorkbookWorksheetProtection(self.context, ResourcePath("protection", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -134,4 +116,4 @@ class WorkbookWorksheet(Entity):
                 "pivotTables": self.pivot_tables,
             }
             default_value = property_mapping.get(name, None)
-        return super(WorkbookWorksheet, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

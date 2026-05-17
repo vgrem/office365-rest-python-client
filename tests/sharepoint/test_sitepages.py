@@ -1,25 +1,16 @@
 from office365.sharepoint.publishing.pages.collection import SitePageCollection
 from office365.sharepoint.publishing.pages.page import SitePage
+
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSitePages(SPTestCase):
-    target_page = None  # type: SitePage
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSitePages, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_page: SitePage = None
 
     def test1_create_draft_page(self):
         page_title = create_unique_name("Site Page ")
-        page = self.client.site_pages.create_page(
-            page_title, "Site Page.aspx"
-        ).execute_query()
+        page = self.client.site_pages.create_page(page_title, "Site Page.aspx").execute_query()
         self.assertIsNotNone(page.resource_path)
         self.__class__.target_page = page
 

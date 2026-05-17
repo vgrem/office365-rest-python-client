@@ -16,36 +16,32 @@ class GroupLifecyclePolicy(Entity):
     The group can be restored within a period of 30 days from deletion.
     """
 
-    def add_group(self, group_id):
+    def add_group(self, group_id: str) -> ClientResult[bool]:
         """
         Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
         only if the managedGroupTypes property of groupLifecyclePolicy is set to Selected.
 
         :param str group_id: The identifier of the group to remove from the policy.
         """
-        return_type = ClientResult[bool](self.context)
+        return_type = ClientResult(self.context)
         payload = {"groupId": group_id}
         qry = ServiceOperationQuery(self, "addGroup", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def remove_group(self, group_id):
-        # type: (str) -> ClientResult[bool]
+    def remove_group(self, group_id: str) -> ClientResult[bool]:
         """
         Removes a group from a lifecycle policy.
         :param str group_id: The identifier of the group to add to the policy.
         """
         return_type = ClientResult(self.context)
         payload = {"groupId": group_id}
-        qry = ServiceOperationQuery(
-            self, "removeGroup", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "removeGroup", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def alternate_notification_emails(self):
-        # type: () -> Optional[str]
+    def alternate_notification_emails(self) -> Optional[str]:
         """
         List of email address to send notifications for groups without owners.
         Multiple email address can be defined by separating email address with a semicolon.
@@ -53,8 +49,7 @@ class GroupLifecyclePolicy(Entity):
         return self.properties.get("alternateNotificationEmails", None)
 
     @property
-    def group_lifetime_in_days(self):
-        # type: () -> Optional[int]
+    def group_lifetime_in_days(self) -> Optional[int]:
         """
         Number of days before a group expires and needs to be renewed. Once renewed, the group expiration is extended
         by the number of days defined.
@@ -62,7 +57,6 @@ class GroupLifecyclePolicy(Entity):
         return self.properties.get("groupLifetimeInDays", None)
 
     @property
-    def managed_group_types(self):
-        # type: () -> Optional[str]
+    def managed_group_types(self) -> Optional[str]:
         """The group type for which the expiration policy applies. Possible values are All, Selected or None."""
         return self.properties.get("managedGroupTypes", None)

@@ -1,5 +1,6 @@
-"""
-This example demonstrates how to retrieve all fields in a SharePoint site.
+"""Demonstrates how to retrieve all fields from a SharePoint site
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext
@@ -9,4 +10,4 @@ client = ClientContext(test_team_site_url).with_credentials(test_client_credenti
 
 web_fields = client.web.fields.get().execute_query()
 for f in web_fields:
-    print("Field name {0}".format(f.internal_name))
+    print(f"Field name {f.internal_name}")

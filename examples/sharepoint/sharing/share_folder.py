@@ -1,5 +1,7 @@
 """
-Demonstrates how to create and get a tokenized sharing link for a Folder
+Demonstrates how to create and retrieve a tokenized sharing link for a folder.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext
@@ -13,7 +15,5 @@ folder = ctx.web.get_folder_by_server_relative_url("Shared Documents/Archive")
 result = folder.share_link(SharingLinkKind.AnonymousView).execute_query()
 
 # Optional step: resolve folder by guest url
-shared_folder = ctx.web.get_folder_by_guest_url(
-    result.value.sharingLinkInfo.Url
-).execute_query()
+shared_folder = ctx.web.get_folder_by_guest_url(result.value.sharingLinkInfo.Url).execute_query()
 print(shared_folder)

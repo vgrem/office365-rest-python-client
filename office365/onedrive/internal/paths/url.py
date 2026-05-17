@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
 
-from typing_extensions import Self
+from typing import TYPE_CHECKING
 
 from office365.onedrive.internal.paths.root import RootPath
 from office365.runtime.paths.v4.entity import EntityPath
@@ -12,30 +12,25 @@ if TYPE_CHECKING:
 class UrlPath(EntityPath):
     """Resource path for OneDrive entity path-based addressing"""
 
-    def __init__(self, url, parent, collection=None):
-        # type: (str, ResourcePath, ResourcePath) -> None
+    def __init__(self, url: str, parent: ResourcePath | None, collection: ResourcePath | None = None) -> None:
         """
         :param str url: File or Folder server relative url
         :type parent: office365.runtime.paths.resource_path.ResourcePath
         """
         if isinstance(parent, UrlPath):
-            url = "/".join([parent._key, url])
+            url = "/".join([str(parent._key), url])
             collection = parent.collection
             parent = parent.parent
         elif isinstance(parent, RootPath):
             collection = parent.collection
         elif isinstance(parent, EntityPath):
             collection = parent.collection
-        super(UrlPath, self).__init__(url, parent, collection)
-
-    def patch(self, key):
-        # type: (str) -> Self
-        return super(UrlPath, self).patch(key)
+        super().__init__(url, parent, collection)
 
     @property
     def segment(self):
-        return ":/{0}:/".format(self._key)
+        return f":/{self._key}:/"
 
     @property
-    def delimiter(self):
-        return None
+    def delimiter(self) -> str:
+        return ""

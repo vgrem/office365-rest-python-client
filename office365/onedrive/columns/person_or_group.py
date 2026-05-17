@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,7 +8,10 @@ class PersonOrGroupColumn(ClientValue):
     a person or group chosen from the directory."""
 
     def __init__(
-        self, allow_multiple_selection=None, choose_from_type=None, display_as=None
+        self,
+        allow_multiple_selection: bool | None = None,
+        choose_from_type: str | None = None,
+        display_as: str | None = None,
     ):
         """
         :param bool allow_multiple_selection: Indicates whether multiple values can be selected from the source.

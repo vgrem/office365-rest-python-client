@@ -1,37 +1,34 @@
+from typing import Union
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.webparts.definition import WebPartDefinition
-from office365.sharepoint.webparts.definition_collection import (
+from office365.sharepoint.webparts.definitions.collection import (
     WebPartDefinitionCollection,
 )
+from office365.sharepoint.webparts.definitions.definition import WebPartDefinition
 
 
 class LimitedWebPartManager(Entity):
     """Provides operations to access and modify the existing Web Parts on a Web Part Page, and add new ones
     to the Web Part Page."""
 
-    def export_web_part(self, web_part):
-        # type: (str or WebPartDefinition) -> ClientResult[str]
+    def export_web_part(self, web_part: Union[str, WebPartDefinition]) -> ClientResult[str]:
         """Exports the specified Web Part, given its ID.
         :param str or WebPartDefinition web_part: The WebPartDefinition or  Id of the Web Part to export.
         """
         return_type = ClientResult(self.context, str())
-        self.web_parts.add_child(return_type)
 
-        def _export_web_part(web_part_id):
-            # type: (str) -> None
+        def _export_web_part(web_part_id: str) -> None:
             params = {"webPartId": web_part_id}
-            qry = ServiceOperationQuery(
-                self, "ExportWebPart", params, None, None, return_type
-            )
+            qry = ServiceOperationQuery(self, "ExportWebPart", params, None, None, return_type)
             self.context.add_query(qry)
 
         if isinstance(web_part, WebPartDefinition):
 
             def _web_part_loaded():
-                _export_web_part(web_part.id)
+                _export_web_part(web_part.id or "")
 
             web_part.ensure_property("Id", _web_part_loaded)
         else:
@@ -39,7 +36,7 @@ class LimitedWebPartManager(Entity):
 
         return return_type
 
-    def import_web_part(self, web_part_xml):
+    def import_web_part(self, web_part_xml: str) -> WebPartDefinition:
         """
         Imports a Web Part from a string in the .dwp format as specified in [MS-WPPS] section 2.2.4.2,
         or the .webpart format as specified in [MS-WPPS] section 2.2.3.1.
@@ -55,21 +52,17 @@ class LimitedWebPartManager(Entity):
         return_type = WebPartDefinition(self.context)
         self.web_parts.add_child(return_type)
         payload = {"webPartXml": web_part_xml}
-        qry = ServiceOperationQuery(
-            self, "ImportWebPart", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ImportWebPart", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def web_parts(self):
+    def web_parts(self) -> WebPartDefinitionCollection:
         """A collection of the Web Parts on the Web Part Page available to the current user based
         on the current user’s permissions."""
         return self.properties.get(
             "WebParts",
-            WebPartDefinitionCollection(
-                self.context, ResourcePath("WebParts", self.resource_path)
-            ),
+            WebPartDefinitionCollection(self.context, ResourcePath("WebParts", self.resource_path)),
         )
 
     @property
@@ -80,4 +73,4 @@ class LimitedWebPartManager(Entity):
         if default_value is None:
             property_mapping = {"WebParts": self.web_parts}
             default_value = property_mapping.get(name, None)
-        return super(LimitedWebPartManager, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

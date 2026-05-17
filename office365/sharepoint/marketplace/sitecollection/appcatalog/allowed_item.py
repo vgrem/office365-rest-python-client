@@ -7,14 +7,12 @@ class SiteCollectionAppCatalogAllowedItem(Entity):
     """An entry in the site collection app catalog allow list."""
 
     @property
-    def site_id(self):
-        # type: () -> Optional[str]
+    def site_id(self) -> Optional[str]:
         """The ID of a site collection in the allow list."""
         return self.properties.get("SiteID", None)
 
     @property
-    def absolute_url(self):
-        # type: () -> Optional[str]
+    def absolute_url(self) -> Optional[str]:
         """The absolute URL of a site collection in the allow list."""
         return self.properties.get("AbsoluteUrl", None)
 

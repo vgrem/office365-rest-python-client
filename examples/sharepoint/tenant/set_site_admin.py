@@ -1,33 +1,22 @@
-from office365.sharepoint.sites.site import Site
+"""
+Sets secondary site collection administrators on a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
+"""
+
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import (
     test_admin_site_url,
-    test_site_url,
-    test_user_credentials,
-    test_user_principal_name_alt,
+    test_client_credentials,
+    test_team_site_url,
 )
 
-tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
+tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_client_credentials)
 
-target_site = (
-    Site.from_url(test_site_url)
-    .with_credentials(test_user_credentials)
-    .get()
-    .execute_query()
-)
-admins = tenant.get_site_secondary_administrators(
-    site_id=target_site.id
-).execute_query()
+result = tenant.get_site_secondary_administrators_by_site_url(test_team_site_url).execute_query()
+# tenant.clear_site_secondary_administrators(test_team_site_url).execute_query()
 
-existing_admin_names = [admin.loginName for admin in admins]
 
-target_user = target_site.root_web.ensure_user(
-    test_user_principal_name_alt
-).execute_query()
-names = existing_admin_names + [target_user.login_name]
-tenant.set_site_secondary_administrators(
-    site_id=target_site.id, names=names
-).execute_query()
-
-for admin in admins:
-    print(admin.loginName)
+user_result = tenant.context.search_user("SharePoint Service Administrator").execute_query()
+names = [admin.loginName for admin in result.value] + [user_result.value.get("loginName")]
+tenant.set_site_secondary_administrators_by_site_url(site_url=test_team_site_url, names=names).execute_query()

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.format import WorkbookRangeFormat
@@ -48,9 +48,7 @@ class WorkbookRange(Entity):
         """
         return_type = WorkbookRange(self.context)
         payload = {"shift": shift}
-        qry = ServiceOperationQuery(
-            self, "insert", parameters_type=payload, return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "insert", parameters_type=payload, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -82,8 +80,7 @@ class WorkbookRange(Entity):
         return return_type
 
     @property
-    def address(self):
-        # type: () -> Optional[str]
+    def address(self) -> Optional[str]:
         """
         Represents the range reference in A1-style. Address value will contain the Sheet reference
         (e.g. Sheet1!A1:B4)
@@ -91,38 +88,32 @@ class WorkbookRange(Entity):
         return self.properties.get("address", None)
 
     @property
-    def address_local(self):
-        # type: () -> Optional[str]
+    def address_local(self) -> Optional[str]:
         """Represents range reference for the specified range in the language of the user."""
         return self.properties.get("addressLocal", None)
 
     @property
-    def cell_count(self):
-        # type: () -> Optional[int]
+    def cell_count(self) -> Optional[int]:
         """Number of cells in the range. Read-only."""
         return self.properties.get("cellCount", None)
 
     @property
-    def column_count(self):
-        # type: () -> Optional[int]
+    def column_count(self) -> Optional[int]:
         """Represents the total number of columns in the range. Read-only."""
         return self.properties.get("columnCount", None)
 
     @property
-    def column_hidden(self):
-        # type: () -> Optional[bool]
+    def column_hidden(self) -> Optional[bool]:
         """Represents if all columns of the current range are hidden."""
         return self.properties.get("columnHidden", None)
 
     @property
-    def column_index(self):
-        # type: () -> Optional[int]
+    def column_index(self) -> Optional[int]:
         """Represents the column number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("columnIndex", None)
 
     @property
-    def row_index(self):
-        # type: () -> Optional[int]
+    def row_index(self) -> Optional[int]:
         """Returns the row number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("rowIndex", None)
 
@@ -131,9 +122,7 @@ class WorkbookRange(Entity):
         """Returns a format object, encapsulating the range's font, fill, borders, alignment, and other properties"""
         return self.properties.get(
             "format",
-            WorkbookRangeFormat(
-                self.context, ResourcePath("format", self.resource_path)
-            ),
+            WorkbookRangeFormat(self.context, ResourcePath("format", self.resource_path)),
         )
 
     @property
@@ -145,15 +134,13 @@ class WorkbookRange(Entity):
         )
 
     @property
-    def values(self):
-        # type: () -> List
+    def values(self) -> list | None:
         """Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contains an error returns the error string."""
         return self.properties.get("values", None)
 
     @property
-    def value_types(self):
-        # type: () -> List
+    def value_types(self) -> list | None:
         """Represents the type of data of each cell. The possible values are:
         Unknown, Empty, String, Integer, Double, Boolean, Error."""
         return self.properties.get("valueTypes", None)
@@ -165,7 +152,5 @@ class WorkbookRange(Entity):
 
         return self.properties.get(
             "worksheet",
-            WorkbookWorksheet(
-                self.context, ResourcePath("worksheet", self.resource_path)
-            ),
+            WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )

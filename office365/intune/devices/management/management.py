@@ -7,10 +7,10 @@ from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
-from office365.intune.devices.managed import ManagedDevice
+from office365.intune.devices.management.managed.managed import ManagedDevice
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
-from office365.intune.devices.management.virtual_endpoint import VirtualEndpoint
+from office365.intune.devices.management.virtualendpoint.virtual_endpoint import VirtualEndpoint
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -24,7 +24,7 @@ class DeviceManagement(Entity):
     configuration.
     """
 
-    def get_effective_permissions(self, scope=None):
+    def get_effective_permissions(self, scope=None) -> ClientResult[ClientValueCollection[RolePermission]]:
         """Retrieves the effective permissions of the currently authenticated user"""
         return_type = ClientResult(self.context, ClientValueCollection(RolePermission))
         # params = {"scope": scope}
@@ -33,27 +33,23 @@ class DeviceManagement(Entity):
         return return_type
 
     @property
-    def audit_events(self):
+    def audit_events(self) -> AuditEventCollection:
         """"""
         return self.properties.get(
             "auditEvents",
-            AuditEventCollection(
-                self.context, ResourcePath("auditEvents", self.resource_path)
-            ),
+            AuditEventCollection(self.context, ResourcePath("auditEvents", self.resource_path)),
         )
 
     @property
-    def virtual_endpoint(self):
+    def virtual_endpoint(self) -> VirtualEndpoint:
         """"""
         return self.properties.get(
             "virtualEndpoint",
-            VirtualEndpoint(
-                self.context, ResourcePath("virtualEndpoint", self.resource_path)
-            ),
+            VirtualEndpoint(self.context, ResourcePath("virtualEndpoint", self.resource_path)),
         )
 
     @property
-    def terms_and_conditions(self):
+    def terms_and_conditions(self) -> EntityCollection[TermsAndConditions]:
         """"""
         return self.properties.get(
             "termsAndConditions",
@@ -65,7 +61,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def device_categories(self):
+    def device_categories(self) -> EntityCollection[DeviceCategory]:
         """"""
         return self.properties.get(
             "deviceCategories",
@@ -77,7 +73,7 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def device_enrollment_configurations(self):
+    def device_enrollment_configurations(self) -> EntityCollection[DeviceEnrollmentConfiguration]:
         """"""
         return self.properties.get(
             "deviceEnrollmentConfigurations",
@@ -89,11 +85,11 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def intune_brand(self):
+    def intune_brand(self) -> IntuneBrand:
         return self.properties.get("intuneBrand", IntuneBrand())
 
     @property
-    def managed_devices(self):
+    def managed_devices(self) -> EntityCollection[ManagedDevice]:
         """"""
         return self.properties.get(
             "managedDevices",
@@ -105,13 +101,11 @@ class DeviceManagement(Entity):
         )
 
     @property
-    def reports(self):
+    def reports(self) -> DeviceManagementReports:
         """"""
         return self.properties.get(
             "reports",
-            DeviceManagementReports(
-                self.context, ResourcePath("reports", self.resource_path)
-            ),
+            DeviceManagementReports(self.context, ResourcePath("reports", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -126,4 +120,4 @@ class DeviceManagement(Entity):
                 "virtualEndpoint": self.virtual_endpoint,
             }
             default_value = property_mapping.get(name, None)
-        return super(DeviceManagement, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

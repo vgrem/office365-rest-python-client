@@ -13,3 +13,7 @@ class FollowResult(ClientValue):
         """
         self.Item = item
         self.ResultType = result_type
+
+    @property
+    def entity_type_name(self):
+        return "SP.UserProfiles.FollowResult"

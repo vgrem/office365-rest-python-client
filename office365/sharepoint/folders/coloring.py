@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -12,9 +14,9 @@ class FolderColoring(Entity):
 
     def create_folder(
         self,
-        decoded_url,
-        coloring_information=FolderColoringInformation(color_hex="1"),
-        return_type=None,
+        decoded_url: str,
+        coloring_information: FolderColoringInformation = FolderColoringInformation(),
+        return_type: Optional[Folder] = None,
     ):
         """
         :param str decoded_url:
@@ -28,14 +30,11 @@ class FolderColoring(Entity):
             "path": SPResPath(decoded_url),
             "coloringInformation": coloring_information,
         }
-        qry = ServiceOperationQuery(
-            self, "CreateFolder", parameters_type=payload, return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "CreateFolder", parameters_type=payload, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def stamp_color(self, decoded_url, coloring_information):
-        # type: (str, FolderColoringInformation) -> Self
+    def stamp_color(self, decoded_url: str, coloring_information: FolderColoringInformation) -> Self:
         """
         :param str decoded_url:
         :param FolderColoringInformation coloring_information:

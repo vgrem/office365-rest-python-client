@@ -1,3 +1,7 @@
+from typing import Optional
+
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.post import Post
@@ -10,7 +14,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class ConversationThread(Entity):
     """A conversationThread is a collection of posts."""
 
-    def reply(self, post):
+    def reply(self, post: Post) -> Self:
         """Reply to a thread in a group conversation and add a new post to it. You can specify the parent conversation
         in the request, or, you can specify just the thread without the parent conversation.
 
@@ -22,28 +26,26 @@ class ConversationThread(Entity):
         return self
 
     @property
-    def cc_recipients(self):
+    def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The Cc: recipients for the thread."""
         return self.properties.get("ccRecipients", ClientValueCollection(Recipient))
 
     @property
-    def has_attachments(self):
+    def has_attachments(self) -> Optional[bool]:
         """Indicates whether any of the posts within this thread has at least one attachment."""
         return self.properties.get("hasAttachments", None)
 
     @property
-    def to_recipients(self):
+    def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the thread."""
         return self.properties.get("toRecipients", ClientValueCollection(Recipient))
 
     @property
-    def posts(self):
+    def posts(self) -> EntityCollection[Post]:
         """"""
         return self.properties.get(
             "posts",
-            EntityCollection(
-                self.context, Post, ResourcePath("posts", self.resource_path)
-            ),
+            EntityCollection(self.context, Post, ResourcePath("posts", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -53,4 +55,4 @@ class ConversationThread(Entity):
                 "toRecipients": self.to_recipients,
             }
             default_value = property_mapping.get(name, None)
-        return super(ConversationThread, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

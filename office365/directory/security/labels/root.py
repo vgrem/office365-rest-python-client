@@ -1,6 +1,7 @@
-from office365.directory.security.labels.retention import RetentionLabel
+from office365.directory.security.labels.retention.collection import (
+    RetentionLabelCollection,
+)
 from office365.entity import Entity
-from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -13,13 +14,12 @@ class LabelsRoot(Entity):
     """
 
     @property
-    def retention_labels(self):
+    def retention_labels(self) -> RetentionLabelCollection:
         """Represents how customers can manage their data, whether and for how long to retain or delete it."""
         return self.properties.get(
             "retentionLabels",
-            EntityCollection(
+            RetentionLabelCollection(
                 self.context,
-                RetentionLabel,
                 ResourcePath("retentionLabels", self.resource_path),
             ),
         )

@@ -17,7 +17,7 @@ class FileSystemInfo(ClientValue):
             Available for the recent file list only.
         :param datetime.datetime last_modified_datetime: The UTC date and time the file was last modified on a client.
         """
-        super(FileSystemInfo, self).__init__()
+        super().__init__()
         self.createdDateTime = created_datetime
         self.lastAccessedDateTime = last_accessed_datetime
         self.lastModifiedDateTime = last_modified_datetime

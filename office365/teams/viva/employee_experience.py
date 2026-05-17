@@ -10,7 +10,7 @@ class EmployeeExperience(Entity):
     """Represents a container that exposes navigation properties for employee experience resources."""
 
     @property
-    def communities(self):
+    def communities(self) -> EntityCollection[Community]:
         """A collection of communities in Viva Engage."""
         return self.properties.get(
             "communities",
@@ -22,7 +22,7 @@ class EmployeeExperience(Entity):
         )
 
     @property
-    def learning_course_activities(self):
+    def learning_course_activities(self) -> EntityCollection[LearningCourseActivity]:
         """A collection of learning course activities."""
         return self.properties.get(
             "learningCourseActivities",
@@ -34,7 +34,7 @@ class EmployeeExperience(Entity):
         )
 
     @property
-    def learning_providers(self):
+    def learning_providers(self) -> EntityCollection[LearningProvider]:
         """A collection of learning providers."""
         return self.properties.get(
             "learningProviders",
@@ -52,4 +52,4 @@ class EmployeeExperience(Entity):
                 "learningProviders": self.learning_providers,
             }
             default_value = property_mapping.get(name, None)
-        return super(EmployeeExperience, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

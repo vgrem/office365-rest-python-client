@@ -6,7 +6,7 @@ class AnnouncementsController(Entity):
     def __init__(self, context, path=None):
         if path is None:
             path = ResourcePath("SP.Publishing.AnnouncementsController")
-        super(AnnouncementsController, self).__init__(context, path)
+        super().__init__(context, path)
 
     @property
     def entity_type_name(self):

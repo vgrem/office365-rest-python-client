@@ -6,6 +6,6 @@ class OnenoteOperation(Operation):
     """The status of certain long-running OneNote operations."""
 
     @property
-    def error(self):
+    def error(self) -> OnenoteOperationError:
         """The error returned by the operation."""
         return self.properties.get("error", OnenoteOperationError())

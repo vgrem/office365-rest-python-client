@@ -1,4 +1,4 @@
-from office365.directory.identitygovernance.privilegedaccess.unified_role_assignment_schedule_request import (
+from office365.directory.policies.unifiedrolemanagement.unified_role_assignment_schedule_request import (
     UnifiedRoleAssignmentScheduleRequest,
 )
 from office365.directory.rolemanagement.unifiedrole.assignment import (
@@ -19,8 +19,7 @@ class RbacApplication(Entity):
     """
 
     @property
-    def role_assignments(self):
-        # type: () -> EntityCollection[UnifiedRoleAssignment]
+    def role_assignments(self) -> EntityCollection[UnifiedRoleAssignment]:
         """Resource to grant access to users or groups."""
         return self.properties.get(
             "roleAssignments",
@@ -32,8 +31,7 @@ class RbacApplication(Entity):
         )
 
     @property
-    def role_definitions(self):
-        # type: () -> EntityCollection[UnifiedRoleDefinition]
+    def role_definitions(self) -> EntityCollection[UnifiedRoleDefinition]:
         """Resource representing the roles allowed by RBAC providers and the permissions assigned to the roles."""
         return self.properties.get(
             "roleDefinitions",
@@ -44,8 +42,9 @@ class RbacApplication(Entity):
             ),
         )
 
-    def role_assignment_schedule_requests(self):
-        # type: () -> EntityCollection[UnifiedRoleAssignmentScheduleRequest]
+    def role_assignment_schedule_requests(
+        self,
+    ) -> EntityCollection[UnifiedRoleAssignmentScheduleRequest]:
         """Resource representing the roles allowed by RBAC providers and the permissions assigned to the roles."""
         return self.properties.get(
             "roleAssignmentScheduleRequests",
@@ -63,4 +62,4 @@ class RbacApplication(Entity):
                 "roleDefinitions": self.role_definitions,
             }
             default_value = property_mapping.get(name, None)
-        return super(RbacApplication, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

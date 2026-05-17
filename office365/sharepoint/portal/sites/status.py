@@ -1,8 +1,8 @@
-class SiteStatus:
-    """Status of a modern SharePoint site"""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class SiteStatus(Enum):
+    """Status of a modern SharePoint site"""
 
     NotFound = 0
     """Not Found. The site doesn't exist."""
@@ -15,3 +15,5 @@ class SiteStatus:
 
     Error = 3
     """Error. An error occurred while provisioning the site."""
+
+    None_ = -1

@@ -14,6 +14,4 @@ class InviteParticipantsOperation(CommsOperation):
         """
         The participants to invite.
         """
-        return self.properties.get(
-            "participants", ClientValueCollection(InvitationParticipantInfo)
-        )
+        return self.properties.get("participants", ClientValueCollection(InvitationParticipantInfo))

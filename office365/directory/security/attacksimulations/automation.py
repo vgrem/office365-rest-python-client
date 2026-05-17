@@ -11,12 +11,12 @@ class SimulationAutomation(Entity):
     """Represents simulation automation created to run on a tenant."""
 
     @property
-    def created_by(self):
+    def created_by(self) -> EmailIdentity:
         """Identity of the user who created the attack simulation automation."""
         return self.properties.get("createdBy", EmailIdentity())
 
     @property
-    def runs(self):
+    def runs(self) -> EntityCollection[SimulationAutomationRun]:
         """A collection of simulation automation runs."""
         return self.properties.get(
             "runs",
@@ -33,4 +33,4 @@ class SimulationAutomation(Entity):
                 "createdBy": self.created_by,
             }
             default_value = property_mapping.get(name, None)
-        return super(SimulationAutomation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

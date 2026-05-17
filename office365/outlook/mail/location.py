@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.runtime.client_value import ClientValue
@@ -16,14 +18,14 @@ class Location(ClientValue):
 
     def __init__(
         self,
-        address=PhysicalAddress(),
-        coordinates=None,
-        display_name=None,
-        location_email_address=None,
-        location_type=None,
-        location_uri=None,
-        unique_id=None,
-        unique_id_type=None,
+        address: PhysicalAddress = PhysicalAddress(),
+        coordinates: Optional[List[OutlookGeoCoordinates]] = None,
+        display_name: Optional[str] = None,
+        location_email_address: Optional[str] = None,
+        location_type: Optional[str] = None,
+        location_uri: Optional[str] = None,
+        unique_id: Optional[str] = None,
+        unique_id_type: Optional[str] = None,
     ):
         """
         :param PhysicalAddress address: The street address of the location.
@@ -35,7 +37,7 @@ class Location(ClientValue):
         :param str unique_id: For internal use only.
         :param str unique_id_type: For internal use only.
         """
-        super(Location, self).__init__()
+        super().__init__()
         self.address = address
         self.coordinates = ClientValueCollection(OutlookGeoCoordinates, coordinates)
         self.displayName = display_name
@@ -44,3 +46,7 @@ class Location(ClientValue):
         self.locationUri = location_uri
         self.uniqueId = unique_id
         self.uniqueIdType = unique_id_type
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.Location"

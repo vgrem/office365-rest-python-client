@@ -6,24 +6,21 @@ from office365.sharepoint.contenttypes.content_type import ContentType
 from office365.sharepoint.contenttypes.creation_information import (
     ContentTypeCreationInformation,
 )
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestContentType(SPTestCase):
-    target_ct = None  # type: ContentType
-    localized_title = "Contoso Dokumentti"
+    target_ct: ContentType = None
+    localized_title: str = "Contoso Dokumentti"
 
     def test1_list_site_content_types(self):
-        web_cts = self.client.site.root_web.content_types.get().execute_query()
-        self.assertIsInstance(web_cts, ContentTypeCollection)
+        result = self.client.site.root_web.content_types.get().execute_query()
+        self.assertIsInstance(result, ContentTypeCollection)
 
     def test2_get_content_type_by_id(self):
-        ct = (
-            self.client.site.root_web.content_types.get_by_id("0x0101")
-            .get()
-            .execute_query()
-        )
-        self.assertIsNotNone(ct.name)
+        result = self.client.site.root_web.content_types.get_by_id("0x0101").get().execute_query()
+        self.assertIsNotNone(result.name)
 
     def test3_create_content_type(self):
         cti = ContentTypeCreationInformation("Contoso Document" + str(randint(0, 1000)))
@@ -32,16 +29,14 @@ class TestContentType(SPTestCase):
         self.__class__.target_ct = ct
 
     def test4_update_content_type(self):
-        ct_to_update = self.__class__.target_ct
-        ct_to_update.description = "New desc"
-        ct_to_update.update(True).execute_query()
-        self.assertIsNotNone(ct_to_update.description)
+        ct = self.__class__.target_ct
+        ct.description = "New desc"
+        ct.update(True).execute_query()
+        self.assertIsNotNone(ct.description)
 
     def test5_set_value_for_ui_culture(self):
         ct = self.__class__.target_ct
-        result = ct.name_resource.set_value_for_ui_culture(
-            "fi-FI", self.localized_title
-        ).execute_query()
+        result = ct.name_resource.set_value_for_ui_culture("fi-FI", self.localized_title).execute_query()
         self.assertIsNotNone(result.value)
 
     def test6_get_value_for_ui_culture(self):
@@ -58,7 +53,5 @@ class TestContentType(SPTestCase):
         self.assertTrue(before_count, len(web_cts) + 1)
 
     def test9_get_content_types_changes(self):
-        changes = self.client.web.get_changes(
-            ChangeQuery(content_type=True)
-        ).execute_query()
-        self.assertGreater(len(changes), 0)
+        result = self.client.web.get_changes(ChangeQuery(content_type=True)).execute_query()
+        self.assertGreater(len(result), 0)

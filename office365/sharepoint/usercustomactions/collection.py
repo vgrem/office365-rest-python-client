@@ -6,9 +6,7 @@ from office365.sharepoint.usercustomactions.action import UserCustomAction
 class UserCustomActionCollection(EntityCollection[UserCustomAction]):
     def __init__(self, context, resource_path=None):
         """Specifies a collection of custom actions."""
-        super(UserCustomActionCollection, self).__init__(
-            context, UserCustomAction, resource_path
-        )
+        super().__init__(context, UserCustomAction, resource_path)
 
     def clear(self):
         """

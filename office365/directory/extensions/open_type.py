@@ -11,7 +11,6 @@ class OpenTypeExtension(Extension):
     """
 
     @property
-    def extension_name(self):
-        # type: () -> Optional[str]
+    def extension_name(self) -> Optional[str]:
         """A unique text identifier for an open type data extension."""
         return self.properties.get("extensionName", None)

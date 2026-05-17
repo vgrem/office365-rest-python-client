@@ -17,13 +17,10 @@ class AccessReviewInstance(Entity):
     """
 
     @property
-    def stages(self):
-        # type: () -> AccessReviewStageCollection
+    def stages(self) -> AccessReviewStageCollection:
         """If the instance has multiple stages, this returns the collection of stages.
         A new stage will only be created when the previous stage ends"""
         return self.properties.get(
             "stages",
-            AccessReviewStageCollection(
-                self.context, ResourcePath("stages", self.resource_path)
-            ),
+            AccessReviewStageCollection(self.context, ResourcePath("stages", self.resource_path)),
         )

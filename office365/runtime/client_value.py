@@ -1,50 +1,65 @@
+from __future__ import annotations
+
+from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar
 
 from typing_extensions import Self
 
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+from office365.runtime.utilities import parse_enum
 
-ClientValueT = TypeVar("ClientValueT", int, float, str, bool, "ClientValue")
+ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, "ClientValue")
 
 
-class ClientValue(object):
+class ClientValue:
     """Represent complex type.
     Complex types consist of a list of properties with no key, and can therefore only exist as properties of a
     containing entity or as a temporary value
     """
 
-    def set_property(self, k, v, persist_changes=True):
-        # type: (str|int, Any, bool) -> Self
-        prop_type = getattr(self, k, None)
-        if isinstance(prop_type, ClientValue) and v is not None:
+    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
+        k = str(k)
+        prop_val = getattr(self, k, None)
+        if isinstance(prop_val, ClientValue) and v is not None:
             if isinstance(v, list):
-                [
-                    prop_type.set_property(i, p_v, persist_changes)
-                    for i, p_v in enumerate(v)
-                ]
+                [prop_val.set_property(i, p_v, persist_changes) for i, p_v in enumerate(v)]
             else:
-                [
-                    prop_type.set_property(k, p_v, persist_changes)
-                    for k, p_v in v.items()
-                ]
-            setattr(self, k, prop_type)
+                [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
+            setattr(self, k, prop_val)
+        elif isinstance(prop_val, Enum):
+            setattr(self, k, parse_enum(type(prop_val), v))
         else:
             setattr(self, k, v)
         return self
 
-    def get_property(self, k):
-        # type: (str) -> ClientValueT
-        return getattr(self, k)
+    def get_property(self, name: str) -> ClientValueT:
+        """Gets a property value.
 
-    def __iter__(self):
-        # type: () -> Iterator[Tuple[str, ClientValueT]]
+        Args:
+            name: Name of the property to retrieve
+
+        Returns:
+            The property value
+
+        Raises:
+            AttributeError: If property doesn't exist
+        """
+        return getattr(self, name)
+
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
         for n, v in vars(self).items():
             yield n, v
 
-    def to_json(self, json_format=None):
-        # type: (Optional[ODataJsonFormat]) -> Dict
-        """Serializes a client value"""
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any]:
+        """Serializes the ClientValue to JSON format.
+
+        Args:
+            json_format: Optional OData JSON formatting options
+
+        Returns:
+            Dictionary representing the JSON-serialized object
+        """
 
         def _is_valid_value(val):
             from office365.runtime.client_value_collection import ClientValueCollection
@@ -59,16 +74,21 @@ class ClientValue(object):
         for n, v in json.items():
             if isinstance(v, ClientValue):
                 json[n] = v.to_json(json_format)
-        if (
-            isinstance(json_format, JsonLightFormat)
-            and json_format.include_control_information
-            and self.entity_type_name is not None
-        ):
-            json[json_format.metadata_type] = {"type": self.entity_type_name}
+            elif isinstance(v, Enum):
+                json[n] = v.value
+        if json_format is not None and json_format.include_control_information and self.entity_type_name is not None:
+            if isinstance(json_format, JsonLightFormat):
+                json[json_format.metadata_type] = {"type": self.entity_type_name}
+            elif isinstance(json_format, ODataJsonFormat):
+                json[json_format.metadata_type] = "#" + self.entity_type_name
         return json
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
-        """Returns server type name of value"""
-        return type(self).__name__
+    def entity_type_name(self) -> Optional[str]:
+        """The server-side type name for client value.
+
+        Returns:
+            Defaults to the class name
+        """
+        # return type(self).__name__
+        return None

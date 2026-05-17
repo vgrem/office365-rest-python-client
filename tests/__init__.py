@@ -4,14 +4,12 @@ import string
 
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.user_credential import UserCredential
-from tests.config import SecEnvInterpolation, load_config
+
+from tests.config import load_config
 
 
-def create_unique_name(prefix):
-    # type: (str) -> str
-    return prefix + "".join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
-    )
+def create_unique_name(prefix: str) -> str:
+    return prefix + "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
 def create_unique_file_name(prefix, ext):
@@ -53,7 +51,7 @@ test_user_principal_name_alt = settings.get("users", "test_user2")
 test_admin_principal_name = settings.get("users", "test_user3")
 
 test_cert_thumbprint = settings.get("certificate_credentials", "thumbprint")
-test_cert_path = "{0}/selfsigncert.pem".format(os.path.dirname(__file__))
+test_cert_path = f"{os.path.dirname(__file__)}/selfsigncert.pem"
 
 test_username = settings.get("user_credentials", "username")
 test_password = settings.get("user_credentials", "password")

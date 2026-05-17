@@ -9,12 +9,12 @@ class Segment(Entity):
     the call."""
 
     @property
-    def callee(self):
+    def callee(self) -> Endpoint:
         """Endpoint that answered this segment."""
         return self.properties.get("callee", Endpoint())
 
     @property
-    def caller(self):
+    def caller(self) -> Endpoint:
         """Endpoint that initiated this segment."""
         return self.properties.get("caller", Endpoint())
 

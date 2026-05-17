@@ -22,13 +22,8 @@ class TermGroup(TaxonomyItem):
         """
         return_type = TermSetCollection(self.context)
 
-        def _sets_loaded(col):
-            # type: (TermSetCollection) -> None
-            [
-                return_type.add_child(ts)
-                for ts in col
-                if str(ts.localized_names[0]) == label
-            ]
+        def _sets_loaded(col: TermSetCollection) -> None:
+            [return_type.add_child(ts) for ts in col if str(ts.localized_names[0]) == label]
 
         def _group_resolved():
             self.term_sets.get().after_execute(_sets_loaded)
@@ -37,21 +32,17 @@ class TermGroup(TaxonomyItem):
         return return_type
 
     @property
-    def term_sets(self):
-        # type: () -> TaxonomyItemCollection[TermSet]
+    def term_sets(self) -> TaxonomyItemCollection[TermSet]:
         """
         Gets a collection of the child TermSet instances of this TermGroup object.
         """
         return self.properties.get(
             "termSets",
-            TaxonomyItemCollection(
-                self.context, TermSet, ResourcePath("termSets", self.resource_path)
-            ),
+            TaxonomyItemCollection(self.context, TermSet, ResourcePath("termSets", self.resource_path)),
         )
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Gets the name of the Term Group"""
         return self.properties.get("displayName", None)
 
@@ -59,4 +50,4 @@ class TermGroup(TaxonomyItem):
         if default_value is None:
             property_mapping = {"termSets": self.term_sets}
             default_value = property_mapping.get(name, None)
-        return super(TermGroup, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

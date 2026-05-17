@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -7,7 +9,13 @@ class Reputation(Entity):
     """The Reputation static type includes methods to set the reputation properties on a list item."""
 
     @staticmethod
-    def set_rating(context, list_id, item_id, rating, return_type=None):
+    def set_rating(
+        context,
+        list_id: str,
+        item_id: int,
+        rating: int,
+        return_type: Optional[ClientResult[float]] = None,
+    ) -> ClientResult[float]:
         """
         The SetRating static method rates an item within the specified list.
         The return value is the average rating for the specified list item.
@@ -24,15 +32,19 @@ class Reputation(Entity):
 
         binding_type = Reputation(context)
         payload = {"listID": list_id, "itemID": item_id, "rating": rating}
-        qry = ServiceOperationQuery(
-            binding_type, "SetRating", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "SetRating", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def set_like(context, list_id, item_id, like, return_type=None):
+    def set_like(
+        context,
+        list_id: str,
+        item_id: int,
+        like: bool,
+        return_type: Optional[ClientResult[int]] = None,
+    ) -> ClientResult[int]:
         """
         The SetLike static method sets or unsets the like quality for the current user for an item within
            the specified list. The return value is the total number of likes for the specified list item.
@@ -49,9 +61,7 @@ class Reputation(Entity):
             return_type = ClientResult(context)
         binding_type = Reputation(context)
         payload = {"listID": list_id, "itemID": item_id, "like": like}
-        qry = ServiceOperationQuery(
-            binding_type, "SetLike", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(binding_type, "SetLike", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type

@@ -11,25 +11,22 @@ class ProvisioningObjectSummary(Entity):
     """Represents an action performed by the Azure AD Provisioning service and its associated properties."""
 
     @property
-    def activity_datetime(self):
+    def activity_datetime(self) -> datetime:
         """Represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("activityDateTime", datetime.min)
 
     @property
-    def change_id(self):
-        # type: () -> Optional[str]
+    def change_id(self) -> Optional[str]:
         """Unique ID of this change in this cycle. Supports $filter (eq, contains)."""
         return self.properties.get("changeId", None)
 
     @property
-    def cycle_id(self):
-        # type: () -> Optional[str]
+    def cycle_id(self) -> Optional[str]:
         """Unique ID per job iteration. Supports $filter (eq, contains)."""
         return self.properties.get("cycleId", None)
 
     @property
-    def duration_in_milliseconds(self):
-        # type: () -> Optional[int]
+    def duration_in_milliseconds(self) -> Optional[int]:
         """Indicates how long this provisioning action took to finish. Measured in milliseconds."""
         return self.properties.get("durationInMilliseconds", None)
 
@@ -45,4 +42,4 @@ class ProvisioningObjectSummary(Entity):
                 "servicePrincipal": self.service_principal,
             }
             default_value = property_mapping.get(name, None)
-        return super(ProvisioningObjectSummary, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

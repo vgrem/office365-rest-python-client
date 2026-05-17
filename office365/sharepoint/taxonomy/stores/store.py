@@ -13,28 +13,29 @@ from office365.sharepoint.taxonomy.terms.term import Term
 class TermStore(TaxonomyItem):
     """Represents a hierarchical or flat set of Term objects known as a 'TermSet'."""
 
-    def get_term_sets_by_name(self, label, lcid=1033):
+    def get_term_sets_by_name(self, label: str, lcid: int = 1033) -> TermSetCollection:
         """
         This method retrieves a collection of all TermSet objects in this TermStore
         that the current user has permissions to read that have a matching TermSet name in the provided LCID.
         """
         return_type = TermSetCollection(self.context)
 
-        def _sets_loaded(sets):
-            # type: (TermSetCollection) -> None
+        def _sets_loaded(sets: TermSetCollection) -> None:
             [return_type.add_child(ts) for ts in sets]
 
-        def _groups_loaded(col):
-            # type: (TermGroupCollection) -> None
-            [
-                grp.get_term_sets_by_name(label, lcid).after_execute(_sets_loaded)
-                for grp in col
-            ]
+        def _groups_loaded(col: TermGroupCollection) -> None:
+            [grp.get_term_sets_by_name(label, lcid).after_execute(_sets_loaded) for grp in col]
 
         self.term_groups.get().after_execute(_groups_loaded)
         return return_type
 
-    def search_term(self, label, set_id=None, parent_term_id=None, language_tag=None):
+    def search_term(
+        self,
+        label: str,
+        set_id: Optional[str] = None,
+        parent_term_id: Optional[str] = None,
+        language_tag: Optional[str] = None,
+    ):
         """
         Search term by name
 
@@ -43,9 +44,7 @@ class TermStore(TaxonomyItem):
         :param str or None parent_term_id:
         :param str or None language_tag:
         """
-        return_type = TaxonomyItemCollection[Term](
-            self.context, Term, self.resource_path
-        )
+        return_type = TaxonomyItemCollection[Term](self.context, Term, self.resource_path)
         params = {
             "label": label,
             "setId": set_id,
@@ -57,25 +56,21 @@ class TermStore(TaxonomyItem):
         return return_type
 
     @property
-    def default_language_tag(self):
-        # type: () -> Optional[str]
+    def default_language_tag(self) -> Optional[str]:
         """Gets or sets the LCID of the default working language."""
         return self.properties.get("defaultLanguageTag", None)
 
     @property
-    def language_tags(self):
+    def language_tags(self) -> StringCollection:
         """Gets an integer collection of LCIDs."""
         return self.properties.get("languageTags", StringCollection())
 
     @property
-    def term_groups(self):
-        # type: () -> TermGroupCollection
+    def term_groups(self) -> TermGroupCollection:
         """Gets a collection of the child Group objects"""
         return self.properties.get(
             "termGroups",
-            TermGroupCollection(
-                self.context, ResourcePath("termGroups", self.resource_path)
-            ),
+            TermGroupCollection(self.context, ResourcePath("termGroups", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -85,4 +80,4 @@ class TermStore(TaxonomyItem):
                 "languageTags": self.language_tags,
             }
             default_value = property_mapping.get(name, None)
-        return super(TermStore, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

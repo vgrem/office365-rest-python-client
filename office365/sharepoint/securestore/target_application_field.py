@@ -8,10 +8,8 @@ class TargetApplicationField(Entity):
 
     def __init__(self, context, name=None, masked=None, credential_type=None):
         params = {"name": name, "masked": masked, "credentialType": credential_type}
-        static_path = ServiceOperationPath(
-            "Microsoft.Office.SecureStoreService.Server.TargetApplicationField", params
-        )
-        super(TargetApplicationField, self).__init__(context, static_path)
+        static_path = ServiceOperationPath("Microsoft.Office.SecureStoreService.Server.TargetApplicationField", params)
+        super().__init__(context, static_path)
 
     @staticmethod
     def create(context, name, masked, credential_type):
@@ -25,9 +23,7 @@ class TargetApplicationField(Entity):
         """
         return_type = TargetApplicationField(context)
         payload = {"name": name, "masked": masked, "credentialType": credential_type}
-        qry = ServiceOperationQuery(
-            return_type, "", None, payload, None, return_type, True
-        )
+        qry = ServiceOperationQuery(return_type, "", None, payload, None, return_type, True)
         context.add_query(qry)
         return return_type
 

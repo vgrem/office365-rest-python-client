@@ -1,19 +1,30 @@
 import math
 import time
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import StringCollection
 
 
 class ContextWebInformation(ClientValue):
     """Specifies metadata about a site."""
 
-    def __init__(self, form_digest_value=None, form_digest_timeout_secs=None):
+    def __init__(
+        self,
+        form_digest_value: Optional[str] = None,
+        form_digest_timeout_secs: Optional[int] = None,
+        form_digest_timeout_seconds: Optional[int] = None,
+        library_version: Optional[str] = None,
+        site_full_url: Optional[str] = None,
+        supported_schema_versions: StringCollection = StringCollection(),
+        web_full_url: Optional[str] = None,
+    ):
         """
         :param str form_digest_value: An object that is inserted into a page and is used by a protocol server
              to validate client requests. The validation is specific to a user, site, and time period.
         :param int form_digest_timeout_secs: Specifies the amount of time in seconds before security validation expires.
         """
-        super(ContextWebInformation, self).__init__()
+        super().__init__()
         self.FormDigestValue = form_digest_value
         self.FormDigestTimeoutSeconds = form_digest_timeout_secs
         self.LibraryVersion = None
@@ -21,6 +32,11 @@ class ContextWebInformation(ClientValue):
         self.SupportedSchemaVersions = None
         self.WebFullUrl = None
         self._valid_from = time.time()
+        self.FormDigestTimeoutSeconds = form_digest_timeout_seconds
+        self.LibraryVersion = library_version
+        self.SiteFullUrl = site_full_url
+        self.SupportedSchemaVersions = supported_schema_versions
+        self.WebFullUrl = web_full_url
 
     @property
     def is_valid(self):
@@ -29,6 +45,5 @@ class ContextWebInformation(ClientValue):
         """
         if self.FormDigestTimeoutSeconds is None:
             return False
-
         expires_in_sec = math.ceil(time.time() - self._valid_from)
         return expires_in_sec < self.FormDigestTimeoutSeconds

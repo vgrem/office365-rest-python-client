@@ -20,22 +20,20 @@ repos:
         language: system
         pass_filenames: false
 
-      # A proposal to replace black & pylint
-      # - id: ruff-format
-      #   name: ruff-format
-      #   entry: uv run ruff format --exit-non-zero-on-fix
-      #   language: system
-      #   pass_filenames: false
-
-      - id: black
-        name: black
-        entry: uv run black .
+      - id: ruff-format
+        name: ruff-format
+        entry: uv run ruff format --exit-non-zero-on-fix
         language: system
         pass_filenames: false
 
-      - id: pylint
-        name: pylint
-        entry: uv run pylint office365
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
         language: system
         pass_filenames: false
 
+      - id: pytest
+        name: pytest
+        entry: uv run pytest --offline
+        language: system
+        pass_filenames: false

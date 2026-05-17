@@ -9,5 +9,5 @@ class SharePointIdentity(Identity):
         """
         :param str login_name: The sign in name of the SharePoint identity.
         """
-        super(SharePointIdentity, self).__init__()
+        super().__init__()
         self.loginName = login_name

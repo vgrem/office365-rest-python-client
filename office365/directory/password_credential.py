@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,11 +12,15 @@ class PasswordCredential(ClientValue):
 
     def __init__(
         self,
-        display_name=None,
-        secret_text=None,
-        key_id=None,
-        start_datetime=None,
-        end_datetime=None,
+        display_name: str | None = None,
+        secret_text: str | None = None,
+        key_id: str | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
+        custom_key_identifier: bytes | None = None,
+        end_date_time: datetime | None = None,
+        hint: str | None = None,
+        start_date_time: datetime | None = None,
     ):
         """
         :param str display_name: Friendly name for the password. Optional.
@@ -20,17 +28,25 @@ class PasswordCredential(ClientValue):
             characters in length. The generated password value is only returned during the initial POST request to
             addPassword. There is no way to retrieve this password in the future.
         :param str key_id: The unique identifier for the password.
-        :param str start_datetime: The date and time at which the password becomes valid. The Timestamp type represents
-             date and time information using ISO 8601 format and is always in UTC time.
+        :param datetime start_datetime: The date and time at which the password becomes valid. The Timestamp
+             type represents date and time information using ISO 8601 format and is always in UTC time.
              For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
-        :param str end_datetime:
+        :param datetime end_datetime:
         """
-        super(PasswordCredential, self).__init__()
+        super().__init__()
         self.displayName = display_name
         self.secretText = secret_text
         self.keyId = key_id
         self.startDateTime = start_datetime
         self.endDateTime = end_datetime
+        self.customKeyIdentifier = custom_key_identifier
+        self.endDateTime = end_date_time
+        self.hint = hint
+        self.startDateTime = start_date_time
 
     def __str__(self):
-        return self.displayName or self.entity_type_name
+        return str(self.displayName or self.entity_type_name or "")
+
+    @property
+    def entity_type_name(self):
+        return None

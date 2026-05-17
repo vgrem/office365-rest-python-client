@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import requests
 from typing_extensions import Self
@@ -15,14 +15,12 @@ class TeamCollection(EntityCollection[Team]):
     """Team's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(TeamCollection, self).__init__(context, Team, resource_path)
+        super().__init__(context, Team, resource_path)
 
-    def get_all(self, page_size=None, page_loaded=None):
-        # type: (int, Callable[[Self], None]) -> Self
+    def get_all(self, page_size: Optional[int] = None, page_loaded: Optional[Callable[[Self], None]] = None) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
-        def _init_teams(groups):
-            # type: (Self) -> None
+        def _init_teams(groups) -> None:
             for grp in groups:
                 if "Team" in grp.properties["resourceProvisioningOptions"]:
                     team = Team(self.context, ResourcePath(grp.id, self.resource_path))
@@ -33,7 +31,7 @@ class TeamCollection(EntityCollection[Team]):
         self.context.groups.get_all(page_size, page_loaded=_init_teams)
         return self
 
-    def create(self, display_name, description=None):
+    def create(self, display_name: str, description: Optional[str] = None):
         """Create a new team.
 
         This is async operation.
@@ -44,13 +42,14 @@ class TeamCollection(EntityCollection[Team]):
         return_type = Team(self.context)
         self.add_child(return_type)
 
-        def _process_response(resp):
-            # type: (requests.Response) -> None
+        def _process_response(resp: requests.Response) -> None:
             content_loc = resp.headers.get("Content-Location", None)
+            assert content_loc is not None
             team_path = ODataPathBuilder.parse_url(content_loc)
             return_type.set_property("id", team_path.segment, False)
 
             loc = resp.headers.get("Location", None)
+            assert loc is not None
             operation_path = ODataPathBuilder.parse_url(loc)
             operation = TeamsAsyncOperation(self.context, operation_path)
             return_type.operations.add_child(operation)
@@ -61,5 +60,5 @@ class TeamCollection(EntityCollection[Team]):
             "template@odata.bind": "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
         }
         qry = CreateEntityQuery(self, payload, return_type)
-        self.context.add_query(qry).after_execute(_process_response)
+        self.context.add_query(qry).after_execute(_process_response, include_response=True)
         return return_type

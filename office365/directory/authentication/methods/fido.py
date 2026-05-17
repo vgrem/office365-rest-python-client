@@ -12,24 +12,21 @@ class Fido2AuthenticationMethod(AuthenticationMethod):
         return self.display_name or self.entity_type_name
 
     @property
-    def attestation_certificates(self):
-        # type: () -> StringCollection
+    def attestation_certificates(self) -> StringCollection:
         """The attestation certificate(s) attached to this security key."""
         return self.properties.get("attestationCertificates", StringCollection())
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """The timestamp when this key was registered to the user."""
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The display name of the key as given by the user."""
         return self.properties.get("displayName", None)
 
     @property
-    def model(self):
-        # type: () -> Optional[str]
+    def model(self) -> Optional[str]:
         """The manufacturer-assigned model of the FIDO2 security key."""
         return self.properties.get("model", None)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.groups.group import Group
 from office365.planner.plans.plan import PlannerPlan
 from tests import create_unique_name
@@ -5,8 +7,8 @@ from tests.graph_case import GraphTestCase
 
 
 class TestPlanner(GraphTestCase):
-    target_group = None  # type: Group
-    target_plan = None  # type: PlannerPlan
+    target_group: Optional[Group] = None
+    target_plan: Optional[PlannerPlan] = None
 
     @classmethod
     def setUpClass(cls):
@@ -38,9 +40,7 @@ class TestPlanner(GraphTestCase):
         self.assertGreaterEqual(len(my_plans), 0)
 
     def test4_create_task(self):
-        task = self.client.planner.tasks.add(
-            "Update client list", self.__class__.target_plan
-        ).execute_query()
+        task = self.client.planner.tasks.add("Update client list", self.__class__.target_plan).execute_query()
         self.assertIsNotNone(task.resource_path)
 
     def test5_list_tasks(self):

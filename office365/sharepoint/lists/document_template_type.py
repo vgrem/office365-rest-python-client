@@ -1,4 +1,7 @@
-class DocumentTemplateType:
+from enum import Enum
+
+
+class DocumentTemplateType(Enum):
     """Specifies the type for the document template (1) for the new list."""
 
     Invalid = 0

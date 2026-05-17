@@ -11,7 +11,6 @@ class AuthenticationFlowsPolicy(Entity):
     """
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """The human-readable name of the policy."""
         return self.properties.get("displayName", None)

@@ -1,7 +1,22 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SocialAttachmentAction(ClientValue):
-    """he SocialAttachmentAction class specifies the user actions that are allowed for the attachment object."""
+    def __init__(
+        self,
+        action_kind: Optional[int] = None,
+        action_uri: Optional[str] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+    ):
+        """The SocialAttachmentAction class specifies the user actions that are allowed for the attachment object."""
+        self.ActionKind = action_kind
+        self.ActionUri = action_uri
+        self.Height = height
+        self.Width = width
 
-    pass
+    @property
+    def entity_type_name(self):
+        return "SP.Social.SocialAttachmentAction"

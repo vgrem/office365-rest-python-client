@@ -1,7 +1,8 @@
 """
-Creates a modern page on a SharePoint site
+Create a modern page on a SharePoint site.
 
 https://support.microsoft.com/en-gb/office/create-and-use-modern-pages-on-a-sharepoint-site-b3d46deb-27a6-4b1e-87b8-df851e503dec
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,8 +1,12 @@
-import datetime
-from typing import TYPE_CHECKING, AnyStr
+from __future__ import annotations
+
+from datetime import datetime
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast
 from urllib.parse import quote, unquote
 
 import requests
+from requests import Response
+from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -15,10 +19,14 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.files.checkin_type import CheckinType
+from office365.sharepoint.files.move_operations import MoveOperations
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.pages.customized_page_status import CustomizedPageStatus
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.irm.effective_settings import (
     EffectiveInformationRightsManagementSettings,
 )
@@ -27,6 +35,9 @@ from office365.sharepoint.permissions.irm.file_settings import (
 )
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
+from office365.sharepoint.sharing.object_sharing_information import (
+    ObjectSharingInformation,
+)
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.upload_status import UploadStatus
 from office365.sharepoint.utilities.wopi_frame_action import SPWOPIFrameAction
@@ -34,7 +45,7 @@ from office365.sharepoint.webparts.limited_manager import LimitedWebPartManager
 from office365.sharepoint.webparts.personalization_scope import PersonalizationScope
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from office365.sharepoint.client_context import ClientContext
 
 
 class AbstractFile(Entity):
@@ -49,9 +60,7 @@ class AbstractFile(Entity):
         """Immediately writes content of file"""
         if not self.is_property_available("ServerRelativeUrl"):
             raise ValueError
-        response = File.save_binary(
-            self.context, self.properties["ServerRelativeUrl"], content
-        )
+        response = File.save_binary(self.context, self.properties["ServerRelativeUrl"], content)
         return response
 
 
@@ -60,13 +69,13 @@ class File(AbstractFile):
     or a file in a folder."""
 
     def __repr__(self):
-        return self.serverRelativeUrl or self.unique_id or self.entity_type_name
+        return self.server_relative_url or self.unique_id or self.entity_type_name
 
     def __str__(self):
         return self.name or self.entity_type_name
 
     @staticmethod
-    def from_url(abs_url):
+    def from_url(abs_url: str) -> File:
         """
         Retrieves a File from absolute url
         :type abs_url: str
@@ -78,7 +87,7 @@ class File(AbstractFile):
         return_type = ctx.web.get_file_by_server_relative_url(file_relative_url)
         return return_type
 
-    def create_anonymous_link(self, is_edit_link=False):
+    def create_anonymous_link(self, is_edit_link: bool = False) -> ClientResult[str]:
         """Create an anonymous link which can be used to access a document without needing to authenticate.
 
         :param bool is_edit_link: If true, the link will allow the guest user edit privileges on the item.
@@ -88,15 +97,15 @@ class File(AbstractFile):
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
 
-            Web.create_anonymous_link(
-                self.context, self.serverRelativeUrl, is_edit_link, return_type
-            )
+            assert self.server_relative_url is not None
+            Web.create_anonymous_link(self.context, self.server_relative_url, is_edit_link, return_type)
 
         self.ensure_property("ServerRelativeUrl", _file_loaded)
         return return_type
 
-    def create_anonymous_link_with_expiration(self, expiration, is_edit_link=False):
-        # type: (datetime.datetime, bool) -> ClientResult[str]
+    def create_anonymous_link_with_expiration(
+        self, expiration: datetime, is_edit_link: bool = False
+    ) -> ClientResult[str]:
         """Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
 
         :param is_edit_link: If true, the link will allow the guest user edit privileges on the item.
@@ -111,9 +120,10 @@ class File(AbstractFile):
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
 
+            assert self.server_relative_url is not None
             Web.create_anonymous_link_with_expiration(
                 self.context,
-                self.serverRelativeUrl,
+                self.server_relative_url,
                 is_edit_link,
                 expiration.isoformat(timespec="seconds"),
                 return_type,
@@ -122,16 +132,14 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativeUrl", _file_loaded)
         return return_type
 
-    def get_content(self):
-        # type: () -> ClientResult[AnyStr]
+    def get_content(self) -> ClientResult[bytes]:
         """Downloads a file content"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "$value", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_pre_authorized_access_url(self, expiration_hours):
-        # type: (int) -> ClientResult[str]
+    def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:
         """Returns a link for downloading the file without authentication.
         :param int expiration_hours: The number of hours until the link expires. If the maximum expiration time
         defined in the web application is less than the specified expiration time, the maximum expiration time
@@ -143,24 +151,25 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def get_absolute_url(self):
-        # type: () -> ClientResult[str]
+    def get_absolute_url(self) -> ClientResult[str]:
         """Gets absolute url of a File"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
 
         def _loaded():
-            return_type.set_property(
-                "__value", self.listItemAllFields.properties.get("EncodedAbsUrl")
-            )
+            return_type.set_property("__value", self.listItemAllFields.properties.get("EncodedAbsUrl"))
 
         self.listItemAllFields.ensure_property("EncodedAbsUrl", _loaded)
         return return_type
 
-    def get_sharing_information(self):
+    def get_sharing_information(self) -> ObjectSharingInformation:
         """Gets the sharing information for a file."""
         return self.listItemAllFields.get_sharing_information()
 
-    def get_wopi_frame_url(self, action=SPWOPIFrameAction.View):
+    def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
+        """Returns the user permissions for a file"""
+        return self.listItemAllFields.get_user_effective_permissions(user)
+
+    def get_wopi_frame_url(self, action: SPWOPIFrameAction = SPWOPIFrameAction.View) -> ClientResult[str]:
         """
         Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
         file's associated WOPI application. If there is no associated WOPI application or associated action,
@@ -169,15 +178,18 @@ class File(AbstractFile):
         :param str action: The full URL to the WOPI frame.
         """
         return_type = ClientResult(self.context, str())
-        params = {"action": action}
-        qry = ServiceOperationQuery(
-            self, "GetWOPIFrameUrl", params, None, None, return_type
-        )
+        params = {"action": action.value}
+        qry = ServiceOperationQuery(self, "GetWOPIFrameUrl", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def share_link(self, link_kind, expiration=None, role=None, password=None):
-        # type: (int, Optional[datetime.datetime], Optional[int], Optional[str]) -> ClientResult[ShareLinkResponse]
+    def share_link(
+        self,
+        link_kind: int,
+        expiration: Optional[datetime] = None,
+        role: Optional[int] = None,
+        password: Optional[str] = None,
+    ) -> ClientResult[ShareLinkResponse]:
         """Creates a tokenized sharing link for a file based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
@@ -194,7 +206,7 @@ class File(AbstractFile):
         """
         return self.listItemAllFields.share_link(link_kind, expiration, role, password)
 
-    def unshare_link(self, link_kind, share_id=None):
+    def unshare_link(self, link_kind, share_id=None) -> ListItem:
         """
         Removes the specified tokenized sharing link of the file.
 
@@ -202,9 +214,9 @@ class File(AbstractFile):
             sharing link that is intended to be removed.
         :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
         """
-        return self.listItemAllFields.unshare_link(link_kind, share_id)
+        return self.listItemAllFields.unshare_link(link_kind, share_id)  # type: ignore[arg-type]
 
-    def get_image_preview_uri(self, width, height, client_type=None):
+    def get_image_preview_uri(self, width: int, height: int, client_type=None) -> ClientResult[str]:
         """
         Returns the uri where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -216,13 +228,11 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
-        qry = ServiceOperationQuery(
-            self, "GetImagePreviewUri", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetImagePreviewUri", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_image_preview_url(self, width, height, client_type=None):
+    def get_image_preview_url(self, width: int, height: int, client_type: Optional[str] = None) -> ClientResult[str]:
         """
         Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -233,20 +243,18 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
-        qry = ServiceOperationQuery(
-            self, "GetImagePreviewUrl", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetImagePreviewUrl", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def recycle(self):
+    def recycle(self) -> ClientResult[str]:
         """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def approve(self, comment):
+    def approve(self, comment: str) -> Self:
         """
         Approves the file submitted for content approval with the specified comment.
 
@@ -256,7 +264,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def deny(self, comment):
+    def deny(self, comment: str) -> Self:
         """Denies approval for a file that was submitted for content approval.
 
         :param str comment: A string containing the comment.
@@ -265,8 +273,12 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def copyto(self, destination, overwrite=False, file_name=None):
-        # type: (Folder|str, bool, str) -> "File"
+    def copyto(
+        self,
+        destination: Union[Folder, str],
+        overwrite: bool = False,
+        file_name: Optional[str] = None,
+    ) -> "File":
         """Copies the file to the destination URL.
 
         :param office365.sharepoint.folders.folder.Folder or str destination: Specifies the destination folder or
@@ -275,13 +287,12 @@ class File(AbstractFile):
         :param str file_name: A new file name
         """
         return_type = File(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
-        def _copyto(destination_folder):
-            # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.serverRelativeUrl), file_name or self.name]
-            )
+        def _copyto(destination_folder: Folder) -> None:
+            assert self.name is not None
+            file_path = "/".join([str(destination_folder.server_relative_url), file_name or self.name])
             return_type.set_property("ServerRelativeUrl", file_path)
 
             params = {"strNewUrl": file_path, "boverwrite": overwrite}
@@ -297,7 +308,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
         return return_type
 
-    def copyto_using_path(self, destination, overwrite=False, file_name=None):
+    def copyto_using_path(self, destination, overwrite=False, file_name=None):  # type: ignore[override]
         """
         Copies the file to the destination path. Server MUST overwrite an existing file of the same name
         if overwrite is true.
@@ -309,13 +320,12 @@ class File(AbstractFile):
         """
 
         return_type = File(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
-        def _copyto_using_path(destination_folder):
-            # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.server_relative_path), file_name or self.name]
-            )
+        def _copyto_using_path(destination_folder: Folder) -> None:
+            assert self.name is not None
+            file_path = "/".join([str(destination_folder.server_relative_path), file_name or self.name])
             return_type.set_property("ServerRelativePath", file_path)
 
             params = {"DecodedUrl": file_path, "bOverWrite": overwrite}
@@ -324,28 +334,26 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property(
-                    "ServerRelativePath", _copyto_using_path, destination
-                )
+                destination.ensure_property("ServerRelativePath", _copyto_using_path, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().select(
-                    ["ServerRelativePath"]
-                ).after_execute(_copyto_using_path)
+                self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
+                    _copyto_using_path
+                )
 
         self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
         return return_type
 
-    def moveto(self, destination, flag):
+    def moveto(self, destination: Union[str, Folder], flag: int) -> Self:
         """Moves the file to the specified destination url.
 
-        :param str or office365.sharepoint.folders.folder.Folder destination: Specifies the existing folder or folder
+        :param str or Folder destination: Specifies the existing folder or folder
              site relative url.
         :param int flag: Specifies the kind of move operation.
         """
 
-        def _moveto(destination_folder):
-            # type: (Folder) -> None
-            file_url = "/".join([str(destination_folder.serverRelativeUrl), self.name])
+        def _moveto(destination_folder: Folder) -> None:
+            assert self.name is not None
+            file_url = "/".join([str(destination_folder.server_relative_url), self.name])
 
             params = {"newurl": file_url, "flags": flag}
             qry = ServiceOperationQuery(self, "moveto", params)
@@ -354,20 +362,18 @@ class File(AbstractFile):
             def _update_file(return_type):
                 self.set_property("ServerRelativeUrl", file_url)
 
-            self.context.after_query_execute(_update_file)
+            self.context.after_execute(_update_file)
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
                 destination.ensure_property("ServerRelativeUrl", _moveto, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().after_execute(
-                    _moveto
-                )
+                self.context.web.ensure_folder_path(destination).get().after_execute(_moveto)
 
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
         return self
 
-    def move_to_using_path(self, destination, flag):
+    def move_to_using_path(self, destination: Union[str, Folder], flag: MoveOperations) -> Self:
         """
         Moves the file to the specified destination path.
 
@@ -376,34 +382,29 @@ class File(AbstractFile):
         :param int flag: Specifies the kind of move operation.
         """
 
-        def _move_to_using_path(destination_folder):
-            # type: (Folder) -> None
-            file_path = "/".join(
-                [str(destination_folder.server_relative_path), self.name]
-            )
-            params = {"DecodedUrl": file_path, "moveOperations": flag}
+        def _move_to_using_path(destination_folder: Folder) -> None:
+            assert self.name is not None
+            file_path = "/".join([str(destination_folder.server_relative_path), self.name])
+            params = {"DecodedUrl": file_path, "moveOperations": flag.value}
             qry = ServiceOperationQuery(self, "MoveToUsingPath", params)
 
-            def _update_file(return_type):
-                # type: (File) -> None
+            def _update_file(return_type: File) -> None:
                 self.set_property("ServerRelativePath", file_path)
 
-            self.context.add_query(qry).after_query_execute(_update_file)
+            self.context.add_query(qry).after_execute(_update_file)
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property(
-                    "ServerRelativePath", _move_to_using_path, destination
-                )
+                destination.ensure_property("ServerRelativePath", _move_to_using_path, destination)
             else:
-                self.context.web.ensure_folder_path(destination).get().select(
-                    ["ServerRelativePath"]
-                ).after_execute(_move_to_using_path)
+                self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
+                    _move_to_using_path
+                )
 
         self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
         return self
 
-    def publish(self, comment):
+    def publish(self, comment: str) -> Self:
         """Submits the file for content approval with the specified comment.
         :param str comment: Specifies the comment.
         """
@@ -411,7 +412,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def unpublish(self, comment):
+    def unpublish(self, comment: str) -> Self:
         """Removes the file from content approval or unpublishes a major version.
         :param str comment: Specifies the comment for UnPublish. Its length MUST be equal to or less than 1023.
         """
@@ -419,22 +420,20 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def check_access_and_post_view_audit_event(self):
+    def check_access_and_post_view_audit_event(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "CheckAccessAndPostViewAuditEvent", return_type=return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckAccessAndPostViewAuditEvent", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def checkout(self):
+    def checkout(self) -> Self:
         """Checks out the file from a document library based on the check-out type."""
         qry = ServiceOperationQuery(self, "checkout")
         self.context.add_query(qry)
         return self
 
-    def checkin(self, comment, checkin_type):
+    def checkin(self, comment: str, checkin_type: CheckinType) -> Self:
         """
         Checks the file in to a document library based on the check-in type.
 
@@ -444,18 +443,20 @@ class File(AbstractFile):
             https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
         :param int checkin_type: Specifies the type of check-in.
         """
-        params = {"comment": comment, "checkInType": checkin_type}
+        params = {"comment": comment, "checkInType": checkin_type.value}
         qry = ServiceOperationQuery(self, "checkin", params)
         self.context.add_query(qry)
         return self
 
-    def undocheckout(self):
+    def undocheckout(self) -> Self:
         """Reverts an existing checkout for the file."""
         qry = ServiceOperationQuery(self, "UndoCheckout")
         self.context.add_query(qry)
         return self
 
-    def get_limited_webpart_manager(self, scope=PersonalizationScope.User):
+    def get_limited_webpart_manager(
+        self, scope: PersonalizationScope = PersonalizationScope.User
+    ) -> LimitedWebPartManager:
         """Specifies the control set used to access, modify, or add Web Parts associated with this Web Part Page and
         view.
 
@@ -464,30 +465,26 @@ class File(AbstractFile):
         """
         return LimitedWebPartManager(
             self.context,
-            ServiceOperationPath(
-                "GetLimitedWebPartManager", [scope], self.resource_path
-            ),
+            ServiceOperationPath("GetLimitedWebPartManager", [scope.value], self.resource_path),
         )
 
-    def open_binary_stream(self):
+    def open_binary_stream(self) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
-        qry = ServiceOperationQuery(
-            self, "OpenBinaryStream", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "OpenBinaryStream", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def save_binary_stream(self, stream):
+    def save_binary_stream(self, stream: bytes) -> Self:
         """Saves the file in binary format.
 
         :param str or bytes stream: A stream containing the contents of the specified file.
         """
-        qry = ServiceOperationQuery(self, "SaveBinaryStream", None, stream)
+        qry = ServiceOperationQuery(self, "SaveBinaryStream", None, stream)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
-    def get_upload_status(self, upload_id):
+    def get_upload_status(self, upload_id: str) -> UploadStatus:
         """Gets the status of a chunk upload session.
         :param str upload_id:  The upload session ID.
         """
@@ -495,14 +492,11 @@ class File(AbstractFile):
             "uploadId": upload_id,
         }
         return_type = UploadStatus(self.context)
-        qry = ServiceOperationQuery(
-            self, "GetUploadStatus", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetUploadStatus", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def upload_with_checksum(self, upload_id, checksum, stream):
-        # type: (str, str, bytes) -> File
+    def upload_with_checksum(self, upload_id: str, checksum: str, stream: bytes) -> File:
         """
         :param str upload_id: The upload session ID.
         :param str checksum:
@@ -510,13 +504,11 @@ class File(AbstractFile):
         """
         return_type = File(self.context)
         params = {"uploadId": upload_id, "checksum": checksum}
-        qry = ServiceOperationQuery(
-            self, "UploadWithChecksum", params, stream, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 
-    def cancel_upload(self, upload_id):
+    def cancel_upload(self, upload_id: str) -> Self:
         """
         Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
         created the file, the file will be deleted.
@@ -530,7 +522,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    def start_upload(self, upload_id, content):
+    def start_upload(self, upload_id: str, content: bytes) -> ClientResult[int]:
         """Starts a new chunk upload session and uploads the first fragment.
 
         :param bytes content: File content
@@ -538,13 +530,11 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, int())
         params = {"uploadID": upload_id}
-        qry = ServiceOperationQuery(
-            self, "startUpload", params, content, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "startUpload", params, content, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 
-    def continue_upload(self, upload_id, file_offset, content):
+    def continue_upload(self, upload_id: str, file_offset: int, content: bytes) -> ClientResult[int]:
         """
         Continues the chunk upload session with an additional fragment. The current file content is not changed.
 
@@ -560,14 +550,14 @@ class File(AbstractFile):
                 "uploadID": upload_id,
                 "fileOffset": file_offset,
             },
-            content,
+            content,  # type: ignore[arg-type]
             None,
             return_type,
         )
         self.context.add_query(qry)
         return return_type
 
-    def finish_upload(self, upload_id, file_offset, content):
+    def finish_upload(self, upload_id: str, file_offset: int, content: bytes) -> Self:
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
 
@@ -576,11 +566,11 @@ class File(AbstractFile):
         :param bytes content: File content
         """
         params = {"uploadID": upload_id, "fileOffset": file_offset}
-        qry = ServiceOperationQuery(self, "finishUpload", params, content, None, self)
+        qry = ServiceOperationQuery(self, "finishUpload", params, content, None, self)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
-    def finish_upload_with_checksum(self, upload_id, file_offset, checksum, stream):
+    def finish_upload_with_checksum(self, upload_id: str, file_offset: int, checksum: str, stream: bytes) -> Self:
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
 
@@ -594,30 +584,24 @@ class File(AbstractFile):
             "fileOffset": file_offset,
             "checksum": checksum,
         }
-        qry = ServiceOperationQuery(
-            self, "FinishUploadWithChecksum", payload, stream, None, self
-        )
+        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
     @staticmethod
-    def save_binary(context, server_relative_url, content):
-        """Uploads a file
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type server_relative_url: str
-        :type content: str
-        """
+    def save_binary(context: ClientContext, server_relative_url: str, content: bytes):
+        """Uploads a file"""
         try:
             decoded_server_relative_url = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
+
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath"
+            rf"(DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
+
         request = RequestOptions(url)
         request.method = HttpMethod.Post
         request.set_header("X-HTTP-Method", "PUT")
@@ -626,30 +610,27 @@ class File(AbstractFile):
         return response
 
     @staticmethod
-    def open_binary(context, server_relative_url):
+    def open_binary(context: ClientContext, server_relative_url: str) -> Response:
         """
         Returns the file object located at the specified server-relative URL.
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type server_relative_url: str
-        :return Response
         """
         try:
             decoded_server_relative_url = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
             decoded_server_relative_url = server_relative_url
+
         url = quote(
-            r"{0}/web/getFileByServerRelativePath(DecodedUrl='{1}')/\$value".format(
-                context.service_root_url, decoded_server_relative_url
-            ),
+            rf"{context.service_root_url}/web/getFileByServerRelativePath("
+            rf"DecodedUrl='{decoded_server_relative_url}')/\$value",
             safe=":/",
         )
+
         request = RequestOptions(url)
         request.method = HttpMethod.Get
         response = context.pending_request().execute_request_direct(request)
         return response
 
-    def download(self, file_object, after_downloaded=None):
+    def download(self, file_object: IO, after_downloaded: Optional[Callable[[File], None]] = None) -> Self:
         """
         Download a file content. Use this method to download a content of a small size
 
@@ -657,8 +638,7 @@ class File(AbstractFile):
         :param (File) -> None after_downloaded: A download callback
         """
 
-        def _save_content(return_type):
-            # type: (ClientResult[AnyStr]) -> None
+        def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)
             if callable(after_downloaded):
                 after_downloaded(self)
@@ -669,9 +649,7 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativePath", _download_inner)
         return self
 
-    def download_session(
-        self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True
-    ):
+    def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True):
         """
         Download a file content. Use this method to download a content of a large size
 
@@ -684,14 +662,11 @@ class File(AbstractFile):
         def _download_as_stream():
             qry = ServiceOperationQuery(self, "$value")
 
-            def _construct_request(request):
-                # type: (RequestOptions) -> None
+            def _construct_request(request: RequestOptions) -> None:
                 request.stream = True
                 request.method = HttpMethod.Get
 
-            def _process_response(response):
-                # type: (requests.Response) -> None
-                response.raise_for_status()
+            def _process_response(response: requests.Response) -> None:
                 bytes_read = 0
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     bytes_read += len(chunk)
@@ -699,9 +674,9 @@ class File(AbstractFile):
                         chunk_downloaded(bytes_read)
                     file_object.write(chunk)
 
-            self.context.add_query(qry).before_query_execute(
-                _construct_request
-            ).after_execute(_process_response)
+            self.context.add_query(qry).before_execute(_construct_request).after_execute(
+                _process_response, include_response=True
+            )
 
         if use_path:
             self.ensure_property("ServerRelativePath", _download_as_stream)
@@ -709,7 +684,7 @@ class File(AbstractFile):
             self.ensure_property("ServerRelativeUrl", _download_as_stream)
         return self
 
-    def rename(self, new_file_name):
+    def rename(self, new_file_name: str) -> Self:
         """
         Rename a file
         :param str new_file_name: A new file name
@@ -721,32 +696,28 @@ class File(AbstractFile):
         return self
 
     @property
-    def activity_capabilities(self):
+    def activity_capabilities(self) -> ActivityCapabilities:
         """"""
         return self.properties.get("ActivityCapabilities", ActivityCapabilities())
 
     @property
-    def checkin_comment(self):
-        # type: () -> Optional[str]
+    def checkin_comment(self) -> Optional[str]:
         """Specifies the comment used when a document is checked into a document library.
         Its length MUST be equal to or less than 1023."""
         return self.properties.get("CheckInComment", None)
 
     @property
-    def content_tag(self):
-        # type: () -> Optional[str]
+    def content_tag(self) -> Optional[str]:
         """Returns internal version of content, used to validate document equality for read purposes."""
         return self.properties.get("ContentTag", None)
 
     @property
-    def author(self):
+    def author(self) -> User:
         """Specifies the user who added the file."""
-        return self.properties.get(
-            "Author", User(self.context, ResourcePath("Author", self.resource_path))
-        )
+        return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
     @property
-    def checked_out_by_user(self):
+    def checked_out_by_user(self) -> User:
         """Gets an object that represents the user who has checked out the file."""
         return self.properties.get(
             "CheckedOutByUser",
@@ -754,19 +725,16 @@ class File(AbstractFile):
         )
 
     @property
-    def check_out_type(self):
-        # type: () -> Optional[int]
+    def check_out_type(self) -> Optional[int]:
         return self.properties.get("CheckOutType", None)
 
     @property
-    def expiration_date(self):
-        # type: () -> Optional[datetime.datetime]
+    def expiration_date(self) -> Optional[datetime]:
         """Specifies the date and time when the file expires."""
-        return self.properties.get("ExpirationDate", datetime.datetime.min)
+        return self.properties.get("ExpirationDate", datetime.min)
 
     @property
-    def version_events(self):
-        # type: () -> EntityCollection[FileVersionEvent]
+    def version_events(self) -> EntityCollection[FileVersionEvent]:
         """Gets the history of events on this version object."""
         return self.properties.get(
             "VersionEvents",
@@ -778,7 +746,9 @@ class File(AbstractFile):
         )
 
     @property
-    def effective_information_rights_management_settings(self):
+    def effective_information_rights_management_settings(
+        self,
+    ) -> EffectiveInformationRightsManagementSettings:
         """
         Returns the effective Information Rights Management (IRM) settings for the file.
 
@@ -786,16 +756,16 @@ class File(AbstractFile):
         list which contains the file, or based on a rule. From greatest to least, IRM settings take precedence in the
         following order: rule, list, then file.
         """
-        path = ResourcePath(
-            "EffectiveInformationRightsManagementSettings", self.resource_path
-        )
+        path = ResourcePath("EffectiveInformationRightsManagementSettings", self.resource_path)
         return self.properties.get(
             "EffectiveInformationRightsManagementSettings",
             EffectiveInformationRightsManagementSettings(self.context, path),
         )
 
     @property
-    def information_rights_management_settings(self):
+    def information_rights_management_settings(
+        self,
+    ) -> InformationRightsManagementFileSettings:
         """Returns the Information Rights Management (IRM) settings for the file."""
         return self.properties.get(
             "InformationRightsManagementSettings",
@@ -806,18 +776,15 @@ class File(AbstractFile):
         )
 
     @property
-    def listItemAllFields(self):
-        # type: () -> ListItem
+    def listItemAllFields(self) -> ListItem:
         """Gets a value that specifies the list item fields values for the list item corresponding to the file."""
         return self.properties.setdefault(
             "ListItemAllFields",
-            ListItem(
-                self.context, ResourcePath("listItemAllFields", self.resource_path)
-            ),
+            ListItem(self.context, ResourcePath("listItemAllFields", self.resource_path)),
         )
 
     @property
-    def version_expiration_report(self):
+    def version_expiration_report(self) -> FileVersionCollection:
         """"""
         return self.properties.get(
             "VersionExpirationReport",
@@ -828,18 +795,15 @@ class File(AbstractFile):
         )
 
     @property
-    def versions(self):
-        # type: () -> FileVersionCollection
+    def versions(self) -> FileVersionCollection:
         """Gets a value that returns a collection of file version objects that represent the versions of the file."""
         return self.properties.get(
             "Versions",
-            FileVersionCollection(
-                self.context, ResourcePath("versions", self.resource_path)
-            ),
+            FileVersionCollection(self.context, ResourcePath("versions", self.resource_path)),
         )
 
     @property
-    def modified_by(self):
+    def modified_by(self) -> User:
         """Gets a value that returns the user who last modified the file."""
         return self.properties.get(
             "ModifiedBy",
@@ -847,7 +811,7 @@ class File(AbstractFile):
         )
 
     @property
-    def locked_by_user(self):
+    def locked_by_user(self) -> User:
         """Gets a value that returns the user that owns the current lock on the file."""
         return self.properties.get(
             "LockedByUser",
@@ -855,116 +819,119 @@ class File(AbstractFile):
         )
 
     @property
-    def serverRelativeUrl(self):
-        # type: () -> Optional[str]
+    def server_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the file based on the URL for the server."""
         return self.properties.get("ServerRelativeUrl", None)
 
     @property
-    def server_relative_path(self):
+    def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
     @property
-    def length(self):
-        # type: () -> Optional[int]
+    def length(self) -> Optional[int]:
         """Gets the file size."""
         return int(self.properties.get("Length", 0))
 
     @property
-    def exists(self):
-        # type: () -> Optional[bool]
+    def exists(self) -> Optional[bool]:
         """Specifies whether the file exists."""
         return self.properties.get("Exists", None)
 
     @property
-    def irm_enabled(self):
-        # type: () -> Optional[bool]
+    def irm_enabled(self) -> Optional[bool]:
         """Specifies whether or not Information Rights Management (IRM) is enabled at the file level.
         A value of true indicates IRM is enabled; a value of false indicates IRM is disabled.
         """
         return self.properties.get("IrmEnabled", None)
 
     @property
-    def level(self):
-        # type: () -> Optional[str]
+    def level(self) -> Optional[str]:
         """Specifies the publishing level of the file."""
         return self.properties.get("Level", None)
 
     @property
-    def linking_uri(self):
-        # type: () -> Optional[str]
+    def linking_uri(self) -> Optional[str]:
         """Specifies the URL that is suitable for durable linking to the file."""
         return self.properties.get("LinkingUri", None)
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """Specifies the file name including the extension.
         It MUST NOT be NULL. Its length MUST be equal to or less than 260.
         """
         return self.properties.get("Name", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """Gets the GUID that identifies the List containing the file."""
         return self.properties.get("ListId", None)
 
     @property
-    def site_id(self):
-        # type: () -> Optional[str]
+    def site_id(self) -> Optional[str]:
         """Gets the GUID that identifies the site collection containing the file."""
         return self.properties.get("SiteId", None)
 
     @property
-    def web_id(self):
-        # type: () -> Optional[str]
+    def web_id(self) -> Optional[str]:
         """Gets the GUID for the site containing the file."""
         return self.properties.get("WebId", None)
 
     @property
-    def time_created(self):
-        # type: () -> Optional[datetime.datetime]
+    def time_created(self) -> Optional[datetime]:
         """Gets a value that specifies when the file was created."""
-        return self.properties.get("TimeCreated", datetime.datetime.min)
+        return self.properties.get("TimeCreated", datetime.min)
 
     @property
-    def time_last_modified(self):
-        # type: () -> Optional[datetime.datetime]
+    def time_last_modified(self) -> Optional[datetime]:
         """Specifies when the file was last modified."""
-        return self.properties.get("TimeLastModified", datetime.datetime.min)
+        return self.properties.get("TimeLastModified", datetime.min)
 
     @property
-    def minor_version(self):
-        # type: () -> Optional[int]
+    def minor_version(self) -> Optional[int]:
         """Gets a value that specifies the minor version of the file."""
         return self.properties.get("MinorVersion", None)
 
     @property
-    def major_version(self):
-        # type: () -> Optional[int]
+    def major_version(self) -> Optional[int]:
         """Gets a value that specifies the major version of the file."""
         return self.properties.get("MajorVersion", None)
 
     @property
-    def unique_id(self):
-        # type: () -> Optional[str]
+    def unique_id(self) -> Optional[str]:
         """Gets a value that specifies the a file unique identifier"""
         return self.properties.get("UniqueId", None)
 
     @property
-    def customized_page_status(self):
-        # type: () -> Optional[int]
+    def customized_page_status(self) -> Optional[CustomizedPageStatus]:
         """Specifies the customization status of the file."""
-        return self.properties.get("CustomizedPageStatus", None)
+        return self.properties.get("CustomizedPageStatus", CustomizedPageStatus.None_)
 
     @property
-    def parent_folder(self):
-        # type: () -> Optional[Folder]
+    def parent_folder(self) -> Optional[Folder]:
+        """Gets the parent folder.
+
+        Returns:
+            The parent Folder object
+
+        Raises:
+            ValueError: If no parent collection exists
+            TypeError: If parent is not a Folder
+        """
+
+        from office365.sharepoint.folders.folder import Folder
+
         if self.parent_collection is None:
             return None
-        return self.parent_collection.parent
+
+        parent = self.parent_collection.parent
+        if parent is None:
+            return None
+
+        if isinstance(parent, Folder):
+            return cast(Folder, parent)
+
+        raise TypeError(f"Expected parent to be Folder but got {type(parent).__name__}")
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -982,23 +949,19 @@ class File(AbstractFile):
                 "VersionExpirationReport": self.version_expiration_report,
             }
             default_value = property_mapping.get(name, None)
-        return super(File, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
-        super(File, self).set_property(name, value, persist_changes)
+        super().set_property(name, value, persist_changes)
 
-        # prioritize using UniqueId
+        # fallback: prioritize using UniqueId
         if name == "UniqueId":
             self._resource_path = self.context.web.get_file_by_id(value).resource_path
 
-        # fallback: create a new resource path
+        # alternative fallback: create a new resource path
         if self._resource_path is None:
             if name == "ServerRelativeUrl":
-                self._resource_path = self.context.web.get_file_by_server_relative_url(
-                    value
-                ).resource_path
+                self._resource_path = self.context.web.get_file_by_server_relative_url(value).resource_path
             elif name == "ServerRelativePath":
-                self._resource_path = self.context.web.get_file_by_server_relative_path(
-                    value
-                ).resource_path
+                self._resource_path = self.context.web.get_file_by_server_relative_path(value).resource_path
         return self

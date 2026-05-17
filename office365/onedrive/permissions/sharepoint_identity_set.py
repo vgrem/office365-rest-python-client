@@ -23,7 +23,7 @@ class SharePointIdentitySet(IdentitySet):
         :param SharePointIdentity site_group: The SharePoint group associated with this action
         :param SharePointIdentity site_user: The SharePoint user associated with this action
         """
-        super(SharePointIdentitySet, self).__init__()
+        super().__init__()
         self.group = group
         self.siteGroup = site_group
         self.siteUser = site_user

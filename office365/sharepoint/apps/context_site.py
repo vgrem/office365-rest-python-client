@@ -9,17 +9,16 @@ from office365.sharepoint.webs.web import Web
 class AppContextSite(Entity):
     """ """
 
-    def __init__(self, context, site_url):
-        # type: (ClientContext, str) -> None
+    def __init__(self, context: ClientContext, site_url: str) -> None:
         """"""
         static_path = ServiceOperationPath(
             "SP.AppContextSite",
             {"siteUrl": site_url},
         )
-        super(AppContextSite, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     @property
-    def site(self):
+    def site(self) -> Site:
         """"""
         return self.properties.get(
             "Site",
@@ -30,7 +29,7 @@ class AppContextSite(Entity):
         )
 
     @property
-    def web(self):
+    def web(self) -> Web:
         """"""
         return self.properties.get(
             "Web",

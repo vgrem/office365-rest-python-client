@@ -1,6 +1,6 @@
 from office365.directory.domains.dns_record import DomainDnsRecord
 from office365.directory.domains.state import DomainState
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -18,16 +18,17 @@ class Domain(Entity):
     authentication, etc.
     """
 
-    def verify(self):
+    def verify(self) -> "Domain":
         """Validates the ownership of the domain."""
         return_type = Domain(self.context)
-        self.parent_collection.add_child(return_type)
+        if self.parent_collection:
+            self.parent_collection.add_child(return_type)
         qry = ServiceOperationQuery(self, "verify", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def supported_services(self):
+    def supported_services(self) -> StringCollection:
         """
         The capabilities assigned to the domain. Can include 0, 1 or more of following values:
         Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain,
@@ -37,7 +38,7 @@ class Domain(Entity):
         return self.properties.get("supportedServices", StringCollection())
 
     @property
-    def domain_name_references(self):
+    def domain_name_references(self) -> DirectoryObjectCollection:
         """
         The objects such as users and groups that reference the domain ID. Read-only, Nullable.
         Supports $expand and $filter by the OData type of objects returned.
@@ -46,13 +47,11 @@ class Domain(Entity):
         """
         return self.properties.get(
             "domainNameReferences",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("domainNameReferences", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("domainNameReferences", self.resource_path)),
         )
 
     @property
-    def service_configuration_records(self):
+    def service_configuration_records(self) -> EntityCollection[DomainDnsRecord]:
         """
         DNS records the customer adds to the DNS zone file of the domain before the domain can be used by
         Microsoft Online services. Read-only, Nullable. Supports $expand.
@@ -67,7 +66,7 @@ class Domain(Entity):
         )
 
     @property
-    def verification_dns_records(self):
+    def verification_dns_records(self) -> EntityCollection[DomainDnsRecord]:
         """
         DNS records that the customer adds to the DNS zone file of the domain before the customer can complete
         domain ownership verification with Azure AD. Read-only, Nullable. Supports $expand.
@@ -82,7 +81,7 @@ class Domain(Entity):
         )
 
     @property
-    def state(self):
+    def state(self) -> DomainState:
         """Status of asynchronous operations scheduled for the domain."""
         return self.properties.get("state", DomainState())
 
@@ -94,4 +93,4 @@ class Domain(Entity):
                 "verificationDnsRecords": self.verification_dns_records,
             }
             default_value = property_mapping.get(name, None)
-        return super(Domain, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

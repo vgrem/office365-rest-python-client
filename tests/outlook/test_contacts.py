@@ -1,10 +1,11 @@
 from office365.outlook.contacts.contact import Contact
+
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 
 
 class TestOutlookContacts(GraphTestCase):
-    target_contact = None  # type: Contact
+    target_contact: Contact = None
 
     @requires_delegated_permission("Contacts.ReadWrite")
     def test1_create_contact(self):

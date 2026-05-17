@@ -12,29 +12,25 @@ class UserCustomAction(Entity):
             default_value = self.description_resource
         elif name == "TitleResource":
             default_value = self.title_resource
-        return super(UserCustomAction, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
-    def rights(self):
+    def rights(self) -> BasePermissions:
         """Specifies the permissions needed for the custom action."""
         return self.properties.get("Rights", BasePermissions())
 
     @property
-    def description_resource(self):
+    def description_resource(self) -> UserResource:
         """Gets the SP.UserResource object that corresponds to the Description for this object."""
         return self.properties.get(
             "DescriptionResource",
-            UserResource(
-                self.context, ResourcePath("DescriptionResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
     @property
-    def title_resource(self):
+    def title_resource(self) -> UserResource:
         """Returns the UserResource object that corresponds to the Title for this object."""
         return self.properties.get(
             "TitleResource",
-            UserResource(
-                self.context, ResourcePath("TitleResource", self.resource_path)
-            ),
+            UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )

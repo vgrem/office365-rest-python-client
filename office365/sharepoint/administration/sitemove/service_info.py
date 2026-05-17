@@ -6,6 +6,4 @@ class SiteMoveServiceInfo(ClientValue):
 
     @property
     def entity_type_name(self):
-        return (
-            "Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveServiceInfo"
-        )
+        return "Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveServiceInfo"

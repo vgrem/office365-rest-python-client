@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,9 +9,9 @@ class PasswordProfile(ClientValue):
 
     def __init__(
         self,
-        password=None,
-        force_change_password_next_sign_in=None,
-        force_change_password_next_sign_in_with_mfa=None,
+        password: str | None = None,
+        force_change_password_next_sign_in: bool | None = None,
+        force_change_password_next_sign_in_with_mfa: bool | None = None,
     ):
         """
         :param str password: The password for the user. This property is required when a user is created.
@@ -24,9 +26,11 @@ class PasswordProfile(ClientValue):
              authentication before password change. After a password change, this property will be automatically
              reset to false. If not set, default is false.
         """
-        super(PasswordProfile, self).__init__()
+        super().__init__()
         self.password = password
         self.forceChangePasswordNextSignIn = force_change_password_next_sign_in
-        self.forceChangePasswordNextSignInWithMfa = (
-            force_change_password_next_sign_in_with_mfa
-        )
+        self.forceChangePasswordNextSignInWithMfa = force_change_password_next_sign_in_with_mfa
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.PasswordProfile"

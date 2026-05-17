@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -25,6 +27,13 @@ class SharingLinkData(ClientValue):
         is_writable=None,
         link_kind=None,
         object_type=None,
+        is_address_bar_link: Optional[bool] = None,
+        object_unique_id: Optional[str] = None,
+        requires_password: Optional[bool] = None,
+        restricted_share_membership: Optional[bool] = None,
+        restrict_to_existing_relationships: Optional[bool] = None,
+        share_id: Optional[str] = None,
+        track_link_users: Optional[bool] = None,
     ):
         """
         :param bool blocks_download:
@@ -67,3 +76,10 @@ class SharingLinkData(ClientValue):
         self.IsWritable = is_writable
         self.LinkKind = link_kind
         self.ObjectType = object_type
+        self.IsAddressBarLink = is_address_bar_link
+        self.ObjectUniqueId = object_unique_id
+        self.RequiresPassword = requires_password
+        self.RestrictedShareMembership = restricted_share_membership
+        self.RestrictToExistingRelationships = restrict_to_existing_relationships
+        self.ShareId = share_id
+        self.TrackLinkUsers = track_link_users

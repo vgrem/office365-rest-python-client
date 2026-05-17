@@ -5,9 +5,9 @@ from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
 class JsonLightFormat(ODataJsonFormat):
     """JSON Light format for SharePoint Online/One Drive for Business"""
 
-    def __init__(self, metadata_level=ODataV3MetadataLevel.Verbose):
-        super(JsonLightFormat, self).__init__(metadata_level)
-        self.function = None
+    def __init__(self, metadata_level: ODataV3MetadataLevel = ODataV3MetadataLevel.Verbose):
+        super().__init__(metadata_level)
+        self.function: str | None = None
 
     @property
     def security(self):
@@ -49,11 +49,9 @@ class JsonLightFormat(ODataJsonFormat):
 
     @property
     def media_type(self):
-        return "application/json;odata={0}".format(self.metadata_level)
+        assert isinstance(self.metadata_level, ODataV3MetadataLevel)
+        return f"application/json;odata={self.metadata_level.value}"
 
     @property
     def include_control_information(self):
-        return (
-            self.metadata_level == ODataV3MetadataLevel.Verbose
-            or self.metadata_level == ODataV3MetadataLevel.MinimalMetadata
-        )
+        return self.metadata_level in {ODataV3MetadataLevel.Verbose, ODataV3MetadataLevel.MinimalMetadata}

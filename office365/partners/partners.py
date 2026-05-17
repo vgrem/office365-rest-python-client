@@ -7,7 +7,7 @@ class Partners(Entity):
     """Represents billing details for a Microsoft direct partner."""
 
     @property
-    def billing(self):
+    def billing(self) -> Billing:
         """
         Represents billing details for billed and unbilled data.
         """

@@ -8,18 +8,15 @@ class RepostPage(SitePage):
     internet or other page in your SharePoint environment"""
 
     @property
-    def is_banner_image_url_external(self):
-        # type: () -> Optional[bool]
+    def is_banner_image_url_external(self) -> Optional[bool]:
         return self.properties.get("IsBannerImageUrlExternal", None)
 
     @property
-    def original_source_item_id(self):
-        # type: () -> Optional[str]
+    def original_source_item_id(self) -> Optional[str]:
         return self.properties.get("OriginalSourceItemId", None)
 
     @property
-    def original_source_url(self):
-        # type: () -> Optional[str]
+    def original_source_url(self) -> Optional[str]:
         return self.properties.get("OriginalSourceUrl", None)
 
     @property

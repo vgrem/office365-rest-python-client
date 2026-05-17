@@ -8,7 +8,7 @@ class ChangeTrackedEntity(Entity):
     """Represents an entity to track changes made to any supported schedule and associated resource."""
 
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """
         The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
@@ -16,7 +16,7 @@ class ChangeTrackedEntity(Entity):
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def last_modified_datetime(self):
+    def last_modified_datetime(self) -> datetime:
         """
         The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
@@ -24,7 +24,7 @@ class ChangeTrackedEntity(Entity):
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
-    def last_modified_by(self):
+    def last_modified_by(self) -> IdentitySet:
         """Identity of the person who last modified the entity."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
@@ -32,4 +32,4 @@ class ChangeTrackedEntity(Entity):
         if default_value is None:
             property_mapping = {}
             default_value = property_mapping.get(name, None)
-        return super(ChangeTrackedEntity, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

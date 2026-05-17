@@ -11,9 +11,7 @@ path = "../../data/report.csv"
 
 print("Uploading a new file...")
 with open(path, "rb") as f:
-    target_file = (
-        ctx.web.default_document_library().root_folder.files.upload(f).execute_query()
-    )
+    target_file = ctx.web.default_document_library().root_folder.files.upload(f).execute_query()
 
 
 print("Replacing file content...")

@@ -13,9 +13,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 draft_message = (
     client.users[test_user_principal_name]
     .messages.add(

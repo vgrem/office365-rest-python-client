@@ -1,4 +1,7 @@
-class DateTimeFieldFormatType:
+from enum import Enum
+
+
+class DateTimeFieldFormatType(Enum):
     """Specifies the format to use in displaying date and time fields."""
 
     DateOnly = 0

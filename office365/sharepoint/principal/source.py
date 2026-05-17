@@ -1,8 +1,8 @@
-class PrincipalSource:
-    """Specifies the source of a principal."""
+from enum import Enum
 
-    def __init__(self):
-        pass
+
+class PrincipalSource(Enum):
+    """Specifies the source of a principal."""
 
     None_ = 0
     """Do not specify a principal source."""

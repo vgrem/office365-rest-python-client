@@ -9,6 +9,6 @@ class TeamGuestSettings(ClientValue):
         :param bool allow_create_update_channels:
         :param bool allow_delete_channels:
         """
-        super(TeamGuestSettings, self).__init__()
+        super().__init__()
         self.allowCreateUpdateChannels = allow_create_update_channels
         self.allowDeleteChannels = allow_delete_channels

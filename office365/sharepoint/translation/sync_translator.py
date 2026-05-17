@@ -19,11 +19,9 @@ class SyncTranslator(Entity):
         """
         :param str target_language:
         """
-        super(SyncTranslator, self).__init__(
+        super().__init__(
             context,
-            ServiceOperationPath(
-                "SP.Translation.SyncTranslator", {"targetLanguage": target_language}
-            ),
+            ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language}),
         )
 
     def translate(self, input_file, output_file):
@@ -46,8 +44,7 @@ class SyncTranslator(Entity):
         return return_type
 
     @property
-    def output_save_behavior(self):
-        # type: () -> Optional[int]
+    def output_save_behavior(self) -> Optional[int]:
         """
         The protocol client sets this property to determine the behavior of the protocol server in the case that
         the output file already exists when a translation occurs.

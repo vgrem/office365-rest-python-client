@@ -1,7 +1,12 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
+
+if TYPE_CHECKING:
+    from office365.sharepoint.listitems.listitem import ListItem
 
 
 class Alert(Entity):
@@ -15,46 +20,37 @@ class Alert(Entity):
     """
 
     @property
-    def alert_frequency(self):
-        # type: () -> Optional[int]
+    def alert_frequency(self) -> Optional[int]:
         """Gets the time interval for sending the alert."""
         return self.properties.get("AlertFrequency", None)
 
     @property
-    def alert_template_name(self):
-        # type: () -> Optional[int]
+    def alert_template_name(self) -> Optional[int]:
         """Gets the string representing the alert template name."""
         return self.properties.get("AlertTemplateName", None)
 
     @property
-    def always_notify(self):
-        # type: () -> Optional[bool]
+    def always_notify(self) -> Optional[bool]:
         """Gets a Boolean value that causes daily and weekly alerts to trigger, even if there is no matching event."""
         return self.properties.get("AlwaysNotify", None)
 
     @property
-    def item(self):
+    def item(self) -> ListItem:
         """Gets the list item or document to which the alert applies."""
         from office365.sharepoint.listitems.listitem import ListItem
 
-        return self.properties.get(
-            "Item", ListItem(self.context, ResourcePath("item", self.resource_path))
-        )
+        return self.properties.get("Item", ListItem(self.context, ResourcePath("item", self.resource_path)))
 
     @property
     def user(self):
         """Gets user object that represents User for the alert."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "User", User(self.context, ResourcePath("user", self.resource_path))
-        )
+        return self.properties.get("User", User(self.context, ResourcePath("user", self.resource_path)))
 
     @property
     def list(self):
         """Gets list object that represents List for the alert."""
         from office365.sharepoint.lists.list import List
 
-        return self.properties.get(
-            "List", List(self.context, ResourcePath("list", self.resource_path))
-        )
+        return self.properties.get("List", List(self.context, ResourcePath("list", self.resource_path)))

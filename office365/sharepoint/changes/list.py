@@ -12,29 +12,25 @@ class ChangeList(Change):
     """
 
     def __repr__(self):
-        return "List: {0}".format(self.list_id)
+        return f"List: {self.list_id}"
 
     @property
-    def base_template(self):
-        # type: () -> Optional[int]
+    def base_template(self) -> Optional[int]:
         """An SP.ListTemplateType object that returns the list template type of the list."""
         return self.properties.get("BaseTemplate", None)
 
     @property
-    def editor(self):
-        # type: () -> Optional[str]
+    def editor(self) -> Optional[str]:
         """A string that returns the name of the user who modified the list."""
         return self.properties.get("Editor", None)
 
     @property
-    def hidden(self):
-        # type: () -> Optional[bool]
+    def hidden(self) -> Optional[bool]:
         """Returns a Boolean value that indicates whether a list is a hidden list."""
         return self.properties.get("Hidden", None)
 
     @property
-    def list_id(self):
-        # type: () -> Optional[str]
+    def list_id(self) -> Optional[str]:
         """Identifies the changed list"""
         return self.properties.get("ListId", None)
 
@@ -43,6 +39,4 @@ class ChangeList(Change):
         """An SP.User object that represents information about the user who created the list."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "Creator", User(self.context, ResourcePath("Creator", self.resource_path))
-        )
+        return self.properties.get("Creator", User(self.context, ResourcePath("Creator", self.resource_path)))

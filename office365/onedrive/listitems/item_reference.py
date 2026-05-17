@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.runtime.client_value import ClientValue
 
@@ -7,17 +9,17 @@ class ItemReference(ClientValue):
 
     def __init__(
         self,
-        _id=None,
-        name=None,
-        path=None,
-        drive_id=None,
-        drive_type=None,
-        site_id=None,
-        sharepoint_ids=SharePointIds(),
-        share_id=None,
+        id_: str | None = None,
+        name: str | None = None,
+        path: str | None = None,
+        drive_id: str | None = None,
+        drive_type: str | None = None,
+        site_id: str | None = None,
+        sharepoint_ids: SharePointIds | None = SharePointIds(),
+        share_id: str | None = None,
     ):
         """
-        :param str _id: Unique identifier of the driveItem in the drive or a listItem in a list. Read-only.
+        :param str id_: Unique identifier of the driveItem in the drive or a listItem in a list. Read-only.
         :param str name: The name of the item being referenced. Read-only.
         :param str path: Path that can be used to navigate to the item. Read-only.
         :param str drive_id: Unique identifier of the drive instance that contains the driveItem.
@@ -30,8 +32,8 @@ class ItemReference(ClientValue):
         :param SharePointIds sharepoint_ids: Returns identifiers useful for SharePoint REST compatibility
         :param str share_id: A unique identifier for a shared resource that can be accessed via the Shares API.
         """
-        super(ItemReference, self).__init__()
-        self.id = _id
+        super().__init__()
+        self.id = id_
         self.name = name
         self.path = path
         self.driveId = drive_id

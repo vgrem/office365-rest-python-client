@@ -43,7 +43,5 @@ class SynchronizationJob(Entity):
         """The synchronization schema configured for the job."""
         return self.properties.get(
             "schema",
-            SynchronizationSchema(
-                self.context, ResourcePath("schema", self.resource_path)
-            ),
+            SynchronizationSchema(self.context, ResourcePath("schema", self.resource_path)),
         )

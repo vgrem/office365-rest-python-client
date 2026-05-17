@@ -21,7 +21,7 @@ class CalendarPermission(Entity):
     """
 
     @property
-    def allowed_roles(self):
+    def allowed_roles(self) -> StringCollection:
         """
         List of allowed sharing or delegating permission levels for the calendar.
         Possible values are: none, freeBusyRead, limitedRead, read, write, delegateWithoutPrivateEventAccess,
@@ -30,7 +30,7 @@ class CalendarPermission(Entity):
         return self.properties.get("allowedRoles", StringCollection())
 
     @property
-    def email_address(self):
+    def email_address(self) -> EmailAddress:
         """
         Represents a sharee or delegate who has access to the calendar.
         For the "My Organization" sharee, the address property is null. Read-only.
@@ -38,16 +38,14 @@ class CalendarPermission(Entity):
         return self.properties.get("emailAddress", EmailAddress())
 
     @property
-    def is_inside_organization(self):
-        # type: () -> Optional[bool]
+    def is_inside_organization(self) -> Optional[bool]:
         """
         True if the user in context (sharee or delegate) is inside the same organization as the calendar owner
         """
         return self.properties.get("isInsideOrganization", None)
 
     @property
-    def is_removable(self):
-        # type: () -> Optional[bool]
+    def is_removable(self) -> Optional[bool]:
         """
         True if the user can be removed from the list of sharees or delegates for the specified calendar,
         false otherwise. The "My organization" user determines the permissions other people within your organization
@@ -56,8 +54,7 @@ class CalendarPermission(Entity):
         return self.properties.get("isRemovable", None)
 
     @property
-    def role(self):
-        # type: () -> Optional[str]
+    def role(self) -> Optional[str]:
         """Current permission level of the calendar sharee or delegate."""
         return self.properties.get("role", None)
 
@@ -68,4 +65,4 @@ class CalendarPermission(Entity):
                 "emailAddress": self.email_address,
             }
             default_value = property_mapping.get(name, None)
-        return super(CalendarPermission, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

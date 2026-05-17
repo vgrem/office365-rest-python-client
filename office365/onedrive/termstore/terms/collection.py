@@ -10,10 +10,10 @@ class TermCollection(EntityCollection[Term]):
         """
         :param office365.onedrive.termstore.sets.set.Set parent_set: The parent set that contains the term
         """
-        super(TermCollection, self).__init__(context, Term, resource_path)
+        super().__init__(context, Term, resource_path)
         self._parent_set = parent_set
 
-    def add(self, label):
+    def add(self, label: str) -> Term:
         """Create a new term object.
 
         :param str label: The name of the label.
@@ -22,11 +22,10 @@ class TermCollection(EntityCollection[Term]):
         self.add_child(return_type)
 
         def _set_loaded():
-            term_create_info = {
-                "labels": ClientValueCollection(LocalizedLabel, [LocalizedLabel(label)])
-            }
+            term_create_info = {"labels": ClientValueCollection(LocalizedLabel, [LocalizedLabel(label)])}
             qry = CreateEntityQuery(self, term_create_info, return_type)
             self.context.add_query(qry)
 
-        self._parent_set.ensure_property("id", _set_loaded)
+        if self._parent_set is not None:
+            self._parent_set.ensure_property("id", _set_loaded)
         return return_type

@@ -7,5 +7,5 @@ class SiteCreationData(ClientValue):
         self.SiteCreationSourceGuid = site_creation_source_guid
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCreationData"

@@ -1,120 +1,162 @@
+from __future__ import annotations
+
 import datetime
+import importlib
 import inspect
+import pkgutil
 import uuid
-from typing import Type
+from functools import lru_cache
+from typing import Optional, Sequence, Type
+
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.collections import GuidCollection, StringCollection
+
+_PRIMITIVE_TYPES = {
+    "Edm.Boolean": bool,
+    "Edm.Int32": int,
+    "Edm.Int64": int,
+    "Edm.String": str,
+    "Edm.Guid": uuid.UUID,
+    "Edm.Single": float,
+    "Edm.Double": float,
+    "Edm.Binary": bytes,
+    "Edm.DateTimeOffset": datetime.datetime,
+    "Edm.DateTime": datetime.datetime,
+    "Edm.Duration": datetime.timedelta,
+    "Collection(SP.KeyValue)": dict,
+    "Collection(Edm.Guid)": GuidCollection,
+    "Collection(Edm.String)": StringCollection,
+    "Collection(Edm.Int32)": ClientValueCollection[int],
+}
 
 
-class ODataType(object):
-    primitive_types = {
-        bool: "Edm.Boolean",
-        int: "Edm.Int32",
-        str: "Edm.String",
-        datetime.datetime: "Edm.DateTimeOffset",
-        uuid.UUID: "Edm.Guid",
-    }
-    """Primitive OData data type mapping"""
+class ODataType:
+    """OData type system utilities with enhanced type resolution."""
 
-    def __init__(self):
-        self.name = None
-        self.namespace = None
-        self.baseType = None
-        self.properties = {}
-        self.methods = {}
+    def __init__(self, name: str | None = None, is_object_type: bool = False):
+        self._name = name
+        self._client_type = None
+        self._is_object_type = is_object_type
+        self._used_modules = None
+        self._item_client_type = None
 
-    @staticmethod
-    def _try_parse_key_value(value):
-        """
-        :type value: dict
-        """
-        key = value.get("Key", None)
-        type_name = value.get("ValueType", None)
-        raw_value = value.get("Value", None)
-        try:
-            if type_name == "Edm.Int64":
-                return key, int(raw_value)
-            elif type_name == "Edm.Double":
-                return key, float(raw_value)
-            elif type_name == "Edm.Boolean":
-                return key, raw_value == "true"
+    def __repr__(self):
+        return f"ODataType(name={self._name!r}, client_type={self.client_type_name!r})"
+
+    def __str__(self):
+        return self.client_type_name
+
+    @property
+    def client_type_name(self) -> str:
+        """Returns the model type name representation."""
+        if self._client_type:
+            return self._client_type.__name__
+
+        name = self._name
+        if name is None:
+            return ""
+        if name in _PRIMITIVE_TYPES:
+            primitive_type = _PRIMITIVE_TYPES[name]
+            return primitive_type.__name__
+        elif self.is_collection:
+            item_type_name = name[len("Collection(") : -1]
+            self._item_client_type = ODataType(name=item_type_name, is_object_type=self._is_object_type)
+            item_client_name = self._item_client_type.client_type_name
+            if self._is_object_type:
+                return f"EntityCollection[{item_client_name}]"
             else:
-                return key, raw_value
-        except ValueError:
-            return key, raw_value
+                return f"ClientValueCollection[{item_client_name}]"
+        else:
+            return name.split(".")[-1]
 
-    @staticmethod
-    def parse_key_value_collection(value):
-        """
-        Converts the collection of SP.KeyValue into dict
+    @property
+    def item_client_type(self) -> Optional[ODataType]:
+        """Returns the ODataType for collection items, if this is a collection."""
+        return self._item_client_type
 
-        :type value: dict
-        """
-        result = {}
-        for v in value.values():
-            key, value = ODataType._try_parse_key_value(v)
-            result[key] = value
-        return result
+    @property
+    def client_type(self) -> Optional[Type]:
+        """Returns the resolved Python type, or None if not resolved yet."""
+        return self._client_type
 
-    @staticmethod
-    def try_parse_datetime(value):
-        """
-        Converts the specified string representation of an Edm.DateTime or Edm.DateTimeOffset to its datetime equivalent
+    def resolve_client_type(self, modules: Sequence[str]) -> Optional[Type]:
+        """Resolves and caches the actual Python type."""
+        if self._client_type:
+            return self._client_type
 
-        :param str value: Represents date and time with values ranging from 12:00:00 midnight, January 1, 1753 A.D.
-            through 11:59:59 P.M, December 9999 A.D.
-        """
-        if value is None:
-            return None
-        elif isinstance(value, datetime.datetime):
-            return value
+        modules_key = tuple(sorted(modules))
+        resolved = self._resolve_type(modules_key)
 
-        known_formats = [
-            "%Y-%m-%dT%H:%M:%SZ",
-            "%Y-%m-%dT%H:%M:%S.%fZ",
-            "%Y-%m-%dT%H:%M:%S",
-            "%Y-%m-%dT%H:%M:%S.%f",
-        ]
+        self._client_type = resolved
+        self._used_modules = modules_key
+        return resolved
 
-        result = None
-        for cur_format in known_formats:
+    @lru_cache(maxsize=512)  # noqa: B019
+    def _resolve_type(self, modules_key: tuple) -> Optional[Type]:
+        """Internal cached resolution."""
+        target_name = self.client_type_name
+
+        def _search_module(module_name: str) -> Optional[Type]:
             try:
-                result = datetime.datetime.strptime(value, cur_format)
-                break
-            except ValueError:
-                pass
-        return result
+                module = importlib.import_module(module_name)
 
-    @staticmethod
-    def resolve_type(client_type):
-        """
-        Resolves OData type name
-        :param T client_type: Client value type
+                if hasattr(module, target_name):
+                    cls = getattr(module, target_name)
+                    if inspect.isclass(cls):
+                        return cls
+
+                if hasattr(module, "__path__"):
+                    for _, name, _ in pkgutil.iter_modules(module.__path__):
+                        full_name = module_name + "." + name
+                        found_class = _search_module(full_name)
+                        if found_class:
+                            return found_class
+
+            except (ImportError, AttributeError):
+                pass
+            return None
+
+        for m_name in modules_key:
+            result = _search_module(m_name.strip())
+            if result:
+                return result
+        return None
+
+    @classmethod
+    def resolve_type_name(cls, client_type: Type) -> Optional[str]:
+        """Resolves the OData type name for a given Python type.
+
+        Args:
+            client_type: The Python type to resolve (class or instance)
+
+        Returns:
+            The OData type name or None if unknown
+
+        Examples:
+            >>> ODataType.resolve_type_name(str)
+            'Edm.String'
+            >>> ODataType.resolve_type_name(ClientValue)
+            'SP.ClientValue'
         """
         from office365.runtime.client_value import ClientValue
 
-        if issubclass(client_type, ClientValue):
-            client_value = client_type()
-            return client_value.entity_type_name
-        else:
-            return ODataType.primitive_types.get(client_type, None)
+        try:
+            if issubclass(client_type, ClientValue):
+                return client_type().entity_type_name  # type: ignore[call-arg]
+        except TypeError:
+            pass
 
-    @staticmethod
-    def resolve_enum_key(enum_type, value):
-        # type: (Type, int) -> str
-        return next(
-            iter(
-                [item[0] for item in inspect.getmembers(enum_type) if item[1] == value]
-            ),
-            None,
-        )
+        for odata_type, py_type in _PRIMITIVE_TYPES.items():
+            if py_type == client_type:
+                return odata_type
+        return None
 
-    def add_property(self, prop_schema):
-        """
-        :type prop_schema:  office365.runtime.odata.property.ODataProperty
-        """
-        alias = prop_schema.name
-        # if type_schema['state'] == 'detached':
-        #    prop_schema['state'] = 'detached'
-        # else:
-        #    prop_schema['state'] = 'attached'
-        # type_alias = type_schema['name']
-        self.properties[alias] = prop_schema
+    @property
+    def is_primitive_type(self) -> bool:
+        """Checks if a type is a known OData primitive type."""
+        return self._name in _PRIMITIVE_TYPES
+
+    @property
+    def is_collection(self) -> bool:
+        """Check if this type represents a collection."""
+        return self._name is not None and self._name.startswith("Collection(")

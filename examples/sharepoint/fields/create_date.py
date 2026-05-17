@@ -1,5 +1,6 @@
-"""
-Demonstrates how to crete a site field of type DateTime
+"""Demonstrates how to create a site field of type DateTime
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
 
 from office365.sharepoint.client_context import ClientContext

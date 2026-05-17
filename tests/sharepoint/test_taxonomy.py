@@ -4,21 +4,14 @@ from office365.sharepoint.taxonomy.groups.group import TermGroup
 from office365.sharepoint.taxonomy.sets.set import TermSet
 from office365.sharepoint.taxonomy.stores.store import TermStore
 from office365.sharepoint.taxonomy.terms.term import Term
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPTaxonomy(SPTestCase):
-    target_field = None  # type: Field
-    target_term_group = None  # type: TermGroup
-    target_term_set = None  # type: TermSet
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestSPTaxonomy, cls).setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    target_field: Field = None
+    target_term_group: TermGroup = None
+    target_term_set: TermSet = None
 
     def test1_get_term_store(self):
         term_store = self.client.taxonomy.term_store.get().execute_query()
@@ -26,11 +19,7 @@ class TestSPTaxonomy(SPTestCase):
         self.assertIsNotNone(term_store.name)
 
     def test2_get_term_groups(self):
-        term_group = (
-            self.client.taxonomy.term_store.term_groups.get_by_name("Geography")
-            .get()
-            .execute_query()
-        )
+        term_group = self.client.taxonomy.term_store.term_groups.get_by_name("Geography").get().execute_query()
         self.assertIsNotNone(term_group.resource_path)
         self.assertIsInstance(term_group, TermGroup)
         self.__class__.target_term_group = term_group

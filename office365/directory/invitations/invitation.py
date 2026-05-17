@@ -28,24 +28,22 @@ class Invitation(Entity):
     """
 
     @property
-    def invited_user_display_name(self):
-        # type: () -> Optional[str]
+    def invited_user_display_name(self) -> Optional[str]:
         """The display name of the user being invited."""
         return self.properties.get("invitedUserDisplayName", None)
 
     @property
-    def invited_user_email_address(self):
-        # type: () -> Optional[str]
+    def invited_user_email_address(self) -> Optional[str]:
         """The email address of the user being invited."""
         return self.properties.get("invitedUserEmailAddress", None)
 
     @property
-    def invited_user_message_info(self):
+    def invited_user_message_info(self) -> InvitedUserMessageInfo:
         """"""
         return self.properties.get("invitedUserMessageInfo", InvitedUserMessageInfo())
 
     @property
-    def invited_user(self):
+    def invited_user(self) -> User:
         """The user created as part of the invitation creation."""
         return self.properties.get(
             "invitedUser",
@@ -59,4 +57,4 @@ class Invitation(Entity):
                 "invitedUser": self.invited_user,
             }
             default_value = property_mapping.get(name, None)
-        return super(Invitation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

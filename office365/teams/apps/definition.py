@@ -12,9 +12,7 @@ class TeamsAppDefinition(Entity):
     @property
     def bot(self):
         """The details of the bot specified in the Teams app manifest."""
-        return self.properties.get(
-            "bot", TeamworkBot(self.context, ResourcePath("bot", self.resource_path))
-        )
+        return self.properties.get("bot", TeamworkBot(self.context, ResourcePath("bot", self.resource_path)))
 
     @property
     def created_by(self):
@@ -43,4 +41,4 @@ class TeamsAppDefinition(Entity):
                 "lastModifiedDateTime": self.last_modified_datetime,
             }
             default_value = property_mapping.get(name, None)
-        return super(TeamsAppDefinition, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

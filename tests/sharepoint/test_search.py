@@ -1,36 +1,37 @@
 from datetime import datetime, timedelta
-from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.search.administration.document_crawl_log import (
-    DocumentCrawlLog,
-)
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
+
 from tests import (
-    test_admin_credentials,
-    test_admin_site_url,
+    test_client_id,
+    test_password,
     test_site_url,
-    test_user_credentials,
+    test_tenant,
+    test_username,
 )
+from tests.sharepoint.sharepoint_case import SPTestCase
 
 
-class TestSearch(TestCase):
+class TestSearch(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSearch, cls).setUpClass()
-        cls.client = ClientContext(test_site_url).with_credentials(
-            test_user_credentials
+        cls.client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
         )
+
+    def test0_get_search_service(self):
+        result = self.client.search.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
 
     def test1_export_search_settings(self):
         current_user = self.client.web.current_user
         export_start_data = datetime.today() - timedelta(days=100)
-        result = self.client.search.export(
-            current_user, export_start_data
-        ).execute_query()
+        result = self.client.search.export(current_user, export_start_data).execute_query()
         self.assertIsNotNone(result.value)
 
     def test2_export_popular_tenant_queries(self):
@@ -42,9 +43,7 @@ class TestSearch(TestCase):
         self.assertIsNotNone(result.value)
 
     def test4_search_post_query(self):
-        result = self.client.search.post_query(
-            query_text="filename:guide.docx"
-        ).execute_query()
+        result = self.client.search.post_query(query_text="filename:guide.docx").execute_query()
         self.assertIsInstance(result.value, SearchResult)
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 
@@ -54,9 +53,7 @@ class TestSearch(TestCase):
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 
     def test6_search_get_query_with_select(self):
-        result = self.client.search.query(
-            "guide.docx", select_properties=["Path", "LastModifiedTime"]
-        ).execute_query()
+        result = self.client.search.query("guide.docx", select_properties=["Path", "LastModifiedTime"]).execute_query()
         self.assertIsInstance(result.value, SearchResult)
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 
@@ -81,9 +78,7 @@ class TestSearch(TestCase):
         self.assertIsNotNone(result.value)
 
     def test_11_get_promoted_result_query_rules(self):
-        result = (
-            self.client.search_setting.get_promoted_result_query_rules().execute_query()
-        )
+        result = self.client.search_setting.get_promoted_result_query_rules().execute_query()
         self.assertIsNotNone(result.value)
 
     # def test7_get_crawled_urls(self):

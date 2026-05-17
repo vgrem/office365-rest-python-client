@@ -10,3 +10,7 @@ class SiteScriptSerializationResult(ClientValue):
         """
         self.JSON = json
         self.Warnings = StringCollection(warnings)
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptSerializationResult"

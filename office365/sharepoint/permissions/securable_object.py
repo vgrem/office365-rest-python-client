@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, Union
 
 from typing_extensions import Self
 
@@ -14,16 +16,17 @@ from office365.sharepoint.permissions.roles.assignments.collection import (
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.users.user import User
+from office365.sharepoint.sharing.role_type import RoleType
 
 
 class SecurableObject(Entity):
     """An object that can be assigned security permissions."""
 
-    def get_role_assignment(self, principal):
+    def get_role_assignment(self, principal: Principal) -> RoleAssignment:
         """
         Retrieves the role assignment object (1) based on the specified user or group
 
-        :param office365.sharepoint.principal.principal.Principal principal: Specifies the user or group of the
+        :param Principal principal: Specifies the user or group of the
             role assignment.
         """
         return_type = RoleAssignment(self.context)
@@ -35,8 +38,7 @@ class SecurableObject(Entity):
         principal.ensure_property("Id", _principal_loaded)
         return return_type
 
-    def add_role_assignment(self, principal, role):
-        # type: (Principal|str, RoleDefinition|int) -> Self
+    def add_role_assignment(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
         """Adds a role assignment to securable resource.
 
         :param RoleDefinition or int principal: Specifies the role definition or role type.
@@ -53,13 +55,13 @@ class SecurableObject(Entity):
             role.ensure_property("Id", _add_role_assignment)
 
         def _add_role_assignment():
-            self.role_assignments.add_role_assignment(principal.id, role.id)
+            if principal.id is not None and role.id is not None:
+                self.role_assignments.add_role_assignment(principal.id, role.id)
 
         principal.ensure_property("Id", _ensure_role_def)
         return self
 
-    def remove_role_assignment(self, principal, role_def):
-        # type: (Principal|str, RoleDefinition|int) -> Self
+    def remove_role_assignment(self, principal: Principal | str, role_def: RoleDefinition | RoleType) -> Self:
         """Removes a role assignment from a securable resource.
         :param Principal principal: Specifies the user or group of the
         role assignment.
@@ -73,7 +75,8 @@ class SecurableObject(Entity):
             role_def = self.context.web.role_definitions.get_by_type(role_def)
 
         def _remove_role_assignment():
-            self.role_assignments.remove_role_assignment(principal.id, role_def.id)
+            if principal.id is not None and role_def.id is not None:
+                self.role_assignments.remove_role_assignment(principal.id, role_def.id)
 
         def _ensure_role_def():
             role_def.ensure_property("Id", _remove_role_assignment)
@@ -105,23 +108,18 @@ class SecurableObject(Entity):
             "copyRoleAssignments": copy_role_assignments,
             "clearSubscopes": clear_sub_scopes,
         }
-        qry = ServiceOperationQuery(
-            self, "BreakRoleInheritance", None, payload, None, None
-        )
+        qry = ServiceOperationQuery(self, "BreakRoleInheritance", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
-    def reset_role_inheritance(self):
+    def reset_role_inheritance(self) -> Self:
         """Resets the role inheritance for the securable object and inherits role assignments from
         the parent securable object."""
-        qry = ServiceOperationQuery(
-            self, "ResetRoleInheritance", None, None, None, None
-        )
+        qry = ServiceOperationQuery(self, "ResetRoleInheritance", None, None, None, None)
         self.context.add_query(qry)
         return self
 
-    def get_user_effective_permissions(self, user):
-        # type: (str|User) -> ClientResult[BasePermissions]
+    def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """
         Returns the user permissions for secured object.
 
@@ -129,8 +127,7 @@ class SecurableObject(Entity):
         """
         return_type = ClientResult(self.context, BasePermissions())
 
-        def _create_and_add_query(login_name):
-            # type: (str) -> None
+        def _create_and_add_query(login_name: str) -> None:
             qry = ServiceOperationQuery(
                 self,
                 "GetUserEffectivePermissions",
@@ -144,7 +141,8 @@ class SecurableObject(Entity):
         if isinstance(user, User):
 
             def _user_loaded():
-                _create_and_add_query(user.login_name)
+                if user.login_name is not None:
+                    _create_and_add_query(user.login_name)
 
             user.ensure_property("LoginName", _user_loaded)
         else:
@@ -152,8 +150,7 @@ class SecurableObject(Entity):
         return return_type
 
     @property
-    def has_unique_role_assignments(self):
-        # type: () -> Optional[bool]
+    def has_unique_role_assignments(self) -> Optional[bool]:
         """Specifies whether the role assignments are uniquely defined for this securable object or inherited from a
         parent securable object. If the value is "false", role assignments are inherited from a parent securable
         object.
@@ -161,8 +158,7 @@ class SecurableObject(Entity):
         return self.properties.get("HasUniqueRoleAssignments", None)
 
     @property
-    def first_unique_ancestor_securable_object(self):
-        # type: () -> SecurableObject
+    def first_unique_ancestor_securable_object(self) -> SecurableObject:
         """Specifies the object where role assignments for this object are defined"""
         return self.properties.get(
             "FirstUniqueAncestorSecurableObject",
@@ -173,14 +169,11 @@ class SecurableObject(Entity):
         )
 
     @property
-    def role_assignments(self):
-        # type: () -> RoleAssignmentCollection
+    def role_assignments(self) -> RoleAssignmentCollection:
         """The role assignments for the securable object."""
         return self.properties.get(
             "RoleAssignments",
-            RoleAssignmentCollection(
-                self.context, ResourcePath("RoleAssignments", self.resource_path)
-            ),
+            RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -190,4 +183,4 @@ class SecurableObject(Entity):
                 "RoleAssignments": self.role_assignments,
             }
             default_value = property_mapping.get(name, None)
-        return super(SecurableObject, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

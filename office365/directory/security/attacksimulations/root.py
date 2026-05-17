@@ -2,7 +2,7 @@ from office365.directory.security.attacksimulations.automation import (
     SimulationAutomation,
 )
 from office365.directory.security.attacksimulations.landing_page import LandingPage
-from office365.directory.security.attacksimulations.operation import (
+from office365.directory.security.attacksimulations.operations.operation import (
     AttackSimulationOperation,
 )
 from office365.directory.security.attacksimulations.simulation import Simulation
@@ -16,8 +16,7 @@ class AttackSimulationRoot(Entity):
     can learn from."""
 
     @property
-    def landing_pages(self):
-        # type: () -> EntityCollection[LandingPage]
+    def landing_pages(self) -> EntityCollection[LandingPage]:
         """Represents an attack simulation training landing page."""
         return self.properties.get(
             "landingPages",
@@ -29,8 +28,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def operations(self):
-        # type: () -> EntityCollection[AttackSimulationOperation]
+    def operations(self) -> EntityCollection[AttackSimulationOperation]:
         """Represents an attack simulation training operation."""
         return self.properties.get(
             "operations",
@@ -42,8 +40,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def simulations(self):
-        # type: () -> EntityCollection[Simulation]
+    def simulations(self) -> EntityCollection[Simulation]:
         """Represents an attack simulation training campaign in a tenant."""
         return self.properties.get(
             "simulations",
@@ -55,8 +52,7 @@ class AttackSimulationRoot(Entity):
         )
 
     @property
-    def simulation_automations(self):
-        # type: () -> EntityCollection[SimulationAutomation]
+    def simulation_automations(self) -> EntityCollection[SimulationAutomation]:
         """Represents simulation automation created to run on a tenant."""
         return self.properties.get(
             "simulationAutomations",
@@ -74,4 +70,4 @@ class AttackSimulationRoot(Entity):
                 "simulationAutomations": self.simulation_automations,
             }
             default_value = property_mapping.get(name, None)
-        return super(AttackSimulationRoot, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

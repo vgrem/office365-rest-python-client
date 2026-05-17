@@ -9,7 +9,12 @@ from office365.sharepoint.search.promoted_result_query_rule import (
 class PromotedResultsOperationsResult(ClientValue):
     """This object contains properties that describes the result of the REST call get promoted results"""
 
-    def __init__(self, result=None, object_owner=SearchObjectOwnerResult()):
+    def __init__(
+        self,
+        result=None,
+        object_owner=SearchObjectOwnerResult(),
+        search_object_owner: SearchObjectOwnerResult = SearchObjectOwnerResult(),
+    ):
         """
         :param list[PromotedResultQueryRule] result: This property contains the collection of the results of
             the promoted results.
@@ -18,6 +23,7 @@ class PromotedResultsOperationsResult(ClientValue):
         """
         self.Result = ClientValueCollection(PromotedResultQueryRule, result)
         self.SearchObjectOwner = object_owner
+        self.SearchObjectOwner = search_object_owner
 
     @property
     def entity_type_name(self):

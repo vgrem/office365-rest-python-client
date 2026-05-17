@@ -15,32 +15,26 @@ class BrandCenter(Entity):
     """
 
     def __init__(self, context):
-        super(BrandCenter, self).__init__(context, ResourcePath("SP.BrandCenter"))
+        super().__init__(context, ResourcePath("SP.BrandCenter"))
 
-    def configuration(self):
+    def configuration(self) -> ClientResult[BrandCenterConfiguration]:
         """ """
         return_type = ClientResult(self.context, BrandCenterConfiguration())
-        qry = ServiceOperationQuery(
-            self, "Configuration", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "Configuration", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def add_site_theme(self, theme_data):
+    def add_site_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """ """
         return_type = ClientResult(self.context, ThemeData())
         payload = {"themeData": theme_data}
-        qry = ServiceOperationQuery(
-            self, "AddSiteTheme", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "AddSiteTheme", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_site_themes(self):
+    def get_site_themes(self) -> ClientResult[SiteThemes]:
         """ """
         return_type = ClientResult(self.context, SiteThemes())
-        qry = ServiceOperationQuery(
-            self, "GetSiteThemes", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetSiteThemes", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

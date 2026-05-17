@@ -18,4 +18,4 @@ class ResourceReference(ClientValue):
         return self.type or ""
 
     def __repr__(self):
-        return "{0}:{1}".format(self.type, self.webUrl)
+        return f"{self.type}:{self.webUrl}"

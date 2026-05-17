@@ -18,12 +18,10 @@ from office365.sharepoint.tenant.administration.internal.appservice.permission_r
 
 class SPOWebAppServicePrincipal(Entity):
     def __init__(self, context):
-        stat_path = ResourcePath(
-            "Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal"
-        )
-        super(SPOWebAppServicePrincipal, self).__init__(context, stat_path)
+        stat_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal")
+        super().__init__(context, stat_path)
 
-    def update_spfx_client_secret(self, secret_value):
+    def update_spfx_client_secret(self, secret_value: str):
         """
         :param str secret_value:
         """
@@ -39,25 +37,22 @@ class SPOWebAppServicePrincipal(Entity):
         return self
 
     @property
-    def account_enabled(self):
-        # type: () -> Optional[bool]
+    def account_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("AccountEnabled", False)
 
     @property
-    def app_id(self):
-        # type: () -> Optional[str]
+    def app_id(self) -> Optional[bool]:
         """ """
         return self.properties.get("AppId", False)
 
     @property
-    def reply_urls(self):
-        # type: () -> StringCollection
+    def reply_urls(self) -> StringCollection:
         """ """
         return self.properties.get("ReplyUrls", StringCollection())
 
     @property
-    def grant_manager(self):
+    def grant_manager(self) -> SPO3rdPartyAADPermissionGrantCollection:
         return self.properties.get(
             "GrantManager",
             SPO3rdPartyAADPermissionGrantCollection(
@@ -67,7 +62,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def permission_grants(self):
+    def permission_grants(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionGrant]:
         return self.properties.get(
             "PermissionGrants",
             EntityCollection(
@@ -78,7 +73,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def permission_requests(self):
+    def permission_requests(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionRequest]:
         return self.properties.get(
             "PermissionRequests",
             EntityCollection(
@@ -89,7 +84,7 @@ class SPOWebAppServicePrincipal(Entity):
         )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal"
 
     def get_property(self, name, default_value=None):
@@ -101,4 +96,4 @@ class SPOWebAppServicePrincipal(Entity):
                 "ReplyUrls": self.reply_urls,
             }
             default_value = property_mapping.get(name, None)
-        return super(SPOWebAppServicePrincipal, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

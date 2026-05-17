@@ -19,19 +19,13 @@ from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_sta
 from tests import test_admin_credentials, test_admin_site_url, test_team_site_url
 
 client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
-site_props = client.tenant.get_site_properties_by_url(
-    test_team_site_url, True
-).execute_query()
+site_props = client.tenant.get_site_properties_by_url(test_team_site_url, True).execute_query()
 if site_props.deny_add_and_customize_pages == DenyAddAndCustomizePagesStatus.Disabled:
     print("Enabling custom script on site: {0}...".format(test_team_site_url))
     site_props.deny_add_and_customize_pages = DenyAddAndCustomizePagesStatus.Enabled
     site_props.update().execute_query()
     print("[Ok] Updated")
 elif site_props.deny_add_and_customize_pages == DenyAddAndCustomizePagesStatus.Enabled:
-    print(
-        "[Skipping] Custom script has already been allowed on site: {0}".format(
-            test_team_site_url
-        )
-    )
+    print("[Skipping] Custom script has already been allowed on site: {0}".format(test_team_site_url))
 else:
     print("Unknown status detected")

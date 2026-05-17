@@ -5,14 +5,12 @@ from office365.sharepoint.entity import Entity
 
 
 class SPAppLicenseManager(Entity):
-    def check_license(self, product_id):
+    def check_license(self, product_id: str) -> ClientResult[AppLicenseCollection]:
         """
         :param str product_id:
         """
         return_type = ClientResult(self.context, AppLicenseCollection())
         payload = {"productId": product_id}
-        qry = ServiceOperationQuery(
-            self, "CheckLicense", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "CheckLicense", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

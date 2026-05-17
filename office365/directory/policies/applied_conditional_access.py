@@ -11,12 +11,7 @@ class AppliedConditionalAccessPolicy(ClientValue):
     """
 
     def __init__(
-        self,
-        display_name=None,
-        enforced_grant_controls=None,
-        enforced_session_controls=None,
-        id_=None,
-        result=None,
+        self, display_name=None, enforced_grant_controls=None, enforced_session_controls=None, id_=None, result=None
     ):
         """
         :param str display_name: Refers to the name of the conditional access policy
@@ -29,3 +24,7 @@ class AppliedConditionalAccessPolicy(ClientValue):
         self.enforcedSessionControls = StringCollection(enforced_session_controls)
         self.id = id_
         self.result = result
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AppliedConditionalAccessPolicy"

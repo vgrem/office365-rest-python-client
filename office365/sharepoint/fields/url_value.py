@@ -10,7 +10,7 @@ class FieldUrlValue(ClientValue):
              of the following: NULL, empty, an absolute URL, or a server-relative URL.
         :param str description: Specifies the description for the URI. Its length MUST be equal to or less than 255.
         """
-        super(FieldUrlValue, self).__init__()
+        super().__init__()
         self.Url = url
         self.Description = description
 

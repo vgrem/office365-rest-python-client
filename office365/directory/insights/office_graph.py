@@ -13,8 +13,7 @@ class OfficeGraphInsights(Entity):
     """
 
     @property
-    def shared(self):
-        # type: () -> EntityCollection[SharedInsight]
+    def shared(self) -> EntityCollection[SharedInsight]:
         """
         Calculated relationship identifying documents shared with or by the user. This includes URLs, file attachments,
         and reference attachments to OneDrive for Business and SharePoint files found in Outlook messages and meetings.
@@ -22,14 +21,11 @@ class OfficeGraphInsights(Entity):
         """
         return self.properties.get(
             "shared",
-            EntityCollection(
-                self.context, SharedInsight, ResourcePath("shared", self.resource_path)
-            ),
+            EntityCollection(self.context, SharedInsight, ResourcePath("shared", self.resource_path)),
         )
 
     @property
-    def trending(self):
-        # type: () -> EntityCollection[Trending]
+    def trending(self) -> EntityCollection[Trending]:
         """
         Calculated relationship identifying documents trending around a user.
         Trending documents are calculated based on activity of the user's closest network of people and include
@@ -38,21 +34,16 @@ class OfficeGraphInsights(Entity):
         """
         return self.properties.get(
             "trending",
-            EntityCollection(
-                self.context, Trending, ResourcePath("trending", self.resource_path)
-            ),
+            EntityCollection(self.context, Trending, ResourcePath("trending", self.resource_path)),
         )
 
     @property
-    def used(self):
-        # type: () -> EntityCollection[UsedInsight]
+    def used(self) -> EntityCollection[UsedInsight]:
         """
         Calculated relationship identifying the latest documents viewed or modified by a user,
         including OneDrive for Business and SharePoint documents, ranked by recency of use.
         """
         return self.properties.get(
             "used",
-            EntityCollection(
-                self.context, UsedInsight, ResourcePath("used", self.resource_path)
-            ),
+            EntityCollection(self.context, UsedInsight, ResourcePath("used", self.resource_path)),
         )

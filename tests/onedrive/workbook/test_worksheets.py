@@ -9,9 +9,9 @@ from tests.onedrive.test_excel import upload_excel
 
 
 class TestExcelWorksheets(GraphTestCase):
-    excel_file = None  # type: DriveItem
+    excel_file: DriveItem = None
     sheet_name = create_unique_name("Sheet")
-    worksheet = None  # type: WorkbookWorksheet
+    worksheet: WorkbookWorksheet = None
 
     @classmethod
     def setUpClass(cls):
@@ -24,9 +24,7 @@ class TestExcelWorksheets(GraphTestCase):
         cls.excel_file.delete_object().execute_query_retry()
 
     def test1_add_worksheet(self):
-        result = self.__class__.excel_file.workbook.worksheets.add(
-            self.sheet_name
-        ).execute_query()
+        result = self.__class__.excel_file.workbook.worksheets.add(self.sheet_name).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test2_list_worksheets(self):

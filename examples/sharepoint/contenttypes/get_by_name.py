@@ -1,5 +1,6 @@
-"""
-Retrieves a Content Type by name on a Web site
+"""Retrieves a content type by name from a web site.
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
 """
 
 from office365.sharepoint.client_context import ClientContext

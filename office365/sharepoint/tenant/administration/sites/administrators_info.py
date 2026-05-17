@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SiteAdministratorsInfo(ClientValue):
-    def __init__(self, email=None, login_name=None, name=None):
+    def __init__(self, email=None, login_name=None, name=None, user_principal_name: Optional[str] = None):
         """
         :param str email:
         :param str login_name:
@@ -11,7 +13,11 @@ class SiteAdministratorsInfo(ClientValue):
         self.email = email
         self.loginName = login_name
         self.name = name
+        self.userPrincipalName = user_principal_name
+
+    def __str__(self):
+        return self.name or self.entity_type_name
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteAdministratorsInfo"

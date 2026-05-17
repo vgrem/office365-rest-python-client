@@ -1,20 +1,19 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.sites.manager.types import TopSiteFilesResult
+from office365.sharepoint.sites.manager.topsitefilesresult import TopSiteFilesResult
 
 
 class SiteManagerService(Entity):
     """ """
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.SharePoint.SiteManager.SiteManagerService"
-        )
-        super(SiteManagerService, self).__init__(context, static_path)
+        super().__init__(context, StaticPath("Microsoft.SharePoint.SiteManager.SiteManagerService"))
 
-    def top_files(self, max_count=None):
+    def top_files(self, max_count: Optional[int] = None) -> ClientResult[TopSiteFilesResult]:
         """ """
         return_type = ClientResult(self.context, TopSiteFilesResult())
         payload = {"maxCount": max_count}

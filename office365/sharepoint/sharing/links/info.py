@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.invitation.link import LinkInvitation
@@ -19,6 +21,34 @@ class SharingLinkInfo(ClientValue):
         track_link_users=None,
         share_token_string=None,
         url=None,
+        blocks_download: Optional[bool] = None,
+        description: Optional[str] = None,
+        embeddable: Optional[bool] = None,
+        expiration: Optional[str] = None,
+        has_external_guest_invitees: Optional[bool] = None,
+        is_active: Optional[bool] = None,
+        is_address_bar_link: Optional[bool] = None,
+        is_create_only_link: Optional[bool] = None,
+        is_default: Optional[bool] = None,
+        is_edit_link: Optional[bool] = None,
+        is_ephemeral: Optional[bool] = None,
+        is_forms_link: Optional[bool] = None,
+        is_main_link: Optional[bool] = None,
+        is_manage_list_link: Optional[bool] = None,
+        is_review_link: Optional[bool] = None,
+        is_unhealthy: Optional[bool] = None,
+        last_modified: Optional[str] = None,
+        limit_use_to_application: Optional[bool] = None,
+        link_kind: Optional[int] = None,
+        meeting_id: Optional[str] = None,
+        must_always_use_link: Optional[bool] = None,
+        password_last_modified: Optional[str] = None,
+        requires_password: Optional[bool] = None,
+        restricted_share_membership: Optional[bool] = None,
+        restrict_to_existing_relationships: Optional[bool] = None,
+        scope: Optional[int] = None,
+        share_id: Optional[str] = None,
+        sharing_link_status: Optional[int] = None,
     ):
         """
         Specifies the information about the tokenized sharing link.
@@ -39,7 +69,7 @@ class SharingLinkInfo(ClientValue):
         :param bool track_link_users:
         :param str share_token_string:
         """
-        super(SharingLinkInfo, self).__init__()
+        super().__init__()
         self.AllowsAnonymousAccess = allows_anonymous_access
         self.ApplicationId = application_id
         self.Created = created
@@ -52,6 +82,34 @@ class SharingLinkInfo(ClientValue):
         self.TrackLinkUsers = track_link_users
         self.ShareTokenString = share_token_string
         self.Url = url
+        self.BlocksDownload = blocks_download
+        self.Description = description
+        self.Embeddable = embeddable
+        self.Expiration = expiration
+        self.HasExternalGuestInvitees = has_external_guest_invitees
+        self.IsActive = is_active
+        self.IsAddressBarLink = is_address_bar_link
+        self.IsCreateOnlyLink = is_create_only_link
+        self.IsDefault = is_default
+        self.IsEditLink = is_edit_link
+        self.IsEphemeral = is_ephemeral
+        self.IsFormsLink = is_forms_link
+        self.IsMainLink = is_main_link
+        self.IsManageListLink = is_manage_list_link
+        self.IsReviewLink = is_review_link
+        self.IsUnhealthy = is_unhealthy
+        self.LastModified = last_modified
+        self.LimitUseToApplication = limit_use_to_application
+        self.LinkKind = link_kind
+        self.MeetingId = meeting_id
+        self.MustAlwaysUseLink = must_always_use_link
+        self.PasswordLastModified = password_last_modified
+        self.RequiresPassword = requires_password
+        self.RestrictedShareMembership = restricted_share_membership
+        self.RestrictToExistingRelationships = restrict_to_existing_relationships
+        self.Scope = scope
+        self.ShareId = share_id
+        self.SharingLinkStatus = sharing_link_status
 
     def __str__(self):
         return self.Url or ""

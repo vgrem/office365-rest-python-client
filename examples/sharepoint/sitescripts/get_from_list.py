@@ -1,5 +1,10 @@
 """
-# This example creates the site script output from an existing list
+Generates a site script from an existing list.
+
+Site scripts can be generated from existing lists to capture
+their configuration for reuse.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
 """
 
 from office365.sharepoint.client_context import ClientContext

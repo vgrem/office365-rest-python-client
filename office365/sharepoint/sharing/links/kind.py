@@ -1,7 +1,6 @@
 class SharingLinkKind:
     def __init__(self):
         """Specifies the kind of tokenized sharing link"""
-        pass
 
     Uninitialized = 0
     """Indicates the kind is indeterminate or that the value has not been initialized"""

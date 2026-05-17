@@ -1,15 +1,19 @@
+"""Demonstrates how to import list items in bulk into a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
+"""
+
 from typing import List
 
 from faker import Faker
-
 from office365.runtime.client_object import ClientObject
+from office365.runtime.client_result import ClientResult
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
 from tests import test_team_site_url, test_user_credentials
 
 
-def print_progress(return_types):
-    # type: (List[ClientObject]) -> None
+def print_progress(return_types: List[ClientObject | ClientResult]) -> None:
     items_count = len([t for t in return_types if isinstance(t, ListItem)])
     print("{0} list items has been created".format(items_count))
 
@@ -17,7 +21,7 @@ def print_progress(return_types):
 def load_data_source(amount=1000):
     fake = Faker()
     contacts = []
-    for idx in range(0, amount):
+    for _ in range(amount):
         contact = {
             "Title": fake.name(),
             "FullName": fake.name(),
@@ -35,11 +39,10 @@ def load_data_source(amount=1000):
     return contacts
 
 
-def run(context):
-    # type: (ClientContext) -> None
+def run(context: ClientContext) -> None:
     contacts_data = load_data_source()
     contacts_list = context.web.lists.get_by_title("Contacts_Large")
-    for idx, contact in enumerate(contacts_data):
+    for _, contact in enumerate(contacts_data):
         # contact_item = contacts_list.add_item(contact).execute_query()
         contacts_list.add_item(contact)
         # print(

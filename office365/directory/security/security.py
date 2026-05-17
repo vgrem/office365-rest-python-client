@@ -13,6 +13,7 @@ from office365.directory.security.threatintelligence.threat_intelligence import 
     ThreatIntelligence,
 )
 from office365.directory.security.triggers.root import TriggersRoot
+from office365.directory.security.triggertypes.root import TriggerTypesRoot
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
@@ -24,7 +25,7 @@ class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
     It doesn't contain any usable properties."""
 
-    def run_hunting_query(self, query):
+    def run_hunting_query(self, query: str) -> ClientResult[HuntingQueryResults]:
         """
         Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
         to proactively look for specific threats in your environment.
@@ -33,63 +34,49 @@ class Security(Entity):
         """
         return_type = ClientResult(self.context, HuntingQueryResults())
         payload = {"Query": query}
-        qry = ServiceOperationQuery(
-            self, "runHuntingQuery", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "runHuntingQuery", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     @property
-    def alerts(self):
-        # type: () -> AlertCollection
+    def alerts(self) -> AlertCollection:
         return self.properties.get(
             "alerts",
             AlertCollection(self.context, ResourcePath("alerts", self.resource_path)),
         )
 
     @property
-    def alerts_v2(self):
-        # type: () -> EntityCollection[Alert]
+    def alerts_v2(self) -> EntityCollection[Alert]:
         """A collection of alerts in Microsoft 365 Defender."""
         return self.properties.get(
             "alerts_v2",
-            EntityCollection(
-                self.context, Alert, ResourcePath("alerts_v2", self.resource_path)
-            ),
+            EntityCollection(self.context, Alert, ResourcePath("alerts_v2", self.resource_path)),
         )
 
     @property
-    def cases(self):
+    def cases(self) -> CasesRoot:
         """"""
-        return self.properties.get(
-            "cases", CasesRoot(self.context, ResourcePath("cases", self.resource_path))
-        )
+        return self.properties.get("cases", CasesRoot(self.context, ResourcePath("cases", self.resource_path)))
 
     @property
-    def attack_simulation(self):
+    def attack_simulation(self) -> AttackSimulationRoot:
         """"""
         return self.properties.get(
             "attackSimulation",
-            AttackSimulationRoot(
-                self.context, ResourcePath("attackSimulation", self.resource_path)
-            ),
+            AttackSimulationRoot(self.context, ResourcePath("attackSimulation", self.resource_path)),
         )
 
     @property
-    def incidents(self):
-        # type: () -> EntityCollection[Incident]
+    def incidents(self) -> EntityCollection[Incident]:
         """A collection of correlated alert instances and associated metadata that reflects the story of
         an attack in a tenant"""
         return self.properties.get(
             "incidents",
-            EntityCollection(
-                self.context, Incident, ResourcePath("incidents", self.resource_path)
-            ),
+            EntityCollection(self.context, Incident, ResourcePath("incidents", self.resource_path)),
         )
 
     @property
-    def labels(self):
-        # type: () -> LabelsRoot
+    def labels(self) -> LabelsRoot:
         """"""
         return self.properties.get(
             "labels",
@@ -97,8 +84,7 @@ class Security(Entity):
         )
 
     @property
-    def subject_rights_requests(self):
-        # type: () -> EntityCollection[SubjectRightsRequest]
+    def subject_rights_requests(self) -> EntityCollection[SubjectRightsRequest]:
         """Get a list of the subjectRightsRequest objects and their properties."""
         return self.properties.get(
             "subjectRightsRequests",
@@ -110,7 +96,9 @@ class Security(Entity):
         )
 
     @property
-    def secure_score_control_profiles(self):
+    def secure_score_control_profiles(
+        self,
+    ) -> EntityCollection[SecureScoreControlProfile]:
         """"""
         return self.properties.get(
             "secureScoreControlProfiles",
@@ -122,7 +110,7 @@ class Security(Entity):
         )
 
     @property
-    def triggers(self):
+    def triggers(self) -> TriggersRoot:
         """"""
         return self.properties.get(
             "triggers",
@@ -130,13 +118,19 @@ class Security(Entity):
         )
 
     @property
-    def threat_intelligence(self):
+    def trigger_types(self) -> TriggerTypesRoot:
+        """"""
+        return self.properties.get(
+            "triggerTypes",
+            TriggerTypesRoot(self.context, ResourcePath("triggerTypes", self.resource_path)),
+        )
+
+    @property
+    def threat_intelligence(self) -> ThreatIntelligence:
         """"""
         return self.properties.get(
             "threatIntelligence",
-            ThreatIntelligence(
-                self.context, ResourcePath("threatIntelligence", self.resource_path)
-            ),
+            ThreatIntelligence(self.context, ResourcePath("threatIntelligence", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -146,12 +140,12 @@ class Security(Entity):
                 "attackSimulation": self.attack_simulation,
                 "subjectRightsRequests": self.subject_rights_requests,
                 "secureScoreControlProfiles": self.secure_score_control_profiles,
+                "triggerTypes": self.trigger_types,
                 "threatIntelligence": self.threat_intelligence,
             }
             default_value = property_mapping.get(name, None)
-        return super(Security, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "microsoft.graph.security.alert"

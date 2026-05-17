@@ -7,3 +7,7 @@ class SpaApplication(ClientValue):
 
     def __init__(self, redirect_uris=None):
         self.redirectUris = StringCollection(redirect_uris)
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.SpaApplication"

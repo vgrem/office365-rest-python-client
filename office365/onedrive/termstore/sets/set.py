@@ -18,8 +18,7 @@ class Set(Entity):
         return repr(self.localized_names)
 
     @property
-    def children(self):
-        # type: () -> TermCollection
+    def children(self) -> TermCollection:
         """Children terms of set in term store."""
         return self.properties.get(
             "children",
@@ -31,12 +30,9 @@ class Set(Entity):
         )
 
     @property
-    def localized_names(self):
-        # type: () -> ClientValueCollection[LocalizedName]
+    def localized_names(self) -> ClientValueCollection[LocalizedName]:
         """"""
-        return self.properties.get(
-            "localizedNames", ClientValueCollection(LocalizedName)
-        )
+        return self.properties.get("localizedNames", ClientValueCollection(LocalizedName))
 
     @property
     def parent_group(self):
@@ -49,25 +45,19 @@ class Set(Entity):
         )
 
     @property
-    def relations(self):
-        # type: () -> EntityCollection[Relation]
+    def relations(self) -> EntityCollection[Relation]:
         """Indicates which terms have been pinned or reused directly under the set."""
         return self.properties.get(
             "relations",
-            EntityCollection(
-                self.context, Relation, ResourcePath("relations", self.resource_path)
-            ),
+            EntityCollection(self.context, Relation, ResourcePath("relations", self.resource_path)),
         )
 
     @property
-    def terms(self):
-        # type: () -> TermCollection
+    def terms(self) -> TermCollection:
         """All the terms under the set."""
         return self.properties.get(
             "terms",
-            TermCollection(
-                self.context, ResourcePath("terms", self.resource_path), self
-            ),
+            TermCollection(self.context, ResourcePath("terms", self.resource_path), self),
         )
 
     def get_property(self, name, default_value=None):
@@ -77,8 +67,8 @@ class Set(Entity):
                 "parentGroup": self.parent_group,
             }
             default_value = property_mapping.get(name, None)
-        return super(Set, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
-    def entity_type_name(self):
-        return None
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.termStore.set"

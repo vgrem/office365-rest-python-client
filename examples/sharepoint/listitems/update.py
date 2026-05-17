@@ -1,4 +1,7 @@
-""" """
+"""Demonstrates how to update a list item
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
 
 import sys
 from random import randint

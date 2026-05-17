@@ -35,7 +35,11 @@ class AppRole(ClientValue):
         self.value = value
 
     def __str__(self):
-        return "{0}  {1}".format(self.allowedMemberTypes, self.value)
+        return f"{self.allowedMemberTypes}  {self.value}"
 
     def __repr__(self):
         return self.value or self.id or self.entity_type_name
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AppRole"

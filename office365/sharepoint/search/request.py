@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -14,12 +16,13 @@ class SearchRequest(ClientValue):
     Uniform Resource Locator (URL) length limitations that some clients experience with HTTP GET operations.
     """
 
+    # pylint: disable=too-many-statements
     def __init__(
         self,
-        query_text,
+        querytext: Optional[str] = None,
         select_properties=None,
         culture=None,
-        trim_duplicates=False,
+        trim_duplicates: Optional[bool] = False,
         row_limit=None,
         rows_per_page=None,
         start_row=None,
@@ -37,10 +40,37 @@ class SearchRequest(ClientValue):
         ui_language=None,
         hit_highlighted_properties=None,
         hit_highlighted_multivalue_property_limit=None,
-        **kwargs,
+        block_dedupe_mode: Optional[int] = None,
+        bypass_result_types: Optional[bool] = None,
+        desired_snippet_length: Optional[int] = None,
+        enable_fql: Optional[bool] = None,
+        enable_interleaving: Optional[bool] = None,
+        enable_nicknames: Optional[bool] = None,
+        enable_ordering_hit_highlighted_property: Optional[bool] = None,
+        enable_phonetic: Optional[bool] = None,
+        enable_stemming: Optional[bool] = None,
+        generate_block_rank_log: Optional[bool] = None,
+        hidden_constraints: Optional[str] = None,
+        impression_id: Optional[str] = None,
+        max_snippet_length: Optional[int] = None,
+        ols_query_session: Optional[str] = None,
+        personalization_data: Optional[str] = None,
+        process_best_bets: Optional[bool] = None,
+        process_personal_favorites: Optional[bool] = None,
+        properties_to_generate_acronyms: Optional[StringCollection] = None,
+        query_tag: Optional[str] = None,
+        query_template_properties_url: Optional[str] = None,
+        refinement_filters: Optional[StringCollection] = None,
+        refiners: Optional[str] = None,
+        results_url: Optional[str] = None,
+        timeout: Optional[int] = None,
+        time_zone_id: Optional[int] = None,
+        total_rows_exact_minimum: Optional[int] = None,
+        trim_duplicates_include_id: Optional[int] = None,
+        use_ols_query: Optional[int] = None,
     ):
         """
-        :param str query_text: The query text of the search query. If this element is not present or a value is not
+        :param str querytext: The query text of the search query. If this element is not present or a value is not
             specified, a default value of an empty string MUST be used, and the server MUST return a
             FaultException<ExceptionDetail> message.
         :param list[str] or None select_properties: As specified in [MS-QSSWS] section 2.2.4.11.
@@ -96,8 +126,8 @@ class SearchRequest(ClientValue):
         :param int hit_highlighted_multivalue_property_limit: Specifies the maximum number of hit highlighted values
              of multi-value properties to be returned.
         """
-        super(SearchRequest, self).__init__()
-        self.Querytext = query_text
+        super().__init__()
+        self.Querytext = querytext
         self.SelectProperties = StringCollection(select_properties)
         self.ClientType = client_type
         self.CollapseSpecification = collapse_specification
@@ -117,10 +147,35 @@ class SearchRequest(ClientValue):
         self.Properties = ClientValueCollection(QueryProperty, properties)
         self.UILanguage = ui_language
         self.HitHighlightedProperties = StringCollection(hit_highlighted_properties)
-        self.HitHighlightedMultivaluePropertyLimit = (
-            hit_highlighted_multivalue_property_limit
-        )
-        self.__dict__.update(**kwargs)
+        self.HitHighlightedMultivaluePropertyLimit = hit_highlighted_multivalue_property_limit
+        self.BlockDedupeMode = block_dedupe_mode
+        self.BypassResultTypes = bypass_result_types
+        self.DesiredSnippetLength = desired_snippet_length
+        self.EnableFQL = enable_fql
+        self.EnableInterleaving = enable_interleaving
+        self.EnableNicknames = enable_nicknames
+        self.EnableOrderingHitHighlightedProperty = enable_ordering_hit_highlighted_property
+        self.EnablePhonetic = enable_phonetic
+        self.EnableStemming = enable_stemming
+        self.GenerateBlockRankLog = generate_block_rank_log
+        self.HiddenConstraints = hidden_constraints
+        self.ImpressionId = impression_id
+        self.MaxSnippetLength = max_snippet_length
+        self.OLSQuerySession = ols_query_session
+        self.PersonalizationData = personalization_data
+        self.ProcessBestBets = process_best_bets
+        self.ProcessPersonalFavorites = process_personal_favorites
+        self.PropertiesToGenerateAcronyms = properties_to_generate_acronyms
+        self.QueryTag = query_tag
+        self.QueryTemplatePropertiesUrl = query_template_properties_url
+        self.RefinementFilters = refinement_filters
+        self.Refiners = refiners
+        self.ResultsUrl = results_url
+        self.Timeout = timeout
+        self.TimeZoneId = time_zone_id
+        self.TotalRowsExactMinimum = total_rows_exact_minimum
+        self.TrimDuplicatesIncludeId = trim_duplicates_include_id
+        self.UseOLSQuery = use_ols_query
 
     @property
     def entity_type_name(self):

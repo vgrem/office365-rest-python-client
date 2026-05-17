@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
+from typing_extensions import Self
 
 from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
@@ -17,10 +21,14 @@ class PermissionCollection(EntityCollection[Permission]):
     """Permission's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(PermissionCollection, self).__init__(context, Permission, resource_path)
+        super().__init__(context, Permission, resource_path)
 
-    def add(self, roles, identity=None, identity_type=None):
-        # type: (list[str], Application|User|Group|Device|str, str) -> Permission
+    def add(
+        self,
+        roles: list[str],
+        identity: Application | User | Group | Device | str | None = None,
+        identity_type: str | None = None,
+    ) -> Permission:
         """
         Create a new permission object.
 
@@ -43,9 +51,7 @@ class PermissionCollection(EntityCollection[Permission]):
             identity_type = type(identity).__name__.lower()
         else:
             if identity_type is None:
-                raise ValueError(
-                    "Identity type is a mandatory when identity identifier is specified"
-                )
+                raise ValueError("Identity type is a mandatory when identity identifier is specified")
             known_identity = known_identities.get(identity_type, None)
             if known_identity is None:
                 raise ValueError("Unknown identity type")
@@ -57,7 +63,8 @@ class PermissionCollection(EntityCollection[Permission]):
                 "grantedToIdentities": [
                     {
                         identity_type: Identity(
-                            display_name=identity.display_name, _id=identity.id
+                            display_name=getattr(identity, "display_name", str(identity)),
+                            _id=getattr(identity, "id", str(identity)),
                         )
                     }
                 ],
@@ -66,16 +73,18 @@ class PermissionCollection(EntityCollection[Permission]):
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)
 
-        identity.ensure_properties(["displayName"], _add)
+        if isinstance(identity, Entity):
+            identity.ensure_properties(["displayName"], _add)
+        else:
+            _add()
         return return_type
 
-    def delete_all(self):
+    def delete_all(self) -> Self:
         """Remove all access to resource"""
 
-        def _after_loaded(return_type):
-            # type: (PermissionCollection) -> None
+        def _delete(return_type: PermissionCollection) -> None:
             for permission in return_type:
                 permission.delete_object()
 
-        self.get().after_execute(_after_loaded)
+        self.get_all().after_execute(_delete)
         return self

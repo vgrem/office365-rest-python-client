@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.outlook.calendar.attendees.availability import AttendeeAvailability
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 from office365.outlook.mail.location import Location
@@ -13,12 +15,11 @@ class MeetingTimeSuggestion(ClientValue):
 
     def __init__(
         self,
-        attendee_availability=None,
-        confidence=None,
-        locations=None,
-        meeting_timeslot=TimeSlot(),
-    ):
-        # type: (list[AttendeeAvailability], float, list[Location], TimeSlot) -> None
+        attendee_availability: Optional[list[AttendeeAvailability]] = None,
+        confidence: Optional[float] = None,
+        locations: Optional[list[Location]] = None,
+        meeting_timeslot: TimeSlot = TimeSlot(),
+    ) -> None:
         """
         :param attendee_availability: An array that shows the availability status of each
             attendees for this meeting suggestion.
@@ -27,9 +28,7 @@ class MeetingTimeSuggestion(ClientValue):
              for this meeting suggestion.
         :param meeting_timeslot: A time period suggested for the meeting.
         """
-        self.attendeeAvailability = ClientValueCollection(
-            AttendeeAvailability, attendee_availability
-        )
+        self.attendeeAvailability = ClientValueCollection(AttendeeAvailability, attendee_availability)
         self.confidence = confidence
         self.locations = ClientValueCollection(Location, locations)
         self.meetingTimeSlot = meeting_timeslot

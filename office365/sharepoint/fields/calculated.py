@@ -12,19 +12,16 @@ class FieldCalculated(Field):
     """
 
     @property
-    def currency_locale_id(self):
-        # type: () -> Optional[int]
+    def currency_locale_id(self) -> Optional[int]:
         """Gets the locale ID that is used for currency on the Web site."""
         return self.properties.get("CurrencyLocaleId", None)
 
     @property
-    def formula(self):
-        # type: () -> Optional[str]
+    def formula(self) -> Optional[str]:
         """Specifies the formula for the field"""
         return self.properties.get("Formula", None)
 
     @formula.setter
-    def formula(self, val):
-        # type: (str) -> None
+    def formula(self, val: str) -> None:
         """Sets a value that specifies the Formula."""
         self.set_property("Formula", val)

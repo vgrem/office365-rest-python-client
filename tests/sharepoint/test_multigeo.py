@@ -1,4 +1,5 @@
 from office365.sharepoint.multigeo.api_versions import MultiGeoApiVersions
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 

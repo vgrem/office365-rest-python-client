@@ -11,9 +11,9 @@ class ReportAbandonedQueries(ReportBase):
     """
 
     def __init__(self, reports=None):
-        super(ReportAbandonedQueries, self).__init__()
+        super().__init__()
         self.Reports = ClientValueCollection(ReportAbandonedQueriesItem, reports)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:  # type: ignore[override]
         return "Microsoft.Office.Server.Search.REST.ReportAbandonedQueries"

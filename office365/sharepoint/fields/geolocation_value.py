@@ -1,8 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class FieldGeolocationValue(ClientValue):
-    def __init__(self, latitude, longitude, altitude=None):
+    def __init__(
+        self,
+        latitude: float,
+        longitude: float,
+        altitude: Optional[float] = None,
+        measure: Optional[float] = None,
+    ):
         """
         Specifies altitude, latitude, longitude and measure values for FieldGeolocation (section 3.2.5.185).<191>
 
@@ -11,10 +19,11 @@ class FieldGeolocationValue(ClientValue):
         :param float altitude: Specifies the altitude value for Geolocation field. It is a user defined value
 
         """
-        super(FieldGeolocationValue, self).__init__()
+        super().__init__()
         self.Latitude = latitude
         self.Longitude = longitude
         self.Altitude = altitude
+        self.Measure = measure
 
     @property
     def entity_type_name(self):

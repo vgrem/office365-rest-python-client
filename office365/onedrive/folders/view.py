@@ -11,7 +11,7 @@ class FolderView(ClientValue):
             items should be sorted ascending.
         :param str view_type: The type of view that should be used to represent the folder.
         """
-        super(FolderView, self).__init__()
+        super().__init__()
         self.sortBy = sort_by
         self.sortOrder = sort_order
         self.viewType = view_type

@@ -1,0 +1,25 @@
+from typing import Optional
+
+from office365.runtime.client_value import ClientValue
+
+
+class CardDesignFeatures(ClientValue):
+    def __init__(
+        self,
+        catalog_type: Optional[int] = None,
+        is_context_not_available: Optional[bool] = None,
+        is_disabled_by_tenant_admin: Optional[bool] = None,
+        is_enabled: Optional[bool] = None,
+        is_flight_deactivated: Optional[bool] = None,
+        is_not_a_home_site: Optional[bool] = None,
+    ):
+        self.catalogType = catalog_type
+        self.isContextNotAvailable = is_context_not_available
+        self.isDisabledByTenantAdmin = is_disabled_by_tenant_admin
+        self.isEnabled = is_enabled
+        self.isFlightDeactivated = is_flight_deactivated
+        self.isNotAHomeSite = is_not_a_home_site
+
+    @property
+    def entity_type_name(self):
+        return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.CardDesignFeatures"

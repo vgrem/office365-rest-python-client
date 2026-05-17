@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from datetime import datetime
 from typing import Optional
+
+from typing_extensions import Self
 
 from office365.communications.presences.status_message import PresenceStatusMessage
 from office365.entity import Entity
@@ -10,7 +15,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
-    def clear_presence(self, session_id=None):
+    def clear_presence(self, session_id: str | None = None) -> Self:
         """
         Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
@@ -22,7 +27,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def clear_user_preferred_presence(self):
+    def clear_user_preferred_presence(self) -> Self:
         """
         Clear the preferred availability and activity status for a user.
         """
@@ -31,7 +36,11 @@ class Presence(Entity):
         return self
 
     def set_presence(
-        self, session_id, availability=None, activity=None, expiration_duration=None
+        self,
+        session_id: str,
+        availability: Optional[str] = None,
+        activity: Optional[str] = None,
+        expiration_duration: Optional[str] = None,
     ):
         """
         Set the state of a user's presence session as an application.
@@ -53,29 +62,25 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_status_message(self, message, expiry=None):
+    def set_status_message(self, message: str | ItemBody, expiry: Optional[datetime] = None):
         """
         Set a presence status message for a user. An optional expiration date and time can be supplied.
         :param str or ItemBody message: Status message item.
-        :param datetime.datetime expiry: Time in which the status message expires. If not provided, the status message
+        :param datetime expiry: Time in which the status message expires. If not provided, the status message
             doesn't expire.
         """
         if not isinstance(message, ItemBody):
             message = ItemBody(message)
         if expiry:
-            expiry = DateTimeTimeZone.parse(expiry)
-        payload = {
-            "statusMessage": PresenceStatusMessage(
-                message=message, expiry_datetime=expiry
-            )
-        }
+            status_message = PresenceStatusMessage(message=message, expiry_datetime=DateTimeTimeZone.parse(expiry))
+        else:
+            status_message = PresenceStatusMessage(message=message)
+        payload = {"statusMessage": status_message}
         qry = ServiceOperationQuery(self, "setStatusMessage", None, payload)
         self.context.add_query(qry)
         return self
 
-    def set_user_preferred_presence(
-        self, availability="Available", activity="Available", expiration_duration=None
-    ):
+    def set_user_preferred_presence(self, availability="Available", activity="Available", expiration_duration=None):
         """
         Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
         the user's presence shows as the preferred status.
@@ -100,8 +105,7 @@ class Presence(Entity):
         return self
 
     @property
-    def activity(self):
-        # type: () -> Optional[str]
+    def activity(self) -> Optional[str]:
         """
         The supplemental information to a user's availability.
         Possible values are Available, Away, BeRightBack, Busy, DoNotDisturb, InACall, InAConferenceCall, Inactive,
@@ -110,8 +114,7 @@ class Presence(Entity):
         return self.properties.get("activity", None)
 
     @property
-    def availability(self):
-        # type: () -> Optional[str]
+    def availability(self) -> Optional[str]:
         """
         The base presence information for a user.
         Possible values are Available, AvailableIdle, Away, BeRightBack, Busy, BusyIdle, DoNotDisturb, Offline,

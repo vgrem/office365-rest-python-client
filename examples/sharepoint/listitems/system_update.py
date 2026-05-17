@@ -1,8 +1,9 @@
-"""
-Demonstrates how to update system metadata properties of List Item
+"""Demonstrates how to update system metadata properties of a list item
 
-Note: When using Entra ID (former Azure AD), some system metadata updates
+Note: When using Entra ID (formerly Azure AD), some system metadata updates
 (e.g. Author, Editor) require Sites.FullControl permission.
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 import sys
@@ -23,6 +24,7 @@ items = target_list.items.get().top(1).execute_query()
 if len(items) == 0:
     sys.exit("No items were found")
 
+assert items[0].id is not None
 # item_to_update = items[0]
 item_to_update = items.get_by_id(items[0].id)
 
@@ -43,10 +45,8 @@ result = item_to_update.validate_update_list_item(
     new_document_update=True,
 ).execute_query()
 
-has_any_error = any([item.HasException for item in result.value])
+has_any_error = any([getattr(item, "HasException", False) for item in result.value])
 if has_any_error:
-    print(
-        "Item update completed with errors, for details refer 'ErrorMessage' property"
-    )
+    print("Item update completed with errors, for details refer 'ErrorMessage' property")
 else:
     print("Item has been updated successfully")

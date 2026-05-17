@@ -1,4 +1,4 @@
-from office365.directory.authentication.method_configuration import (
+from office365.directory.authentication.methods.configuration import (
     AuthenticationMethodConfiguration,
 )
 from office365.directory.authentication.methods.sms_target import (

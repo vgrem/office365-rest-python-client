@@ -5,9 +5,7 @@ Find consent grants for app permissions
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 
 col = client.service_principals.get().execute_query()
@@ -28,7 +26,5 @@ for sp in col:
     if len(app_roles) > 0:
         print("Application Permissions (Admin Consent)")
         for app_role in app_roles:
-            resource_sp = (
-                client.service_principals[app_role.resource_id].get().execute_query()
-            )
+            resource_sp = client.service_principals[app_role.resource_id].get().execute_query()
             print(app_role.resource_display_name, ": ", resource_sp.app_roles)

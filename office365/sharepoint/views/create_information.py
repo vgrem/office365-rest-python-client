@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -7,14 +9,21 @@ class ViewCreationInformation(ClientValue):
 
     def __init__(
         self,
-        title=None,
-        view_type_kind=None,
-        view_fields=None,
-        view_data=None,
-        row_limit=None,
-        query=None,
-        personal_view=None,
-        paged=None,
+        title: Optional[str] = None,
+        view_type_kind: Optional[int] = None,
+        view_fields: Optional[List[str]] = None,
+        view_data: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        query: Optional[str] = None,
+        personal_view: Optional[bool] = None,
+        paged: Optional[bool] = None,
+        associated_content_type_id: Optional[str] = None,
+        base_view_id: Optional[int] = None,
+        calendar_view_styles: Optional[str] = None,
+        column_width: Optional[str] = None,
+        custom_formatter: Optional[str] = None,
+        set_as_default_view: Optional[bool] = None,
+        view_type2: Optional[str] = None,
     ):
         """
         :param str title: Specifies the display name of the new list view. Its length MUST be equal to or less than 255.
@@ -29,7 +38,7 @@ class ViewCreationInformation(ClientValue):
             If the value is "false", the new list view is a public view.
         :param bool paged: Specifies whether the new list view is a paged view.
         """
-        super(ViewCreationInformation, self).__init__()
+        super().__init__()
         self.Title = title
         self.ViewTypeKind = view_type_kind
         self.ViewFields = StringCollection(view_fields)
@@ -38,6 +47,13 @@ class ViewCreationInformation(ClientValue):
         self.Query = query
         self.PersonalView = personal_view
         self.Paged = paged
+        self.AssociatedContentTypeId = associated_content_type_id
+        self.baseViewId = base_view_id
+        self.CalendarViewStyles = calendar_view_styles
+        self.ColumnWidth = column_width
+        self.CustomFormatter = custom_formatter
+        self.SetAsDefaultView = set_as_default_view
+        self.ViewType2 = view_type2
 
     @property
     def entity_type_name(self):

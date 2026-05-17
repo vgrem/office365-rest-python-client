@@ -9,8 +9,7 @@ class VirtualEventsRoot(Entity):
     """The container for virtual event APIs."""
 
     @property
-    def townhalls(self):
-        # type: () -> EntityCollection[VirtualEventTownhall]
+    def townhalls(self) -> EntityCollection[VirtualEventTownhall]:
         """A collection of town halls. Nullable."""
         return self.properties.get(
             "townhalls",
@@ -22,8 +21,7 @@ class VirtualEventsRoot(Entity):
         )
 
     @property
-    def webinars(self):
-        # type: () -> EntityCollection[VirtualEventWebinar]
+    def webinars(self) -> EntityCollection[VirtualEventWebinar]:
         """A collection of webinars. Nullable."""
         return self.properties.get(
             "webinars",

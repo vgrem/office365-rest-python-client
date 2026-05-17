@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import base64
 import datetime
 from typing import Optional
+
+from typing_extensions import Self
 
 from office365.directory.applications.api import ApiApplication
 from office365.directory.applications.optional_claims import OptionalClaims
@@ -13,14 +17,16 @@ from office365.directory.applications.spa import SpaApplication
 from office365.directory.certificates.certification import Certification
 from office365.directory.extensions.extension_property import ExtensionProperty
 from office365.directory.key_credential import KeyCredential
-from office365.directory.object import DirectoryObject
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -39,15 +45,19 @@ class Application(DirectoryObject):
 
     def __str__(self):
         if self.display_name:
-            return "Name: {0}".format(self.display_name)
+            return f"Name: {self.display_name}"
         elif self.app_id:
-            return "App Id: {0}".format(self.app_id)
+            return f"App Id: {self.app_id}"
         else:
             return self.entity_type_name
 
     def add_certificate(
-        self, cert_data, display_name, start_datetime=None, end_datetime=None
-    ):
+        self,
+        cert_data: bytes,
+        display_name: str,
+        start_datetime: datetime.datetime | None = None,
+        end_datetime: datetime.datetime | None = None,
+    ) -> Self:
         """Adds a certificate to an application.
 
         :param str display_name: Friendly name for the key.
@@ -66,20 +76,20 @@ class Application(DirectoryObject):
             start_datetime=start_datetime.isoformat(),
             end_datetime=end_datetime.isoformat(),
             key=base64.b64encode(cert_data).decode("utf-8"),
-            display_name="CN={0}".format(display_name),
+            display_name=f"CN={display_name}",
         )
         self.key_credentials.add(params)
         self.update()
         return self
 
-    def remove_certificate(self, thumbprint):
+    def remove_certificate(self, thumbprint: str) -> Self:
         """
         Remove a certificate from an application.
         :param str thumbprint: The unique identifier for the password.
         """
         raise NotImplementedError("remove_certificate")
 
-    def add_password(self, display_name):
+    def add_password(self, display_name: str) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
         :param str display_name: App display name
@@ -90,7 +100,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return result
 
-    def remove_password(self, key_id):
+    def remove_password(self, key_id: str) -> Self:
         """Remove a password from an application.
 
         :param str key_id: The unique identifier for the password.
@@ -99,19 +109,23 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def delete_object(self, permanent_delete=False):
+    def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the application from directory
         :type permanent_delete: bool
 
         """
-        super(Application, self).delete_object()
+        super().delete_object()
+        deleted_app = DirectoryObject(
+            self.context,
+            EntityPath(self.id, self.context.directory.deleted_applications.resource_path),
+        )
+        self.context.directory.deleted_applications.add_child(deleted_app)
         if permanent_delete:
-            deleted_item = self.context.directory.deleted_applications[self.id]
-            deleted_item.delete_object()
+            deleted_app.delete_object()
         return self
 
-    def set_verified_publisher(self, verified_publisher_id):
+    def set_verified_publisher(self, verified_publisher_id: str) -> Self:
         """Set the verifiedPublisher on an application.
         For more information, including prerequisites to setting a verified publisher, see Publisher verification.
 
@@ -127,7 +141,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def unset_verified_publisher(self):
+    def unset_verified_publisher(self) -> Self:
         """Unset the verifiedPublisher previously set on an application, removing all verified publisher properties.
         For more information, see Publisher verification.
         """
@@ -135,7 +149,12 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def add_key(self, key_credential, password_credential, proof):
+    def add_key(
+        self,
+        key_credential: KeyCredential,
+        password_credential: PasswordCredential,
+        proof: str,
+    ) -> ClientResult[KeyCredential]:
         """
         Add a key credential to an application. This method, along with removeKey can be used by an application
         to automate rolling its expiring keys.
@@ -159,7 +178,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def remove_key(self, key_id, proof):
+    def remove_key(self, key_id: str, proof: str) -> Self:
         """
         Remove a key credential from an application.
         This method along with addKey can be used by an application to automate rolling its expiring keys.
@@ -173,27 +192,22 @@ class Application(DirectoryObject):
                  nbf - Not before time.
                  exp - Expiration time should be "nbf" + 10 mins.
         """
-        qry = ServiceOperationQuery(
-            self, "removeKey", None, {"keyId": key_id, "proof": proof}
-        )
+        qry = ServiceOperationQuery(self, "removeKey", None, {"keyId": key_id, "proof": proof})
         self.context.add_query(qry)
         return self
 
     @property
-    def app_id(self):
-        # type: () -> Optional[str]
+    def app_id(self) -> Optional[str]:
         """The unique identifier for the application that is assigned to an application by Azure AD. Not nullable."""
         return self.properties.get("appId", None)
 
     @property
-    def application_template_id(self):
-        # type: () -> Optional[str]
+    def application_template_id(self) -> Optional[str]:
         """Unique identifier of the applicationTemplate"""
         return self.properties.get("applicationTemplateId", None)
 
     @property
-    def app_roles(self):
-        # type: () -> ClientValueCollection[AppRole]
+    def app_roles(self) -> ClientValueCollection[AppRole]:
         """
         The collection of roles defined for the application. With app role assignments, these roles can be assigned to
         users, groups, or service principals associated with other applications
@@ -201,12 +215,12 @@ class Application(DirectoryObject):
         return self.properties.get("appRoles", ClientValueCollection(AppRole))
 
     @property
-    def api(self):
+    def api(self) -> ApiApplication:
         """Specifies settings for an application that implements a web API."""
         return self.properties.get("api", ApiApplication())
 
     @property
-    def certification(self):
+    def certification(self) -> Certification:
         """Specifies the certification status of the application."""
         return self.properties.get("certification", Certification())
 
@@ -216,29 +230,25 @@ class Application(DirectoryObject):
         return self.properties.get("createdDateTime", datetime.datetime.min)
 
     @property
-    def default_redirect_uri(self):
-        # type: () -> Optional[str]
+    def default_redirect_uri(self) -> Optional[str]:
         """ """
         return self.properties.get("defaultRedirectUri", None)
 
     @property
-    def spa(self):
+    def spa(self) -> SpaApplication:
         """
         Specifies settings for a single-page application, including sign out URLs and redirect URIs for
         authorization codes and access tokens."""
         return self.properties.get("spa", SpaApplication())
 
     @property
-    def key_credentials(self):
+    @persist_property("keyCredentials")
+    def key_credentials(self) -> ClientValueCollection[KeyCredential]:
         """The collection of key credentials associated with the application. Not nullable."""
-        self._properties_to_persist.append("keyCredentials")
-        return self.properties.setdefault(
-            "keyCredentials", ClientValueCollection(KeyCredential)
-        )
+        return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """
         The display name for the application.
         Supports $filter (eq, ne, NOT, ge, le, in, startsWith), $search, and $orderBy.
@@ -246,7 +256,7 @@ class Application(DirectoryObject):
         return self.properties.get("displayName", None)
 
     @property
-    def identifier_uris(self):
+    def identifier_uris(self) -> StringCollection:
         """
         The URIs that identify the application within its Azure AD tenant, or within a verified custom domain
         if the application is multi-tenant. For more information see Application Objects and Service Principal Objects.
@@ -255,27 +265,24 @@ class Application(DirectoryObject):
         return self.properties.get("identifierUris", StringCollection())
 
     @property
-    def optional_claims(self):
+    def optional_claims(self) -> OptionalClaims:
         """Application developers can configure optional claims in their Microsoft Entra applications to specify
         the claims that are sent to their application by the Microsoft security token service.
         """
         return self.properties.get("optionalClaims", OptionalClaims())
 
     @property
-    def password_credentials(self):
+    def password_credentials(self) -> ClientValueCollection[PasswordCredential]:
         """The collection of password credentials associated with the application"""
-        return self.properties.get(
-            "passwordCredentials", ClientValueCollection(PasswordCredential)
-        )
+        return self.properties.get("passwordCredentials", ClientValueCollection(PasswordCredential))
 
     @property
-    def public_client(self):
+    def public_client(self) -> PublicClientApplication:
         """Specifies settings for installed clients such as desktop or mobile devices."""
         return self.properties.get("publicClient", PublicClientApplication())
 
     @property
-    def signin_audience(self):
-        # type: () -> Optional[str]
+    def signin_audience(self) -> Optional[str]:
         """
         Specifies the Microsoft accounts that are supported for the current application.
         Supported values are: AzureADMyOrg, AzureADMultipleOrgs, AzureADandPersonalMicrosoftAccount,
@@ -284,30 +291,23 @@ class Application(DirectoryObject):
         return self.properties.get("signInAudience", None)
 
     @property
-    def created_on_behalf_of(self):
-        # type: () -> DirectoryObject
+    def created_on_behalf_of(self) -> DirectoryObject:
         """"""
         return self.properties.get(
             "createdOnBehalfOf",
-            DirectoryObject(
-                self.context, ResourcePath("createdOnBehalfOf", self.resource_path)
-            ),
+            DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path)),
         )
 
     @property
-    def owners(self):
-        # type: () -> DirectoryObjectCollection
+    def owners(self) -> DirectoryObjectCollection:
         """Directory objects that are owners of the application."""
         return self.properties.get(
             "owners",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("owners", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
     @property
-    def extension_properties(self):
-        # type: () -> EntityCollection[ExtensionProperty]
+    def extension_properties(self) -> EntityCollection[ExtensionProperty]:
         """List extension properties on an application object."""
         return self.properties.get(
             "extensionProperties",
@@ -319,18 +319,15 @@ class Application(DirectoryObject):
         )
 
     @property
-    def required_resource_access(self):
+    def required_resource_access(self) -> ClientValueCollection[RequiredResourceAccess]:
         """Specifies the resources that the application needs to access. This property also specifies the set
         of delegated permissions and application roles that it needs for each of those resources.
         This configuration of access to the required resources drives the consent experience.
         """
-        return self.properties.get(
-            "requiredResourceAccess", ClientValueCollection(RequiredResourceAccess)
-        )
+        return self.properties.get("requiredResourceAccess", ClientValueCollection(RequiredResourceAccess))
 
     @property
-    def token_issuance_policies(self):
-        # type: () -> EntityCollection[TokenIssuancePolicy]
+    def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:
         """Get all tokenIssuancePolicies assigned to this object."""
         return self.properties.get(
             "tokenIssuancePolicies",
@@ -356,4 +353,4 @@ class Application(DirectoryObject):
                 "tokenIssuancePolicies": self.token_issuance_policies,
             }
             default_value = property_mapping.get(name, None)
-        return super(Application, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

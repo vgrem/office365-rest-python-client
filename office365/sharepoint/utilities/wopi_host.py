@@ -9,8 +9,7 @@ class WopiHostUtility(Entity):
     """ """
 
     @staticmethod
-    def generate_file_bundle(context):
-        # type: (ClientContext) -> ClientResult[str]
+    def generate_file_bundle(context: ClientContext) -> ClientResult[str]:
         """ """
         return_type = ClientResult(context)
         qry = ServiceOperationQuery(

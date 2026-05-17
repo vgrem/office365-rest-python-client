@@ -2,14 +2,13 @@
 Retrieve the metadata for a driveItem in a drive by file system path
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-get?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 file_path = "Financial Sample.xlsx"
 file_item = client.me.drive.root.get_by_path(file_path).get().execute_query()
 print(file_item.web_url)

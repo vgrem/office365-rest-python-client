@@ -7,9 +7,7 @@ class NativeClient(Entity):
     """Gets endpoints for native client authentication relative to current request."""
 
     def __init__(self, context):
-        super(NativeClient, self).__init__(
-            context, ResourcePath("SP.OAuth.NativeClient")
-        )
+        super().__init__(context, ResourcePath("SP.OAuth.NativeClient"))
 
     def authenticate(self):
         """Authentication module to handle MicrosoftOnlineCredentials."""

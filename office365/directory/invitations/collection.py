@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.invitations.invitation import Invitation
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -7,9 +9,9 @@ class InvitationCollection(EntityCollection[Invitation]):
     """Invitation's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(InvitationCollection, self).__init__(context, Invitation, resource_path)
+        super().__init__(context, Invitation, resource_path)
 
-    def create(self, invited_user_email_address, invite_redirect_url=None):
+    def create(self, invited_user_email_address: str, invite_redirect_url: Optional[str] = None) -> Invitation:
         """
         Use this API to create a new invitation. Invitation adds an external user to the organization.
 

@@ -1,6 +1,10 @@
+from typing import Optional
+
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
-from office365.outlook.mail.automatic_replies_setting import AutomaticRepliesSetting
+from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
+from office365.outlook.mail.delegatemeetingmessagedeliveryoptions import DelegateMeetingMessageDeliveryOptions
+from office365.outlook.mail.userpurpose import UserPurpose
 from office365.runtime.client_value import ClientValue
 
 
@@ -9,13 +13,15 @@ class MailboxSettings(ClientValue):
 
     def __init__(
         self,
-        time_format=None,
-        time_zone=None,
-        automatic_replies_setting=AutomaticRepliesSetting(),
-        archive_folder=None,
-        date_format=None,
-        language=LocaleInfo(),
-        working_hours=WorkingHours(),
+        time_format: Optional[str] = None,
+        time_zone: Optional[str] = None,
+        automatic_replies_setting: AutomaticRepliesSetting = AutomaticRepliesSetting(),
+        archive_folder: Optional[str] = None,
+        date_format: Optional[str] = None,
+        language: LocaleInfo = LocaleInfo(),
+        working_hours: WorkingHours = WorkingHours(),
+        delegate_meeting_message_delivery_options: Optional[DelegateMeetingMessageDeliveryOptions] = None,
+        user_purpose: Optional[UserPurpose] = None,
     ):
         """
         :param str time_format: The time format for the user's mailbox.
@@ -28,7 +34,7 @@ class MailboxSettings(ClientValue):
             and country/region.
         :param WorkingHours working_hours: The days of the week and hours in a specific time zone that the user works.
         """
-        super(MailboxSettings, self).__init__()
+        super().__init__()
         self.timeFormat = time_format
         self.timeZone = time_zone
         self.automaticRepliesSetting = automatic_replies_setting
@@ -36,3 +42,9 @@ class MailboxSettings(ClientValue):
         self.dateFormat = date_format
         self.language = language
         self.workingHours = working_hours
+        self.delegateMeetingMessageDeliveryOptions = delegate_meeting_message_delivery_options
+        self.userPurpose = user_purpose
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.MailboxSettings"

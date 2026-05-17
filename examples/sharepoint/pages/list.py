@@ -1,5 +1,7 @@
 """
-List site pages
+List site pages on a SharePoint site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,7 @@
 """
-Demonstrates how to determine whether user has the permissions for a list
+Demonstrates how to determine whether a user has permissions for a file.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
 from office365.sharepoint.client_context import ClientContext
@@ -15,9 +17,7 @@ file_url = "Shared Documents/Financial Sample.xlsx"
 
 target_user = client.web.site_users.get_by_email(test_user_principal_name_alt)
 target_file = client.web.get_file_by_server_relative_path(file_url)
-result = target_file.listItemAllFields.get_user_effective_permissions(
-    target_user
-).execute_query()
+result = target_file.get_user_effective_permissions(target_user).execute_query()
 # verify whether user has Reader role to a file
 if result.value.has(PermissionKind.OpenItems):
     print("User has access to read a file")

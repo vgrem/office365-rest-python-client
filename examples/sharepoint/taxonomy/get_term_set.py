@@ -1,5 +1,7 @@
 """
-Find TermSets by name
+Finds term sets by name within a term group.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,7 @@
 """
-Retrieves folder system metadata
+Retrieves folder system metadata.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -1,5 +1,5 @@
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
@@ -10,23 +10,21 @@ class ServerSettings(Entity):
     """Provides methods for obtaining server properties."""
 
     def __init__(self, context):
-        super(ServerSettings, self).__init__(context, ResourcePath("SP.ServerSettings"))
+        super().__init__(context, StaticPath("SP.ServerSettings"))
 
     @staticmethod
-    def is_sharepoint_online(context):
+    def is_sharepoint_online(context) -> ClientResult[bool]:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         """
         binding_type = ServerSettings(context)
         return_type = ClientResult(context)
-        qry = ServiceOperationQuery(
-            binding_type, "IsSharePointOnline", None, None, None, return_type, True
-        )
+        qry = ServiceOperationQuery(binding_type, "IsSharePointOnline", None, None, None, return_type, True)
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def get_blocked_file_extensions(context):
+    def get_blocked_file_extensions(context) -> ClientResult[StringCollection]:
         """
         :type context: office365.sharepoint.client_context.ClientContext
         """
@@ -45,7 +43,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
-    def get_global_installed_languages(context, compatibility_level):
+    def get_global_installed_languages(context, compatibility_level: int) -> LanguageCollection:
         """
         Gets a list of installed languages that are compatible with a given version of SharePoint.
 

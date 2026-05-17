@@ -7,7 +7,7 @@ class AppIdPath(ResourcePath):
 
     @property
     def segment(self):
-        return "(appId='{0}')".format(self._key)
+        return f"(appId='{self._key}')"
 
     @property
     def delimiter(self):

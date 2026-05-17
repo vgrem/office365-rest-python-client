@@ -1,7 +1,10 @@
 """
-Connect via national clouds (Microsoft 365 GCC High environment)
+Connect via national clouds (Microsoft 365 GCC High environment).
 
 Microsoft Graph for US Government L4: https://graph.microsoft.us
+
+https://learn.microsoft.com/en-us/graph/auth
+https://learn.microsoft.com/en-us/graph/deployments
 """
 
 from office365.azure_env import AzureEnvironment
@@ -13,7 +16,7 @@ from tests import (
     test_user_principal_name,
 )
 
-client = GraphClient(
-    tenant=test_tenant, environment=AzureEnvironment.USGovernmentHigh
-).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=test_tenant, environment=AzureEnvironment.USGovernmentHigh).with_client_secret(
+    test_client_id, test_client_secret
+)
 messages = client.users[test_user_principal_name].messages.get().execute_query()

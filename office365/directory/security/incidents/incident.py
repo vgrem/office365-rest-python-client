@@ -23,14 +23,12 @@ class Incident(Entity):
     """
 
     @property
-    def assigned_to(self):
-        # type: () -> Optional[str]
+    def assigned_to(self) -> Optional[str]:
         """Owner of the incident, or null if no owner is assigned. Free editable text."""
         return self.properties.get("assignedTo", None)
 
     @property
-    def classification(self):
-        # type: () -> Optional[str]
+    def classification(self) -> Optional[str]:
         """The specification for the incident.
         Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue.
         """
@@ -47,23 +45,19 @@ class Incident(Entity):
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def alerts(self):
-        # type: () -> EntityCollection[Alert]
+    def alerts(self) -> EntityCollection[Alert]:
         """The list of related alerts. Supports $expand."""
         return self.properties.get(
             "alerts",
-            EntityCollection(
-                self.context, Alert, ResourcePath("alerts", self.resource_path)
-            ),
+            EntityCollection(self.context, Alert, ResourcePath("alerts", self.resource_path)),
         )
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:
         return "microsoft.graph.security.incident"
 
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {"createdDateTime": self.created_datetime}
             default_value = property_mapping.get(name, None)
-        return super(Incident, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

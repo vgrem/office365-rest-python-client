@@ -1,5 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
-from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.promoted_results_operations_result import (
@@ -13,16 +15,14 @@ class SearchSetting(Entity):
     """This object provides the REST operations defined under search settings."""
 
     def __init__(self, context):
-        super(SearchSetting, self).__init__(
-            context, ResourcePath("Microsoft.Office.Server.Search.REST.SearchSetting")
-        )
+        super().__init__(context, StaticPath("Microsoft.Office.Server.Search.REST.SearchSetting"))
 
     def get_query_configuration(
         self,
-        call_local_search_farms_only=True,
-        skip_group_object_id_lookup=None,
-        throw_on_remote_api_check=None,
-    ):
+        call_local_search_farms_only: bool = True,
+        skip_group_object_id_lookup: Optional[bool] = None,
+        throw_on_remote_api_check: Optional[bool] = None,
+    ) -> ClientResult[QueryConfiguration]:
         """
         This operation gets the query configuration from the server. This operation requires that the Search Service
         Application is partitioned. If the Search Service Application is not partitioned the operations returns
@@ -38,9 +38,7 @@ class SearchSetting(Entity):
             "skipGroupObjectIdLookup": skip_group_object_id_lookup,
             "throwOnRemoteApiCheck": throw_on_remote_api_check,
         }
-        qry = ServiceOperationQuery(
-            self, "getqueryconfiguration", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getqueryconfiguration", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -52,7 +50,7 @@ class SearchSetting(Entity):
         start_date=None,
         end_date=None,
         site_collection_id=None,
-    ):
+    ) -> ClientResult[ReportBase]:
         """
         :param str tenant_id:
         :param str report_type:
@@ -70,24 +68,23 @@ class SearchSetting(Entity):
             "EndDate": end_date,
             "SiteCollectionId": site_collection_id,
         }
-        qry = ServiceOperationQuery(
-            self, "ExportSearchReports", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "ExportSearchReports", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def ping_admin_endpoint(self):
+    def ping_admin_endpoint(self) -> ClientResult[bool]:
         """ """
         return_type = ClientResult[bool](self.context)
-        qry = ServiceOperationQuery(
-            self, "PingAdminEndpoint", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "PingAdminEndpoint", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_promoted_result_query_rules(
-        self, site_collection_level=None, offset=None, number_of_rules=None
-    ):
+        self,
+        site_collection_level: Optional[bool] = None,
+        offset: Optional[int] = None,
+        number_of_rules: Optional[int] = None,
+    ) -> ClientResult[PromotedResultsOperationsResult]:
         """
         The operation is called to retrieve the promoted results (also called Best Bets) for a tenant or a
         site collection.
@@ -107,9 +104,7 @@ class SearchSetting(Entity):
             "offset": offset,
             "numberOfRules": number_of_rules,
         }
-        qry = ServiceOperationQuery(
-            self, "getpromotedresultqueryrules", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "getpromotedresultqueryrules", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 

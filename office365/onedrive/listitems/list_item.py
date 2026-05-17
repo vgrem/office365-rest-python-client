@@ -1,4 +1,12 @@
+from __future__ import annotations
+
+from datetime import datetime
+from typing import TYPE_CHECKING, Any
+
+from typing_extensions import Self
+
 from office365.entity_collection import EntityCollection
+from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.contenttypes.info import ContentTypeInfo
@@ -10,26 +18,34 @@ from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.list_item import ListItemVersion
 from office365.runtime.paths.resource_path import ResourcePath
 
+if TYPE_CHECKING:
+    from office365.onedrive.driveitems.driveItem import DriveItem
+
 
 class ListItem(BaseItem):
     """Represents an item in a SharePoint list. Column values in the list are available through the fieldValueSet
     dictionary."""
 
-    def get_activities_by_interval(self, start_dt=None, end_dt=None, interval=None):
+    def get_activities_by_interval(
+        self,
+        start_dt: datetime | None = None,
+        end_dt: datetime | None = None,
+        interval: str | None = None,
+    ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
-        :param datetime.datetime start_dt: The start time over which to aggregate activities.
-        :param datetime.datetime end_dt: The end time over which to aggregate activities.
+        :param datetime start_dt: The start time over which to aggregate activities.
+        :param datetime end_dt: The end time over which to aggregate activities.
         :param str interval: The aggregation interval.
         """
         qry = build_get_activities_by_interval_query(self, start_dt, end_dt, interval)
         self.context.add_query(qry)
-        return qry.return_type
+        return qry.return_type  # type: ignore
 
     @property
-    def fields(self):
+    def fields(self) -> FieldValueSet:
         """The values of the columns set on this list item."""
         return self.properties.get(
             "fields",
@@ -37,8 +53,7 @@ class ListItem(BaseItem):
         )
 
     @property
-    def versions(self):
-        # type: () -> EntityCollection[ListItemVersion]
+    def versions(self) -> EntityCollection[ListItemVersion]:
         """The list of previous versions of the list item."""
         return self.properties.get(
             "versions",
@@ -50,7 +65,7 @@ class ListItem(BaseItem):
         )
 
     @property
-    def drive_item(self):
+    def drive_item(self) -> DriveItem:
         """For document libraries, the driveItem relationship exposes the listItem as a driveItem."""
         from office365.onedrive.driveitems.driveItem import DriveItem
 
@@ -60,13 +75,12 @@ class ListItem(BaseItem):
         )
 
     @property
-    def content_type(self):
-        # type: () -> ContentTypeInfo
+    def content_type(self) -> ContentTypeInfo:
         """The content type of this list item"""
         return self.properties.get("contentType", ContentTypeInfo())
 
     @property
-    def analytics(self):
+    def analytics(self) -> ItemAnalytics:
         """Analytics about the view activities that took place on this item."""
         return self.properties.get(
             "analytics",
@@ -74,8 +88,7 @@ class ListItem(BaseItem):
         )
 
     @property
-    def document_set_versions(self):
-        # type: () -> EntityCollection[DocumentSetVersion]
+    def document_set_versions(self) -> EntityCollection[DocumentSetVersion]:
         """Version information for a document set version created by a user."""
         return self.properties.get(
             "documentSetVersions",
@@ -86,7 +99,7 @@ class ListItem(BaseItem):
             ),
         )
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
             property_mapping = {
                 "contentType": self.content_type,
@@ -94,4 +107,4 @@ class ListItem(BaseItem):
                 "driveItem": self.drive_item,
             }
             default_value = property_mapping.get(name, None)
-        return super(ListItem, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

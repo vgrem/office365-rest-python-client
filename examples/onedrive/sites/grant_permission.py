@@ -2,6 +2,7 @@
 Grants permissions on a site.
 
 https://learn.microsoft.com/en-us/graph/api/site-post-permissions?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 from office365.graph_client import GraphClient
@@ -12,9 +13,7 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 print("Retrieving app...")
 app = client.applications.get_by_app_id(test_client_id)

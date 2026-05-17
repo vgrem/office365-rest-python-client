@@ -31,7 +31,7 @@ class Reminder(ClientValue):
              This URL cannot be accessed from within an iFrame.
         :param DateTimeTimeZone reminder_fire_time: The date, time, and time zone that the reminder is set to occur.
         """
-        super(Reminder, self).__init__()
+        super().__init__()
         self.changeKey = change_key
         self.eventStartTime = event_start_time
         self.eventEndTime = event_end_time

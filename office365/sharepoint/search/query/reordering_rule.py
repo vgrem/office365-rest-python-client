@@ -1,9 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ReorderingRule(ClientValue):
-    """The ReorderingRule type contains information about how search results SHOULD be reordered if they met the
-    condition."""
+    def __init__(self, boost: Optional[int] = None, match_type: Optional[int] = None, match_value: Optional[str] = None):
+        """The ReorderingRule type contains information about how search results SHOULD be reordered if they met the
+        condition."""
+        self.Boost = boost
+        self.MatchType = match_type
+        self.MatchValue = match_value
 
     @property
     def entity_type_name(self):

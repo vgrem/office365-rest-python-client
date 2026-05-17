@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Union
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
@@ -32,27 +32,26 @@ class EntityType:
         pass
 
     @staticmethod
-    def resolve(name):
-        # type: (str) -> Type[Event | List | Site | ListItem | Message | Drive | DriveItem]
+    def resolve(name: str) -> Type[Union[Event, List, Site, ListItem, Message, Drive, DriveItem]]:
         class_name = name.split(".")[-1]
-        return EntityType._types.get(class_name, None)
+        result = EntityType._types.get(class_name, None)
+        assert result is not None
+        return result
 
     event = "event"
-
     list = "list"
-
     site = "site"
-
     listItem = "listItem"
-
     message = "message"
-
     drive = "drive"
-
     driveItem = "driveItem"
-
     externalItem = "externalItem"
-
     person = "person"
-
     chatMessage = "chatMessage"
+    unknownFutureValue = "9"
+    acronym = "12"
+    bookmark = "13"
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.EntityType"

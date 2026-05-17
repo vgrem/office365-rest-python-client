@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, Union
 
 from typing_extensions import TYPE_CHECKING
 
@@ -12,11 +14,9 @@ if TYPE_CHECKING:
 
 class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
     def __init__(self, context, resource_path, parent):
-        super(ColumnDefinitionCollection, self).__init__(
-            context, ColumnDefinition, resource_path, parent
-        )
+        super().__init__(context, ColumnDefinition, resource_path, parent)
 
-    def add_number(self, name, minimum=None, maximum=None):
+    def add_number(self, name: str, minimum: float | None = None, maximum: float | None = None):
         """
         Creates a number column
         :param str name: The API-facing name of the column as it appears in the fields on a listItem
@@ -27,7 +27,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, number=NumberColumn(minimum, maximum))
 
-    def add_text(self, name, max_length=None, text_type=None):
+    def add_text(self, name: str, max_length: int | None = None, text_type: str | None = None):
         """
         Creates a text column
 
@@ -37,11 +37,9 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         """
         from office365.onedrive.columns.text import TextColumn
 
-        return self.add(
-            name=name, text=TextColumn(max_length=max_length, text_type=text_type)
-        )
+        return self.add(name=name, text=TextColumn(max_length=max_length, text_type=text_type))
 
-    def add_hyperlink_or_picture(self, name, is_picture=None):
+    def add_hyperlink_or_picture(self, name: str, is_picture: bool | None = None):
         """
         Creates a hyperlink or picture column
 
@@ -57,8 +55,12 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
             hyperlinkOrPicture=HyperlinkOrPictureColumn(is_picture=is_picture),
         )
 
-    def add_lookup(self, name, lookup_list, column_name=None):
-        # type: (str, List|str, Optional[str]) -> ColumnDefinition
+    def add_lookup(
+        self,
+        name: str,
+        lookup_list: Union[List, str],
+        column_name: Optional[str] = None,
+    ) -> ColumnDefinition:
         """
         Creates a lookup column
 
@@ -67,13 +69,13 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         :param str column_name: The name of the lookup source column.
         """
         from office365.onedrive.columns.lookup import LookupColumn
-        from office365.onedrive.lists.list import List  # noqa
+        from office365.onedrive.lists.list import List
 
         if isinstance(lookup_list, List):
             return_type = ColumnDefinition(self.context)
             self.add_child(return_type)
 
-            def _list_loaded():
+            def _add_lookup():
                 params = {
                     "name": name,
                     "lookup": LookupColumn(lookup_list.id, column_name),
@@ -81,7 +83,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
                 qry = CreateEntityQuery(self, params, return_type)
                 self.context.add_query(qry)
 
-            lookup_list.ensure_property("id", _list_loaded)
+            lookup_list.ensure_property("id", _add_lookup)
             return return_type
         else:
             return self.add(name=name, lookup=LookupColumn(lookup_list, column_name))

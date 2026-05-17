@@ -1,3 +1,9 @@
+"""
+Creates a modern communication site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
+"""
+
 from random import randint
 
 from office365.sharepoint.client_context import ClientContext

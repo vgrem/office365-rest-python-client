@@ -16,6 +16,6 @@ class ChangeNotificationCollection(ClientValue):
             Only provided for change notifications with resource data Optional.
         :param list[ChangeNotification] value: The set of notifications being sent to the notification URL. Required.
         """
-        super(ChangeNotificationCollection, self).__init__()
+        super().__init__()
         self.validationTokens = StringCollection(validation_tokens)
         self.value = ClientValueCollection(ChangeNotification, value)

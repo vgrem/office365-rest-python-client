@@ -12,24 +12,19 @@ class CalendarGroup(Entity):
     """
 
     @property
-    def name(self):
-        # type: () -> Optional[str]
+    def name(self) -> Optional[str]:
         """The group name"""
         return self.properties.get("name", None)
 
     @property
-    def class_id(self):
-        # type: () -> Optional[str]
+    def class_id(self) -> Optional[str]:
         """The class identifier"""
         return self.properties.get("classId", None)
 
     @property
-    def calendars(self):
-        # type: () -> EntityCollection[Calendar]
+    def calendars(self) -> EntityCollection[Calendar]:
         """The calendars in the calendar group. Navigation property. Read-only. Nullable."""
         return self.properties.get(
             "calendars",
-            EntityCollection(
-                self.context, Calendar, ResourcePath("calendars", self.resource_path)
-            ),
+            EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path)),
         )

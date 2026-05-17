@@ -1,4 +1,4 @@
-from office365.directory.object_collection import DirectoryObjectCollection
+from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -18,8 +18,7 @@ class FeatureRolloutPolicy(Entity):
     """
 
     @property
-    def applies_to(self):
-        # type: () -> DirectoryObjectCollection
+    def applies_to(self) -> DirectoryObjectCollection:
         """
         Specifies a list of directoryObject resources that feature is enabled for.
         """
@@ -37,4 +36,4 @@ class FeatureRolloutPolicy(Entity):
                 "appliesTo": self.applies_to,
             }
             default_value = property_mapping.get(name, None)
-        return super(FeatureRolloutPolicy, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

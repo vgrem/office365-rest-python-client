@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from office365.entity import Entity
 from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -68,7 +70,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def days(self, start_date, end_date):
+    def days(self, start_date: datetime, end_date: datetime) -> WorkbookFunctionResult:
         """Returns the number of days between two dates.
 
         :param datetime.datetime start_date: Two dates between which you want to know the number of days.

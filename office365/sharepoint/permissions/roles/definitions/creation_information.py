@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
@@ -6,9 +8,9 @@ class RoleDefinitionCreationInformation(ClientValue):
     def __init__(
         self,
         base_permissions=BasePermissions(),
-        name=None,
-        description=None,
-        order=None,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        order: Optional[int] = None,
     ):
         """Contains properties that are used as parameters to initialize a role definition.
 
@@ -16,7 +18,7 @@ class RoleDefinitionCreationInformation(ClientValue):
         :param str description: Specifies the description of the role definition.
         :param int order: Specifies the order in which roles MUST be displayed in the WFE.
         """
-        super(RoleDefinitionCreationInformation, self).__init__()
+        super().__init__()
         self.Name = name
         self.Description = description
         self.BasePermissions = base_permissions

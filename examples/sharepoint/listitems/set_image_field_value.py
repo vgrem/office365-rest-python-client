@@ -1,3 +1,8 @@
+"""Demonstrates how to set an image field value on a list item
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
+"""
+
 import json
 import os
 import sys
@@ -15,10 +20,8 @@ def upload_image(web, file_path):
     with open(file_path, "rb") as content_file:
         file_content = content_file.read()
     lib = web.lists.ensure_site_assets_library().execute_query()
-    file = lib.root_folder.upload_file(
-        os.path.basename(file_path), file_content
-    ).execute_query()
-    return file.serverRelativeUrl
+    file = lib.root_folder.upload_file(os.path.basename(file_path), file_content).execute_query()
+    return file.server_relative_url
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
@@ -38,7 +41,7 @@ if len(items) == 0:
 
 
 # 2.Set image field value
-first_item = items[0]  # type: ListItem
+first_item: ListItem = items[0]
 # field_value = ImageFieldValue(image_url)
 field_value_raw = json.dumps({"serverRelativeUrl": image_url})
 first_item.set_property(field_name, field_value_raw).update().execute_query()

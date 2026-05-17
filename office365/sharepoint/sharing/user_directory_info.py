@@ -11,7 +11,7 @@ class UserDirectoryInfo(ClientValue):
         :param str primary_email: User primary email of the directory user. E.g. user@domain.com.
         :param str principal_name: Principal name of the directory user. E.g. user@domain.com.
         """
-        super(UserDirectoryInfo, self).__init__()
+        super().__init__()
         self.Name = name
         self.NetId = net_id
         self.PrimaryEmail = primary_email

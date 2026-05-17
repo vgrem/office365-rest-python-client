@@ -2,6 +2,7 @@ from office365.directory.extensions.open_type import OpenTypeExtension
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.runtime.client_value_collection import ClientValueCollection
+
 from tests import create_unique_name, test_tenant
 from tests.graph_case import GraphTestCase
 
@@ -9,13 +10,13 @@ from tests.graph_case import GraphTestCase
 class TestGraphUser(GraphTestCase):
     """Tests for Azure Active Directory (Azure AD) users"""
 
-    test_user = None  # type: User
-    test_extension = None  # type: OpenTypeExtension
+    test_user: User = None
+    test_extension: OpenTypeExtension = None
 
     def test1_create_user(self):
         login = create_unique_name("testuser")
         password = create_unique_name("P@ssw0rd")
-        profile = UserProfile("{0}@{1}".format(login, test_tenant), password)
+        profile = UserProfile(f"{login}@{test_tenant}", password)
         new_user = self.client.users.add(profile).execute_query()
         self.assertIsNotNone(new_user.id)
         self.__class__.test_user = new_user
@@ -30,9 +31,7 @@ class TestGraphUser(GraphTestCase):
         self.assertIsNotNone(result.value)
 
     def test4_get_user_licences(self):
-        user = (
-            self.__class__.test_user.select(["assignedLicenses"]).get().execute_query()
-        )
+        user = self.__class__.test_user.select(["assignedLicenses"]).get().execute_query()
         self.assertIsInstance(user.assigned_licenses, ClientValueCollection)
 
     def test5_list_subscribed_skus(self):
@@ -52,11 +51,7 @@ class TestGraphUser(GraphTestCase):
         prop_val = create_unique_name("city_")
         user_to_update.set_property(prop_name, prop_val).update().execute_query()
 
-        result = (
-            self.client.users.filter("{0} eq '{1}'".format(prop_name, prop_val))
-            .get()
-            .execute_query()
-        )
+        result = self.client.users.filter(f"{prop_name} eq '{prop_val}'").get().execute_query()
         self.assertEqual(1, len(result))
 
     # def test9_check_member_groups(self):

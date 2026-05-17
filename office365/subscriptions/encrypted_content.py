@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,11 +8,11 @@ class ChangeNotificationEncryptedContent(ClientValue):
 
     def __init__(
         self,
-        data=None,
-        data_key=None,
-        data_signature=None,
-        encryption_certificate_id=None,
-        encryption_certificate_thumbprint=None,
+        data: Optional[str] = None,
+        data_key: Optional[str] = None,
+        data_signature: Optional[str] = None,
+        encryption_certificate_id: Optional[str] = None,
+        encryption_certificate_thumbprint: Optional[str] = None,
     ):
         """
         :param str data: Base64-encoded encrypted data that produces a full resource represented as JSON.

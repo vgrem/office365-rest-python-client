@@ -1,25 +1,31 @@
+from typing import TYPE_CHECKING, List, Optional
+
+from typing_extensions import Self
+
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.recyclebin.item import RecycleBinItem
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
     """Represents a collection of View resources."""
 
-    def __init__(self, context, resource_path=None):
-        super(RecycleBinItemCollection, self).__init__(
-            context, RecycleBinItem, resource_path
-        )
+    def __init__(self, context: "ClientContext", resource_path: Optional[ResourcePath] = None):
+        super().__init__(context, RecycleBinItem, resource_path)
 
-    def delete_all_second_stage_items(self):
+    def delete_all_second_stage_items(self) -> Self:
         """Permanently deletes all Recycle Bin items in the second-stage Recycle Bin"""
         qry = ServiceOperationQuery(self, "DeleteAllSecondStageItems")
         self.context.add_query(qry)
         return self
 
-    def delete_by_ids(self, ids):
+    def delete_by_ids(self, ids: List[str]) -> Self:
         """
         Permanently deletes Recycle Bin items by their identifiers
 
@@ -30,7 +36,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def move_to_second_stage_by_ids(self, ids):
+    def move_to_second_stage_by_ids(self, ids: List[str]) -> Self:
         """
         Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their identifies
 
@@ -41,7 +47,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def move_all_to_second_stage(self):
+    def move_all_to_second_stage(self) -> Self:
         """
         Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin if the
         SecondStageRecycleBinQuota property of the current web application is not 0.
@@ -51,7 +57,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         self.context.add_query(qry)
         return self
 
-    def get_by_id(self, recycle_bin_id):
+    def get_by_id(self, recycle_bin_id: str) -> RecycleBinItem:
         """
         Returns the recycle bin type with the given identifier from the collection.
 
@@ -62,13 +68,13 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
             ServiceOperationPath("GetById", [recycle_bin_id], self.resource_path),
         )
 
-    def delete_all(self):
+    def delete_all(self) -> Self:
         """Permanently deletes all Recycle Bin items."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)
         return self
 
-    def restore_all(self):
+    def restore_all(self) -> Self:
         """Restores all Recycle Bin items to their original locations."""
         qry = ServiceOperationQuery(self, "RestoreAll")
         self.context.add_query(qry)

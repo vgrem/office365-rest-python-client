@@ -1,29 +1,45 @@
-# Installing to virtualenv
+# Prerequisites
+
+- Python >= 3.8
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
+
+# Setup
+
+## With uv (recommended)
 
 ```bash
-uv sync
+$ uv venv
+$ source .venv/bin/activate
+$ uv sync
+```
+
+## With pip
+
+```bash
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip install -e ".[examples,ntlm]"
 ```
 
 ## Running tests
 
-Most of the tests are end-to-end - operations are invoked against actual tenant (not mocked).
-So one has to configure his/her office/sharepoint credentials.
-To do so, create a file ```.env``` like this (replace the bracketed values by your values):
+Most tests are end-to-end and run against a real tenant. Configure your credentials in a `.env` file:
 
 ```bash
-export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
+export office365_python_sdk_securevars='{username};{password};{client_id};{client_password}'
 ```
 
-This file is in .gitignore, so it will never be committed.
+This file is `.gitignore`d. Source it before running tests:
 
 ```bash
-. .env   # source it to export the variable
-pytest ...  # run the test(s) you need...
+$ . .env
+$ pytest                        # all tests
+$ pytest tests/test_sharepoint   # specific area
 ```
 
-## Configure Tenant
+### Required tenant roles
 
-Roles:
+The test account needs these [Azure AD roles](https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference) assigned:
 
 - Global reader
 - Groups admin

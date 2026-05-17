@@ -1,7 +1,9 @@
-import copy
-from typing import Any, Iterator, Optional, Tuple
+from __future__ import annotations
 
-import requests
+import copy
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+
+from requests import Response
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_request import ClientRequest
@@ -20,34 +22,52 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 
 
 class ODataRequest(ClientRequest):
-    def __init__(self, json_format):
-        # type: (ODataJsonFormat) -> None
-        """Creates OData request"""
-        super(ODataRequest, self).__init__()
+    """Handles OData protocol specific request/response processing for API calls."""
+
+    def __init__(self, json_format: ODataJsonFormat) -> None:
+        """
+        Initialize a new OData request processor.
+
+        Args:
+            json_format: The JSON format handler for OData serialization/deserialization
+        """
+        super().__init__()
         self._default_json_format = json_format
         self.beforeExecute += self._ensure_http_headers
 
     @property
     def json_format(self):
+        """Gets the default JSON format handler."""
         return self._default_json_format
 
-    def build_request(self, query):
-        # type: (ClientQuery) -> RequestOptions
-        """Builds a request"""
-        request = RequestOptions(query.url)
+    def build_request(self, query: ClientQuery) -> RequestOptions:
+        """
+        Builds a request object for the specified query.
+
+        Args:
+            query: The client query to execute
+
+        Returns:
+            Configured request options
+        """
+        request = RequestOptions(url=query.url)
         request.method = HttpMethod.Get
         if isinstance(query, DeleteEntityQuery):
             request.method = HttpMethod.Post
-        elif isinstance(
-            query, (CreateEntityQuery, UpdateEntityQuery, ServiceOperationQuery)
-        ):
+        elif isinstance(query, (CreateEntityQuery, UpdateEntityQuery, ServiceOperationQuery)):
             request.method = HttpMethod.Post
             if query.parameters_type is not None:
                 request.data = self._build_payload(query)
         return request
 
-    def process_response(self, response, query):
-        # type: (requests.Response, ClientQuery) -> None
+    def process_response(self, response: Response, query: ClientQuery) -> None:
+        """
+        Processes the HTTP response according to OData specifications.
+
+        Args:
+            response: The HTTP response
+            query: The original query that generated this response
+        """
         json_format = copy.deepcopy(self.json_format)
         return_type = query.return_type
         if return_type is None:
@@ -56,10 +76,7 @@ class ODataRequest(ClientRequest):
         if isinstance(return_type, ClientObject):
             return_type.clear_state()
 
-        if (
-            response.headers.get("Content-Type", "").lower().split(";")[0]
-            != "application/json"
-        ):
+        if response.headers.get("Content-Type", "").lower().split(";")[0] != "application/json":
             if isinstance(return_type, ClientResult):
                 return_type.set_property("__value", response.content)
         else:
@@ -69,17 +86,38 @@ class ODataRequest(ClientRequest):
 
             self.map_json(response.json(), return_type, json_format)
 
-    def map_json(self, json, return_type, json_format=None):
-        # type: (Any, ClientValue | ClientResult | ClientObject, Optional[ODataJsonFormat]) -> None
+    def map_json(
+        self,
+        json: Any,
+        return_type: Union[ClientValue, ClientResult, ClientObject],
+        json_format: Optional[ODataJsonFormat] = None,
+    ) -> None:
+        """
+        Maps JSON response to client objects.
+
+        Args:
+            json: The JSON response data
+            return_type: The target object to map data to
+            json_format: Optional format override
+        """
         if json_format is None:
             json_format = self.json_format
 
         if json and return_type is not None:
             for k, v in self._next_property(json, json_format):
-                return_type.set_property(k, v, False)
+                return_type.set_property(str(k), v, False)
 
-    def _next_property(self, json, json_format):
-        # type: (Any, ODataJsonFormat) -> Iterator[Tuple[str, Any]]
+    def _next_property(self, json: Any, json_format: ODataJsonFormat) -> Iterator[Tuple[Union[str, int], Any]]:
+        """
+        Generator that yields properties from JSON response according to OData format.
+
+        Args:
+            json: The JSON data to process
+            json_format: The format specification
+
+        Yields:
+            Property name-value pairs
+        """
         if isinstance(json_format, JsonLightFormat):
             json = json.get(json_format.security, json)
             json = json.get(json_format.function, json)
@@ -93,9 +131,10 @@ class ODataRequest(ClientRequest):
 
             if isinstance(json, list):
                 for index, item in enumerate(json):
+                    transformed = None
                     if isinstance(item, dict):
-                        item = {k: v for k, v in self._next_property(item, json_format)}
-                    yield index, item
+                        transformed = {k: v for k, v in self._next_property(item, json_format)}
+                    yield index, transformed if isinstance(item, dict) else item
             elif isinstance(json, dict):
                 for name, value in json.items():
                     if isinstance(json_format, JsonLightFormat):
@@ -106,11 +145,10 @@ class ODataRequest(ClientRequest):
                         is_valid = "@odata" not in name
 
                     if is_valid:
+                        transformed = None
                         if isinstance(value, dict):
-                            value = {
-                                k: v for k, v in self._next_property(value, json_format)
-                            }
-                        yield name, value
+                            transformed = {k: v for k, v in self._next_property(value, json_format)}
+                        yield name, transformed if isinstance(value, dict) else value
                     elif name == "@odata.etag":
                         yield "__etag", value
             else:
@@ -118,36 +156,38 @@ class ODataRequest(ClientRequest):
         elif json is not None:
             yield "__value", json
 
-    def _build_payload(self, query):
-        # type: (ClientQuery) -> dict|list
-        """Normalizes OData request payload"""
+    def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any], str, bytes]:
+        """
+        Normalizes OData request payload.
 
-        def _normalize_payload(payload):
-            # type: (ClientObject|ClientValue|dict|list) -> dict|list
+        Args:
+            query: The query containing parameters to serialize
+
+        Returns:
+            Normalized payload dictionary or list
+        """
+
+        def _normalize_payload(
+            payload: ClientObject | ClientValue | dict | list | str | bytes | None,
+        ) -> dict | list | str | bytes:
             if isinstance(payload, (ClientObject, ClientValue)):
                 return payload.to_json(self._default_json_format)
             elif isinstance(payload, dict):
-                return {
-                    k: _normalize_payload(v)
-                    for k, v in payload.items()
-                    if v is not None
-                }
+                return {k: _normalize_payload(v) for k, v in payload.items() if v is not None}
             elif isinstance(payload, list):
                 return [_normalize_payload(item) for item in payload]
+            elif payload is None:
+                return {}
             return payload
 
         json = _normalize_payload(query.parameters_type)
-        if (
-            isinstance(query, ServiceOperationQuery)
-            and query.parameters_name is not None
-        ):
+        if isinstance(query, ServiceOperationQuery) and query.parameters_name is not None:
             json = {query.parameters_name: json}
         return json
 
-    def _ensure_http_headers(self, request):
-        # type: (RequestOptions) -> None
+    def _ensure_http_headers(self, request: RequestOptions) -> None:
         """
-        Ensures that HTTP Header Fields are specified in the OData request, namely:
+        Ensures required OData headers are present in the request, namely:
            - The Content-Type header
            - Accept request-header field
            - The If-Match request-header field (optional)

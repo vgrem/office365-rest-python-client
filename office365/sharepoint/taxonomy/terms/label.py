@@ -15,7 +15,7 @@ class Label(ClientValue):
         self.languageTag = language_tag
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
     def __repr__(self):
-        return "{0}:{1}".format(self.languageTag, self.name)
+        return f"{self.languageTag}:{self.name}"

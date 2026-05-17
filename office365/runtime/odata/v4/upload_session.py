@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from datetime import datetime
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -7,7 +11,10 @@ class UploadSession(ClientValue):
     Business, or SharePoint document libraries."""
 
     def __init__(
-        self, upload_url=None, expiration_datetime=None, next_expected_ranges=None
+        self,
+        upload_url: str | None = None,
+        expiration_datetime: datetime | None = None,
+        next_expected_ranges: list[str] | None = None,
     ):
         """
         :param str upload_url: The URL endpoint that accepts PUT requests for byte ranges of the file.
@@ -19,7 +26,7 @@ class UploadSession(ClientValue):
             this property always indicates a single value "{start}", the location in the file where the next upload
             should begin.
         """
-        super(UploadSession, self).__init__()
+        super().__init__()
         self.uploadUrl = upload_url
         self.expirationDateTime = expiration_datetime
         self.nextExpectedRanges = StringCollection(next_expected_ranges)

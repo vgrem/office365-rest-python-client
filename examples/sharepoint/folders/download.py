@@ -1,5 +1,7 @@
 """
-Demonstrates how to enumerate folder files and download file's content
+Demonstrates how to enumerate folder files and download their content.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 import os
@@ -11,24 +13,21 @@ from office365.sharepoint.folders.folder import Folder
 from tests import test_client_credentials, test_team_site_url
 
 
-def print_progress(file):
-    # type: (File) -> None
-    print("File {0} has been  downloaded".format(file.serverRelativeUrl))
+def print_progress(file: File) -> None:
+    print(f"File {file.server_relative_url} has been  downloaded")
 
 
-def download_files(source_folder, download_path):
-    # type: (Folder, str) -> None
-
+def download_files(source_folder: Folder, download_path: str) -> None:
     # 1. retrieve files collection (metadata) from library root folder
     files = source_folder.files.get().execute_query()
 
     # 2. start download process (per file)
     for file in files:
-        print("Downloading file: {0} ...".format(file.properties["ServerRelativeUrl"]))
+        print(f"Downloading file: {file.properties['ServerRelativeUrl']} ...")
         download_file_name = os.path.join(download_path, file.name)
         with open(download_file_name, "wb") as local_file:
             file.download(local_file).execute_query()
-        print("[Ok] file has been downloaded: {0}".format(download_file_name))
+        print(f"[Ok] file has been downloaded: {download_file_name}")
 
 
 to_path = tempfile.mkdtemp()

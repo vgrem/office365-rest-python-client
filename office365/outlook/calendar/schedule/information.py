@@ -29,7 +29,7 @@ class ScheduleInformation(ClientValue):
         :param str schedule_id: An SMTP address of the user, distribution list, or resource, identifying an instance
             of scheduleInformation.
         """
-        super(ScheduleInformation, self).__init__()
+        super().__init__()
         self.scheduleItems = ClientValueCollection(ScheduleItem, schedule_items)
         self.scheduleId = schedule_id
         self.availabilityView = availability_view

@@ -11,9 +11,7 @@ class PersonalCache(Entity):
     requesting the data from the server."""
 
     def __init__(self, context):
-        super(PersonalCache, self).__init__(
-            context, ResourcePath("SP.UserProfiles.PersonalCache")
-        )
+        super().__init__(context, ResourcePath("SP.UserProfiles.PersonalCache"))
 
     def dispose(self):
         """ """
@@ -22,8 +20,7 @@ class PersonalCache(Entity):
         return self
 
     @property
-    def cache_name(self):
-        # type: () -> Optional[str]
+    def cache_name(self) -> Optional[str]:
         """"""
         return self.properties.get("CacheName", None)
 

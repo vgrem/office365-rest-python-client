@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.webhooks.subscription import Subscription
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPWebHooks(SPTestCase):
-    target_list = None  # type: List
-    target_subscription = None  # type: Subscription
+    target_list: List = None
+    target_subscription: Subscription = None
     push_service_url = "https://westeurope0.pushnp.svc.ms/notifications?token=526a9d28-d4ec-45b7-81b9-4e1599524784"
 
     @classmethod
@@ -20,9 +21,7 @@ class TestSPWebHooks(SPTestCase):
         pass
 
     def test1_create_subscription(self):
-        subscription = self.target_list.subscriptions.add(
-            self.push_service_url
-        ).execute_query()
+        subscription = self.target_list.subscriptions.add(self.push_service_url).execute_query()
         self.assertIsNotNone(subscription.notification_url)
         self.__class__.target_subscription = subscription
 

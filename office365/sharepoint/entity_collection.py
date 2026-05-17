@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Optional, Type, TypeVar
+from __future__ import annotations
 
-from office365.runtime.client_object import T
+from typing import TYPE_CHECKING, Optional, Type, cast
+
+from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -10,24 +12,42 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
 
 
-class EntityCollection(ClientObjectCollection[T]):
-    """SharePoint's entity set"""
+class EntityCollection(ClientObjectCollection[ClientObjectT]):
+    """A type-safe collection of SharePoint entities.
 
-    def __init__(self, context, item_type, resource_path=None, parent=None):
-        # type: (ClientContext, Type[T], Optional[ResourcePath], Optional[Entity]) -> None
-        super(EntityCollection, self).__init__(
-            context, item_type, resource_path, parent
-        )
+    Provides strongly-typed access to SharePoint entity collections with support for:
+    - Type-safe object creation
+    - Fluent API patterns
+    - Parent-child relationships
+    """
 
-    def create_typed_object(self, initial_properties=None, resource_path=None):
-        # type: (Optional[dict], Optional[ResourcePath]) -> T
+    def __init__(
+        self,
+        context: ClientContext,
+        item_type: Type[ClientObjectT],
+        resource_path: Optional[ResourcePath] = None,
+        parent: Optional[Entity] = None,
+    ) -> None:
+        """Initialize an entity collection.
+
+        Args:
+            context: SharePoint client context
+            item_type: The class type of items in this collection
+            resource_path: Relative resource path
+            parent: Parent entity of this collection
+        """
+        super().__init__(context, item_type, resource_path, parent)
+
+    def create_typed_object(
+        self,
+        initial_properties: Optional[dict] = None,
+        resource_path: Optional[ResourcePath] = None,
+    ) -> ClientObjectT:
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
-        return super(EntityCollection, self).create_typed_object(
-            initial_properties, resource_path
-        )
+        return super().create_typed_object(initial_properties, resource_path)
 
     @property
-    def context(self):
-        # type: () -> ClientContext
-        return self._context
+    def context(self) -> ClientContext:
+        """Gets the SharePoint client context for this collection."""
+        return cast("ClientContext", self._context)

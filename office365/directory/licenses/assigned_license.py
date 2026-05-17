@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -8,14 +10,18 @@ class AssignedLicense(ClientValue):
     of assignedLicense.
     """
 
-    def __init__(self, sku_id=None, disabled_plans=None):
+    def __init__(self, sku_id: Optional[str] = None, disabled_plans: Optional[List[str]] = None):
         """
         :param str sku_id: The unique identifier for the SKU.
         :param list[str] disabled_plans: A collection of the unique identifiers for plans that have been disabled.
         """
-        super(AssignedLicense, self).__init__()
+        super().__init__()
         self.skuId = sku_id
         self.disabledPlans = StringCollection(disabled_plans)
 
     def __repr__(self):
-        return self.skuId
+        return str(self.skuId or "")
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.AssignedLicense"

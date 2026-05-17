@@ -12,6 +12,9 @@ class UserRegistrationMethodSummary(ClientValue):
         method_counts=None,
         user_roles=None,
         user_types=None,
+        user_registration_method_counts: ClientValueCollection[UserRegistrationMethodCount] = ClientValueCollection(
+            UserRegistrationMethodCount
+        ),
     ):
         """
         :param int total_user_count: Total number of users in the tenant.
@@ -22,8 +25,11 @@ class UserRegistrationMethodSummary(ClientValue):
         :param str user_types: User type. Possible values are: all, member, guest, unknownFutureValue.
         """
         self.totalUserCount = total_user_count
-        self.userRegistrationMethodCounts = ClientValueCollection(
-            UserRegistrationMethodCount, method_counts
-        )
+        self.userRegistrationMethodCounts = ClientValueCollection(UserRegistrationMethodCount, method_counts)
         self.userRoles = user_roles
         self.userTypes = user_types
+        self.userRegistrationMethodCounts = user_registration_method_counts
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.UserRegistrationMethodSummary"

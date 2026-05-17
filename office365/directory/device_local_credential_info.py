@@ -9,8 +9,7 @@ class DeviceLocalCredentialInfo(Entity):
     that are enabled with Local Admin Password Solution (LAPS)."""
 
     @property
-    def device_name(self):
-        # type: () -> Optional[str]
+    def device_name(self) -> Optional[str]:
         """
         Display name of the device that the local credentials are associated with.
         """

@@ -7,7 +7,6 @@ class SimulationAutomationRun(Entity):
     """Represents a run of an attack simulation automation on a tenant."""
 
     @property
-    def simulation_id(self):
-        # type: () -> Optional[str]
+    def simulation_id(self) -> Optional[str]:
         """"""
         return self.properties.get("simulationId", None)

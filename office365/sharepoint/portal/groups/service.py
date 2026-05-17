@@ -1,5 +1,5 @@
 import random
-from typing import AnyStr
+from typing import AnyStr, Optional, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
@@ -10,23 +10,23 @@ from office365.sharepoint.entity import Entity
 
 class GroupService(Entity):
     def get_group_image(
-        self, group_id, image_hash=None, image_color=None, return_type=None
-    ):
-        # type: (str, str, str, ClientResult) -> ClientResult[AnyStr]
+        self,
+        group_id: str,
+        image_hash: Optional[Union[str, int]] = None,
+        image_color: Optional[str] = None,
+        return_type: Optional[ClientResult] = None,
+    ) -> ClientResult[AnyStr]:
         if return_type is None:
             return_type = ClientResult(self.context)
         if image_hash is None:
             image_hash = random.getrandbits(64)
-        qry = ServiceOperationQuery(
-            self, "GetGroupImage", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetGroupImage", None, None, None, return_type)
 
-        def _create_request(request):
-            # type: (RequestOptions) -> None
-            request.url += "?id='{0}'&hash={1}".format(group_id, image_hash)
+        def _create_request(request: RequestOptions) -> None:
+            request.url += f"?id='{group_id}'&hash={image_hash}"
             request.method = HttpMethod.Get
 
-        self.context.add_query(qry).before_query_execute(_create_request)
+        self.context.add_query(qry).before_execute(_create_request)
         return return_type
 
     def sync_group_properties(self):

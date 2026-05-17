@@ -12,15 +12,13 @@ class SPWebService(Entity):
         :param office365.sharepoint.client_context.ClientContext context: SharePoint context
         """
         return_type = SPWebService(context)
-        qry = ServiceOperationQuery(
-            return_type, "ContentService", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(return_type, "ContentService", None, None, None, return_type)
         qry.static = True
         context.add_query(qry)
         return return_type
 
     @property
-    def web_applications(self):
+    def web_applications(self) -> EntityCollection[WebApplication]:
         return self.properties.get(
             "WebApplications",
             EntityCollection(

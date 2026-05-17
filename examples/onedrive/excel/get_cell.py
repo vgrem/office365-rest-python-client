@@ -2,6 +2,7 @@
 Gets the range object containing the single cell based on row and column numbers.
 
 https://learn.microsoft.com/en-us/graph/api/worksheet-cell?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/resources/drive
 """
 
 import sys
@@ -9,9 +10,7 @@ import sys
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 drive_item = client.me.drive.root.get_by_path("Financial Sample.xlsx")
 worksheets = drive_item.workbook.worksheets.get().execute_query()
 if len(worksheets) == 0:

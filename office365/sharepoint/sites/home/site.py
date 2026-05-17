@@ -2,7 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.sites.home.reference import SPHSiteReference
+from office365.sharepoint.sites.home.spreference import SPHSiteReference
 
 
 class SPHSite(Entity):
@@ -15,9 +15,9 @@ class SPHSite(Entity):
         """
         if resource_path is None:
             resource_path = ResourcePath("SP.SPHSite")
-        super(SPHSite, self).__init__(context, resource_path)
+        super().__init__(context, resource_path)
 
-    def details(self):
+    def details(self) -> ClientResult[SPHSiteReference]:
         return_type = ClientResult(self.context, SPHSiteReference())
         qry = ServiceOperationQuery(self, "Details", None, None, None, return_type)
         self.context.add_query(qry)
@@ -35,9 +35,7 @@ class SPHSite(Entity):
         if return_value is None:
             return_value = ClientResult(context)
         params = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            SPHSite(context), "IsCommSite", params, None, None, return_value, True
-        )
+        qry = ServiceOperationQuery(SPHSite(context), "IsCommSite", params, None, None, return_value, True)
         context.add_query(qry)
         return return_value
 
@@ -79,9 +77,7 @@ class SPHSite(Entity):
             return_value = ClientResult(context)
         sph = SPHSite(context)
         params = {"siteUrl": site_url}
-        qry = ServiceOperationQuery(
-            sph, "IsValidHomeSite", params, None, None, return_value
-        )
+        qry = ServiceOperationQuery(sph, "IsValidHomeSite", params, None, None, return_value)
         qry.static = True
         context.add_query(qry)
         return return_value
@@ -96,16 +92,12 @@ class SPHSite(Entity):
         """
         sph = SPHSite(context)
         params = {"siteUrl": site_url, "validationActionType": validation_action_type}
-        qry = ServiceOperationQuery(
-            sph, "ValidateHomeSite", params, None, None, None, True
-        )
+        qry = ServiceOperationQuery(sph, "ValidateHomeSite", params, None, None, None, True)
         context.add_query(qry)
         return sph
 
     @staticmethod
-    def set_as_home_site(
-        context, site_url, viva_connections_default_start=None, return_value=None
-    ):
+    def set_as_home_site(context, site_url, viva_connections_default_start=None, return_value=None):
         """
         Sets a site as a landing site for your intranet.
 

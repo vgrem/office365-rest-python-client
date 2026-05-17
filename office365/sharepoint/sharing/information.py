@@ -28,17 +28,14 @@ class SharingInformation(Entity):
         return self.properties.get("accessRequestSettings", AccessRequestSettings())
 
     @property
-    def anonymous_link_expiration_restriction_days(self):
-        # type: () -> Optional[int]
+    def anonymous_link_expiration_restriction_days(self) -> Optional[int]:
         """Tenant's anonymous link expiration restriction in days."""
         return self.properties.get("anonymousLinkExpirationRestrictionDays", None)
 
     @property
     def domain_restriction_settings(self):
         """Whether DomainRestrictionSettings is used to limit the external Users set by Admin."""
-        return self.properties.get(
-            "anonymousLinkExpirationRestrictionDays", DomainRestrictionSettings()
-        )
+        return self.properties.get("anonymousLinkExpirationRestrictionDays", DomainRestrictionSettings())
 
     @property
     def permissions_information(self):
@@ -52,9 +49,7 @@ class SharingInformation(Entity):
         """PickerSettings used by the PeoplePicker Control."""
         return self.properties.get(
             "pickerSettings",
-            PickerSettings(
-                self.context, ResourcePath("pickerSettings", self.resource_path)
-            ),
+            PickerSettings(self.context, ResourcePath("pickerSettings", self.resource_path)),
         )
 
     @property
@@ -67,9 +62,7 @@ class SharingInformation(Entity):
     @property
     def sharing_link_templates(self):
         """"""
-        return self.properties.get(
-            "sharingLinkTemplates", SharingLinkDefaultTemplatesCollection()
-        )
+        return self.properties.get("sharingLinkTemplates", SharingLinkDefaultTemplatesCollection())
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -82,7 +75,7 @@ class SharingInformation(Entity):
                 "sharingLinkTemplates": self.sharing_link_templates,
             }
             default_value = property_mapping.get(name, None)
-        return super(SharingInformation, self).get_property(name, default_value)
+        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self):

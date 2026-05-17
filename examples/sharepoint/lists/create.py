@@ -1,12 +1,13 @@
-"""
-Creating a list in SharePoint site
+"""Demonstrates how to create a list in a SharePoint site
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
 from random import randint
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.lists.creation_information import ListCreationInformation
-from office365.sharepoint.lists.template_type import ListTemplateType
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from tests import test_client_credentials, test_team_site_url
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

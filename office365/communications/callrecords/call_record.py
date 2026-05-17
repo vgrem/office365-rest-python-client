@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.communications.callrecords.session import Session
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -10,24 +12,22 @@ class CallRecord(Entity):
     sometimes referred to as an online meeting."""
 
     @property
-    def join_web_url(self):
+    def join_web_url(self) -> Optional[str]:
         """Meeting URL associated to the call. May not be available for a peerToPeer call record type."""
         return self.properties.get("joinWebUrl", None)
 
     @property
-    def organizer(self):
+    def organizer(self) -> IdentitySet:
         """The organizing party's identity.."""
         return self.properties.get("organizer", IdentitySet())
 
     @property
-    def sessions(self):
+    def sessions(self) -> EntityCollection[Session]:
         """
         List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group
         calls typically have at least one session per participant.
         """
         return self.properties.get(
             "sessions",
-            EntityCollection(
-                self.context, Session, ResourcePath("sessions", self.resource_path)
-            ),
+            EntityCollection(self.context, Session, ResourcePath("sessions", self.resource_path)),
         )

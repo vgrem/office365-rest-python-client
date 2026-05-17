@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.permissions.identity import Identity
 from office365.runtime.client_value import ClientValue
 
@@ -7,12 +9,12 @@ class SharingLink(ClientValue):
 
     def __init__(
         self,
-        _type=None,
-        scope=None,
-        web_html=None,
-        web_url=None,
-        prevents_download=None,
-        application=Identity(),
+        _type: str | None = None,
+        scope: str | None = None,
+        web_html: str | None = None,
+        web_url: str | None = None,
+        prevents_download: bool | None = None,
+        application: Identity | None = Identity(),
     ):
         """
         :param str _type: The type of the link created.
@@ -25,7 +27,7 @@ class SharingLink(ClientValue):
               and cannot use it to download the contents of the item. Only for OneDrive for Business and SharePoint.
          :param Identity application: The app the link is associated with.
         """
-        super(SharingLink, self).__init__()
+        super().__init__()
         self.type = _type
         self.scope = scope
         self.webHtml = web_html

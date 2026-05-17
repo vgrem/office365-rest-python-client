@@ -7,7 +7,7 @@ class AlertCollection(EntityCollection[Alert]):
     """Service Principal's collection"""
 
     def __init__(self, context, resource_path=None):
-        super(AlertCollection, self).__init__(context, Alert, resource_path)
+        super().__init__(context, Alert, resource_path)
 
     def add(
         self,
@@ -30,12 +30,11 @@ class AlertCollection(EntityCollection[Alert]):
         :param str vendor_information:
         """
 
-        def _construct_request(request):
-            # type: (RequestOptions) -> None
+        def _construct_request(request: RequestOptions) -> None:
             request.set_header("Content-Type", "application/json")
 
         return (
-            super(AlertCollection, self)
+            super()
             .add(
                 title=title,
                 description=description,

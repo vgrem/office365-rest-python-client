@@ -1,5 +1,6 @@
-"""
-Demonstrates how to retrieve a lookup field values from SharePoint List
+"""Demonstrates how to retrieve lookup field values from a SharePoint list
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext
@@ -24,11 +25,5 @@ items = (
 )
 for item in items:
     assigned_to = item.properties.get("AssignedTo", {}).get("Id", None)
-    predecessors_ids = [
-        v.get("Id", None) for k, v in item.properties.get("Predecessors", {}).items()
-    ]
-    print(
-        "AssignedTo Id: {0}, Predecessors Ids: {1}".format(
-            assigned_to, predecessors_ids
-        )
-    )
+    predecessors_ids = [v.get("Id", None) for k, v in item.properties.get("Predecessors", {}).items()]
+    print("AssignedTo Id: {0}, Predecessors Ids: {1}".format(assigned_to, predecessors_ids))

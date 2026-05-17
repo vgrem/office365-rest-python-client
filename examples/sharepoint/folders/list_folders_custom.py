@@ -1,5 +1,7 @@
 """
-Demonstrates how to enumerate a folder
+Demonstrates how to enumerate folders recursively using a custom callback.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
 from typing import Callable
@@ -9,17 +11,15 @@ from office365.sharepoint.folders.folder import Folder
 from tests import test_client_credentials, test_team_site_url
 
 
-def enum_folder(parent_folder, action):
-    # type: (Folder, Callable[[Folder], None]) -> None
+def enum_folder(parent_folder: Folder, action: Callable[[Folder], None]) -> None:
     parent_folder.expand(["Folders"]).get().execute_query()
     action(parent_folder)
     for folder in parent_folder.folders:
         enum_folder(folder, action)
 
 
-def print_folder_stat(folder):
-    # type: (Folder) -> None
-    print(folder.serverRelativeUrl)
+def print_folder_stat(folder: Folder) -> None:
+    print(folder.server_relative_url)
     print(folder.time_created)
 
 

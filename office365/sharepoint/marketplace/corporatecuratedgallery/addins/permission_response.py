@@ -12,12 +12,8 @@ class SPAddinPermissionResponse(ClientValue):
     """"""
 
     def __init__(self, addin_permissions=None, failed_addins=None):
-        self.addinPermissions = ClientValueCollection(
-            SPAddinPermissionInfo, addin_permissions
-        )
-        self.failedAddins = ClientValueCollection(
-            SPAddinPermissionFailedInfo, failed_addins
-        )
+        self.addinPermissions = ClientValueCollection(SPAddinPermissionInfo, addin_permissions)
+        self.failedAddins = ClientValueCollection(SPAddinPermissionFailedInfo, failed_addins)
 
     @property
     def entity_type_name(self):

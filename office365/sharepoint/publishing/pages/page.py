@@ -1,42 +1,29 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.dependency_metadata import (
     SitePageDependencyMetadata,
 )
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 from office365.sharepoint.publishing.pages.metadata import SitePageMetadata
+from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import (
+    SharePagePreviewByEmailFieldsData,
+)
 from office365.sharepoint.translation.status_collection import (
     TranslationStatusCollection,
 )
 
 
-class SharePagePreviewByEmailFieldsData(ClientValue):
-    """This class contains the information used by SharePagePreviewByEmail method"""
-
-    def __init__(self, message=None, recipient_emails=None):
-        """
-        :param str message:
-        :param list[str] recipient_emails:
-        """
-        self.message = message
-        self.recipientEmails = StringCollection(recipient_emails)
-
-    @property
-    def entity_type_name(self):
-        return "SP.Publishing.SharePagePreviewByEmailFieldsData"
-
-
 class SitePage(SitePageMetadata):
     """Represents a Site Page."""
 
-    def checkout_page(self):
+    def checkout_page(self) -> Self:
         """Checks out the current Site Page if it is available to be checked out."""
         qry = ServiceOperationQuery(self, "CheckoutPage", None, None, None, self)
         self.context.add_query(qry)
@@ -54,33 +41,34 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def ensure_title_resource(self):
+    def ensure_title_resource(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "EnsureTitleResource")
         self.context.add_query(qry)
         return self
 
-    def get_dependency_metadata(self):
+    def get_dependency_metadata(
+        self,
+    ) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """ """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SitePageDependencyMetadata)
-        )
-        qry = ServiceOperationQuery(
-            self, "GetDependencyMetadata", return_type=return_type
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SitePageDependencyMetadata))
+        qry = ServiceOperationQuery(self, "GetDependencyMetadata", return_type=return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_version(self, version_id):
+    def get_version(self, version_id: str) -> "SitePage":
         """ """
         return_type = SitePage(self.context, self.resource_path)
-        qry = ServiceOperationQuery(
-            self, "GetVersion", [version_id], None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "GetVersion", [version_id], None, None, return_type)
         self.context.add_query(qry)
+        return return_type
 
     def save_page(
-        self, title, canvas_content=None, banner_image_url=None, topic_header=None
+        self,
+        title: str,
+        canvas_content: Optional[str] = None,
+        banner_image_url: Optional[str] = None,
+        topic_header: Optional[str] = None,
     ):
         """
         Updates the current Site Page with the provided pageStream content.
@@ -100,9 +88,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def save_draft(
-        self, title, canvas_content=None, banner_image_url=None, topic_header=None
-    ):
+    def save_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
         """
         Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
         has minor versions enabled.
@@ -119,15 +105,11 @@ class SitePage(SitePageMetadata):
             topic_header=topic_header,
         )
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "SaveDraft", None, payload, "sitePage", return_type
-        )
+        qry = ServiceOperationQuery(self, "SaveDraft", None, payload, "sitePage", return_type)
         self.context.add_query(qry)
         return return_type
 
-    def save_page_as_draft(
-        self, title, canvas_content=None, banner_image_url=None, topic_header=None
-    ):
+    def save_page_as_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
         """
         Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
         has minor versions enabled.
@@ -144,18 +126,14 @@ class SitePage(SitePageMetadata):
             topic_header=topic_header,
         )
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self, "SavePageAsDraft", None, payload, "pageStream", return_type
-        )
+        qry = ServiceOperationQuery(self, "SavePageAsDraft", None, payload, "pageStream", return_type)
         self.context.add_query(qry)
         return return_type
 
-    def save_page_as_template(self):
+    def save_page_as_template(self) -> "SitePage":
         """ """
         return_type = SitePage(self.context)
-        qry = ServiceOperationQuery(
-            self, "SavePageAsTemplate", None, None, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SavePageAsTemplate", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -163,9 +141,7 @@ class SitePage(SitePageMetadata):
         """ """
         return_type = ClientResult(self.context, SitePageCoAuthState())
         payload = {"pageStream": page_stream}
-        qry = ServiceOperationQuery(
-            self, "SavePageCoAuth", None, payload, None, return_type
-        )
+        qry = ServiceOperationQuery(self, "SavePageCoAuth", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -212,9 +188,7 @@ class SitePage(SitePageMetadata):
         """
         payload = SitePageFieldsData(publish_start_date=publish_start_date)
         result = ClientResult(self.context)
-        qry = ServiceOperationQuery(
-            self, "SchedulePublish", None, payload, "sitePage", result
-        )
+        qry = ServiceOperationQuery(self, "SchedulePublish", None, payload, "sitePage", result)
         self.context.add_query(qry)
         return result
 
@@ -236,46 +210,37 @@ class SitePage(SitePageMetadata):
         return return_type
 
     @property
-    def canvas_content(self):
-        # type: () -> Optional[str]
+    def canvas_content(self) -> Optional[str]:
         """Gets the CanvasContent1 for the current Site Page"""
         return self.properties.get("CanvasContent1", None)
 
     @property
-    def language(self):
-        # type: () -> Optional[str]
+    def language(self) -> Optional[str]:
         """Gets the Language for the Site Page."""
         return self.properties.get("Language", None)
 
     @canvas_content.setter
-    def canvas_content(self, value):
-        # type: (str) -> None
+    def canvas_content(self, value: str) -> None:
         """Sets the CanvasContent1 for the current Site Page"""
         self.set_property("CanvasContent1", value)
 
     @property
-    def layout_web_parts_content(self):
-        # type: () -> Optional[str]
+    def layout_web_parts_content(self) -> Optional[str]:
         """Gets the LayoutWebPartsContent field for the current Site Page."""
         return self.properties.get("LayoutWebpartsContent", None)
 
     @layout_web_parts_content.setter
-    def layout_web_parts_content(self, value):
-        # type: (str) -> None
+    def layout_web_parts_content(self, value: str) -> None:
         """Sets the LayoutWebPartsContent field for the current Site Page."""
         self.set_property("LayoutWebpartsContent", value)
 
     @property
-    def translations(self):
-        # type: () -> TranslationStatusCollection
+    def translations(self) -> TranslationStatusCollection:
         return self.properties.get(
             "Translations",
-            TranslationStatusCollection(
-                self.context, ResourcePath("Translations", self.resource_path)
-            ),
+            TranslationStatusCollection(self.context, ResourcePath("Translations", self.resource_path)),
         )
 
     @property
-    def entity_type_name(self):
-        # type: () -> str
+    def entity_type_name(self) -> str:  # type: ignore[override]
         return "SP.Publishing.SitePage"

@@ -14,7 +14,7 @@ class LocalizedName(ClientValue):
         :param str name: The name in the localized language.
         :param str language_tag: The language tag for the label.
         """
-        super(LocalizedName, self).__init__()
+        super().__init__()
         self.name = name
         self.languageTag = language_tag
 

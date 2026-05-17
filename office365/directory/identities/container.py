@@ -20,8 +20,7 @@ class IdentityContainer(Entity):
     """
 
     @property
-    def api_connectors(self):
-        # type: () -> EntityCollection[IdentityApiConnector]
+    def api_connectors(self) -> EntityCollection[IdentityApiConnector]:
         """Represents entry point for API connectors."""
         return self.properties.get(
             "apiConnectors",
@@ -33,8 +32,9 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def authentication_event_listeners(self):
-        # type: () -> EntityCollection[AuthenticationEventListener]
+    def authentication_event_listeners(
+        self,
+    ) -> EntityCollection[AuthenticationEventListener]:
         """Get the collection of authenticationListener resources supported by the onSignupStart event."""
         return self.properties.get(
             "authenticationEventListeners",
@@ -46,27 +46,23 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def conditional_access(self):
+    def conditional_access(self) -> ConditionalAccessRoot:
         """The entry point for the Conditional Access (CA) object model."""
         return self.properties.get(
             "conditionalAccess",
-            ConditionalAccessRoot(
-                self.context, ResourcePath("conditionalAccess", self.resource_path)
-            ),
+            ConditionalAccessRoot(self.context, ResourcePath("conditionalAccess", self.resource_path)),
         )
 
     @property
-    def identity_providers(self):
+    def identity_providers(self) -> IdentityProviderBaseCollection:
         """Represents entry point for identity provider base."""
         return self.properties.get(
             "identityProviders",
-            IdentityProviderBaseCollection(
-                self.context, ResourcePath("identityProviders", self.resource_path)
-            ),
+            IdentityProviderBaseCollection(self.context, ResourcePath("identityProviders", self.resource_path)),
         )
 
     @property
-    def b2x_user_flows(self):
+    def b2x_user_flows(self) -> EntityCollection[B2XIdentityUserFlow]:
         """Represents entry point for B2X/self-service sign-up identity userflows."""
         return self.properties.get(
             "b2xUserFlows",
@@ -78,7 +74,7 @@ class IdentityContainer(Entity):
         )
 
     @property
-    def user_flow_attributes(self):
+    def user_flow_attributes(self) -> EntityCollection[IdentityUserFlowAttribute]:
         """Represents entry point for identity userflow attributes."""
         return self.properties.get(
             "userFlowAttributes",
@@ -100,4 +96,4 @@ class IdentityContainer(Entity):
                 "userFlowAttributes": self.user_flow_attributes,
             }
             default_value = property_mapping.get(name, None)
-        return super(IdentityContainer, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

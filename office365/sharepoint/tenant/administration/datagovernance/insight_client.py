@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
@@ -17,8 +19,13 @@ if TYPE_CHECKING:
 class SPDataGovernanceInsightRestApiClient(SPDataGovernanceRestApiClientBase):
     """"""
 
-    def __init__(self, context, authorization_header, url, user_agent):
-        # type: (ClientContext, str, str, str) -> None
+    def __init__(
+        self,
+        context: ClientContext,
+        authorization_header: str,
+        url: str,
+        user_agent: str,
+    ) -> None:
         static_path = ServiceOperationPath(
             "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightRestApiClient",
             {
@@ -27,7 +34,7 @@ class SPDataGovernanceInsightRestApiClient(SPDataGovernanceRestApiClientBase):
                 "userAgent": user_agent,
             },
         )
-        super(SPDataGovernanceInsightRestApiClient, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def create_data_access_governance_report(
         self,
@@ -67,7 +74,8 @@ class SPDataGovernanceInsightRestApiClient(SPDataGovernanceRestApiClientBase):
         self.context.add_query(qry)
         return return_type
 
-    def export_spo_data_access_governance_insight(self, report_id):
+    def export_spo_data_access_governance_insight(self, report_id: str) -> ClientResult[str]:
+        """ """
         return_type = ClientResult(self.context, str())
         payload = {"reportId": report_id}
         qry = ServiceOperationQuery(

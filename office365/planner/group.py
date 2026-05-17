@@ -17,7 +17,5 @@ class PlannerGroup(Entity):
 
         return self.properties.get(
             "plans",
-            PlannerPlanCollection(
-                self.context, ResourcePath("plans", self.resource_path)
-            ),
+            PlannerPlanCollection(self.context, ResourcePath("plans", self.resource_path)),
         )

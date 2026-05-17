@@ -14,8 +14,13 @@ from office365.sharepoint.tenant.administration.datagovernance.client_base impor
 class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
     """"""
 
-    def __init__(self, context, authorization_header, url, user_agent):
-        # type: (ClientContext, str, str, str) -> None
+    def __init__(
+        self,
+        context: ClientContext,
+        authorization_header: str,
+        url: str,
+        user_agent: str,
+    ) -> None:
         static_path = ServiceOperationPath(
             "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightRestApiClient",
             {
@@ -24,13 +29,11 @@ class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
                 "userAgent": user_agent,
             },
         )
-        super(SPOCopilotAgentInsightsRestApiClient, self).__init__(context, static_path)
+        super().__init__(context, static_path)
 
     def get_all_copilot_agent_insights_reports_metadata(self):
         """ """
-        return_type = ClientResult(
-            self.context, ClientValueCollection(SPOCopilotAgentInsightsReportMetadata)
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(SPOCopilotAgentInsightsReportMetadata))
         qry = ServiceOperationQuery(
             self,
             "GetAllCopilotAgentInsightsReportsMetadata",

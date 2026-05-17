@@ -31,7 +31,7 @@ class UserProfile(ClientValue):
         :type city: str
         :type country: str
         """
-        super(UserProfile, self).__init__()
+        super().__init__()
         self.userPrincipalName = principal_name
         self.passwordProfile = PasswordProfile(password)
         self.mailNickname = principal_name.split("@")[0]

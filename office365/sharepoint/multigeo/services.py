@@ -21,13 +21,10 @@ class MultiGeoServices(Entity):
     """
 
     def __init__(self, context):
-        static_path = ResourcePath(
-            "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta"
-        )
-        super(MultiGeoServices, self).__init__(context, static_path)
+        static_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta")
+        super().__init__(context, static_path)
 
-    def user_personal_site_location(self, user_principal_name):
-        # type: (str) -> UserPersonalSiteLocation
+    def user_personal_site_location(self, user_principal_name: str) -> UserPersonalSiteLocation:
         return_type = UserPersonalSiteLocation(self.context)
         qry = ServiceOperationQuery(
             self,
@@ -41,8 +38,7 @@ class MultiGeoServices(Entity):
         return return_type
 
     @property
-    def storage_quotas(self):
-        # type: () -> EntityCollection[UnifiedGroup]
+    def storage_quotas(self) -> EntityCollection[UnifiedGroup]:
         """ """
         return self.properties.get(
             "StorageQuotas",
@@ -54,8 +50,7 @@ class MultiGeoServices(Entity):
         )
 
     @property
-    def unified_groups(self):
-        # type: () -> EntityCollection[UnifiedGroup]
+    def unified_groups(self) -> EntityCollection[UnifiedGroup]:
         """ """
         return self.properties.get(
             "UnifiedGroups",
@@ -74,4 +69,4 @@ class MultiGeoServices(Entity):
         if default_value is None:
             property_mapping = {"UnifiedGroups": self.unified_groups}
             default_value = property_mapping.get(name, None)
-        return super(MultiGeoServices, self).get_property(name, default_value)
+        return super().get_property(name, default_value)

@@ -1,8 +1,8 @@
-class PermissionKind:
-    """Specifies permissions that are used to define user roles."""
+from enum import IntEnum
 
-    def __init__(self):
-        pass
+
+class PermissionKind(IntEnum):
+    """Specifies permissions that are used to define user roles."""
 
     EmptyMask = 0
 

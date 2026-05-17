@@ -1,0 +1,18 @@
+from typing import Optional
+
+from office365.directory.identitygovernance.workflow.triggertimebasedattribute import WorkflowTriggerTimeBasedAttribute
+from office365.runtime.client_value import ClientValue
+
+
+class TimeBasedAttributeTrigger(ClientValue):
+    def __init__(
+        self,
+        offset_in_days: Optional[int] = None,
+        time_based_attribute: Optional[WorkflowTriggerTimeBasedAttribute] = None,
+    ):
+        self.offsetInDays = offset_in_days
+        self.timeBasedAttribute = time_based_attribute
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.identityGovernance.TimeBasedAttributeTrigger"

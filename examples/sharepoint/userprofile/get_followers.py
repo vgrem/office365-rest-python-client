@@ -1,5 +1,7 @@
 """
 Gets the people who are following the specified user.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
 
 from office365.sharepoint.client_context import ClientContext

@@ -8,8 +8,7 @@ class AadUserConversationMember(ConversationMember):
     """Represents an Azure Active Directory user in a team, a channel, or a chat."""
 
     @property
-    def user_id(self):
-        # type: () -> Optional[str]
+    def user_id(self) -> Optional[str]:
         """The guid of the user."""
         return self.properties.get("userId", None)
 
@@ -17,14 +16,11 @@ class AadUserConversationMember(ConversationMember):
     def user(self):
         from office365.directory.users.user import User
 
-        return self.properties.get(
-            "user", User(self.context, ResourcePath("user", self.resource_path))
-        )
+        return self.properties.get("user", User(self.context, ResourcePath("user", self.resource_path)))
 
     def to_json(self, json_format=None):
         return {
-            "roles": self.roles,
-            "user@odata.bind": "https://graph.microsoft.com/v1.0/users/{0}".format(
-                self.user_id
-            ),
+            "@odata.type": "#" + self.entity_type_name,
+            "roles": self.roles.to_json(json_format),
+            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{self.user_id}",
         }

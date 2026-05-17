@@ -3,6 +3,7 @@ import unittest
 from office365.directory.groups.group import Group
 from office365.directory.users.user import User
 from office365.runtime.client_request_exception import ClientRequestException
+
 from tests import create_unique_name, test_user_principal_name
 from tests.graph_case import GraphTestCase
 
@@ -10,8 +11,8 @@ from tests.graph_case import GraphTestCase
 class TestGraphGroup(GraphTestCase):
     """Tests for Azure Active Directory (Azure AD) groups"""
 
-    target_group = None  # type: Group
-    target_user = None  # type: User
+    target_group: Group = None
+    target_user: User = None
     directory_quota_exceeded = False
 
     def test1_create_group(self):
@@ -25,14 +26,14 @@ class TestGraphGroup(GraphTestCase):
                 self.directory_quota_exceeded = True
                 result = self.client.me.get_member_groups().execute_query()
                 self.assertIsNotNone(result.value)
-                filter_expr = "displayName eq '{0}'".format(result.value[0])
+                filter_expr = f"displayName eq '{result.value[0]}'"
                 result = self.client.groups.filter(filter_expr).get().execute_query()
                 self.__class__.target_group = result[0]
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test2_list_groups(self):
-        groups = self.client.groups.top(1).get().execute_query()
-        self.assertEqual(len(groups), 1)
+        result = self.client.groups.top(1).get().execute_query()
+        self.assertEqual(len(result), 1)
 
     def test3_get_groups_count(self):
         result = self.client.groups.count().execute_query()
@@ -46,13 +47,7 @@ class TestGraphGroup(GraphTestCase):
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test5_add_group_owner(self):
-        users = (
-            self.client.users.filter(
-                "mail eq '{mail}'".format(mail=test_user_principal_name)
-            )
-            .get()
-            .execute_query()
-        )
+        users = self.client.users.filter(f"mail eq '{test_user_principal_name}'").get().execute_query()
         self.assertEqual(len(users), 1)
 
         owner = users[0]
@@ -88,7 +83,5 @@ class TestGraphGroup(GraphTestCase):
         grp_to_delete.delete_object(True).execute_query()
 
     def test_11_get_changes(self):
-        changed_groups = (
-            self.client.groups.delta.select(["displayName"]).get().execute_query()
-        )
+        changed_groups = self.client.groups.delta.select(["displayName"]).get().execute_query()
         self.assertGreater(len(changed_groups), 0)

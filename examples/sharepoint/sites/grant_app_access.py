@@ -1,8 +1,8 @@
 """
-Controlling app access on a specific SharePoint site collection
+Controls app access on a specific SharePoint site collection.
 
-Refer:
 https://developer.microsoft.com/en-us/office/blogs/controlling-app-access-on-specific-sharepoint-site-collections/
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.graph_client import GraphClient
@@ -13,15 +13,13 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 site = client.sites.get_by_url(test_team_site_url)
 app = client.applications.get_by_app_id(test_client_id)
 roles = ["read", "write"]
 
-print("Granting {0} permissions for application {1}".format(roles, app))
+print(f"Granting {roles} permissions for application {app}")
 site.permissions.add(roles, app).execute_query()
 result = site.permissions.get().execute_query()
 for perm in result:
-    print("Current permissions: {0}".format(perm.granted_to_identities))
+    print(f"Current permissions: {perm.granted_to_identities}")

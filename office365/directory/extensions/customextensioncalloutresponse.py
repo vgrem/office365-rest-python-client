@@ -1,0 +1,17 @@
+from __future__ import annotations
+
+from office365.directory.extensions.customextensiondata import CustomExtensionData
+from office365.runtime.client_value import ClientValue
+
+
+class CustomExtensionCalloutResponse(ClientValue):
+    def __init__(
+        self, data: CustomExtensionData = CustomExtensionData(), source: str | None = None, type_: str | None = None
+    ):
+        self.data = data
+        self.source = source
+        self.type = type_
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.CustomExtensionCalloutResponse"

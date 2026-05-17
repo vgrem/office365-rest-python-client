@@ -1,5 +1,7 @@
 """
-Lists web roles
+Lists web roles.
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
 from office365.sharepoint.client_context import ClientContext

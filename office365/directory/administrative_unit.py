@@ -1,7 +1,7 @@
 from typing import Optional
 
 from office365.directory.extensions.extension import Extension
-from office365.directory.object import DirectoryObject
+from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -18,8 +18,7 @@ class AdministrativeUnit(DirectoryObject):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self):
-        # type: () -> Optional[str]
+    def display_name(self) -> Optional[str]:
         """Display name for the administrative unit"""
         return self.properties.get("displayName", None)
 
@@ -35,22 +34,17 @@ class AdministrativeUnit(DirectoryObject):
     @property
     def members(self):
         """Users and groups that are members of this administrative unit"""
-        from office365.directory.object_collection import DirectoryObjectCollection
+        from office365.directory.objects.collection import DirectoryObjectCollection
 
         return self.properties.get(
             "members",
-            DirectoryObjectCollection(
-                self.context, ResourcePath("members", self.resource_path)
-            ),
+            DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property
-    def extensions(self):
-        # type: () -> EntityCollection[Extension]
+    def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for this administrative unit."""
         return self.properties.get(
             "extensions",
-            EntityCollection(
-                self.context, Extension, ResourcePath("extensions", self.resource_path)
-            ),
+            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )

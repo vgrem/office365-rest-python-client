@@ -13,7 +13,7 @@ class IdentitySet(ClientValue):
         :param Identity device: The device associated with this action.
         :param Identity user: The user associated with this action.
         """
-        super(IdentitySet, self).__init__()
+        super().__init__()
         self.application = application
         self.device = device
         self.user = user

@@ -10,7 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.search.acronyms.acronym import Acronym
 from office365.search.bookmarks.bookmark import Bookmark
 from office365.search.entity_type import EntityType
-from office365.search.hit import SearchHit
+from office365.search.hits.hit import SearchHit
 from office365.search.qnas.qna import Qna
 from office365.search.query import SearchQuery
 from office365.search.request import SearchRequest
@@ -25,14 +25,13 @@ class SearchEntity(Entity):
 
     def query(
         self,
-        query_string,
-        entity_types=None,
-        page_from=None,
-        size=None,
-        enable_top_results=None,
-        region=None,
-    ):
-        # type: (str, Optional[List[str]], Optional[int], Optional[int], Optional[bool], Optional[str]) -> ClientResult[ClientValueCollection[SearchResponse]]
+        query_string: str,
+        entity_types: Optional[List[str]] = None,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        enable_top_results: Optional[bool] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """
         Runs the query specified in the request body. Search results are provided in the response.
 
@@ -54,31 +53,34 @@ class SearchEntity(Entity):
             region=region,
         )
 
-        def _patch_hit(search_hit):
-            # type: (SearchHit) -> None
-            resource_type_name = search_hit.get_property("resource").get(
-                "@odata.type", None
-            )
+        def _patch_hit(search_hit: SearchHit) -> None:
+            resource_type_name = search_hit.get_property("resource").get("@odata.type", None)
             resource_type = EntityType.resolve(resource_type_name)
             resource = resource_type(self.context, EntityPath())
             self.context.pending_request().map_json(search_hit.resource, resource)
             search_hit.set_property("resource", resource)
 
-        def _process_response(result):
-            # type: (ClientResult[ClientValueCollection[SearchResponse]]) -> None
-            for item in result.value:
-                for hcs in item.hitsContainers:
+        def _process_response(
+            result: ClientResult[ClientValueCollection[SearchResponse]],
+        ) -> None:
+            result_items = result.value  # type: ignore[attr-defined]
+            for item in result_items:
+                for hcs in item.hitsContainers:  # type: ignore[attr-defined]
                     [_patch_hit(hit) for hit in hcs.hits]
 
         payload = {"requests": ClientValueCollection(SearchRequest, [search_request])}
         return_type = ClientResult(self.context, ClientValueCollection(SearchResponse))
         qry = ServiceOperationQuery(self, "query", None, payload, None, return_type)
-        self.context.add_query(qry).after_query_execute(_process_response)
+        self.context.add_query(qry).after_execute(_process_response)
         return return_type
 
     def query_messages(
-        self, query_string, page_from=None, size=None, enable_top_results=None
-    ):
+        self,
+        query_string: str,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        enable_top_results: Optional[bool] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook messages. Alias to query method
         :param str query_string: Contains the query terms.
         :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
@@ -93,13 +95,15 @@ class SearchEntity(Entity):
             enable_top_results=enable_top_results,
         )
 
-    def query_events(self, query_string):
+    def query_events(self, query_string: str) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook calendar events. Alias to query method
         :param str query_string: Contains the query terms.
         """
         return self.query(query_string, entity_types=[EntityType.event])
 
-    def query_drive_items(self, query_string, page_from=None, size=None):
+    def query_drive_items(
+        self, query_string: str, page_from: Optional[int] = None, size: Optional[int] = None
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches OneDrive items. Alias to query method
         :param str query_string: Contains the query terms.
         :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
@@ -112,7 +116,13 @@ class SearchEntity(Entity):
             size=size,
         )
 
-    def query_list_items(self, query_string, page_from=None, size=None, region=None):
+    def query_list_items(
+        self,
+        query_string: str,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches list items. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -128,7 +138,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_peoples(self, query_string, page_from=None, size=None, region=None):
+    def query_peoples(
+        self,
+        query_string: str,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches peoples. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -144,7 +160,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_sites(self, query_string, page_from=None, size=None, region=None):
+    def query_sites(
+        self,
+        query_string: str,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches sites. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -160,7 +182,13 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    def query_chat_messages(self, query_string, page_from=None, size=None, region=None):
+    def query_chat_messages(
+        self,
+        query_string: str,
+        page_from: Optional[int] = None,
+        size: Optional[int] = None,
+        region: Optional[str] = None,
+    ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Teams chat messages. Alias to query method
 
         :param str query_string: Contains the query terms.
@@ -177,7 +205,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def acronyms(self):
+    def acronyms(self) -> EntityCollection[Acronym]:
         """Administrative answer in Microsoft Search results to define common acronyms in an organization."""
         return self.properties.get(
             "acronyms",
@@ -189,7 +217,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def bookmarks(self):
+    def bookmarks(self) -> EntityCollection[Bookmark]:
         """Administrative answer in Microsoft Search results for common search queries in an organization."""
         return self.properties.get(
             "bookmarks",
@@ -201,7 +229,7 @@ class SearchEntity(Entity):
         )
 
     @property
-    def qnas(self):
+    def qnas(self) -> EntityCollection[Qna]:
         """Administrative answer in Microsoft Search results that provide answers for specific search keywords in
         an organization."""
         return self.properties.get(

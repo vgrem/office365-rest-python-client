@@ -1,5 +1,6 @@
-"""
-Demonstrates how to retrieve list items and include which properties to return (via select method)
+"""Demonstrates how to retrieve list items and select specific properties to return
+
+Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
 from office365.sharepoint.client_context import ClientContext
