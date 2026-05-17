@@ -31,8 +31,10 @@ class Attachment(Entity):
             file.get_content().after_execute(_save_content)
 
         def _download_file_by_url():
-            file = self.context.web.get_file_by_server_relative_url(self.server_relative_url)
-            file.get_content().after_execute(_save_content)
+            server_relative_url = self.server_relative_url
+            if server_relative_url is not None:
+                file = self.context.web.get_file_by_server_relative_url(server_relative_url)
+                file.get_content().after_execute(_save_content)
 
         if use_path:
             self.ensure_property("ServerRelativePath", _download_file_by_path)
@@ -62,9 +64,11 @@ class Attachment(Entity):
         """
 
         def _upload_file_by_url():
-            target_file = self.context.web.get_file_by_server_relative_url(self.server_relative_url)
-            qry = create_upload_file_query(target_file, file_object)
-            self.context.add_query(qry)
+            server_relative_url = self.server_relative_url
+            if server_relative_url is not None:
+                target_file = self.context.web.get_file_by_server_relative_url(server_relative_url)
+                qry = create_upload_file_query(target_file, file_object)
+                self.context.add_query(qry)
 
         def _upload_file_by_path():
             target_file = self.context.web.get_file_by_server_relative_path(str(self.server_relative_path))
@@ -105,8 +109,9 @@ class Attachment(Entity):
         super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if self._resource_path is None:
-            if name == "ServerRelativeUrl":
+            if name == "ServerRelativeUrl" and value is not None:
                 self._resource_path = self.context.web.get_file_by_server_relative_url(value).resource_path
+        return self
 
     def get_property(self, name, default_value=None):
         if default_value is None:

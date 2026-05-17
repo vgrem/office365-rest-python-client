@@ -37,19 +37,20 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         if isinstance(attachment_file_information, dict):
             attachment_file_information = AttachmentCreationInformation(
-                attachment_file_information.get("filename"),
-                attachment_file_information.get("content"),
+                str(attachment_file_information.get("filename") or ""),
+                attachment_file_information.get("content") or b"",
             )
 
         return_type = Attachment(self.context)
         self.add_child(return_type)
+        content = attachment_file_information.content
         qry = ServiceOperationQuery(
             self,
             "add",
             {
                 "filename": attachment_file_information.filename,
             },
-            attachment_file_information.content,
+            content,  # type: ignore[reportArgumentType]
             None,
             return_type,
         )
@@ -69,7 +70,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return_type = Attachment(self.context)
         params = {"DecodedUrl": decoded_url}
-        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)
+        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)  # type: ignore[reportArgumentType]
         self.context.add_query(qry)
         self.add_child(return_type)
         return return_type
@@ -99,7 +100,9 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
         def _file_downloaded(attachment_file: Attachment, result: ClientResult[AnyStr]) -> None:
             with zipfile.ZipFile(output_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
-                zf.writestr(attachment_file.file_name, result.value)
+                file_name = attachment_file.file_name
+                if file_name is not None:
+                    zf.writestr(file_name, result.value)
                 if callable(file_downloaded):
                     file_downloaded(attachment_file)
 

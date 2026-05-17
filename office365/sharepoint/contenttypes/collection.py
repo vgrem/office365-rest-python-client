@@ -17,7 +17,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ContentType, resource_path, parent)
 
-    def get_by_name(self, name: str) -> ContentType:
+    def get_by_name(self, name: str) -> Optional[ContentType]:
         """
         Returns the content type with the given name from the collection.
 
@@ -59,9 +59,9 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def create(
         self,
         name: str,
-        description: str = None,
-        group: str = None,
-        parent_content_type: ContentType = None,
+        description: Optional[str] = None,
+        group: Optional[str] = None,
+        parent_content_type: Optional[ContentType] = None,
     ) -> ContentType:
         """
         Creates a new content type to the collection and returns a reference to the added SP.ContentType.

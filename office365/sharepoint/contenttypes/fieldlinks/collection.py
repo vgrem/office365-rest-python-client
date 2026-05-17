@@ -35,7 +35,8 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         if isinstance(field, Field):
 
             def _field_loaded():
-                _add(field.internal_name)
+                if field.internal_name is not None:
+                    _add(field.internal_name)
 
             field.ensure_property("InternalName", _field_loaded)
         else:

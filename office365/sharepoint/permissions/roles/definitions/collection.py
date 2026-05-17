@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -22,8 +24,8 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self,
         base_permissions: BasePermissions,
         name: str,
-        description: str = None,
-        order: int = None,
+        description: Optional[str] = None,
+        order: Optional[int] = None,
     ):
         """
         Adds a new role definition to the collection, based on the passed parameter.

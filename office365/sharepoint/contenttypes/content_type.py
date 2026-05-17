@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from typing_extensions import Self
 
@@ -38,7 +38,7 @@ class ContentType(Entity):
         self.context.add_query(qry)
         return self
 
-    def update(self, update_children: bool) -> Self:
+    def update(self, *args: Any, update_children: bool = False) -> Self:
         """
         Updates the content type, and any child objects  of the content type if specified,
         with any changes made to the content type.

@@ -16,7 +16,7 @@ class BasePermissions(ClientValue):
         perms = self.permission_levels
         return f"BasePermissions({', '.join(perms)})" if perms else "BasePermissions(Empty)"
 
-    def __iter__(self) -> Iterator[str]:
+    def __iter__(self) -> Iterator[str]:  # type: ignore[override]
         for perm in PermissionKind:
             if perm != PermissionKind.EmptyMask and self.has(perm):
                 yield perm.name
@@ -62,7 +62,7 @@ class BasePermissions(ClientValue):
     def to_json(self, json_format=None):
         return {"Low": str(self.Low), "High": str(self.High)}
 
-    def set_property(self, k: str, v: Any, persist_changes: bool = True) -> Self:
+    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
         if k in ("Low", "High"):
             setattr(self, k, int(v))
         return self

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,15 +9,15 @@ class TranslationItemInfo(ClientValue):
     def __init__(
         self,
         translation_id=None,
-        canceled: bool = None,
-        error_message: str = None,
-        failed: bool = None,
-        in_progress: bool = None,
-        input_file: str = None,
-        not_started: bool = None,
-        output_file: str = None,
-        result: int = None,
-        succeeded: bool = None,
+        canceled: Optional[bool] = None,
+        error_message: Optional[str] = None,
+        failed: Optional[bool] = None,
+        in_progress: Optional[bool] = None,
+        input_file: Optional[str] = None,
+        not_started: Optional[bool] = None,
+        output_file: Optional[str] = None,
+        result: Optional[int] = None,
+        succeeded: Optional[bool] = None,
     ):
         """
         :param str translation_id: If this translation item belongs to an immediate translation job,

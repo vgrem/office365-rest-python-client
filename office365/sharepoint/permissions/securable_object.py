@@ -55,7 +55,8 @@ class SecurableObject(Entity):
             role.ensure_property("Id", _add_role_assignment)
 
         def _add_role_assignment():
-            self.role_assignments.add_role_assignment(principal.id, role.id)
+            if principal.id is not None and role.id is not None:
+                self.role_assignments.add_role_assignment(principal.id, role.id)
 
         principal.ensure_property("Id", _ensure_role_def)
         return self
@@ -74,7 +75,8 @@ class SecurableObject(Entity):
             role_def = self.context.web.role_definitions.get_by_type(role_def)
 
         def _remove_role_assignment():
-            self.role_assignments.remove_role_assignment(principal.id, role_def.id)
+            if principal.id is not None and role_def.id is not None:
+                self.role_assignments.remove_role_assignment(principal.id, role_def.id)
 
         def _ensure_role_def():
             role_def.ensure_property("Id", _remove_role_assignment)
@@ -139,7 +141,8 @@ class SecurableObject(Entity):
         if isinstance(user, User):
 
             def _user_loaded():
-                _create_and_add_query(user.login_name)
+                if user.login_name is not None:
+                    _create_and_add_query(user.login_name)
 
             user.ensure_property("LoginName", _user_loaded)
         else:

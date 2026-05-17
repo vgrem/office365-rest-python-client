@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -5,10 +7,10 @@ class ContentTypeCreationInformation(ClientValue):
     def __init__(
         self,
         name: str,
-        description: str = None,
-        group: str = None,
-        ct_id: str = None,
-        id_: str = None,
+        description: Optional[str] = None,
+        group: Optional[str] = None,
+        ct_id: Optional[str] = None,
+        id_: Optional[str] = None,
     ):
         """Specifies properties that are used as parameters to initialize a new content type.
 

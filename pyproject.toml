@@ -143,4 +143,10 @@ include = [
     "office365/externalconnectors/*",
     "office365/partners/*",
     "office365/todo/*",
+    "office365/sharepoint/user/*",
+    "office365/sharepoint/comments/*",
+    "office365/sharepoint/attachments/*",
+    "office365/sharepoint/contenttypes/*",
+    "office365/sharepoint/permissions/*",
+    "office365/sharepoint/translation/*",
 ]

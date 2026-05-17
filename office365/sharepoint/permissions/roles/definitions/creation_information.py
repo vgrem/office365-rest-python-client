@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
@@ -6,9 +8,9 @@ class RoleDefinitionCreationInformation(ClientValue):
     def __init__(
         self,
         base_permissions=BasePermissions(),
-        name: str = None,
-        description: str = None,
-        order: int = None,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        order: Optional[int] = None,
     ):
         """Contains properties that are used as parameters to initialize a role definition.
 

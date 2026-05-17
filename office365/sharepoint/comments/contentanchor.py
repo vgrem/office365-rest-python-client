@@ -1,10 +1,11 @@
 from datetime import time
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 class ContentAnchor(ClientValue):
-    def __init__(self, timeline_offset: time = None):
+    def __init__(self, timeline_offset: Optional[time] = None):
         self.timelineOffset = timeline_offset
 
     @property

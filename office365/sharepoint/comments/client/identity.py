@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class Identity(ClientValue):
     def __init__(
         self,
-        email: str = None,
-        id_: int = None,
-        login_name: str = None,
-        name: str = None,
+        email: Optional[str] = None,
+        id_: Optional[int] = None,
+        login_name: Optional[str] = None,
+        name: Optional[str] = None,
     ):
         self.email = email
         self.id = id_
