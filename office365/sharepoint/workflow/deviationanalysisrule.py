@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,14 +7,14 @@ from office365.runtime.types.collections import StringCollection
 class DeviationAnalysisRule(ClientValue):
     def __init__(
         self,
-        definition: str = None,
+        definition: Optional[str] = None,
         fallback_clauses: StringCollection = StringCollection(),
-        id_: str = None,
-        is_acceptable: bool = None,
+        id_: Optional[str] = None,
+        is_acceptable: Optional[bool] = None,
         notes: StringCollection = StringCollection(),
-        rule_name: str = None,
-        send_for_approval: bool = None,
-        snippet_path: str = None,
+        rule_name: Optional[str] = None,
+        send_for_approval: Optional[bool] = None,
+        snippet_path: Optional[str] = None,
     ):
         self.definition = definition
         self.fallback_clauses = fallback_clauses

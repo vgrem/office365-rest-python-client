@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.workflow.configureduserinfo import ConfiguredUserInfo
@@ -7,15 +9,15 @@ class WorkflowConfigurationResponse(ClientValue):
     def __init__(
         self,
         approvers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(ConfiguredUserInfo),
-        category_id: str = None,
-        category_name: str = None,
-        configuration_id: int = None,
-        country: str = None,
-        e_sign_needed: bool = None,
-        language: str = None,
+        category_id: Optional[str] = None,
+        category_name: Optional[str] = None,
+        configuration_id: Optional[int] = None,
+        country: Optional[str] = None,
+        e_sign_needed: Optional[bool] = None,
+        language: Optional[str] = None,
         reviewers: ClientValueCollection[ConfiguredUserInfo] = ClientValueCollection(ConfiguredUserInfo),
-        source: str = None,
-        type_: str = None,
+        source: Optional[str] = None,
+        type_: Optional[str] = None,
     ):
         self.approvers = approvers
         self.category_id = category_id

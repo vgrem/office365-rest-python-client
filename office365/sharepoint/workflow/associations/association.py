@@ -34,7 +34,7 @@ class WorkflowAssociation(Entity):
         return self.properties.get("BaseId", None)
 
     @property
-    def created(self) -> datetime:
+    def created(self) -> datetime | None:
         """Gets the Created property"""
         return self.properties.get("Created", None)
 
@@ -74,7 +74,7 @@ class WorkflowAssociation(Entity):
         return self.properties.get("ListId", None)
 
     @property
-    def modified(self) -> datetime:
+    def modified(self) -> datetime | None:
         """Gets the Modified property"""
         return self.properties.get("Modified", None)
 

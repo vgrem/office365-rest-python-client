@@ -37,7 +37,7 @@ class WorkflowDefinition(Entity):
         return self.properties.get("InitiationUrl", None)
 
     @property
-    def properties(self) -> dict:
+    def properties(self) -> dict | None:
         """Gets the Properties property"""
         return self.properties.get("Properties", None)
 
