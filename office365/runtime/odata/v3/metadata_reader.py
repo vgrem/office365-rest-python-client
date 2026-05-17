@@ -10,15 +10,19 @@ class ODataV3Reader(ODataReader):
 
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
         schema = PropertyInformation()
-        schema.Name = node.get("Name")
+        schema.Name = node.get("Name") or ""
         schema.IsNavigation = True
 
         relationship = node.get("Relationship")
+        if relationship is None:
+            return None
         to_role = node.get("ToRole")
-        # from_role = node.get("FromRole")
+        if to_role is None:
+            return None
 
         association_name = relationship.split(".")[-1] if "." in relationship else relationship
 
+        assert self._root is not None
         association_node = self._root.find(f".//xmlns:Association[@Name='{association_name}']", self.xml_namespaces)
         if association_node is None:
             return None

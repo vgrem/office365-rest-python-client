@@ -45,7 +45,7 @@ class PasswordCredential(ClientValue):
         self.startDateTime = start_date_time
 
     def __str__(self):
-        return self.displayName or self.entity_type_name
+        return str(self.displayName or self.entity_type_name or "")
 
     @property
     def entity_type_name(self):

@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class UsersProcessingSummary(ClientValue):
     def __init__(
         self,
-        failed_tasks: int = None,
-        failed_users: int = None,
-        successful_users: int = None,
-        total_tasks: int = None,
-        total_users: int = None,
+        failed_tasks: Optional[int] = None,
+        failed_users: Optional[int] = None,
+        successful_users: Optional[int] = None,
+        total_tasks: Optional[int] = None,
+        total_users: Optional[int] = None,
     ):
         self.failedTasks = failed_tasks
         self.failedUsers = failed_users

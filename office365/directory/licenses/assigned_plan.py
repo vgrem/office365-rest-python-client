@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -14,7 +15,7 @@ class AssignedPlan(ClientValue):
         capability_status=None,
         service=None,
         service_plan_id=None,
-        assigned_date_time: datetime = None,
+        assigned_date_time: Optional[datetime] = None,
     ):
         """
         :param datetime.datetime assigned_datetime: The date and time at which the plan was assigned.
@@ -32,7 +33,7 @@ class AssignedPlan(ClientValue):
         self.assignedDateTime = assigned_date_time
 
     def __repr__(self):
-        return self.service
+        return str(self.service or "")
 
     @property
     def entity_type_name(self):

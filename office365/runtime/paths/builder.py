@@ -41,8 +41,8 @@ class ODataPathBuilder:
         segments = [n for n in re.split(r"[('')]|/", path_str) if n]  # noqa
         if not segments:
             raise TypeError("Invalid path format")
-        path = None
-        for segment in segments:
+        path = ResourcePath(segments[0], None)
+        for segment in segments[1:]:
             path = ResourcePath(segment, path)
         return path
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -23,7 +24,7 @@ class LicenseAssignmentState(ClientValue):
         last_updated_datetime=None,
         sku_id=None,
         state=None,
-        last_updated_date_time: datetime = None,
+        last_updated_date_time: Optional[datetime] = None,
     ):
         """
         :param str assigned_by_group: ndicates whether the license is directly assigned or inherited from a group.

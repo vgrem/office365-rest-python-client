@@ -70,7 +70,7 @@ class ResourcePath:
         """String representation of the full path (same as to_url())."""
         return self.to_url()
 
-    def __eq__(self, other: ResourcePath) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Compares two resource paths for equality based on their URL representation.
 
@@ -80,6 +80,8 @@ class ResourcePath:
         Returns:
             bool: True if paths are equivalent
         """
+        if not isinstance(other, ResourcePath):
+            return NotImplemented
         return self.to_url() == other.to_url()
 
     def to_url(self) -> str:
@@ -111,6 +113,6 @@ class ResourcePath:
         return str(self._key)
 
     @property
-    def delimiter(self) -> str:
+    def delimiter(self) -> str | None:
         """Gets the path delimiter (always '/' for OData)."""
         return "/"

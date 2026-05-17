@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.certificates.x509.affinitylevel import X509CertificateAffinityLevel
 from office365.runtime.client_value import ClientValue
 
@@ -5,10 +7,10 @@ from office365.runtime.client_value import ClientValue
 class X509CertificateUserBinding(ClientValue):
     def __init__(
         self,
-        priority: int = None,
+        priority: Optional[int] = None,
         trust_affinity_level: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none,
-        user_property: str = None,
-        x509_certificate_field: str = None,
+        user_property: Optional[str] = None,
+        x509_certificate_field: Optional[str] = None,
     ):
         self.priority = priority
         self.trustAffinityLevel = trust_affinity_level

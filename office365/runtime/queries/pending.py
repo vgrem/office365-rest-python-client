@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from office365.runtime.queries.client_query import ClientQuery, T
 
@@ -17,5 +17,5 @@ class PendingQuery(ClientQuery[T]):
     def resolve(self, query: ClientQuery[T]):
         """Resolve this pending query with an actual query"""
         self.__dict__.update(query.__dict__)
-        self.__class__ = query.__class__
+        self.__class__ = cast(type, query.__class__)
         return self

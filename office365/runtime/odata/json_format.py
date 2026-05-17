@@ -16,7 +16,7 @@ class ODataJsonFormat(ABC):
     ensuring they provide all required format properties and metadata handling.
     """
 
-    def __init__(self, metadata_level: Optional[Union[ODataV3MetadataLevel, ODataV4MetadataLevel]] = None):
+    def __init__(self, metadata_level: Optional[Union[ODataV3MetadataLevel, ODataV4MetadataLevel, str]] = None):
         """
         Initialize the OData JSON format handler.
 

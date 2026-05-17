@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, cast
 
 from typing_extensions import Self
 
@@ -32,7 +32,7 @@ class ServicePrincipal(DirectoryObject):
     """Represents an instance of an application in a directory."""
 
     def __str__(self):
-        return self.display_name
+        return self.display_name or ""
 
     def add_key(
         self,
@@ -116,7 +116,7 @@ class ServicePrincipal(DirectoryObject):
 
         return_type = ClientResult(self.context, StringCollection())
 
-        def _get_delegated_permissions(client_id: str, principal_id: str = None) -> None:
+        def _get_delegated_permissions(client_id: str, principal_id: str | None = None) -> None:
             if principal_id is None:
                 query_text = f"clientId eq '{client_id}'  and consentType eq '{consent_type}'"
             else:
@@ -125,7 +125,7 @@ class ServicePrincipal(DirectoryObject):
             def _loaded(col):
                 scope_val = next(iter([g.scope for g in col if g.resource_id == self.id]), None)
                 if scope_val is not None:
-                    [return_type.value.add(name) for name in scope_val.split(" ")]
+                    [cast(StringCollection, return_type.value).add(name) for name in scope_val.split(" ")]
 
             (self.context.oauth2_permission_grants.get().filter(query_text).after_execute(_loaded))
 
@@ -140,9 +140,11 @@ class ServicePrincipal(DirectoryObject):
 
         def _resolve_principal(app_id):
             if isinstance(principal, User):
+                user_id = principal.id
+                assert user_id is not None
 
                 def _after():
-                    _get_delegated_permissions(app_id, principal.id)
+                    _get_delegated_permissions(app_id, user_id)
 
                 principal.ensure_property("id", _after)
             else:
@@ -175,56 +177,15 @@ class ServicePrincipal(DirectoryObject):
 
         def _resource_resolved():
             if isinstance(principal, User):
+                user_id = principal.id
+                assert user_id is not None
 
                 def _after():
-                    _principal_resolved(principal.id)
+                    _principal_resolved(user_id)
 
                 principal.ensure_property("id", _after)
             else:
-                _principal_resolved(principal)
-
-        self.ensure_property("id", _resource_resolved)
-        return self
-
-    def revoke_delegated_permissions(
-        self,
-        app: Application | str,
-        principal: User | str | None = None,
-        scope: AppRole | str | None = None,
-    ) -> Self:
-        """"""
-
-        def _revoke_delegated_permissions(principal_id: str, client_id: str) -> None:
-            def _after(return_type):
-                if len(return_type) > 0:
-                    return_type[0].delete_object()
-
-            if principal:
-                query_text = (
-                    f"clientId eq '{client_id}' and principalId eq '{principal_id}' and resourceId eq '{self.id}'"
-                )
-            else:
-                query_text = (
-                    f"clientId eq '{client_id}' and consentType eq 'AllPrincipals' and resourceId eq '{self.id}'"
-                )
-
-            self.context.oauth2_permission_grants.filter(query_text).get().after_execute(_after)
-
-        def _principal_resolved(principal_id: str) -> None:
-            def _client_loaded(return_type: ServicePrincipal) -> None:
-                _revoke_delegated_permissions(principal_id, return_type.id)
-
-            self.context.service_principals.get_by_app(app).get().after_execute(_client_loaded)
-
-        def _resource_resolved():
-            if isinstance(principal, User):
-
-                def _after():
-                    _principal_resolved(principal.id)
-
-                principal.ensure_property("id", _after)
-            else:
-                _principal_resolved(principal)
+                _principal_resolved(principal)  # type: ignore[reportArgumentType]
 
         self.ensure_property("id", _resource_resolved)
         return self
@@ -239,11 +200,11 @@ class ServicePrincipal(DirectoryObject):
             ]
             for app_role in self.app_roles:
                 if app_role.id in app_role_ids:
-                    return_type.value.add(app_role)
+                    cast(AppRoleCollection, return_type.value).add(app_role)
 
         def _resolve_app():
             self.context.service_principals.get_by_app(app).get().after_execute(
-                lambda service_principal: _get_application_permissions(service_principal.id)
+                lambda service_principal: _get_application_permissions(service_principal.id)  # type: ignore[reportAttributeAccessIssue]
             )
 
         self.ensure_properties(["id", "appRoles", "appRoleAssignedTo"], _resolve_app)
@@ -260,11 +221,17 @@ class ServicePrincipal(DirectoryObject):
             self.app_role_assigned_to.add(principalId=principal_id, resourceId=self.id, appRoleId=app_role_id)
 
         def _ensure_resource():
+            assert self.id is not None
+
             def _after(return_type):
+                assert return_type.id is not None
                 if isinstance(app_role, AppRole):
+                    assert app_role.id is not None
                     _grant_application_permissions(return_type.id, app_role.id)
                 else:
                     _grant_application_permissions(return_type.id, self.app_roles[app_role].id)
+
+            self.context.service_principals.get_by_app(app).get().after_execute(_after)
 
             self.context.service_principals.get_by_app(app).get().after_execute(_after)
 
@@ -282,10 +249,14 @@ class ServicePrincipal(DirectoryObject):
                 if item.principal_id == principal_id
             ]
             if len(app_role_to_revoke) > 0:
-                self.app_role_assigned_to[app_role_to_revoke[0].id].delete_object()
+                item_id = app_role_to_revoke[0].id
+                assert item_id is not None
+                self.app_role_assigned_to[item_id].delete_object()
 
         def _ensure_app_role(principal: "ServicePrincipal") -> None:
+            assert principal.id is not None
             if isinstance(app_role, AppRole):
+                assert app_role.id is not None
                 _revoke(principal.id, app_role.id)
             else:
                 _revoke(principal.id, self.app_roles[app_role].id)
@@ -519,5 +490,6 @@ class ServicePrincipal(DirectoryObject):
 
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None and name == "appId":
+            assert self.parent_collection is not None
             self._resource_path = AppIdPath(value, self.parent_collection.resource_path)
         return super().set_property(name, value, persist_changes)

@@ -16,8 +16,8 @@ class TypeInformation:
     elements in an OData model. Used for type reflection and metadata operations.
     """
 
-    BaseTypeFullName: Optional[str] = None
-    FullName: Optional[str] = None
+    BaseTypeFullName: str = ""
+    FullName: str = ""
     IsValueObject: Optional[bool] = None
     Methods: Dict[str, MethodInformation] = field(default_factory=dict)
     Properties: Dict[str, PropertyInformation] = field(default_factory=dict)

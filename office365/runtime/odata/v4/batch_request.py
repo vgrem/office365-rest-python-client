@@ -18,7 +18,7 @@ class ODataV4BatchRequest(ODataRequest):
     OData operations in a single HTTP request and processing the batched responses.
     """
 
-    def build_request(self, query: BatchQuery) -> RequestOptions:
+    def build_request(self, query: BatchQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
         """Constructs a batch request from multiple individual queries.
 
         Args:
@@ -34,7 +34,7 @@ class ODataV4BatchRequest(ODataRequest):
         request.data = self._prepare_payload(query)
         return request
 
-    def process_response(self, response: Response, query: BatchQuery) -> None:
+    def process_response(self, response: Response, query: BatchQuery) -> None:  # type: ignore[reportIncompatibleMethodOverride]
         """Processes the batch response and handles each individual response.
 
         Args:

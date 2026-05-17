@@ -15,5 +15,5 @@ class MethodInformation:
 
     Name: Optional[str] = None
     IsBeta: Optional[bool] = None
-    Parameters: List[str] = list
+    Parameters: Optional[List[str]] = None
     ReturnTypeFullName: Optional[str] = None

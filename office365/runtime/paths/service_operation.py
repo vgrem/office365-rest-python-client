@@ -33,9 +33,9 @@ class ServiceOperationPath(ResourcePath):
         return ODataPathBuilder.build_segment(self)
 
     @property
-    def name(self) -> str:
+    def name(self) -> str | None:
         """Gets the name of the service operation."""
-        return self._key
+        return str(self._key) if self._key is not None else None
 
     @property
     def parameters(self) -> Optional[Union[List, Dict, ClientValue]]:

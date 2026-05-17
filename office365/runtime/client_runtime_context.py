@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Type
+from typing import Any, AnyStr, Callable, List, Optional, Tuple, Type
 
 from requests import Response
 from typing_extensions import Self
 
+from office365.runtime.client_object import ClientObject
 from office365.runtime.client_request import ClientRequest
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
@@ -14,9 +15,6 @@ from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
-
-if TYPE_CHECKING:
-    from office365.runtime.client_object import T
 
 
 class ClientRuntimeContext(ABC):
@@ -56,7 +54,7 @@ class ClientRuntimeContext(ABC):
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
-        success_callback: Optional[Callable[[T | None], None]] = None,
+        success_callback: Optional[Callable[[ClientObject | None], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
     ):
@@ -77,7 +75,8 @@ class ClientRuntimeContext(ABC):
                     success_callback(self.current_query.return_type)
                 break
             except exceptions as e:
-                self.add_query(self.current_query)
+                if self.current_query is not None:
+                    self.add_query(self.current_query)
                 if callable(failure_callback):
                     failure_callback(retry, e)
                 sleep(timeout_secs)
@@ -91,7 +90,7 @@ class ClientRuntimeContext(ABC):
     def service_root_url(self) -> str:
         """Gets the service root URL."""
 
-    def load(self, client_object: T, properties_to_retrieve: List[str] | None = None) -> Self:
+    def load(self, client_object: ClientObject, properties_to_retrieve: List[str] | None = None) -> Self:
         """Prepares retrieval query for the specified client object.
 
         Args:
@@ -113,12 +112,14 @@ class ClientRuntimeContext(ABC):
             return self
         query = self._queries[-1]
 
-        self.pending_request().before_execute(action, once=once, condition=lambda: self.current_query.id == query.id)
+        self.pending_request().before_execute(
+            action, once=once, condition=lambda: self.current_query is not None and self.current_query.id == query.id
+        )
         return self
 
     def after_execute(
         self,
-        action: Callable[[Response], None] | Callable[[Self], None],
+        action: Callable[[Any], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:
@@ -139,10 +140,12 @@ class ClientRuntimeContext(ABC):
         def _process_response(resp: Response) -> None:
             resp.raise_for_status()
             if callable(action):
-                action(resp if include_response else query.return_type)
+                action(resp if include_response else query.return_type)  # type: ignore[arg-type]
 
         self.pending_request().after_execute(
-            _process_response, once=True, condition=lambda: self.current_query.id == query.id
+            _process_response,
+            once=True,
+            condition=lambda: self.current_query is not None and self.current_query.id == query.id,
         )
 
         if execute_first and len(self._queries) > 1:

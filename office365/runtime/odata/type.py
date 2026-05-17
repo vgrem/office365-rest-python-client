@@ -6,13 +6,10 @@ import inspect
 import pkgutil
 import uuid
 from functools import lru_cache
-from typing import Optional, Sequence, Type, TypeVar
+from typing import Optional, Sequence, Type
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import GuidCollection, StringCollection
-
-T = TypeVar("T", bound=Type)
-
 
 _PRIMITIVE_TYPES = {
     "Edm.Boolean": bool,
@@ -36,7 +33,7 @@ _PRIMITIVE_TYPES = {
 class ODataType:
     """OData type system utilities with enhanced type resolution."""
 
-    def __init__(self, name: str = None, is_object_type=False):
+    def __init__(self, name: str | None = None, is_object_type: bool = False):
         self._name = name
         self._client_type = None
         self._is_object_type = is_object_type
@@ -55,11 +52,14 @@ class ODataType:
         if self._client_type:
             return self._client_type.__name__
 
-        if self._name in _PRIMITIVE_TYPES:
-            primitive_type = _PRIMITIVE_TYPES[self._name]
+        name = self._name
+        if name is None:
+            return ""
+        if name in _PRIMITIVE_TYPES:
+            primitive_type = _PRIMITIVE_TYPES[name]
             return primitive_type.__name__
         elif self.is_collection:
-            item_type_name = self._name[len("Collection(") : -1]
+            item_type_name = name[len("Collection(") : -1]
             self._item_client_type = ODataType(name=item_type_name, is_object_type=self._is_object_type)
             item_client_name = self._item_client_type.client_type_name
             if self._is_object_type:
@@ -67,7 +67,7 @@ class ODataType:
             else:
                 return f"ClientValueCollection[{item_client_name}]"
         else:
-            return self._name.split(".")[-1]
+            return name.split(".")[-1]
 
     @property
     def item_client_type(self) -> Optional[ODataType]:
@@ -123,7 +123,7 @@ class ODataType:
         return None
 
     @classmethod
-    def resolve_type_name(cls, client_type: T) -> Optional[str]:
+    def resolve_type_name(cls, client_type: Type) -> Optional[str]:
         """Resolves the OData type name for a given Python type.
 
         Args:
@@ -142,7 +142,7 @@ class ODataType:
 
         try:
             if issubclass(client_type, ClientValue):
-                return client_type().entity_type_name
+                return client_type().entity_type_name  # type: ignore[call-arg]
         except TypeError:
             pass
 
@@ -159,4 +159,4 @@ class ODataType:
     @property
     def is_collection(self) -> bool:
         """Check if this type represents a collection."""
-        return self._name.startswith("Collection(")
+        return self._name is not None and self._name.startswith("Collection(")

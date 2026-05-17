@@ -62,6 +62,7 @@ class ACSTokenProvider(AuthenticationProvider):
             target_host: URL authority of the target principal
             target_realm: Realm for token's nameid and audience
         """
+        assert target_realm is not None
         resource = self.get_formatted_principal(self.SHAREPOINT_PRINCIPAL, target_host, target_realm)
         principal_id = self.get_formatted_principal(self._credential.client_id, None, target_realm)
         sts_url = self.get_security_token_service_url(target_realm)

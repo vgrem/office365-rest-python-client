@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from typing import Union
+
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -25,10 +29,8 @@ class EntityPath(ResourcePath):
     def segment(self):
         return str(self._key or "<key>")
 
-    def patch(self, key):
-        # type: (str) -> Self
+    def patch(self, key: Union[int, str]) -> Self:
         """Patches the path"""
         self._key = key
         self._parent = self.collection
-        self.__class__ = EntityPath
         return self

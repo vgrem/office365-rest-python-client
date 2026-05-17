@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.certificates.x509.affinitylevel import X509CertificateAffinityLevel
 from office365.directory.certificates.x509.authenticationmode import X509CertificateAuthenticationMode
 from office365.directory.certificates.x509.ruletype import X509CertificateRuleType
@@ -7,9 +9,9 @@ from office365.runtime.client_value import ClientValue
 class X509CertificateRule(ClientValue):
     def __init__(
         self,
-        identifier: str = None,
-        issuer_subject_identifier: str = None,
-        policy_oid_identifier: str = None,
+        identifier: Optional[str] = None,
+        issuer_subject_identifier: Optional[str] = None,
+        policy_oid_identifier: Optional[str] = None,
         x509_certificate_authentication_mode: X509CertificateAuthenticationMode = X509CertificateAuthenticationMode.none,
         x509_certificate_required_affinity_level: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none,
         x509_certificate_rule_type: X509CertificateRuleType = X509CertificateRuleType.none,

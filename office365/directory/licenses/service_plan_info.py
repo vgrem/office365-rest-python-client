@@ -29,4 +29,4 @@ class ServicePlanInfo(ClientValue):
         self.appliesTo = applies_to
 
     def __repr__(self):
-        return self.servicePlanName
+        return str(self.servicePlanName or "")

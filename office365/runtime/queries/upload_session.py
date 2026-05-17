@@ -1,3 +1,5 @@
+from typing import cast
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -14,7 +16,8 @@ class UploadSessionQuery(ServiceOperationQuery):
 
     @property
     def upload_session_url(self):
-        return self.return_type.value.uploadUrl
+        session = cast(UploadSession, self.return_type.value)
+        return session.uploadUrl
 
     @property
     def return_type(self) -> ClientResult[UploadSession]:

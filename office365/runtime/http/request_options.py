@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, BinaryIO, Dict, Optional, Union
+from typing import Any, BinaryIO, Dict, List, Optional, Union
 
 from office365.runtime.http.http_method import HttpMethod
 
@@ -21,7 +21,7 @@ class RequestOptions:
 
     url: str
     method: HttpMethod = HttpMethod.Get
-    data: Optional[Union[str, bytes, BinaryIO, Dict[str, Any]]] = None
+    data: Optional[Union[str, bytes, BinaryIO, Dict[str, Any], List[Any]]] = None
     headers: Dict[str, str] = field(default_factory=dict)
     auth: Optional[Any] = None
     verify: bool = True
@@ -35,12 +35,12 @@ class RequestOptions:
     @property
     def is_file(self) -> bool:
         """Check if data is a file-like object."""
-        return hasattr(self.data, "read") and callable(self.data.read)
+        return callable(getattr(self.data, "read", None))
 
     @property
     def is_bytes(self) -> bool:
         """Check if data is bytes-like."""
-        return isinstance(self.data, bytes) or (hasattr(self.data, "decode") and callable(self.data.decode))
+        return isinstance(self.data, bytes) or callable(getattr(self.data, "decode", None))
 
     def set_header(self, name: str, value: Any) -> None:
         """Set a request header."""

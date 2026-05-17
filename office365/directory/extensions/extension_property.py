@@ -37,7 +37,7 @@ class ExtensionProperty(DirectoryObject):
         return self.properties.get("dataType", None)
 
     @property
-    def target_objects(self):
+    def target_objects(self) -> Optional[StringCollection]:
         """
         Following values are supported. Not nullable.
         User

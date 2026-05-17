@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import List
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -11,9 +12,9 @@ class UploadSession(ClientValue):
 
     def __init__(
         self,
-        upload_url: str = None,
-        expiration_datetime: datetime = None,
-        next_expected_ranges: List[str] = None,
+        upload_url: str | None = None,
+        expiration_datetime: datetime | None = None,
+        next_expected_ranges: list[str] | None = None,
     ):
         """
         :param str upload_url: The URL endpoint that accepts PUT requests for byte ranges of the file.

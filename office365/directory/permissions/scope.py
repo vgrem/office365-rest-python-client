@@ -21,9 +21,9 @@ class PermissionScope(ClientValue):
         is_enabled: bool | None = None,
         origin: str | None = None,
         type_=None,
-        user_consent_description: str = None,
-        user_consent_display_name: str = None,
-        value: str = None,
+        user_consent_description: str | None = None,
+        user_consent_display_name: str | None = None,
+        value: str | None = None,
     ):
         """
         :param str admin_consent_display_name: The permission's title, intended to be read by an administrator granting

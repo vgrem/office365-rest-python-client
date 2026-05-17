@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
@@ -9,7 +9,7 @@ class QueryOptionsBuilder:
     """Builder for constructing QueryOptions instances."""
 
     @staticmethod
-    def build(client_object: ClientObject, properties_to_include: List[str] = None) -> QueryOptions:
+    def build(client_object: ClientObject, properties_to_include: Optional[List[str]] = None) -> QueryOptions:
         """Builds optimized query options for the given client object.
 
         Args:

@@ -18,7 +18,7 @@ class UrlPath(EntityPath):
         :type parent: office365.runtime.paths.resource_path.ResourcePath
         """
         if isinstance(parent, UrlPath):
-            url = "/".join([parent._key, url])
+            url = "/".join([str(parent._key), url])
             collection = parent.collection
             parent = parent.parent
         elif isinstance(parent, RootPath):

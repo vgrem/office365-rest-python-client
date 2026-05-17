@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -6,11 +7,11 @@ from office365.runtime.client_value import ClientValue
 class ResourceSpecificPermission(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        display_name: str = None,
-        id_: UUID = None,
-        is_enabled: bool = None,
-        value: str = None,
+        description: Optional[str] = None,
+        display_name: Optional[str] = None,
+        id_: Optional[UUID] = None,
+        is_enabled: Optional[bool] = None,
+        value: Optional[str] = None,
     ):
         self.description = description
         self.displayName = display_name

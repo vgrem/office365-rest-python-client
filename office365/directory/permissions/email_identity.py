@@ -1,10 +1,12 @@
+from typing import Optional
+
 from office365.directory.permissions.identity import Identity
 
 
 class EmailIdentity(Identity):
     """Represents the email identity of a user."""
 
-    def __init__(self, id_=None, email=None, display_name=None):
+    def __init__(self, id_: Optional[str] = None, email: Optional[str] = None, display_name: Optional[str] = None):
         """
         :param str email:
         """

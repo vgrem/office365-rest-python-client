@@ -54,7 +54,10 @@ class ODataReader(ABC):
 
     def process_type_node(self, type_node: Element, schema_node: Element, base_type: str) -> TypeInformation:
         type_schema = TypeInformation()
-        type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_node.get('Name'))}"
+        type_name = type_node.get("Name")
+        if type_name is None:
+            raise ValueError("Type node missing 'Name' attribute")
+        type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_name)}"
         type_schema.BaseTypeFullName = base_type
         type_schema.IsValueObject = base_type == "EntityType"
 
@@ -84,13 +87,13 @@ class ODataReader(ABC):
 
     def process_property_node(self, node: Element) -> PropertyInformation:
         schema = PropertyInformation()
-        schema.Name = node.get("Name")
+        schema.Name = node.get("Name") or ""
         schema.TypeName = node.get("Type")
         return schema
 
     def process_member_node(self, node: Element) -> MemberInformation:
         schema = MemberInformation()
-        schema.Name = node.get("Name")
+        schema.Name = node.get("Name") or ""
         schema.Value = node.get("Value")
         return schema
 

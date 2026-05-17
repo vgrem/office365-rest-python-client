@@ -84,7 +84,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
         """
         return self._data[index]
 
-    def __iter__(self) -> Iterator[T]:
+    def __iter__(self) -> Iterator[T]:  # type: ignore[reportIncompatibleMethodOverride]
         """Iterates through all items in the collection.
 
         Yields:
@@ -103,7 +103,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
     def __repr__(self) -> str:
         return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Union[List[Any], Dict[str, Any]]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Union[List[Any], Dict[str, Any]]:  # type: ignore[reportIncompatibleMethodOverride]
         """Serializes the collection to OData JSON format.
 
         Args:
@@ -123,12 +123,12 @@ class ClientValueCollection(ClientValue, Generic[T]):
                 "__metadata": {"type": "Collection(Edm.String)"}
             }
         """
-        json = [v for v in self]
+        json = [v for v in self]  # type: ignore[assignment]
         for i, v in enumerate(json):
             if isinstance(v, ClientValue):
-                json[i] = v.to_json(json_format)
+                json[i] = v.to_json(json_format)  # type: ignore[assignment]
             elif isinstance(v, uuid.UUID):
-                json[i] = str(v)
+                json[i] = str(v)  # type: ignore[assignment]
         if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:
             json = {
                 json_format.collection: json,
@@ -149,19 +149,19 @@ class ClientValueCollection(ClientValue, Generic[T]):
             ValueError: If initial_value cannot be converted to item_type
         """
         if initial_value is None:
-            return uuid.uuid4() if self._item_type == uuid.UUID else self._item_type()
+            return uuid.uuid4() if self._item_type == uuid.UUID else self._item_type()  # type: ignore[reportReturnType]
         elif self._item_type == uuid.UUID:
-            return uuid.UUID(initial_value)
+            return uuid.UUID(initial_value)  # type: ignore[reportReturnType,reportArgumentType]
         elif issubclass(self._item_type, Enum):
-            return parse_enum(self._item_type, initial_value)
+            return parse_enum(self._item_type, initial_value)  # type: ignore[reportReturnType,reportArgumentType]
         elif issubclass(self._item_type, ClientValue):
             value = self._item_type()
-            [value.set_property(k, v, False) for k, v in initial_value.items()]
+            [value.set_property(k, v, False) for k, v in initial_value.items()]  # type: ignore[reportAttributeAccessIssue]
             return value
         else:
-            return initial_value
+            return initial_value  # type: ignore[reportReturnType]
 
-    def set_property(self, index: int, value: Any, persist_changes: bool = False):
+    def set_property(self, index: int, value: Any, persist_changes: bool = False):  # type: ignore[reportIncompatibleMethodOverride]
         """Adds an item to the collection after type conversion.
 
         Args:

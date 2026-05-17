@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,10 +7,10 @@ from office365.runtime.client_value import ClientValue
 class OnPremisesProvisioningError(ClientValue):
     def __init__(
         self,
-        category: str = None,
-        occurred_date_time: datetime = None,
-        property_causing_error: str = None,
-        value: str = None,
+        category: Optional[str] = None,
+        occurred_date_time: Optional[datetime] = None,
+        property_causing_error: Optional[str] = None,
+        value: Optional[str] = None,
     ):
         self.category = category
         self.occurredDateTime = occurred_date_time

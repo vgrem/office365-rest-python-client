@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ServicePrincipalLockConfiguration(ClientValue):
     def __init__(
         self,
-        all_properties: bool = None,
-        credentials_with_usage_sign: bool = None,
-        credentials_with_usage_verify: bool = None,
-        is_enabled: bool = None,
-        token_encryption_key_id: bool = None,
+        all_properties: Optional[bool] = None,
+        credentials_with_usage_sign: Optional[bool] = None,
+        credentials_with_usage_verify: Optional[bool] = None,
+        is_enabled: Optional[bool] = None,
+        token_encryption_key_id: Optional[bool] = None,
     ):
         self.allProperties = all_properties
         self.credentialsWithUsageSign = credentials_with_usage_sign

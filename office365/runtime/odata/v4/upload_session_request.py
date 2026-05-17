@@ -32,9 +32,12 @@ class UploadSessionRequest(ClientRequest):
         self._chunk_uploaded = chunk_uploaded
         self._range_data: Optional[bytes] = None
 
-    def build_request(self, query: UploadSessionQuery) -> Self:
+    def build_request(self, query: UploadSessionQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
         """Build a request for uploading a single chunk."""
-        request = RequestOptions(query.upload_session_url)
+        assert self._range_data is not None
+        upload_url = query.upload_session_url
+        assert upload_url is not None
+        request = RequestOptions(upload_url)
         request.method = HttpMethod.Put
         request.set_header("Content-Length", str(len(self._range_data)))
         request.set_header(
@@ -45,13 +48,13 @@ class UploadSessionRequest(ClientRequest):
         request.data = self._range_data
         return request
 
-    def process_response(self, response: Response, query: UploadSessionQuery) -> None:
+    def process_response(self, response: Response, query: UploadSessionQuery) -> None:  # type: ignore[reportIncompatibleMethodOverride]
         """Handle the response after uploading a chunk."""
         response.raise_for_status()
         if callable(self._chunk_uploaded):
             self._chunk_uploaded(self.range_end)
 
-    def execute_query(self, query: UploadSessionQuery) -> Self:
+    def execute_query(self, query: UploadSessionQuery) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Execute the upload query for each chunk."""
         for self._range_data in self._read_next():
             super().execute_query(query)
@@ -79,6 +82,7 @@ class UploadSessionRequest(ClientRequest):
         """Get the starting byte position of the current chunk."""
         if self.range_end == 0:
             return 0
+        assert self._range_data is not None
         return self.range_end - len(self._range_data)
 
     @property

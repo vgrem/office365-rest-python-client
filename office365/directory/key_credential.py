@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -19,9 +20,9 @@ class KeyCredential(ClientValue):
         start_datetime=None,
         key_type=None,
         usage=None,
-        end_date_time: datetime = None,
-        start_date_time: datetime = None,
-        type_: str = None,
+        end_date_time: Optional[datetime] = None,
+        start_date_time: Optional[datetime] = None,
+        type_: Optional[str] = None,
     ):
         """
         :param str custom_key_identifier: A 40-character binary type that can be used to identify the credential.

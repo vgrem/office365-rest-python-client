@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union, cast
 
 from requests import Response
 from typing_extensions import Self
@@ -25,7 +25,7 @@ class ClientResult(Generic[ClientValueT]):
     ) -> None:
         """Client result"""
         self._context = context
-        self._value = copy.deepcopy(default_value)  # type: ClientValueT
+        self._value = cast(ClientValueT, copy.deepcopy(default_value))
 
     def before_execute(self, action: Callable[[RequestOptions], None]) -> Self:
         """Attach an event handler which is triggered before query is submitted to server"""
@@ -34,7 +34,7 @@ class ClientResult(Generic[ClientValueT]):
 
     def after_execute(
         self,
-        action: Callable[[Self], None] | Callable[[Response], None],
+        action: Callable[[Any], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:
@@ -62,7 +62,7 @@ class ClientResult(Generic[ClientValueT]):
     @property
     def value(self) -> ClientValueT:
         """Returns the value"""
-        return self._value
+        return self._value  # type: ignore[return-value]
 
     def execute_query(self) -> Self:
         """Submit request(s) to the server"""

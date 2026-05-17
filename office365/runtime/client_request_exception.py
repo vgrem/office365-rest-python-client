@@ -13,13 +13,14 @@ class ClientRequestException(RequestException):
 
     def _get_error_info(self) -> Dict[str, Any]:
         """Extract and parse error info from response."""
-        if getattr(self, "response", None) is None:
+        response = getattr(self, "response", None)
+        if response is None:
             return {}
 
-        content_type = self.response.headers.get("Content-Type", "").split(";")[0].lower()
-        if content_type == "application/json" and self.response.content:
+        content_type = response.headers.get("Content-Type", "").split(";")[0].lower()
+        if content_type == "application/json" and response.content:
             try:
-                payload = self.response.json()
+                payload = response.json()
                 return payload.get("error", {})
             except ValueError:
                 pass

@@ -191,8 +191,8 @@ class AuthenticationContext:
                 else:
                     self._cached_token = TokenResponse.from_json(token_res)
 
-                if hasattr(self._cached_token, "expiresIn"):
-                    expires_in = self._cached_token.expiresIn
+                if hasattr(self._cached_token, "expiresIn"):  # type: ignore[reportAttributeAccessIssue]
+                    expires_in = self._cached_token.expiresIn  # type: ignore[reportAttributeAccessIssue]
                     self._token_expires = request_time + timedelta(seconds=int(expires_in))
             request.set_header("Authorization", _get_authorization_header(self._cached_token))
 

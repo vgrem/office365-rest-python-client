@@ -214,7 +214,7 @@ class User(DirectoryObject):
         if isinstance(user, User):
             user.ensure_property("id", lambda: _assign_manager(user.id))
         elif hasattr(user, "id"):
-            _assign_manager(user.id)
+            _assign_manager(user.id)  # type: ignore[reportAttributeAccessIssue]
         else:
             _assign_manager(str(user))
         return self.manager
@@ -1229,5 +1229,6 @@ class User(DirectoryObject):
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "id" or name == "userPrincipalName":
+                assert self.parent_collection is not None
                 self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
         return self

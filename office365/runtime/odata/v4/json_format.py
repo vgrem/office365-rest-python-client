@@ -5,7 +5,7 @@ from office365.runtime.odata.v4.metadata_level import ODataV4MetadataLevel
 class V4JsonFormat(ODataJsonFormat):
     """JSON format (V4)"""
 
-    def __init__(self, metadata_level: ODataV4MetadataLevel = ODataV4MetadataLevel.Minimal):
+    def __init__(self, metadata_level: str = ODataV4MetadataLevel.Minimal):
         super().__init__(metadata_level)
         """The IEEE754Compatible format parameter indicates that the service MUST serialize Edm.Int64 and
         Edm.Decimal numbers as strings."""

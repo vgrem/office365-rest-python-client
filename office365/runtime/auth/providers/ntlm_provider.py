@@ -34,7 +34,7 @@ class NtlmProvider(AuthenticationProvider):
         super().__init__()
         self._last_error: Optional[Exception] = None
         try:
-            from requests_ntlm import HttpNtlmAuth
+            from requests_ntlm import HttpNtlmAuth  # type: ignore[reportMissingImports]
 
             self.auth = HttpNtlmAuth(credentials.userName, credentials.password)
         except ImportError as e:

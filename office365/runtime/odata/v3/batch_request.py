@@ -22,7 +22,7 @@ class ODataBatchV3Request(ODataRequest):
     operations in a single HTTP request and processing the multipart response.
     """
 
-    def build_request(self, query: BatchQuery) -> RequestOptions:
+    def build_request(self, query: BatchQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
         """Construct an OData v3 batch request.
 
         Args:
@@ -39,7 +39,7 @@ class ODataBatchV3Request(ODataRequest):
         request.data = self._prepare_payload(query)
         return request
 
-    def process_response(self, response: Response, query: BatchQuery) -> None:
+    def process_response(self, response: Response, query: BatchQuery) -> None:  # type: ignore[reportIncompatibleMethodOverride]
         """Process a batch response by handling each sub-response.
 
         Args:
@@ -67,7 +67,7 @@ class ODataBatchV3Request(ODataRequest):
 
         query_id = 0
         for raw_response in message.get_payload():
-            if raw_response.get_content_type() == "application/http":
+            if isinstance(raw_response, Message) and raw_response.get_content_type() == "application/http":
                 qry = query.ordered_queries[query_id]
                 query_id += 1
                 yield qry, self._deserialize_response(raw_response)
@@ -129,10 +129,12 @@ class ODataBatchV3Request(ODataRequest):
         Returns:
             Constructed Response object
         """
-        response = raw_response.get_payload(decode=True)
-        lines = list(filter(None, response.decode("utf-8").split("\r\n")))
+        payload = raw_response.get_payload(decode=True)
+        assert isinstance(payload, bytes)
+        lines = list(filter(None, payload.decode("utf-8").split("\r\n")))
         response_status_regex = "^HTTP/1\\.\\d (\\d{3}) (.*)$"
         status_result = re.match(response_status_regex, lines[0])
+        assert status_result is not None
         status_info = status_result.groups()
 
         resp = requests.Response()

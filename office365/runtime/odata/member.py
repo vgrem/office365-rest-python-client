@@ -10,5 +10,5 @@ class MemberInformation:
         Name: The name of the member
     """
 
-    Name: Optional[str] = None
+    Name: str = ""
     Value: Optional[str] = None

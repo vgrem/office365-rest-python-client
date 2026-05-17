@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import AnyStr
+from typing import Union
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
@@ -19,7 +19,7 @@ class ServiceOperationQuery(ClientQuery[T]):
         binding_type: ClientObject,
         method_name: str | None = None,
         method_params: list | dict | ClientValue | None = None,
-        parameters_type: ClientObject | ClientValue | dict | AnyStr | None = None,
+        parameters_type: ClientObject | ClientValue | dict | str | None = None,
         parameters_name: str | None = None,
         return_type: T | None = None,
         is_static: bool = False,
@@ -41,10 +41,12 @@ class ServiceOperationQuery(ClientQuery[T]):
     @property
     def path(self) -> ServiceOperationPath:
         """Gets the service operation path for this query."""
+        assert self.binding_type is not None
         if self.static:
             static_name = f"{self.binding_type.entity_type_name}.{self._method_name}"
             return ServiceOperationPath(static_name, self._method_params)
         else:
+            assert self._method_name is not None
             return ServiceOperationPath(self._method_name, self._method_params, self.binding_type.resource_path)
 
     @property

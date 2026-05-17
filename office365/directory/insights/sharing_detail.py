@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.directory.insights.identity import InsightIdentity
 from office365.directory.insights.resource_reference import ResourceReference
@@ -11,10 +12,10 @@ class SharingDetail(ClientValue):
     def __init__(
         self,
         shared_by=InsightIdentity(),
-        shared_datetime: datetime = None,
+        shared_datetime: Optional[datetime] = None,
         sharing_reference=ResourceReference(),
-        sharing_subject: str = None,
-        sharing_type: str = None,
+        sharing_subject: Optional[str] = None,
+        sharing_type: Optional[str] = None,
     ):
         """
         :param datetime shared_datetime: The date and time the file was last shared.

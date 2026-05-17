@@ -11,7 +11,7 @@ class PropertyInformation:
         ReadOnly: Whether the property is read-only
     """
 
-    Name: Optional[str] = None
+    Name: str = ""
     TypeName: Optional[str] = None
     ReadOnly: Optional[bool] = None
     IsBeta: Optional[bool] = None

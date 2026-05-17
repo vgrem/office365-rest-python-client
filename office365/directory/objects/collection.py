@@ -18,7 +18,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, DirectoryObject, resource_path)
 
-    def get_by_ids(self, ids: List[str], types: List[str] = None) -> DirectoryObjectCollection:
+    def get_by_ids(self, ids: List[str], types: list[str] | None = None) -> DirectoryObjectCollection:
         """
         Returns the directory objects specified in a list of IDs.
         :param list[str] ids: A collection of IDs for which to return objects. The IDs are GUIDs, represented as
@@ -34,7 +34,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, directory_object: DirectoryObject) -> Self:
+    def add(self, directory_object: DirectoryObject) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Adds directory objects to the collection."""
 
         def _add():
@@ -89,10 +89,10 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
     def validate_properties(
         self,
-        entity_type: str = None,
-        display_name: str = None,
-        mail_nickname: str = None,
-        on_behalf_of_userid: str = None,
+        entity_type: str | None = None,
+        display_name: str | None = None,
+        mail_nickname: str | None = None,
+        on_behalf_of_userid: str | None = None,
     ) -> Self:
         """
         Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.

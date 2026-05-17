@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class LicenseProcessingState(ClientValue):
-    def __init__(self, state: str = None):
+    def __init__(self, state: Optional[str] = None):
         self.state = state
 
     ""

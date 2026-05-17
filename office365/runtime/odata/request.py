@@ -105,7 +105,7 @@ class ODataRequest(ClientRequest):
 
         if json and return_type is not None:
             for k, v in self._next_property(json, json_format):
-                return_type.set_property(k, v, False)
+                return_type.set_property(str(k), v, False)
 
     def _next_property(self, json: Any, json_format: ODataJsonFormat) -> Iterator[Tuple[Union[str, int], Any]]:
         """
@@ -154,7 +154,7 @@ class ODataRequest(ClientRequest):
         elif json is not None:
             yield "__value", json
 
-    def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any]]:
+    def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any], str]:
         """
         Normalizes OData request payload.
 
@@ -165,13 +165,15 @@ class ODataRequest(ClientRequest):
             Normalized payload dictionary or list
         """
 
-        def _normalize_payload(payload: ClientObject | ClientValue | Dict | List) -> Dict | List:
+        def _normalize_payload(payload: ClientObject | ClientValue | dict | list | str | None) -> dict | list | str:
             if isinstance(payload, (ClientObject, ClientValue)):
                 return payload.to_json(self._default_json_format)
             elif isinstance(payload, dict):
                 return {k: _normalize_payload(v) for k, v in payload.items() if v is not None}
             elif isinstance(payload, list):
                 return [_normalize_payload(item) for item in payload]
+            elif payload is None:
+                return {}
             return payload
 
         json = _normalize_payload(query.parameters_type)

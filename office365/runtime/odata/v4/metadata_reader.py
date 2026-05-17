@@ -10,7 +10,7 @@ class ODataV4Reader(ODataReader):
 
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
         schema = PropertyInformation()
-        schema.Name = node.get("Name")
+        schema.Name = node.get("Name") or ""
         schema.TypeName = node.get("Type")
         schema.IsNavigation = True
         schema.IsBeta = False
