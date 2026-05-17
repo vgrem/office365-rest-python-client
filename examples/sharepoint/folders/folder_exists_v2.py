@@ -15,4 +15,4 @@ except ClientRequestException as e:
     if e.response.status_code == 404:
         print("Folder '{0}' not found".format(folder_path))
     else:
-        raise ValueError(e.response.text)
+        raise ValueError(e.response.text) from e

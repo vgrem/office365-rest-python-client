@@ -108,7 +108,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         except requests.exceptions.RequestException as e:
             logger.error(e.response.text)  # type: ignore[reportOptionalMemberAccess]
             self.error = f"Error: {e}"
-            raise ValueError(e.response.text)  # type: ignore[reportOptionalMemberAccess]
+            raise ValueError(e.response.text) from e  # type: ignore[reportOptionalMemberAccess]
 
     def _get_user_realm(self) -> Optional[UserRealmInfo]:
         """Get User Realm"""

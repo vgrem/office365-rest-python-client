@@ -14,7 +14,7 @@ def try_get_file(web: Web, url: str) -> Optional[File]:
         if e.response.status_code == 404:
             return None
         else:
-            raise ValueError(e.response.text)
+            raise ValueError(e.response.text) from e
 
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)

@@ -96,7 +96,6 @@ lint.select = [
 ]
 lint.ignore = [
   "B008",    # Do not perform function call in argument defaults
-  "B904",    # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
   "E501",    # Line too long
   "PLC0415", # `import` should be at the top-level of a file (circular import workaround)
   "PLR1714", # merge multiple comparisons
