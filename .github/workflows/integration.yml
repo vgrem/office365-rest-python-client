@@ -1,0 +1,49 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      pytest_args:
+        description: 'Pytest arguments (e.g. tests/directory/test_user.py)'
+        required: false
+        default: ''
+        type: string
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
+
+env:
+  DEFAULT_PYTHON: "3.10"
+  UV_VERSION: 0.9.22
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Install Requirements
+        run: uv sync --frozen --all-extras
+      - name: Run integration tests
+        env:
+          office365_python_sdk_securevars: ${{ secrets.OFFICE365_PYTHON_SDK_SECUREVARS }}
+        run: |
+          if [ -z "$OFFICE365_PYTHON_SDK_SECUREVARS" ]; then
+            echo "❌ OFFICE365_PYTHON_SDK_SECUREVARS not set"
+            exit 1
+          fi
+          args="${{ github.event.inputs.pytest_args }}"
+          if [ -z "$args" ]; then
+            uv run pytest -q
+          else
+            uv run pytest -q $args
+          fi

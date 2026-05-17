@@ -62,13 +62,5 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - name: Install Requirements
         run: uv sync --frozen --all-extras
-      - name: Test with pytest (skip entirely if secrets missing)
-        env:
-          office365_python_sdk_securevars: ${{ secrets.OFFICE365_PYTHON_SDK_SECUREVARS }}
-        run: |
-          if [ -z "${{env.office365_python_sdk_securevars}}" ]; then \
-            echo "No secrets available; run offline"; \
-            uv run pytest --offline; \
-          else \
-            uv run pytest; \
-          fi
+      - name: Run offline tests
+        run: uv run pytest --offline -q
