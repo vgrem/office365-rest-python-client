@@ -11,6 +11,7 @@ from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.response_status import ResponseStatus
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
+from office365.outlook.mail.body_type import BodyType
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.location import Location
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -236,7 +237,7 @@ class Event(OutlookItem):
     @body.setter
     def body(self, value):
         """Sets The body of the message associated with the event. It can be in HTML or text format."""
-        self.set_property("body", ItemBody(value, "HTML"))
+        self.set_property("body", ItemBody(value, BodyType.html))
 
     @property
     def body_preview(self) -> Optional[str]:

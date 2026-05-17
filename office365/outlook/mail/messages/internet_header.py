@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,7 +9,7 @@ class InternetMessageHeader(ClientValue):
     network path taken by a message from the sender to the recipient.
     """
 
-    def __init__(self, name: str = None, value: str = None):
+    def __init__(self, name: Optional[str] = None, value: Optional[str] = None):
         """
         :param str name: Represents the key in a key-value pair.
         :param str value:The value in a key-value pair.

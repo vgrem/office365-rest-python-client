@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytz
 
 from office365.runtime.client_value import ClientValue
@@ -6,7 +8,7 @@ from office365.runtime.client_value import ClientValue
 class DateTimeTimeZone(ClientValue):
     """Describes the date, time, and time zone of a point in time."""
 
-    def __init__(self, datetime: str = None, timezone: str = None):
+    def __init__(self, datetime: Optional[str] = None, timezone: Optional[str] = None):
         """
 
         :param str timezone: Represents a time zone, for example, "Pacific Standard Time".
@@ -18,7 +20,7 @@ class DateTimeTimeZone(ClientValue):
         self.timeZone = timezone
 
     def __repr__(self):
-        return f"{self.dateTime}, {self.timeZone}"
+        return f"{self.dateTime or ''}, {self.timeZone or ''}"
 
     @staticmethod
     def parse(dt):

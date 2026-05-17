@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.mail.item_body import ItemBody
@@ -16,16 +16,16 @@ if TYPE_CHECKING:
 class MessageCollection(DeltaCollection["Message"]):
     """ """
 
-    def __init__(self, context: GraphClient, resource_path: ResourcePath = None):
+    def __init__(self, context: GraphClient, resource_path: Optional[ResourcePath] = None):
         from office365.outlook.mail.messages.message import Message
 
         super().__init__(context, Message, resource_path)
 
     def add(
         self,
-        subject: str = None,
-        body: Union[str, ItemBody] = None,
-        to_recipients: List[str] = None,
+        subject: Optional[str] = None,
+        body: Optional[Union[str, ItemBody]] = None,
+        to_recipients: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Message:
         """
@@ -53,6 +53,7 @@ class MessageCollection(DeltaCollection["Message"]):
         A $search request returns up to 1,000 results
         """
 
+        assert self.resource_path is not None
         return_type = MessageCollection(self.context, self.resource_path)
         return_type.query_options.custom["search"] = query_text
         return_type.get()

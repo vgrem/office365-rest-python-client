@@ -135,4 +135,5 @@ include = [
     "office365/communications/*",
     "office365/search/*",
     "office365/teams/*",
+    "office365/outlook/*",
 ]

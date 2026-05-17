@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, List
+from typing import Any, List, Optional
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
@@ -18,11 +18,11 @@ class EventCollection(DeltaCollection[Event]):
 
     def add(
         self,
-        subject: str = None,
-        body: str | ItemBody = None,
-        start: datetime = None,
-        end=datetime,
-        attendees=List[str],
+        subject: Optional[str] = None,
+        body: Optional[str | ItemBody] = None,
+        start: Optional[datetime] = None,
+        end: Optional[datetime] = None,
+        attendees: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Event:
         """

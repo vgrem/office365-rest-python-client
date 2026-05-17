@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
 from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
@@ -11,15 +13,15 @@ class MailboxSettings(ClientValue):
 
     def __init__(
         self,
-        time_format: str = None,
-        time_zone: str = None,
+        time_format: Optional[str] = None,
+        time_zone: Optional[str] = None,
         automatic_replies_setting: AutomaticRepliesSetting = AutomaticRepliesSetting(),
-        archive_folder: str = None,
-        date_format: str = None,
+        archive_folder: Optional[str] = None,
+        date_format: Optional[str] = None,
         language: LocaleInfo = LocaleInfo(),
         working_hours: WorkingHours = WorkingHours(),
-        delegate_meeting_message_delivery_options: DelegateMeetingMessageDeliveryOptions = None,
-        user_purpose: UserPurpose = None,
+        delegate_meeting_message_delivery_options: Optional[DelegateMeetingMessageDeliveryOptions] = None,
+        user_purpose: Optional[UserPurpose] = None,
     ):
         """
         :param str time_format: The time format for the user's mailbox.

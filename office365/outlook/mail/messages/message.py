@@ -15,6 +15,7 @@ from office365.directory.extensions.extension import Extension
 from office365.entity_collection import EntityCollection
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
+from office365.outlook.mail.body_type import BodyType
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
@@ -46,9 +47,9 @@ class Message(OutlookItem):
 
     def create_forward(
         self,
-        to_recipients: List[Recipient] = None,
-        message: Message = None,
-        comment: str = None,
+        to_recipients: Optional[List[Recipient]] = None,
+        message: Optional[Message] = None,
+        comment: Optional[str] = None,
     ) -> Message:
         """
         Create a draft to forward an existing message, in either JSON or MIME format.
@@ -129,7 +130,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    def reply(self, comment: str = None) -> Message:
+    def reply(self, comment: Optional[str] = None) -> Message:
         """Reply to the sender of a message by specifying a comment and using the Reply method. The message is then
         saved in the Sent Items folder.
 
@@ -187,6 +188,7 @@ class Message(OutlookItem):
         if isinstance(destination, MailFolder):
 
             def _loaded():
+                assert destination.id is not None
                 _copy(destination.id)
 
             destination.ensure_property("id", _loaded)
@@ -212,6 +214,7 @@ class Message(OutlookItem):
         if isinstance(destination, MailFolder):
 
             def _loaded():
+                assert destination.id is not None
                 _move(destination.id)
 
             destination.ensure_property("id", _loaded)
@@ -280,7 +283,7 @@ class Message(OutlookItem):
             return
         if content_type.lower() not in ["text", "html"]:
             raise ValueError("content_type must be either 'Text' or 'HTML'")
-        item_body = ItemBody(content=content, content_type=content_type)
+        item_body = ItemBody(content=content, content_type=BodyType(content_type.lower()))
         self.set_property("body", item_body)
 
     @property

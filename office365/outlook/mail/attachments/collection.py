@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import base64
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Optional
 
 import requests
 
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 class AttachmentCollection(EntityCollection[Attachment]):
     """Attachment collection"""
 
-    def __init__(self, context: GraphClient, resource_path: ResourcePath = None) -> None:
+    def __init__(self, context: GraphClient, resource_path: Optional[ResourcePath] = None) -> None:
         super().__init__(context, Attachment, resource_path)
 
     def add_file(
@@ -49,11 +49,14 @@ class AttachmentCollection(EntityCollection[Attachment]):
         return_type = FileAttachment(self.context)
         return_type.name = name
         if base64_content:
-            content = base64_content
+            content_bytes: bytes = base64_content
         else:
-            content = base64.b64encode(content.encode("utf-8")).decode("utf-8")
-        return_type.content_bytes = content
-        return_type.content_type = content_type
+            assert content is not None
+            content_str = content if isinstance(content, str) else content.decode("utf-8")
+            content_bytes = base64.b64encode(content_str.encode("utf-8"))
+        return_type.content_bytes = content_bytes
+        if content_type:
+            return_type.content_type = content_type
         self.add_child(return_type)
         return self
 

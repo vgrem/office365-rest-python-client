@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.outlook.calendar.attendees.availability import AttendeeAvailability
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 from office365.outlook.mail.location import Location
@@ -13,9 +15,9 @@ class MeetingTimeSuggestion(ClientValue):
 
     def __init__(
         self,
-        attendee_availability: list[AttendeeAvailability] = None,
-        confidence: float = None,
-        locations: list[Location] = None,
+        attendee_availability: Optional[list[AttendeeAvailability]] = None,
+        confidence: Optional[float] = None,
+        locations: Optional[list[Location]] = None,
         meeting_timeslot: TimeSlot = TimeSlot(),
     ) -> None:
         """

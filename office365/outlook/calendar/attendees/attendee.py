@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.outlook.calendar.attendees.base import AttendeeBase
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
@@ -10,9 +12,9 @@ class Attendee(AttendeeBase):
     def __init__(
         self,
         email_address=EmailAddress(),
-        attendee_type: str = None,
-        proposed_new_time: TimeSlot = None,
-        status: str = None,
+        attendee_type: Optional[str] = None,
+        proposed_new_time: Optional[TimeSlot] = None,
+        status: Optional[str] = None,
     ):
         """
 

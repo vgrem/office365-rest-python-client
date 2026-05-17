@@ -17,4 +17,4 @@ class TimeZoneInformation(ClientValue):
         self.displayName = display_name
 
     def __repr__(self) -> str:
-        return self.displayName
+        return self.displayName or ""

@@ -12,4 +12,4 @@ class TimeZoneBase(ClientValue):
         self.name = name
 
     def __repr__(self):
-        return self.name
+        return self.name or ""

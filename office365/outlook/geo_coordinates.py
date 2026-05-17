@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,11 +8,11 @@ class OutlookGeoCoordinates(ClientValue):
 
     def __init__(
         self,
-        accuracy: float = None,
-        altitude: float = None,
-        altitude_accuracy: float = None,
-        latitude: float = None,
-        longitude: float = None,
+        accuracy: Optional[float] = None,
+        altitude: Optional[float] = None,
+        altitude_accuracy: Optional[float] = None,
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
     ) -> None:
         """
         :param float accuracy: The accuracy of the latitude and longitude. As an example, the accuracy can be measured
