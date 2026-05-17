@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class AgreementPermissionsData(ClientValue):
     def __init__(
         self,
-        can_add_amendment: bool = None,
-        can_create_agreement: bool = None,
-        can_create_template: bool = None,
-        can_import_agreement: bool = None,
-        can_upload_signed_version: bool = None,
-        is_workspace_owner: bool = None,
+        can_add_amendment: Optional[bool] = None,
+        can_create_agreement: Optional[bool] = None,
+        can_create_template: Optional[bool] = None,
+        can_import_agreement: Optional[bool] = None,
+        can_upload_signed_version: Optional[bool] = None,
+        is_workspace_owner: Optional[bool] = None,
     ):
         self.can_add_amendment = can_add_amendment
         self.can_create_agreement = can_create_agreement

@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class FieldCreationParameters(ClientValue):
     def __init__(
         self,
-        data_source: str = None,
-        data_type: str = None,
-        description: str = None,
-        title: str = None,
+        data_source: Optional[str] = None,
+        data_type: Optional[str] = None,
+        description: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.DataSource = data_source
         self.DataType = data_type

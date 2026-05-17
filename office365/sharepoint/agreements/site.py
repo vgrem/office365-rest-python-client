@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharepointids import SharePointIds
@@ -10,14 +11,14 @@ class SPAgreementsSite(ClientValue):
     def __init__(
         self,
         created_date_time: datetime = datetime.min,
-        description: str = None,
-        group_id: str = None,
+        description: Optional[str] = None,
+        group_id: Optional[str] = None,
         last_modified_date_time: datetime = datetime.min,
         resource_visualization: ResourceVisualization = ResourceVisualization(),
         share_point_ids: SharePointIds = SharePointIds(),
         template: SiteTemplate = SiteTemplate(),
-        title: str = None,
-        web_url: str = None,
+        title: Optional[str] = None,
+        web_url: Optional[str] = None,
     ):
         self.CreatedDateTime = created_date_time
         self.Description = description

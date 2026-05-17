@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ApproveItemApprovalRequestPayload(ClientValue):
     def __init__(
         self,
-        approval_id: str = None,
-        comments: str = None,
-        item_id: str = None,
-        url: str = None,
-        version: str = None,
+        approval_id: Optional[str] = None,
+        comments: Optional[str] = None,
+        item_id: Optional[str] = None,
+        url: Optional[str] = None,
+        version: Optional[str] = None,
     ):
         self.approvalId = approval_id
         self.comments = comments

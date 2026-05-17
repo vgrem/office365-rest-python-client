@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class AgreementSearchParameters(ClientValue):
     def __init__(
         self,
-        agreement_number: str = None,
-        category: str = None,
-        owner: str = None,
-        row_limit: int = None,
-        start_row: int = None,
-        state: str = None,
+        agreement_number: Optional[str] = None,
+        category: Optional[str] = None,
+        owner: Optional[str] = None,
+        row_limit: Optional[int] = None,
+        start_row: Optional[int] = None,
+        state: Optional[str] = None,
     ):
         self.agreement_number = agreement_number
         self.category = category

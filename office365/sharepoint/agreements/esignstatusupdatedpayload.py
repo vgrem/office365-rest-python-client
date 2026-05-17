@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class AgreementESignStatusUpdatedPayload(ClientValue):
     def __init__(
         self,
-        agreement_id: str = None,
-        external_reference: str = None,
-        signed_doc_id: str = None,
-        status: str = None,
+        agreement_id: Optional[str] = None,
+        external_reference: Optional[str] = None,
+        signed_doc_id: Optional[str] = None,
+        status: Optional[str] = None,
     ):
         self.agreement_id = agreement_id
         self.external_reference = external_reference

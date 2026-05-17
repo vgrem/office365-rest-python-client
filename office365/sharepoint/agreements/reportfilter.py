@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class AgreementReportFilter(ClientValue):
     def __init__(
         self,
-        category: str = None,
-        first_party: str = None,
-        language: str = None,
-        location: str = None,
-        owner: str = None,
-        second_party: str = None,
-        state: str = None,
+        category: Optional[str] = None,
+        first_party: Optional[str] = None,
+        language: Optional[str] = None,
+        location: Optional[str] = None,
+        owner: Optional[str] = None,
+        second_party: Optional[str] = None,
+        state: Optional[str] = None,
     ):
         self.category = category
         self.first_party = first_party
