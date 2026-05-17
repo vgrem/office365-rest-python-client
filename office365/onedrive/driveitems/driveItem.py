@@ -856,8 +856,9 @@ class DriveItem(BaseItem):
             ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path)),
         )
 
-    def delta(self, token: str | None = None) -> EntityCollection["DriveItem"]:
-        """This method allows your app to track changes to a drive item and its children over time."""
+    @property
+    def delta(self) -> EntityCollection["DriveItem"]:
+        """Tracks changes to a drive item and its children over time."""
         return self.properties.get(
             "delta",
             EntityCollection(self.context, DriveItem, DeltaPath(self.resource_path)),

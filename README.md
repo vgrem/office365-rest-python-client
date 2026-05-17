@@ -38,9 +38,9 @@ The library provides two clients: **`ClientContext`** for SharePoint REST API an
 > and will be **fully retired on April 2, 2026**. Use Azure AD-based authentication instead.
 > [Learn more](https://aka.ms/retirement/acs/support)
 
-## ClientContext — SharePoint
+## ClientContext - SharePoint
 
-### Azure AD App-Only (certificate) — RECOMMENDED
+### Azure AD App-Only (certificate) - RECOMMENDED
 
 ```python
 ctx = ClientContext('{site_url}').with_client_certificate(tenant, client_id, thumbprint, cert_path)
@@ -86,7 +86,7 @@ ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/modern/with_device_flow.py)
 
-### Legacy — SAML User Auth ⚠️
+### Legacy - SAML User Auth ⚠️
 
 > **Deprecated**: `with_user_credentials` uses the legacy SAML-based auth flow
 > which is being phased out by Microsoft. Use `with_username_and_password`
@@ -172,7 +172,7 @@ client = GraphClient(acquire_token)
 
 ---
 
-# ClientContext — SharePoint API
+# ClientContext - SharePoint API
 
 ## Quick start
 
