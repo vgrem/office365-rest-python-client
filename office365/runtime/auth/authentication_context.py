@@ -10,7 +10,6 @@ from typing_extensions import Self
 from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
-from office365.runtime.auth.providers.cookie_provider import CookieAuthProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential

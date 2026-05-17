@@ -71,4 +71,5 @@ class CookieAuthProvider(AuthenticationProvider):
     def authenticate_request(self, request) -> None:
         """Sets the Cookie header using cached or freshly acquired cookies."""
         self._ensure_cookies_cached()
+        assert self._cached_auth_cookies is not None
         request.set_header("Cookie", self._cached_auth_cookies.cookie_header)

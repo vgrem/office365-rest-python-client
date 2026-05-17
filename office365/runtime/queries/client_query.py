@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
-
-from office365.runtime.client_result import ClientResult
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
