@@ -1,7 +1,7 @@
 """
 Get the messages in the signed-in user's mailbox
 
-# The example is adapted from https://learn.microsoft.com/en-us/graph/api/user-list-messages
+https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0
 """
 
 from office365.graph_client import GraphClient

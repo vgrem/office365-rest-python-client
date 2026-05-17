@@ -1,6 +1,7 @@
 """
-Demonstrates how to read messages (basic properties) in user mailbox
+Read messages (basic properties) in a user mailbox
 
+https://learn.microsoft.com/en-us/graph/api/resources/message
 """
 
 from office365.graph_client import GraphClient

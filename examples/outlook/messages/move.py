@@ -18,4 +18,4 @@ message = client.me.messages.add(
     to_recipients=["fannyd@contoso.onmicrosoft.com"],
 )
 message.move(to_folder).execute_query()
-print(f"Draft message is created && moved into {folder_name} folder")
+print(f"Draft message is created and moved into {folder_name} folder")

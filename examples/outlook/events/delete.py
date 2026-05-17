@@ -1,5 +1,7 @@
 """
-Deletes the event
+Delete an event from the user's default calendar
+
+https://learn.microsoft.com/en-us/graph/api/resources/event
 """
 
 from office365.graph_client import GraphClient

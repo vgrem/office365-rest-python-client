@@ -1,7 +1,5 @@
 """
-Create a single-value extended property for a message
-
-Demonstrates how to update the properties of a message object.
+Update the properties of a message object
 
 https://learn.microsoft.com/en-us/graph/api/message-update?view=graph-rest-1.0
 """

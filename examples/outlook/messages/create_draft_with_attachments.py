@@ -1,4 +1,8 @@
-""" """
+"""
+Create a draft message with a file attachment
+
+https://learn.microsoft.com/en-us/graph/api/resources/message
+"""
 
 import base64
 

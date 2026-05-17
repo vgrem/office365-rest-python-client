@@ -1,5 +1,7 @@
 """
-Marks all items (messages) in folder as read
+Mark all items (messages) in a folder as read/unread
+
+https://learn.microsoft.com/en-us/graph/api/resources/message
 """
 
 from office365.graph_client import GraphClient

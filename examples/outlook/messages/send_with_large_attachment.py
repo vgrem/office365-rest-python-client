@@ -1,5 +1,5 @@
 """
-Demonstrates how send e message with large attachment to Outlook message
+Send a message with a large attachment using an upload session
 
 https://learn.microsoft.com/en-us/graph/api/attachment-createuploadsession?view=graph-rest-1.0
 """

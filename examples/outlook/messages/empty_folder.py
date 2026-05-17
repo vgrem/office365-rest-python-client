@@ -1,6 +1,7 @@
 """
-Empties the mail folder
+Empties the mail folder (deletes all messages)
 
+https://learn.microsoft.com/en-us/graph/api/resources/message
 """
 
 from office365.graph_client import GraphClient

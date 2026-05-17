@@ -1,7 +1,7 @@
 """
 Reply to the sender of a message using either JSON or MIME format.
 
-The example is adapted from https://docs.microsoft.com/en-us/graph/api/message-reply?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/message-reply?view=graph-rest-1.0
 """
 
 import sys
