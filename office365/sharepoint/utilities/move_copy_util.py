@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import IO, TYPE_CHECKING, AnyStr, Callable
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -142,7 +142,7 @@ class MoveCopyUtil(Entity):
     def download_folder(
         remove_folder: Folder,
         download_file: IO,
-        after_file_downloaded: Callable[[File], None] = None,
+        after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
     ) -> Folder:
         """

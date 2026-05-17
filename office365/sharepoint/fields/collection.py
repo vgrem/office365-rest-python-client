@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union, cast
+
+from office365.sharepoint.fields.field import Field
+
+T = TypeVar("T", bound=Field)
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -9,7 +13,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.fields.calculated import FieldCalculated
 from office365.sharepoint.fields.creation_information import FieldCreationInformation
 from office365.sharepoint.fields.date_time import FieldDateTime
-from office365.sharepoint.fields.field import Field, T
+from office365.sharepoint.fields.field import Field
 from office365.sharepoint.fields.geolocation import FieldGeolocation
 from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
 from office365.sharepoint.fields.number import FieldNumber
@@ -35,7 +39,7 @@ class FieldCollection(EntityCollection[Field]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
 
-    def add_calculated(self, title: str, formula: str, description: str = None) -> FieldCalculated:
+    def add_calculated(self, title: str, formula: str, description: Optional[str] = None) -> FieldCalculated:
         """
         Creates a Calculated field
         :param str title: Specifies the display name of the field
@@ -111,7 +115,7 @@ class FieldCollection(EntityCollection[Field]):
     def add_lookup_field(
         self,
         title: str,
-        lookup_list: Union[str, List],
+        lookup_list: Union[str, "List"],
         lookup_field_name: str,
         allow_multiple_values: bool = False,
     ):
@@ -125,7 +129,6 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field.
         """
         from office365.sharepoint.fields.lookup import FieldLookup
-        from office365.sharepoint.lists.list import List  # noqa
 
         return_type = FieldLookup(self.context)
 
@@ -155,7 +158,9 @@ class FieldCollection(EntityCollection[Field]):
         if isinstance(lookup_list, List):
 
             def _lookup_list_loaded():
-                _add_lookup_field(lookup_list.id)
+                lookup_list_id = lookup_list.id
+                if lookup_list_id is not None:
+                    _add_lookup_field(lookup_list_id)
 
             lookup_list.ensure_property("Id", _lookup_list_loaded)
         else:
@@ -172,7 +177,8 @@ class FieldCollection(EntityCollection[Field]):
         """
         fld_type = FieldType.MultiChoice if multiple_values else FieldType.Choice
         create_field_info = FieldCreationInformation(title, fld_type)
-        [create_field_info.Choices.add(choice) for choice in values]
+        if create_field_info.Choices is not None:
+            [create_field_info.Choices.add(choice) for choice in values]
         return self.add_field(create_field_info)
 
     def add_user_field(
@@ -190,7 +196,7 @@ class FieldCollection(EntityCollection[Field]):
         :param int or None selection_mode:
         :param bool allow_multiple_values:
         """
-        return self.add(
+        return self.add(  # type: ignore[returnType]
             FieldType.User,
             Title=title,
             Description=description,
@@ -230,7 +236,7 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, field_type_kind: FieldType, **parameters: Any) -> T:
+    def add(self, field_type_kind: FieldType, **parameters: Any) -> Field:
         """Adds a fields to the fields collection."""
         field_type = Field.resolve_field_type(field_type_kind.value)
         return_type = field_type(self.context)
@@ -241,14 +247,14 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
-    def add_field(self, parameters: FieldCreationInformation, return_type: T = None) -> T:
+    def add_field(self, parameters: FieldCreationInformation, return_type: Optional[T] = None) -> T:
         """Adds a fields to the fields collection.
 
         :type parameters: FieldCreationInformation
         :param Field or None return_type: Return type
         """
         if return_type is None:
-            return_type = Field(self.context)
+            return_type = cast(T, Field(self.context))
         self.add_child(return_type)
         payload = {"parameters": parameters}
         qry = ServiceOperationQuery(self, "AddField", None, payload, None, return_type)
@@ -282,19 +288,25 @@ class FieldCollection(EntityCollection[Field]):
 
         def _term_store_loaded(term_store: TermStore) -> None:
             if isinstance(term_set, TermSet):
+                term_set_obj = term_set
 
                 def _term_set_loaded():
-                    _create_taxonomy_field(term_store.id, term_set.id)
+                    ts_id = term_store.id
+                    ts_id2 = term_set_obj.id
+                    if ts_id is not None and ts_id2 is not None:
+                        _create_taxonomy_field(ts_id, ts_id2)
 
                 term_set.ensure_property("id", _term_set_loaded)
             else:
-                _create_taxonomy_field(term_store.id, term_set)
+                ts_id = term_store.id
+                if ts_id is not None:
+                    _create_taxonomy_field(ts_id, term_set)
 
         self.context.load(self.context.taxonomy.term_store).after_execute(_term_store_loaded)
 
         return return_type
 
-    def create_field_as_xml(self, schema_xml: str, return_type: T = None) -> T:
+    def create_field_as_xml(self, schema_xml: str, return_type: Optional[T] = None) -> T:
         """
         Creates a field based on the values defined in the parameters input parameter.
 
@@ -302,7 +314,7 @@ class FieldCollection(EntityCollection[Field]):
         :param Field or None return_type: Return type
         """
         if return_type is None:
-            return_type = Field(self.context)
+            return_type = cast(T, Field(self.context))
         self.add_child(return_type)
         payload = {"parameters": XmlSchemaFieldCreationInformation(schema_xml)}
         qry = ServiceOperationQuery(self, "CreateFieldAsXml", None, payload, None, return_type)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Type, TypeVar, Union
+from typing import Optional, Type, Union
 
 from typing_extensions import Self
 
@@ -11,8 +11,6 @@ from office365.runtime.utilities import parse_enum
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.translation.user_resource import UserResource
-
-T = TypeVar("T", bound="Field")
 
 
 class Field(Entity):
@@ -25,7 +23,7 @@ class Field(Entity):
         return self.internal_name or self.id or self.entity_type_name
 
     @staticmethod
-    def resolve_field_type(type_id_or_name: Union[str, int]) -> Type[T]:
+    def resolve_field_type(type_id_or_name: Union[str, int]) -> Type[Field]:
         from office365.sharepoint.fields.calculated import FieldCalculated
         from office365.sharepoint.fields.choice import FieldChoice
         from office365.sharepoint.fields.computed import FieldComputed
@@ -40,7 +38,7 @@ class Field(Entity):
         from office365.sharepoint.fields.user import FieldUser
         from office365.sharepoint.taxonomy.field import TaxonomyField
 
-        field_known_types = {
+        field_known_types: dict[FieldType, Type[Field]] = {
             FieldType.Text: FieldText,
             FieldType.Calculated: FieldCalculated,
             FieldType.Choice: FieldChoice,
@@ -56,7 +54,9 @@ class Field(Entity):
         }
         if isinstance(type_id_or_name, int):
             type_enum = parse_enum(FieldType, type_id_or_name)
-            return field_known_types.get(type_enum, Field)
+            if type_enum is not None:
+                return field_known_types.get(type_enum, Field)  # type: ignore[arg-type]
+            return Field
         elif type_id_or_name == "TaxonomyFieldType" or type_id_or_name == "TaxonomyFieldTypeMulti":
             return TaxonomyField
         elif type_id_or_name == "Thumbnail":
@@ -304,7 +304,7 @@ class Field(Entity):
         super().set_property(name, value, persist_changes)
         # fallback: create a new resource path
         if name == "FieldTypeKind":
-            self.__class__ = self.resolve_field_type(value)
+            self.__class__ = self.resolve_field_type(value)  # type: ignore[reportAttributeAccessIssue]
         elif name == "TypeAsString" and self.properties.get("FieldTypeKind", 0) == 0:
-            self.__class__ = self.resolve_field_type(value)
+            self.__class__ = self.resolve_field_type(value)  # type: ignore[reportAttributeAccessIssue]
         return self

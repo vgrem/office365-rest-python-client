@@ -149,4 +149,6 @@ include = [
     "office365/sharepoint/contenttypes/*",
     "office365/sharepoint/permissions/*",
     "office365/sharepoint/translation/*",
+    "office365/sharepoint/fields/*",
+    "office365/sharepoint/folders/*",
 ]

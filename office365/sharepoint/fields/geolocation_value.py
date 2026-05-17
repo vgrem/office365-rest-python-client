@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,8 +8,8 @@ class FieldGeolocationValue(ClientValue):
         self,
         latitude: float,
         longitude: float,
-        altitude: float = None,
-        measure: float = None,
+        altitude: Optional[float] = None,
+        measure: Optional[float] = None,
     ):
         """
         Specifies altitude, latitude, longitude and measure values for FieldGeolocation (section 3.2.5.185).<191>

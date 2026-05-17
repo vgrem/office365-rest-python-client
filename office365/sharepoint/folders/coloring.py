@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -14,7 +16,7 @@ class FolderColoring(Entity):
         self,
         decoded_url: str,
         coloring_information: FolderColoringInformation = FolderColoringInformation(),
-        return_type: Folder = None,
+        return_type: Optional[Folder] = None,
     ):
         """
         :param str decoded_url:

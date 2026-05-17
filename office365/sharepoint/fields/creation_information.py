@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -10,14 +10,14 @@ class FieldCreationInformation(ClientValue):
         self,
         title: str,
         field_type_kind: FieldType,
-        description: str = None,
-        lookup_list_id: str = None,
-        lookup_field_name: str = None,
-        lookup_web_id: str = None,
+        description: Optional[str] = None,
+        lookup_list_id: Optional[str] = None,
+        lookup_field_name: Optional[str] = None,
+        lookup_web_id: Optional[str] = None,
         required: bool = False,
-        formula: str = None,
-        choices: List[str] = None,
-        is_compact_name: bool = None,
+        formula: Optional[str] = None,
+        choices: Optional[List[str]] = None,
+        is_compact_name: Optional[bool] = None,
     ):
         """
         Represents metadata about fields creation.

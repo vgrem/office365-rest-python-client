@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -77,8 +77,8 @@ class DocumentSharingManager(Entity):
         context: ClientContext,
         resource_address: str,
         user_role_assignments: List[UserRoleAssignment],
-        validate_existing_permissions: bool = None,
-        additive_mode: bool = None,
+        validate_existing_permissions: Optional[bool] = None,
+        additive_mode: Optional[bool] = None,
         send_server_managed_notification=None,
         custom_message=None,
         include_anonymous_links_in_notification=None,

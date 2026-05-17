@@ -1,9 +1,11 @@
+from typing import Optional
+
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.principal.users.user import User
 
 
 class FieldUserValue(FieldLookupValue):
-    def __init__(self, user_id: int, email: str = None):
+    def __init__(self, user_id: int, email: Optional[str] = None):
         """Represents the value of a user fields for a list item."""
         super().__init__(user_id)
         self.Email = email

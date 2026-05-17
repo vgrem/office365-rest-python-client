@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -46,7 +47,7 @@ class FolderCollection(EntityCollection[Folder]):
             folder = folder.add(name)
         return folder
 
-    def add(self, name: str, color_hex: FolderColors = None) -> Folder:
+    def add(self, name: str, color_hex: Optional[FolderColors] = None) -> Folder:
         """Adds the folder that is located at the specified URL to the collection.
         :param str name: Specifies the Name or Path of the folder.
         :param str color_hex: Specifies the color of the folder.
@@ -55,11 +56,18 @@ class FolderCollection(EntityCollection[Folder]):
         if color_hex:
 
             def _add_coloring():
-                path = os.path.join(self.parent.properties.get("ServerRelativeUrl"), name)
+                parent = self.parent
+                if parent is None:
+                    return
+                server_relative_url = parent.properties.get("ServerRelativeUrl")
+                if server_relative_url is None:
+                    return
+                path = os.path.join(server_relative_url, name)
                 coloring_info = FolderColoringInformation(color_hex=color_hex)
                 self.context.folder_coloring.create_folder(path, coloring_info, return_type=return_type)
 
-            self.parent.ensure_property("ServerRelativeUrl", _add_coloring)
+            if self.parent is not None:
+                self.parent.ensure_property("ServerRelativeUrl", _add_coloring)
         else:
             self.add_child(return_type)
             qry = ServiceOperationQuery(self, "Add", [name], None, None, return_type)

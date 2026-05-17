@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import IO, TYPE_CHECKING, Callable, List, Optional, Union
+from typing import IO, TYPE_CHECKING, Callable, List, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -56,7 +56,7 @@ class Folder(Entity):
         return ctx.web.get_folder_by_server_relative_url(relative_url)
 
     def download_folder(
-        self, download_file: IO, after_file_downloaded: Callable[[File], None] = None, recursive: bool = True
+        self, download_file: IO, after_file_downloaded: Optional[Callable[[File], None]] = None, recursive: bool = True
     ):
         """
         Downloads a folder into a zip file
@@ -68,7 +68,7 @@ class Folder(Entity):
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for a folder"""
-        return self.list_item_all_fields.get_user_effective_permissions(user)
+        return self.list_item_all_fields.get_user_effective_permissions(user)  # type: ignore[arg-type]
 
     def get_folders(self, recursive: bool = False) -> FolderCollection:
         """
@@ -95,7 +95,9 @@ class Folder(Entity):
         """
         from office365.sharepoint.files.collection import FileCollection
 
-        return_type = FileCollection(self.context, self.files.resource_path, self)
+        resource_path = self.files.resource_path
+        assert resource_path is not None
+        return_type = FileCollection(self.context, resource_path, self)
 
         def _get_files(parent: Folder) -> None:
             [return_type.add_child(f) for f in parent.files]
@@ -122,7 +124,7 @@ class Folder(Entity):
         """
 
         def _move_to(destination_folder: Folder) -> None:
-            destination_url = "/".join([destination_folder.server_relative_url, self.name])
+            destination_url = "/".join([x or "" for x in [destination_folder.server_relative_url, self.name]])
             qry = ServiceOperationQuery(self, "MoveTo", {"newUrl": destination_url})
 
             def _update_folder(return_type):
@@ -149,7 +151,7 @@ class Folder(Entity):
         """
 
         def _move_to_using_path(destination_folder: Folder) -> None:
-            destination_path = "/".join([str(destination_folder.server_relative_path), self.name])
+            destination_path = "/".join([x or "" for x in [str(destination_folder.server_relative_path), self.name]])
             qry = ServiceOperationQuery(self, "MoveToUsingPath", {"DecodedUrl": destination_path})
 
             def _update_folder(url):
@@ -179,6 +181,7 @@ class Folder(Entity):
 
         def _move_folder():
             opt = MoveCopyOptions(retain_editor_and_modified_on_move=retain_editor_and_modified)
+            assert self.server_relative_path is not None
             MoveCopyUtil.move_folder_by_path(self.context, self.server_relative_path.DecodedUrl, new_relative_path, opt)
 
         self.ensure_property("ServerRelativePath", _move_folder)
@@ -209,7 +212,7 @@ class Folder(Entity):
             link_kind=link_kind, expiration=expiration, role=role, password=password
         )
 
-    def unshare_link(self, link_kind: int, share_id: str = None) -> Self:
+    def unshare_link(self, link_kind: int, share_id: Optional[str] = None) -> Self:
         """
         Removes the specified tokenized sharing link of the folder.
 
@@ -217,7 +220,7 @@ class Folder(Entity):
             sharing link that is intended to be removed.
         :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
         """
-        return self.list_item_all_fields.unshare_link(link_kind, share_id)
+        return self.list_item_all_fields.unshare_link(link_kind, share_id)  # type: ignore[returnType]
 
     def recycle(self) -> ClientResult[str]:
         """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
@@ -238,7 +241,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_changes(self, query: ChangeQuery = None) -> ChangeCollection:
+    def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the folder,
            based on the specified query.
 
@@ -267,7 +270,7 @@ class Folder(Entity):
 
     def add(self, name: str) -> Self:
         """Adds the folder that is located under a current folder"""
-        return self.folders.add(name)
+        return self.folders.add(name)  # type: ignore[returnType]
 
     def rename(self, name: str) -> Self:
         """Rename a Folder resource"""
@@ -290,12 +293,12 @@ class Folder(Entity):
     def update_document_sharing_info(
         self,
         user_role_assignments: List[UserRoleAssignment],
-        validate_existing_permissions: bool = None,
-        additive_mode: bool = None,
-        send_server_managed_notification: bool = None,
-        custom_message: str = None,
-        include_anonymous_links_in_notification: bool = None,
-        propagate_acl: bool = None,
+        validate_existing_permissions: Optional[bool] = None,
+        additive_mode: Optional[bool] = None,
+        send_server_managed_notification: Optional[bool] = None,
+        custom_message: Optional[str] = None,
+        include_anonymous_links_in_notification: Optional[bool] = None,
+        propagate_acl: Optional[bool] = None,
     ) -> ClientResult[ClientValueCollection[UserSharingResult]]:
         """
         This method allows a caller with the 'ManagePermission' permission to update sharing information about a
@@ -355,10 +358,11 @@ class Folder(Entity):
         :param bool reset_author_and_created:
         """
         return_type = Folder(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
         def _copy_to(destination_folder: Folder) -> None:
-            destination_url = "/".join([destination_folder.server_relative_url, self.name])
+            destination_url = "/".join([x or "" for x in [destination_folder.server_relative_url, self.name]])
             return_type.set_property("ServerRelativeUrl", destination_url)
             opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
             MoveCopyUtil.copy_folder(self.context, self.server_relative_url, destination_url, opts)
@@ -382,10 +386,11 @@ class Folder(Entity):
         :type reset_author_and_created: bool
         """
         return_type = Folder(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
         def _copy_folder_by_path(destination_folder: Folder) -> None:
-            destination_url = "/".join([str(destination_folder.server_relative_path), self.name])
+            destination_url = "/".join([x or "" for x in [str(destination_folder.server_relative_path), self.name]])
             return_type.set_property("ServerRelativePath", destination_url)
             opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
             MoveCopyUtil.copy_folder_by_path(self.context, str(self.server_relative_path), destination_url, opts)
@@ -501,7 +506,7 @@ class Folder(Entity):
         return self.properties.get("ServerRelativePath", SPResPath())
 
     @property
-    def property_ref_name(self) -> Optional[str]:
+    def property_ref_name(self) -> Optional[str]:  # type: ignore[override]
         return None
 
     def get_property(self, name, default_value=None):

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -7,8 +9,8 @@ class FolderDeleteParameters(ClientValue):
         bypass_shared_lock=None,
         delete_if_empty=None,
         etag_match=None,
-        bypass_checked_out: bool = None,
-        e_tag_match: str = None,
+        bypass_checked_out: Optional[bool] = None,
+        e_tag_match: Optional[str] = None,
     ):
         """
         :param bool bypass_shared_lock:
