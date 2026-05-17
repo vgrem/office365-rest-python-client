@@ -1,9 +1,9 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.migrationcenter.folderinformation import SPFolderInformation
-from typing import Optional
 
 
 class SPListInformation(ClientValue):

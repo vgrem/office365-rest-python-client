@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.dashboard.content import DashboardContent
-from typing import Optional
 
 
 class DashboardPersonalizationData(ClientValue):

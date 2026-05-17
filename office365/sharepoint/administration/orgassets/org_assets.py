@@ -1,9 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.administration.orgassets.library_collection import (
     OrgAssetsLibraryCollection,
 )
 from office365.sharepoint.types.resource_path import ResourcePath
-from typing import Optional
 
 
 class OrgAssets(ClientValue):

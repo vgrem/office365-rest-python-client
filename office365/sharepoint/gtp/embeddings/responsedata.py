@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from typing import Optional
 
 
 class GptEmbeddingsResponseData(ClientValue):

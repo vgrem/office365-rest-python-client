@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.resource_path import ResourcePath
-from typing import Optional
 
 
 class DashboardItem(ClientValue):

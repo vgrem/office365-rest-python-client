@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
@@ -5,7 +7,6 @@ from office365.sharepoint.listitems.versions.get_parameters import (
     GetListItemVersionsParameters,
 )
 from office365.sharepoint.listitems.versions.version import ListItemVersion
-from typing import Optional
 
 
 class ListItemVersionCollection(EntityCollection[ListItemVersion]):

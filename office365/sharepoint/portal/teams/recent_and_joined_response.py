@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.listhome.favorite_item import FavoriteListHomeItem
-from typing import Optional
 
 
 class RecentAndJoinedTeamsResponse(ClientValue):

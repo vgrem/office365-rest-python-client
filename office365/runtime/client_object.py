@@ -10,7 +10,6 @@ from typing import (
     List,
     Optional,
     TypeVar,
-    Union,
 )
 
 from typing_extensions import Self

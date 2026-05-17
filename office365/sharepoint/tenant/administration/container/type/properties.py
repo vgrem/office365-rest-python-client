@@ -1,10 +1,10 @@
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.container.type.billingproperties import (
     SPContainerTypeBillingProperties,
 )
-from typing import Optional
 
 
 class SPContainerTypeProperties(ClientValue):

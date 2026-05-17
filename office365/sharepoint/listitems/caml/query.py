@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.listitems.collection_position import (
     ListItemCollectionPosition,
 )
 from office365.sharepoint.types.resource_path import ResourcePath
 from office365.sharepoint.views.scope import ViewScope
-from typing import Optional
 
 
 class CamlQuery(ClientValue):

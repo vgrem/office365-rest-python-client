@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Union
-
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath

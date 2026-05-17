@@ -1,8 +1,8 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from typing import Optional
 
 
 class TenantAdminRansomwareActivity(ClientValue):

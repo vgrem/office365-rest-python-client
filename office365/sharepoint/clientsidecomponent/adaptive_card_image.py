@@ -1,5 +1,6 @@
-from office365.sharepoint.clientsidecomponent.card_element import CardElement
 from typing import Optional
+
+from office365.sharepoint.clientsidecomponent.card_element import CardElement
 
 
 class AdaptiveCardImage(CardElement):

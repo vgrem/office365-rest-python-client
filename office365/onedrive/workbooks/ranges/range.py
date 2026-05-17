@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.format import WorkbookRangeFormat

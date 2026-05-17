@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.contentmanagementassessmentpolicyreportdetails import (
@@ -7,7 +8,6 @@ from office365.sharepoint.tenant.administration.contentmanagementassessmentpolic
 from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails import (
     SitePermissionsReportDetails,
 )
-from typing import Optional
 
 
 class ContentManagementAssessmentResults(ClientValue):

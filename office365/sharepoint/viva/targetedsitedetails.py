@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection

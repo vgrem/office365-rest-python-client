@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
-from typing import Optional
 
 
 class GroupCreationInformation(ClientValue):

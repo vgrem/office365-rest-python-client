@@ -1,15 +1,10 @@
 import uuid
-from unittest import TestCase
 
-from office365.graph_client import GraphClient
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.permissions.permission import Permission
 from tests import (
     test_client_credentials,
-    test_client_id,
-    test_client_secret,
     test_team_site_url,
-    test_tenant,
     test_user_principal_name_alt,
 )
 from tests.decorators import requires_app_permission

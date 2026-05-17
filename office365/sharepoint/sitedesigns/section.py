@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sitedesigns.heroimage import HeroImage
-from typing import Optional
 
 
 class Section(ClientValue):

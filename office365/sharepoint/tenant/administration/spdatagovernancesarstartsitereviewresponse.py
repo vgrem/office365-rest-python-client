@@ -1,9 +1,9 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.errorfacet import ErrorFacet
-from typing import Optional
 
 
 class SPDataGovernanceSARStartSiteReviewResponse(ClientValue):

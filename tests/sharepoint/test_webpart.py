@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.webparts.definitions.definition import WebPartDefinition

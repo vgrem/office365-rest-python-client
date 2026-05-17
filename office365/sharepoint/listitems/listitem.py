@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Optional, TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 
 from typing_extensions import Self
 

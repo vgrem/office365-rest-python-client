@@ -1,11 +1,11 @@
 import uuid
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.sitedesigns.image import SiteDesignImage
 from office365.sharepoint.webs.teamappinfo import TeamAppInfo
-from typing import Optional
 
 
 class SiteDesignCreationInfo(ClientValue):

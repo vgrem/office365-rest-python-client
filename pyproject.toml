@@ -94,27 +94,19 @@ lint.select = [
   #"UP",  # pyupgrade
   "W", # pycodestyle
 ]
-# Comments next to codes explain why they are ignored
-# All these are subject to review and possible removal in the future
 lint.ignore = [
   "B007",    # Loop control var not used in the loop body
-  "B008",    # Do not perform function call in argument defaults; instead, perform the call within the function
-  "B020",    # Loop control variable `self` overrides iterable it iterates
+  "B008",    # Do not perform function call in argument defaults
+  "B020",    # Loop control variable `self` overrides iterable
   "B904",    # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
-  "D203",
-  "D213",
-  "E203",
-  "E501",
-  "PLC0415", # `import` should be at the top-level of a file
-  #"PLE0307", # `__str__` does not return `str`
+  "E501",    # Line too long
+  "PLC0415", # `import` should be at the top-level of a file (circular import workaround)
   "PLR1714", # merge multiple comparisons
-  "PLR2004", # Magic value used in comparison, consider replacing `2` with a constant variable
+  "PLR2004", # Magic value used in comparison
   "PLW1641", # Object does not implement `__hash__` method
-  "PLW2901", # `for` loop variable `value` overwritten by assignment target
+  "PLW2901", # `for` loop variable overwritten by assignment target
 ]
 lint.per-file-ignores."examples/**/*.py" = [ "F401" ]
-lint.per-file-ignores."office365/**/*.py" = [ "F401" ]
-lint.per-file-ignores."tests/**/*.py" = [ "F401" ]
 
 lint.pylint.max-args = 50
 lint.pylint.max-branches = 16

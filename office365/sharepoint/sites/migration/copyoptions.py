@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.sites.migration.moveandsharefileinfo import SPMoveAndShareFileInfo
-from typing import Optional
 
 
 class CopyMigrationOptions(ClientValue):

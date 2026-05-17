@@ -1,10 +1,11 @@
+from typing import Optional
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources import (
     BaseRawDataSources,
 )
 from office365.sharepoint.tenant.administration.copilot.reportrow import ReportRow
-from typing import Optional
 
 
 class ReportDetails(BaseRawDataSources):

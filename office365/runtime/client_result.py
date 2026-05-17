@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import copy
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, cast
 
-from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException

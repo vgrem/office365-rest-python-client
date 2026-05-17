@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.sites.home.navconfiguration import HomeSiteNavConfiguration
-from typing import Optional
 
 
 class ConfigurationData(ClientValue):

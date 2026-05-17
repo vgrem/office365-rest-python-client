@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.audit.data import AuditData
-from typing import Optional
 
 
 class UnifiedAuditRecord(ClientValue):

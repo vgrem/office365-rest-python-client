@@ -1,10 +1,11 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.clientsidecomponent.card_element import CardElement
 from office365.sharepoint.clientsidecomponent.padding import Padding
 from office365.sharepoint.sitedesigns.autoinvokeaction import AutoInvokeAction
 from office365.sharepoint.sitedesigns.autoinvokeoptions import AutoInvokeOptions
-from typing import Optional
 
 
 class AdaptiveCard(ClientValue):

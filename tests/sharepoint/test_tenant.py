@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus

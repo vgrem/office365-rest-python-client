@@ -1,4 +1,3 @@
-from unittest import TestCase
 from urllib.parse import urljoin
 
 from office365.sharepoint.client_context import ClientContext

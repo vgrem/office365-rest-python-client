@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.webparts.tile_data import TileData
-from typing import Optional
 
 
 class PromotedSites(Entity):

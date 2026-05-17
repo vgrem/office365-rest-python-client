@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.sites.status import SiteStatus
-from typing import Optional
 
 
 class GroupSiteInfo(ClientValue):

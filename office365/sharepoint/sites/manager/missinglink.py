@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sites.manager.missinglinkreferrer import MissingLinkReferrer
-from typing import Optional
 
 
 class MissingLink(ClientValue):

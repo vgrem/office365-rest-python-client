@@ -1,8 +1,9 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources import (
     BaseRawDataSources,
 )
-from typing import Optional
 
 
 class AdaptiveCardConfig(ClientValue):

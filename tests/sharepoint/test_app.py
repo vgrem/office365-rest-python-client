@@ -1,5 +1,4 @@
 import os
-from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.marketplace.app_metadata import CorporateCatalogAppMetadata

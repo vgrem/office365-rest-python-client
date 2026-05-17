@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.documents.destinationlibraryinfo import (
     DestinationLibraryInfo,
@@ -6,7 +8,6 @@ from office365.sharepoint.documents.effectivebasepermissions import (
     EffectiveBasePermissions,
 )
 from office365.sharepoint.documents.librarydetails import LibraryDetails
-from typing import Optional
 
 
 class AgreementsSolutionFileContext(ClientValue):

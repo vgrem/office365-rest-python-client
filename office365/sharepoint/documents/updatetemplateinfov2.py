@@ -1,8 +1,9 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
-from typing import Optional
 
 
 class UpdateTemplateInfoV2(ClientValue):

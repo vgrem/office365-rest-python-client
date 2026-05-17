@@ -1,10 +1,11 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.clientsidecomponent.query_result import (
     SPClientSideComponentQueryResult,
 )
 from office365.sharepoint.viva.dashboard.content import DashboardContent
-from typing import Optional
 
 
 class DashboardConfiguration(ClientValue):

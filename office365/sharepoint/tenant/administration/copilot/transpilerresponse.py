@@ -1,8 +1,9 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.transpilerresponse import (
     TranspilerResponse,
 )
-from typing import Optional
 
 
 class CopilotTranspilerResponse(ClientValue):

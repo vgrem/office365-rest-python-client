@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -7,7 +9,6 @@ from office365.sharepoint.viva.app_configuration import AppConfiguration
 from office365.sharepoint.viva.connections.page import VivaConnectionsPage
 from office365.sharepoint.viva.dashboard.configuration import DashboardConfiguration
 from office365.sharepoint.viva.home import VivaHome
-from typing import Optional
 
 
 class EmployeeEngagement(Entity):

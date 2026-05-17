@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import IO, TYPE_CHECKING, Callable, List, Optional, Union, cast
+from typing import IO, TYPE_CHECKING, Callable, List, Optional, Union
 
 from typing_extensions import Self
 

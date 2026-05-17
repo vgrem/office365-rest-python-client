@@ -1,9 +1,9 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.portal.channels.info import ChannelInfo
-from typing import Optional
 
 
 class ChannelInfoCollection(ClientValue):

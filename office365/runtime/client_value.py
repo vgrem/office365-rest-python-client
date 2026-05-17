@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar
 
 from typing_extensions import Self
 

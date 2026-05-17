@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.documents.placeholder import Placeholder
-from typing import Optional
 
 
 class TemplateMetaData(ClientValue):

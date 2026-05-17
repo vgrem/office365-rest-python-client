@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.gtp.chat.response import ChatGptResponse
-from typing import Optional
 
 
 class GptAsyncExecuteResponse(ClientValue):

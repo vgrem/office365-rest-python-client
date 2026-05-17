@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.home.datacacheentry import SharePointHomeDataCacheEntry
-from typing import Optional
 
 
 class SharePointHomeDataCache(ClientValue):

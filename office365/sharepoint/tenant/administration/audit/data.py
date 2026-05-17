@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,7 +9,6 @@ from office365.sharepoint.tenant.administration.modified_property import (
 )
 from office365.sharepoint.tenant.administration.parameter import Parameter
 from office365.sharepoint.tenant.administration.target_property import TargetProperty
-from typing import Optional
 
 
 class AuditData(ClientValue):

@@ -1,6 +1,7 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.clientsidecomponent.updatecardelement import UpdateCardElement
-from typing import Optional
 
 
 class ElementUpdate(ClientValue):

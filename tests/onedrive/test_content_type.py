@@ -1,9 +1,6 @@
 import uuid
-from unittest import TestCase
 
-from office365.graph_client import GraphClient
 from office365.onedrive.contenttypes.content_type import ContentType
-from tests import test_client_id, test_password, test_tenant, test_username
 from tests.decorators import requires_delegated_permission
 from tests.graph_case import GraphTestCase
 

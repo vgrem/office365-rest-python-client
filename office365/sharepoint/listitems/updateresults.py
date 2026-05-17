@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
-from typing import Optional
 
 
 class ListItemUpdateResults(ClientValue):

@@ -1,8 +1,9 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.copilot.adaptive_card_config import (
     AdaptiveCardConfig,
 )
-from typing import Optional
 
 
 class TranspilerResponse(ClientValue):

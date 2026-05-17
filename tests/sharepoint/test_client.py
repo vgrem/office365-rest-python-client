@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection

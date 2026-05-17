@@ -1,8 +1,8 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.announcementaction import AnnouncementAction
-from typing import Optional
 
 
 class AnnouncementState(ClientValue):

@@ -1,7 +1,8 @@
+from typing import Optional
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.clientsidecomponent.card_element import CardElement
 from office365.sharepoint.clientsidecomponent.padding import Padding
-from typing import Optional
 
 
 class Container(CardElement):

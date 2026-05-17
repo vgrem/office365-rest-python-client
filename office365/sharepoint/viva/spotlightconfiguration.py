@@ -1,8 +1,9 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.viva.newssite import NewsSite
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
-from typing import Optional
 
 
 class SpotlightConfiguration(ClientValue):
