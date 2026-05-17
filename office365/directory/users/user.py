@@ -77,6 +77,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -535,7 +536,10 @@ class User(DirectoryObject):
         :param permanent_delete: Permanently deletes the user from directory
         :type permanent_delete: bool
         """
-        super().delete_object()
+        qry = DeleteEntityQuery(self)
+        self.context.add_query(qry)
+        if self._parent_collection is not None:
+            self._parent_collection.remove_child(self)
         if permanent_delete:
             deleted_user = self.context.directory.deleted_users[self.id]
             deleted_user.delete_object()

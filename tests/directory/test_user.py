@@ -60,7 +60,10 @@ class TestGraphUser(GraphTestCase):
 
     def test_10_delete_user(self):
         user_to_delete = self.__class__.test_user
-        user_to_delete.delete_object(True).execute_query()
+        if user_to_delete is None:
+            self.skipTest("No test user to delete")
+        user_to_delete.delete_object().execute_query()
+        self.__class__.test_user = None
 
     def test_11_get_user_changes(self):
         changed_users = self.client.users.delta.get().execute_query()
