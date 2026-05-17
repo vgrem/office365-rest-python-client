@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -11,7 +13,7 @@ class SiteScriptSerializationInfo(ClientValue):
         include_regional_settings=None,
         include_site_external_sharing_capability=None,
         include_theme=None,
-        included_pages: StringCollection = None,
+        included_pages: Optional[StringCollection] = None,
     ):
         """
         :param bool include_branding:

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,11 +8,11 @@ class SiteScriptActionResult(ClientValue):
         self,
         outcome_text=None,
         target=None,
-        error_code: int = None,
-        outcome: int = None,
-        target_id: str = None,
-        title: str = None,
-        verb: str = None,
+        error_code: Optional[int] = None,
+        outcome: Optional[int] = None,
+        target_id: Optional[str] = None,
+        title: Optional[str] = None,
+        verb: Optional[str] = None,
     ):
         """
         :param str outcome_text:

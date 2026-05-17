@@ -190,4 +190,5 @@ include = [
     "office365/sharepoint/teams/*",
     "office365/sharepoint/yammer/*",
     "office365/sharepoint/authpolicy/*",
+    "office365/sharepoint/sitescripts/*",
 ]

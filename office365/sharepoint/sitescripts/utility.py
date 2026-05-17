@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -47,7 +47,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_list_designs(context: ClientContext, store: str = None) -> ClientResult[SiteDesignMetadata]:
+    def get_list_designs(context: ClientContext, store: Optional[str] = None) -> ClientResult[SiteDesignMetadata]:
         """
         Gets a list designs.
         """
@@ -76,8 +76,8 @@ class SiteScriptUtility(Entity):
     def get_site_script_from_list(
         context: ClientContext,
         list_url: str,
-        options: Dict = None,
-        return_type: ClientResult[str] = None,
+        options: Optional[Dict] = None,
+        return_type: Optional[ClientResult[str]] = None,
     ):
         """
         Creates site script syntax from an existing SharePoint list.
@@ -99,8 +99,8 @@ class SiteScriptUtility(Entity):
     def get_site_script_from_web(
         context: ClientContext,
         web_url: str,
-        info: SiteScriptSerializationInfo = None,
-        return_type: ClientResult[SiteScriptSerializationResult] = None,
+        info: Optional[SiteScriptSerializationInfo] = None,
+        return_type: Optional[ClientResult[SiteScriptSerializationResult]] = None,
     ):
         """
         Creates site script syntax from an existing SharePoint site.
