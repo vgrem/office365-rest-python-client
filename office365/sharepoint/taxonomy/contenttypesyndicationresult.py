@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -7,8 +9,8 @@ class ContentTypeSyndicationResult(ClientValue):
         self,
         failed_content_type_errors: StringCollection = StringCollection(),
         failed_content_type_i_ds: StringCollection = StringCollection(),
-        failed_reason: int = None,
-        is_passed: bool = None,
+        failed_reason: Optional[int] = None,
+        is_passed: Optional[bool] = None,
     ):
         self.FailedContentTypeErrors = failed_content_type_errors
         self.FailedContentTypeIDs = failed_content_type_i_ds

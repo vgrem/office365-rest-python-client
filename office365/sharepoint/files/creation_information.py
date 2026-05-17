@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,10 +8,10 @@ class FileCreationInformation(ClientValue):
 
     def __init__(
         self,
-        url: str = None,
+        url: Optional[str] = None,
         overwrite: bool = False,
         content=None,
-        xor_hash: str = None,
+        xor_hash: Optional[str] = None,
     ):
         """
         :param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative

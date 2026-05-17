@@ -1,5 +1,6 @@
 import math
 import time
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -10,13 +11,13 @@ class ContextWebInformation(ClientValue):
 
     def __init__(
         self,
-        form_digest_value: str = None,
-        form_digest_timeout_secs: int = None,
-        form_digest_timeout_seconds: int = None,
-        library_version: str = None,
-        site_full_url: str = None,
+        form_digest_value: Optional[str] = None,
+        form_digest_timeout_secs: Optional[int] = None,
+        form_digest_timeout_seconds: Optional[int] = None,
+        library_version: Optional[str] = None,
+        site_full_url: Optional[str] = None,
         supported_schema_versions: StringCollection = StringCollection(),
-        web_full_url: str = None,
+        web_full_url: Optional[str] = None,
     ):
         """
         :param str form_digest_value: An object that is inserted into a page and is used by a protocol server

@@ -64,21 +64,21 @@ class TaxonomyField(FieldLookup):
                 parent_list = fields.parent
 
                 def _list_loaded():
-                    params.web_id = parent_list.parent_web.id
-                    params.list_id = parent_list.id
+                    params.WebId = parent_list.parent_web.id
+                    params.ListId = parent_list.id
                     fields.create_field_as_xml(params.schema_xml, return_type)
 
                 fields.parent.ensure_properties(["Id", "ParentWeb"], _list_loaded)
             else:
 
                 def _web_loaded():
-                    params.web_id = fields.context.web.id
+                    params.WebId = fields.context.web.id
                     fields.create_field_as_xml(params.schema_xml, return_type)
 
                 fields.context.web.ensure_property("Id", _web_loaded)
 
         def _text_field_created(text_field: FieldMultiLineText) -> None:
-            params.text_field_id = text_field.id
+            params.TextFieldId = text_field.id
             _create_taxonomy_field_inner()
 
         return_type._create_text_field(name).after_execute(_text_field_created)
@@ -182,7 +182,9 @@ class TaxonomyField(FieldLookup):
     @property
     def text_field(self) -> FieldMultiLineText:
         """Gets the hidden text field in an item."""
-        return self.parent_collection.parent.fields.get_by_id(self.text_field_id)
+        text_field_id = self.text_field_id
+        assert text_field_id is not None
+        return cast(FieldMultiLineText, self.parent_collection.parent.fields.get_by_id(text_field_id))
 
     @property
     def user_created(self) -> Optional[bool]:

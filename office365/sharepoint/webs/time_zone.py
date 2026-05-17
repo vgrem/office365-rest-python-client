@@ -11,7 +11,7 @@ from office365.sharepoint.webs.time_zone_information import TimeZoneInformation
 class TimeZone(Entity):
     """Represents the time zone setting that is implemented on a SharePoint Web site."""
 
-    def local_time_to_utc(self, date: datetime) -> ClientResult[datetime]:
+    def local_time_to_utc(self, date: datetime) -> ClientResult:  # type: ignore[type-arg]
         """
         Converts the specified date from local time to Coordinated Universal Time (UTC).
 

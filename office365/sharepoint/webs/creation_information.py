@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,12 +8,12 @@ class WebCreationInformation(ClientValue):
 
     def __init__(
         self,
-        description: str = None,
-        language: int = None,
-        title: str = None,
-        url: str = None,
-        use_same_permissions_as_parent_site: bool = None,
-        web_template: str = None,
+        description: Optional[str] = None,
+        language: Optional[int] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
+        use_same_permissions_as_parent_site: Optional[bool] = None,
+        web_template: Optional[str] = None,
     ):
         super().__init__()
         self.Title = None

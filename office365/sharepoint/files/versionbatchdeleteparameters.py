@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.files.versions.policyselectionparameters import (
     VersionPolicySelectionParameters,
@@ -7,12 +9,12 @@ from office365.sharepoint.files.versions.policyselectionparameters import (
 class FileVersionBatchDeleteParameters(ClientValue):
     def __init__(
         self,
-        batch_delete_mode: int = None,
-        delete_older_than_days: int = None,
+        batch_delete_mode: Optional[int] = None,
+        delete_older_than_days: Optional[int] = None,
         file_type_selections: VersionPolicySelectionParameters = VersionPolicySelectionParameters(),
-        major_version_limit: int = None,
-        major_with_minor_versions_limit: int = None,
-        sync_list_policy: bool = None,
+        major_version_limit: Optional[int] = None,
+        major_with_minor_versions_limit: Optional[int] = None,
+        sync_list_policy: Optional[bool] = None,
     ):
         self.batch_delete_mode = batch_delete_mode
         self.delete_older_than_days = delete_older_than_days

@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -20,9 +21,9 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
         self.TermSetId = term_set_id
         self.AnchorId = anchor_id
         self.FieldId = str(uuid.uuid1())
-        self.TextFieldId = None
-        self.WebId = None
-        self.ListId = None
+        self.TextFieldId: Optional[str] = None
+        self.WebId: Optional[str] = None
+        self.ListId: Optional[str] = None
         self.AllowMultipleValues = allow_multiple_values
 
     @property

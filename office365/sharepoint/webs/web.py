@@ -135,7 +135,7 @@ class Web(SecurableObject):
     Also referred to as web site.
     """
 
-    def __init__(self, context: ClientContext, resource_path: ResourcePath = None):
+    def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None):
         """ """
         if resource_path is None:
             resource_path = WebPath("Web")
@@ -145,7 +145,7 @@ class Web(SecurableObject):
     def __str__(self):
         return self.title or self.entity_type_name
 
-    def available_addins(self, server_relative_urls: list[str] = None):
+    def available_addins(self, server_relative_urls: Optional[list[str]] = None):
         """
         :param list[str] server_relative_urls:
         """
@@ -176,7 +176,7 @@ class Web(SecurableObject):
         self.ensure_properties(["AccessRequestListUrl"], _get_access_request_list)
         return return_type
 
-    def get_adaptive_card_extensions(self, include_errors: bool = None, project=None):
+    def get_adaptive_card_extensions(self, include_errors: Optional[bool] = None, project=None):
         payload = {
             "includeErrors": include_errors,
             "project": project,
@@ -200,7 +200,7 @@ class Web(SecurableObject):
     def get_site_script(
         self,
         include_branding: bool = True,
-        included_lists: list[str] = None,
+        included_lists: Optional[list[str]] = None,
         include_links_to_exported_items: bool = True,
         include_regional_settings: bool = True,
     ) -> ClientResult[SiteScriptSerializationResult]:
@@ -222,6 +222,7 @@ class Web(SecurableObject):
         )
 
         def _get_site_script():
+            assert self.url is not None
             SiteScriptUtility.get_site_script_from_web(self.context, self.url, info, return_type=result)
 
         self.ensure_property("Url", _get_site_script)
@@ -234,7 +235,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_list_data_as_stream(self, path: str, view_xml: str = None) -> ClientResult[bytes]:
+    def get_list_data_as_stream(self, path: str, view_xml: Optional[str] = None) -> ClientResult[bytes]:
         """Returns list data from the specified list url and for the specified query parameters.
 
         :param str path: A string that contains the site-relative URL for a list, for example, /Lists/Announcements.
@@ -245,6 +246,7 @@ class Web(SecurableObject):
         return_type = ClientResult(self.context, bytes())
 
         def _get_list_data_as_stream():
+            assert self.url is not None
             list_abs_url = self.url + path
             parameters = RenderListDataParameters(view_xml=view_xml)
             List.get_list_data_as_stream(self.context, list_abs_url, parameters, return_type=return_type)
@@ -252,7 +254,9 @@ class Web(SecurableObject):
         self.ensure_property("Url", _get_list_data_as_stream)
         return return_type
 
-    def get_onedrive_list_data_as_stream(self, view_xml: str = None) -> ClientResult[bytes]:
+    def get_onedrive_list_data_as_stream(
+        self, view_xml: Optional[Union[str, RenderListDataParameters]] = None
+    ) -> ClientResult[bytes]:
         """Returns list data from the specified list url and for the specified query parameters.
 
         :param str view_xml:
@@ -260,7 +264,7 @@ class Web(SecurableObject):
         if view_xml is None:
             view_xml = RenderListDataParameters()
             view_xml.ViewXml = "<View><Query></Query></View>"
-        return List.get_onedrive_list_data_as_stream(self.context, view_xml)
+        return List.get_onedrive_list_data_as_stream(self.context, view_xml)  # type: ignore[arg-type]
 
     def get_list_operation(self, list_id: str, operation_id: str) -> SPLargeOperation:
         """ """
@@ -348,6 +352,7 @@ class Web(SecurableObject):
         if isinstance(user, User):
 
             def _user_loaded():
+                assert user.login_name is not None
                 _create_and_add_query(user.login_name)
 
             user.ensure_property("LoginName", _user_loaded)
@@ -507,7 +512,7 @@ class Web(SecurableObject):
         return return_type
 
     def get_addin_principals_having_permissions_in_sites(
-        self, server_relative_urls: list[str] = None, urls: list[str] = None
+        self, server_relative_urls: Optional[list[str]] = None, urls: Optional[list[str]] = None
     ) -> ClientResult[SPGetAddinPrincipalsResponse]:
         """
         :param list[str] server_relative_urls:
@@ -594,11 +599,11 @@ class Web(SecurableObject):
 
     def get_recycle_bin_items(
         self,
-        paging_info: str = None,
+        paging_info: Optional[str] = None,
         row_limit: int = 100,
         is_ascending: bool = True,
-        order_by: int = None,
-        item_state: int = None,
+        order_by: Optional[int] = None,
+        item_state: Optional[int] = None,
     ) -> RecycleBinItemCollection:
         """
         Gets the recycle bin items that are based on the specified query.
@@ -609,6 +614,7 @@ class Web(SecurableObject):
         :param int order_by: the column by which to order the Recycle Bin query.
         :param int item_state: Recycle Bin stage of items to return in the query.
         """
+        assert self.recycle_bin.resource_path is not None
         return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {
             "rowLimit": row_limit,
@@ -624,9 +630,9 @@ class Web(SecurableObject):
     def get_recycle_bin_items_by_query_info(
         self,
         is_ascending: bool = True,
-        item_state: int = None,
-        order_by: int = None,
-        paging_info: str = None,
+        item_state: Optional[int] = None,
+        order_by: Optional[int] = None,
+        paging_info: Optional[str] = None,
         row_limit: int = 100,
         show_only_my_items: bool = False,
     ) -> RecycleBinItemCollection:
@@ -640,6 +646,7 @@ class Web(SecurableObject):
         :param int item_state: Recycle Bin stage of items to return in the query.
         :param bool show_only_my_items:
         """
+        assert self.recycle_bin.resource_path is not None
         return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {
             "rowLimit": row_limit,
@@ -656,6 +663,7 @@ class Web(SecurableObject):
     def get_all_webs(self) -> WebCollection:
         """Returns a collection containing a flat list of all Web objects in the Web."""
 
+        assert self.webs.resource_path is not None
         return_type = WebCollection(self.context, self.webs.resource_path)
 
         def _webs_loaded():
@@ -769,7 +777,7 @@ class Web(SecurableObject):
         context: ClientContext,
         url: str,
         is_edit_link: bool,
-        return_type: ClientResult[str] = None,
+        return_type: Optional[ClientResult[str]] = None,
     ):
         """Create an anonymous link which can be used to access a document without needing to authenticate.
 
@@ -795,7 +803,7 @@ class Web(SecurableObject):
         url: str,
         is_edit_link: bool,
         expiration_string: str,
-        return_type=None,
+        return_type: Optional[ClientResult[str]] = None,
     ):
         """
         Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
@@ -833,8 +841,8 @@ class Web(SecurableObject):
     def get_object_sharing_settings(
         context: ClientContext,
         object_url: str,
-        group_id: str = None,
-        use_simplified_roles: bool = None,
+        group_id: Optional[str] = None,
+        use_simplified_roles: Optional[bool] = None,
         return_type=None,
     ) -> ObjectSharingSettings:
         """Given a path to an object in SharePoint, this will generate a sharing settings object which contains
@@ -866,7 +874,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
-    def get_client_side_components_by_id(self, component_ids: list[str] = None):
+    def get_client_side_components_by_id(self, component_ids: Optional[list[str]] = None):
         """
         Returns the client side components for the requested component identifiers.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
@@ -902,10 +910,10 @@ class Web(SecurableObject):
 
         :param str path: Contains the server-relative path of the file.
         """
-        path = SPResPath.create_relative(self.context.base_url, path)
+        res_path = SPResPath.create_relative(self.context.base_url, path)
         return File(
             self.context,
-            ServiceOperationPath("getFileByServerRelativePath", path.to_json(), self.resource_path),
+            ServiceOperationPath("getFileByServerRelativePath", res_path.to_json(), self.resource_path),
             self.root_folder.files,
         )
 
@@ -1067,7 +1075,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getList", [str(safe_path)], self.resource_path),
         )
 
-    def get_changes(self, query: ChangeQuery = None):
+    def get_changes(self, query: Optional[ChangeQuery] = None):
         """Returns the collection of all changes from the change log that have occurred within the scope of the web,
         based on the specified query.
 
@@ -1352,7 +1360,7 @@ class Web(SecurableObject):
     def get_document_libraries(
         context: "ClientContext",
         web_full_url: str,
-        return_type: ClientResult[ClientValueCollection[DocumentLibraryInformation]] = None,
+        return_type: Optional[ClientResult[ClientValueCollection[DocumentLibraryInformation]]] = None,
     ) -> ClientResult[ClientValueCollection[DocumentLibraryInformation]]:
         """
             Returns the document libraries of a SharePoint site, specifically a list of objects that represents
@@ -1693,7 +1701,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def set_storage_entity(self, key: str, value: str, description: str = None, comments: str = None):
+    def set_storage_entity(
+        self, key: str, value: str, description: Optional[str] = None, comments: Optional[str] = None
+    ):
         """
         This will set the storage entity identified by the given key
 
@@ -1762,7 +1772,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_access_request_site_description_and_update(self, description: str = None) -> Self:
+    def set_access_request_site_description_and_update(self, description: Optional[str] = None) -> Self:
         """
         :param str description:
         """
@@ -2462,13 +2472,14 @@ class Web(SecurableObject):
         super().set_property(name, value, persist_changes)
         if name == "Url":
             self._web_url = value
+            assert self._resource_path is not None
             self._resource_path.patch(value)
         return self
 
     @property
     def resource_url(self) -> str:
         """Returns Web url"""
-        orig_resource_url = super().resource_url
+        orig_resource_url = super().resource_url or ""
         if self._web_url is not None:
             orig_resource_url = orig_resource_url.replace(self.context.service_root_url, self._web_url + "/_api")
         return orig_resource_url

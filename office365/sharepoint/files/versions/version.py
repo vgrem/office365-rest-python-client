@@ -14,7 +14,7 @@ class FileVersion(Entity):
     """Represents a version of a File object."""
 
     def __str__(self):
-        return self.version_label
+        return self.version_label or ""
 
     def __repr__(self):
         return f"Is Current: {self.is_current_version}, {self.version_label}"
@@ -93,9 +93,10 @@ class FileVersion(Entity):
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
 
-    def set_property(self, key, value, persist_changes=True):
+    def set_property(self, key, value, persist_changes=True):  # type: ignore[override]
         super().set_property(key, value, persist_changes)
         if key.lower() == self.property_ref_name.lower():
+            assert self.parent_collection is not None
             if self._resource_path is None:
                 self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:

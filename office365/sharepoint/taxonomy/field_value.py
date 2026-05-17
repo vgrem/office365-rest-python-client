@@ -1,10 +1,12 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class TaxonomyFieldValue(ClientValue):
     """Represents a single value held in a TaxonomyField (section 3.1.5.27) object."""
 
-    def __init__(self, label: str = None, term_guid: str = None, wss_id: int = -1):
+    def __init__(self, label: Optional[str] = None, term_guid: Optional[str] = None, wss_id: int = -1):
         """
         Represents a single value held in a TaxonomyField (section 3.1.5.27) object.
 

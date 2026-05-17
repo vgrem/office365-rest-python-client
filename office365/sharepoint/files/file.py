@@ -97,6 +97,7 @@ class File(AbstractFile):
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
 
+            assert self.server_relative_url is not None
             Web.create_anonymous_link(self.context, self.server_relative_url, is_edit_link, return_type)
 
         self.ensure_property("ServerRelativeUrl", _file_loaded)
@@ -119,6 +120,7 @@ class File(AbstractFile):
         def _file_loaded():
             from office365.sharepoint.webs.web import Web
 
+            assert self.server_relative_url is not None
             Web.create_anonymous_link_with_expiration(
                 self.context,
                 self.server_relative_url,
@@ -132,7 +134,7 @@ class File(AbstractFile):
 
     def get_content(self) -> ClientResult[bytes]:
         """Downloads a file content"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "$value", return_type=return_type)
         self.context.add_query(qry)
         return return_type
@@ -151,7 +153,7 @@ class File(AbstractFile):
 
     def get_absolute_url(self) -> ClientResult[str]:
         """Gets absolute url of a File"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
 
         def _loaded():
             return_type.set_property("__value", self.listItemAllFields.properties.get("EncodedAbsUrl"))
@@ -204,7 +206,7 @@ class File(AbstractFile):
         """
         return self.listItemAllFields.share_link(link_kind, expiration, role, password)
 
-    def unshare_link(self, link_kind, share_id=None) -> Self:
+    def unshare_link(self, link_kind, share_id=None) -> ListItem:
         """
         Removes the specified tokenized sharing link of the file.
 
@@ -212,7 +214,7 @@ class File(AbstractFile):
             sharing link that is intended to be removed.
         :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
         """
-        return self.listItemAllFields.unshare_link(link_kind, share_id)
+        return self.listItemAllFields.unshare_link(link_kind, share_id)  # type: ignore[arg-type]
 
     def get_image_preview_uri(self, width: int, height: int, client_type=None) -> ClientResult[str]:
         """
@@ -230,7 +232,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def get_image_preview_url(self, width: int, height: int, client_type: str = None) -> ClientResult[str]:
+    def get_image_preview_url(self, width: int, height: int, client_type: Optional[str] = None) -> ClientResult[str]:
         """
         Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -275,7 +277,7 @@ class File(AbstractFile):
         self,
         destination: Union[Folder, str],
         overwrite: bool = False,
-        file_name: str = None,
+        file_name: Optional[str] = None,
     ) -> "File":
         """Copies the file to the destination URL.
 
@@ -285,9 +287,11 @@ class File(AbstractFile):
         :param str file_name: A new file name
         """
         return_type = File(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
         def _copyto(destination_folder: Folder) -> None:
+            assert self.name is not None
             file_path = "/".join([str(destination_folder.server_relative_url), file_name or self.name])
             return_type.set_property("ServerRelativeUrl", file_path)
 
@@ -304,7 +308,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
         return return_type
 
-    def copyto_using_path(self, destination, overwrite=False, file_name=None):
+    def copyto_using_path(self, destination, overwrite=False, file_name=None):  # type: ignore[override]
         """
         Copies the file to the destination path. Server MUST overwrite an existing file of the same name
         if overwrite is true.
@@ -316,9 +320,11 @@ class File(AbstractFile):
         """
 
         return_type = File(self.context)
+        assert self.parent_collection is not None
         self.parent_collection.add_child(return_type)
 
         def _copyto_using_path(destination_folder: Folder) -> None:
+            assert self.name is not None
             file_path = "/".join([str(destination_folder.server_relative_path), file_name or self.name])
             return_type.set_property("ServerRelativePath", file_path)
 
@@ -346,6 +352,7 @@ class File(AbstractFile):
         """
 
         def _moveto(destination_folder: Folder) -> None:
+            assert self.name is not None
             file_url = "/".join([str(destination_folder.server_relative_url), self.name])
 
             params = {"newurl": file_url, "flags": flag}
@@ -376,6 +383,7 @@ class File(AbstractFile):
         """
 
         def _move_to_using_path(destination_folder: Folder) -> None:
+            assert self.name is not None
             file_path = "/".join([str(destination_folder.server_relative_path), self.name])
             params = {"DecodedUrl": file_path, "moveOperations": flag.value}
             qry = ServiceOperationQuery(self, "MoveToUsingPath", params)
@@ -472,7 +480,7 @@ class File(AbstractFile):
 
         :param str or bytes stream: A stream containing the contents of the specified file.
         """
-        qry = ServiceOperationQuery(self, "SaveBinaryStream", None, stream)
+        qry = ServiceOperationQuery(self, "SaveBinaryStream", None, stream)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
@@ -496,7 +504,7 @@ class File(AbstractFile):
         """
         return_type = File(self.context)
         params = {"uploadId": upload_id, "checksum": checksum}
-        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)
+        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 
@@ -522,7 +530,7 @@ class File(AbstractFile):
         """
         return_type = ClientResult(self.context, int())
         params = {"uploadID": upload_id}
-        qry = ServiceOperationQuery(self, "startUpload", params, content, None, return_type)
+        qry = ServiceOperationQuery(self, "startUpload", params, content, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 
@@ -542,7 +550,7 @@ class File(AbstractFile):
                 "uploadID": upload_id,
                 "fileOffset": file_offset,
             },
-            content,
+            content,  # type: ignore[arg-type]
             None,
             return_type,
         )
@@ -558,7 +566,7 @@ class File(AbstractFile):
         :param bytes content: File content
         """
         params = {"uploadID": upload_id, "fileOffset": file_offset}
-        qry = ServiceOperationQuery(self, "finishUpload", params, content, None, self)
+        qry = ServiceOperationQuery(self, "finishUpload", params, content, None, self)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
@@ -576,7 +584,7 @@ class File(AbstractFile):
             "fileOffset": file_offset,
             "checksum": checksum,
         }
-        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)
+        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 
@@ -622,7 +630,7 @@ class File(AbstractFile):
         response = context.pending_request().execute_request_direct(request)
         return response
 
-    def download(self, file_object: IO, after_downloaded: Callable[[File], None] = None) -> Self:
+    def download(self, file_object: IO, after_downloaded: Optional[Callable[[File], None]] = None) -> Self:
         """
         Download a file content. Use this method to download a content of a small size
 

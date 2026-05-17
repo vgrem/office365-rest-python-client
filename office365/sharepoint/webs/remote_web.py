@@ -41,4 +41,4 @@ class RemoteWeb(ClientObject):
     @property
     def web(self):
         """Gets the SPWeb."""
-        return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
+        return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))  # type: ignore[arg-type]

@@ -32,9 +32,9 @@ class TermStore(TaxonomyItem):
     def search_term(
         self,
         label: str,
-        set_id: str = None,
-        parent_term_id: str = None,
-        language_tag: str = None,
+        set_id: Optional[str] = None,
+        parent_term_id: Optional[str] = None,
+        language_tag: Optional[str] = None,
     ):
         """
         Search term by name

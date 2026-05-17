@@ -26,6 +26,7 @@ class TaxonomyItem(ClientObject):
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
+            assert self.parent_collection is not None
             if self._resource_path is None:
                 self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
             else:

@@ -20,4 +20,4 @@ class LocalizedName(ClientValue):
         return f"{self.name};{self.languageTag}"
 
     def __str__(self):
-        return self.name
+        return self.name or ""

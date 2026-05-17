@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ContentTypeInfo(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        group: str = None,
-        id_: str = None,
-        is_hidden: bool = None,
-        is_sealed: bool = None,
-        name: str = None,
-        parent_name: str = None,
+        description: Optional[str] = None,
+        group: Optional[str] = None,
+        id_: Optional[str] = None,
+        is_hidden: Optional[bool] = None,
+        is_sealed: Optional[bool] = None,
+        name: Optional[str] = None,
+        parent_name: Optional[str] = None,
     ):
         self.Description = description
         self.Group = group

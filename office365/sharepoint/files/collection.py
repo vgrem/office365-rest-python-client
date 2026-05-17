@@ -27,8 +27,8 @@ class FileCollection(EntityCollection[File]):
     def __init__(
         self,
         context: ClientContext,
-        resource_path: ResourcePath = None,
-        parent: Folder = None,
+        resource_path: Optional[ResourcePath] = None,
+        parent: Optional[Folder] = None,
     ) -> None:
         super().__init__(context, File, resource_path, parent)
 
@@ -39,7 +39,7 @@ class FileCollection(EntityCollection[File]):
         self.context.add_query(qry)
         return return_type
 
-    def upload(self, path_or_file: Union[str, IO], file_name: str = None) -> File:
+    def upload(self, path_or_file: Union[str, IO], file_name: Optional[str] = None) -> File:
         """Uploads a file into folder.
 
         Note: This method only supports files up to 4MB in size!
@@ -47,14 +47,14 @@ class FileCollection(EntityCollection[File]):
         :param str or typing.IO path_or_file: Path where file to upload resides or file handle
         :param str file_name: New file name
         """
-        if hasattr(path_or_file, "read"):
-            name = file_name or os.path.basename(path_or_file.name)
-            content = path_or_file.read()
-            return self.add(name, content, True)
-        else:
+        if isinstance(path_or_file, str):
             with open(path_or_file, "rb") as f:
                 content = f.read()
             name = file_name or os.path.basename(path_or_file)
+            return self.add(name, content, True)
+        else:
+            name = file_name or os.path.basename(path_or_file.name)
+            content = path_or_file.read()
             return self.add(name, content, True)
 
     def upload_with_checksum(self, file_object: IO, chunk_size: int = 1024) -> File:
@@ -73,17 +73,17 @@ class FileCollection(EntityCollection[File]):
 
     def create_upload_session(
         self,
-        file: IO | str,
+        file_or_path: IO | str,
         chunk_size: int,
         chunk_uploaded: Optional[Callable[[int, Any], None]] = None,
-        file_name: str = None,
+        file_name: Optional[str] = None,
         **kwargs: Any,
     ) -> File:
         """
         Creates an upload session with progress callback support.
 
         Args:
-            file: File object or path to upload
+            file_or_path: File object or path to upload
             chunk_size: Size of upload chunks in bytes
             chunk_uploaded: Callback that accepts offset and optional additional args
             file_name: Optional name for the uploaded file
@@ -91,26 +91,28 @@ class FileCollection(EntityCollection[File]):
         """
 
         auto_close = False
-        if not hasattr(file, "read"):
-            file = open(file, "rb")
+        if isinstance(file_or_path, str):
+            f: IO = open(file_or_path, "rb")
             auto_close = True
+        else:
+            f = file_or_path
 
-        file_size = os.fstat(file.fileno()).st_size
-        file_name = file_name if file_name else os.path.basename(file.name)
+        file_size = os.fstat(f.fileno()).st_size
+        file_name = file_name if file_name else os.path.basename(f.name)
         upload_id = str(uuid.uuid4())
 
         def _upload(return_type: File) -> None:
             def _after_uploaded(result: ClientResult) -> None:
                 _upload(return_type)
 
-            uploaded_bytes = file.tell()
+            uploaded_bytes = f.tell()
             if callable(chunk_uploaded):
-                chunk_uploaded(uploaded_bytes, **kwargs)
+                chunk_uploaded(uploaded_bytes, **kwargs)  # type: ignore[call-arg]
 
-            content = file.read(chunk_size)
+            content = f.read(chunk_size)
             if uploaded_bytes == file_size:
-                if auto_close and not file.closed:
-                    file.close()
+                if auto_close and not f.closed:
+                    f.close()
                 return
 
             if uploaded_bytes == 0:
@@ -123,7 +125,7 @@ class FileCollection(EntityCollection[File]):
         if file_size > chunk_size:
             return self.add(file_name, None, True).after_execute(_upload)
         else:
-            return self.add(file_name, file.read(), True)
+            return self.add(file_name, f.read(), True)
 
     def add(self, url: str, content: Optional[bytes | str] = None, overwrite=False):
         """
@@ -139,7 +141,7 @@ class FileCollection(EntityCollection[File]):
         return_type = File(self.context)
         self.add_child(return_type)
         params = FileCreationInformation(url=url, overwrite=overwrite)
-        qry = ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)
+        qry = ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 

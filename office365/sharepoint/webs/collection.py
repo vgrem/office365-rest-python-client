@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -19,8 +19,8 @@ class WebCollection(EntityCollection["Web"]):
     def __init__(
         self,
         context: ClientContext,
-        resource_path: ResourcePath = None,
-        parent_web: Web = None,
+        resource_path: Optional[ResourcePath] = None,
+        parent_web: Optional[Web] = None,
     ):
         from office365.sharepoint.webs.web import Web
 
@@ -41,12 +41,14 @@ class WebCollection(EntityCollection["Web"]):
 
     def create_typed_object(self, initial_properties=None, resource_path=None):
         if resource_path is None:
-            resource_path = WebPath(self.resource_path)
+            assert self.resource_path is not None
+            resource_path = WebPath(self.resource_path)  # type: ignore[arg-type]
         return super().create_typed_object(initial_properties, resource_path)
 
     @property
     def resource_url(self) -> str:
-        val = super().resource_url
+        val = super().resource_url or ""
+        assert self._parent is not None
         parent_web_url = self._parent.get_property("Url")
         if parent_web_url is not None:
             val = val.replace(self.context.service_root_url, parent_web_url + "/_api")

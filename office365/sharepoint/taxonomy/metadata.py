@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,18 +8,18 @@ class TaxonomyMetadata(ClientValue):
 
     def __init__(
         self,
-        anchor_id: str = None,
-        excluded_termset: bool = None,
-        exclude_keyword: bool = None,
-        is_add_terms: bool = None,
-        is_include_deprecated: bool = None,
-        is_include_path_data: bool = None,
-        is_include_unavailable: bool = None,
-        is_span_term_sets: bool = None,
-        is_span_term_stores: bool = None,
-        lcid: int = None,
-        ssp_list: str = None,
-        term_set_list: str = None,
+        anchor_id: Optional[str] = None,
+        excluded_termset: Optional[bool] = None,
+        exclude_keyword: Optional[bool] = None,
+        is_add_terms: Optional[bool] = None,
+        is_include_deprecated: Optional[bool] = None,
+        is_include_path_data: Optional[bool] = None,
+        is_include_unavailable: Optional[bool] = None,
+        is_span_term_sets: Optional[bool] = None,
+        is_span_term_stores: Optional[bool] = None,
+        lcid: Optional[int] = None,
+        ssp_list: Optional[str] = None,
+        term_set_list: Optional[str] = None,
     ):
         """Initializes a new instance of TaxonomyMetadata.
 
