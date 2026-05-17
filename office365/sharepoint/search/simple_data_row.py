@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.utilities import parse_key_value_collection
@@ -7,7 +7,7 @@ from office365.runtime.utilities import parse_key_value_collection
 class SimpleDataRow(ClientValue):
     """Represents a row in a data table"""
 
-    def __init__(self, cells: Dict[str, Any] = None):
+    def __init__(self, cells: Optional[Dict[str, Any]] = None):
         """
         :param dict cells: The cells in the data table row.
         """

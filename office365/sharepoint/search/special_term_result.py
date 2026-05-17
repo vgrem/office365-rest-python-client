@@ -1,15 +1,17 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SpecialTermResult(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        is_visual_best_bet: bool = None,
-        pi_search_result_id: str = None,
-        render_template_id: str = None,
-        title: str = None,
-        url: str = None,
+        description: Optional[str] = None,
+        is_visual_best_bet: Optional[bool] = None,
+        pi_search_result_id: Optional[str] = None,
+        render_template_id: Optional[str] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.Description = description
         self.IsVisualBestBet = is_visual_best_bet

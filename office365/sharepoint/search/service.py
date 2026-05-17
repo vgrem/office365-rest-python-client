@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -39,6 +39,7 @@ class SearchService(Entity):
         return_type = ClientResult(self.context, str())
 
         def _export(user_name: str):
+            assert user_name is not None
             payload = {"userName": user_name, "startTime": start_time.isoformat()}
             qry = ServiceOperationQuery(self, "export", None, payload, None, return_type)
             self.context.add_query(qry)
@@ -46,6 +47,7 @@ class SearchService(Entity):
         if isinstance(user, User):
 
             def _user_loaded():
+                assert user.user_principal_name is not None
                 _export(user.user_principal_name)
 
             user.ensure_property("UserPrincipalName", _user_loaded)
@@ -77,7 +79,7 @@ class SearchService(Entity):
     def query(
         self,
         query_text: str,
-        source_id: str = None,
+        source_id: Optional[str] = None,
         ranking_model_id=None,
         start_row=None,
         row_limit=None,
@@ -145,9 +147,9 @@ class SearchService(Entity):
     def post_query(
         self,
         query_text: str,
-        select_properties: List[str] = None,
-        trim_duplicates: bool = None,
-        row_limit: int = None,
+        select_properties: Optional[List[str]] = None,
+        trim_duplicates: Optional[bool] = None,
+        row_limit: Optional[int] = None,
         **kwargs: Any,
     ) -> ClientResult[SearchResult]:
         """The operation is used to retrieve search results through the use of the HTTP protocol
@@ -228,9 +230,9 @@ class SearchService(Entity):
     def auto_completions(
         self,
         query_text: str,
-        sources: str = None,
-        number_of_completions: int = None,
-        cursor_position: int = None,
+        sources: Optional[str] = None,
+        number_of_completions: Optional[int] = None,
+        cursor_position: Optional[int] = None,
     ) -> ClientResult[QueryAutoCompletionResults]:
         """
         The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.reports.queryrulesdata import ReportQueryRulesData
@@ -6,7 +8,7 @@ from office365.sharepoint.search.reports.queryrulesdata import ReportQueryRulesD
 class ReportQueryRulesItem(ClientValue):
     def __init__(
         self,
-        date: str = None,
+        date: Optional[str] = None,
         report: ClientValueCollection[ReportQueryRulesData] = ClientValueCollection(ReportQueryRulesData),
     ):
         self.Date = date

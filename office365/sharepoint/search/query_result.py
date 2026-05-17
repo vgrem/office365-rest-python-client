@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -16,11 +16,11 @@ class QueryResult(ClientValue):
 
     def __init__(
         self,
-        query_id: str = None,
-        custom_results: List[CustomResult] = None,
+        query_id: Optional[str] = None,
+        custom_results: Optional[List[CustomResult]] = None,
         refinement_results=RefinementResults(),
         relevant_results=RelevantResults(),
-        query_rule_id: str = None,
+        query_rule_id: Optional[str] = None,
         special_term_results: SpecialTermResults = SpecialTermResults(),
     ):
         """

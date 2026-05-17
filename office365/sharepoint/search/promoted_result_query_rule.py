@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -18,14 +19,14 @@ class PromotedResultQueryRule(ClientValue):
         contact=None,
         context_conditions=None,
         creation_date=None,
-        display_name: str = None,
-        end_date: datetime = None,
-        is_promoted_results_only: bool = None,
-        last_modified_date: datetime = None,
-        promoted_results: ClientValueCollection[PromotedResults] = None,
-        query_conditions: ClientValueCollection[QueryCondition] = None,
-        review_date: datetime = None,
-        start_date: datetime = None,
+        display_name: Optional[str] = None,
+        end_date: Optional[datetime] = None,
+        is_promoted_results_only: Optional[bool] = None,
+        last_modified_date: Optional[datetime] = None,
+        promoted_results: Optional[ClientValueCollection[PromotedResults]] = None,
+        query_conditions: Optional[ClientValueCollection[QueryCondition]] = None,
+        review_date: Optional[datetime] = None,
+        start_date: Optional[datetime] = None,
     ):
         """
         :param str contact: This property contains the contact information for the promoted result.

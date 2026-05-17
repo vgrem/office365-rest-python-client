@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection, StringCollection
 
@@ -10,10 +12,10 @@ class QueryContext(ClientValue):
         group_object_ids=None,
         site_id=None,
         tenant_instance_id=None,
-        portal_url: str = None,
+        portal_url: Optional[str] = None,
         role_ids: GuidCollection = GuidCollection(),
-        sp_site_id: str = None,
-        sp_web_id: str = None,
+        sp_site_id: Optional[str] = None,
+        sp_web_id: Optional[str] = None,
     ):
         """
         :param str site_id: This property contains the site identification.

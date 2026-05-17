@@ -19,7 +19,7 @@ ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials
 
 list_title = "Orders"
 lib = ctx.web.lists.get_by_title(list_title)
-export_path = os.path.join(tempfile.mkdtemp(), "{0}.zip".format(list_title))
+export_path = os.path.join(tempfile.mkdtemp(), f"{list_title}.zip")
 with open(export_path, "wb") as f:
     lib.export(f, True, print_progress).execute_query()
-print("List has been export into {0} ...".format(export_path))
+print(f"List has been export into {export_path} ...")

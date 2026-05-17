@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,11 +7,11 @@ from office365.runtime.client_value import ClientValue
 class PromotedResults(ClientValue):
     def __init__(
         self,
-        description: str = None,
-        is_visual: bool = None,
-        last_modified_time: datetime = None,
-        title: str = None,
-        url: str = None,
+        description: Optional[str] = None,
+        is_visual: Optional[bool] = None,
+        last_modified_time: Optional[datetime] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.Description = description
         self.IsVisual = is_visual

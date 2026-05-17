@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
@@ -55,7 +55,7 @@ class DocumentCrawlLog(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_unsuccesful_crawled_urls(self, display_url: str = None) -> ClientResult[SimpleDataTable]:
+    def get_unsuccesful_crawled_urls(self, display_url: Optional[str] = None) -> ClientResult[SimpleDataTable]:
         """
         Retrieves information about the contents that failed crawling.
 

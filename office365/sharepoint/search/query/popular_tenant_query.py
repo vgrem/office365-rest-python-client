@@ -1,17 +1,19 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class PopularTenantQuery(ClientValue):
     def __init__(
         self,
-        always_suggest: bool = None,
-        click_count: int = None,
-        lcid: int = None,
-        query_count: int = None,
-        query_text: str = None,
-        site_id: str = None,
-        source_id: str = None,
-        web_id: str = None,
+        always_suggest: Optional[bool] = None,
+        click_count: Optional[int] = None,
+        lcid: Optional[int] = None,
+        query_count: Optional[int] = None,
+        query_text: Optional[str] = None,
+        site_id: Optional[str] = None,
+        source_id: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         self.AlwaysSuggest = always_suggest
         self.ClickCount = click_count

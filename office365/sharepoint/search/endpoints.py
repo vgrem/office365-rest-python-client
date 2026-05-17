@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.search.query.context import QueryContext
 
@@ -9,9 +11,9 @@ class SearchEndpoints(ClientValue):
         self,
         admin_endpoint=None,
         query_context=QueryContext(),
-        afd_endpoint: str = None,
-        geolocation: str = None,
-        query_endpoint: str = None,
+        afd_endpoint: Optional[str] = None,
+        geolocation: Optional[str] = None,
+        query_endpoint: Optional[str] = None,
     ):
         self.AdminEndpoint = admin_endpoint
         self.QueryContext = query_context

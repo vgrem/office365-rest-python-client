@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -8,12 +10,12 @@ class QueryAutoCompletionMatch(ClientValue):
         self,
         alternation=None,
         key=None,
-        length: int = None,
-        match_type: str = None,
-        score: float = None,
-        source_name: str = None,
-        start: int = None,
-        value: str = None,
+        length: Optional[int] = None,
+        match_type: Optional[str] = None,
+        score: Optional[float] = None,
+        source_name: Optional[str] = None,
+        start: Optional[int] = None,
+        value: Optional[str] = None,
     ):
         """ """
         self.Alternation = alternation

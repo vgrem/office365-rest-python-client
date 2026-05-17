@@ -10,4 +10,4 @@ def print_progress(items: ListItemCollection) -> None:
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 large_list = ctx.web.lists.get_by_title("Contacts_Large")
 all_items = large_list.items.get_all(5000, print_progress).execute_query()
-print("Total items count: {0}".format(len(all_items)))
+print(f"Total items count: {len(all_items)}")

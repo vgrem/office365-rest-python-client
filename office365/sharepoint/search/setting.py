@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -18,8 +20,8 @@ class SearchSetting(Entity):
     def get_query_configuration(
         self,
         call_local_search_farms_only: bool = True,
-        skip_group_object_id_lookup: bool = None,
-        throw_on_remote_api_check: bool = None,
+        skip_group_object_id_lookup: Optional[bool] = None,
+        throw_on_remote_api_check: Optional[bool] = None,
     ) -> ClientResult[QueryConfiguration]:
         """
         This operation gets the query configuration from the server. This operation requires that the Search Service
@@ -79,9 +81,9 @@ class SearchSetting(Entity):
 
     def get_promoted_result_query_rules(
         self,
-        site_collection_level: bool = None,
-        offset: int = None,
-        number_of_rules: int = None,
+        site_collection_level: Optional[bool] = None,
+        offset: Optional[int] = None,
+        number_of_rules: Optional[int] = None,
     ) -> ClientResult[PromotedResultsOperationsResult]:
         """
         The operation is called to retrieve the promoted results (also called Best Bets) for a tenant or a

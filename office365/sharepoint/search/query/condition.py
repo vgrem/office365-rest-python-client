@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,10 +7,10 @@ from office365.runtime.types.collections import StringCollection
 class QueryCondition(ClientValue):
     def __init__(
         self,
-        lcid: int = None,
-        matching_options: str = None,
-        query_condition_type: str = None,
-        subject_terms_origin: str = None,
+        lcid: Optional[int] = None,
+        matching_options: Optional[str] = None,
+        query_condition_type: Optional[str] = None,
+        subject_terms_origin: Optional[str] = None,
         terms: StringCollection = StringCollection(),
     ):
         """This object contains the conditions for the promoted result"""

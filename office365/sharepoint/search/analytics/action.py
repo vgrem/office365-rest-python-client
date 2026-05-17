@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,10 +7,10 @@ from office365.runtime.client_value import ClientValue
 class AnalyticsAction(ClientValue):
     def __init__(
         self,
-        action_type: str = None,
-        expire_time: datetime = None,
-        properties: dict = None,
-        user_time: datetime = None,
+        action_type: Optional[str] = None,
+        expire_time: Optional[datetime] = None,
+        properties: Optional[dict] = None,
+        user_time: Optional[datetime] = None,
     ):
         """Represents the action in a Microsoft.SharePoint.Client.Search.Analytics.AnalyticsSignal Object."""
         self.ActionType = action_type

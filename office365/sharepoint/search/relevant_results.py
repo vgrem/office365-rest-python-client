@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.utilities import parse_key_value_collection
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
@@ -12,8 +14,8 @@ class RelevantResults(ClientValue):
 
     def __init__(
         self,
-        group_template_id: str = None,
-        item_template_id: str = None,
+        group_template_id: Optional[str] = None,
+        item_template_id: Optional[str] = None,
         properties=None,
         result_title=None,
         result_title_url=None,

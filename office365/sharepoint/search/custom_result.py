@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
@@ -13,9 +15,9 @@ class CustomResult(ClientValue):
         item_template_id=None,
         result_title=None,
         properties=None,
-        result_title_url: str = None,
+        result_title_url: Optional[str] = None,
         table: SimpleDataTable = SimpleDataTable(),
-        table_type: str = None,
+        table_type: Optional[str] = None,
     ):
         """
         :param str group_template_id: Specifies the identifier of the layout template that specifies how the results
