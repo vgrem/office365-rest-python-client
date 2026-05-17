@@ -13,7 +13,6 @@ from typing import (
     Union,
 )
 
-from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
@@ -156,7 +155,7 @@ class ClientObject:
 
     def after_execute(
         self,
-        action: Callable[[Self], None] | Callable[[Response], None],
+        action: Callable[[Any], None],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:
@@ -171,7 +170,7 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.context.after_execute(action, execute_first, include_response)  # type: ignore[arg-type]
+        self.context.after_execute(action, execute_first, include_response)
         return self
 
     def get(self) -> Self:
