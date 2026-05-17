@@ -47,7 +47,7 @@ class SharePointRequest(ODataRequest):
             allow_ntlm=allow_ntlm,
             browser_mode=browser_mode,
         )
-        self.beforeExecute += self._auth_context.authenticate_request
+        self.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
 
     def execute_request(self, path: str) -> Response:
         """

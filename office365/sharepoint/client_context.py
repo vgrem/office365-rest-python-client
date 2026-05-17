@@ -62,7 +62,7 @@ class ClientContext(ClientRuntimeContext):
         self,
         base_url: str,
         auth_context: Optional[AuthenticationContext] = None,
-        environment: AzureEnvironment = None,
+        environment: Optional[AzureEnvironment] = None,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ) -> None:
@@ -76,7 +76,7 @@ class ClientContext(ClientRuntimeContext):
         if auth_context is None:
             auth_context = AuthenticationContext(
                 url=base_url,
-                environment=environment,
+                environment=environment or AzureEnvironment.Global,
                 allow_ntlm=allow_ntlm,
                 browser_mode=browser_mode,
             )
@@ -211,7 +211,7 @@ class ClientContext(ClientRuntimeContext):
     def execute_batch(
         self,
         items_per_batch: int = 100,
-        success_callback: Callable[[List[ClientObject | ClientResult]], None] = None,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
     ) -> Self:
         """
         Construct and submit to a server a batch request
@@ -219,12 +219,12 @@ class ClientContext(ClientRuntimeContext):
         :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
         """
         batch_request = ODataBatchV3Request(JsonLightFormat())
-        batch_request.beforeExecute += self.authentication_context.authenticate_request
-        batch_request.beforeExecute += self._ensure_form_digest
+        batch_request.beforeExecute += self.authentication_context.authenticate_request  # type: ignore[operator]
+        batch_request.beforeExecute += self._ensure_form_digest  # type: ignore[operator]
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
             batch_request.execute_query(qry)
-            if callable(success_callback):
+            if callable(success_callback) and qry.return_type is not None:
                 success_callback(qry.return_type)
         return self
 
@@ -239,6 +239,7 @@ class ClientContext(ClientRuntimeContext):
     def _ensure_form_digest(self, request: RequestOptions) -> None:
         if not self.context_info.is_valid:
             self._ctx_web_info = self._get_context_web_information()
+        assert self._ctx_web_info is not None
         request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
 
     def _get_context_web_information(self):
@@ -259,20 +260,20 @@ class ClientContext(ClientRuntimeContext):
 
     def execute_query_with_incremental_retry(self, max_retry=5):
         """Handles throttling requests."""
-        settings = {"timeout": 0}
+        settings: dict[str, int] = {"timeout": 0}
 
-        def _try_process_if_failed(retry: int, ex: RequestException) -> None:
+        def _try_process_if_failed(retry: int, ex: Exception) -> None:
             """
             check if request was throttled - http status code 429
             or check is request failed due to server unavailable - http status code 503
             """
-            if ex.response.status_code in {429, 503}:
+            if isinstance(ex, RequestException) and ex.response is not None and ex.response.status_code in {429, 503}:
                 retry_after = ex.response.headers.get("Retry-After", None)
                 if retry_after is not None:
                     settings["timeout"] = int(retry_after)
 
         self.execute_query_retry(
-            timeout_secs=settings.get("timeout"),
+            timeout_secs=settings["timeout"],
             max_retry=max_retry,
             failure_callback=_try_process_if_failed,
         )
@@ -316,15 +317,17 @@ class ClientContext(ClientRuntimeContext):
         site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
         def _after_site_create(result: ClientResult[SPSiteCreationResponse]) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:
+            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
                 raise ValueError(result.value)
-            elif result.value.SiteStatus == SiteStatus.Ready:
-                return_type.set_property("__siteUrl", result.value.SiteUrl)
+            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
+                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
 
         (self.site_manager.create(title, site_url, owner).after_execute(_after_site_create))
         return return_type
 
-    def create_team_site(self, alias: str, title: str, is_public: bool = True, owners: List[str] = None) -> Site:
+    def create_team_site(
+        self, alias: str, title: str, is_public: bool = True, owners: Optional[List[str]] = None
+    ) -> Site:
         """Creates a modern SharePoint Team site
 
         :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
@@ -334,10 +337,10 @@ class ClientContext(ClientRuntimeContext):
         return_type = Site(self)
 
         def _after_site_created(result: ClientResult[GroupSiteInfo]) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:
-                raise ValueError(result.value.ErrorMessage)
-            elif result.value.SiteStatus == SiteStatus.Ready:
-                return_type.set_property("__siteUrl", result.value.SiteUrl)
+            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
+                raise ValueError(result.value.ErrorMessage)  # type: ignore[attr-defined]
+            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
+                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
 
         opt_params = GroupCreationParams(owners=owners)
         self.group_site_manager.create_group_ex(title, alias, is_public, opt_params).after_execute(_after_site_created)
@@ -356,10 +359,10 @@ class ClientContext(ClientRuntimeContext):
         def _after_site_created(
             result: ClientResult[CommunicationSiteCreationResponse],
         ) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:
+            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
                 raise ValueError("Site creation error")
-            elif result.value.SiteStatus == SiteStatus.Ready:
-                return_type.set_property("__siteUrl", result.value.SiteUrl)
+            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
+                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
 
         self.site_pages.communication_site.create(title, site_url).after_execute(_after_site_created)
         return return_type

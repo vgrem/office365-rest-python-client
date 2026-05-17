@@ -1,17 +1,19 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class UpdateUploadedAgreementMetadataPayload(ClientValue):
     def __init__(
         self,
-        agreement_number: str = None,
-        agreement_url: str = None,
-        category: str = None,
-        country: str = None,
-        is_draft: bool = None,
-        is_existing_agreement: bool = None,
-        language: str = None,
-        state: str = None,
+        agreement_number: Optional[str] = None,
+        agreement_url: Optional[str] = None,
+        category: Optional[str] = None,
+        country: Optional[str] = None,
+        is_draft: Optional[bool] = None,
+        is_existing_agreement: Optional[bool] = None,
+        language: Optional[str] = None,
+        state: Optional[str] = None,
     ):
         self.agreement_number = agreement_number
         self.agreement_url = agreement_url

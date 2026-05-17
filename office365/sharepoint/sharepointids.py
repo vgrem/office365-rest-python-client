@@ -1,18 +1,20 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class SharePointIds(ClientValue):
     def __init__(
         self,
-        hub_site_id: str = None,
-        site_id: str = None,
-        site_url: str = None,
-        web_id: str = None,
-        list_id: str = None,
-        unique_id: str = None,
-        list_item_id: str = None,
-        list_item_unique_id: str = None,
-        tenant_id: str = None,
+        hub_site_id: Optional[str] = None,
+        site_id: Optional[str] = None,
+        site_url: Optional[str] = None,
+        web_id: Optional[str] = None,
+        list_id: Optional[str] = None,
+        unique_id: Optional[str] = None,
+        list_item_id: Optional[str] = None,
+        list_item_unique_id: Optional[str] = None,
+        tenant_id: Optional[str] = None,
     ):
         self.hub_site_id = hub_site_id
         self.site_id = site_id

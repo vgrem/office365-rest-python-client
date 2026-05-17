@@ -16,7 +16,7 @@ class GraphRequest(ODataRequest):
     def __init__(
         self,
         version: GraphVersion = GraphVersion.default(),
-        tenant: str = None,
+        tenant: Optional[str] = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """
@@ -31,7 +31,7 @@ class GraphRequest(ODataRequest):
         self._version = version
         self._environment = environment
         self._auth_context = AuthenticationContext(environment=environment, tenant=tenant)
-        self.beforeExecute += self.authenticate_request
+        self.beforeExecute += self.authenticate_request  # type: ignore[operator]
 
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
         """

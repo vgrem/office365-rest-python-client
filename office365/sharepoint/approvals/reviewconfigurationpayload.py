@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,9 +7,9 @@ from office365.runtime.types.collections import StringCollection
 class ReviewConfigurationPayload(ClientValue):
     def __init__(
         self,
-        category_id: str = None,
+        category_id: Optional[str] = None,
         reviewers: StringCollection = StringCollection(),
-        review_type: str = None,
+        review_type: Optional[str] = None,
     ):
         self.category_id = category_id
         self.reviewers = reviewers

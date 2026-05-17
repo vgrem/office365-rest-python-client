@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.reports.report import Report
 from office365.runtime.client_result import ClientResult
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 def create_report_query(
     report_root: ReportRoot,
     report_name: str,
-    period: str = None,
+    period: Optional[str] = None,
     return_stream: bool = False,
 ):
     """

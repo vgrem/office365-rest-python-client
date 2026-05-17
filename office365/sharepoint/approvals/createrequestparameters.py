@@ -1,19 +1,21 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ApprovalsCreateRequestParameters(ClientValue):
     def __init__(
         self,
-        approvers: str = None,
-        await_all: bool = None,
-        details: str = None,
-        item_id: str = None,
-        item_url_type: int = None,
-        list_id: str = None,
-        mark_doc_as_final: bool = None,
-        title: str = None,
-        url: str = None,
-        version: str = None,
+        approvers: Optional[str] = None,
+        await_all: Optional[bool] = None,
+        details: Optional[str] = None,
+        item_id: Optional[str] = None,
+        item_url_type: Optional[int] = None,
+        list_id: Optional[str] = None,
+        mark_doc_as_final: Optional[bool] = None,
+        title: Optional[str] = None,
+        url: Optional[str] = None,
+        version: Optional[str] = None,
     ):
         self.approvers = approvers
         self.await_all = await_all

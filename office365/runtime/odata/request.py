@@ -131,6 +131,7 @@ class ODataRequest(ClientRequest):
 
             if isinstance(json, list):
                 for index, item in enumerate(json):
+                    transformed = None
                     if isinstance(item, dict):
                         transformed = {k: v for k, v in self._next_property(item, json_format)}
                     yield index, transformed if isinstance(item, dict) else item
@@ -144,6 +145,7 @@ class ODataRequest(ClientRequest):
                         is_valid = "@odata" not in name
 
                     if is_valid:
+                        transformed = None
                         if isinstance(value, dict):
                             transformed = {k: v for k, v in self._next_property(value, json_format)}
                         yield name, transformed if isinstance(value, dict) else value

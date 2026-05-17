@@ -91,9 +91,9 @@ class GraphClient(ClientRuntimeContext):
 
     def __init__(
         self,
-        token_callback: Callable[[], Dict[str, str]] = None,
-        tenant: str = None,
-        scopes: List[str] = None,
+        token_callback: Optional[Callable[[], Dict[str, str]]] = None,
+        tenant: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
@@ -173,7 +173,7 @@ class GraphClient(ClientRuntimeContext):
     def execute_batch(
         self,
         items_per_batch: int = 20,
-        success_callback: Callable[[List[Any]], None] = None,
+        success_callback: Optional[Callable[[List[Any]], None]] = None,
     ):
         """
         Execute batched requests
@@ -183,11 +183,11 @@ class GraphClient(ClientRuntimeContext):
             success_callback: Optional callback for successful requests
         """
         batch_request = ODataV4BatchRequest(V4JsonFormat())
-        batch_request.beforeExecute += self.pending_request().authenticate_request
+        batch_request.beforeExecute += self.pending_request().authenticate_request  # type: ignore[operator]
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
             batch_request.execute_query(qry)
-            if callable(success_callback):
+            if callable(success_callback) and qry.return_type is not None:
                 success_callback(qry.return_type)
         return self
 
@@ -197,7 +197,7 @@ class GraphClient(ClientRuntimeContext):
             self._pending_request = GraphRequest(tenant=self._tenant, environment=self._environment)
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
-            self._pending_request.beforeExecute += self._build_specific_query
+            self._pending_request.beforeExecute += self._build_specific_query  # type: ignore[operator]
         return self._pending_request
 
     @property
@@ -549,6 +549,6 @@ class GraphClient(ClientRuntimeContext):
         return Teamwork(self, ResourcePath("teamwork"))
 
     @property
-    def tenant_name(self) -> str:
+    def tenant_name(self) -> Optional[str]:
         """Tenant id or domain name"""
         return self._tenant

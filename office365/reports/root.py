@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Union
+from typing import Optional, Union
 
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.entity import Entity
@@ -40,7 +40,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def managed_device_enrollment_top_failures(self, period: str = None) -> ClientResult[Report]:
+    def managed_device_enrollment_top_failures(self, period: Optional[str] = None) -> ClientResult[Report]:
         """
         Note: The Microsoft Graph API for Intune requires an active Intune license for the tenant.
         """
@@ -61,7 +61,7 @@ class ReportRoot(Entity):
         return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "getEmailActivityCounts", {"period": period}, return_type)
         self.context.add_query(qry)
-        return qry.return_type
+        return return_type
 
     def get_email_activity_user_counts(self, period: str):
         """
@@ -86,7 +86,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getEmailActivityUserDetail", period, return_stream=True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_email_app_usage_apps_user_counts(self, period: str) -> ClientResult[Report]:
         """
@@ -98,7 +99,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getEmailAppUsageAppsUserCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_email_app_usage_user_counts(self, period) -> ClientResult[bytes]:
         """
@@ -110,7 +112,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getEmailAppUsageUserCounts", period, True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     ###
     def get_email_app_usage_user_detail(self, period: str) -> ClientResult[bytes]:
@@ -123,7 +126,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getEmailAppUsageUserDetail", period, True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_mailbox_usage_storage(self, period: str) -> ClientResult[bytes]:
         """
@@ -135,9 +139,10 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getMailboxUsageStorage", period, True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
-    def get_m365_app_user_counts(self, period: str = None) -> ClientResult[bytes]:
+    def get_m365_app_user_counts(self, period: Optional[str] = None) -> ClientResult[bytes]:
         """
         Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel,
         PowerPoint, OneNote, and Teams) in your organization.
@@ -147,7 +152,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_m365_app_user_detail(self, period_or_date: Union[date, str] = None) -> ClientResult[bytes]:
+    def get_m365_app_user_detail(self, period_or_date: Optional[Union[date, str]] = None) -> ClientResult[bytes]:
         """
         Get a report that provides the details about which apps and platforms users have used.
         """
@@ -166,7 +171,8 @@ class ReportRoot(Entity):
         """Get the count of Microsoft 365 activations on desktops and devices."""
         qry = create_report_query(self, "getOffice365ActivationsUserCounts")
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_onedrive_activity_file_counts(self, period: str) -> ClientResult[Report]:
         """
@@ -178,7 +184,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getOneDriveActivityFileCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_onedrive_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """
@@ -190,7 +197,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getOneDriveActivityUserCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_onedrive_activity_user_detail(self, period: str):
         """
@@ -215,7 +223,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getOneDriveUsageFileCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_onedrive_usage_storage(self, period):
         """
@@ -252,7 +261,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getMailboxUsageMailboxCounts", period, True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_mailbox_usage_quota_status_mailbox_counts(self, period: str):
         """
@@ -285,7 +295,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getTeamsUserActivityUserCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_sharepoint_activity_user_counts(self, period: str):
         """
@@ -322,7 +333,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getSharePointSiteUsageDetail", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_sharepoint_site_usage_site_counts(self, period: str) -> ClientResult[Report]:
         """
@@ -334,7 +346,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getSharePointSiteUsageSiteCounts", period)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_teams_team_counts(self, period: str) -> ClientResult[bytes]:
         """
@@ -346,7 +359,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getTeamsTeamCounts", period, return_stream=True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     def get_teams_user_activity_counts(self, period: str) -> ClientResult[bytes]:
         """
@@ -355,7 +369,8 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getTeamsUserActivityCounts", period, return_stream=True)
         self.context.add_query(qry)
-        return qry.return_type
+        assert qry.return_type is not None
+        return qry.return_type  # type: ignore[return-type]
 
     @property
     def authentication_methods(self) -> AuthenticationMethodsRoot:

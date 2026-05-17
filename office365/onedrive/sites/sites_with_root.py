@@ -28,7 +28,9 @@ class SitesWithRoot(EntityCollection[Site]):
 
         :param str path: Server relative path
         """
-        tenant_part = self.context.tenant_name.split(".")[0]
+        tenant_name = self.context.tenant_name
+        assert tenant_name is not None
+        tenant_part = tenant_name.split(".")[0]
         host_name = f"{tenant_part}.sharepoint.com"
         return_type = Site(self.context, SitePath(host_name, path, self.resource_path))
         self.add_child(return_type)

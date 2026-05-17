@@ -1,17 +1,19 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ApprovalsProperties(ClientValue):
     def __init__(
         self,
-        approvers_await_all: bool = None,
-        approvers_await_all_fixed: bool = None,
-        approvers_fixed: bool = None,
-        approver_source_type: int = None,
-        approver_source_value: str = None,
-        provisioning_error: str = None,
-        provisioning_status: int = None,
-        notifications_enabled: bool = None,
+        approvers_await_all: Optional[bool] = None,
+        approvers_await_all_fixed: Optional[bool] = None,
+        approvers_fixed: Optional[bool] = None,
+        approver_source_type: Optional[int] = None,
+        approver_source_value: Optional[str] = None,
+        provisioning_error: Optional[str] = None,
+        provisioning_status: Optional[int] = None,
+        notifications_enabled: Optional[bool] = None,
     ):
         self.ApproversAwaitAll = approvers_await_all
         self.ApproversAwaitAllFixed = approvers_await_all_fixed

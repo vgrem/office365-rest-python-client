@@ -84,7 +84,7 @@ class ResourcePath:
             return NotImplemented
         return self.to_url() == other.to_url()
 
-    __hash__ = None
+    __hash__ = None  # type: ignore[assignment]
 
     def to_url(self) -> str:
         """
