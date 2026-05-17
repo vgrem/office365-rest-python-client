@@ -21,12 +21,8 @@ def load_cookies_from_storage_state(path: str) -> Dict[str, str]:
 
 
 if __name__ == "__main__":
-    site_url = os.environ.get(
-        "SP_SITE_URL", "https://contoso.sharepoint.com/sites/demo"
-    )
-    storage_state_path = os.environ.get(
-        "PLAYWRIGHT_STORAGE_STATE", "./storage_state.json"
-    )
+    site_url = os.environ.get("SP_SITE_URL", "https://contoso.sharepoint.com/sites/demo")
+    storage_state_path = os.environ.get("PLAYWRIGHT_STORAGE_STATE", "./storage_state.json")
 
     def cookie_source():
         return load_cookies_from_storage_state(storage_state_path)
