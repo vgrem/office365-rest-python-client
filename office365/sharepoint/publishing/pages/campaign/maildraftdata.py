@@ -1,8 +1,10 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class CampaignPublicationMailDraftData(ClientValue):
-    def __init__(self, draft_id: str = None, group_upn: str = None):
+    def __init__(self, draft_id: Optional[str] = None, group_upn: Optional[str] = None):
         self.DraftId = draft_id
         self.GroupUpn = group_upn
 

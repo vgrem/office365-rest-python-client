@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -30,7 +32,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.add_child(return_type)
         return return_type
 
-    def create_app_page(self, web_part_data: str = None) -> ClientResult[str]:
+    def create_app_page(self, web_part_data: Optional[str] = None) -> ClientResult[str]:
         """
         :param str web_part_data:
         """

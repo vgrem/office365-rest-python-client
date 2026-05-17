@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.amplify.clientamplifyendpointinfo import (
@@ -11,22 +13,22 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 class ClientAmplifyResult(ClientValue):
     def __init__(
         self,
-        canvas_element: str = None,
-        code: str = None,
+        canvas_element: Optional[str] = None,
+        code: Optional[str] = None,
         endpoint: ClientAmplifyEndpointInfo = ClientAmplifyEndpointInfo(),
-        event_id: str = None,
-        expected: bool = None,
+        event_id: Optional[str] = None,
+        expected: Optional[bool] = None,
         extra_properties: ClientValueCollection[ClientAmplifyExtraProperty] = ClientValueCollection(
             ClientAmplifyExtraProperty
         ),
-        internal_description: str = None,
-        origin: str = None,
-        stage: str = None,
-        status_indicative: bool = None,
-        step: str = None,
-        timestamp_utc: str = None,
-        upstream_error_code: str = None,
-        upstream_http_status_code: int = None,
+        internal_description: Optional[str] = None,
+        origin: Optional[str] = None,
+        stage: Optional[str] = None,
+        status_indicative: Optional[bool] = None,
+        step: Optional[str] = None,
+        timestamp_utc: Optional[str] = None,
+        upstream_error_code: Optional[str] = None,
+        upstream_http_status_code: Optional[int] = None,
     ):
         self.canvasElement = canvas_element
         self.code = code

@@ -16,7 +16,7 @@ class PointPublishingPost(Entity):
         return self.properties.get("Content", None)
 
     @property
-    def created_date(self) -> datetime:
+    def created_date(self) -> Optional[datetime]:
         """Gets the CreatedDate property"""
         return self.properties.get("CreatedDate", None)
 
@@ -26,7 +26,7 @@ class PointPublishingPost(Entity):
         return self.properties.get("FriendlyUrlFileName", None)
 
     @property
-    def modified_date(self) -> datetime:
+    def modified_date(self) -> Optional[datetime]:
         """Gets the ModifiedDate property"""
         return self.properties.get("ModifiedDate", None)
 

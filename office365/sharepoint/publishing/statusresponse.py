@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -13,9 +14,9 @@ class PublishingStatusResponse(ClientValue):
     def __init__(
         self,
         email_publishing_status: EmailPublishingStatus = EmailPublishingStatus(),
-        last_tried_at: datetime = None,
-        pre_publish_validation_error_code: int = None,
-        publishing_status: int = None,
+        last_tried_at: Optional[datetime] = None,
+        pre_publish_validation_error_code: Optional[int] = None,
+        publishing_status: Optional[int] = None,
         share_point_publishing_status: ClientValueCollection[SharePointPublishingStatusResponse] = ClientValueCollection(
             SharePointPublishingStatusResponse
         ),
@@ -26,7 +27,7 @@ class PublishingStatusResponse(ClientValue):
         viva_engage_v2_publishing_status: ClientValueCollection[VivaEngagePublishingStatus] = ClientValueCollection(
             VivaEngagePublishingStatus
         ),
-        yammer_publishing_status: dict = None,
+        yammer_publishing_status: Optional[dict] = None,
         errors: ClientValueCollection[ClientAmplifyResult] = ClientValueCollection(ClientAmplifyResult),
     ):
         self.EmailPublishingStatus = email_publishing_status

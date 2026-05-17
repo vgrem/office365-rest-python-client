@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.publishing.sharepointpublishingstatus import (
     SharePointPublishingStatus,
@@ -7,9 +9,9 @@ from office365.sharepoint.publishing.sharepointpublishingstatus import (
 class SharePointPublishingStatusResponse(ClientValue):
     def __init__(
         self,
-        site_id: str = None,
+        site_id: Optional[str] = None,
         status: SharePointPublishingStatus = SharePointPublishingStatus(),
-        web_id: str = None,
+        web_id: Optional[str] = None,
     ):
         self.SiteId = site_id
         self.Status = status

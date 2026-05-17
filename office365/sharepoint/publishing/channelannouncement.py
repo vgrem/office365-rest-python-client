@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.publishing.announcements.author import AnnouncementAuthor
 from office365.sharepoint.publishing.calltoaction import CallToAction
@@ -9,13 +11,13 @@ class ChannelAnnouncement(ClientValue):
         self,
         author: AnnouncementAuthor = AnnouncementAuthor(),
         call_to_action: CallToAction = CallToAction(),
-        channel_name: str = None,
+        channel_name: Optional[str] = None,
         icon: Icon = Icon(),
-        id_: int = None,
-        is_read: bool = None,
-        message: str = None,
-        publish_start_date: str = None,
-        title: str = None,
+        id_: Optional[int] = None,
+        is_read: Optional[bool] = None,
+        message: Optional[str] = None,
+        publish_start_date: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.Author = author
         self.CallToAction = call_to_action

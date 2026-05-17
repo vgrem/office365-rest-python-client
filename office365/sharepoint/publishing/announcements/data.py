@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.publishing.calltoaction import CallToAction
@@ -9,13 +10,13 @@ class AnnouncementsData(ClientValue):
     def __init__(
         self,
         call_to_action: CallToAction = CallToAction(),
-        dismissable: bool = None,
-        expires_on: datetime = None,
+        dismissable: Optional[bool] = None,
+        expires_on: Optional[datetime] = None,
         icon: Icon = Icon(),
-        id_: str = None,
-        message: str = None,
-        publish_start_date: datetime = None,
-        title: str = None,
+        id_: Optional[str] = None,
+        message: Optional[str] = None,
+        publish_start_date: Optional[datetime] = None,
+        title: Optional[str] = None,
     ):
         self.CallToAction = call_to_action
         self.Dismissable = dismissable

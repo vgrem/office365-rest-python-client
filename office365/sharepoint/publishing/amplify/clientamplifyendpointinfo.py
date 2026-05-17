@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
@@ -8,14 +10,14 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 class ClientAmplifyEndpointInfo(ClientValue):
     def __init__(
         self,
-        endpoint_sub_type: str = None,
-        endpoint_type: str = None,
+        endpoint_sub_type: Optional[str] = None,
+        endpoint_type: Optional[str] = None,
         extra_properties: ClientValueCollection[ClientAmplifyExtraProperty] = ClientValueCollection(
             ClientAmplifyExtraProperty
         ),
-        href: str = None,
-        id_: str = None,
-        name: str = None,
+        href: Optional[str] = None,
+        id_: Optional[str] = None,
+        name: Optional[str] = None,
     ):
         self.endpointSubType = endpoint_sub_type
         self.endpointType = endpoint_type

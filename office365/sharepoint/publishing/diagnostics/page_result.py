@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,11 +11,11 @@ from office365.sharepoint.publishing.tooldetails import ToolDetails
 class PageDiagnosticsResult(ClientValue):
     def __init__(
         self,
-        created_date: datetime = None,
+        created_date: Optional[datetime] = None,
         page_details: PageDetails = PageDetails(),
-        result_status: int = None,
+        result_status: Optional[int] = None,
         suggestions: ClientValueCollection[RuleResult] = ClientValueCollection(RuleResult),
-        score: int = None,
+        score: Optional[int] = None,
         tool_details: ToolDetails = ToolDetails(),
     ):
         self.CreatedDate = created_date

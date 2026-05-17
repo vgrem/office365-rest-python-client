@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -8,12 +9,12 @@ class ApprovalRequestCreationInfo(ClientValue):
     def __init__(
         self,
         approvers: StringCollection = StringCollection(),
-        await_all: bool = None,
+        await_all: Optional[bool] = None,
         distribution_channel: StringCollection = StringCollection(),
-        important: bool = None,
-        message: str = None,
-        publish_option: str = None,
-        schedule_publish_date: datetime = None,
+        important: Optional[bool] = None,
+        message: Optional[str] = None,
+        publish_option: Optional[str] = None,
+        schedule_publish_date: Optional[datetime] = None,
     ):
         self.Approvers = approvers
         self.AwaitAll = await_all

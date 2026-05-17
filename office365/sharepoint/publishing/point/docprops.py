@@ -27,7 +27,7 @@ class PointPublishingDocProps(Entity):
         return self.properties.get("FileType", None)
 
     @property
-    def modified(self) -> datetime:
+    def modified(self) -> Optional[datetime]:
         """Gets the Modified property"""
         return self.properties.get("Modified", None)
 

@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class ProfilePropertyViewEditPolicy(ClientValue):
     def __init__(
         self,
-        is_disabled: bool = None,
-        is_required: bool = None,
-        is_taxonomic: bool = None,
-        is_user_editable: bool = None,
-        is_visible_on_editor: bool = None,
-        privacy: int = None,
-        user_override_privacy: bool = None,
+        is_disabled: Optional[bool] = None,
+        is_required: Optional[bool] = None,
+        is_taxonomic: Optional[bool] = None,
+        is_user_editable: Optional[bool] = None,
+        is_visible_on_editor: Optional[bool] = None,
+        privacy: Optional[int] = None,
+        user_override_privacy: Optional[bool] = None,
     ):
         self.IsDisabled = is_disabled
         self.IsRequired = is_required

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -17,9 +19,9 @@ class SitePageDependencyMetadata(ClientValue):
         related_web_parts_details: ClientValueCollection[WebPartDetailsWrapper] = ClientValueCollection(
             WebPartDetailsWrapper
         ),
-        type_: str = None,
-        unique_id: str = None,
-        web_id: str = None,
+        type_: Optional[str] = None,
+        unique_id: Optional[str] = None,
+        web_id: Optional[str] = None,
     ):
         self.DependencyItemPath = dependency_item_path
         self.IsInPageSiteAssetsFolder = is_in_page_site_assets_folder

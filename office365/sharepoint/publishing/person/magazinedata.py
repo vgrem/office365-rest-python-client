@@ -1,21 +1,23 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class PersonMagazineData(ClientValue):
     def __init__(
         self,
-        about_me: str = None,
-        background_image_url: str = None,
-        background_image_x: int = None,
-        background_image_y: int = None,
-        department_name: str = None,
-        display_name: str = None,
-        email: str = None,
-        has_edit_permission: bool = None,
-        office: str = None,
-        phone: str = None,
-        picture_url: str = None,
-        title: str = None,
+        about_me: Optional[str] = None,
+        background_image_url: Optional[str] = None,
+        background_image_x: Optional[int] = None,
+        background_image_y: Optional[int] = None,
+        department_name: Optional[str] = None,
+        display_name: Optional[str] = None,
+        email: Optional[str] = None,
+        has_edit_permission: Optional[bool] = None,
+        office: Optional[str] = None,
+        phone: Optional[str] = None,
+        picture_url: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.AboutMe = about_me
         self.BackgroundImageUrl = background_image_url

@@ -41,7 +41,7 @@ class PointPublishingMagazineProps(Entity):
         return self.properties.get("MagazineType", None)
 
     @property
-    def published_date(self) -> datetime:
+    def published_date(self) -> Optional[datetime]:
         """Gets the PublishedDate property"""
         return self.properties.get("PublishedDate", None)
 

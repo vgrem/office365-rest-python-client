@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -17,7 +19,7 @@ class CommunicationSite(Entity):
     """Represents a Communication Site."""
 
     def create(
-        self, title: str, site_url: str, description: str = None
+        self, title: str, site_url: str, description: Optional[str] = None
     ) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Initiates creation of a Communication Site.

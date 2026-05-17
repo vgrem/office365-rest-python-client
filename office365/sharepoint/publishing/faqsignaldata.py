@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.submitinfo import SubmitInfo
@@ -6,10 +8,10 @@ from office365.sharepoint.publishing.submitinfo import SubmitInfo
 class FaqSignalData(ClientValue):
     def __init__(
         self,
-        question_id: str = None,
-        signal_type: int = None,
+        question_id: Optional[str] = None,
+        signal_type: Optional[int] = None,
         submits: ClientValueCollection[SubmitInfo] = ClientValueCollection(SubmitInfo),
-        value: int = None,
+        value: Optional[int] = None,
     ):
         self.QuestionId = question_id
         self.SignalType = signal_type

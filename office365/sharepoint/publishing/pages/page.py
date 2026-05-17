@@ -66,9 +66,9 @@ class SitePage(SitePageMetadata):
     def save_page(
         self,
         title: str,
-        canvas_content: str = None,
-        banner_image_url: str = None,
-        topic_header: str = None,
+        canvas_content: Optional[str] = None,
+        banner_image_url: Optional[str] = None,
+        topic_header: Optional[str] = None,
     ):
         """
         Updates the current Site Page with the provided pageStream content.
@@ -242,5 +242,5 @@ class SitePage(SitePageMetadata):
         )
 
     @property
-    def entity_type_name(self) -> str:
+    def entity_type_name(self) -> str:  # type: ignore[override]
         return "SP.Publishing.SitePage"

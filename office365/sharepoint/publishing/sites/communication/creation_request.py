@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
@@ -6,15 +8,15 @@ class CommunicationSiteCreationRequest(ClientValue):
         self,
         title: str,
         url: str,
-        description: str = None,
-        lcid: str = None,
-        classification: str = None,
-        allow_filesharing_for_guest_users: bool = None,
-        web_template_extension_id: str = None,
-        site_design_id: str = None,
-        allow_file_sharing_for_guest_users: bool = None,
-        sensitivity_label: str = None,
-        sensitivity_label2: str = None,
+        description: Optional[str] = None,
+        lcid: Optional[str] = None,
+        classification: Optional[str] = None,
+        allow_filesharing_for_guest_users: Optional[bool] = None,
+        web_template_extension_id: Optional[str] = None,
+        site_design_id: Optional[str] = None,
+        allow_file_sharing_for_guest_users: Optional[bool] = None,
+        sensitivity_label: Optional[str] = None,
+        sensitivity_label2: Optional[str] = None,
     ):
         """
         Options for configuring the Communication Site that will be created.

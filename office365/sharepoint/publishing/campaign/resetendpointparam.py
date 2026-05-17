@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -5,10 +7,10 @@ from office365.runtime.types.collections import StringCollection
 class CampaignPublicationResetEndpointParam(ClientValue):
     def __init__(
         self,
-        email_transpile_content: str = None,
-        engage_transpile_content: str = None,
+        email_transpile_content: Optional[str] = None,
+        engage_transpile_content: Optional[str] = None,
         reset_endpoint: StringCollection = StringCollection(),
-        teams_transpile_content: str = None,
+        teams_transpile_content: Optional[str] = None,
     ):
         self.EmailTranspileContent = email_transpile_content
         self.EngageTranspileContent = engage_transpile_content

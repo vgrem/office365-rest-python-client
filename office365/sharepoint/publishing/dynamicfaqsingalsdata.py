@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -6,9 +7,9 @@ from office365.runtime.client_value import ClientValue
 class DynamicFaqSingalsData(ClientValue):
     def __init__(
         self,
-        id_: str = None,
-        submitted_at: datetime = None,
-        submitted_question: str = None,
+        id_: Optional[str] = None,
+        submitted_at: Optional[datetime] = None,
+        submitted_question: Optional[str] = None,
     ):
         self.Id = id_
         self.SubmittedAt = submitted_at

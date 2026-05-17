@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -7,14 +9,14 @@ class SharePageByEmailData(ClientValue):
         self,
         bcc_emails: StringCollection = StringCollection(),
         cc_emails: StringCollection = StringCollection(),
-        email_size: str = None,
-        message: str = None,
-        page_content: str = None,
-        page_item_id: int = None,
+        email_size: Optional[str] = None,
+        message: Optional[str] = None,
+        page_content: Optional[str] = None,
+        page_item_id: Optional[int] = None,
         recipient_emails: StringCollection = StringCollection(),
-        scenario_tag: str = None,
-        subject: str = None,
-        url: str = None,
+        scenario_tag: Optional[str] = None,
+        subject: Optional[str] = None,
+        url: Optional[str] = None,
     ):
         self.BccEmails = bcc_emails
         self.CcEmails = cc_emails

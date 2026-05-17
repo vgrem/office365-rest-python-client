@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -24,20 +25,20 @@ class SitePageFieldsData(ClientValue):
         author_byline: StringCollection = StringCollection(),
         authoring_metadata: SitePageAuthoringMetadata = SitePageAuthoringMetadata(),
         boost_properties: SitePageBoostProperties = SitePageBoostProperties(),
-        call_to_action: str = None,
-        canvas_content1: str = None,
-        canvas_json1: str = None,
-        categories: str = None,
+        call_to_action: Optional[str] = None,
+        canvas_content1: Optional[str] = None,
+        canvas_json1: Optional[str] = None,
+        categories: Optional[str] = None,
         co_auth_state: SitePageCoAuthState = SitePageCoAuthState(),
         collaborators: ClientValueCollection[SitePageCollaborator] = ClientValueCollection(SitePageCollaborator),
-        description: str = None,
-        email_transpile_content: str = None,
-        hidden_highlights_metadata: str = None,
-        hide_list_editor_metadata: str = None,
-        layout_webparts_content: str = None,
-        modified: datetime = None,
-        teams_transpile_content: str = None,
-        web_transpile_content: str = None,
+        description: Optional[str] = None,
+        email_transpile_content: Optional[str] = None,
+        hidden_highlights_metadata: Optional[str] = None,
+        hide_list_editor_metadata: Optional[str] = None,
+        layout_webparts_content: Optional[str] = None,
+        modified: Optional[datetime] = None,
+        teams_transpile_content: Optional[str] = None,
+        web_transpile_content: Optional[str] = None,
     ):
         """
         Represents Site Page metadata for use in page authoring operations.

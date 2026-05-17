@@ -1,14 +1,16 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class GettyImage(ClientValue):
     def __init__(
         self,
-        image_id: str = None,
-        image_url: str = None,
-        insertion_iso_timestamp: str = None,
-        primary_id: str = None,
-        secondary_id: str = None,
+        image_id: Optional[str] = None,
+        image_url: Optional[str] = None,
+        insertion_iso_timestamp: Optional[str] = None,
+        primary_id: Optional[str] = None,
+        secondary_id: Optional[str] = None,
     ):
         self.ImageId = image_id
         self.ImageUrl = image_url

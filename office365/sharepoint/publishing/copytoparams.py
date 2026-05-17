@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
@@ -5,23 +7,23 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class CopyToParams(ClientValue):
     def __init__(
         self,
-        as_news: bool = None,
-        as_private_authoring_page: bool = None,
-        as_template: bool = None,
-        canvas_content_only: bool = None,
-        component_json_string: str = None,
-        create_copy_for_edit: bool = None,
-        create_copy_with_title_suffix: bool = None,
-        create_if_missing: bool = None,
-        delete_source_page: bool = None,
+        as_news: Optional[bool] = None,
+        as_private_authoring_page: Optional[bool] = None,
+        as_template: Optional[bool] = None,
+        canvas_content_only: Optional[bool] = None,
+        component_json_string: Optional[str] = None,
+        create_copy_for_edit: Optional[bool] = None,
+        create_copy_with_title_suffix: Optional[bool] = None,
+        create_if_missing: Optional[bool] = None,
+        delete_source_page: Optional[bool] = None,
         dependency_property_types_to_deep_copy: ClientValueCollection[int] = ClientValueCollection(int),
-        destination_page_unique_id: str = None,
-        destination_type: int = None,
-        destination_web_url: str = None,
-        scenario_id: int = None,
-        scenario_payload: str = None,
-        should_add_fallback_link_for_video_for_amplify: bool = None,
-        site_page_flags: str = None,
+        destination_page_unique_id: Optional[str] = None,
+        destination_type: Optional[int] = None,
+        destination_web_url: Optional[str] = None,
+        scenario_id: Optional[int] = None,
+        scenario_payload: Optional[str] = None,
+        should_add_fallback_link_for_video_for_amplify: Optional[bool] = None,
+        site_page_flags: Optional[str] = None,
     ):
         self.AsNews = as_news
         self.AsPrivateAuthoringPage = as_private_authoring_page

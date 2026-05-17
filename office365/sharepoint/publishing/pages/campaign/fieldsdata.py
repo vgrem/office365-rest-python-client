@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 
 
 class CampaignPublicationFieldsData(SitePageFieldsData):
     def __init__(
         self,
-        endpoint_email: str = None,
-        endpoint_share_point: str = None,
-        endpoint_teams: str = None,
-        endpoint_viva_engage: str = None,
-        endpoint_yammer: str = None,
-        publication_metadata: str = None,
-        publication_status: int = None,
+        endpoint_email: Optional[str] = None,
+        endpoint_share_point: Optional[str] = None,
+        endpoint_teams: Optional[str] = None,
+        endpoint_viva_engage: Optional[str] = None,
+        endpoint_yammer: Optional[str] = None,
+        publication_metadata: Optional[str] = None,
+        publication_status: Optional[int] = None,
     ):
         super().__init__()
         self.EndpointEmail = endpoint_email
@@ -22,5 +24,5 @@ class CampaignPublicationFieldsData(SitePageFieldsData):
         self.PublicationStatus = publication_status
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self):  # type: ignore[override]
         return "SP.Publishing.CampaignPublicationFieldsData"

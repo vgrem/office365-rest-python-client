@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
 class CampaignMetadata(ClientValue):
     def __init__(
         self,
-        color: str = None,
-        description: str = None,
-        logo: str = None,
-        title: str = None,
+        color: Optional[str] = None,
+        description: Optional[str] = None,
+        logo: Optional[str] = None,
+        title: Optional[str] = None,
     ):
         self.Color = color
         self.Description = description

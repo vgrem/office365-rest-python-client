@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -9,9 +10,9 @@ class PortalLaunchWave(ClientValue):
     def __init__(
         self,
         groups: ClientValueCollection[PortalLaunchWaveGroup] = ClientValueCollection(PortalLaunchWaveGroup),
-        launch_date_utc: datetime = None,
-        name: str = None,
-        order: int = None,
+        launch_date_utc: Optional[datetime] = None,
+        name: Optional[str] = None,
+        order: Optional[int] = None,
     ):
         self.Groups = groups
         self.LaunchDateUtc = launch_date_utc

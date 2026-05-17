@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.validations.errorcodesforemail import (
@@ -24,10 +26,12 @@ class PrePublishValidationsResponse(ClientValue):
         pre_publish_validations_error_codes_for_share_point_sites: ClientValueCollection[
             PrePublishValidationsErrorCodesForSharePointSite
         ] = ClientValueCollection(PrePublishValidationsErrorCodesForSharePointSite),
-        pre_publish_validations_error_codes_for_teams: ClientValueCollection[
-            PrePublishValidationsErrorCodesForTeams
+        pre_publish_validations_error_codes_for_teams: Optional[
+            ClientValueCollection[PrePublishValidationsErrorCodesForTeams]
         ] = None,
-        pre_publish_validations_error_codes_for_viva_engage: PrePublishValidationsErrorCodesForVivaEngage = None,
+        pre_publish_validations_error_codes_for_viva_engage: Optional[
+            PrePublishValidationsErrorCodesForVivaEngage
+        ] = None,
         pre_publish_validations_error_codes_for_viva_engage_v2: ClientValueCollection[
             PrePublishValidationsErrorCodesForVivaEngage
         ] = ClientValueCollection(PrePublishValidationsErrorCodesForVivaEngage),

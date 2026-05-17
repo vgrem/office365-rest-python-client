@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.datetimecustomproperty import (
@@ -11,43 +13,43 @@ from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 class PersonMagazineUserProfile(ClientValue):
     def __init__(
         self,
-        aad_object_id: str = None,
-        about_me: str = None,
-        about_me_truncated: str = None,
+        aad_object_id: Optional[str] = None,
+        about_me: Optional[str] = None,
+        about_me_truncated: Optional[str] = None,
         assistant: PersonCore = PersonCore(),
         birth_date: ProfileDateTime = ProfileDateTime(),
-        birthday: str = None,
+        birthday: Optional[str] = None,
         date_time_custom_properties: ClientValueCollection[DateTimeCustomProperty] = ClientValueCollection(
             DateTimeCustomProperty
         ),
-        department_name: str = None,
-        display_name: str = None,
-        email: str = None,
-        fax: str = None,
-        has_edit_permission: bool = None,
+        department_name: Optional[str] = None,
+        display_name: Optional[str] = None,
+        email: Optional[str] = None,
+        fax: Optional[str] = None,
+        has_edit_permission: Optional[bool] = None,
         hire_date: ProfileDateTime = ProfileDateTime(),
-        home_phone: str = None,
-        interest: str = None,
-        lync: str = None,
-        mobile_phone: str = None,
-        office: str = None,
-        office_location: str = None,
-        one_drive_url: str = None,
-        past_projects: str = None,
+        home_phone: Optional[str] = None,
+        interest: Optional[str] = None,
+        lync: Optional[str] = None,
+        mobile_phone: Optional[str] = None,
+        office: Optional[str] = None,
+        office_location: Optional[str] = None,
+        one_drive_url: Optional[str] = None,
+        past_projects: Optional[str] = None,
         person_type_custom_properties: ClientValueCollection[PersonCustomProperty] = ClientValueCollection(
             PersonCustomProperty
         ),
-        phone: str = None,
-        picture_url: str = None,
-        point_publishing_personal_site_url: str = None,
-        responsibilities: str = None,
-        schools: str = None,
-        skills: str = None,
-        sps_department: str = None,
-        sps_job_title: str = None,
-        string_custom_properties: dict = None,
-        title: str = None,
-        user_name: str = None,
+        phone: Optional[str] = None,
+        picture_url: Optional[str] = None,
+        point_publishing_personal_site_url: Optional[str] = None,
+        responsibilities: Optional[str] = None,
+        schools: Optional[str] = None,
+        skills: Optional[str] = None,
+        sps_department: Optional[str] = None,
+        sps_job_title: Optional[str] = None,
+        string_custom_properties: Optional[dict] = None,
+        title: Optional[str] = None,
+        user_name: Optional[str] = None,
     ):
         self.AadObjectId = aad_object_id
         self.AboutMe = about_me
