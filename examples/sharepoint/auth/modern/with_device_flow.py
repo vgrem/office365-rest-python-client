@@ -1,8 +1,11 @@
 """
-Demonstrates how to authenticate users on devices or operating systems that don't provide a web browser.
-Device code flow lets the user use another device such as a computer or a mobile phone to sign in interactively.
+Connect to SharePoint using device code flow.
 
-https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
+Useful for devices or environments without a web browser.
+The user authenticates on another device by visiting a URL
+and entering the displayed code.
+
+See https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
 """
 
 from office365.sharepoint.client_context import ClientContext

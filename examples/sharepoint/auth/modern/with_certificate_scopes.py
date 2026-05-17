@@ -1,8 +1,11 @@
 """
-Demonstrates how to authenticate using App-Only flow
+Connect to SharePoint using Azure AD app-only with custom scopes.
 
-Refer this article for a detailed instruction:
-https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
+Prerequisites:
+    - An app registered in Azure AD with a certificate credential
+    - Grant the app appropriate SharePoint permissions
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
 """
 
 import os

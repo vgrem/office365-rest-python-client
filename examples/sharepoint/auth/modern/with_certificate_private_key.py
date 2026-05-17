@@ -1,19 +1,11 @@
 """
+Connect to SharePoint using Azure AD app-only with a certificate private key as a string.
+
 Prerequisites:
+    - An app registered in Azure AD with a certificate credential
+    - The certificate private key file on disk
 
-Setting up an Azure AD app for app-only access:
-
-- create a self signed certificate
-- register an Azure AD application in the Azure Active Directory tenant that is linked to your Office 365 tenant
-- grant the permissions once application is registered, for instance choose:
-      SharePoint
-        Application permissions
-          Sites
-            Sites.FullControl.All
-- and finally upload the certificate to the application
-
-Refer this article for a detailed instruction:
-https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
+See https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
 """
 
 from office365.sharepoint.client_context import ClientContext

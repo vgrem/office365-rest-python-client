@@ -1,3 +1,9 @@
+"""
+Connect to SharePoint using an externally acquired token via ADAL.
+
+⚠️ DEPRECATED: ADAL is deprecated. Use MSAL and with_client_certificate instead.
+"""
+
 import os
 
 from office365.runtime.auth.token_response import TokenResponse

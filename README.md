@@ -46,7 +46,7 @@ The library provides two clients: **`ClientContext`** for SharePoint REST API an
 ctx = ClientContext('{site_url}').with_client_certificate(tenant, client_id, thumbprint, cert_path)
 ```
 
-[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/with_certificate.py)
+[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/modern/with_certificate.py)
 
 ### Username & password (MSAL ROPC) — RECOMMENDED for user auth
 
@@ -61,7 +61,7 @@ ctx = ClientContext('{site_url}').with_username_and_password(
 )
 ```
 
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) | [Example](examples/sharepoint/auth/with_user_credential.py)
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) | [Example](examples/sharepoint/auth/modern/with_username_and_password.py)
 
 ### Interactive
 
@@ -74,7 +74,7 @@ ctx = ClientContext('{site_url}').with_interactive('{tenant}', '{client_id}')
 
 > Prerequisite: configure Redirect URI as `http://localhost` in Azure Portal.
 
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication) | [Example](examples/sharepoint/auth/with_interactive.py)
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication) | [Example](examples/sharepoint/auth/modern/with_interactive.py)
 
 ### Device code
 
@@ -84,7 +84,7 @@ User authenticates on another device via a displayed code.
 ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
 ```
 
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/with_device_flow.py)
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/modern/with_device_flow.py)
 
 ### Legacy — SAML User Auth ⚠️
 
@@ -105,7 +105,7 @@ ctx.with_username_and_password(tenant='{tenant}', client_id='{client_id}', usern
 
 [Docs](https://learn.microsoft.com/en-us/microsoft-365/enterprise/modern-auth-for-office-2013-and-2016)
 
-### Legacy — ACS App-Only ⚠️
+### Legacy - ACS App-Only ⚠️
 
 > **Deprecated**: Azure ACS is being retired. Use Azure AD certificate auth instead.
 
@@ -115,7 +115,7 @@ from office365.sharepoint.client_context import ClientContext
 ctx = ClientContext('{site_url}').with_credentials(ClientCredential('{client_id}', '{client_secret}'))
 ```
 
-[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs) | [Example](examples/sharepoint/auth/with_app_only.py)
+[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs) | [Example](examples/sharepoint/auth/legacy/with_app_only.py)
 
 ---
 

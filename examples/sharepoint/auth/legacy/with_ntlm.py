@@ -1,5 +1,7 @@
 """
-Demonstrates how to authenticate with user credentials (username and password) in non-interactive mode
+Connect to SharePoint on-premises using NTLM authentication.
+
+This method is only relevant for SharePoint on-premises deployments.
 """
 
 import logging
@@ -11,3 +13,4 @@ logging.basicConfig(level=logging.DEBUG)
 
 ctx = ClientContext(test_team_site_url, allow_ntlm=True).with_user_credentials(test_username, test_password)
 web = ctx.web.get().execute_query()
+print(web.url)
