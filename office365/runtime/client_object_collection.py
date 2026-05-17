@@ -296,7 +296,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             raise ValueError("Next page not available")
         return self.get().before_execute(_construct_request)
 
-    def first(self, expression: str) -> Optional[T]:
+    def first(self, expression: str) -> T:
         """
         Get the first item matching the filter criteria.
 
@@ -321,7 +321,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
-    def single(self, expression: str) -> T | None:
+    def single(self, expression: str) -> T:
         """
         Get exactly one item matching the filter criteria.
 
