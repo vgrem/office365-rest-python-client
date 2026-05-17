@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject, T
+from office365.runtime.client_object import ClientObject, ClientObjectT
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
@@ -13,7 +13,7 @@ from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
 
 
-class ClientObjectCollection(ClientObject, Generic[T]):
+class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
     """
     A strongly-typed collection container for SharePoint client objects.
 
@@ -27,7 +27,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
     def __init__(
         self,
         context: ClientRuntimeContext,
-        item_type: Type[T],
+        item_type: Type[ClientObjectT],
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[ClientObject] = None,
     ) -> None:
@@ -41,8 +41,8 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             parent: Parent object that owns this collection
         """
         super().__init__(context, resource_path)
-        self._data: list[T] = []
-        self._item_type: Type[T] = item_type
+        self._data: list[ClientObjectT] = []
+        self._item_type: Type[ClientObjectT] = item_type
         self._page_loaded: EventHandler = EventHandler(False)
         self._paged_mode: bool = False
         self._current_pos: int | None = None
@@ -69,7 +69,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self,
         initial_properties: Optional[Dict] = None,
         resource_path: Optional[ResourcePath] = None,
-    ) -> T:
+    ) -> ClientObjectT:
         """
         Factory method to create a new item of the collection's type.
 
@@ -78,7 +78,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             resource_path: Custom API path for the new object
 
         Returns:
-            T: New instance of the collection's item type
+            ClientObjectT: New instance of the collection's item type
 
         Raises:
             AttributeError: If no item type was specified for the collection
@@ -118,7 +118,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             [client_object.set_property(k, v, persist_changes) for k, v in value.items()]
         return self
 
-    def add_child(self, client_object: T) -> Self:
+    def add_child(self, client_object: ClientObjectT) -> Self:
         """
         Add an item to the collection and set its parent reference.
 
@@ -132,7 +132,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self._data.append(client_object)
         return self
 
-    def remove_child(self, client_object: T) -> Self:
+    def remove_child(self, client_object: ClientObjectT) -> Self:
         """
         Remove an item from the collection.
 
@@ -145,7 +145,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self._data = [item for item in self._data if item != client_object]
         return self
 
-    def __iter__(self) -> Iterator[T]:
+    def __iter__(self) -> Iterator[ClientObjectT]:
         """Iterate through all items, automatically handling paged results."""
         yield from self._data
 
@@ -164,7 +164,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         """Developer-friendly string representation of the collection."""
         return f"entity_type_name={self.entity_type_name}(count={len(self)})"
 
-    def __getitem__(self, index: int) -> T:
+    def __getitem__(self, index: int) -> ClientObjectT:
         """Get an item by its index position."""
         return self._data[index]
 
@@ -279,7 +279,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             self: Supports fluent method chaining
         """
 
-        def _page_loaded(col: Self) -> None:
+        def _page_loaded(col: ClientObjectCollection) -> None:
             if self.has_next:
                 self._get_next().after_execute(_page_loaded)
 
@@ -296,7 +296,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             raise ValueError("Next page not available")
         return self.get().before_execute(_construct_request)
 
-    def first(self, expression: str) -> T:
+    def first(self, expression: str) -> ClientObjectT:
         """
         Get the first item matching the filter criteria.
 
@@ -304,7 +304,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             expression: OData filter expression
 
         Returns:
-            T: The first matching item
+            ClientObjectT: The first matching item
 
         Raises:
             ValueError: If no matching items found
@@ -321,7 +321,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
-    def single(self, expression: str) -> T:
+    def single(self, expression: str) -> ClientObjectT:
         """
         Get exactly one item matching the filter criteria.
 
@@ -329,7 +329,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
             expression: OData filter expression
 
         Returns:
-            T: The single matching item
+            ClientObjectT: The single matching item
 
         Raises:
             NotFoundException: If no items match
@@ -360,7 +360,7 @@ class ClientObjectCollection(ClientObject, Generic[T]):
         return self._next_request_url is not None
 
     @property
-    def current_page(self) -> List[T]:
+    def current_page(self) -> List[ClientObjectT]:
         """Get items from the most recently loaded page."""
         return self._data[self._current_pos :]
 

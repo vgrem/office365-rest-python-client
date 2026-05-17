@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Type, cast
 
-from office365.runtime.client_object import T
+from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
 
 
-class EntityCollection(ClientObjectCollection[T]):
+class EntityCollection(ClientObjectCollection[ClientObjectT]):
     """A type-safe collection of SharePoint entities.
 
     Provides strongly-typed access to SharePoint entity collections with support for:
@@ -24,7 +24,7 @@ class EntityCollection(ClientObjectCollection[T]):
     def __init__(
         self,
         context: ClientContext,
-        item_type: Type[T],
+        item_type: Type[ClientObjectT],
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[Entity] = None,
     ) -> None:
@@ -42,7 +42,7 @@ class EntityCollection(ClientObjectCollection[T]):
         self,
         initial_properties: Optional[dict] = None,
         resource_path: Optional[ResourcePath] = None,
-    ) -> T:
+    ) -> ClientObjectT:
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
         return super().create_typed_object(initial_properties, resource_path)

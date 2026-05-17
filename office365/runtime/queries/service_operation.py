@@ -5,10 +5,10 @@ from typing import Union
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
-from office365.runtime.queries.client_query import ClientQuery, T
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 
 
-class ServiceOperationQuery(ClientQuery[T]):
+class ServiceOperationQuery(ClientQuery[ReturnT]):
     """Represents a service operation (function) call in OData.
 
     Can handle both static methods (class-level) and instance methods.
@@ -21,7 +21,7 @@ class ServiceOperationQuery(ClientQuery[T]):
         method_params: list | dict | ClientValue | None = None,
         parameters_type: ClientObject | ClientValue | dict | str | None = None,
         parameters_name: str | None = None,
-        return_type: T | None = None,
+        return_type: ReturnT | None = None,
         is_static: bool = False,
     ):
         super().__init__(

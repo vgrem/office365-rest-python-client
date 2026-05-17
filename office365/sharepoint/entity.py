@@ -125,18 +125,9 @@ class Entity(ClientObject):
 
     @property
     def context(self) -> ClientContext:
-        """Gets the client context associated with this object.
-
-        Returns:
-            ClientContext: The SharePoint client context
-
-        Raises:
-            ValueError: If the context is not initialized
-        """
+        """Gets the client context associated with this object."""
         from office365.sharepoint.client_context import ClientContext
 
-        if self._context is None:
-            raise ValueError("Client context is not initialized")
         return cast(ClientContext, self._context)
 
     @property

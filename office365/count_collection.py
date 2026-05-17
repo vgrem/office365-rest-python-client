@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from requests import Response
 
 from office365.delta_collection import DeltaCollection
-from office365.runtime.client_object import T
+from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.function import FunctionQuery
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     pass
 
 
-class CountCollection(DeltaCollection[T]):
+class CountCollection(DeltaCollection[ClientObjectT]):
     """
     A specialized collection that supports OData $count operations.
 

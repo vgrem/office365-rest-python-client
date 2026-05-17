@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Generic
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import T
+from office365.runtime.client_object import ClientObjectT
 
 
 def mapped_property(name: str) -> Callable:
@@ -29,8 +29,8 @@ def mapped_property(name: str) -> Callable:
     return decorator
 
 
-class BaseScanner(ABC, Generic[T]):
-    def __init__(self, source: T) -> None:
+class BaseScanner(ABC, Generic[ClientObjectT]):
+    def __init__(self, source: ClientObjectT) -> None:
         self.source = source
         self._properties: Dict[str, Any] = {}
 

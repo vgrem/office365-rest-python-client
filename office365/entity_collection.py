@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union, cast
 from typing_extensions import Self
 
 from office365.entity import Entity
-from office365.runtime.client_object import T
+from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
@@ -15,13 +15,13 @@ if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
-class EntityCollection(ClientObjectCollection[T]):
+class EntityCollection(ClientObjectCollection[ClientObjectT]):
     """A collection container which represents a named collections of entities"""
 
     def __init__(
         self,
         context: GraphClient,
-        item_type: Type[T],
+        item_type: Type[ClientObjectT],
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[Entity] = None,
     ) -> None:
@@ -38,7 +38,7 @@ class EntityCollection(ClientObjectCollection[T]):
         self.query_options.custom["token"] = value
         return self
 
-    def __getitem__(self, key: Union[int, str]) -> T:
+    def __getitem__(self, key: Union[int, str]) -> ClientObjectT:
         """
         :param key: key is used to address an entity by either an index or by identifier
         :type key: int or str
@@ -50,7 +50,7 @@ class EntityCollection(ClientObjectCollection[T]):
         else:
             raise ValueError("Invalid key: expected either an entity index [int] or identifier [str]")
 
-    def add(self, *args: Any, **kwargs: Any) -> T:
+    def add(self, *args: Any, **kwargs: Any) -> ClientObjectT:
         """Creates an entity and prepares the query"""
         return_type = self.create_typed_object(kwargs, EntityPath(None, self.resource_path))
         self.add_child(return_type)
@@ -62,7 +62,7 @@ class EntityCollection(ClientObjectCollection[T]):
         self,
         initial_properties: Optional[Dict] = None,
         resource_path: Optional[ResourcePath] = None,
-    ) -> T:
+    ) -> ClientObjectT:
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
         return super().create_typed_object(initial_properties, resource_path)

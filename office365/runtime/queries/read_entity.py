@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING, List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
-from office365.runtime.queries.client_query import ClientQuery, T
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
     from office365.runtime.odata.query_options import QueryOptions
 
 
-class ReadEntityQuery(ClientQuery[T]):
+class ReadEntityQuery(ClientQuery[ReturnT]):
     def __init__(self, return_type: ClientObject, properties_to_include: Optional[List[str]] = None) -> None:
         """
         Read client object query

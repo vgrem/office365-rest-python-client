@@ -8,7 +8,7 @@ from typing_extensions import Self
 from office365.delta_path import DeltaPath
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.runtime.client_object import T
+from office365.runtime.client_object import ClientObjectT
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ class ChangeType(Enum):
     deleted = "2"
 
 
-class DeltaCollection(EntityCollection[T]):
+class DeltaCollection(EntityCollection[ClientObjectT]):
     """
     A specialized collection that tracks changes (deltas) to entities over time.
 
@@ -41,7 +41,7 @@ class DeltaCollection(EntityCollection[T]):
     def __init__(
         self,
         context: GraphClient,
-        item_type: Type[T],
+        item_type: Type[ClientObjectT],
         resource_path: Optional[ResourcePath] = None,
         parent: Optional[Entity] = None,
     ):
@@ -66,7 +66,7 @@ class DeltaCollection(EntityCollection[T]):
         return self
 
     @property
-    def delta(self) -> DeltaCollection[T]:
+    def delta(self) -> DeltaCollection[ClientObjectT]:
         """
         Gets a new delta collection for tracking subsequent changes.
 

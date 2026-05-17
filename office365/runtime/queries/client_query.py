@@ -12,10 +12,10 @@ if TYPE_CHECKING:
     from office365.runtime.client_value import ClientValue
     from office365.runtime.odata.query_options import QueryOptions
 
-T = TypeVar("T", bound="ClientObject | ClientResult")
+ReturnT = TypeVar("ReturnT", bound="ClientObject | ClientResult")
 
 
-class ClientQuery(Generic[T]):
+class ClientQuery(Generic[ReturnT]):
     """Client query"""
 
     def __init__(
@@ -24,7 +24,7 @@ class ClientQuery(Generic[T]):
         binding_type: ClientObject | None = None,
         parameters_type: ClientObject | ClientValue | dict | str | None = None,
         parameters_name: str | None = None,
-        return_type: T | None = None,
+        return_type: ReturnT | None = None,
     ) -> None:
         """
         Initialize a client query
@@ -46,7 +46,7 @@ class ClientQuery(Generic[T]):
         """Builds a request"""
         return self.context.build_request(self)
 
-    def execute_query(self) -> T | None:
+    def execute_query(self) -> ReturnT | None:
         """Executes the query and returns the result.
 
         Returns:
@@ -107,6 +107,6 @@ class ClientQuery(Generic[T]):
         return self._parameters_type
 
     @property
-    def return_type(self) -> T | None:
+    def return_type(self) -> ReturnT | None:
         """Expected return type of this query."""
         return self._return_type

@@ -5,7 +5,7 @@ import uuid
 from typing_extensions import Self
 
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.queries.client_query import ClientQuery, T
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 
@@ -22,7 +22,7 @@ def create_boundary(prefix: str, compact: bool = False) -> str:
         return prefix + str(uuid.uuid4())
 
 
-class BatchQuery(ClientQuery[T]):
+class BatchQuery(ClientQuery[ReturnT]):
     """Client query collection for batch requests."""
 
     def __init__(self, context: ClientRuntimeContext, queries: list[ClientQuery] | None = None) -> None:
@@ -84,6 +84,6 @@ class BatchQuery(ClientQuery[T]):
         return f"{self.context.service_root_url}/$batch"
 
     @property
-    def return_type(self) -> list[T]:  # type:ignore
+    def return_type(self) -> list[ReturnT]:  # type:ignore
         """Gets the return types of all queries in the batch."""
         return [q.return_type for q in self._queries if q.return_type]

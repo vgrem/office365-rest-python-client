@@ -9,10 +9,10 @@ from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.utilities import parse_enum
 
-T = TypeVar("T")
+ValueT = TypeVar("ValueT")
 
 
-class ClientValueCollection(ClientValue, Generic[T]):
+class ClientValueCollection(ClientValue, Generic[ValueT]):
     """A type-safe collection of ClientValue objects or primitives.
 
     This collection provides:
@@ -38,8 +38,8 @@ class ClientValueCollection(ClientValue, Generic[T]):
 
     def __init__(
         self,
-        item_type: Type[T],
-        initial_values: Optional[List[T]] = None,
+        item_type: Type[ValueT],
+        initial_values: Optional[List[ValueT]] = None,
     ):
         """Initialize a typed collection.
 
@@ -50,10 +50,10 @@ class ClientValueCollection(ClientValue, Generic[T]):
         super().__init__()
         if initial_values is None:
             initial_values = []
-        self._data: list[T] = initial_values
+        self._data: list[ValueT] = initial_values
         self._item_type = item_type
 
-    def add(self, value: T) -> Self:
+    def add(self, value: ValueT) -> Self:
         """Adds an item to the collection.
 
         Args:
@@ -70,7 +70,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
         self._data.append(value)
         return self
 
-    def __getitem__(self, index: int) -> T:
+    def __getitem__(self, index: int) -> ValueT:
         """Gets an item by index.
 
         Args:
@@ -84,7 +84,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
         """
         return self._data[index]
 
-    def __iter__(self) -> Iterator[T]:  # type: ignore[reportIncompatibleMethodOverride]
+    def __iter__(self) -> Iterator[ValueT]:  # type: ignore[reportIncompatibleMethodOverride]
         """Iterates through all items in the collection.
 
         Yields:
@@ -136,7 +136,7 @@ class ClientValueCollection(ClientValue, Generic[T]):
             }
         return json
 
-    def create_typed_value(self, initial_value: Optional[T] = None) -> T:
+    def create_typed_value(self, initial_value: Optional[ValueT] = None) -> ValueT:
         """Creates a new item of the collection's type.
 
         Args:

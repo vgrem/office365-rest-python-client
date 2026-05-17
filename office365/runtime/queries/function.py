@@ -3,10 +3,10 @@ from __future__ import annotations
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
-from office365.runtime.queries.client_query import ClientQuery, T
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 
 
-class FunctionQuery(ClientQuery[T]):
+class FunctionQuery(ClientQuery[ReturnT]):
     """Represents a function call OData query."""
 
     def __init__(
@@ -14,7 +14,7 @@ class FunctionQuery(ClientQuery[T]):
         binding_type: ClientObject,
         method_name: str | None = None,
         method_params: list | dict | ClientValue | None = None,
-        return_type: T | None = None,
+        return_type: ReturnT | None = None,
     ) -> None:
         """Initialize a function query.
 

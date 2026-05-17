@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
 
 
-T = TypeVar("T", bound="ClientObject")
+ClientObjectT = TypeVar("ClientObjectT", bound="ClientObject")
 
 
 class ClientObject:
