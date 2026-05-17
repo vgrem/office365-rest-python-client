@@ -3,7 +3,6 @@ from tests import (
     test_admin_site_url,
     test_client_credentials,
     test_team_site_url,
-    test_user_principal_name_alt,
 )
 
 tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_client_credentials)

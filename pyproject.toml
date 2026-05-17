@@ -106,7 +106,6 @@ lint.ignore = [
   "PLW1641", # Object does not implement `__hash__` method
   "PLW2901", # `for` loop variable overwritten by assignment target
 ]
-lint.per-file-ignores."examples/**/*.py" = [ "F401" ]
 
 lint.pylint.max-args = 50
 lint.pylint.max-branches = 16
