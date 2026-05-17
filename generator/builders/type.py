@@ -21,8 +21,8 @@ class TypeBuilder(ast.NodeTransformer):
     def __init__(
         self,
         type_schema: TypeInformation,
-        options: Dict[str, str] = None,
-        docs_service: BaseDocumentationService = None,
+        options: Optional[Dict[str, str]] = None,
+        docs_service: Optional[BaseDocumentationService] = None,
     ):
         self._schema = type_schema
         self._options = options
@@ -36,16 +36,17 @@ class TypeBuilder(ast.NodeTransformer):
         self._changes: List[str] = []
         self._docstring: Optional[str] = None
         self._entity_type_name_exists: bool = False
-        self._client_type: ODataType = ODataType(self._schema.FullName, self._schema.IsValueObject)
+        self._client_type: ODataType = ODataType(self._schema.FullName, self._schema.IsValueObject or False)
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
             node.name = self.client_type_name
 
+        options = self._options or {}
         [
             self._properties.append(PropertyBuilder(prop_schema))
             for name, prop_schema in self._schema.Properties.items()
-            if name not in self._options.get("ignoredproperties", [])
+            if name not in options.get("ignoredproperties", [])
         ]
 
         [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
@@ -104,7 +105,8 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def build(self) -> Self:
-        self._template = TemplateContext(self._options.get("templatepath"), self._schema)
+        assert self._options is not None
+        self._template = TemplateContext(self._options.get("templatepath", ""), self._schema)
 
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
@@ -122,6 +124,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _build_imports(self, module: ast.Module):
         """Build missing imports"""
+        assert self._template is not None
         imports = self._template.build_imports(self)
 
         existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
@@ -134,11 +137,13 @@ class TypeBuilder(ast.NodeTransformer):
         if not self._members:
             return
 
+        assert self._template is not None
         existing_members = self._template.get_existing_members(class_node)
 
         # Add missing members
         for member_builder in self._members:
             if member_builder.name not in existing_members:
+                assert self._template is not None
                 member_nodes = member_builder.build(self._template)
                 class_node.body.extend(member_nodes)
                 self._changes.append(f"member: {member_builder.name}")
@@ -207,6 +212,7 @@ class TypeBuilder(ast.NodeTransformer):
         """Build missing properties"""
         for prop in self._properties:
             if prop.status == "detached":
+                assert self._template is not None
                 property_methods = prop.build(self._template)
 
                 for method in property_methods:
@@ -222,6 +228,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._ensure_entity_type_name(class_node)
 
     def save(self):
+        assert self._source_tree is not None
         ast.fix_missing_locations(self._source_tree)
         code = ast.unparse(self._source_tree)
 
@@ -243,17 +250,19 @@ class TypeBuilder(ast.NodeTransformer):
             return
 
         if not self._entity_type_name_exists:
+            assert self._template is not None
             entity_type_name_method = self._template.build_type_name_property()
             class_node.body.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
 
     def _resolve_type(self) -> Dict[str, str]:
-        type_info = {}
+        type_info: Dict[str, str] = {}
 
+        assert self._options is not None
         cls = self._client_type.resolve_client_type(tuple(self._options["modules"].split(",")))
         if cls is not None:
             type_info["state"] = "attached"
-            type_info["file"] = inspect.getsourcefile(cls)
+            type_info["file"] = inspect.getsourcefile(cls) or ""
         else:
             type_info["state"] = "detached"
             type_info["file"] = abspath(os.path.join(self._options["outputpath"], self.client_type_name.lower() + ".py"))
@@ -262,17 +271,16 @@ class TypeBuilder(ast.NodeTransformer):
     def _ensure_type_info(self):
         if self._type_info is None:
             self._type_info = self._resolve_type()
+        assert self._type_info is not None
         return self._type_info
 
     @property
     def state(self):
-        self._ensure_type_info()
-        return self._type_info["state"]
+        return self._ensure_type_info()["state"]
 
     @property
     def file(self):
-        self._ensure_type_info()
-        return self._type_info["file"]
+        return self._ensure_type_info()["file"]
 
     @property
     def status(self):

@@ -17,6 +17,9 @@ class ODataV4Reader(ODataReader):
 
         return schema
 
+    def process_method_node(self):
+        pass
+
     @property
     def xml_namespaces(self) -> Dict[str, str]:
         return {

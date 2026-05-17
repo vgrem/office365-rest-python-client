@@ -2,6 +2,7 @@ import json
 import os
 from configparser import ConfigParser
 from pathlib import Path
+from typing import Optional
 
 from office365.runtime.odata.model import ODataModel
 from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
@@ -13,7 +14,7 @@ from generator.documentation.graphdocsservice import GraphOpenService
 from generator.documentation.sharepointdocsservice import SharePointService
 
 
-def generate_files(model: ODataModel, options: dict, docs_service: BaseDocumentationService = None) -> None:
+def generate_files(model: ODataModel, options: dict, docs_service: Optional[BaseDocumentationService] = None) -> None:
     metadata_path = options["metadatapath"]
     checkpoint_file = f".checkpoints/{os.path.basename(metadata_path)}.json"
     os.makedirs(".checkpoints", exist_ok=True)

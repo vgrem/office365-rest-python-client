@@ -20,7 +20,7 @@ class PropertyBuilder:
         self.schema = schema
         self.status = status
         self.docstring: Optional[str] = None
-        self._client_type: ODataType = ODataType(self.schema.TypeName, self.schema.IsNavigation)
+        self._client_type: ODataType = ODataType(self.schema.TypeName, self.schema.IsNavigation or False)
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
         getter_node = template.build_get_property(self)
@@ -89,4 +89,4 @@ class PropertyBuilder:
 
     @property
     def is_object_type(self) -> bool:
-        return self.schema.IsNavigation
+        return self.schema.IsNavigation or False
