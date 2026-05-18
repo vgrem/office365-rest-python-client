@@ -1,37 +1,20 @@
+from __future__ import annotations
+
 import datetime
-from typing import Optional
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RecurrenceRange(ClientValue):
     """
     Describes a date range over which a recurring event. This shared hobject is used to define the recurrence
     of access reviews, calendar events, and access package assignments in Azure AD.
     """
 
-    def __init__(
-        self,
-        start_date: Optional[datetime.date] = None,
-        end_date: Optional[datetime.date] = None,
-        number_of_occurrences: Optional[int] = None,
-        recurrence_timezone: Optional[str] = None,
-        range_type: Optional[str] = None,
-    ) -> None:
-        """
-        :param start_date: The date to start applying the recurrence pattern. The first occurrence of
-            the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the
-            same value as the start property of the recurring event. Required.
-        :param end_date: The date to stop applying the recurrence pattern. Depending on the recurrence pattern of
-            the event, the last occurrence of the meeting may not be this date. Required if type is endDate.
-        :param number_of_occurrences: The number of times to repeat the event. Required and must be positive
-            if type is numbered.
-        :param recurrence_timezone: Time zone for the startDate and endDate properties. Optional. If not specified,
-            the time zone of the event is used.
-        :param range_type: The recurrence range. The possible values are: endDate, noEnd, numbered. Required.
-        """
-        self.endDate = end_date
-        self.numberOfOccurrences = number_of_occurrences
-        self.recurrenceTimeZone = recurrence_timezone
-        self.startDate = start_date
-        self.type = range_type
+    endDate: datetime.date | None = None
+    numberOfOccurrences: int | None = None
+    recurrenceTimeZone: str | None = None
+    startDate: datetime.date | None = None
+    type: str | None = None

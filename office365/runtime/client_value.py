@@ -23,9 +23,11 @@ class ClientValue:
         prop_val = getattr(self, k, None)
         if isinstance(prop_val, ClientValue) and v is not None:
             if isinstance(v, list):
-                [prop_val.set_property(i, p_v, persist_changes) for i, p_v in enumerate(v)]
+                for i, p_v in enumerate(v):
+                    prop_val.set_property(i, p_v, persist_changes)
             else:
-                [prop_val.set_property(k, p_v, persist_changes) for k, p_v in v.items()]
+                for key, p_v in v.items():
+                    prop_val.set_property(key, p_v, persist_changes)
             setattr(self, k, prop_val)
         elif isinstance(prop_val, Enum):
             setattr(self, k, parse_enum(type(prop_val), v))
@@ -33,7 +35,7 @@ class ClientValue:
             setattr(self, k, v)
         return self
 
-    def get_property(self, name: str) -> ClientValueT:
+    def get_property(self, name: str) -> Any:
         """Gets a property value.
 
         Args:
@@ -70,18 +72,18 @@ class ClientValue:
                 return False
             return True
 
-        json = {k: v for k, v in self if _is_valid_value(v)}
-        for n, v in json.items():
+        result = {k: v for k, v in self if _is_valid_value(v)}
+        for n, v in result.items():
             if isinstance(v, ClientValue):
-                json[n] = v.to_json(json_format)
+                result[n] = v.to_json(json_format)
             elif isinstance(v, Enum):
-                json[n] = v.value
+                result[n] = v.value
         if json_format is not None and json_format.include_control_information and self.entity_type_name is not None:
             if isinstance(json_format, JsonLightFormat):
-                json[json_format.metadata_type] = {"type": self.entity_type_name}
+                result[json_format.metadata_type] = {"type": self.entity_type_name}
             elif isinstance(json_format, ODataJsonFormat):
-                json[json_format.metadata_type] = "#" + self.entity_type_name
-        return json
+                result[json_format.metadata_type] = "#" + self.entity_type_name
+        return result
 
     @property
     def entity_type_name(self) -> Optional[str]:

@@ -1,19 +1,21 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class EmailAddress(ClientValue):
-    """The name and email address of a contact or message recipient."""
+    """The name and email address of a contact or message recipient.
 
-    def __init__(self, address: Optional[str] = None, name: Optional[str] = None):
-        """
-        :param str address: The email address of the person or entity.
-        :param str name: The display name of the person or entity.
-        """
-        super().__init__()
-        self.address = address
-        self.name = name
+    Fields:
+        address (str | None): The email address of the person or entity.
+        name (str | None): The display name of the person or entity.
+    """
+
+    address: str | None = None
+    name: str | None = None
 
     def __str__(self):
         return self.address or ""

@@ -1,20 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.outlook.mail.body_type import BodyType
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ItemBody(ClientValue):
     """Represents properties of the body of an item, such as a message, event or group post."""
 
-    def __init__(self, content: Optional[str] = None, content_type: BodyType = BodyType.text):
-        """
-        :param str content: The content of the item.
-        :param BodyType content_type: The type of the content. Possible values are text and html.
-        """
-        super().__init__()
-        self.content = content
-        self.contentType = content_type
+    content: str | None = None
+    contentType: BodyType = BodyType.text
 
     @staticmethod
     def text(content: str) -> "ItemBody":

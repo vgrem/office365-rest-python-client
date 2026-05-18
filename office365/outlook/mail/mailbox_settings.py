@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
@@ -8,42 +10,19 @@ from office365.outlook.mail.userpurpose import UserPurpose
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MailboxSettings(ClientValue):
     """Settings for the primary mailbox of a user."""
 
-    def __init__(
-        self,
-        time_format: Optional[str] = None,
-        time_zone: Optional[str] = None,
-        automatic_replies_setting: AutomaticRepliesSetting = AutomaticRepliesSetting(),
-        archive_folder: Optional[str] = None,
-        date_format: Optional[str] = None,
-        language: LocaleInfo = LocaleInfo(),
-        working_hours: WorkingHours = WorkingHours(),
-        delegate_meeting_message_delivery_options: Optional[DelegateMeetingMessageDeliveryOptions] = None,
-        user_purpose: Optional[UserPurpose] = None,
-    ):
-        """
-        :param str time_format: The time format for the user's mailbox.
-        :param str time_zone: The default time zone for the user's mailbox.
-        :param AutomaticRepliesSetting automatic_replies_setting: 	Configuration settings to automatically notify
-            the sender of an incoming email with a message from the signed-in user.
-        :param str archive_folder: Folder ID of an archive folder for the user.
-        :param str date_format: The date format for the user's mailbox.
-        :param LocaleInfo language: The locale information for the user, including the preferred language
-            and country/region.
-        :param WorkingHours working_hours: The days of the week and hours in a specific time zone that the user works.
-        """
-        super().__init__()
-        self.timeFormat = time_format
-        self.timeZone = time_zone
-        self.automaticRepliesSetting = automatic_replies_setting
-        self.archiveFolder = archive_folder
-        self.dateFormat = date_format
-        self.language = language
-        self.workingHours = working_hours
-        self.delegateMeetingMessageDeliveryOptions = delegate_meeting_message_delivery_options
-        self.userPurpose = user_purpose
+    timeFormat: str | None = None
+    timeZone: str | None = None
+    automaticRepliesSetting: AutomaticRepliesSetting = field(default_factory=AutomaticRepliesSetting)
+    archiveFolder: str | None = None
+    dateFormat: str | None = None
+    language: LocaleInfo = field(default_factory=LocaleInfo)
+    workingHours: WorkingHours = field(default_factory=WorkingHours)
+    delegateMeetingMessageDeliveryOptions: DelegateMeetingMessageDeliveryOptions | None = None
+    userPurpose: UserPurpose | None = None
 
     @property
     def entity_type_name(self):

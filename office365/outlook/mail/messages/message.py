@@ -284,7 +284,7 @@ class Message(OutlookItem):
             return
         if content_type.lower() not in ["text", "html"]:
             raise ValueError("content_type must be either 'Text' or 'HTML'")
-        item_body = ItemBody(content=content, content_type=BodyType(content_type.lower()))
+        item_body = ItemBody(content=content, contentType=BodyType(content_type.lower()))
         self.set_property("body", item_body)
 
     @property

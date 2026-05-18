@@ -113,10 +113,10 @@ class User(DirectoryObject):
 
         setting = AutomaticRepliesSetting(
             status=status,
-            scheduled_start_datetime=DateTimeTimeZone.parse(scheduled_start_datetime),
-            scheduled_end_datetime=DateTimeTimeZone.parse(scheduled_end_datetime),
-            internal_reply_message=internal_reply_message,
-            external_reply_message=external_reply_message,
+            scheduledStartDateTime=DateTimeTimeZone.parse(scheduled_start_datetime),
+            scheduledEndDateTime=DateTimeTimeZone.parse(scheduled_end_datetime),
+            internalReplyMessage=internal_reply_message,
+            externalReplyMessage=external_reply_message,
         )
 
         def _construct_request(request):

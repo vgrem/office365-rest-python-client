@@ -1,25 +1,19 @@
+from __future__ import annotations
+
 import os
-from typing import Optional
+from dataclasses import dataclass
 
 from office365.outlook.mail.attachments.type import AttachmentType
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AttachmentItem(ClientValue):
     """Represents attributes of an item to be attached."""
 
-    def __init__(
-        self, attachment_type: Optional[AttachmentType] = None, name: Optional[str] = None, size: Optional[int] = None
-    ):
-        """
-        :param AttachmentType attachment_type:
-        :param str name:
-        :param int size:
-        """
-        super().__init__()
-        self.attachmentType = attachment_type
-        self.name = name
-        self.size = size
+    attachmentType: AttachmentType | None = None
+    name: str | None = None
+    size: int | None = None
 
     @staticmethod
     def create_file(path: str) -> "AttachmentItem":
@@ -27,4 +21,4 @@ class AttachmentItem(ClientValue):
         file_size = os.stat(path).st_size
         from office365.outlook.mail.attachments.type import AttachmentType
 
-        return AttachmentItem(attachment_type=AttachmentType.file, name=file_name, size=file_size)
+        return AttachmentItem(attachmentType=AttachmentType.file, name=file_name, size=file_size)

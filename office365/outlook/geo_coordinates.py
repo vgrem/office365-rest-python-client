@@ -1,32 +1,28 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class OutlookGeoCoordinates(ClientValue):
-    """The geographic coordinates, elevation, and their degree of accuracy for a physical location."""
+    """The geographic coordinates, elevation, and their degree of accuracy for a physical location.
 
-    def __init__(
-        self,
-        accuracy: Optional[float] = None,
-        altitude: Optional[float] = None,
-        altitude_accuracy: Optional[float] = None,
-        latitude: Optional[float] = None,
-        longitude: Optional[float] = None,
-    ) -> None:
-        """
-        :param float accuracy: The accuracy of the latitude and longitude. As an example, the accuracy can be measured
-            in meters, such as the latitude and longitude are accurate to within 50 meters.
-        :param float altitude: The altitude of the location.
-        :param float altitude_accuracy: The accuracy of the altitude.
-        :param float latitude: The latitude of the location.
-        :param float longitude: The longitude of the location.
-        """
-        self.accuracy = accuracy
-        self.altitude = altitude
-        self.altitudeAccuracy = altitude_accuracy
-        self.latitude = latitude
-        self.longitude = longitude
+    Fields:
+        accuracy (float | None): The accuracy of the latitude and longitude. As an example, the accuracy can be
+            measured in meters, such as the latitude and longitude are accurate to within 50 meters.
+        altitude (float | None): The altitude of the location.
+        altitudeAccuracy (float | None): The accuracy of the altitude.
+        latitude (float | None): The latitude of the location.
+        longitude (float | None): The longitude of the location.
+    """
+
+    accuracy: float | None = None
+    altitude: float | None = None
+    altitudeAccuracy: float | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
     @property
     def entity_type_name(self):
