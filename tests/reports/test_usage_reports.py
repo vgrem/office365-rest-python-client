@@ -1,17 +1,14 @@
-from tests.decorators import requires_delegated_permission
+"""Tests for Microsoft Graph Usage Reports API."""
+
+from tests.decorators import requires_delegated_permission_or_role
 from tests.graph_case import GraphTestCase
 
 
 class TestUsageReports(GraphTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestUsageReports, cls).setUpClass()
+    """Tests for Microsoft Graph usage reports."""
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    @requires_delegated_permission("PartnerBilling.Read.All")
+    @requires_delegated_permission_or_role("PartnerBilling.Read.All", roles=["Global Administrator"])
     def test1_billed_usage_export(self):
+        """Export billed usage data."""
         result = self.client.reports.partners.billing.usage.billed.export("G016907411").execute_query()
         self.assertIsNotNone(result.value)

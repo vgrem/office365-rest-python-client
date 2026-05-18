@@ -37,7 +37,8 @@ class TestOutlookContacts(GraphTestCase):
         roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test3_update_contact(self):
-        contact = self.__class__.target_contact
+        contact = TestOutlookContacts.target_contact
+        assert contact is not None
         self.assertIsNotNone(contact.id)
         contact.set_property("department", "Media").update().execute_query()
 
@@ -46,8 +47,10 @@ class TestOutlookContacts(GraphTestCase):
         roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test4_delete_contact(self):
-        contact_id = self.__class__.target_contact.id
-        self.__class__.target_contact.delete_object().execute_query()
+        contact = TestOutlookContacts.target_contact
+        assert contact is not None
+        contact_id = contact.id
+        contact.delete_object().execute_query()  # type: ignore[attr-defined]
         contacts = self.client.me.contacts.get().execute_query()
         results = [c for c in contacts if c.id == contact_id]
         self.assertEqual(len(results), 0)

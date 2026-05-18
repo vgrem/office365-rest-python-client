@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.outlook.mail.attachments.type import AttachmentType
 from office365.outlook.mail.messages.message import Message
@@ -7,11 +9,11 @@ from tests.graph_case import GraphTestCase
 
 
 class TestAttachments(GraphTestCase):
-    target_message: Message = None
+    target_message: Optional[Message] = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestAttachments, cls).setUpClass()
+        super().setUpClass()
         cls.target_message = cls.client.me.messages.add(
             subject="Meet for lunch?",
             body="The new cafeteria is open.",
@@ -20,11 +22,14 @@ class TestAttachments(GraphTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_message is not None
         cls.target_message.delete_object().execute_query()
 
     @requires_delegated_permission_or_role("Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_upload_session(self):
-        message = self.__class__.target_message
+        """Test creating an upload session for a message attachment."""
+        message = TestAttachments.target_message
+        assert message is not None
         attachment_item = AttachmentItem(attachmentType=AttachmentType.file, name="flower", size=3483322)
         result = message.attachments.create_upload_session(attachment_item).execute_query()
         self.assertIsNotNone(result.value)

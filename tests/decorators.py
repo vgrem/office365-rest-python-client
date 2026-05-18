@@ -7,6 +7,7 @@ from typing import Any, Callable, TypeVar, cast
 from unittest import TestCase
 
 from office365.directory.permissions.guard import (
+    _cached_app_permissions,
     _cached_delegated_permissions,
     has_app_permission,
     has_delegated_permission,
@@ -16,6 +17,29 @@ from office365.directory.permissions.guard import (
 from tests import test_client_id
 
 T = TypeVar("T", bound=Callable[..., Any])
+
+
+def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
+    """Skip test unless the app has the required application permissions."""
+
+    def decorator(test_method: T) -> T:
+        @wraps(test_method)
+        def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
+            client = getattr(self, "client", None)
+            if not client:
+                self.skipTest("No client available for permission check")
+
+            permissions = _cached_app_permissions(client, test_client_id)
+
+            if not any(role.value in app_roles for role in permissions):
+                required = ", ".join(f"'{r}'" for r in app_roles)
+                self.skipTest(f"Required app permission {required} not granted")
+
+            return test_method(self, *args, **kwargs)
+
+        return cast(T, wrapper)
+
+    return decorator
 
 
 def requires_delegated_permission_or_role(

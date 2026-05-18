@@ -79,7 +79,7 @@ class Message(OutlookItem):
 
     def get_content(self) -> ClientResult[bytes]:
         """Get MIME content of a message"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "$value", None, return_type)
         self.context.add_query(qry)
         return return_type

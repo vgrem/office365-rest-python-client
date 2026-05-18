@@ -3,10 +3,10 @@
 Examples for working with Outlook mail, calendar, and events via the Graph API.
 
 ## Mail
-- **Send email**: [`messages/send.py`](./messages/send.py)
-- **Send HTML email**: [`messages/send_html.py`](./messages/send_html.py)
-- **Send with attachment**: [`messages/send_with_attachment.py`](./messages/send_with_attachment.py)
-- **Send with large attachment**: [`messages/send_with_large_attachment.py`](./messages/send_with_large_attachment.py)
+- **Send email**: [`messages/send/send.py`](./messages/send/send.py)
+- **Send HTML email**: [`messages/send/send_html.py`](./messages/send/send_html.py)
+- **Send with attachment**: [`messages/send/send_with_attachment.py`](./messages/send/send_with_attachment.py)
+- **Send with large attachment**: [`messages/send/send_with_large_attachment.py`](./messages/send/send_with_large_attachment.py)
 - **Create draft**: [`messages/create_draft.py`](./messages/create_draft.py)
 - **Create draft with attachments**: [`messages/create_draft_with_attachments.py`](./messages/create_draft_with_attachments.py)
 - **List messages**: [`messages/list_all.py`](./messages/list_all.py)
@@ -19,8 +19,8 @@ Examples for working with Outlook mail, calendar, and events via the Graph API.
 - **Mark as read**: [`messages/mark_as_read.py`](./messages/mark_as_read.py)
 - **Download attachments**: [`messages/download.py`](./messages/download.py)
 - **Download with attachments**: [`messages/download_with_attachments.py`](./messages/download_with_attachments.py)
-- **Search messages**: [`messages/search.py`](./messages/search.py)
-- **Custom search**: [`messages/search_custom.py`](./messages/search_custom.py)
+- **Search messages**: [`messages/search/search.py`](./messages/search/search.py)
+- **Custom search**: [`messages/search/search_custom.py`](./messages/search/search_custom.py)
 - **Create extended property**: [`messages/create_property.py`](./messages/create_property.py)
 - **Create subscription**: [`messages/create_subscription.py`](./messages/create_subscription.py)
 - **Get basic properties**: [`messages/get_basic_props.py`](./messages/get_basic_props.py)
