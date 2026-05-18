@@ -1,57 +1,70 @@
-from functools import lru_cache, wraps
-from typing import Any, Callable, List, TypeVar, cast
+"""Test decorators for permission and role checks."""
+
+from __future__ import annotations
+
+from functools import wraps
+from typing import Any, Callable, TypeVar, cast
 from unittest import TestCase
 
-from office365.directory.applications.roles.collection import AppRoleCollection
-from office365.directory.rolemanagement.role import DirectoryRole
-from office365.entity_collection import EntityCollection
-from office365.graph_client import GraphClient
-from office365.runtime.types.collections import StringCollection
+from office365.directory.permissions.guard import (
+    _cached_delegated_permissions,
+    has_app_permission,
+    has_delegated_permission,
+    has_role,
+)
 
 from tests import test_client_id
 
 T = TypeVar("T", bound=Callable[..., Any])
 
 
-@lru_cache(maxsize=1)
-def _get_cached_permissions(client: GraphClient, client_id: str) -> AppRoleCollection:
-    """Get and cache application permissions for a client"""
-    resource = client.service_principals.get_by_name("Microsoft Graph")
-    result = resource.get_application_permissions(client_id).execute_query()
-    return result.value
+def requires_delegated_permission_or_role(
+    *scopes: str,
+    roles: list[str] | None = None,
+) -> Callable[[T], T]:
+    """Skip test unless app has permission OR user has directory role.
 
+    Checks delegated permissions, then application permissions,
+    then directory roles. Test runs if ANY check passes.
 
-def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
+    Args:
+        *scopes: Permission names to check (delegated or app-only)
+        roles: Directory role names to check
+    """
+
     def decorator(test_method: T) -> T:
         @wraps(test_method)
         def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
             client = getattr(self, "client", None)
             if not client:
-                self.skipTest("No client available for permission check")
+                self.skipTest("No client available")
 
-            permissions = _get_cached_permissions(client, test_client_id)
+            if scopes:
+                for scope in scopes:
+                    if has_delegated_permission(client, scope, test_client_id) or has_app_permission(
+                        client, scope, test_client_id
+                    ):
+                        return test_method(self, *args, **kwargs)
 
-            if not any(role.value in app_roles for role in permissions):
-                required_roles = ", ".join(f"'{role}'" for role in app_roles)
-                self.skipTest(f"Required app permission '{required_roles}' not granted")
+            if roles:
+                for role in roles:
+                    if has_role(client, role):
+                        return test_method(self, *args, **kwargs)
 
-            return test_method(self, *args, **kwargs)
+            reasons = []
+            if scopes:
+                reasons.append(f"scope {', '.join(scopes)}")
+            if roles:
+                reasons.append(f"role {', '.join(roles)}")
+            self.skipTest(f"Missing {' nor '.join(reasons)}")
 
-        return wrapper
+        return cast(T, wrapper)
 
     return decorator
-
-
-@lru_cache(maxsize=1)
-def _get_cached_delegated_permissions(client: GraphClient, client_id: str) -> StringCollection:
-    """Get and cache delegated permissions for a client"""
-    resource = client.service_principals.get_by_name("Microsoft Graph")
-    result = resource.get_delegated_permissions(client_id).execute_query()
-    return result.value
 
 
 def requires_delegated_permission(*scopes: str) -> Callable[[T], T]:
-    """Decorator to verify delegated permissions before test execution"""
+    """Skip test unless the app has the required delegated permissions."""
 
     def decorator(test_method: T) -> T:
         @wraps(test_method)
@@ -60,59 +73,12 @@ def requires_delegated_permission(*scopes: str) -> Callable[[T], T]:
             if not client:
                 self.skipTest("No client available for permission check")
 
-            # Get permissions from cache or API
-            granted_scopes = _get_cached_delegated_permissions(client, test_client_id)
+            granted = _cached_delegated_permissions(client, test_client_id)
 
-            if not any(scope in granted_scopes for scope in scopes):
+            if not any(scope in granted for scope in scopes):
                 self.skipTest(f"Required delegated permission '{', '.join(scopes)}' not granted")
 
             return test_method(self, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
-
-
-@lru_cache(maxsize=1)
-def _get_cached_directory_roles(client: GraphClient) -> EntityCollection[DirectoryRole]:
-    """Get and cache application permissions for a client"""
-    result = client.me.get_directory_roles().execute_query()
-    return result
-
-
-def requires_directory_role(*required_roles: str) -> Callable[[T], T]:
-    """
-    Decorator that checks if the user has at least one of the required directory roles.
-
-    Args:
-        *required_roles: One or more role names that are required to execute the function
-
-    Returns:
-        The decorated function if authorization succeeds, raises PermissionError otherwise
-    """
-
-    def decorator(func: T) -> T:
-        @wraps(func)
-        def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
-            client = getattr(self, "client", None)
-            if not client:
-                self.skipTest("No client available for directory roles check")
-
-            # Get the user's current roles
-            result = _get_cached_directory_roles(client)
-            user_roles: List[str] = [role.display_name for role in result]
-
-            # Check if user has at least one of the required roles
-            has_required_role = any(role in user_roles for role in required_roles)
-
-            if not has_required_role:
-                required_roles_str = ", ".join(required_roles)
-                user_roles_str = ", ".join(user_roles) if user_roles else "None"
-                raise PermissionError(
-                    f"Access denied. Requires one of these roles: {required_roles_str}. User has roles: {user_roles_str}"
-                )
-
-            return func(self, *args, **kwargs)
 
         return cast(T, wrapper)
 

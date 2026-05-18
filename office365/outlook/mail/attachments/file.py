@@ -22,6 +22,6 @@ class FileAttachment(Attachment):
         return self.properties.get("contentBytes", None)
 
     @content_bytes.setter
-    def content_bytes(self, value: bytes) -> None:
+    def content_bytes(self, value: str | bytes) -> None:
         """Sets the base64-encoded contents of the file."""
-        self.set_property("contentBytes", value)
+        self.set_property("contentBytes", value.decode("utf-8") if isinstance(value, bytes) else value)
