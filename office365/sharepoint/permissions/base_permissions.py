@@ -1,4 +1,5 @@
 from typing import Any, Iterator, Union
+
 from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue

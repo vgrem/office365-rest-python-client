@@ -1,32 +1,26 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Recipient(ClientValue):
-    """Represents information about a user in the sending or receiving end of an event, message or group post."""
+    """The recipient of an event, message, or group post."""
 
-    def __init__(self, email_address=None):
-        """
-        :param EmailAddress email_address: The recipient's email address.
-        """
-        if email_address is None:
-            email_address = EmailAddress()
-        super().__init__()
-        self.emailAddress = email_address
-
-    def __repr__(self):
-        return repr(self.emailAddress)
+    emailAddress: EmailAddress = field(default_factory=EmailAddress)
 
     @staticmethod
-    def from_email(value):
-        """
-        :type value: str or EmailAddress
-        """
+    def from_email(value: str | EmailAddress) -> Recipient:
         if isinstance(value, EmailAddress):
             return Recipient(value)
-        else:
-            return Recipient(EmailAddress(value))
+        return Recipient(EmailAddress(value))
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str | None:
         return None
+
+    def __repr__(self) -> str:
+        return repr(self.emailAddress)

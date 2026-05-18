@@ -90,5 +90,4 @@ class ClientValue:
         Returns:
             Defaults to the class name
         """
-        # return type(self).__name__
         return None
