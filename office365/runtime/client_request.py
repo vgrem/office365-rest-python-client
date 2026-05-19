@@ -3,24 +3,31 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
-import requests
 from requests import HTTPError, Response
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.transport.base import BaseTransport
+from office365.runtime.transport.requests_transport import RequestsTransport
 from office365.runtime.types.event_handler import EventHandler
 
 
 class ClientRequest(ABC):
-    def __init__(self):
-        """
-        Abstract request client
-        """
+    def __init__(self, transport: BaseTransport | None = None):
+        self._transport = transport or RequestsTransport()
         self.beforeExecute = EventHandler()
         self.afterExecute = EventHandler()
+
+    @property
+    def transport(self) -> BaseTransport:
+        """The HTTP transport used for API requests."""
+        return self._transport
+
+    @transport.setter
+    def transport(self, value: BaseTransport) -> None:
+        self._transport = value
 
     @abstractmethod
     def build_request(self, query: ClientQuery) -> RequestOptions:
@@ -33,7 +40,7 @@ class ClientRequest(ABC):
             Configured RequestOptions object"""
 
     @abstractmethod
-    def process_response(self, response: requests.Response, query: ClientQuery) -> None:
+    def process_response(self, response: Response, query: ClientQuery) -> None:
         """Handle and transform the response
 
         Args:
@@ -105,65 +112,6 @@ class ClientRequest(ABC):
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
         self.beforeExecute(request)
-        if request.method == HttpMethod.Post:
-            if request.is_bytes or request.is_file:
-                response = requests.post(
-                    url=request.url,
-                    headers=request.headers,
-                    data=request.data,
-                    auth=request.auth,
-                    verify=request.verify,
-                    proxies=request.proxies,
-                    timeout=request.timeout,
-                )
-            else:
-                response = requests.post(
-                    url=request.url,
-                    headers=request.headers,
-                    json=request.data,
-                    auth=request.auth,
-                    verify=request.verify,
-                    proxies=request.proxies,
-                    timeout=request.timeout,
-                )
-        elif request.method == HttpMethod.Patch:
-            response = requests.patch(
-                url=request.url,
-                headers=request.headers,
-                json=request.data,
-                auth=request.auth,
-                verify=request.verify,
-                proxies=request.proxies,
-                timeout=request.timeout,
-            )
-        elif request.method == HttpMethod.Delete:
-            response = requests.delete(
-                url=request.url,
-                headers=request.headers,
-                auth=request.auth,
-                verify=request.verify,
-                proxies=request.proxies,
-                timeout=request.timeout,
-            )
-        elif request.method == HttpMethod.Put:
-            response = requests.put(
-                url=request.url,
-                data=request.data,
-                headers=request.headers,
-                auth=request.auth,
-                verify=request.verify,
-                proxies=request.proxies,
-                timeout=request.timeout,
-            )
-        else:
-            response = requests.get(
-                url=request.url,
-                headers=request.headers,
-                auth=request.auth,
-                verify=request.verify,
-                stream=request.stream,
-                proxies=request.proxies,
-                timeout=request.timeout,
-            )
+        response = self._transport.execute(request)
         response.raise_for_status()
         return response
