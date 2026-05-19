@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import copy
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, cast
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, cast
 
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.client_value import ClientValueT
+from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
+
+ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, ClientValue)
 
 
 class ClientResult(Generic[ClientValueT]):
