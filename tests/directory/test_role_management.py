@@ -1,21 +1,21 @@
 from tests import test_user_principal_name
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestRoleManagement(GraphDelegatedTestCase):
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "EntitlementManagement.Read.All",
         "EntitlementManagement.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test1_list_role_definitions(self):
         """List role definitions"""
         result = self.client.role_management.directory.role_definitions.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "RoleManagement.Read.All", "Directory.Read.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "RoleManagement.Read.All", "Directory.Read.All", or_roles=["Global Administrator"]
     )
     def test2_get_role_definition(self):
         """Get a role definition by ID"""
@@ -26,16 +26,16 @@ class TestRoleManagement(GraphDelegatedTestCase):
         )
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "RoleManagement.Read.All", "Directory.Read.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "RoleManagement.Read.All", "Directory.Read.All", or_roles=["Global Administrator"]
     )
     def test3_list_role_assignments(self):
         """List role assignments"""
         col = self.client.role_management.directory.role_assignments.get().execute_query()
         self.assertIsNotNone(col.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "RoleManagement.Read.All", "Directory.Read.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "RoleManagement.Read.All", "Directory.Read.All", or_roles=["Global Administrator"]
     )
     def test4_get_user_role_assignments(self):
         """Get role assignments for a user"""

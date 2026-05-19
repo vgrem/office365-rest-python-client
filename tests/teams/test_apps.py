@@ -3,7 +3,7 @@ from typing import Optional
 
 from office365.teams.team import Team
 
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -24,13 +24,13 @@ class TestTeamApps(GraphDelegatedTestCase):
         if cls.target_team is not None:
             cls.target_team.delete_object().execute_query_retry()
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "AppCatalog.Read.All",
         "AppCatalog.ReadWrite.All",
         "Team.ReadBasic.All",
         "Team.Read.All",
         "Team.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test1_list_team_apps(self):
         """Test listing installed apps for a team"""

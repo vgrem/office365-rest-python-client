@@ -3,7 +3,7 @@
 from typing import Optional
 
 from office365.onenote.sections.section import OnenoteSection
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -12,8 +12,8 @@ class TestSection(GraphDelegatedTestCase):
 
     target_section: Optional[OnenoteSection] = None
 
-    @requires_delegated_permission_or_role(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test1_list_sections(self):
         """List all OneNote sections."""

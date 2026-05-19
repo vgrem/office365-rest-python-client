@@ -8,7 +8,7 @@ from tests import (
     test_team_site_url,
     test_user_principal_name_alt,
 )
-from tests.decorators import requires_app_permission, requires_delegated_permission_or_role
+from tests.decorators import requires_app_permission, requires_delegated
 from tests.graph_case import GraphApplicationTestCase
 
 
@@ -65,7 +65,7 @@ class TestPermissions(GraphApplicationTestCase):
         self.assertIsNotNone(perm.resource_path)
         TestPermissions.target_permission = result[0]
 
-    @requires_delegated_permission_or_role("Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"])
     def test6_driveitem_update_permission(self):
         """Update a drive item permission"""
         # perm_to_update = self.__class__.target_permission
@@ -79,20 +79,20 @@ class TestPermissions(GraphApplicationTestCase):
         assert perm_to_delete is not None
         perm_to_delete.delete_object().execute_query()
 
-    @requires_delegated_permission_or_role(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test8_driveitem_grant_access(self):
         """Grant access to a drive item by URL"""
         file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"
         permissions = (
             self.client.shares.by_url(file_abs_url)
-            .permission.grant(recipients=[test_user_principal_name_alt], roles=["read"])
+            .permission.grant(recipients=[test_user_principal_name_alt], or_roles=["read"])
             .execute_query()
         )
         self.assertIsNotNone(permissions.resource_path)
 
-    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator"])
     def test9_create_site_permission(self):
         """Create a permission on the root site"""
         app = self.client.applications.get_by_app_id(test_client_credentials.client_id)
@@ -100,13 +100,13 @@ class TestPermissions(GraphApplicationTestCase):
         assert new_site_permission.resource_path is not None
         self.target_permission = new_site_permission
 
-    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("Sites.Read.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"])
     def test_10_list_site_permissions(self):
         """List all permissions on the root site"""
         site_permissions = self.client.sites.root.permissions.get().execute_query()
         self.assertIsNotNone(site_permissions.resource_path)
 
-    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator"])
     def test_11_delete_site_permission(self):
         """Delete a site permission"""
         assert self.target_permission is not None

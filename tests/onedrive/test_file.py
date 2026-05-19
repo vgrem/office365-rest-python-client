@@ -7,7 +7,7 @@ from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
 from tests import create_unique_name
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -30,8 +30,8 @@ class TestFile(GraphDelegatedTestCase):
         assert cls.target_drive is not None
         cls.target_drive.list.delete_object().execute_query()
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test1_create_folder(self):
         """Create a folder in the target drive"""
@@ -41,8 +41,8 @@ class TestFile(GraphDelegatedTestCase):
         self.assertEqual(folder.name, target_folder_name)
         TestFile.target_folder = folder
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test2_get_folder_permissions(self):
         """Get permissions of the target folder"""
@@ -50,8 +50,8 @@ class TestFile(GraphDelegatedTestCase):
         folder_perms = TestFile.target_folder.permissions.get().execute_query()
         self.assertIsNotNone(folder_perms.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test3_upload_file(self):
         """Upload a file to the target drive"""
@@ -62,8 +62,8 @@ class TestFile(GraphDelegatedTestCase):
         assert self.target_file is not None
         assert self.target_file.web_url is not None
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test4_preview_file(self):
         """Get a preview of the target file"""
@@ -74,8 +74,8 @@ class TestFile(GraphDelegatedTestCase):
     # def test5_validate_permission(self):
     #    self.__class__.target_file.validate_permission().execute_query()
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test6_checkout(self):
         """Check out the target file"""
@@ -84,8 +84,8 @@ class TestFile(GraphDelegatedTestCase):
         target_item = TestFile.target_file.get().select(["publication"]).execute_query()
         self.assertEqual(target_item.publication.level, "checkout")
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test7_checkin(self):
         """Check in the target file"""
@@ -94,8 +94,8 @@ class TestFile(GraphDelegatedTestCase):
         target_item = TestFile.target_file.get().select(["publication"]).execute_query()
         self.assertEqual(target_item.publication.level, "published")
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test8_list_versions(self):
         """List versions of the target file"""
@@ -111,8 +111,8 @@ class TestFile(GraphDelegatedTestCase):
     #    target_item = self.__class__.target_file.unfollow().execute_query()
     #    self.assertIsNotNone(target_item.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_11_upload_file_session(self):
         """Upload a file using resumable upload session"""
@@ -122,8 +122,8 @@ class TestFile(GraphDelegatedTestCase):
         target_file = self.target_drive.root.resumable_upload(local_path).get().execute_query()
         self.assertIsNotNone(target_file.web_url)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_12_download_file(self):
         """Download the target file content"""
@@ -131,8 +131,8 @@ class TestFile(GraphDelegatedTestCase):
         result = TestFile.target_file.get_content().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_13_convert_file(self):
         """Convert the target file to PDF"""
@@ -140,8 +140,8 @@ class TestFile(GraphDelegatedTestCase):
         result = TestFile.target_file.convert("pdf").execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_14_copy_file(self):
         """Copy the target file"""
@@ -158,8 +158,8 @@ class TestFile(GraphDelegatedTestCase):
     #    self.client.execute_query()
     #    self.assertIsNotNone(result.value)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_15_get_activities_by_interval(self):
         """Get activities for the target file by time interval"""
@@ -169,8 +169,8 @@ class TestFile(GraphDelegatedTestCase):
         result = TestFile.target_file.get_activities_by_interval(start_time, end_time, "day").execute_query()
         self.assertIsNotNone(result)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_16_get_item_analytics(self):
         """Get analytics for the target file"""
@@ -178,8 +178,8 @@ class TestFile(GraphDelegatedTestCase):
         result = TestFile.target_file.analytics.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_17_extract_sensitivity_labels(self):
         """Extract sensitivity labels from the target file"""
@@ -191,8 +191,8 @@ class TestFile(GraphDelegatedTestCase):
     #    result = self.target_file.set_retention_label("Retention label for Contracts").execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_19_delete_file(self):
         """Delete files from the target drive"""

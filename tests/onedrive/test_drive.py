@@ -1,18 +1,18 @@
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestDrive(GraphDelegatedTestCase):
     """OneDrive specific test case base class"""
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Files.Read",
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test1_list_drives(self):
         """List all drives"""
@@ -21,14 +21,14 @@ class TestDrive(GraphDelegatedTestCase):
         for drive in drives:
             self.assertIsNotNone(drive.web_url)
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Files.Read",
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test2_list_drives_alt(self):
         """List drives using direct request"""
@@ -38,28 +38,28 @@ class TestDrive(GraphDelegatedTestCase):
         for drive in drives:
             self.assertIsNotNone(drive["webUrl"])
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Files.Read",
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test4_get_drive_root(self):
         """Get the root of the current drive"""
         result = self.client.me.drive.root.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Files.Read",
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test5_get_recent(self):
         """Get recently used items"""

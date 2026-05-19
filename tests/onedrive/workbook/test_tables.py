@@ -5,7 +5,7 @@ from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.onedrive.workbooks.tables.table import WorkbookTable
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -30,7 +30,7 @@ class TestExcelTables(GraphDelegatedTestCase):
         assert cls.excel_file is not None
         cls.excel_file.delete_object().execute_query_retry()
 
-    @requires_delegated_permission_or_role("Files.ReadWrite", roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
     def test1_sort_apply(self):
         """Apply sorting to a table"""
         sort_fields = [WorkbookSortField()]

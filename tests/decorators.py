@@ -42,18 +42,16 @@ def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
     return decorator
 
 
-def requires_delegated_permission_or_role(
+def requires_delegated(
     *scopes: str,
-    roles: list[str] | None = None,
+    or_roles: list[str] | None = None,
 ) -> Callable[[T], T]:
-    """Skip test unless app has permission OR user has directory role.
-
-    Checks delegated permissions, then application permissions,
-    then directory roles. Test runs if ANY check passes.
+    """Skip test unless token has one of the scopes (delegated or app)
+    OR the user has one of the directory roles.
 
     Args:
-        *scopes: Permission names to check (delegated or app-only)
-        roles: Directory role names to check
+        *scopes: Delegated or application permission names — ANY match passes.
+        or_roles: Directory role display names — ANY match passes (fallback).
     """
 
     def decorator(test_method: T) -> T:
@@ -63,24 +61,22 @@ def requires_delegated_permission_or_role(
             if not client:
                 self.skipTest("No client available")
 
-            if scopes:
-                for scope in scopes:
-                    if has_delegated_permission(client, scope, test_client_id) or has_app_permission(
-                        client, scope, test_client_id
-                    ):
-                        return test_method(self, *args, **kwargs)
+            has_scope = any(
+                has_delegated_permission(client, s, test_client_id)
+                or has_app_permission(client, s, test_client_id)
+                for s in scopes
+            )
+            has_dir_role = any(has_role(client, r) for r in (or_roles or []))
 
-            if roles:
-                for role in roles:
-                    if has_role(client, role):
-                        return test_method(self, *args, **kwargs)
+            if has_scope or has_dir_role:
+                return test_method(self, *args, **kwargs)
 
             reasons = []
             if scopes:
-                reasons.append(f"scope {', '.join(scopes)}")
-            if roles:
-                reasons.append(f"role {', '.join(roles)}")
-            self.skipTest(f"Missing {' nor '.join(reasons)}")
+                reasons.append(f"one of scopes: {', '.join(scopes)}")
+            if or_roles:
+                reasons.append(f"one of roles: {', '.join(or_roles)}")
+            self.skipTest(f"Insufficient permissions — required: {' or '.join(reasons)}")
 
         return cast(T, wrapper)
 

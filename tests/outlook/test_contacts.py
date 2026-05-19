@@ -2,16 +2,16 @@ from typing import Optional
 
 from office365.outlook.contacts.contact import Contact
 
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestOutlookContacts(GraphDelegatedTestCase):
     target_contact: Optional[Contact] = None
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Contacts.ReadWrite",
-        roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test1_create_contact(self):
         result = self.client.me.contacts.add(
@@ -23,18 +23,18 @@ class TestOutlookContacts(GraphDelegatedTestCase):
         self.assertEqual(result.email_addresses[0].name, "Pavel Bansky")
         self.__class__.target_contact = result
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Contacts.Read",
         "Contacts.ReadWrite",
-        roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test2_list_contacts(self):
         result = self.client.me.contacts.get().execute_query()
         self.assertGreaterEqual(len(result), 1)
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Contacts.ReadWrite",
-        roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test3_update_contact(self):
         contact = TestOutlookContacts.target_contact
@@ -42,9 +42,9 @@ class TestOutlookContacts(GraphDelegatedTestCase):
         self.assertIsNotNone(contact.id)
         contact.set_property("department", "Media").update().execute_query()
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Contacts.ReadWrite",
-        roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test4_delete_contact(self):
         contact = TestOutlookContacts.target_contact

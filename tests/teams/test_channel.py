@@ -7,7 +7,7 @@ from office365.teams.channels.channel import Channel
 from office365.teams.chats.messages.message import ChatMessage
 from office365.teams.team import Team
 
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -36,7 +36,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         team = TestGraphChannel.target_team.get().execute_query()
         self.assertIsNotNone(team.id)
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Channel.ReadBasic.All",
         "ChannelSettings.Read.All",
         "ChannelSettings.ReadWrite.All",
@@ -44,7 +44,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         "Group.Read.All",
         "Group.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test2_list_channels(self):
         """Test listing channels for a team"""
@@ -52,8 +52,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         channels = TestGraphChannel.target_team.channels.get().execute_query()
         self.assertGreater(len(channels), 0)
 
-    @requires_delegated_permission_or_role(
-        "Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test3_create_channel(self):
         """Test creating a channel in a team"""
@@ -63,7 +63,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(new_channel.resource_path)
         TestGraphChannel.target_channel = new_channel
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Channel.ReadBasic.All",
         "ChannelSettings.ReadWrite.All",
         "ChannelSettings.Read.All",
@@ -71,7 +71,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         "Group.Read.All",
         "Group.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test4_get_channel(self):
         """Test getting a specific channel"""
@@ -82,8 +82,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         existing_channel = TestGraphChannel.target_team.channels[channel.id].get().execute_query()
         self.assertEqual(existing_channel.id, channel.id)
 
-    @requires_delegated_permission_or_role(
-        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test6_list_allowed_members(self):
         """Test listing allowed members of a channel"""
@@ -91,11 +91,11 @@ class TestGraphChannel(GraphDelegatedTestCase):
         result = TestGraphChannel.target_channel.shared_with_teams.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "Channel.ReadBasic.All",
         "ChannelSettings.Read.All",
         "ChannelSettings.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test7_get_primary_channel(self):
         """Test getting the primary channel"""
@@ -103,7 +103,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         primary_channel = TestGraphChannel.target_team.primary_channel.get().execute_query()
         self.assertIsNotNone(primary_channel.resource_path)
 
-    @requires_delegated_permission_or_role("ChannelSettings.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator"])
     def test9_channel_provision_email(self):
         """Test provisioning email for a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -111,7 +111,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         result = channel.provision_email().execute_query()  # type: ignore[attr-defined]
         self.assertIsNotNone(result.value)  # type: ignore[attr-defined]
 
-    @requires_delegated_permission_or_role("ChannelSettings.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator"])
     def test_10_channel_remove_email(self):
         """Test removing email from a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -119,7 +119,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         result = channel.remove_email().execute_query()  # type: ignore[attr-defined]
         self.assertIsNotNone(result.value)  # type: ignore[attr-defined]
 
-    @requires_delegated_permission_or_role("ChannelMessage.Send", "Group.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator"])
     def test_11_send_message(self):
         """Test sending a message to a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -127,7 +127,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(message.id)
         TestGraphChannel.target_message = message
 
-    @requires_delegated_permission_or_role("ChannelMessage.Send", "Group.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator"])
     def test_12_reply_to_message(self):
         """Test replying to a message"""
         assert TestGraphChannel.target_message is not None
@@ -135,8 +135,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         reply = TestGraphChannel.target_message.replies.add(body=item_body).execute_query()
         self.assertIsNotNone(reply.id)
 
-    @requires_delegated_permission_or_role(
-        "Channel.Delete.All", "Directory.ReadWrite.All", "Group.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Channel.Delete.All", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test_13_delete_channel(self):
         """Test deleting a channel"""

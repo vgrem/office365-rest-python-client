@@ -1,4 +1,4 @@
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -16,8 +16,11 @@ class TestManagedDevices(GraphDelegatedTestCase):
     #    result = self.client.device_management.managed_devices.add().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission_or_role(
-        "DeviceManagementConfiguration.Read.All", "Device.Read.All", "Directory.Read.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "DeviceManagementConfiguration.Read.All",
+        "Device.Read.All",
+        "Directory.Read.All",
+        or_roles=["Global Administrator"],
     )
     def test2_get_my(self):
         """Test retrieving managed devices for the current user."""

@@ -4,7 +4,7 @@ from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.outlook.mail.attachments.type import AttachmentType
 from office365.outlook.mail.messages.message import Message
 
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -25,7 +25,7 @@ class TestAttachments(GraphDelegatedTestCase):
         assert cls.target_message is not None
         cls.target_message.delete_object().execute_query()
 
-    @requires_delegated_permission_or_role("Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All")
+    @requires_delegated("Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_upload_session(self):
         """Test creating an upload session for a message attachment."""
         message = TestAttachments.target_message

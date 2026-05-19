@@ -1,7 +1,7 @@
 import os
 
 from tests import test_team_site_url
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -19,8 +19,8 @@ class TestShares(GraphDelegatedTestCase):
     def tearDownClass(cls):
         cls.file_item.delete_object().execute_query_retry()
 
-    @requires_delegated_permission_or_role(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", roles=["Global Administrator"]
+    @requires_delegated(
+        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", or_roles=["Global Administrator"]
     )
     def test1_get_file_by_abs_url(self):
         """Get a file by its absolute URL"""

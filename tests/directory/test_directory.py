@@ -3,7 +3,7 @@ from typing import Optional
 from office365.directory.administrative_unit import AdministrativeUnit
 from office365.runtime.client_value_collection import ClientValueCollection
 
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -36,7 +36,7 @@ class TestDirectory(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     # Privileged Role Administrator is required
-    # @requires_delegated_permission_or_role("AdministrativeUnit.ReadWrite.All", roles=["Global Administrator"])
+    # @requires_delegated("AdministrativeUnit.ReadWrite.All", or_roles=["Global Administrator"])
     # def test7_create_administrative_unit(self):
     #    name = "Seattle District Technical Schools"
     #    result = self.client.directory.administrative_units.add(
@@ -45,12 +45,12 @@ class TestDirectory(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.resource_path)
     #    self.__class__.administrative_unit = result
 
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "AdministrativeUnit.Read.All",
         "AdministrativeUnit.ReadWrite.All",
         "Directory.Read.All",
         "Directory.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test8_list_administrative_units(self):
         """List administrative units"""

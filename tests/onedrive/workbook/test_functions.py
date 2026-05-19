@@ -3,7 +3,7 @@ from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.tables.table import WorkbookTable
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -25,7 +25,7 @@ class TestExcelFunctions(GraphDelegatedTestCase):
         assert cls.target_item is not None
         cls.target_item.delete_object().execute_query_retry()
 
-    @requires_delegated_permission_or_role("Files.ReadWrite", roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
     def test1_get_abs(self):
         """Test the ABS workbook function"""
         assert TestExcelFunctions.target_item is not None

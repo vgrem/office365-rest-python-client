@@ -2,7 +2,7 @@ from typing import Optional
 
 from office365.onedrive.sitepages.site_page import SitePage
 from tests import create_unique_name, test_team_site_url
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -23,7 +23,7 @@ class TestWebPart(GraphDelegatedTestCase):
         assert cls.target_page is not None
         cls.target_page.delete_object().execute_query()
 
-    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
+    @requires_delegated("Sites.Read.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"])
     def test1_list_web_parts(self):
         """List web parts on the target page"""
         assert self.target_page is not None

@@ -1,12 +1,12 @@
-from tests.decorators import requires_delegated_permission_or_role
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestDeviceManagement(GraphDelegatedTestCase):
-    @requires_delegated_permission_or_role(
+    @requires_delegated(
         "DeviceManagementServiceConfig.Read.All",
         "DeviceManagementServiceConfig.ReadWrite.All",
-        roles=["Global Administrator"],
+        or_roles=["Global Administrator"],
     )
     def test1_get(self):
         """Test retrieving device management settings."""

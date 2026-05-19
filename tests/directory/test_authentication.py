@@ -1,9 +1,9 @@
-from tests.decorators import requires_app_permission, requires_delegated_permission_or_role
+from tests.decorators import requires_app_permission, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestAuthentication(GraphDelegatedTestCase):
-    @requires_delegated_permission_or_role("UserAuthenticationMethod.Read.All", roles=["Global Administrator"])
+    @requires_delegated("UserAuthenticationMethod.Read.All", or_roles=["Global Administrator"])
     def test1_list_methods(self):
         """List authentication methods for the current user"""
         result = self.client.me.authentication.methods.get().execute_query()
