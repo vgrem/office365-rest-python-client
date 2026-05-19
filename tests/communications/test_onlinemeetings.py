@@ -1,36 +1,50 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 import pytz
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
+from tests.decorators import requires_delegated_permission_or_role
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestOnlineMeetings(GraphDelegatedTestCase):
-    target_meeting: OnlineMeeting = None
+    target_meeting: Optional[OnlineMeeting] = None
 
+    @requires_delegated_permission_or_role("OnlineMeetings.ReadWrite", roles=["Global Administrator"])
     def test1_create_meeting(self):
+        """Creates an online meeting"""
         result = self.client.me.online_meetings.create(subject="User Token Meeting").execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.__class__.target_meeting = result
+        TestOnlineMeetings.target_meeting = result
 
+    @requires_delegated_permission_or_role("OnlineMeetings.ReadWrite", roles=["Global Administrator"])
     def test2_get_meeting(self):
-        meeting_id = self.__class__.target_meeting.id
+        """Gets an online meeting by ID"""
+        assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
+        meeting_id = TestOnlineMeetings.target_meeting.id
+        assert meeting_id is not None, "Meeting ID must not be None"
         result = self.client.me.online_meetings[meeting_id].get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     # def test3_get_virtual_appointment_join_web_url(self):
     #    result = (
-    #        self.__class__.target_meeting.get_virtual_appointment_join_web_url().execute_query()
+    #        TestOnlineMeetings.target_meeting.get_virtual_appointment_join_web_url().execute_query()
     #    )
     #    self.assertIsNotNone(result.value)
 
+    @requires_delegated_permission_or_role("OnlineMeetings.ReadWrite", roles=["Global Administrator"])
     def test4_update_meeting(self):
+        """Updates an online meeting"""
+        assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
         now = datetime.now(pytz.utc)
-        update_meeting = self.__class__.target_meeting
+        update_meeting = TestOnlineMeetings.target_meeting
         update_meeting.subject = "Patch Meeting Subject"
         update_meeting.start_datetime = now
         update_meeting.end_datetime = now + timedelta(hours=1)
         update_meeting.update().execute_query()
 
+    @requires_delegated_permission_or_role("OnlineMeetings.ReadWrite", roles=["Global Administrator"])
     def test5_delete_meeting(self):
-        self.__class__.target_meeting.delete_object().execute_query()
+        """Deletes an online meeting"""
+        assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
+        TestOnlineMeetings.target_meeting.delete_object().execute_query()
