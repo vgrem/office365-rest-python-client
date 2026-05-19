@@ -1,15 +1,12 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FileDeleteParameters(ClientValue):
-    def __init__(
-        self,
-        bypass_checked_out: Optional[bool] = None,
-        bypass_shared_lock: Optional[bool] = None,
-        e_tag_match: Optional[str] = None,
-    ):
-        self.bypass_checked_out = bypass_checked_out
-        self.bypass_shared_lock = bypass_shared_lock
-        self.e_tag_match = e_tag_match
+    bypass_checked_out: bool | None = None
+    bypass_shared_lock: bool | None = None
+    e_tag_match: str | None = None
