@@ -1,46 +1,58 @@
+"""Tests for Microsoft Graph Booking API."""
+
+from typing import Optional
+
 from office365.booking.business.business import BookingBusiness
-from tests.decorators import requires_delegated_permission
+from tests.decorators import requires_delegated_permission_or_role
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestBusiness(GraphDelegatedTestCase):
-    business: BookingBusiness = None
+    """Tests for Booking businesses."""
 
-    @requires_delegated_permission(
+    business: Optional[BookingBusiness] = None
+
+    @requires_delegated_permission_or_role(
         "Bookings.Read.All",
         "Bookings.Manage.All",
         "Bookings.ReadWrite.All",
         "BookingsAppointment.ReadWrite.All",
+        roles=["Global Administrator"],
     )
     def test1_list_booking_business(self):
+        """List all booking businesses."""
         result = self.client.solutions.booking_businesses.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("Bookings.Manage.All")
+    @requires_delegated_permission_or_role("Bookings.Manage.All", roles=["Global Administrator"])
     def test2_create_booking_business(self):
+        """Create a new booking business."""
         result = self.client.solutions.booking_businesses.add("Fourth Coffee").execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.__class__.business = result
+        TestBusiness.business = result
 
-    @requires_delegated_permission(
+    @requires_delegated_permission_or_role(
         "Bookings.Read.All",
         "Bookings.Manage.All",
         "Bookings.ReadWrite.All",
         "BookingsAppointment.ReadWrite.All",
+        roles=["Global Administrator"],
     )
     def test3_ensure_created(self):
-        result = self.__class__.business.get().execute_query_retry()
+        """Verify the booking business was created."""
+        assert TestBusiness.business is not None
+        result = TestBusiness.business.get().execute_query_retry()
         self.assertIsNotNone(result.resource_path)
 
-    # def test4_get_staff_availability(self):
-    #    result = self.__class__.business.get_staff_availability().execute_query()
-    #    self.assertIsNotNone(result.resource_path)
-
-    @requires_delegated_permission("Bookings.Manage.All")
-    def test5_publish(self):
-        result = self.__class__.business.publish().execute_query()
+    @requires_delegated_permission_or_role("Bookings.Manage.All", roles=["Global Administrator"])
+    def test4_publish(self):
+        """Publish the booking business."""
+        assert TestBusiness.business is not None
+        result = TestBusiness.business.publish().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("Bookings.Manage.All")
-    def test6_delete_booking_business(self):
-        self.__class__.business.delete_object().execute_query_retry()
+    @requires_delegated_permission_or_role("Bookings.Manage.All", roles=["Global Administrator"])
+    def test5_delete_booking_business(self):
+        """Delete the booking business."""
+        assert TestBusiness.business is not None
+        TestBusiness.business.delete_object().execute_query_retry()

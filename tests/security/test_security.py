@@ -1,3 +1,4 @@
+
 from tests.decorators import requires_app_permission
 from tests.graph_case import GraphApplicationTestCase
 
@@ -17,6 +18,7 @@ class TestSecurity(GraphApplicationTestCase):
 
     @requires_app_permission("AttackSimulation.ReadWrite.All")
     def test2_create_simulations(self):
+        """Create attack simulation."""
         simulation = {
             "displayName": "Test Phishing Campaign",
             "payloadDeliveryPlatform": "email",
@@ -28,9 +30,9 @@ class TestSecurity(GraphApplicationTestCase):
         result = self.client.security.attack_simulation.simulations.add(**simulation).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    # @requires_app_permission("SecurityIncident.Read.All")
-    # @requires_app_permission("SecurityIncident.ReadWrite.All")
+    @requires_app_permission("SecurityIncident.Read.All", "SecurityIncident.ReadWrite.All")
     def test2_list_incidents(self):
+        """List security incidents."""
         col = self.client.security.incidents.top(10).get().execute_query()
         self.assertIsNotNone(col.resource_path)
 

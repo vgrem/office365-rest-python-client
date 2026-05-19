@@ -1,15 +1,19 @@
-from tests.decorators import requires_delegated_permission
+
+from tests.decorators import requires_delegated_permission_or_role
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestRecordsManagement(GraphDelegatedTestCase):
-    @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
+    @requires_delegated_permission_or_role(
+        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All", roles=["Global Administrator"]
+    )
     def test2_list_retention_event_types(self):
+        """List retention event types."""
         result = self.client.security.trigger_types.retention_event_types.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    # @requires_delegated_permission(
-    #    "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All"
+    # @requires_delegated_permission_or_role(
+    #    "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All", roles=["Global Administrator"]
     # )
     # def test3_create_retention_label(self):
     #    result = self.client.security.labels.retention_labels.add(
@@ -22,7 +26,10 @@ class TestRecordsManagement(GraphDelegatedTestCase):
     #    ).execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
+    @requires_delegated_permission_or_role(
+        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All", roles=["Global Administrator"]
+    )
     def test4_list_retention_labels(self):
+        """List retention labels."""
         result = self.client.security.labels.retention_labels.get().execute_query()
         self.assertIsNotNone(result.resource_path)
