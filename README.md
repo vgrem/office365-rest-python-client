@@ -1,338 +1,513 @@
+# office365-rest-python-client
 
-# About
-Microsoft 365 & Microsoft Graph library for Python
-
-## Status
 [![Downloads](https://pepy.tech/badge/office365-rest-python-client/month)](https://pepy.tech/project/office365-rest-python-client)
 [![PyPI](https://img.shields.io/pypi/v/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client/)
 
-> **📌 Python Requirement**: Python 3.8 or newer.
+**Python client library for Microsoft 365 and Microsoft Graph APIs.**
 
-# Installation
+Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNote, Planner, and more), and supports all modern Azure AD authentication flows.
+
+> **Python 3.8+ required.**
+
+---
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Which client do I need?](#which-client-do-i-need)
+- [Authentication](#authentication)
+  - [ClientContext — SharePoint](#clientcontext--sharepoint-auth)
+  - [GraphClient — Microsoft Graph](#graphclient--microsoft-graph-auth)
+  - [Azure Environments (national clouds)](#azure-environments)
+- [SharePoint — ClientContext](#sharepoint--clientcontext)
+- [Microsoft Graph — GraphClient](#microsoft-graph--graphclient)
+- [Dependencies](#dependencies)
+
+---
+
+## Installation
 
 ```bash
 pip install office365-rest-python-client
 ```
 
-Or with uv:
+With [uv](https://github.com/astral-sh/uv):
 
 ```bash
 uv pip install office365-rest-python-client
 ```
 
-The latest version from GitHub can be installed directly:
+Latest from GitHub (includes unreleased changes):
 
-```
+```bash
 pip install git+https://github.com/vgrem/office365-rest-python-client.git
 ```
 
-# Quick Start
+---
 
-## SharePoint REST API
+## Which client do I need?
+
+| | `ClientContext` | `GraphClient` |
+|---|---|---|
+| **Target API** | SharePoint REST API v1 | Microsoft Graph API |
+| **Use for** | SharePoint lists, files, folders, search, site admin, permissions | Outlook, OneDrive, Teams, OneNote, Planner, Users, Groups |
+| **SharePoint via Graph?** | — | Partial — use `ClientContext` for full SharePoint fidelity |
+| **Docs** | [SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service) | [Microsoft Graph](https://learn.microsoft.com/en-us/graph/overview) |
+
+---
+
+## Authentication
+
+> ⚠️ **ACS Retirement:** Azure Access Control Service (ACS) app-only auth is fully retired as of April 2026. `UserCredential` (SAML/IDCRL) is retired as of May 1, 2026. Both have been removed from the library. Migrate to Azure AD auth. [Learn more](https://aka.ms/retirement/acs/support)
+
+---
+
+### ClientContext — SharePoint Auth
+
+#### App-only: Certificate (recommended for automation)
+
+No user interaction. Ideal for scripts, pipelines, and services.
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://{tenant}.sharepoint.com").with_client_certificate(
-    tenant="{tenant}", client_id="{client_id}",
-    thumbprint="{thumbprint}", cert_path="./cert.pem",
+ctx = ClientContext("{site_url}").with_client_certificate(
+    tenant="{tenant}",           # e.g. contoso.onmicrosoft.com
+    client_id="{client_id}",
+    thumbprint="{thumbprint}",
+    cert_path="/path/to/cert.pem"
 )
-web = ctx.web.get().execute_query()
-print(f"Web: {web.title}")
 ```
 
-## Microsoft Graph API
+[Setup guide](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/modern/with_certificate.py)
+
+#### App-only: Client secret
 
 ```python
-from office365.graph_client import GraphClient
-
-client = GraphClient(tenant="{tenant}").with_client_secret(
-    client_id="{client_id}", client_secret="{client_secret}",
+ctx = ClientContext("{site_url}").with_client_secret(
+    tenant="{tenant}",
+    client_id="{client_id}",
+    client_secret="{client_secret}"
 )
-me = client.me.get().execute_query()
-print(f"User: {me.user_principal_name}")
 ```
 
----
+[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) | [Example](examples/sharepoint/auth/modern/with_client_secret.py)
 
-# Supported APIs
+#### User auth: Username & password (MSAL ROPC)
 
-| Client | Capabilities |
-|---|---|
-| **ClientContext** (SharePoint REST) | Sites, Webs, Lists, ListItems, Files, Folders, Fields, ContentTypes, Permissions, Taxonomy, Search, Tenant Administration, User Profiles |
-| **GraphClient** (Microsoft Graph) | Users, Groups, Directory, Outlook (Mail/Calendar/Contacts), OneDrive, Teams, Planner, OneNote, Security, Reports, Booking, Tasks, Intune, Presence, Online Meetings |
-
----
-
-# Authentication
-
-The library provides two clients: **`ClientContext`** for SharePoint REST API and **`GraphClient`** for Microsoft Graph API.
-
-> **📌 ACS Retirement Notice**: Azure Access Control Service (ACS) for SharePoint
-> is being retired. ACS stopped working for **new tenants** on November 1, 2024,
-> and will be **fully retired on April 2, 2026**. Use Azure AD-based authentication instead.
-> [Learn more](https://aka.ms/retirement/acs/support)
-
-## ClientContext - SharePoint
-
-### Azure AD App-Only (certificate) - RECOMMENDED
+Non-interactive user auth. Requires no MFA on the account.
 
 ```python
-ctx = ClientContext('{site_url}').with_client_certificate(tenant, client_id, thumbprint, cert_path)
-```
-
-[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/modern/with_certificate.py)
-
-### Username & password (MSAL ROPC) - RECOMMENDED for user auth
-
-Uses the OAuth 2.0 Resource Owner Password Credentials grant via MSAL.
-
-```python
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext('{site_url}').with_username_and_password(
-    tenant='{tenant}', client_id='{client_id}',
-    username='{username}', password='{password}'
+ctx = ClientContext("{site_url}").with_username_and_password(
+    tenant="{tenant}",
+    client_id="{client_id}",
+    username="{username}",
+    password="{password}"
 )
 ```
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) | [Example](examples/sharepoint/auth/modern/with_username_and_password.py)
 
-### Interactive
+#### User auth: Interactive (MFA-compatible)
 
-Opens a browser for user login.
+Opens a browser. Works with MFA and Conditional Access.
 
 ```python
-from office365.sharepoint.client_context import ClientContext
-ctx = ClientContext('{site_url}').with_interactive('{tenant}', '{client_id}')
+ctx = ClientContext("{site_url}").with_interactive(
+    tenant="{tenant}",
+    client_id="{client_id}"
+)
 ```
 
-> Prerequisite: configure Redirect URI as `http://localhost` in Azure Portal.
+> Prerequisite: add `http://localhost` as a Redirect URI in your Azure app registration.
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication) | [Example](examples/sharepoint/auth/modern/with_interactive.py)
 
-### Device code
+#### User auth: Device code
 
-User authenticates on another device via a displayed code.
+Authenticate on another device via a displayed code. Useful for headless environments.
 
 ```python
-ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
+ctx = ClientContext("{site_url}").with_device_flow(
+    tenant="{tenant}",
+    client_id="{client_id}"
+)
 ```
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/modern/with_device_flow.py)
 
-### On-premises SharePoint (NTLM)
+#### On-premise: NTLM
 
-For SharePoint on-premises deployments using NTLM authentication:
-
-```bash
-pip install office365-rest-python-client[ntlm]
-```
+For SharePoint Server (2016, 2019, Subscription Edition). Requires `pip install office365-rest-python-client[ntlm]`.
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://{onpremises_server}/sites/site", allow_ntlm=True).with_user_credentials(
-    "{username}", "{password}"
+ctx = ClientContext("http://sharepoint.company.com/sites/project", allow_ntlm=True).with_user_credentials(
+    username="DOMAIN\\username",
+    password="password"
 )
-web = ctx.web.get().execute_query()
-print(f"Web: {web.title}")
 ```
 
 [Example](examples/sharepoint/auth/legacy/with_ntlm.py)
 
-### Legacy - SAML User Auth ⚠️
-
-> **Deprecated**: `with_user_credentials` uses the legacy SAML-based auth flow
-> which is being phased out by Microsoft. Use `with_username_and_password`
-> (MSAL ROPC OAuth 2.0) instead.
-
-```python
-from office365.sharepoint.client_context import ClientContext
-ctx = ClientContext('{site_url}').with_user_credentials('{username}', '{password}')
-```
-
-Replaced by:
-
-```python
-ctx.with_username_and_password(tenant='{tenant}', client_id='{client_id}', username='{username}', password='{password}')
-```
-
-[Docs](https://learn.microsoft.com/en-us/microsoft-365/enterprise/modern-auth-for-office-2013-and-2016)
-
-### Legacy - ACS App-Only ⚠️
-
-> **Deprecated**: Azure ACS is being retired. Use Azure AD certificate auth instead.
-
-```python
-from office365.runtime.auth.client_credential import ClientCredential
-from office365.sharepoint.client_context import ClientContext
-ctx = ClientContext('{site_url}').with_credentials(ClientCredential('{client_id}', '{client_secret}'))
-```
-
-[Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs) | [Example](examples/sharepoint/auth/legacy/with_app_only.py)
-
 ---
 
-## GraphClient - Microsoft Graph
+### GraphClient — Microsoft Graph Auth
 
-### Client secret
-
-Uses the OAuth 2.0 Client Credentials grant via MSAL.
+#### Client secret
 
 ```python
 from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}').with_client_secret(client_id='{client_id}', client_secret='{client_secret}')
+
+client = GraphClient(tenant="{tenant}").with_client_secret(
+    client_id="{client_id}",
+    client_secret="{client_secret}"
+)
 ```
 
 [Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_client_secret.py)
 
-### Certificate
+#### Certificate
 
 ```python
-client = GraphClient(tenant='{tenant}').with_client_certificate(client_id, thumbprint, private_key)
+client = GraphClient(tenant="{tenant}").with_client_certificate(
+    client_id="{client_id}",
+    thumbprint="{thumbprint}",
+    private_key="{private_key}"
+)
 ```
 
-[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_client_secret.py)
+[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_certificate.py)
 
-### Interactive
-
-Opens a browser for user login.
+#### Interactive (MFA-compatible)
 
 ```python
-client = GraphClient(tenant='{tenant}').with_token_interactive(client_id='{client_id}')
+client = GraphClient(tenant="{tenant}").with_token_interactive(
+    client_id="{client_id}"
+)
 ```
 
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication)
-
-### Username & password (MSAL ROPC)
+#### Username & password (MSAL ROPC)
 
 ```python
-client = GraphClient(tenant='{tenant}').with_username_and_password('{client_id}', '{username}', '{password}')
+client = GraphClient(tenant="{tenant}").with_username_and_password(
+    client_id="{client_id}",
+    username="{username}",
+    password="{password}"
+)
 ```
 
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc)
+#### Custom token acquisition
 
-### Custom token acquisition
-
-Any OAuth2-compliant library (MSAL, ADAL, etc.):
+Bring your own MSAL or any OAuth 2.0-compliant token provider:
 
 ```python
+import msal
+
 def acquire_token():
-    # your token acquisition logic
-    return token
+    app = msal.ConfidentialClientApplication(
+        client_id, authority=f"https://login.microsoftonline.com/{tenant}",
+        client_credential=client_secret
+    )
+    return app.acquire_token_for_client(["https://graph.microsoft.com/.default"])
 
 client = GraphClient(acquire_token)
 ```
 
 ---
 
-# ClientContext - SharePoint API
+### Azure Environments
 
-## Quick start
+For national and sovereign clouds, pass the `environment` parameter:
+
+```python
+from office365.azure_env import AzureEnvironment
+from office365.sharepoint.client_context import ClientContext
+
+ctx = ClientContext("{site_url}", environment=AzureEnvironment.USGovernmentHigh)\
+    .with_client_certificate(...)
+```
+
+| Environment | Constant |
+|---|---|
+| Global (default) | `AzureEnvironment.Global` |
+| US Government GCC | `AzureEnvironment.USGovernment` |
+| US Government GCC High | `AzureEnvironment.USGovernmentHigh` |
+| US Government DoD | `AzureEnvironment.USGovernmentDoD` |
+| China (21Vianet) | `AzureEnvironment.China` |
+| Germany (legacy) | `AzureEnvironment.Germany` |
+
+---
+
+## SharePoint — ClientContext
+
+### Quick start
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-site_url = "https://{tenant}.sharepoint.com"
-ctx = ClientContext(site_url).with_username_and_password(
+ctx = ClientContext("{site_url}").with_client_certificate(
     tenant="{tenant}", client_id="{client_id}",
-    username="{username}", password="{password}",
+    thumbprint="{thumbprint}", cert_path="./cert.pem"
 )
 web = ctx.web.get().execute_query()
-print(f"Web title: {web.title}")
+print(f"Site title: {web.title}")
 ```
 
-## Azure environments
-
-Add the `environment` parameter for non-global clouds:
+### Lists & Items
 
 ```python
-from office365.azure_env import AzureEnvironment
-ctx = ClientContext('{site_url}', environment=AzureEnvironment.USGovernmentHigh).with_credentials(...)
+# Get all items (handles 5000+ row threshold automatically)
+items = ctx.web.lists.get_by_title("Orders").items.get_all().execute_query()
+for item in items:
+    print(item.properties["Title"])
+
+# Create item
+target_list = ctx.web.lists.get_by_title("Tasks")
+item = target_list.add_item({"Title": "New task", "Status": "Active"}).execute_query()
+
+# Bulk create — auto-batches in chunks of 100
+for row in data:
+    target_list.add_item({"Title": row["name"]})
+ctx.execute_batch()
+
+# Filter, select, expand
+items = ctx.web.lists.get_by_title("Projects")\
+    .items\
+    .filter("Status eq 'Active'")\
+    .select(["Title", "Author/Title"])\
+    .expand(["Author"])\
+    .get_all().execute_query()
 ```
 
-## Examples
+[All list examples](examples/sharepoint/lists/)
 
-For a comprehensive list, see the [SharePoint examples guide](examples/sharepoint/README.md).
+### Files & Folders
+
+```python
+# Upload file
+with open("report.pdf", "rb") as f:
+    folder = ctx.web.get_folder_by_server_relative_url("/sites/mysite/Shared Documents")
+    file = folder.upload_file("report.pdf", f).execute_query()
+
+# Download file
+with open("report.pdf", "wb") as f:
+    ctx.web.get_file_by_server_relative_path("/sites/mysite/Shared Documents/report.pdf")\
+        .download(f).execute_query()
+
+# Large file upload (chunked)
+folder.files.create_upload_session(
+    local_path, chunk_size=10*1024*1024,
+    chunk_uploaded=lambda offset: print(f"{offset} bytes uploaded")
+).execute_query()
+
+# Download folder as zip
+with open("archive.zip", "wb") as f:
+    folder.download_folder(f).execute_query()
+
+# Create nested folders
+base = ctx.web.get_folder_by_server_relative_url("/sites/mysite/Shared Documents")
+sub = base.add("Projects").execute_query()
+sub.add("2025").execute_query()
+```
+
+[All file examples](examples/sharepoint/files/) | [All folder examples](examples/sharepoint/folders/)
+
+### Search
+
+```python
+from office365.sharepoint.search.request import SearchRequest
+from office365.sharepoint.search.service import SearchService
+
+search = SearchService(ctx)
+request = SearchRequest("IsDocument:1", row_limit=50, start_row=0)
+result = search.post_query(request).execute_query()
+
+rows = result.value.PrimaryQueryResult.RelevantResults.Table.Rows
+for row in rows:
+    print(row)
+```
+
+[All search examples](examples/sharepoint/search/)
+
+### Permissions
+
+```python
+from office365.sharepoint.roles.type import RoleType
+
+# Break inheritance and grant access to a user
+role_def = ctx.web.role_definitions.get_by_type(RoleType.Reader)
+user = ctx.web.ensure_user("i:0#.f|membership|user@company.com")
+item = ctx.web.lists.get_by_title("Confidential").items.get_by_id(1)
+item.break_role_inheritance(copy_role_assignments=False)
+item.add_role_assignment(user, role_def)
+ctx.execute_query()
+```
+
+[Permissions examples](examples/sharepoint/permissions/)
+
+### Site Administration (Tenant)
+
+```python
+from office365.sharepoint.tenant.administration.tenant import Tenant
+
+tenant = Tenant(ctx)
+
+# List all sites
+sites = tenant.get_site_properties_from_sharepoint_by_filters().execute_query()
+for site in sites:
+    print(site.url)
+
+# Create a site
+tenant.create_site({"Url": "https://tenant.sharepoint.com/sites/newsite", "Title": "New Site"}).execute_query()
+```
+
+[All tenant/admin examples](examples/sharepoint/tenant/)
 
 ---
 
-# GraphClient — Microsoft Graph API
+## Microsoft Graph — GraphClient
 
-## Quick start
+### Quick start
 
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant='{tenant}').with_client_secret(client_id='{client_id}', client_secret='{client_secret}')
+client = GraphClient(tenant="{tenant}").with_client_secret(
+    client_id="{client_id}", client_secret="{client_secret}"
+)
 me = client.me.get().execute_query()
-print(f"User: {me.user_principal_name}")
+print(f"Signed in as: {me.user_principal_name}")
 ```
 
-## Outlook
+### Outlook — Mail & Calendar
 
 ```python
-from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}').with_client_secret(client_id='{client_id}', client_secret='{client_secret}')
+# Send email
 client.me.send_mail(
-    subject="Meet for lunch?",
-    body="The new cafeteria is open.",
-    to_recipients=["user@contoso.onmicrosoft.com"]
+    subject="Hello",
+    body="Message body",
+    to_recipients=["user@company.com"]
+).execute_query()
+
+# List messages
+messages = client.me.messages.top(10).get().execute_query()
+for msg in messages:
+    print(msg.subject)
+
+# Create calendar event
+from office365.outlook.calendar.events.event import Event
+event = client.me.calendar.events.add(
+    subject="Team standup",
+    start="2025-06-01T09:00:00",
+    end="2025-06-01T09:30:00"
 ).execute_query()
 ```
 
-[Send email](examples/outlook/messages/send.py) | [List messages](examples/outlook/messages/list_all.py) | [Download](examples/outlook/messages/download.py) | [Search](examples/outlook/messages/search.py)
+[All Outlook examples](examples/outlook/)
 
-More [Outlook examples](examples/outlook/README.md).
-
-## OneDrive
+### OneDrive
 
 ```python
-from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}')
+# List drives
 drives = client.drives.get().execute_query()
-for drive in drives:
-    print(f"Drive url: {drive.web_url}")
+
+# Upload file to OneDrive
+with open("report.xlsx", "rb") as f:
+    client.me.drive.root.upload("report.xlsx", f).execute_query()
+
+# Download file
+with open("report.xlsx", "wb") as local_file:
+    client.me.drive.root.get_by_path("Documents/report.xlsx")\
+        .download(local_file).execute_query()
 ```
 
-[Download files](examples/onedrive/files/download.py) | [Upload files](examples/onedrive/folders/upload.py) | [List drives](examples/onedrive/drives/list.py)
+[All OneDrive examples](examples/onedrive/)
 
-More [OneDrive examples](examples/onedrive/README.md).
-
-## Teams
+### Teams
 
 ```python
-from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}')
+# List all teams
+teams = client.groups.get().execute_query()
+
+# Send channel message
+client.teams["{team_id}"].channels["{channel_id}"]\
+    .messages.add(body="Hello team!").execute_query()
+
+# Create a team
 new_team = client.groups["{group_id}"].add_team().execute_query()
 ```
 
-[Create a team](examples/teams/create_team.py) | [List teams](examples/teams/list_all.py) | [Send messages](examples/teams/send_message.py)
+[All Teams examples](examples/teams/)
 
-More [Teams examples](examples/teams/README.md).
-
-## OneNote
+### OneNote
 
 ```python
-from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}')
-with open("./MyPage.html", 'rb') as f:
+# Create a page
+with open("MyPage.html", "rb") as f:
     page = client.me.onenote.pages.add(presentation_file=f).execute_query()
 ```
 
-## Planner
+[All OneNote examples](examples/onenote/)
+
+### Planner
 
 ```python
-from office365.graph_client import GraphClient
-client = GraphClient(tenant='{tenant}')
-task = client.planner.tasks.add(title="New task", planId="--plan-id--").execute_query()
+# Create a task
+task = client.planner.tasks.add(
+    title="Review PR",
+    planId="{plan_id}"
+).execute_query()
+```
+
+[All Planner examples](examples/planner/)
+
+### Users & Groups
+
+```python
+# List users
+users = client.users.top(100).get().execute_query()
+
+# Create group
+group = client.groups.add(
+    display_name="Engineering",
+    mail_nickname="engineering",
+    mail_enabled=False,
+    security_enabled=True
+).execute_query()
+```
+
+[All user examples](examples/directory/)
+
+---
+
+## Dependencies
+
+Installed automatically:
+
+| Package | Purpose |
+|---|---|
+| [requests](https://github.com/psf/requests) | HTTP transport |
+| [msal](https://github.com/AzureAD/microsoft-authentication-library-for-python) | Azure AD authentication |
+
+Optional:
+
+```bash
+pip install office365-rest-python-client[pandas]   # to_dataframe() on collections
 ```
 
 ---
 
-# Dependencies
+## Contributing
 
-- [requests](https://github.com/kennethreitz/requests)
-- [MSAL for Python](https://pypi.org/project/msal/)
+PRs welcome. See [issues](https://github.com/vgrem/office365-rest-python-client/issues) for things to work on.
+
+## Links
+
+- [PyPI](https://pypi.org/project/office365-rest-python-client/)
+- [Changelog](CHANGELOG.md)
+- [SharePoint REST API docs](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service)
+- [Microsoft Graph docs](https://learn.microsoft.com/en-us/graph/overview)
+- [MSAL for Python](https://github.com/AzureAD/microsoft-authentication-library-for-python)
