@@ -332,9 +332,7 @@ task = client.planner.tasks.add(title="New task", planId="--plan-id--").execute_
 
 ---
 
-# Third Party Libraries
-
-The following libraries will be installed when you install the client library:
+# Dependencies
 
 - [requests](https://github.com/kennethreitz/requests)
-- [Microsoft Authentication Library (MSAL) for Python](https://pypi.org/project/msal/)
+- [MSAL for Python](https://pypi.org/project/msal/)
