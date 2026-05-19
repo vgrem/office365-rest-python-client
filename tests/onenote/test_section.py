@@ -1,10 +1,21 @@
+"""Tests for Microsoft Graph OneNote Sections API."""
+
+from typing import Optional
+
 from office365.onenote.sections.section import OnenoteSection
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestSection(GraphTestCase):
-    target_section: OnenoteSection = None
+class TestSection(GraphDelegatedTestCase):
+    """Tests for OneNote sections."""
 
-    def test2_list_sections(self):
+    target_section: Optional[OnenoteSection] = None
+
+    @requires_delegated_permission_or_role(
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", roles=["Global Administrator"]
+    )
+    def test1_list_sections(self):
+        """List all OneNote sections."""
         result = self.client.me.onenote.sections.get().execute_query()
         self.assertIsNotNone(result.resource_path)

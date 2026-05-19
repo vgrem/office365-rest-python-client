@@ -5,10 +5,10 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 
 from tests import test_team_site_url
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestGraphClient(GraphTestCase):
+class TestGraphClient(GraphDelegatedTestCase):
     def test1_execute_batch_get_requests(self):
         current_user = self.client.me.get()  # 1.1: construct query to retrieve current user
         my_drive = self.client.me.drive.get()  # 1.2: construct query to retrieve my drive

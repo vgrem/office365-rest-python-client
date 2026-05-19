@@ -1,7 +1,7 @@
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestThreatAssessment(GraphTestCase):
+class TestThreatAssessment(GraphDelegatedTestCase):
     threat_assessment_request = None
 
     def test1_create_url_assessment(self):

@@ -5,10 +5,10 @@ from office365.outlook.mail.attachments.type import AttachmentType
 from office365.outlook.mail.messages.message import Message
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestAttachments(GraphTestCase):
+class TestAttachments(GraphDelegatedTestCase):
     target_message: Optional[Message] = None
 
     @classmethod

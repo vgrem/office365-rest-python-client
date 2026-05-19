@@ -1,7 +1,7 @@
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestManagedDevices(GraphTestCase):
+class TestManagedDevices(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestManagedDevices, cls).setUpClass()

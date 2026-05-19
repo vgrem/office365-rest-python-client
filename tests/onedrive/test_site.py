@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.onedrive.sites.site import Site
 from tests import test_team_site_url
-from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestSite(GraphTestCase):
+class TestSite(GraphDelegatedTestCase):
     """OneDrive specific test case base class"""
 
-    test_site: Site = None
+    test_site: Optional[Site] = None
 
     @classmethod
     def setUpClass(cls):
@@ -20,57 +22,74 @@ class TestSite(GraphTestCase):
     def tearDownClass(cls):
         pass
 
-    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test1_get_root_site(self):
+        """Get the root site"""
         result = self.client.sites.root.get().execute_query()
         assert result.id is not None
 
-    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test2_get_site_by_path(self):
+        """Get a site by its server-relative path"""
         result = self.client.sites.get_by_path("/sites/team").execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test3_get_site_by_url(self):
+        """Get a site by its absolute URL"""
         result = self.client.sites.get_by_url(test_team_site_url).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission(
+    @requires_delegated_permission_or_role(
         "Files.Read",
         "Files.ReadWrite",
         "Files.Read.All",
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
+        roles=["Global Administrator"],
     )
     def test4_get_activities_by_interval(self):
+        """Get activities for the site by time interval"""
+        assert self.test_site is not None
         col = self.test_site.get_activities_by_interval().execute_query()
         self.assertIsNotNone(col)
 
-    @requires_delegated_permission("Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
     def test5_follow(self):
+        """Follow the test site"""
+        assert self.test_site is not None
         self.client.me.follow_site(self.test_site).execute_query()
 
-    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test6_list_followed_sites(self):
+        """List all followed sites"""
         result = self.client.me.followed_sites.get().execute_query()
         self.followed_sites_count = len(result)
         self.assertGreaterEqual(len(result), 1, "No followed sites were returned")
 
-    @requires_delegated_permission("Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
     def test7_unfollow(self):
+        """Unfollow the test site"""
+        assert self.test_site is not None
         self.client.me.unfollow_site(self.test_site).execute_query()
 
-    @requires_delegated_permission(
+    @requires_delegated_permission_or_role(
         "Sites.Read.All",
         "Sites.FullControl.All",
         "Sites.Manage.All",
         "Sites.ReadWrite.All",
+        roles=["Global Administrator"],
     )
     def test9_get_operations(self):
+        """Get site operations"""
+        assert self.test_site is not None
         result = self.test_site.operations.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test_10_get_analytics(self):
+        """Get analytics for the test site"""
+        assert self.test_site is not None
         result = self.test_site.analytics.last_seven_days.get().execute_query()
         self.assertIsNotNone(result.resource_path)

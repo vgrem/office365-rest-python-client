@@ -6,10 +6,10 @@ from office365.outlook.mail.messages.rules.rule import MessageRule
 from office365.outlook.mail.recipient import Recipient
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestMessageRules(GraphTestCase):
+class TestMessageRules(GraphDelegatedTestCase):
     target_message_rule: Optional[MessageRule] = None
 
     @requires_delegated_permission_or_role(

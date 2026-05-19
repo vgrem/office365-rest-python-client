@@ -3,10 +3,10 @@ from __future__ import annotations
 from office365.todo.tasks.list import TodoTaskList
 from tests import create_unique_name
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestTaskList(GraphTestCase):
+class TestTaskList(GraphDelegatedTestCase):
     task_list: TodoTaskList | None = None
 
     @requires_delegated_permission("Tasks.ReadWrite")

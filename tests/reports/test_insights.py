@@ -3,10 +3,10 @@
 from unittest import skipIf
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestInsights(GraphTestCase):
+class TestInsights(GraphDelegatedTestCase):
     """Tests for Microsoft Graph Insights API (trending, shared, used)."""
 
     insights_enabled = False

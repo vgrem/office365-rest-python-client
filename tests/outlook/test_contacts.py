@@ -3,10 +3,10 @@ from typing import Optional
 from office365.outlook.contacts.contact import Contact
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestOutlookContacts(GraphTestCase):
+class TestOutlookContacts(GraphDelegatedTestCase):
     target_contact: Optional[Contact] = None
 
     @requires_delegated_permission_or_role(

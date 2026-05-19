@@ -1,16 +1,18 @@
+from typing import Optional
+
 from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 
 from tests import create_unique_name
-from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestServicePrincipal(GraphTestCase):
-    target_object: ServicePrincipal = None
-    target_app: Application = None
-    password_creds: PasswordCredential = None
+class TestServicePrincipal(GraphDelegatedTestCase):
+    target_object: Optional[ServicePrincipal] = None
+    target_app: Optional[Application] = None
+    password_creds: Optional[PasswordCredential] = None
 
     @classmethod
     def setUpClass(cls):
@@ -20,44 +22,85 @@ class TestServicePrincipal(GraphTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.target_app.delete_object(True).execute_query()
+        if cls.target_app is not None:
+            cls.target_app.delete_object(True).execute_query()
 
+    @requires_delegated_permission_or_role(
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test1_create_service_principal(self):
-        service_principal = self.client.service_principals.add(self.target_app.app_id).execute_query()
+        """Create a service principal"""
+        assert TestServicePrincipal.target_app is not None
+        service_principal = self.client.service_principals.add(TestServicePrincipal.target_app.app_id).execute_query()
         self.assertIsNotNone(service_principal.resource_path)
-        self.__class__.target_object = service_principal
+        TestServicePrincipal.target_object = service_principal
 
-    @requires_delegated_permission(
+    @requires_delegated_permission_or_role(
         "Application.Read.All",
         "Application.ReadWrite.All",
         "Directory.Read.All",
         "Directory.ReadWrite.All",
+        roles=["Global Administrator"],
     )
     def test2_list_service_principals(self):
+        """List service principals"""
         result = self.client.service_principals.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("Directory.Read.All", roles=["Global Administrator"])
     def test3_get_service_principals_count(self):
+        """Get service principals count"""
         result = self.client.service_principals.count().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_delegated_permission_or_role("Application.Read.All", roles=["Global Administrator"])
     def test4_get_by_app_id(self):
-        principal = self.client.service_principals.get_by_app_id(self.target_app.app_id).get().execute_query()
+        """Get service principal by app ID"""
+        assert TestServicePrincipal.target_app is not None
+        principal = (
+            self.client.service_principals.get_by_app_id(TestServicePrincipal.target_app.app_id).get().execute_query()
+        )
         self.assertIsNotNone(principal.resource_path)
 
+    @requires_delegated_permission_or_role(
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test5_add_password(self):
-        result = self.__class__.target_object.add_password("Password friendly name").execute_query()
+        """Add password to the service principal"""
+        assert TestServicePrincipal.target_object is not None
+        result = TestServicePrincipal.target_object.add_password("Password friendly name").execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.password_creds = result.value
+        TestServicePrincipal.password_creds = result.value
 
+    @requires_delegated_permission_or_role(
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test6_remove_password(self):
-        key_id = self.__class__.password_creds.keyId
-        self.__class__.target_object.remove_password(key_id).execute_query()
+        """Remove password from the service principal"""
+        assert TestServicePrincipal.password_creds is not None
+        key_id = TestServicePrincipal.password_creds.keyId
+        assert TestServicePrincipal.target_object is not None
+        TestServicePrincipal.target_object.remove_password(key_id).execute_query()
 
+    @requires_delegated_permission_or_role(
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test7_delete_service_principal(self):
-        self.__class__.target_object.delete_object().execute_query()
+        """Delete the service principal"""
+        assert TestServicePrincipal.target_object is not None
+        TestServicePrincipal.target_object.delete_object().execute_query()
 
+    @requires_delegated_permission_or_role("Directory.Read.All", roles=["Global Administrator"])
     def test8_list_deleted(self):
-        result = self.__class__.client.directory.deleted_service_principals.get().execute_query()
+        """List deleted service principals"""
+        result = self.client.directory.deleted_service_principals.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertGreater(len(result), 0)

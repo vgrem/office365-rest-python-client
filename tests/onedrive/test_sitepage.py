@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.onedrive.sitepages.site_page import SitePage
 from tests import create_unique_name, test_team_site_url
-from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestSitePage(GraphTestCase):
+class TestSitePage(GraphDelegatedTestCase):
     """OneDrive specific test case base class"""
 
-    target_page: SitePage = None
+    target_page: Optional[SitePage] = None
 
     @classmethod
     def setUpClass(cls):
@@ -20,28 +22,41 @@ class TestSitePage(GraphTestCase):
     def tearDownClass(cls):
         pass
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test1_create_site_page(self):
+        """Create a site page"""
         result = self.test_site.pages.add(self.page_name).execute_query()
-        self.assertIsNotNone(result.resource_path)
-        self.__class__.target_page = result
+        assert result.resource_path is not None
+        TestSitePage.target_page = result
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test2_get_site_page(self):
-        page = self.__class__.target_page
+        """Get a site page by ID"""
+        page = TestSitePage.target_page
+        assert page is not None
         result = page.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test3_get_item_by_name(self):
+        """Get a page list item by name"""
         result = self.pages_list.items.get_by_name("Home.aspx").execute_query()
-        self.assertIsNotNone(result.resource_path)
-        self.__class__.target_item = result
+        assert result.resource_path is not None
+        TestSitePage.target_item = result
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test4_checkin_site_page(self):
-        page = self.__class__.target_page
+        """Check in a site page"""
+        page = TestSitePage.target_page
+        assert page is not None
         result = page.checkin("Initial version").execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test5_get_site_page_pub_state(self):
-        page = self.__class__.target_page
+        """Get the publishing state of a site page"""
+        page = TestSitePage.target_page
+        assert page is not None
         result = page.get().select(["publishingState"]).execute_query()
         self.assertIsNotNone(result.publishing_state.level)
 
@@ -50,8 +65,9 @@ class TestSitePage(GraphTestCase):
     #    result = page.publish().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated_permission("Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test7_list_site_pages(self):
+        """List all site pages"""
         result = self.test_site.pages.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -69,10 +85,15 @@ class TestSitePage(GraphTestCase):
     #    result = page.get_web_parts_by_position().execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test_11_delete_site_page(self):
-        page = self.__class__.target_page
+        """Delete a site page"""
+        page = TestSitePage.target_page
+        assert page is not None
         page.delete_object().execute_query()
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test_12_get_site_page_list(self):
+        """Get the Site Pages list"""
         result = self.test_site.lists.get_by_name("Site Pages").get().execute_query()
         self.assertIsNotNone(result.resource_path)

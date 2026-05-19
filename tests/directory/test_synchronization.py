@@ -1,25 +1,33 @@
+from typing import Optional
+
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 
 from tests import test_client_id
-from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestSynchronization(GraphTestCase):
-    target_sp: ServicePrincipal = None
+class TestSynchronization(GraphDelegatedTestCase):
+    target_sp: Optional[ServicePrincipal] = None
 
     # "salesforce"
 
     @classmethod
     def setUpClass(cls):
-        super(TestSynchronization, cls).setUpClass()
+        super().setUpClass()
         cls.target_sp = cls.client.service_principals.get_by_app_id(test_client_id).get().execute_query()
 
     @classmethod
     def tearDownClass(cls):
         pass
 
-    @requires_delegated_permission("Synchronization.Read.All", "Synchronization.ReadWrite.All")
+    @requires_delegated_permission_or_role(
+        "Synchronization.Read.All",
+        "Synchronization.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test1_list_synchronization_jobs(self):
-        result = self.target_sp.synchronization.jobs.get().execute_query()
+        """List synchronization jobs"""
+        assert TestSynchronization.target_sp is not None
+        result = TestSynchronization.target_sp.synchronization.jobs.get().execute_query()
         self.assertIsNotNone(result.resource_path)

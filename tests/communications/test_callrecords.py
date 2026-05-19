@@ -1,7 +1,7 @@
-from tests.graph_case import GraphSecretTestCase
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestCallRecord(GraphSecretTestCase):
+class TestCallRecord(GraphApplicationTestCase):
     @classmethod
     def tearDownClass(cls):
         pass

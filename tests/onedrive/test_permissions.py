@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.permissions.permission import Permission
@@ -7,13 +8,13 @@ from tests import (
     test_team_site_url,
     test_user_principal_name_alt,
 )
-from tests.decorators import requires_app_permission
-from tests.graph_case import GraphSecretTestCase
+from tests.decorators import requires_app_permission, requires_delegated_permission_or_role
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestPermissions(GraphSecretTestCase):
-    target_drive_item: DriveItem = None
-    target_permission: Permission = None
+class TestPermissions(GraphApplicationTestCase):
+    target_drive_item: Optional[DriveItem] = None
+    target_permission: Optional[Permission] = None
 
     @classmethod
     def setUpClass(cls):
@@ -23,48 +24,66 @@ class TestPermissions(GraphSecretTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_drive_item is not None
         item_to_delete = cls.target_drive_item.get().execute_query()
         item_to_delete.delete_object().execute_query()
 
     @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_anonymous_link(self):
-        permission = self.__class__.target_drive_item.create_link("view", "anonymous").execute_query()
+        """Create an anonymous sharing link"""
+        assert TestPermissions.target_drive_item is not None
+        permission = TestPermissions.target_drive_item.create_link("view", "anonymous").execute_query()
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "read")
 
     @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test2_create_company_link(self):
-        permission = self.__class__.target_drive_item.create_link("edit", "organization").execute_query()
+        """Create an organization sharing link"""
+        assert TestPermissions.target_drive_item is not None
+        permission = TestPermissions.target_drive_item.create_link("edit", "organization").execute_query()
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "write")
 
     @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test4_driveitem_list_permissions(self):
-        permissions = self.__class__.target_drive_item.permissions.get().execute_query()
+        """List permissions for a drive item"""
+        assert TestPermissions.target_drive_item is not None
+        permissions = TestPermissions.target_drive_item.permissions.get().execute_query()
         self.assertIsNotNone(permissions.resource_path)
         self.assertGreater(len(permissions), 0)
 
     @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test5_driveitem_get_permission(self):
-        result = self.__class__.target_drive_item.permissions.get().top(1).execute_query()
+        """Get a specific permission for a drive item"""
+        assert TestPermissions.target_drive_item is not None
+        result = TestPermissions.target_drive_item.permissions.get().top(1).execute_query()
         self.assertEqual(len(result), 1)
         perm_id = result[0].id
-        perm = self.__class__.target_drive_item.permissions[perm_id].get().execute_query()
+        assert perm_id is not None
+        assert TestPermissions.target_drive_item is not None
+        perm = TestPermissions.target_drive_item.permissions[perm_id].get().execute_query()
         self.assertIsNotNone(perm.resource_path)
-        self.__class__.target_permission = result[0]
+        TestPermissions.target_permission = result[0]
 
+    @requires_delegated_permission_or_role("Files.ReadWrite.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test6_driveitem_update_permission(self):
+        """Update a drive item permission"""
         # perm_to_update = self.__class__.target_permission
         # perm_to_update.roles = ["read"]
         # perm_to_update.update().execute_query()
-        pass
 
     @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test7_driveitem_delete_permission(self):
-        perm_to_delete = self.__class__.target_permission
+        """Delete a drive item permission"""
+        perm_to_delete = TestPermissions.target_permission
+        assert perm_to_delete is not None
         perm_to_delete.delete_object().execute_query()
 
+    @requires_delegated_permission_or_role(
+        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", roles=["Global Administrator"]
+    )
     def test8_driveitem_grant_access(self):
+        """Grant access to a drive item by URL"""
         file_abs_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"
         permissions = (
             self.client.shares.by_url(file_abs_url)
@@ -73,15 +92,22 @@ class TestPermissions(GraphSecretTestCase):
         )
         self.assertIsNotNone(permissions.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
     def test9_create_site_permission(self):
+        """Create a permission on the root site"""
         app = self.client.applications.get_by_app_id(test_client_credentials.client_id)
         new_site_permission = self.client.sites.root.permissions.add(["write"], app).execute_query()
-        self.assertIsNotNone(new_site_permission.resource_path)
+        assert new_site_permission.resource_path is not None
         self.target_permission = new_site_permission
 
+    @requires_delegated_permission_or_role("Sites.Read.All", "Sites.ReadWrite.All", roles=["Global Administrator"])
     def test_10_list_site_permissions(self):
+        """List all permissions on the root site"""
         site_permissions = self.client.sites.root.permissions.get().execute_query()
         self.assertIsNotNone(site_permissions.resource_path)
 
+    @requires_delegated_permission_or_role("Sites.ReadWrite.All", roles=["Global Administrator"])
     def test_11_delete_site_permission(self):
+        """Delete a site permission"""
+        assert self.target_permission is not None
         self.target_permission.delete_object().execute_query()

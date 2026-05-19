@@ -1,8 +1,8 @@
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestRecordsManagement(GraphTestCase):
+class TestRecordsManagement(GraphDelegatedTestCase):
     @requires_delegated_permission("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
     def test2_list_retention_event_types(self):
         result = self.client.security.trigger_types.retention_event_types.get().execute_query()

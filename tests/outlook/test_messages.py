@@ -7,10 +7,10 @@ from office365.outlook.mail.recipient import Recipient
 
 from tests import test_user_principal_name, test_user_principal_name_alt
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestOutlookMessages(GraphTestCase):
+class TestOutlookMessages(GraphDelegatedTestCase):
     target_message: Optional[Message] = None
 
     @requires_delegated_permission_or_role("Mail.ReadWrite", roles=["Exchange Administrator", "Global Administrator"])

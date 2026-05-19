@@ -3,10 +3,10 @@ from typing import Optional
 from office365.outlook.mail.folders.folder import MailFolder
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestGraphMail(GraphTestCase):
+class TestGraphMail(GraphDelegatedTestCase):
     target_mail_folder: Optional[MailFolder] = None
 
     @requires_delegated_permission_or_role("Mail.ReadWrite", roles=["Exchange Administrator", "Global Administrator"])

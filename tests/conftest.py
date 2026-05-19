@@ -1,6 +1,6 @@
 import pytest
 
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -15,5 +15,5 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         return
     skip_mrk = pytest.mark.skip(reason="--offline exclude all Graph tests")
     for item in items:
-        if issubclass(item.cls, (GraphTestCase, SPTestCase)):  # type: ignore[attr-defined]
+        if issubclass(item.cls, (GraphDelegatedTestCase, SPTestCase)):  # type: ignore[attr-defined]
             item.add_marker(skip_mrk)

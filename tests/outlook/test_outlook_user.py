@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 
 from tests import test_user_principal_name
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestOutlookUser(GraphTestCase):
+class TestOutlookUser(GraphDelegatedTestCase):
     @requires_delegated_permission_or_role(
         "User.Read",
         "User.Read.All",

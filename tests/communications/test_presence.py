@@ -1,8 +1,8 @@
 from office365.communications.presences.presence import Presence
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestPresence(GraphTestCase):
+class TestPresence(GraphDelegatedTestCase):
     target_presence: Presence = None
 
     def test1_get_my_presence(self):

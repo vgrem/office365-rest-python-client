@@ -1,8 +1,8 @@
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestDeviceManagement(GraphTestCase):
+class TestDeviceManagement(GraphDelegatedTestCase):
     @requires_delegated_permission(
         "DeviceManagementServiceConfig.Read.All",
         "DeviceManagementServiceConfig.ReadWrite.All",

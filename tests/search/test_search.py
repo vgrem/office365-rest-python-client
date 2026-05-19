@@ -1,10 +1,10 @@
 """Tests for Microsoft Search API."""
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestSearchOneDrive(GraphTestCase):
+class TestSearchOneDrive(GraphDelegatedTestCase):
     """Tests for Microsoft Search API across OneDrive, mail, and sites."""
 
     @requires_delegated_permission_or_role(

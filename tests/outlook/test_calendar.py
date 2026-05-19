@@ -6,10 +6,10 @@ from office365.outlook.calendar.email_address import EmailAddress
 
 from tests import create_unique_name, test_user_principal_name
 from tests.decorators import requires_delegated_permission, requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestCalendar(GraphTestCase):
+class TestCalendar(GraphDelegatedTestCase):
     """Tests for Calendar"""
 
     cal_name = create_unique_name("Volunteer")

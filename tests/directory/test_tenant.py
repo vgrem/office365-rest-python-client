@@ -1,8 +1,11 @@
 from tests import test_tenant
-from tests.graph_case import GraphSecretTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestTenant(GraphSecretTestCase):
+class TestTenant(GraphApplicationTestCase):
+    @requires_delegated_permission_or_role("Organization.Read.All", roles=["Global Administrator"])
     def test1_find_tenant_information(self):
+        """Find tenant information by domain name"""
         result = self.client.tenant_relationships.find_tenant_information_by_domain_name(test_tenant).execute_query()
         self.assertIsNotNone(result.value)

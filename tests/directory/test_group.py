@@ -1,26 +1,28 @@
 import unittest
+from typing import Optional
 
 from office365.directory.groups.group import Group
 from office365.directory.users.user import User
 from office365.runtime.client_request_exception import ClientRequestException
 
 from tests import create_unique_name, test_user_principal_name
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestGraphGroup(GraphTestCase):
+class TestGraphGroup(GraphDelegatedTestCase):
     """Tests for Azure Active Directory (Azure AD) groups"""
 
-    target_group: Group = None
-    target_user: User = None
+    target_group: Optional[Group] = None
+    target_user: Optional[User] = None
     directory_quota_exceeded = False
 
     def test1_create_group(self):
+        """Create a Microsoft 365 group"""
         try:
             name = create_unique_name("Group")
             new_group = self.client.groups.create_m365(name).execute_query()
             self.assertIsNotNone(new_group.id)
-            self.__class__.target_group = new_group
+            TestGraphGroup.target_group = new_group
         except ClientRequestException as e:
             if e.code == "Directory_QuotaExceeded":
                 self.directory_quota_exceeded = True
@@ -28,60 +30,80 @@ class TestGraphGroup(GraphTestCase):
                 self.assertIsNotNone(result.value)
                 filter_expr = f"displayName eq '{result.value[0]}'"
                 result = self.client.groups.filter(filter_expr).get().execute_query()
-                self.__class__.target_group = result[0]
+                TestGraphGroup.target_group = result[0]
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test2_list_groups(self):
+        """List groups"""
         result = self.client.groups.top(1).get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test3_get_groups_count(self):
+        """Get groups count"""
         result = self.client.groups.count().execute_query()
         self.assertIsNotNone(result.value)
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test4_get_group(self):
-        existing_group = self.__class__.target_group
+        """Get a group by ID"""
+        assert TestGraphGroup.target_group is not None
+        existing_group = TestGraphGroup.target_group
         target_group = self.client.groups[existing_group.id].get().execute_query()
         self.assertIsInstance(target_group, Group)
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not be created")
     def test5_add_group_owner(self):
+        """Add an owner to the group"""
         users = self.client.users.filter(f"mail eq '{test_user_principal_name}'").get().execute_query()
         self.assertEqual(len(users), 1)
 
         owner = users[0]
-        grp = self.__class__.target_group
+        assert TestGraphGroup.target_group is not None
+        grp = TestGraphGroup.target_group
         grp.owners.add(owner).execute_query()
-        self.__class__.target_user = users[0]
+        TestGraphGroup.target_user = users[0]
 
     def test6_list_group_owners(self):
-        owners = self.__class__.target_group.owners.get().execute_query()
+        """List group owners"""
+        assert TestGraphGroup.target_group is not None
+        owners = TestGraphGroup.target_group.owners.get().execute_query()
         self.assertGreater(len(owners), 0)
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not created")
     def test7_remove_group_owner(self):
-        owner_id = self.__class__.target_user.id
-        grp = self.__class__.target_group
+        """Remove an owner from the group"""
+        assert TestGraphGroup.target_user is not None
+        owner_id = TestGraphGroup.target_user.id
+        assert TestGraphGroup.target_group is not None
+        grp = TestGraphGroup.target_group
         grp.owners.remove(owner_id).execute_query()
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not created")
     def test8_add_group_member(self):
-        member = self.__class__.target_user
-        grp = self.__class__.target_group
+        """Add a member to the group"""
+        assert TestGraphGroup.target_user is not None
+        member = TestGraphGroup.target_user
+        assert TestGraphGroup.target_group is not None
+        grp = TestGraphGroup.target_group
         grp.members.add(member).execute_query()
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not created")
     def test9_remove_group_member(self):
-        member_id = self.__class__.target_user.id
-        grp = self.__class__.target_group
+        """Remove a member from the group"""
+        assert TestGraphGroup.target_user is not None
+        member_id = TestGraphGroup.target_user.id
+        assert TestGraphGroup.target_group is not None
+        grp = TestGraphGroup.target_group
         grp.members.remove(member_id).execute_query()
 
     @unittest.skipIf(directory_quota_exceeded, "Skipping, group was not created")
     def test_10_delete_group(self):
-        grp_to_delete = self.__class__.target_group
+        """Delete the group"""
+        assert TestGraphGroup.target_group is not None
+        grp_to_delete = TestGraphGroup.target_group
         grp_to_delete.delete_object(True).execute_query()
 
     def test_11_get_changes(self):
+        """Get group changes via delta query"""
         changed_groups = self.client.groups.delta.select(["displayName"]).get().execute_query()
         self.assertGreater(len(changed_groups), 0)

@@ -1,8 +1,8 @@
 from tests.decorators import requires_app_permission
-from tests.graph_case import GraphSecretTestCase
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestRooms(GraphSecretTestCase):
+class TestRooms(GraphApplicationTestCase):
     """Tests for Rooms"""
 
     @requires_app_permission("Place.Read.All")

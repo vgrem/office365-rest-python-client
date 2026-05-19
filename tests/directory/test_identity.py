@@ -1,18 +1,23 @@
-from tests.decorators import requires_app_permission
-from tests.graph_case import GraphSecretTestCase
+from tests.decorators import requires_app_permission, requires_delegated_permission_or_role
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestIdentity(GraphSecretTestCase):
+class TestIdentity(GraphApplicationTestCase):
     @requires_app_permission("IdentityProvider.Read.All", "IdentityProvider.ReadWrite.All")
     def test1_list_identity_providers(self):
+        """List identity providers"""
         result = self.client.identity.identity_providers.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("IdentityUserFlow.Read.All", roles=["Global Administrator"])
     def test2_list_user_flows(self):
+        """List B2X user flows"""
         result = self.client.identity.b2x_user_flows.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated_permission_or_role("IdentityProvider.Read.All", roles=["Global Administrator"])
     def test3_available_provider_types(self):
+        """List available identity provider types"""
         result = self.client.identity.identity_providers.available_provider_types().execute_query()
         self.assertIsNotNone(result.value)
 
@@ -21,6 +26,7 @@ class TestIdentity(GraphSecretTestCase):
     # )
     @requires_app_permission("IdentityRiskyUser.Read.All")
     def test4_list_risky_users(self):
+        """List risky users"""
         result = self.client.identity_protection.risky_users.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -32,10 +38,12 @@ class TestIdentity(GraphSecretTestCase):
         "Application.ReadWrite.All",
     )
     def test5_list_authentication_event_listeners(self):
+        """List authentication event listeners"""
         result = self.client.identity.authentication_event_listeners.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_app_permission("Policy.Read.All", "Policy.ReadWrite.ConditionalAccess")
     def test6_list_conditional_access_policies(self):
+        """List conditional access policies"""
         result = self.client.identity.conditional_access.policies.get().execute_query()
         self.assertIsNotNone(result.resource_path)

@@ -1,15 +1,17 @@
 import os
+from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.tables.table import WorkbookTable
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestExcelFunctions(GraphTestCase):
+class TestExcelFunctions(GraphDelegatedTestCase):
     """OneDrive specific test case base class"""
 
-    target_item: DriveItem = None
-    table: WorkbookTable = None
+    target_item: Optional[DriveItem] = None
+    table: Optional[WorkbookTable] = None
 
     @classmethod
     def setUpClass(cls):
@@ -20,10 +22,14 @@ class TestExcelFunctions(GraphTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_item is not None
         cls.target_item.delete_object().execute_query_retry()
 
+    @requires_delegated_permission_or_role("Files.ReadWrite", roles=["Global Administrator"])
     def test1_get_abs(self):
-        result = self.__class__.target_item.workbook.functions.abs(-2).execute_query()
+        """Test the ABS workbook function"""
+        assert TestExcelFunctions.target_item is not None
+        result = TestExcelFunctions.target_item.workbook.functions.abs(-2).execute_query()
         self.assertEqual(result.value, 2)
 
     # def test2_get_days(self):

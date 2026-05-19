@@ -1,13 +1,15 @@
+from typing import Optional
+
 from office365.directory.applications.application import Application
 from office365.directory.extensions.extension_property import ExtensionProperty
 
 from tests import create_unique_name
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestExtensions(GraphTestCase):
-    target_app: Application = None
-    target_extension: ExtensionProperty = None
+class TestExtensions(GraphDelegatedTestCase):
+    target_app: Optional[Application] = None
+    target_extension: Optional[ExtensionProperty] = None
 
     @classmethod
     def setUpClass(cls):
@@ -17,16 +19,22 @@ class TestExtensions(GraphTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.target_app.delete_object(True).execute_query()
+        if cls.target_app is not None:
+            cls.target_app.delete_object(True).execute_query()
 
     def test1_create_extension(self):
-        new_extension = self.__class__.target_app.extension_properties.add(name="extensionName").execute_query()
+        """Create an extension property on the application"""
+        assert TestExtensions.target_app is not None
+        new_extension = TestExtensions.target_app.extension_properties.add(name="extensionName").execute_query()
         self.assertIsNotNone(new_extension.resource_path)
-        self.__class__.target_extension = new_extension
+        TestExtensions.target_extension = new_extension
 
     def test2_list_extensions(self):
+        """List available extension properties"""
         result = self.client.directory_objects.get_available_extension_properties(False).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test3_delete_extension(self):
-        self.target_extension.delete_object().execute_query()
+        """Delete the extension property"""
+        assert TestExtensions.target_extension is not None
+        TestExtensions.target_extension.delete_object().execute_query()

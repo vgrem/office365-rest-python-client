@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from office365.intune.devices.device import Device
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestDevices(GraphTestCase):
+class TestDevices(GraphDelegatedTestCase):
     device: Device | None = None
 
     @requires_delegated_permission("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")

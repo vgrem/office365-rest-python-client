@@ -1,9 +1,9 @@
 from office365.booking.business.business import BookingBusiness
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestBusiness(GraphTestCase):
+class TestBusiness(GraphDelegatedTestCase):
     business: BookingBusiness = None
 
     @requires_delegated_permission(

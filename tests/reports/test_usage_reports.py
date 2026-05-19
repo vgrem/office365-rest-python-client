@@ -1,10 +1,10 @@
 """Tests for Microsoft Graph Usage Reports API."""
 
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestUsageReports(GraphTestCase):
+class TestUsageReports(GraphDelegatedTestCase):
     """Tests for Microsoft Graph usage reports."""
 
     @requires_delegated_permission_or_role("PartnerBilling.Read.All", roles=["Global Administrator"])

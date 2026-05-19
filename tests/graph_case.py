@@ -5,7 +5,7 @@ from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_password, test_tenant, test_username
 
 
-class GraphTestCase(TestCase):
+class GraphDelegatedTestCase(TestCase):
     """Microsoft Graph specific test case base class"""
 
     client: GraphClient = None  # type: ignore[assignment]
@@ -20,7 +20,7 @@ class GraphTestCase(TestCase):
         )
 
 
-class GraphSecretTestCase(GraphTestCase):
+class GraphApplicationTestCase(GraphDelegatedTestCase):
     """Microsoft Graph specific test case base class using client secret authentication"""
 
     @classmethod

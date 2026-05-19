@@ -1,8 +1,8 @@
 from tests.decorators import requires_delegated_permission
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestIntuneReports(GraphTestCase):
+class TestIntuneReports(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestIntuneReports, cls).setUpClass()

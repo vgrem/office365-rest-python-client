@@ -1,7 +1,7 @@
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestAdmin(GraphTestCase):
+class TestAdmin(GraphDelegatedTestCase):
     """SharePoint specific test case base class"""
 
     def test1_get_sharepoint_settings(self):

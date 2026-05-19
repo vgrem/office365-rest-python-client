@@ -1,8 +1,8 @@
 from tests.decorators import requires_delegated_permission_or_role
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestOutlookReports(GraphTestCase):
+class TestOutlookReports(GraphDelegatedTestCase):
     @requires_delegated_permission_or_role("Reports.Read.All", roles=["Exchange Administrator", "Global Administrator"])
     def test1_get_email_activity_counts(self):
         result = self.client.reports.get_email_activity_counts("D90").execute_query()

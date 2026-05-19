@@ -1,8 +1,8 @@
 from tests.decorators import requires_app_permission
-from tests.graph_case import GraphSecretTestCase
+from tests.graph_case import GraphApplicationTestCase
 
 
-class TestSecurity(GraphSecretTestCase):
+class TestSecurity(GraphApplicationTestCase):
     # def test1_create_alert(self):
     #    result = self.client.security.alerts.add(
     #        "Simulated Phishing Alert",

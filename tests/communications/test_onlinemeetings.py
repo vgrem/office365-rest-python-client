@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 
 import pytz
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
-from tests.graph_case import GraphTestCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestOnlineMeetings(GraphTestCase):
+class TestOnlineMeetings(GraphDelegatedTestCase):
     target_meeting: OnlineMeeting = None
 
     def test1_create_meeting(self):

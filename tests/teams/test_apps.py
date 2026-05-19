@@ -1,26 +1,39 @@
 import uuid
+from typing import Optional
 
 from office365.teams.team import Team
 
-from tests.graph_case import GraphTestCase
+from tests.decorators import requires_delegated_permission_or_role
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestTeamApps(GraphTestCase):
+class TestTeamApps(GraphDelegatedTestCase):
     """Tests for team Apps"""
 
-    target_team: Team = None
+    target_team: Optional[Team] = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestTeamApps, cls).setUpClass()
+        super().setUpClass()
         team_name = "Team_" + uuid.uuid4().hex
         new_team = cls.client.teams.create(team_name).get().execute_query_retry()
         cls.target_team = new_team
 
     @classmethod
     def tearDownClass(cls):
-        cls.target_team.delete_object().execute_query_retry()
+        if cls.target_team is not None:
+            cls.target_team.delete_object().execute_query_retry()
 
+    @requires_delegated_permission_or_role(
+        "AppCatalog.Read.All",
+        "AppCatalog.ReadWrite.All",
+        "Team.ReadBasic.All",
+        "Team.Read.All",
+        "Team.ReadWrite.All",
+        roles=["Global Administrator"],
+    )
     def test1_list_team_apps(self):
-        result = self.__class__.target_team.installed_apps.get().execute_query()
+        """Test listing installed apps for a team"""
+        assert TestTeamApps.target_team is not None
+        result = TestTeamApps.target_team.installed_apps.get().execute_query()
         self.assertIsNotNone(result.resource_path)
