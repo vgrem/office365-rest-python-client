@@ -1,5 +1,8 @@
-class FeatureDefinitionScope:
-    """Scope of the SPFeatureDefinition"""
+from enum import IntEnum
+
+
+class FeatureDefinitionScope(IntEnum):
+    """Scope of the SPFeatureDefinition."""
 
     None_ = 0
     """Specifies no scope."""
