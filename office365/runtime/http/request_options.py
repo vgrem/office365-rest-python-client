@@ -40,7 +40,7 @@ class RequestOptions:
     @property
     def is_bytes(self) -> bool:
         """Check if data is bytes-like."""
-        return isinstance(self.data, bytes) or callable(getattr(self.data, "decode", None))
+        return isinstance(self.data, (bytes, bytearray, memoryview))
 
     def set_header(self, name: str, value: Any) -> None:
         """Set a request header."""
