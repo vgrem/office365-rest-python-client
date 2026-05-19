@@ -46,10 +46,10 @@ class FieldCollection(EntityCollection[Field]):
         """
         return_type = self.add_field(
             FieldCreationInformation(
-                title=title,
-                formula=formula,
-                field_type_kind=FieldType.Calculated,
-                description=description,
+                Title=title,
+                Formula=formula,
+                FieldTypeKind=FieldType.Calculated,
+                Description=description,
             )
         )
         return return_type
@@ -62,9 +62,9 @@ class FieldCollection(EntityCollection[Field]):
         """
         return_type = self.add_field(
             FieldCreationInformation(
-                title=title,
-                description=description,
-                field_type_kind=FieldType.DateTime,
+                Title=title,
+                Description=description,
+                FieldTypeKind=FieldType.DateTime,
             )
         )
         return return_type
@@ -78,9 +78,9 @@ class FieldCollection(EntityCollection[Field]):
         """
         return_type = self.add_field(
             FieldCreationInformation(
-                title=title,
-                description=description,
-                field_type_kind=FieldType.Geolocation,
+                Title=title,
+                Description=description,
+                FieldTypeKind=FieldType.Geolocation,
             )
         )
         return return_type
@@ -93,9 +93,9 @@ class FieldCollection(EntityCollection[Field]):
         """
         return_type = self.add_field(
             FieldCreationInformation(
-                title=title,
-                description=description,
-                field_type_kind=FieldType.Number,
+                Title=title,
+                Description=description,
+                FieldTypeKind=FieldType.Number,
             )
         )
         return return_type
@@ -107,7 +107,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str or None description:
         """
         return self.add_field(
-            FieldCreationInformation(title=title, description=description, field_type_kind=FieldType.URL)
+            FieldCreationInformation(Title=title, Description=description, FieldTypeKind=FieldType.URL)
         )
 
     def add_lookup_field(
@@ -137,18 +137,15 @@ class FieldCollection(EntityCollection[Field]):
                         ShowField="{lookup_field_name}" List="{{{lookup_list_id}}}" StaticName="{title}" Name="{title}">
                         </Field>
                         """.format(
-                    title=title,
-                    lookup_field_name=lookup_field_name,
-                    lookup_list_id=lookup_list_id,
-                )
+                    )
                 self.create_field_as_xml(field_schema, return_type=return_type)
             else:
                 self.add_field(
                     FieldCreationInformation(
-                        title=title,
-                        lookup_list_id=lookup_list_id,
-                        lookup_field_name=lookup_field_name,
-                        field_type_kind=FieldType.Lookup,
+                        Title=title,
+                        LookupListId=lookup_list_id,
+                        LookupFieldName=lookup_field_name,
+                        FieldTypeKind=FieldType.Lookup,
                     ),
                     return_type=return_type,
                 )
@@ -176,9 +173,7 @@ class FieldCollection(EntityCollection[Field]):
         :param str title: Specifies the display name of the field.
         """
         fld_type = FieldType.MultiChoice if multiple_values else FieldType.Choice
-        create_field_info = FieldCreationInformation(title, fld_type)
-        if create_field_info.Choices is not None:
-            [create_field_info.Choices.add(choice) for choice in values]
+        create_field_info = FieldCreationInformation(Title=title, FieldTypeKind=fld_type, Choices=values)
         return self.add_field(create_field_info)
 
     def add_user_field(
