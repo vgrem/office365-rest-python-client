@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar
+from typing import Any, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self
 
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.utilities import parse_enum
-
-ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, "ClientValue")
 
 
 class ClientValue:
