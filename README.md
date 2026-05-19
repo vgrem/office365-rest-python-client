@@ -27,6 +27,42 @@ The latest version from GitHub can be installed directly:
 pip install git+https://github.com/vgrem/office365-rest-python-client.git
 ```
 
+# Quick Start
+
+## SharePoint REST API
+
+```python
+from office365.sharepoint.client_context import ClientContext
+
+ctx = ClientContext("https://{tenant}.sharepoint.com").with_client_certificate(
+    tenant="{tenant}", client_id="{client_id}",
+    thumbprint="{thumbprint}", cert_path="./cert.pem",
+)
+web = ctx.web.get().execute_query()
+print(f"Web: {web.title}")
+```
+
+## Microsoft Graph API
+
+```python
+from office365.graph_client import GraphClient
+
+client = GraphClient(tenant="{tenant}").with_client_secret(
+    client_id="{client_id}", client_secret="{client_secret}",
+)
+me = client.me.get().execute_query()
+print(f"User: {me.user_principal_name}")
+```
+
+---
+
+# Supported APIs
+
+| Client | Capabilities |
+|---|---|
+| **ClientContext** (SharePoint REST) | Sites, Webs, Lists, ListItems, Files, Folders, Fields, ContentTypes, Permissions, Taxonomy, Search, Tenant Administration, User Profiles |
+| **GraphClient** (Microsoft Graph) | Users, Groups, Directory, Outlook (Mail/Calendar/Contacts), OneDrive, Teams, Planner, OneNote, Security, Reports, Booking, Tasks, Intune, Presence, Online Meetings |
+
 ---
 
 # Authentication
