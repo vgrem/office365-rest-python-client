@@ -1,13 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UpdateCardElement(ClientValue):
-    def __init__(self, is_visible: Optional[bool] = None, type_: Optional[str] = None, value: Optional[str] = None):
-        self.isVisible = is_visible
-        self.type = type_
-        self.value = value
+    is_visible: bool | None = None
+    type_: str | None = None
+    value: str | None = None
 
     @property
     def entity_type_name(self):

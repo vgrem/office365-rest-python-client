@@ -1,18 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.clientsidecomponent.elementupdate import ElementUpdate
 
 
+@dataclass
 class UpdateCard(ClientValue):
-    def __init__(
-        self,
-        card_updates: ClientValueCollection[ElementUpdate] = ClientValueCollection(ElementUpdate),
-        type_: Optional[str] = None,
-    ):
-        self.cardUpdates = card_updates
-        self.type = type_
+    card_updates: ClientValueCollection[ElementUpdate] = field(
+        default_factory=lambda: ClientValueCollection(ElementUpdate)
+    )
+    type_: str | None = None
 
     @property
     def entity_type_name(self):

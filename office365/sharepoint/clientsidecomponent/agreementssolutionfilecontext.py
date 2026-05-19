@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.documents.destinationlibraryinfo import (
@@ -10,55 +12,29 @@ from office365.sharepoint.documents.effectivebasepermissions import (
 from office365.sharepoint.documents.librarydetails import LibraryDetails
 
 
+@dataclass
 class AgreementsSolutionFileContext(ClientValue):
-    def __init__(
-        self,
-        category_id: Optional[str] = None,
-        category_term_set_id: Optional[str] = None,
-        check_out_type: Optional[int] = None,
-        current_version: Optional[str] = None,
-        does_user_have_edit_permission_on_parent: Optional[bool] = None,
-        effective_base_permissions: EffectiveBasePermissions = EffectiveBasePermissions(),
-        field_library: LibraryDetails = LibraryDetails(),
-        file_properties: Optional[dict] = None,
-        file_relative_path: Optional[str] = None,
-        folder_path_full_url: Optional[str] = None,
-        is_agreements_solution_file: Optional[bool] = None,
-        last_published_version: Optional[str] = None,
-        list_id: Optional[str] = None,
-        list_item_id: Optional[str] = None,
-        list_item_properties: Optional[dict] = None,
-        list_item_unique_id: Optional[str] = None,
-        modern_template_library: Optional[LibraryDetails] = None,
-        parent_library: Optional[LibraryDetails] = None,
-        site_id: Optional[str] = None,
-        snippet_library: Optional[LibraryDetails] = None,
-        target_library: Optional[DestinationLibraryInfo] = None,
-        web_id: Optional[str] = None,
-        web_server_relative_url: Optional[str] = None,
-        web_url: Optional[str] = None,
-    ):
-        self.category_id = category_id
-        self.category_term_set_id = category_term_set_id
-        self.check_out_type = check_out_type
-        self.current_version = current_version
-        self.does_user_have_edit_permission_on_parent = does_user_have_edit_permission_on_parent
-        self.effective_base_permissions = effective_base_permissions
-        self.field_library = field_library
-        self.file_properties = file_properties
-        self.file_relative_path = file_relative_path
-        self.folder_path_full_url = folder_path_full_url
-        self.is_agreements_solution_file = is_agreements_solution_file
-        self.last_published_version = last_published_version
-        self.list_id = list_id
-        self.list_item_id = list_item_id
-        self.list_item_properties = list_item_properties
-        self.list_item_unique_id = list_item_unique_id
-        self.modern_template_library = modern_template_library
-        self.parent_library = parent_library
-        self.site_id = site_id
-        self.snippet_library = snippet_library
-        self.target_library = target_library
-        self.web_id = web_id
-        self.web_server_relative_url = web_server_relative_url
-        self.web_url = web_url
+    category_id: str | None = None
+    category_term_set_id: str | None = None
+    check_out_type: int | None = None
+    current_version: str | None = None
+    does_user_have_edit_permission_on_parent: bool | None = None
+    effective_base_permissions: EffectiveBasePermissions = field(default_factory=EffectiveBasePermissions)
+    field_library: LibraryDetails = field(default_factory=LibraryDetails)
+    file_properties: dict | None = None
+    file_relative_path: str | None = None
+    folder_path_full_url: str | None = None
+    is_agreements_solution_file: bool | None = None
+    last_published_version: str | None = None
+    list_id: str | None = None
+    list_item_id: str | None = None
+    list_item_properties: dict | None = None
+    list_item_unique_id: str | None = None
+    modern_template_library: LibraryDetails | None = None
+    parent_library: LibraryDetails | None = None
+    site_id: str | None = None
+    snippet_library: LibraryDetails | None = None
+    target_library: DestinationLibraryInfo | None = None
+    web_id: str | None = None
+    web_server_relative_url: str | None = None
+    web_url: str | None = None

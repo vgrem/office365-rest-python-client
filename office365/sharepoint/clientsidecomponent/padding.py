@@ -1,17 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Padding(ClientValue):
-    def __init__(
-        self,
-        bottom: Optional[str] = None,
-        left: Optional[str] = None,
-        right: Optional[str] = None,
-        top: Optional[str] = None,
-    ):
-        self.bottom = bottom
-        self.left = left
-        self.right = right
-        self.top = top
+    bottom: str | None = None
+    left: str | None = None
+    right: str | None = None
+    top: str | None = None

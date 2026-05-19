@@ -1,8 +1,10 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ActionSubmit(ClientValue):
-    def __init__(self, data: Optional[dict] = None):
-        self.data = data
+    data: dict | None = None

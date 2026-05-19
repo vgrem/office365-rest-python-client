@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,13 +10,10 @@ from office365.sharepoint.clientsidecomponent.adaptivecardcolumn import (
 from office365.sharepoint.clientsidecomponent.padding import Padding
 
 
+@dataclass
 class ColumnSet(ClientValue):
-    def __init__(
-        self,
-        columns: ClientValueCollection[AdaptiveCardColumn] = ClientValueCollection(AdaptiveCardColumn),
-        horizontal_alignment: Optional[str] = None,
-        padding: Padding = Padding(),
-    ):
-        self.columns = columns
-        self.horizontal_alignment = horizontal_alignment
-        self.padding = padding
+    columns: ClientValueCollection[AdaptiveCardColumn] = field(
+        default_factory=lambda: ClientValueCollection(AdaptiveCardColumn)
+    )
+    horizontal_alignment: str | None = None
+    padding: Padding = field(default_factory=Padding)
