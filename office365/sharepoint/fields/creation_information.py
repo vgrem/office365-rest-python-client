@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,49 +8,38 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.fields.type import FieldType
 
 
+@dataclass
 class FieldCreationInformation(ClientValue):
-    def __init__(
-        self,
-        title: str,
-        field_type_kind: FieldType,
-        description: Optional[str] = None,
-        lookup_list_id: Optional[str] = None,
-        lookup_field_name: Optional[str] = None,
-        lookup_web_id: Optional[str] = None,
-        required: bool = False,
-        formula: Optional[str] = None,
-        choices: Optional[List[str]] = None,
-        is_compact_name: Optional[bool] = None,
-    ):
-        """
-        Represents metadata about fields creation.
+    """Represents metadata about fields creation.
 
-        :param str lookup_web_id: Specifies the identifier of the site (2) that contains the list that is the
-            source for the field (2) value.
-        :param bool required: Specifies whether the field (2) requires a value.
-        :param str lookup_field_name: Specifies the name of the field in the other data source when creating
-            a lookup field.
-        :param str lookup_list_id: A CSOM GUID that specifies the target list for the lookup field.
-        :param str title: Specifies the display name of the field.
-        :param int field_type_kind: Specifies the type of the field.
-        :type description: str or None
-        :param str formula:
-        :param list[str] or None choices:
-        """
-        super().__init__()
-        self.Title = title
-        self.FieldTypeKind = field_type_kind
-        self.Description = description
-        self.Choices = (
-            StringCollection(choices) if field_type_kind in {FieldType.MultiChoice, FieldType.Choice} else None
-        )
-        self.LookupListId = lookup_list_id
-        self.LookupFieldName = lookup_field_name
-        self.LookupWebId = lookup_web_id
-        self.Required = required
-        self.Formula = formula
-        self.IsCompactName = is_compact_name
+    Fields:
+        Title: Display name of the field.
+        FieldTypeKind: Type of the field.
+        Description: Description of the field.
+        LookupListId: Target list for the lookup field.
+        LookupFieldName: Name of the field in the source list.
+        LookupWebId: Identifier of the site containing the source list.
+        Required: Whether the field requires a value.
+        Formula: Formula for calculated fields.
+        Choices: List of choices for Choice/MultiChoice fields.
+        IsCompactName: Whether the field name is compact.
+    """
+
+    Title: str
+    FieldTypeKind: FieldType
+    Description: Optional[str] = None
+    LookupListId: Optional[str] = None
+    LookupFieldName: Optional[str] = None
+    LookupWebId: Optional[str] = None
+    Required: bool = False
+    Formula: Optional[str] = None
+    Choices: Optional[List[str]] = None
+    IsCompactName: Optional[bool] = None
+
+    def __post_init__(self) -> None:
+        if self.FieldTypeKind in {FieldType.MultiChoice, FieldType.Choice} and self.Choices is not None:
+            self.Choices = StringCollection(self.Choices)  # type: ignore[assignment]
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.FieldCreationInformation"
