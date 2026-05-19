@@ -122,6 +122,26 @@ ctx = ClientContext('{site_url}').with_device_flow('{tenant}', '{client_id}')
 
 [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/modern/with_device_flow.py)
 
+### On-premises SharePoint (NTLM)
+
+For SharePoint on-premises deployments using NTLM authentication:
+
+```bash
+pip install office365-rest-python-client[ntlm]
+```
+
+```python
+from office365.sharepoint.client_context import ClientContext
+
+ctx = ClientContext("https://{onpremises_server}/sites/site", allow_ntlm=True).with_user_credentials(
+    "{username}", "{password}"
+)
+web = ctx.web.get().execute_query()
+print(f"Web: {web.title}")
+```
+
+[Example](examples/sharepoint/auth/legacy/with_ntlm.py)
+
 ### Legacy - SAML User Auth ⚠️
 
 > **Deprecated**: `with_user_credentials` uses the legacy SAML-based auth flow
