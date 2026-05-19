@@ -1,19 +1,25 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ImageFieldValue(ClientValue):
-    def __init__(self, server_relative_url=None):
-        """
-        :param str server_relative_url:
-        """
-        self.serverRelativeUrl = server_relative_url
-        self.type = ("thumbnail",)
-        self.fileName = None
-        self.nativeFile = {}
-        self.fieldName = "Image"
-        self.serverUrl = None
-        self.fieldId = None
-        self.id = None
+    """
+    Fields:
+        serverRelativeUrl (str | None):
+    """
+
+    serverRelativeUrl: str | None = None
+    type: tuple = ("thumbnail",)
+    fileName: str | None = None
+    nativeFile: dict = field(default_factory=dict)
+    fieldName: str = "Image"
+    serverUrl: str | None = None
+    fieldId: str | None = None
+    id: str | None = None
 
     @property
     def entity_type_name(self):

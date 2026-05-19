@@ -1,8 +1,10 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FieldCalculatedErrorValue(ClientValue):
-    def __init__(self, error_message: Optional[str] = None):
-        self.error_message = error_message
+    error_message: str | None = None

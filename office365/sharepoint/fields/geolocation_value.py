@@ -1,29 +1,26 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FieldGeolocationValue(ClientValue):
-    def __init__(
-        self,
-        latitude: float,
-        longitude: float,
-        altitude: Optional[float] = None,
-        measure: Optional[float] = None,
-    ):
-        """
-        Specifies altitude, latitude, longitude and measure values for FieldGeolocation (section 3.2.5.185).<191>
+    """
+    Specifies altitude, latitude, longitude and measure values for FieldGeolocation (section 3.2.5.185).<191>
 
-        :param float latitude: Specifies the latitude value for Geolocation field.
-        :param float longitude: Specifies the longitude value for Geolocation field.
-        :param float altitude: Specifies the altitude value for Geolocation field. It is a user defined value
+    Fields:
+        Latitude (float): Specifies the latitude value for Geolocation field.
+        Longitude (float): Specifies the longitude value for Geolocation field.
+        Altitude (float | None): Specifies the altitude value for Geolocation field. It is a user defined value
+        Measure (float | None):
+    """
 
-        """
-        super().__init__()
-        self.Latitude = latitude
-        self.Longitude = longitude
-        self.Altitude = altitude
-        self.Measure = measure
+    Latitude: float
+    Longitude: float
+    Altitude: float | None = None
+    Measure: float | None = None
 
     @property
     def entity_type_name(self):

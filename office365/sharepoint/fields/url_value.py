@@ -1,18 +1,22 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FieldUrlValue(ClientValue):
-    """Specifies the hyperlink and the description values for FieldURL."""
+    """Specifies the hyperlink and the description values for FieldURL.
 
-    def __init__(self, url=None, description=None):
-        """
-        :param str url: Specifies the URI. Its length MUST be equal to or less than 255. It MUST be one
+    Fields:
+        Url (str | None): Specifies the URI. Its length MUST be equal to or less than 255. It MUST be one
              of the following: NULL, empty, an absolute URL, or a server-relative URL.
-        :param str description: Specifies the description for the URI. Its length MUST be equal to or less than 255.
-        """
-        super().__init__()
-        self.Url = url
-        self.Description = description
+        Description (str | None): Specifies the description for the URI. Its length MUST be equal to or less than 255.
+    """
+
+    Url: str | None = None
+    Description: str | None = None
 
     @property
     def entity_type_name(self):
