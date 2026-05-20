@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class VivaEngageDestinationV2(ClientValue):
-    def __init__(self, destination_name: Optional[str] = None, destination_type: Optional[int] = None):
-        self.DestinationName = destination_name
-        self.DestinationType = destination_type
+    DestinationName: Optional[str] = None
+    DestinationType: Optional[int] = None
 
     @property
     def entity_type_name(self):

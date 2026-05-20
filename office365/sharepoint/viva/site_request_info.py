@@ -1,14 +1,20 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class VivaSiteRequestInfo(ClientValue):
-    def __init__(self, is_already_added=None, site_url=None):
-        """
-        :param bool is_already_added:
-        :param str site_url:
-        """
-        self.IsAlreadyAdded = is_already_added
-        self.SiteUrl = site_url
+    """Viva site request information.
+
+    Fields:
+        is_already_added (bool):
+        site_url (str):
+    """
+
+    IsAlreadyAdded: Optional[bool] = None
+    SiteUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

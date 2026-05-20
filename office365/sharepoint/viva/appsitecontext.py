@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AppSiteContext(ClientValue):
-    def __init__(self, site_url: Optional[str] = None):
-        self.site_url = site_url
+    site_url: Optional[str] = None

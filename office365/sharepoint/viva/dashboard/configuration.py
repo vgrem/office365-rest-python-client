@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -8,26 +9,17 @@ from office365.sharepoint.clientsidecomponent.query_result import (
 from office365.sharepoint.viva.dashboard.content import DashboardContent
 
 
+@dataclass
 class DashboardConfiguration(ClientValue):
-    def __init__(
-        self,
-        canvas_content: Optional[str] = None,
-        dashboard_item_id: Optional[str] = None,
-        dashboard_list_id: Optional[str] = None,
-        dashboard_unique_item_id: Optional[str] = None,
-        dashboard_url: Optional[str] = None,
-        extra_components: ClientValueCollection[SPClientSideComponentQueryResult] = ClientValueCollection(
-            SPClientSideComponentQueryResult
-        ),
-        personalization_data: DashboardContent = DashboardContent(),
-    ):
-        self.canvasContent = canvas_content
-        self.dashboardItemId = dashboard_item_id
-        self.dashboardListId = dashboard_list_id
-        self.dashboardUniqueItemId = dashboard_unique_item_id
-        self.dashboardUrl = dashboard_url
-        self.extraComponents = extra_components
-        self.personalizationData = personalization_data
+    canvasContent: Optional[str] = None
+    dashboardItemId: Optional[str] = None
+    dashboardListId: Optional[str] = None
+    dashboardUniqueItemId: Optional[str] = None
+    dashboardUrl: Optional[str] = None
+    extraComponents: ClientValueCollection[SPClientSideComponentQueryResult] = field(
+        default_factory=lambda: ClientValueCollection(SPClientSideComponentQueryResult)
+    )
+    personalizationData: DashboardContent = field(default_factory=DashboardContent)
 
     @property
     def entity_type_name(self):

@@ -1,25 +1,18 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class VivaResourceLink(ClientValue):
-    def __init__(
-        self,
-        audiences: StringCollection = StringCollection(),
-        icon: Optional[str] = None,
-        id_: Optional[int] = None,
-        thumbnail_option: Optional[str] = None,
-        title: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.Audiences = audiences
-        self.Icon = icon
-        self.Id = id_
-        self.ThumbnailOption = thumbnail_option
-        self.Title = title
-        self.Url = url
+    Audiences: StringCollection = field(default_factory=StringCollection)
+    Icon: Optional[str] = None
+    Id: Optional[int] = None
+    ThumbnailOption: Optional[str] = None
+    Title: Optional[str] = None
+    Url: Optional[str] = None
 
     @property
     def entity_type_name(self):

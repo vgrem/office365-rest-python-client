@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AnnouncementAction(ClientValue):
-    def __init__(self, type_: Optional[str] = None, value: Optional[bool] = None):
-        self.Type = type_
-        self.value = value
+    Type: Optional[str] = None
+    value: Optional[bool] = None
 
     @property
     def entity_type_name(self):

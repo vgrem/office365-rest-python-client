@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -6,20 +9,14 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.viva.dashboard.carddetails import DashboardCardDetails
 
 
+@dataclass
 class DashboardContent(ClientValue):
-    def __init__(
-        self,
-        dashboard_card_details: ClientValueCollection[DashboardCardDetails] = ClientValueCollection(
-            DashboardCardDetails
-        ),
-        dashboard_form_factor: Optional[str] = None,
-        dashboard_id: Optional[str] = None,
-        last_modified_date: Optional[datetime] = None,
-    ):
-        self.DashboardCardDetails = dashboard_card_details
-        self.DashboardFormFactor = dashboard_form_factor
-        self.DashboardId = dashboard_id
-        self.LastModifiedDate = last_modified_date
+    DashboardCardDetails: ClientValueCollection[DashboardCardDetails] = field(
+        default_factory=lambda: ClientValueCollection(DashboardCardDetails)
+    )
+    DashboardFormFactor: Optional[str] = None
+    DashboardId: Optional[str] = None
+    LastModifiedDate: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

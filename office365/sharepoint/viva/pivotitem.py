@@ -1,10 +1,11 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class PivotItem(ClientValue):
-    def __init__(self, audiences: StringCollection = StringCollection(), name: Optional[str] = None):
-        self.audiences = audiences
-        self.name = name
+    audiences: StringCollection = field(default_factory=StringCollection)
+    name: Optional[str] = None

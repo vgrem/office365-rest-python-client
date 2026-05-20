@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -5,16 +6,11 @@ from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.announcementaction import AnnouncementAction
 
 
+@dataclass
 class AnnouncementState(ClientValue):
-    def __init__(
-        self,
-        action: AnnouncementAction = AnnouncementAction(),
-        expires_on: Optional[datetime] = None,
-        id_: Optional[str] = None,
-    ):
-        self.Action = action
-        self.ExpiresOn = expires_on
-        self.Id = id_
+    Action: AnnouncementAction = field(default_factory=AnnouncementAction)
+    ExpiresOn: Optional[datetime] = None
+    Id: Optional[str] = None
 
     @property
     def entity_type_name(self):

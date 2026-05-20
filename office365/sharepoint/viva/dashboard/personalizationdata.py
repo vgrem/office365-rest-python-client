@@ -1,17 +1,14 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.viva.dashboard.content import DashboardContent
 
 
+@dataclass
 class DashboardPersonalizationData(ClientValue):
-    def __init__(
-        self,
-        personalized_order: DashboardContent = DashboardContent(),
-        user_cards: Optional[str] = None,
-    ):
-        self.PersonalizedOrder = personalized_order
-        self.UserCards = user_cards
+    PersonalizedOrder: DashboardContent = field(default_factory=DashboardContent)
+    UserCards: Optional[str] = None
 
     @property
     def entity_type_name(self):

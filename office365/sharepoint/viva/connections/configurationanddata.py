@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -7,18 +10,14 @@ from office365.sharepoint.viva.spotlightconfiguration import SpotlightConfigurat
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
 
 
+@dataclass
 class ConnectionsConfigurationAndData(ClientValue):
-    def __init__(
-        self,
-        is_configured: Optional[bool] = None,
-        spotlight_configuration: SpotlightConfiguration = SpotlightConfiguration(),
-        spotlight_news: ClientValueCollection[SpotlightNews] = ClientValueCollection(SpotlightNews),
-        title_region: VivaHomeTitleRegion = VivaHomeTitleRegion(),
-    ):
-        self.IsConfigured = is_configured
-        self.SpotlightConfiguration = spotlight_configuration
-        self.SpotlightNews = spotlight_news
-        self.TitleRegion = title_region
+    IsConfigured: Optional[bool] = None
+    SpotlightConfiguration: SpotlightConfiguration = field(default_factory=SpotlightConfiguration)
+    SpotlightNews: ClientValueCollection[SpotlightNews] = field(
+        default_factory=lambda: ClientValueCollection(SpotlightNews)
+    )
+    TitleRegion: VivaHomeTitleRegion = field(default_factory=VivaHomeTitleRegion)
 
     @property
     def entity_type_name(self):
