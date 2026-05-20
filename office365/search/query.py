@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SearchQuery(ClientValue):
-    def __init__(self, query_string: str | None = None, query_template: str | None = None):
-        """
-        Represents a search query that contains search terms and optional filters.
+    """
+    Represents a search query that contains search terms and optional filters.
 
-        :param str query_string: The search query containing the search terms.
-        :param str query_template: Provides a way to decorate the query string. Supports both KQL and query variables.
-        """
-        super().__init__()
-        self.queryString = query_string
-        self.queryTemplate = query_template
+    Fields:
+        queryString (str): The search query containing the search terms.
+        queryTemplate (str): Provides a way to decorate the query string. Supports both KQL and query variables.
+    """
+
+    queryString: str | None = None
+    queryTemplate: str | None = None
