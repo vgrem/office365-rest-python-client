@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
 
 from office365.booking.work_time_slot import BookingWorkTimeSlot
 from office365.outlook.calendar.dayofweek import DayOfWeek
@@ -19,10 +18,9 @@ class BookingWorkHours(ClientValue):
     """
 
     day: DayOfWeek | None = None
-    timeSlots: List[BookingWorkTimeSlot] | None = None
-
-    def __post_init__(self) -> None:
-        self.timeSlots = ClientValueCollection(BookingWorkTimeSlot, self.timeSlots)  # type: ignore[assignment]
+    timeSlots: ClientValueCollection[BookingWorkTimeSlot] = field(
+        default_factory=lambda: ClientValueCollection(BookingWorkTimeSlot)
+    )
 
     @property
     def entity_type_name(self) -> str:
