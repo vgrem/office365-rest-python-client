@@ -72,7 +72,7 @@ class Presence(Entity):
         if not isinstance(message, ItemBody):
             message = ItemBody(message)
         if expiry:
-            status_message = PresenceStatusMessage(message=message, expiry_datetime=DateTimeTimeZone.parse(expiry))
+            status_message = PresenceStatusMessage(message=message, expiryDateTime=DateTimeTimeZone.parse(expiry))
         else:
             status_message = PresenceStatusMessage(message=message)
         payload = {"statusMessage": status_message}
