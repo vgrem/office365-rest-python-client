@@ -46,10 +46,10 @@ class SearchEntity(Entity):
         """
         search_request = SearchRequest(
             query=SearchQuery(query_string),
-            entity_types=entity_types,
+            entityTypes=entity_types,
             page_from=page_from,
             size=size,
-            enable_top_results=enable_top_results,
+            enableTopResults=enable_top_results,
             region=region,
         )
 
