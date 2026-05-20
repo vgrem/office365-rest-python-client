@@ -17,7 +17,7 @@ class RelevantResults(ClientValue):
 
     GroupTemplateId: str | None = None
     ItemTemplateId: str | None = None
-    Properties: dict | None = None
+    Properties: dict = field(default_factory=dict)
     ResultTitle: str | None = None
     ResultTitleUrl: str | None = None
     Table: SimpleDataTable = field(default_factory=SimpleDataTable)

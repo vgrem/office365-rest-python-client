@@ -16,7 +16,7 @@ class RefinementResults(ClientValue):
     GroupTemplateId: str | None = None
     ItemTemplateId: str | None = None
     Refiners: ClientValueCollection[Refiner] = field(default_factory=lambda: ClientValueCollection(Refiner))
-    Properties: dict | None = None
+    Properties: dict = field(default_factory=dict)
     ResultTitle: str | None = None
     ResultTitleUrl: str | None = None
 

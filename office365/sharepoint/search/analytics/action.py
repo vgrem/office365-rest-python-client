@@ -12,7 +12,7 @@ class AnalyticsAction(ClientValue):
 
     ActionType: str | None = None
     ExpireTime: datetime | None = None
-    Properties: dict | None = None
+    Properties: dict = field(default_factory=dict)
     UserTime: datetime | None = None
 
     @property

@@ -7,7 +7,7 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class ExpandedQueryParameters(ClientValue):
-    Properties: dict | None = None
+    Properties: dict = field(default_factory=dict)
 
     "This object contains the dictionary of the expanded query parameters."
 

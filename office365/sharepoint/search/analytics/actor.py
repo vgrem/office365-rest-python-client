@@ -8,7 +8,7 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class AnalyticsActor(ClientValue):
     Id: str | None = None
-    Properties: dict | None = None
+    Properties: dict = field(default_factory=dict)
     TenantId: str | None = None
 
     @property
