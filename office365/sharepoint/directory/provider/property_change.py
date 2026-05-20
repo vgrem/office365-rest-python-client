@@ -1,19 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class PropertyChange(ClientValue):
-    def __init__(
-        self,
-        name: Optional[str] = None,
-        value: Optional[str] = None,
-        values: StringCollection = StringCollection(),
-    ):
-        self.Name = name
-        self.Value = value
-        self.Values = values
+    Name: Optional[str] = None
+    Value: Optional[str] = None
+    Values: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):

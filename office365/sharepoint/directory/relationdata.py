@@ -1,24 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RelationData(ClientValue):
-    def __init__(
-        self,
-        attribute_data_source: Optional[int] = None,
-        target_object_id: Optional[str] = None,
-        target_object_subtype: Optional[int] = None,
-        target_object_type: Optional[int] = None,
-        value: Optional[bytes] = None,
-        value_json_string: Optional[str] = None,
-    ):
-        self.AttributeDataSource = attribute_data_source
-        self.TargetObjectId = target_object_id
-        self.TargetObjectSubtype = target_object_subtype
-        self.TargetObjectType = target_object_type
-        self.Value = value
-        self.ValueJsonString = value_json_string
+    AttributeDataSource: int | None = None
+    TargetObjectId: str | None = None
+    TargetObjectSubtype: int | None = None
+    TargetObjectType: int | None = None
+    Value: bytes | None = None
+    ValueJsonString: str | None = None
 
     @property
     def entity_type_name(self):

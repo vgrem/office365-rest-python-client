@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,16 +8,11 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.directory.linktarget import LinkTarget
 
 
+@dataclass
 class LinkChange(ClientValue):
-    def __init__(
-        self,
-        added: ClientValueCollection[LinkTarget] = ClientValueCollection(LinkTarget),
-        name: Optional[str] = None,
-        removed: ClientValueCollection[LinkTarget] = ClientValueCollection(LinkTarget),
-    ):
-        self.Added = added
-        self.Name = name
-        self.Removed = removed
+    Added: ClientValueCollection[LinkTarget] = field(default_factory=lambda: ClientValueCollection(LinkTarget))
+    Name: Optional[str] = None
+    Removed: ClientValueCollection[LinkTarget] = field(default_factory=lambda: ClientValueCollection(LinkTarget))
 
     @property
     def entity_type_name(self):

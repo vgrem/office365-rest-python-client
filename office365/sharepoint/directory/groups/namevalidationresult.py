@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,20 +9,15 @@ from office365.sharepoint.directory.groups.namevalidationresulterrorparams impor
 )
 
 
+@dataclass
 class GroupNameValidationResult(ClientValue):
-    def __init__(
-        self,
-        alias_error_details: GroupNameValidationResultErrorParams = GroupNameValidationResultErrorParams(),
-        display_name_error_details: GroupNameValidationResultErrorParams = GroupNameValidationResultErrorParams(),
-        error_code: Optional[str] = None,
-        error_message: Optional[str] = None,
-        is_valid_name: Optional[bool] = None,
-    ):
-        self.AliasErrorDetails = alias_error_details
-        self.DisplayNameErrorDetails = display_name_error_details
-        self.ErrorCode = error_code
-        self.ErrorMessage = error_message
-        self.IsValidName = is_valid_name
+    AliasErrorDetails: GroupNameValidationResultErrorParams = field(default_factory=GroupNameValidationResultErrorParams)
+    DisplayNameErrorDetails: GroupNameValidationResultErrorParams = field(
+        default_factory=GroupNameValidationResultErrorParams
+    )
+    ErrorCode: Optional[str] = None
+    ErrorMessage: Optional[str] = None
+    IsValidName: Optional[bool] = None
 
     @property
     def entity_type_name(self):

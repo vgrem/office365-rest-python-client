@@ -1,18 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class StateData(ClientValue):
-    def __init__(
-        self,
-        adapter_name: Optional[str] = None,
-        value: Optional[bytes] = None,
-        value_json_string: Optional[str] = None,
-    ):
-        self.AdapterName = adapter_name
-        self.Value = value
-        self.ValueJsonString = value_json_string
+    AdapterName: str | None = None
+    Value: bytes | None = None
+    ValueJsonString: str | None = None
 
     @property
     def entity_type_name(self):

@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DirectorySessionData(ClientValue):
-    def __init__(self, client_type: Optional[str] = None, session_options: Optional[str] = None):
-        self.ClientType = client_type
-        self.SessionOptions = session_options
+    ClientType: Optional[str] = None
+    SessionOptions: Optional[str] = None
 
     @property
     def entity_type_name(self) -> str:

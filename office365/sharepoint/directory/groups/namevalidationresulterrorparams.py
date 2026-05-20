@@ -1,24 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GroupNameValidationResultErrorParams(ClientValue):
-    def __init__(
-        self,
-        blocked_word: Optional[str] = None,
-        prefix: Optional[str] = None,
-        suffix: Optional[str] = None,
-        validation_error_code: Optional[str] = None,
-        validation_error_message: Optional[str] = None,
-        validation_property_name: Optional[str] = None,
-    ):
-        self.BlockedWord = blocked_word
-        self.Prefix = prefix
-        self.Suffix = suffix
-        self.ValidationErrorCode = validation_error_code
-        self.ValidationErrorMessage = validation_error_message
-        self.ValidationPropertyName = validation_property_name
+    BlockedWord: Optional[str] = None
+    Prefix: Optional[str] = None
+    Suffix: Optional[str] = None
+    ValidationErrorCode: Optional[str] = None
+    ValidationErrorMessage: Optional[str] = None
+    ValidationPropertyName: Optional[str] = None
 
     @property
     def entity_type_name(self):

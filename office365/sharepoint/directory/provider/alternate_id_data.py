@@ -1,13 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AlternateIdData(ClientValue):
-    """"""
-
-    def __init__(self, email=None, identifying_property=None, user_principal_name=None):
-        self.Email = email
-        self.IdentifyingProperty = identifying_property
-        self.UserPrincipalName = user_principal_name
+    Email: Optional[str] = None
+    IdentifyingProperty: Optional[str] = None
+    UserPrincipalName: Optional[str] = None
 
     @property
     def entity_type_name(self):

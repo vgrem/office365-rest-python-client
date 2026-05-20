@@ -1,13 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UserInformation(ClientValue):
-    def __init__(self, id_: Optional[str] = None, name: Optional[str] = None, puid: Optional[str] = None):
-        self.Id = id_
-        self.Name = name
-        self.Puid = puid
+    Id: Optional[str] = None
+    Name: Optional[str] = None
+    Puid: Optional[str] = None
 
     @property
     def entity_type_name(self):
