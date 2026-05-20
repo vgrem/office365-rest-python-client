@@ -1,22 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from office365.booking.savailabilitystatus import BookingsAvailabilityStatus
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AvailabilityItem(ClientValue):
-    def __init__(
-        self,
-        end_date_time: DateTimeTimeZone = DateTimeTimeZone(),
-        service_id: str | None = None,
-        start_date_time: DateTimeTimeZone = DateTimeTimeZone(),
-        status: BookingsAvailabilityStatus = BookingsAvailabilityStatus.none,
-    ):
-        self.endDateTime = end_date_time
-        self.serviceId = service_id
-        self.startDateTime = start_date_time
-        self.status = status
+    endDateTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
+    serviceId: str | None = None
+    startDateTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
+    status: BookingsAvailabilityStatus = BookingsAvailabilityStatus.none
 
     @property
     def entity_type_name(self):

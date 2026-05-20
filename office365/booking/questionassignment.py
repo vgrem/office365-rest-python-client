@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class BookingQuestionAssignment(ClientValue):
-    def __init__(self, is_required: Optional[bool] = None, question_id: Optional[str] = None):
-        self.isRequired = is_required
-        self.questionId = question_id
+    isRequired: bool | None = None
+    questionId: str | None = None
 
     @property
     def entity_type_name(self):

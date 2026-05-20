@@ -1,21 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.booking.phonetype import PhoneType
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Phone(ClientValue):
-    def __init__(
-        self,
-        language: Optional[str] = None,
-        number: Optional[str] = None,
-        region: Optional[str] = None,
-        type_: Optional[PhoneType] = None,
-    ):
-        self.language = language
-        self.number = number
-        self.region = region
-        self.type = type_
+    language: str | None = None
+    number: str | None = None
+    region: str | None = None
+    type: PhoneType | None = None
 
     @property
     def entity_type_name(self):
