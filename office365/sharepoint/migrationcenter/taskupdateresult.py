@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TaskUpdateResult(ClientValue):
-    def __init__(self, error_code: Optional[str] = None, task_id: Optional[UUID] = None):
-        self.ErrorCode = error_code
-        self.TaskId = task_id
+    ErrorCode: Optional[str] = None
+    TaskId: Optional[UUID] = None
 
     @property
     def entity_type_name(self):

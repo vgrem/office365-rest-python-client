@@ -1,18 +1,15 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MigrationProperty(ClientValue):
-    def __init__(
-        self, key: Optional[str] = None, updated_time_utc: Optional[datetime] = None, value: Optional[str] = None
-    ):
-        self.key = key
-        self.updatedTimeUtc = updated_time_utc
-        self.value = value
-
-    ""
+    key: Optional[str] = None
+    updatedTimeUtc: Optional[datetime] = None
+    value: Optional[str] = None
 
     @property
     def entity_type_name(self):

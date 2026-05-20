@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,20 +6,15 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.migrationcenter.taskupdateresult import TaskUpdateResult
 
 
+@dataclass
 class BatchUpdateResult(ClientValue):
-    def __init__(
-        self,
-        error_code: Optional[str] = None,
-        fail_count: Optional[int] = None,
-        processing_milliseconds: Optional[int] = None,
-        result_list: ClientValueCollection[TaskUpdateResult] = ClientValueCollection(TaskUpdateResult),
-        success_count: Optional[int] = None,
-    ):
-        self.ErrorCode = error_code
-        self.FailCount = fail_count
-        self.ProcessingMilliseconds = processing_milliseconds
-        self.ResultList = result_list
-        self.SuccessCount = success_count
+    ErrorCode: Optional[str] = None
+    FailCount: Optional[int] = None
+    ProcessingMilliseconds: Optional[int] = None
+    ResultList: ClientValueCollection[TaskUpdateResult] = field(
+        default_factory=lambda: ClientValueCollection(TaskUpdateResult)
+    )
+    SuccessCount: Optional[int] = None
 
     @property
     def entity_type_name(self):

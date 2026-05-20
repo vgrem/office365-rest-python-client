@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MigrationStorageSettings(ClientValue):
-    def __init__(self, encrypted_certificate: Optional[str] = None, encryption_key: Optional[str] = None):
-        self.EncryptedCertificate = encrypted_certificate
-        self.EncryptionKey = encryption_key
+    EncryptedCertificate: Optional[str] = None
+    EncryptionKey: Optional[str] = None
 
     @property
     def entity_type_name(self):

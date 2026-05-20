@@ -1,22 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPFolderInformation(ClientValue):
-    def __init__(
-        self,
-        depth: Optional[int] = None,
-        is_specified: Optional[bool] = None,
-        name: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-        web_relative_url: Optional[str] = None,
-    ):
-        self.Depth = depth
-        self.IsSpecified = is_specified
-        self.Name = name
-        self.ServerRelativeUrl = server_relative_url
-        self.WebRelativeUrl = web_relative_url
+    Depth: Optional[int] = None
+    IsSpecified: Optional[bool] = None
+    Name: Optional[str] = None
+    ServerRelativeUrl: Optional[str] = None
+    WebRelativeUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):
