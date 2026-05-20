@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -5,26 +8,15 @@ from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.project.myrecsqueryinfo import MyRecsQueryInfo
 
 
+@dataclass
 class MyRecsCacheBlob(ClientValue):
-    def __init__(
-        self,
-        date_cached: Optional[datetime] = None,
-        fill_in_query: Optional[str] = None,
-        fill_in_sort_by: Optional[str] = None,
-        query: Optional[str] = None,
-        query_info: MyRecsQueryInfo = MyRecsQueryInfo(),
-        result: Optional[str] = None,
-        sort_by: Optional[str] = None,
-    ):
-        self.DateCached = date_cached
-        self.FillInQuery = fill_in_query
-        self.FillInSortBy = fill_in_sort_by
-        self.Query = query
-        self.QueryInfo = query_info
-        self.Result = result
-        self.SortBy = sort_by
-
-    ""
+    DateCached: Optional[datetime] = None
+    FillInQuery: Optional[str] = None
+    FillInSortBy: Optional[str] = None
+    Query: Optional[str] = None
+    QueryInfo: MyRecsQueryInfo = field(default_factory=MyRecsQueryInfo)
+    Result: Optional[str] = None
+    SortBy: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,18 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class OrgLabelsContext(ClientValue):
-    def __init__(
-        self,
-        display_name: Optional[str] = None,
-        label_applicable_to: Optional[str] = None,
-        object_id: Optional[str] = None,
-    ):
-        self.DisplayName = display_name
-        self.LabelApplicableTo = label_applicable_to
-        self.ObjectId = object_id
+    DisplayName: Optional[str] = None
+    LabelApplicableTo: Optional[str] = None
+    ObjectId: Optional[str] = None
 
     @property
     def entity_type_name(self):

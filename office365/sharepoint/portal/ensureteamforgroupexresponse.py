@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class EnsureTeamForGroupExResponse(ClientValue):
-    def __init__(self, teams_id: Optional[str] = None, teams_url: Optional[str] = None):
-        self.teamsId = teams_id
-        self.teamsUrl = teams_url
+    teamsId: Optional[str] = None
+    teamsUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

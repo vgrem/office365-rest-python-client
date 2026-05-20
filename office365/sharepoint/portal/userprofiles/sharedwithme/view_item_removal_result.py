@@ -1,17 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharedWithMeViewItemRemovalResult(ClientValue):
-    def __init__(
-        self, error_code: Optional[int] = None, error_message: Optional[str] = None, success: Optional[bool] = None
-    ):
-        self.ErrorCode = error_code
-        self.ErrorMessage = error_message
-        self.Success = success
+    """An object that contains the result of calling the API to remove an item from a user's 'Shared With Me' view."""
 
-    "An object that contains the result of calling the API to remove an item from a user's 'Shared With Me' view."
+    ErrorCode: Optional[int] = None
+    ErrorMessage: Optional[str] = None
+    Success: Optional[bool] = None
 
     @property
     def entity_type_name(self):

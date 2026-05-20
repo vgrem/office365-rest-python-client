@@ -1,13 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.portal.home.datacacheentry import SharePointHomeDataCacheEntry
 
 
+@dataclass
 class SharePointHomeDataCache(ClientValue):
-    def __init__(self, key: Optional[str] = None, value: SharePointHomeDataCacheEntry = SharePointHomeDataCacheEntry()):
-        self.Key = key
-        self.Value = value
+    Key: Optional[str] = None
+    Value: SharePointHomeDataCacheEntry = field(default_factory=SharePointHomeDataCacheEntry)
 
     @property
     def entity_type_name(self):

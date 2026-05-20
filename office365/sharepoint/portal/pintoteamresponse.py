@@ -1,16 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.portal.m365tabitem import M365TabItem
 
 
+@dataclass
 class PinToTeamResponse(ClientValue):
-    def __init__(
-        self,
-        failed_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(M365TabItem),
-        successful_pinning: ClientValueCollection[M365TabItem] = ClientValueCollection(M365TabItem),
-    ):
-        self.FailedPinning = failed_pinning
-        self.SuccessfulPinning = successful_pinning
+    FailedPinning: ClientValueCollection[M365TabItem] = field(default_factory=lambda: ClientValueCollection(M365TabItem))
+    SuccessfulPinning: ClientValueCollection[M365TabItem] = field(
+        default_factory=lambda: ClientValueCollection(M365TabItem)
+    )
 
     @property
     def entity_type_name(self):

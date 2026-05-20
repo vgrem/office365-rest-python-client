@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GroupMoveOperation(ClientValue):
-    def __init__(self, source_group: Optional[str] = None, target_group: Optional[str] = None):
-        self.SourceGroup = source_group
-        self.TargetGroup = target_group
+    SourceGroup: Optional[str] = None
+    TargetGroup: Optional[str] = None
 
     @property
     def entity_type_name(self):

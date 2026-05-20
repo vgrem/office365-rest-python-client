@@ -1,24 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharePointHomeDataCacheContext(ClientValue):
-    def __init__(
-        self,
-        cache_key: Optional[str] = None,
-        hash_: Optional[str] = None,
-        list_item_id: Optional[int] = None,
-        my_site_url: Optional[str] = None,
-        time: Optional[str] = None,
-        version: Optional[str] = None,
-    ):
-        self.CacheKey = cache_key
-        self.Hash = hash_
-        self.ListItemId = list_item_id
-        self.MySiteUrl = my_site_url
-        self.Time = time
-        self.Version = version
+    CacheKey: Optional[str] = None
+    Hash: Optional[str] = None
+    ListItemId: Optional[int] = None
+    MySiteUrl: Optional[str] = None
+    Time: Optional[str] = None
+    Version: Optional[str] = None
 
     @property
     def entity_type_name(self):

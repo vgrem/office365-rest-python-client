@@ -1,27 +1,21 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class GroupSiteConversionInfo(ClientValue):
-    def __init__(
-        self,
-        group_type: Optional[int] = None,
-        is_groupify_disabled: Optional[bool] = None,
-        is_region_restricted: Optional[bool] = None,
-        is_wrong_pdl: Optional[bool] = None,
-        suggested_members: StringCollection = StringCollection(),
-        suggested_owners: StringCollection = StringCollection(),
-        unsuggestable_principals: StringCollection = StringCollection(),
-    ):
-        self.GroupType = group_type
-        self.IsGroupifyDisabled = is_groupify_disabled
-        self.IsRegionRestricted = is_region_restricted
-        self.IsWrongPdl = is_wrong_pdl
-        self.SuggestedMembers = suggested_members
-        self.SuggestedOwners = suggested_owners
-        self.UnsuggestablePrincipals = unsuggestable_principals
+    GroupType: Optional[int] = None
+    IsGroupifyDisabled: Optional[bool] = None
+    IsRegionRestricted: Optional[bool] = None
+    IsWrongPdl: Optional[bool] = None
+    SuggestedMembers: StringCollection = field(default_factory=StringCollection)
+    SuggestedOwners: StringCollection = field(default_factory=StringCollection)
+    UnsuggestablePrincipals: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):

@@ -1,15 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ParentGroup(ClientValue):
-    def __init__(
-        self, display_name: Optional[str] = None, group_site_url: Optional[str] = None, id_: Optional[str] = None
-    ):
-        self.DisplayName = display_name
-        self.GroupSiteUrl = group_site_url
-        self.ID = id_
+    DisplayName: Optional[str] = None
+    GroupSiteUrl: Optional[str] = None
+    ID: Optional[str] = None
 
     @property
     def entity_type_name(self):
