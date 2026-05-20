@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sites.language_collection import LanguageCollection
 
@@ -16,10 +19,7 @@ class ServerSettings(Entity):
         return self._resource_path
 
     @staticmethod
-    def is_sharepoint_online(context) -> ClientResult[bool]:
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        """
+    def is_sharepoint_online(context: ClientContext) -> ClientResult[bool]:
         binding_type = ServerSettings(context)
         return_type = ClientResult(context)
         qry = ServiceOperationQuery(binding_type, "IsSharePointOnline", None, None, None, return_type, True)
@@ -27,10 +27,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
-    def get_blocked_file_extensions(context) -> ClientResult[StringCollection]:
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        """
+    def get_blocked_file_extensions(context: ClientContext) -> ClientResult[StringCollection]:
         binding_type = ServerSettings(context)
         return_type = ClientResult(context, StringCollection())
         qry = ServiceOperationQuery(
@@ -46,13 +43,8 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
-    def get_global_installed_languages(context, compatibility_level: int) -> LanguageCollection:
-        """
-        Gets a list of installed languages that are compatible with a given version of SharePoint.
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param int compatibility_level: The value of the major SharePoint version to query for installed languages.
-        """
+    def get_global_installed_languages(context: ClientContext, compatibility_level: int) -> LanguageCollection:
+        """Gets a list of installed languages that are compatible with a given version of SharePoint."""
         binding_type = ServerSettings(context)
         return_type = LanguageCollection(context)
         qry = ServiceOperationQuery(
