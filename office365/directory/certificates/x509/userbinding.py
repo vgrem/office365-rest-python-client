@@ -1,21 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.directory.certificates.x509.affinitylevel import X509CertificateAffinityLevel
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class X509CertificateUserBinding(ClientValue):
-    def __init__(
-        self,
-        priority: Optional[int] = None,
-        trust_affinity_level: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none,
-        user_property: Optional[str] = None,
-        x509_certificate_field: Optional[str] = None,
-    ):
-        self.priority = priority
-        self.trustAffinityLevel = trust_affinity_level
-        self.userProperty = user_property
-        self.x509CertificateField = x509_certificate_field
+    priority: int | None = None
+    trustAffinityLevel: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none
+    userProperty: str | None = None
+    x509CertificateField: str | None = None
 
     @property
     def entity_type_name(self):

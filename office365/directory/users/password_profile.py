@@ -1,35 +1,24 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PasswordProfile(ClientValue):
-    """Contains the password profile associated with a user. The passwordProfile property of the user entity is a
-    passwordProfile object."""
+    """
+        Contains the password profile associated with a user. The passwordProfile property of the user entity is a
+    passwordProfile object.
+        Fields:
+            password (str): The password for the user. This property is required when a user is created.
+            force_change_password_next_sign_in (bool): true if the user must change her password on the next login;
+            force_change_password_next_sign_in_with_mfa (bool): f true, at next sign-in, the user must perform a
+    """
 
-    def __init__(
-        self,
-        password: str | None = None,
-        force_change_password_next_sign_in: bool | None = None,
-        force_change_password_next_sign_in_with_mfa: bool | None = None,
-    ):
-        """
-        :param str password: The password for the user. This property is required when a user is created.
-             It can be updated, but the user will be required to change the password on the next login.
-             The password must satisfy minimum requirements as specified by the user's passwordPolicies property.
-             By default, a strong password is required.
-        :param bool force_change_password_next_sign_in: true if the user must change her password on the next login;
-             otherwise false.
-        :param bool force_change_password_next_sign_in_with_mfa: f true, at next sign-in, the user must perform a
-             multi-factor authentication (MFA) before being forced to change their password. The behavior is identical
-             to forceChangePasswordNextSignIn except that the user is required to first perform a multi-factor
-             authentication before password change. After a password change, this property will be automatically
-             reset to false. If not set, default is false.
-        """
-        super().__init__()
-        self.password = password
-        self.forceChangePasswordNextSignIn = force_change_password_next_sign_in
-        self.forceChangePasswordNextSignInWithMfa = force_change_password_next_sign_in_with_mfa
+    password: str | None = None
+    forceChangePasswordNextSignIn: bool | None = None
+    forceChangePasswordNextSignInWithMfa: bool | None = None
 
     @property
     def entity_type_name(self):

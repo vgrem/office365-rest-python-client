@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CustomExtensionClientConfiguration(ClientValue):
-    def __init__(self, maximum_retries: Optional[int] = None, timeout_in_milliseconds: Optional[int] = None):
-        self.maximumRetries = maximum_retries
-        self.timeoutInMilliseconds = timeout_in_milliseconds
+    maximumRetries: int | None = None
+    timeoutInMilliseconds: int | None = None
 
     @property
     def entity_type_name(self):

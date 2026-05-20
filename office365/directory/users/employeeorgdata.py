@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class EmployeeOrgData(ClientValue):
-    def __init__(self, cost_center: str | None = None, division: str | None = None):
-        self.costCenter = cost_center
-        self.division = division
+    costCenter: str | None = None
+    division: str | None = None
 
     @property
     def entity_type_name(self):

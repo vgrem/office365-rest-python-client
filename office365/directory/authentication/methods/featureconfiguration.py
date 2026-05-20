@@ -1,18 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.directory.authentication.advancedconfigstate import AdvancedConfigState
 from office365.directory.authentication.methods.featuretarget import FeatureTarget
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AuthenticationMethodFeatureConfiguration(ClientValue):
-    def __init__(
-        self,
-        exclude_target: FeatureTarget = FeatureTarget(),
-        include_target: FeatureTarget = FeatureTarget(),
-        state: AdvancedConfigState = AdvancedConfigState.none,
-    ):
-        self.excludeTarget = exclude_target
-        self.includeTarget = include_target
-        self.state = state
+    excludeTarget: FeatureTarget = field(default_factory=FeatureTarget)
+    includeTarget: FeatureTarget = field(default_factory=FeatureTarget)
+    state: AdvancedConfigState = AdvancedConfigState.none
 
     @property
     def entity_type_name(self):

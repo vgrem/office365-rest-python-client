@@ -1,20 +1,17 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.authentication.fido2restrictionenforcementtype import Fido2RestrictionEnforcementType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class Fido2KeyRestrictions(ClientValue):
-    def __init__(
-        self,
-        aa_guids: StringCollection | None = None,
-        enforcement_type: Fido2RestrictionEnforcementType = Fido2RestrictionEnforcementType.none,
-        is_enforced: bool | None = None,
-    ):
-        self.aaGuids = aa_guids
-        self.enforcementType = enforcement_type
-        self.isEnforced = is_enforced
+    aaGuids: StringCollection | None = None
+    enforcementType: Fido2RestrictionEnforcementType = Fido2RestrictionEnforcementType.none
+    isEnforced: bool | None = None
 
     @property
     def entity_type_name(self):

@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TaskReportSummary(ClientValue):
-    def __init__(
-        self,
-        failed_tasks: Optional[int] = None,
-        successful_tasks: Optional[int] = None,
-        total_tasks: Optional[int] = None,
-        unprocessed_tasks: Optional[int] = None,
-    ):
-        self.failedTasks = failed_tasks
-        self.successfulTasks = successful_tasks
-        self.totalTasks = total_tasks
-        self.unprocessedTasks = unprocessed_tasks
+    failedTasks: int | None = None
+    successfulTasks: int | None = None
+    totalTasks: int | None = None
+    unprocessedTasks: int | None = None
 
     @property
     def entity_type_name(self):

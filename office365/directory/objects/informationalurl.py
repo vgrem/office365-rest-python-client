@@ -1,22 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class InformationalUrl(ClientValue):
-    def __init__(
-        self,
-        logo_url: Optional[str] = None,
-        marketing_url: Optional[str] = None,
-        privacy_statement_url: Optional[str] = None,
-        support_url: Optional[str] = None,
-        terms_of_service_url: Optional[str] = None,
-    ):
-        self.logoUrl = logo_url
-        self.marketingUrl = marketing_url
-        self.privacyStatementUrl = privacy_statement_url
-        self.supportUrl = support_url
-        self.termsOfServiceUrl = terms_of_service_url
+    logoUrl: str | None = None
+    marketingUrl: str | None = None
+    privacyStatementUrl: str | None = None
+    supportUrl: str | None = None
+    termsOfServiceUrl: str | None = None
 
     @property
     def entity_type_name(self):

@@ -1,22 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UsersProcessingSummary(ClientValue):
-    def __init__(
-        self,
-        failed_tasks: Optional[int] = None,
-        failed_users: Optional[int] = None,
-        successful_users: Optional[int] = None,
-        total_tasks: Optional[int] = None,
-        total_users: Optional[int] = None,
-    ):
-        self.failedTasks = failed_tasks
-        self.failedUsers = failed_users
-        self.successfulUsers = successful_users
-        self.totalTasks = total_tasks
-        self.totalUsers = total_users
+    failedTasks: int | None = None
+    failedUsers: int | None = None
+    successfulUsers: int | None = None
+    totalTasks: int | None = None
+    totalUsers: int | None = None
 
     @property
     def entity_type_name(self):

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RuleBasedSubjectSet(ClientValue):
-    def __init__(self, rule: str | None = None):
-        self.rule = rule
+    rule: str | None = None
 
     @property
     def entity_type_name(self):

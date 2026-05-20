@@ -1,30 +1,21 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WorkflowsInsightsByCategory(ClientValue):
-    def __init__(
-        self,
-        failed_joiner_runs: int | None = None,
-        failed_leaver_runs: int | None = None,
-        failed_mover_runs: int | None = None,
-        successful_joiner_runs: int | None = None,
-        successful_leaver_runs: int | None = None,
-        successful_mover_runs: int | None = None,
-        total_joiner_runs: int | None = None,
-        total_leaver_runs: int | None = None,
-        total_mover_runs: int | None = None,
-    ):
-        self.failedJoinerRuns = failed_joiner_runs
-        self.failedLeaverRuns = failed_leaver_runs
-        self.failedMoverRuns = failed_mover_runs
-        self.successfulJoinerRuns = successful_joiner_runs
-        self.successfulLeaverRuns = successful_leaver_runs
-        self.successfulMoverRuns = successful_mover_runs
-        self.totalJoinerRuns = total_joiner_runs
-        self.totalLeaverRuns = total_leaver_runs
-        self.totalMoverRuns = total_mover_runs
+    failedJoinerRuns: int | None = None
+    failedLeaverRuns: int | None = None
+    failedMoverRuns: int | None = None
+    successfulJoinerRuns: int | None = None
+    successfulLeaverRuns: int | None = None
+    successfulMoverRuns: int | None = None
+    totalJoinerRuns: int | None = None
+    totalLeaverRuns: int | None = None
+    totalMoverRuns: int | None = None
 
     @property
     def entity_type_name(self):

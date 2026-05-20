@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.certificates.x509.crlvalidationconfigurationstate import (
     X509CertificateCRLValidationConfigurationState,
 )
@@ -7,16 +9,10 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class X509CertificateCRLValidationConfiguration(ClientValue):
-    def __init__(
-        self,
-        exempted_certificate_authorities_subject_key_identifiers: StringCollection | None = None,
-        state: X509CertificateCRLValidationConfigurationState = X509CertificateCRLValidationConfigurationState.none,
-    ):
-        self.exemptedCertificateAuthoritiesSubjectKeyIdentifiers = (
-            exempted_certificate_authorities_subject_key_identifiers
-        )
-        self.state = state
+    exemptedCertificateAuthoritiesSubjectKeyIdentifiers: StringCollection | None = None
+    state: X509CertificateCRLValidationConfigurationState = X509CertificateCRLValidationConfigurationState.none
 
     @property
     def entity_type_name(self):

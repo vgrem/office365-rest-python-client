@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.directory.protection.riskyusers.risk_detail import RiskDetail
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RiskUserActivity(ClientValue):
-    """Represents the risk activites of an Azure AD user as determined by Azure AD Identity Protection."""
+    """
+    Represents the risk activites of an Azure AD user as determined by Azure AD Identity Protection.
+    """
 
-    def __init__(self, detail: RiskDetail = RiskDetail.none):
-        self.detail = detail
+    detail: RiskDetail = RiskDetail.none

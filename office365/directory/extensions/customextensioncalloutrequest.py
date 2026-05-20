@@ -1,14 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.directory.extensions.customextensiondata import CustomExtensionData
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CustomExtensionCalloutRequest(ClientValue):
-    def __init__(self, data=CustomExtensionData(), source: Optional[str] = None, type_: Optional[str] = None):
-        self.data = data
-        self.source = source
-        self.type = type_
+    data: CustomExtensionData = field(default_factory=CustomExtensionData)
+    source: str | None = None
+    type: str | None = None
 
     @property
     def entity_type_name(self):

@@ -1,23 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.audit.provisioning.statuserrorcategory import ProvisioningStatusErrorCategory
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ProvisioningErrorInfo(ClientValue):
-    def __init__(
-        self,
-        additional_details: str | None = None,
-        error_category: ProvisioningStatusErrorCategory = ProvisioningStatusErrorCategory.none,
-        error_code: str | None = None,
-        reason: str | None = None,
-        recommended_action: str | None = None,
-    ):
-        self.additionalDetails = additional_details
-        self.errorCategory = error_category
-        self.errorCode = error_code
-        self.reason = reason
-        self.recommendedAction = recommended_action
+    additionalDetails: str | None = None
+    errorCategory: ProvisioningStatusErrorCategory = ProvisioningStatusErrorCategory.none
+    errorCode: str | None = None
+    reason: str | None = None
+    recommendedAction: str | None = None
 
     @property
     def entity_type_name(self):

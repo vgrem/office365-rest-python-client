@@ -1,28 +1,20 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TopTasksInsightsSummary(ClientValue):
-    def __init__(
-        self,
-        failed_tasks: int | None = None,
-        failed_users: int | None = None,
-        successful_tasks: int | None = None,
-        successful_users: int | None = None,
-        task_definition_display_name: str | None = None,
-        task_definition_id: str | None = None,
-        total_tasks: int | None = None,
-        total_users: int | None = None,
-    ):
-        self.failedTasks = failed_tasks
-        self.failedUsers = failed_users
-        self.successfulTasks = successful_tasks
-        self.successfulUsers = successful_users
-        self.taskDefinitionDisplayName = task_definition_display_name
-        self.taskDefinitionId = task_definition_id
-        self.totalTasks = total_tasks
-        self.totalUsers = total_users
+    failedTasks: int | None = None
+    failedUsers: int | None = None
+    successfulTasks: int | None = None
+    successfulUsers: int | None = None
+    taskDefinitionDisplayName: str | None = None
+    taskDefinitionId: str | None = None
+    totalTasks: int | None = None
+    totalUsers: int | None = None
 
     @property
     def entity_type_name(self):

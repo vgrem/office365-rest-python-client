@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from office365.directory.authentication.advancedconfigstate import AdvancedConfigState
 from office365.directory.authentication.methods.excludetarget import ExcludeTarget
 from office365.directory.authentication.methods.registrationcampaignincludetarget import (
@@ -9,20 +11,16 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class AuthenticationMethodsRegistrationCampaign(ClientValue):
-    def __init__(
-        self,
-        exclude_targets: ClientValueCollection[ExcludeTarget] = ClientValueCollection(ExcludeTarget),
-        include_targets: ClientValueCollection[
-            AuthenticationMethodsRegistrationCampaignIncludeTarget
-        ] = ClientValueCollection(AuthenticationMethodsRegistrationCampaignIncludeTarget),
-        snooze_duration_in_days: int | None = None,
-        state: AdvancedConfigState = AdvancedConfigState.none,
-    ):
-        self.excludeTargets = exclude_targets
-        self.includeTargets = include_targets
-        self.snoozeDurationInDays = snooze_duration_in_days
-        self.state = state
+    excludeTargets: ClientValueCollection[ExcludeTarget] = field(
+        default_factory=lambda: ClientValueCollection(ExcludeTarget)
+    )
+    includeTargets: ClientValueCollection[AuthenticationMethodsRegistrationCampaignIncludeTarget] = field(
+        default_factory=lambda: ClientValueCollection(AuthenticationMethodsRegistrationCampaignIncludeTarget)
+    )
+    snoozeDurationInDays: int | None = None
+    state: AdvancedConfigState = AdvancedConfigState.none
 
     @property
     def entity_type_name(self):

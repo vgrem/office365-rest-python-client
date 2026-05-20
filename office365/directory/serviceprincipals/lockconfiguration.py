@@ -1,22 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ServicePrincipalLockConfiguration(ClientValue):
-    def __init__(
-        self,
-        all_properties: Optional[bool] = None,
-        credentials_with_usage_sign: Optional[bool] = None,
-        credentials_with_usage_verify: Optional[bool] = None,
-        is_enabled: Optional[bool] = None,
-        token_encryption_key_id: Optional[bool] = None,
-    ):
-        self.allProperties = all_properties
-        self.credentialsWithUsageSign = credentials_with_usage_sign
-        self.credentialsWithUsageVerify = credentials_with_usage_verify
-        self.isEnabled = is_enabled
-        self.tokenEncryptionKeyId = token_encryption_key_id
+    allProperties: bool | None = None
+    credentialsWithUsageSign: bool | None = None
+    credentialsWithUsageVerify: bool | None = None
+    isEnabled: bool | None = None
+    tokenEncryptionKeyId: bool | None = None
 
     @property
     def entity_type_name(self):

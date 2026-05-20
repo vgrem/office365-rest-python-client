@@ -1,12 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.directory.identitygovernance.workflow.customtaskextensionoperationstatus import (
     CustomTaskExtensionOperationStatus,
 )
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CustomTaskExtensionCallbackData(ClientValue):
-    def __init__(self, operation_status: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.none_):
-        self.operationStatus = operation_status
+    operationStatus: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.none_
 
     @property
     def entity_type_name(self):

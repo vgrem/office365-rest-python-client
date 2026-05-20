@@ -1,33 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.identitygovernance.lifecycleworkflows.category import LifecycleWorkflowCategory
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TopWorkflowsInsightsSummary(ClientValue):
-    def __init__(
-        self,
-        failed_runs: int | None = None,
-        failed_users: int | None = None,
-        successful_runs: int | None = None,
-        successful_users: int | None = None,
-        total_runs: int | None = None,
-        total_users: int | None = None,
-        workflow_category: LifecycleWorkflowCategory | None = None,
-        workflow_display_name: str | None = None,
-        workflow_id: str | None = None,
-        workflow_version: int | None = None,
-    ):
-        self.failedRuns = failed_runs
-        self.failedUsers = failed_users
-        self.successfulRuns = successful_runs
-        self.successfulUsers = successful_users
-        self.totalRuns = total_runs
-        self.totalUsers = total_users
-        self.workflowCategory = workflow_category
-        self.workflowDisplayName = workflow_display_name
-        self.workflowId = workflow_id
-        self.workflowVersion = workflow_version
+    failedRuns: int | None = None
+    failedUsers: int | None = None
+    successfulRuns: int | None = None
+    successfulUsers: int | None = None
+    totalRuns: int | None = None
+    totalUsers: int | None = None
+    workflowCategory: LifecycleWorkflowCategory | None = None
+    workflowDisplayName: str | None = None
+    workflowId: str | None = None
+    workflowVersion: int | None = None
 
     @property
     def entity_type_name(self):

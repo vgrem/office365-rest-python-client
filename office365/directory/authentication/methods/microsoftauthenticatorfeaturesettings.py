@@ -1,17 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.directory.authentication.methods.featureconfiguration import (
     AuthenticationMethodFeatureConfiguration as FeatureConfiguration,
 )
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MicrosoftAuthenticatorFeatureSettings(ClientValue):
-    def __init__(
-        self,
-        display_app_information_required_state: FeatureConfiguration = FeatureConfiguration(),
-        display_location_information_required_state: FeatureConfiguration = FeatureConfiguration(),
-    ):
-        self.displayAppInformationRequiredState = display_app_information_required_state
-        self.displayLocationInformationRequiredState = display_location_information_required_state
+    displayAppInformationRequiredState: FeatureConfiguration = field(default_factory=FeatureConfiguration)
+    displayLocationInformationRequiredState: FeatureConfiguration = field(default_factory=FeatureConfiguration)
 
     @property
     def entity_type_name(self):

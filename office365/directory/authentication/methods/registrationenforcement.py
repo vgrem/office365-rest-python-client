@@ -1,15 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.directory.authentication.methods.registrationcampaign import (
     AuthenticationMethodsRegistrationCampaign as RegistrationCampaign,
 )
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RegistrationEnforcement(ClientValue):
-    def __init__(
-        self,
-        authentication_methods_registration_campaign: RegistrationCampaign = RegistrationCampaign(),
-    ):
-        self.authenticationMethodsRegistrationCampaign = authentication_methods_registration_campaign
+    authenticationMethodsRegistrationCampaign: RegistrationCampaign = field(default_factory=RegistrationCampaign)
 
     @property
     def entity_type_name(self):
