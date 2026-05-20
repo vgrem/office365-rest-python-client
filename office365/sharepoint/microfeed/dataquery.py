@@ -1,21 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class MicrofeedDataQuery(ClientValue):
-    def __init__(
-        self,
-        item_limit: Optional[int] = None,
-        query: Optional[str] = None,
-        view_fields: StringCollection = StringCollection(),
-        view_fields_only: Optional[bool] = None,
-    ):
-        self.ItemLimit = item_limit
-        self.Query = query
-        self.ViewFields = view_fields
-        self.ViewFieldsOnly = view_fields_only
+    ItemLimit: Optional[int] = None
+    Query: Optional[str] = None
+    ViewFields: StringCollection = field(default_factory=StringCollection)
+    ViewFieldsOnly: Optional[bool] = None
 
     @property
     def entity_type_name(self):
