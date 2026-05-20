@@ -21,7 +21,7 @@ class SearchResult(ClientValue):
     """
 
     ElapsedTime: str | None = None
-    PrimaryQueryResult: QueryResult | None = None
+    PrimaryQueryResult: QueryResult = field(default_factory=QueryResult)
     Properties: dict | None = None
     SecondaryQueryResults: ClientValueCollection[QueryResult] = field(
         default_factory=lambda: ClientValueCollection(QueryResult)
