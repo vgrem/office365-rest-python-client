@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AccessRequestResponse(ClientValue):
-    def __init__(self, requested_object_id: Optional[str] = None, result: Optional[bool] = None):
-        self.requested_object_id = requested_object_id
-        self.result = result
+    requested_object_id: Optional[str] = None
+    result: Optional[bool] = None

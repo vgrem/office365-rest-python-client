@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UserDTO(ClientValue):
-    def __init__(self, email: Optional[str] = None, login_name: Optional[str] = None):
-        self.Email = email
-        self.LoginName = login_name
+    Email: Optional[str] = None
+    LoginName: Optional[str] = None

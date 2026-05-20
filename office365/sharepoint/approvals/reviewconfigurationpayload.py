@@ -1,16 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class ReviewConfigurationPayload(ClientValue):
-    def __init__(
-        self,
-        category_id: Optional[str] = None,
-        reviewers: StringCollection = StringCollection(),
-        review_type: Optional[str] = None,
-    ):
-        self.category_id = category_id
-        self.reviewers = reviewers
-        self.review_type = review_type
+    category_id: Optional[str] = None
+    reviewers: StringCollection = field(default_factory=StringCollection)
+    review_type: Optional[str] = None
