@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPSiteCollectionScopedPermissionInfo(ClientValue):
-    def __init__(
-        self,
-        list_id: Optional[str] = None,
-        right: Optional[str] = None,
-        site_id: Optional[str] = None,
-        web_id: Optional[str] = None,
-    ):
-        self.listId = list_id
-        self.right = right
-        self.siteId = site_id
-        self.webId = web_id
+    listId: Optional[str] = None
+    right: Optional[str] = None
+    siteId: Optional[str] = None
+    webId: Optional[str] = None
 
     @property
     def entity_type_name(self):

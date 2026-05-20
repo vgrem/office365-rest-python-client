@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -10,28 +11,18 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.tenantscopedpermis
 )
 
 
+@dataclass
 class SPAddinPermissionInfo(ClientValue):
-    """"""
-
-    def __init__(
-        self,
-        absolute_url=None,
-        allow_app_only: Optional[bool] = None,
-        app_identifier: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-        site_collection_scoped_permissions: ClientValueCollection[
-            SPSiteCollectionScopedPermissionInfo
-        ] = ClientValueCollection(SPSiteCollectionScopedPermissionInfo),
-        tenant_scoped_permissions: ClientValueCollection[SPTenantScopedPermissionInfo] = ClientValueCollection(
-            SPTenantScopedPermissionInfo
-        ),
-    ):
-        self.absoluteUrl = absolute_url
-        self.allowAppOnly = allow_app_only
-        self.appIdentifier = app_identifier
-        self.serverRelativeUrl = server_relative_url
-        self.siteCollectionScopedPermissions = site_collection_scoped_permissions
-        self.tenantScopedPermissions = tenant_scoped_permissions
+    absoluteUrl: Optional[str] = None
+    allowAppOnly: Optional[bool] = None
+    appIdentifier: Optional[str] = None
+    serverRelativeUrl: Optional[str] = None
+    siteCollectionScopedPermissions: ClientValueCollection[SPSiteCollectionScopedPermissionInfo] = field(
+        default_factory=lambda: ClientValueCollection(SPSiteCollectionScopedPermissionInfo)
+    )
+    tenantScopedPermissions: ClientValueCollection[SPTenantScopedPermissionInfo] = field(
+        default_factory=lambda: ClientValueCollection(SPTenantScopedPermissionInfo)
+    )
 
     @property
     def entity_type_name(self):

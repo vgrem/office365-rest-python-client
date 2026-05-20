@@ -1,22 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPUninstallAddinErrorDetail(ClientValue):
-    def __init__(
-        self,
-        correlation_id: Optional[str] = None,
-        detail: Optional[str] = None,
-        exception_message: Optional[str] = None,
-        source: Optional[str] = None,
-        type_: Optional[str] = None,
-    ):
-        self.correlationId = correlation_id
-        self.detail = detail
-        self.exceptionMessage = exception_message
-        self.source = source
-        self.type = type_
+    correlationId: Optional[str] = None
+    detail: Optional[str] = None
+    exceptionMessage: Optional[str] = None
+    source: Optional[str] = None
+    type: Optional[str] = None
 
     @property
     def entity_type_name(self):

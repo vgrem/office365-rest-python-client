@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPAddinPrincipalInfo(ClientValue):
-    def __init__(
-        self,
-        absolute_url: Optional[str] = None,
-        app_identifier: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.absoluteUrl = absolute_url
-        self.appIdentifier = app_identifier
-        self.serverRelativeUrl = server_relative_url
-        self.title = title
+    absoluteUrl: Optional[str] = None
+    appIdentifier: Optional[str] = None
+    serverRelativeUrl: Optional[str] = None
+    title: Optional[str] = None
 
     @property
     def entity_type_name(self):

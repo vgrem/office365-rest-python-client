@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -8,26 +9,17 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.spuninstalladdiner
 )
 
 
+@dataclass
 class SPUninstallAddinJobDetail(ClientValue):
-    def __init__(
-        self,
-        absolute_url: Optional[str] = None,
-        app_instance_id: Optional[str] = None,
-        error_details: ClientValueCollection[SPUninstallAddinErrorDetail] = ClientValueCollection(
-            SPUninstallAddinErrorDetail
-        ),
-        job_id: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-        site_id: Optional[str] = None,
-        task_start_time: Optional[datetime] = None,
-    ):
-        self.absoluteUrl = absolute_url
-        self.appInstanceId = app_instance_id
-        self.errorDetails = error_details
-        self.jobId = job_id
-        self.serverRelativeUrl = server_relative_url
-        self.siteId = site_id
-        self.taskStartTime = task_start_time
+    absoluteUrl: Optional[str] = None
+    appInstanceId: Optional[str] = None
+    errorDetails: ClientValueCollection[SPUninstallAddinErrorDetail] = field(
+        default_factory=lambda: ClientValueCollection(SPUninstallAddinErrorDetail)
+    )
+    jobId: Optional[str] = None
+    serverRelativeUrl: Optional[str] = None
+    siteId: Optional[str] = None
+    taskStartTime: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPAppAddAndDeployResponseInfomation(ClientValue):
-    def __init__(
-        self,
-        is_first_time_deployed: Optional[bool] = None,
-        list_id: Optional[str] = None,
-        list_item_id: Optional[str] = None,
-        list_item_unique_id: Optional[str] = None,
-    ):
-        self.IsFirstTimeDeployed = is_first_time_deployed
-        self.ListId = list_id
-        self.ListItemId = list_item_id
-        self.ListItemUniqueId = list_item_unique_id
+    IsFirstTimeDeployed: Optional[bool] = None
+    ListId: Optional[str] = None
+    ListItemId: Optional[str] = None
+    ListItemUniqueId: Optional[str] = None
 
     @property
     def entity_type_name(self):

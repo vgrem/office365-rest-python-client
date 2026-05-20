@@ -1,20 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPAddinPermissionFailedInfo(ClientValue):
-    def __init__(
-        self,
-        app_identifier: Optional[str] = None,
-        error_message: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-    ):
-        self.appIdentifier = app_identifier
-        self.errorMessage = error_message
-        self.serverRelativeUrl = server_relative_url
-
-    ""
+    appIdentifier: Optional[str] = None
+    errorMessage: Optional[str] = None
+    serverRelativeUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

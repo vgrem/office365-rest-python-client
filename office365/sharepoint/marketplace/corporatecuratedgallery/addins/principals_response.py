@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.marketplace.corporatecuratedgallery.spaddinprincipalinfo import (
@@ -8,18 +10,14 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sperrorwithserverr
 )
 
 
+@dataclass
 class SPGetAddinPrincipalsResponse(ClientValue):
-    def __init__(
-        self,
-        addin_principals: ClientValueCollection[SPAddinPrincipalInfo] = ClientValueCollection(SPAddinPrincipalInfo),
-        errors_with_server_relative_url: ClientValueCollection[SPErrorWithServerRelativeUrl] = ClientValueCollection(
-            SPErrorWithServerRelativeUrl
-        ),
-    ):
-        self.addinPrincipals = addin_principals
-        self.errorsWithServerRelativeUrl = errors_with_server_relative_url
-
-    ""
+    addinPrincipals: ClientValueCollection[SPAddinPrincipalInfo] = field(
+        default_factory=lambda: ClientValueCollection(SPAddinPrincipalInfo)
+    )
+    errorsWithServerRelativeUrl: ClientValueCollection[SPErrorWithServerRelativeUrl] = field(
+        default_factory=lambda: ClientValueCollection(SPErrorWithServerRelativeUrl)
+    )
 
     @property
     def entity_type_name(self):

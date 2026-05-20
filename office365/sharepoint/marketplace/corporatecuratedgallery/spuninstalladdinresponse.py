@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.marketplace.corporatecuratedgallery.spfailtotriggeruninstalladdinjobresponse import (
@@ -8,18 +10,14 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sptriggereduninsta
 )
 
 
+@dataclass
 class SPUninstallAddinResponse(ClientValue):
-    def __init__(
-        self,
-        executing: ClientValueCollection[SPTriggeredUninstallAddinJobResponse] = ClientValueCollection(
-            SPTriggeredUninstallAddinJobResponse
-        ),
-        failed: ClientValueCollection[SPFailToTriggerUninstallAddinJobResponse] = ClientValueCollection(
-            SPFailToTriggerUninstallAddinJobResponse
-        ),
-    ):
-        self.executing = executing
-        self.failed = failed
+    executing: ClientValueCollection[SPTriggeredUninstallAddinJobResponse] = field(
+        default_factory=lambda: ClientValueCollection(SPTriggeredUninstallAddinJobResponse)
+    )
+    failed: ClientValueCollection[SPFailToTriggerUninstallAddinJobResponse] = field(
+        default_factory=lambda: ClientValueCollection(SPFailToTriggerUninstallAddinJobResponse)
+    )
 
     @property
     def entity_type_name(self):

@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AppUpgradeAvailability(ClientValue):
-    def __init__(self, asset_id: Optional[str] = None, is_upgrade_available: Optional[bool] = None):
-        self.AssetId = asset_id
-        self.IsUpgradeAvailable = is_upgrade_available
+    AssetId: Optional[str] = None
+    IsUpgradeAvailable: Optional[bool] = None
 
     @property
     def entity_type_name(self):
