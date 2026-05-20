@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union, cast
 
 from typing_extensions import Self
 
@@ -13,7 +13,7 @@ from office365.runtime.http.request_options import RequestOptions
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
 
-ClientValueT = TypeVar("ClientValueT", int, float, str, bytes, bool, dict, Enum, ClientValue)
+ClientValueT = TypeVar("ClientValueT", bound=Union[int, float, str, bytes, bool, dict, Enum, ClientValue])
 
 
 class ClientResult(Generic[ClientValueT]):
@@ -65,7 +65,7 @@ class ClientResult(Generic[ClientValueT]):
         """Returns the value"""
         return self._value  # type: ignore[return-value]
 
-    def execute_query(self) -> Self:
+    def execute_query(self) -> ClientResult[ClientValueT]:
         """Submit request(s) to the server"""
         self._context.execute_query()
         return self
@@ -77,7 +77,7 @@ class ClientResult(Generic[ClientValueT]):
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: tuple[type[Exception], ...] = (ClientRequestException,),
-    ) -> Self:
+    ) -> ClientResult[ClientValueT]:
         """
         Executes the current set of data retrieval queries and method invocations and retries it if needed.
 

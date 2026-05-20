@@ -35,7 +35,7 @@ class Group(Principal):
             self.ensure_property("Id", _group_loaded)
         return self
 
-    def expand_to_principals(self, max_count: int = 10) -> ClientResult[PrincipalInfo]:
+    def expand_to_principals(self, max_count: int = 10) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
         """
         Expands current group to a collection of principals.
         :param int max_count: Specifies the maximum number of principals to be returned.

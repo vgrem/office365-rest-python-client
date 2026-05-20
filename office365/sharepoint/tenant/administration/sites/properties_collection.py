@@ -46,7 +46,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_user_groups(self, site_id: str) -> ClientResult[SiteUserGroupInfo]:
+    def get_site_user_groups(self, site_id: str) -> ClientResult[ClientValueCollection[SiteUserGroupInfo]]:
         """
         Gets site user groups.
 
