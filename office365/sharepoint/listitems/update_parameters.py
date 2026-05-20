@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ListItemUpdateParameters(ClientValue):
-    def __init__(self, bypass_quota_check=None, bypass_shared_lock=None):
-        self.BypassQuotaCheck = bypass_quota_check
-        self.BypassSharedLock = bypass_shared_lock
+    BypassQuotaCheck: bool | None = None
+    BypassSharedLock: bool | None = None

@@ -1,12 +1,12 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPListItemVersionChange(ClientValue):
-    def __init__(
-        self, field_title: Optional[str] = None, new_value: Optional[str] = None, previous_value: Optional[str] = None
-    ):
-        self.field_title = field_title
-        self.new_value = new_value
-        self.previous_value = previous_value
+    field_title: str | None = None
+    new_value: str | None = None
+    previous_value: str | None = None

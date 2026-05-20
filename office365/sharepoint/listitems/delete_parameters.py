@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ListItemDeleteParameters(ClientValue):
-    def __init__(self, bypass_shared_lock=None):
-        """
-        :param bool bypass_shared_lock:
-        """
-        self.BypassSharedLock = bypass_shared_lock
+    """
+    :param bool bypass_shared_lock:
+    """
+
+    BypassSharedLock: bool | None = None

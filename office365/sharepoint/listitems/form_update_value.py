@@ -1,39 +1,28 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 
 
+@dataclass
 class ListItemFormUpdateValue(ClientValue):
-    """Specifies the properties of a list item field and its value."""
+    """Specifies the properties of a list item field and its value.
 
-    def __init__(
-        self,
-        name: Optional[str] = None,
-        value: Optional[str] = None,
-        has_exception: Optional[bool] = None,
-        error_code: Optional[int] = None,
-        error_message: Optional[str] = None,
-        field_name: Optional[str] = None,
-        field_value: Optional[str] = None,
-        item_id: Optional[int] = None,
-    ):
-        """
-        :param str name: Specifies the field internal name for a field.
-        :param str value: Specifies a value for a field.
-        :param bool has_exception: Specifies whether there was an error result after validating the value for the field
-        param int ErrorCode: Specifies the error code after validating the value for the field
-        """
-        super().__init__()
-        self.FieldName = name
-        self.FieldValue = value
-        self.HasException = has_exception
-        self.ErrorCode = error_code
-        self.ErrorMessage = error_message
-        self.FieldName = field_name
-        self.FieldValue = field_value
-        self.ItemId = item_id
+    :param str name: Specifies the field internal name for a field.
+    :param str value: Specifies a value for a field.
+    :param bool has_exception: Specifies whether there was an error result after validating the value for the field
+    param int ErrorCode: Specifies the error code after validating the value for the field
+    """
+
+    FieldName: str | None = None
+    FieldValue: str | None = None
+    HasException: bool | None = None
+    ErrorCode: int | None = None
+    ErrorMessage: str | None = None
+    ItemId: int | None = None
 
     def __repr__(self):
         if self.HasException:

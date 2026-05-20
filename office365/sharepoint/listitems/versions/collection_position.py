@@ -1,10 +1,10 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ListItemVersionCollectionPosition(ClientValue):
-    def __init__(self, paging_info: Optional[str] = None):
-        self.PagingInfo = paging_info
-
-    ""
+    PagingInfo: str | None = None
