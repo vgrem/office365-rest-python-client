@@ -18,9 +18,7 @@ from office365.sharepoint.userprofiles.personal_site_creation_priority import (
 
 def _ensure_user(user: Union[str, User], action: Optional[Callable[[str], None]] = None) -> None:
     if isinstance(user, User):
-        login_name = user.login_name
-        assert login_name is not None
-        user.ensure_property("LoginName", lambda: action(login_name))  # type: ignore[arg-type]
+        user.ensure_property("LoginName", lambda: action(user.login_name))  # type: ignore[arg-type]
     else:
         action(user)  # type: ignore[arg-type]
 
