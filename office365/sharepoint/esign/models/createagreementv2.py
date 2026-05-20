@@ -1,37 +1,24 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CreateAgreementModelV2(ClientValue):
-    def __init__(
-        self,
-        agreement_id: Optional[str] = None,
-        agreement_source: Optional[str] = None,
-        documents: Optional[str] = None,
-        document_source: Optional[str] = None,
-        expiration_date_time: Optional[datetime] = None,
-        form_field_sets: Optional[str] = None,
-        locale: Optional[str] = None,
-        message: Optional[str] = None,
-        name: Optional[str] = None,
-        recipient_sets: Optional[str] = None,
-        signing_mode: Optional[str] = None,
-        target_folder_uri: Optional[str] = None,
-    ):
-        self.agreementId = agreement_id
-        self.agreementSource = agreement_source
-        self.documents = documents
-        self.documentSource = document_source
-        self.expirationDateTime = expiration_date_time
-        self.formFieldSets = form_field_sets
-        self.locale = locale
-        self.message = message
-        self.name = name
-        self.recipientSets = recipient_sets
-        self.signingMode = signing_mode
-        self.targetFolderUri = target_folder_uri
+    agreementId: Optional[str] = None
+    agreementSource: Optional[str] = None
+    documents: Optional[str] = None
+    documentSource: Optional[str] = None
+    expirationDateTime: Optional[datetime] = None
+    formFieldSets: Optional[str] = None
+    locale: Optional[str] = None
+    message: Optional[str] = None
+    name: Optional[str] = None
+    recipientSets: Optional[str] = None
+    signingMode: Optional[str] = None
+    targetFolderUri: Optional[str] = None
 
     @property
     def entity_type_name(self):

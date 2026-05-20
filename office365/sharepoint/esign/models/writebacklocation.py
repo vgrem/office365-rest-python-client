@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WriteBackLocationModel(ClientValue):
-    def __init__(self, title: Optional[str] = None, uri: Optional[str] = None):
-        self.title = title
-        self.uri = uri
+    title: Optional[str] = None
+    uri: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GptRequestOptions(ClientValue):
-    def __init__(self, best_of: Optional[int] = None, prompt: Optional[str] = None):
-        self.BestOf = best_of
-        self.Prompt = prompt
+    BestOf: Optional[int] = None
+    Prompt: Optional[str] = None
 
     @property
     def entity_type_name(self):

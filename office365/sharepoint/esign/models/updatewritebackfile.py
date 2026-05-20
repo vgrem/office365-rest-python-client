@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UpdateWriteBackFileModel(ClientValue):
-    def __init__(
-        self,
-        file_name: Optional[str] = None,
-        list_item_id: Optional[str] = None,
-        url: Optional[str] = None,
-        work_item_id: Optional[str] = None,
-    ):
-        self.fileName = file_name
-        self.listItemId = list_item_id
-        self.url = url
-        self.workItemId = work_item_id
+    fileName: Optional[str] = None
+    listItemId: Optional[str] = None
+    url: Optional[str] = None
+    workItemId: Optional[str] = None
 
     @property
     def entity_type_name(self):

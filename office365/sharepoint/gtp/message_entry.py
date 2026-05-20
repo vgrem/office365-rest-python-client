@@ -1,17 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MessageEntry(ClientValue):
-    """"""
+    """content: str"""
 
-    def __init__(self, content=None, role: Optional[str] = None):
-        """
-        :param str content:
-        """
-        self.content = content
-        self.Role = role
+    content: Optional[str] = None
+    Role: Optional[str] = None
 
     @property
     def entity_type_name(self):

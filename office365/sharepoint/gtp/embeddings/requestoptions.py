@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GptEmbeddingsRequestOptions(ClientValue):
-    def __init__(self, input_: Optional[str] = None):
-        self.Input = input_
+    Input: Optional[str] = None
 
     @property
     def entity_type_name(self):

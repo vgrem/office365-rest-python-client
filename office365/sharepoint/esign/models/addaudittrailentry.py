@@ -1,25 +1,18 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AddAuditTrailEntryModel(ClientValue):
-    def __init__(
-        self,
-        action: Optional[str] = None,
-        action_date_time: Optional[datetime] = None,
-        document_id: Optional[str] = None,
-        is_entry_visible: Optional[bool] = None,
-        location: Optional[str] = None,
-        name: Optional[str] = None,
-    ):
-        self.action = action
-        self.actionDateTime = action_date_time
-        self.documentId = document_id
-        self.isEntryVisible = is_entry_visible
-        self.location = location
-        self.name = name
+    action: Optional[str] = None
+    actionDateTime: Optional[datetime] = None
+    documentId: Optional[str] = None
+    isEntryVisible: Optional[bool] = None
+    location: Optional[str] = None
+    name: Optional[str] = None
 
     @property
     def entity_type_name(self):

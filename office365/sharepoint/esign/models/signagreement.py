@@ -1,18 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SignAgreementModel(ClientValue):
-    def __init__(
-        self,
-        agreements: Optional[str] = None,
-        document_id: Optional[str] = None,
-        signature_fields: Optional[str] = None,
-    ):
-        self.agreements = agreements
-        self.documentId = document_id
-        self.signatureFields = signature_fields
+    agreements: Optional[str] = None
+    documentId: Optional[str] = None
+    signatureFields: Optional[str] = None
 
     @property
     def entity_type_name(self):

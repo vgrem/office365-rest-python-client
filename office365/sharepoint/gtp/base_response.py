@@ -1,22 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class BaseGptResponse(ClientValue):
-    def __init__(
-        self,
-        created: Optional[int] = None,
-        id_: Optional[str] = None,
-        model: Optional[str] = None,
-        object_type: Optional[str] = None,
-    ):
-        self.Created = created
-        self.Id = id_
-        self.Model = model
-        self.ObjectType = object_type
-
-    ""
+    Created: Optional[int] = None
+    Id: Optional[str] = None
+    Model: Optional[str] = None
+    ObjectType: Optional[str] = None
 
     @property
     def entity_type_name(self):

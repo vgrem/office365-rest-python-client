@@ -1,18 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CompleteAgreementModel(ClientValue):
-    def __init__(
-        self,
-        document_id: Optional[str] = None,
-        original_doc_name: Optional[str] = None,
-        target_folder_uri: Optional[str] = None,
-    ):
-        self.documentId = document_id
-        self.originalDocName = original_doc_name
-        self.targetFolderUri = target_folder_uri
+    documentId: Optional[str] = None
+    originalDocName: Optional[str] = None
+    targetFolderUri: Optional[str] = None
 
     @property
     def entity_type_name(self):

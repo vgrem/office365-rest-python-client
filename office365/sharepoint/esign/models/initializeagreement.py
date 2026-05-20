@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class InitializeAgreementModel(ClientValue):
-    def __init__(self, agreement_id: Optional[str] = None, documents: Optional[str] = None):
-        self.agreementId = agreement_id
-        self.documents = documents
+    agreementId: Optional[str] = None
+    documents: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,17 +1,17 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.gtp.chat.responsechoice import ChatGptResponseChoice
 from office365.sharepoint.gtp.responseusage import GptResponseUsage
 
 
+@dataclass
 class ChatGptResponse(ClientValue):
-    def __init__(
-        self,
-        choices: ClientValueCollection[ChatGptResponseChoice] = ClientValueCollection(ChatGptResponseChoice),
-        usage: GptResponseUsage = GptResponseUsage(),
-    ):
-        self.Choices = choices
-        self.Usage = usage
+    Choices: ClientValueCollection[ChatGptResponseChoice] = field(
+        default_factory=lambda: ClientValueCollection(ChatGptResponseChoice)
+    )
+    Usage: GptResponseUsage = field(default_factory=GptResponseUsage)
 
     @property
     def entity_type_name(self):

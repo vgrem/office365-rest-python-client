@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GptResponseChoice(ClientValue):
-    def __init__(self, finish_reason: Optional[str] = None, index: Optional[int] = None, text: Optional[str] = None):
-        self.FinishReason = finish_reason
-        self.Index = index
-        self.Text = text
+    FinishReason: Optional[str] = None
+    Index: Optional[int] = None
+    Text: Optional[str] = None
 
     @property
     def entity_type_name(self):
