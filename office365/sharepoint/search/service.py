@@ -164,10 +164,10 @@ class SearchService(Entity):
         """
         return_type = ClientResult(self.context, SearchResult())
         request = SearchRequest(
-            querytext=query_text,
-            select_properties=select_properties,
-            trim_duplicates=trim_duplicates,
-            row_limit=row_limit,
+            Querytext=query_text,
+            SelectProperties=StringCollection(select_properties) if select_properties else StringCollection(),
+            TrimDuplicates=trim_duplicates if trim_duplicates is not None else False,
+            RowLimit=row_limit,
             **kwargs,
         )
         payload = {"request": request}

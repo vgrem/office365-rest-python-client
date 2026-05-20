@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.reports.abandonedqueries.item import (
     ReportAbandonedQueriesItem,
@@ -5,14 +9,15 @@ from office365.sharepoint.search.reports.abandonedqueries.item import (
 from office365.sharepoint.search.reports.base import ReportBase
 
 
+@dataclass
 class ReportAbandonedQueries(ReportBase):
     """This report shows popular search queries that receive low click-through. Use this report to identify search
     queries that might create user dissatisfaction and to improve the discoverability of content.
     """
 
-    def __init__(self, reports=None):
-        super().__init__()
-        self.Reports = ClientValueCollection(ReportAbandonedQueriesItem, reports)
+    Reports: ClientValueCollection[ReportAbandonedQueriesItem] = field(
+        default_factory=lambda: ClientValueCollection(ReportAbandonedQueriesItem)
+    )
 
     @property
     def entity_type_name(self) -> str:  # type: ignore[override]

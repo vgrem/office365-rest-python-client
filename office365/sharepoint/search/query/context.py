@@ -1,32 +1,21 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
+@dataclass
 class QueryContext(ClientValue):
     """This object contains the query context properties."""
 
-    def __init__(
-        self,
-        group_object_ids=None,
-        site_id=None,
-        tenant_instance_id=None,
-        portal_url: Optional[str] = None,
-        role_ids: GuidCollection = GuidCollection(),
-        sp_site_id: Optional[str] = None,
-        sp_web_id: Optional[str] = None,
-    ):
-        """
-        :param str site_id: This property contains the site identification.
-        """
-        self.GroupObjectIds = StringCollection(group_object_ids)
-        self.SpSiteId = site_id
-        self.TenantInstanceId = tenant_instance_id
-        self.PortalUrl = portal_url
-        self.RoleIds = role_ids
-        self.SpSiteId = sp_site_id
-        self.SpWebId = sp_web_id
+    GroupObjectIds: StringCollection = field(default_factory=StringCollection)
+    SpSiteId: str | None = None
+    TenantInstanceId: str | None = None
+    PortalUrl: str | None = None
+    RoleIds: GuidCollection = field(default_factory=GuidCollection)
+    SpWebId: str | None = None
 
     @property
     def entity_type_name(self):

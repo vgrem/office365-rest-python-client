@@ -1,14 +1,20 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.endpoints import SearchEndpoints
 
 
+@dataclass
 class QueryRoutingInfo(ClientValue):
     """This property contains the query routing info."""
 
-    def __init__(self, query_state=None, search_endpoints=None):
-        self.QueryState = query_state
-        self.SearchEndpoints = ClientValueCollection(SearchEndpoints, search_endpoints)
+    QueryState: str | None = None
+    SearchEndpoints: ClientValueCollection[SearchEndpoints] = field(
+        default_factory=lambda: ClientValueCollection(SearchEndpoints)
+    )
 
     @property
     def entity_type_name(self):

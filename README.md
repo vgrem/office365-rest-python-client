@@ -322,7 +322,7 @@ from office365.sharepoint.search.request import SearchRequest
 from office365.sharepoint.search.service import SearchService
 
 search = SearchService(ctx)
-request = SearchRequest("IsDocument:1", row_limit=50, start_row=0)
+request = SearchRequest("IsDocument:1", RowLimit=50, StartRow=0)
 result = search.post_query(request).execute_query()
 
 rows = result.value.PrimaryQueryResult.RelevantResults.Table.Rows
