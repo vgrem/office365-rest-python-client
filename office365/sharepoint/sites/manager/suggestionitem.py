@@ -1,23 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SuggestionItem(ClientValue):
-    def __init__(
-        self,
-        dismissed_date: Optional[datetime] = None,
-        identifier: Optional[str] = None,
-        state: Optional[int] = None,
-        suggestion_type: Optional[int] = None,
-        metadata: Optional[str] = None,
-    ):
-        self.DismissedDate = dismissed_date
-        self.Identifier = identifier
-        self.State = state
-        self.SuggestionType = suggestion_type
-        self.Metadata = metadata
+    DismissedDate: Optional[datetime] = None
+    Identifier: Optional[str] = None
+    State: Optional[int] = None
+    SuggestionType: Optional[int] = None
+    Metadata: Optional[str] = None
 
     @property
     def entity_type_name(self):

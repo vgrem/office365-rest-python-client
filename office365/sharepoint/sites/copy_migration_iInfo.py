@@ -1,17 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CopyMigrationInfo(ClientValue):
-    """"""
-
-    def __init__(
-        self,
-        encryption_key=None,
-        job_id=None,
-        job_queue_uri=None,
-        source_list_item_unique_ids=None,
-    ):
-        self.EncryptionKey = encryption_key
-        self.JobId = job_id
-        self.JobQueueUri = job_queue_uri
-        self.SourceListItemUniqueIds = source_list_item_unique_ids
+    EncryptionKey: str | None = None
+    JobId: str | None = None
+    JobQueueUri: str | None = None
+    SourceListItemUniqueIds: list[str] | None = None

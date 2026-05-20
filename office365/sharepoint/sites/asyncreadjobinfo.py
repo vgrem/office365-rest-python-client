@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AsyncReadJobInfo(ClientValue):
-    def __init__(self, current_change_token: Optional[str] = None, job_id: Optional[str] = None):
-        self.CurrentChangeToken = current_change_token
-        self.JobId = job_id
+    CurrentChangeToken: Optional[str] = None
+    JobId: Optional[str] = None

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,39 +8,20 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.sites.migration.moveandsharefileinfo import SPMoveAndShareFileInfo
 
 
+@dataclass
 class CopyMigrationOptions(ClientValue):
-    """ """
-
-    def __init__(
-        self,
-        allow_schema_mismatch=None,
-        allow_smaller_version_limit_on_destination=None,
-        bypass_shared_lock=None,
-        client_etags=None,
-        customized_item_name: StringCollection = StringCollection(),
-        exclude_children: Optional[bool] = None,
-        ignore_version_history: Optional[bool] = None,
-        include_item_permissions: Optional[bool] = None,
-        is_move_mode: Optional[bool] = None,
-        merge_email_notifications: Optional[bool] = None,
-        move_and_share_file_info: SPMoveAndShareFileInfo = SPMoveAndShareFileInfo(),
-        move_and_share_items: Optional[bool] = None,
-        move_but_keep_source: Optional[bool] = None,
-        name_conflict_behavior: Optional[int] = None,
-        same_web_copy_move_optimization: Optional[bool] = None,
-    ):
-        self.AllowSchemaMismatch = allow_schema_mismatch
-        self.AllowSmallerVersionLimitOnDestination = allow_smaller_version_limit_on_destination
-        self.BypassSharedLock = bypass_shared_lock
-        self.ClientEtags = client_etags
-        self.CustomizedItemName = customized_item_name
-        self.ExcludeChildren = exclude_children
-        self.IgnoreVersionHistory = ignore_version_history
-        self.IncludeItemPermissions = include_item_permissions
-        self.IsMoveMode = is_move_mode
-        self.MergeEmailNotifications = merge_email_notifications
-        self.MoveAndShareFileInfo = move_and_share_file_info
-        self.MoveAndShareItems = move_and_share_items
-        self.MoveButKeepSource = move_but_keep_source
-        self.NameConflictBehavior = name_conflict_behavior
-        self.SameWebCopyMoveOptimization = same_web_copy_move_optimization
+    AllowSchemaMismatch: bool | None = None
+    AllowSmallerVersionLimitOnDestination: bool | None = None
+    BypassSharedLock: bool | None = None
+    ClientEtags: str | None = None
+    CustomizedItemName: StringCollection = field(default_factory=StringCollection)
+    ExcludeChildren: Optional[bool] = None
+    IgnoreVersionHistory: Optional[bool] = None
+    IncludeItemPermissions: Optional[bool] = None
+    IsMoveMode: Optional[bool] = None
+    MergeEmailNotifications: Optional[bool] = None
+    MoveAndShareFileInfo: SPMoveAndShareFileInfo = field(default_factory=SPMoveAndShareFileInfo)
+    MoveAndShareItems: Optional[bool] = None
+    MoveButKeepSource: Optional[bool] = None
+    NameConflictBehavior: Optional[int] = None
+    SameWebCopyMoveOptimization: Optional[bool] = None

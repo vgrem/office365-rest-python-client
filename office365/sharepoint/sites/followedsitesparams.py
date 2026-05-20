@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FollowedSitesParams(ClientValue):
-    def __init__(self, skip: Optional[int] = None, top: Optional[int] = None):
-        self.Skip = skip
-        self.Top = top
+    Skip: Optional[int] = None
+    Top: Optional[int] = None

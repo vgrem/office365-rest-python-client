@@ -1,34 +1,27 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UsageInfo(ClientValue):
-    """
-    Provides fields used to access information regarding site collection usage.
+    """Provides fields used to access information regarding site collection usage.
+
+    Fields:
+        Bandwidth: Contains the cumulative bandwidth used by the site collection on the previous day or
+            on the last day that log files were processed, which is tracked by usage analysis code.
+        DiscussionStorage: Contains the amount of storage, identified in bytes,
+            used by Web discussion data in the site collection.
+        Visits: Contains the cumulative number of visits to the site collection,
+            which is tracked by the usage analysis code.
     """
 
-    def __init__(
-        self,
-        bandwidth: Optional[int] = None,
-        discussion_storage: Optional[int] = None,
-        visits: Optional[int] = None,
-        hits: Optional[int] = None,
-        storage: Optional[int] = None,
-        storage_percentage_used: Optional[float] = None,
-    ):
-        """
-        :param long bandwidth: Contains the cumulative bandwidth used by the site collection on the previous day or
-            on the last day that log files were processed, which is tracked by usage analysis code.
-        :param long discussion_storage: Contains the amount of storage, identified in bytes,
-            used by Web discussion data in the site collection.
-        :param long visits: Contains the cumulative number of visits to the site collection,
-            which is tracked by the usage analysis code.
-        """
-        super().__init__()
-        self.Bandwidth = bandwidth
-        self.DiscussionStorage = discussion_storage
-        self.Visits = visits
-        self.Hits = hits
-        self.Storage = storage
-        self.StoragePercentageUsed = storage_percentage_used
+    Bandwidth: Optional[int] = None
+    DiscussionStorage: Optional[int] = None
+    Visits: Optional[int] = None
+    Hits: Optional[int] = None
+    Storage: Optional[int] = None
+    StoragePercentageUsed: Optional[float] = None

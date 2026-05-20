@@ -1,23 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RetirablePageMetadata(ClientValue):
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        last_activity_timestamp: Optional[datetime] = None,
-        path: Optional[str] = None,
-        picture_thumbnail_url: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.Description = description
-        self.LastActivityTimestamp = last_activity_timestamp
-        self.Path = path
-        self.PictureThumbnailUrl = picture_thumbnail_url
-        self.Title = title
+    Description: Optional[str] = None
+    LastActivityTimestamp: Optional[datetime] = None
+    Path: Optional[str] = None
+    PictureThumbnailUrl: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

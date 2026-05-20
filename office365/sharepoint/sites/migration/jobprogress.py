@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class MigrationJobProgress(ClientValue):
-    def __init__(self, logs: StringCollection = StringCollection(), next_token: Optional[str] = None):
-        self.logs = logs
-        self.next_token = next_token
+    logs: StringCollection = field(default_factory=StringCollection)
+    next_token: Optional[str] = None

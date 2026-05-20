@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class HTMLFieldSecuritySetting(ClientValue):
-    def __init__(self, allowed_domains: StringCollection = StringCollection(), allow_embedding: Optional[int] = None):
-        self.allowedDomains = allowed_domains
-        self.allowEmbedding = allow_embedding
+    allowedDomains: StringCollection = field(default_factory=StringCollection)
+    allowEmbedding: Optional[int] = None

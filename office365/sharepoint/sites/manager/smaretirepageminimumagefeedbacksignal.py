@@ -1,20 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SMARetirePageMinimumAgeFeedbackSignal(ClientValue):
-    def __init__(
-        self,
-        default_age: Optional[int] = None,
-        from_dismiss_action: Optional[int] = None,
-        from_empty_state: Optional[int] = None,
-        preferred_age: Optional[int] = None,
-    ):
-        self.DefaultAge = default_age
-        self.FromDismissAction = from_dismiss_action
-        self.FromEmptyState = from_empty_state
-        self.PreferredAge = preferred_age
+    DefaultAge: Optional[int] = None
+    FromDismissAction: Optional[int] = None
+    FromEmptyState: Optional[int] = None
+    PreferredAge: Optional[int] = None
 
     @property
     def entity_type_name(self):

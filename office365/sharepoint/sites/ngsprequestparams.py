@@ -1,16 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sites.followedsitesparams import FollowedSitesParams
 from office365.sharepoint.sites.ownedbymeparams import OwnedByMeParams
 from office365.sharepoint.sites.recentfilesparams import RecentFilesParams
 
 
+@dataclass
 class NgspRequestParams(ClientValue):
-    def __init__(
-        self,
-        followed_sites: FollowedSitesParams = FollowedSitesParams(),
-        recent_files: RecentFilesParams = RecentFilesParams(),
-        owned_by_me: OwnedByMeParams = OwnedByMeParams(),
-    ):
-        self.FollowedSites = followed_sites
-        self.RecentFiles = recent_files
-        self.OwnedByMe = owned_by_me
+    FollowedSites: FollowedSitesParams = field(default_factory=FollowedSitesParams)
+    RecentFiles: RecentFilesParams = field(default_factory=RecentFilesParams)
+    OwnedByMe: OwnedByMeParams = field(default_factory=OwnedByMeParams)

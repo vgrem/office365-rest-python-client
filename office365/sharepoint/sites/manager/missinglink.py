@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,16 +8,13 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sites.manager.missinglinkreferrer import MissingLinkReferrer
 
 
+@dataclass
 class MissingLink(ClientValue):
-    def __init__(
-        self,
-        hits: Optional[int] = None,
-        not_found_url: Optional[str] = None,
-        referrers: ClientValueCollection[MissingLinkReferrer] = ClientValueCollection(MissingLinkReferrer),
-    ):
-        self.Hits = hits
-        self.NotFoundUrl = not_found_url
-        self.Referrers = referrers
+    Hits: Optional[int] = None
+    NotFoundUrl: Optional[str] = None
+    Referrers: ClientValueCollection[MissingLinkReferrer] = field(
+        default_factory=lambda: ClientValueCollection(MissingLinkReferrer)
+    )
 
     @property
     def entity_type_name(self):

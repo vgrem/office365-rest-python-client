@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteTemplate(ClientValue):
-    def __init__(self, name: Optional[str] = None):
-        self.name = name
+    name: Optional[str] = None

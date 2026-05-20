@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sites.manager.retirablepagemetadata import (
@@ -5,12 +9,11 @@ from office365.sharepoint.sites.manager.retirablepagemetadata import (
 )
 
 
+@dataclass
 class RetirablePagesQueryResult(ClientValue):
-    def __init__(
-        self,
-        files: ClientValueCollection[RetirablePageMetadata] = ClientValueCollection(RetirablePageMetadata),
-    ):
-        self.Files = files
+    Files: ClientValueCollection[RetirablePageMetadata] = field(
+        default_factory=lambda: ClientValueCollection(RetirablePageMetadata)
+    )
 
     @property
     def entity_type_name(self):
