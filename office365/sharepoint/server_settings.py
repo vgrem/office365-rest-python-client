@@ -46,8 +46,7 @@ class ServerSettings(Entity):
     def get_global_installed_languages(context: ClientContext, compatibility_level: int) -> LanguageCollection:
         """Gets a list of installed languages that are compatible with a given version of SharePoint.
 
-        Args:
-            compatibility_level: The value of the major SharePoint version to query for installed languages.
+        The value of the major SharePoint version to query for installed languages.
         """
         binding_type = ServerSettings(context)
         return_type = LanguageCollection(context)
