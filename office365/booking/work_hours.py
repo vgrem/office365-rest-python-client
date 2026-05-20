@@ -22,8 +22,7 @@ class BookingWorkHours(ClientValue):
     timeSlots: List[BookingWorkTimeSlot] | None = None
 
     def __post_init__(self) -> None:
-        if self.timeSlots is not None:
-            self.timeSlots = ClientValueCollection(BookingWorkTimeSlot, self.timeSlots)  # type: ignore[assignment]
+        self.timeSlots = ClientValueCollection(BookingWorkTimeSlot, self.timeSlots)  # type: ignore[assignment]
 
     @property
     def entity_type_name(self) -> str:
