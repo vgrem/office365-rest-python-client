@@ -1,23 +1,20 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class SocialPostActorInfo(ClientValue):
-    def __init__(
-        self,
-        includes_current_user: Optional[bool] = None,
-        indexes: ClientValueCollection[int] = ClientValueCollection(int),
-        total_count: Optional[int] = None,
-    ):
-        """The SocialPostActorInfo class specifies a set of users, documents, sites, and tags by an index into the
-        SocialThread Actors array (see section 3.1.5.42.1.1.1).
-        In the SocialPost LikerInfo property (see section 3.1.5.26.1.1.6), this class represents a set of users that
-        like the post."""
-        self.IncludesCurrentUser = includes_current_user
-        self.Indexes = indexes
-        self.TotalCount = total_count
+    """The SocialPostActorInfo class specifies a set of users, documents, sites, and tags by an index into the
+    SocialThread Actors array (see section 3.1.5.42.1.1.1).
+    In the SocialPost LikerInfo property (see section 3.1.5.26.1.1.6), this class represents a set of users that
+    like the post."""
+
+    IncludesCurrentUser: Optional[bool] = None
+    Indexes: ClientValueCollection[int] = field(default_factory=lambda: ClientValueCollection(int))
+    TotalCount: Optional[int] = None
 
     @property
     def entity_type_name(self):

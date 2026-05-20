@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -8,48 +9,31 @@ from office365.sharepoint.microfeed.posts.collection import MicrofeedPostCollect
 from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 
 
+@dataclass
 class MicrofeedThread(ClientValue):
-    def __init__(
-        self,
-        can_follow_up: Optional[bool] = None,
-        can_have_attachments: Optional[bool] = None,
-        can_like: Optional[bool] = None,
-        can_reply: Optional[bool] = None,
-        data_links: ClientValueCollection[MicrofeedDataLink] = ClientValueCollection(MicrofeedDataLink),
-        definition_id: Optional[int] = None,
-        definition_name: Optional[str] = None,
-        identifier: Optional[str] = None,
-        locked: Optional[bool] = None,
-        microfeed_entities: ClientValueCollection[MicroBlogEntity] = ClientValueCollection(MicroBlogEntity),
-        owner_index: Optional[int] = None,
-        ref_reply: MicrofeedPost = MicrofeedPost(),
-        ref_root: MicrofeedPost = MicrofeedPost(),
-        render_post_author_image: Optional[bool] = None,
-        replies: MicrofeedPostCollection = MicrofeedPostCollection(),
-        reply_count: Optional[int] = None,
-        root_post: MicrofeedPost = MicrofeedPost(),
-        small_image_size_preferred: Optional[bool] = None,
-        status: Optional[int] = None,
-    ):
-        self.CanFollowUp = can_follow_up
-        self.CanHaveAttachments = can_have_attachments
-        self.CanLike = can_like
-        self.CanReply = can_reply
-        self.DataLinks = data_links
-        self.DefinitionId = definition_id
-        self.DefinitionName = definition_name
-        self.Identifier = identifier
-        self.Locked = locked
-        self.MicrofeedEntities = microfeed_entities
-        self.OwnerIndex = owner_index
-        self.RefReply = ref_reply
-        self.RefRoot = ref_root
-        self.RenderPostAuthorImage = render_post_author_image
-        self.Replies = replies
-        self.ReplyCount = reply_count
-        self.RootPost = root_post
-        self.SmallImageSizePreferred = small_image_size_preferred
-        self.Status = status
+    CanFollowUp: Optional[bool] = None
+    CanHaveAttachments: Optional[bool] = None
+    CanLike: Optional[bool] = None
+    CanReply: Optional[bool] = None
+    DataLinks: ClientValueCollection[MicrofeedDataLink] = field(
+        default_factory=lambda: ClientValueCollection(MicrofeedDataLink)
+    )
+    DefinitionId: Optional[int] = None
+    DefinitionName: Optional[str] = None
+    Identifier: Optional[str] = None
+    Locked: Optional[bool] = None
+    MicrofeedEntities: ClientValueCollection[MicroBlogEntity] = field(
+        default_factory=lambda: ClientValueCollection(MicroBlogEntity)
+    )
+    OwnerIndex: Optional[int] = None
+    RefReply: MicrofeedPost = field(default_factory=MicrofeedPost)
+    RefRoot: MicrofeedPost = field(default_factory=MicrofeedPost)
+    RenderPostAuthorImage: Optional[bool] = None
+    Replies: MicrofeedPostCollection = field(default_factory=MicrofeedPostCollection)
+    ReplyCount: Optional[int] = None
+    RootPost: MicrofeedPost = field(default_factory=MicrofeedPost)
+    SmallImageSizePreferred: Optional[bool] = None
+    Status: Optional[int] = None
 
     @property
     def entity_type_name(self):

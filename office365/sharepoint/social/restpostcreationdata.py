@@ -1,17 +1,14 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.social.posts.creation_data import SocialPostCreationData
 
 
+@dataclass
 class SocialRestPostCreationData(ClientValue):
-    def __init__(
-        self,
-        id_: Optional[str] = None,
-        creation_data: SocialPostCreationData = SocialPostCreationData(),
-    ):
-        self.ID = id_
-        self.creationData = creation_data
+    ID: Optional[str] = None
+    creationData: SocialPostCreationData = field(default_factory=SocialPostCreationData)
 
     @property
     def entity_type_name(self):

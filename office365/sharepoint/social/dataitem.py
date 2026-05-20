@@ -1,22 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SocialDataItem(ClientValue):
-    def __init__(
-        self,
-        account_name: Optional[str] = None,
-        item_type: Optional[int] = None,
-        tag_guid: Optional[str] = None,
-        text: Optional[str] = None,
-        uri: Optional[str] = None,
-    ):
-        self.AccountName = account_name
-        self.ItemType = item_type
-        self.TagGuid = tag_guid
-        self.Text = text
-        self.Uri = uri
+    AccountName: Optional[str] = None
+    ItemType: Optional[int] = None
+    TagGuid: Optional[str] = None
+    Text: Optional[str] = None
+    Uri: Optional[str] = None
 
     @property
     def entity_type_name(self):

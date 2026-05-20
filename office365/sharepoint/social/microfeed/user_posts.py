@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MicrofeedUserPosts(ClientValue):
-    def __init__(self, account_name: Optional[str] = None):
-        self.AccountName = account_name
+    AccountName: Optional[str] = None
 
     @property
     def entity_type_name(self):

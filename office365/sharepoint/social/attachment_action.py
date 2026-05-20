@@ -1,21 +1,17 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SocialAttachmentAction(ClientValue):
-    def __init__(
-        self,
-        action_kind: Optional[int] = None,
-        action_uri: Optional[str] = None,
-        height: Optional[int] = None,
-        width: Optional[int] = None,
-    ):
-        """The SocialAttachmentAction class specifies the user actions that are allowed for the attachment object."""
-        self.ActionKind = action_kind
-        self.ActionUri = action_uri
-        self.Height = height
-        self.Width = width
+    """The SocialAttachmentAction class specifies the user actions that are allowed for the attachment object."""
+
+    ActionKind: Optional[int] = None
+    ActionUri: Optional[str] = None
+    Height: Optional[int] = None
+    Width: Optional[int] = None
 
     @property
     def entity_type_name(self):
