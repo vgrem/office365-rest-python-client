@@ -1,18 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.principal import Principal
 
 
+@dataclass
 class OversharedWebInfo(ClientValue):
-    def __init__(
-        self,
-        has_unique_role_assignments_for_list: Optional[bool] = None,
-        principals: ClientValueCollection[Principal] = ClientValueCollection(Principal),
-    ):
-        self.hasUniqueRoleAssignmentsForList = has_unique_role_assignments_for_list
-        self.principals = principals
+    hasUniqueRoleAssignmentsForList: bool | None = None
+    principals: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
 
     @property
     def entity_type_name(self):

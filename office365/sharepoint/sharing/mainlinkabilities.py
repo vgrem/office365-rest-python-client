@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 from office365.sharepoint.sharing.mainlinkaudienceabilities import (
@@ -6,20 +10,13 @@ from office365.sharepoint.sharing.mainlinkaudienceabilities import (
 from office365.sharepoint.sharing.mainlinkroleabilities import MainLinkRoleAbilities
 
 
+@dataclass
 class MainLinkAbilities(ClientValue):
-    def __init__(
-        self,
-        can_get_link: SharingAbilityStatus = SharingAbilityStatus(),
-        can_manage_link: SharingAbilityStatus = SharingAbilityStatus(),
-        can_reset_link: SharingAbilityStatus = SharingAbilityStatus(),
-        main_link_audience_abilities: MainLinkAudienceAbilities = MainLinkAudienceAbilities(),
-        main_link_role_abilities: MainLinkRoleAbilities = MainLinkRoleAbilities(),
-    ):
-        self.canGetLink = can_get_link
-        self.canManageLink = can_manage_link
-        self.canResetLink = can_reset_link
-        self.mainLinkAudienceAbilities = main_link_audience_abilities
-        self.mainLinkRoleAbilities = main_link_role_abilities
+    canGetLink: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canManageLink: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canResetLink: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    mainLinkAudienceAbilities: MainLinkAudienceAbilities = field(default_factory=MainLinkAudienceAbilities)
+    mainLinkRoleAbilities: MainLinkRoleAbilities = field(default_factory=MainLinkRoleAbilities)
 
     @property
     def entity_type_name(self):

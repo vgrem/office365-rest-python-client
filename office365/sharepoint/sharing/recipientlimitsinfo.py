@@ -1,17 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RecipientLimitsInfo(ClientValue):
-    def __init__(
-        self,
-        alias_only: Optional[int] = None,
-        email_only: Optional[int] = None,
-        mixed_recipients: Optional[int] = None,
-        object_id_only: Optional[int] = None,
-    ):
-        self.alias_only = alias_only
-        self.email_only = email_only
-        self.mixed_recipients = mixed_recipients
-        self.object_id_only = object_id_only
+    alias_only: int | None = None
+    email_only: int | None = None
+    mixed_recipients: int | None = None
+    object_id_only: int | None = None

@@ -1,50 +1,27 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.principal.users.id_info import UserIdInfo
 
 
+@dataclass
 class Principal(ClientValue):
     """Principal class is a representation of an identity (user/group)."""
 
-    def __init__(
-        self,
-        id_=None,
-        directory_object_id=None,
-        email=None,
-        expiration=None,
-        is_active=None,
-        is_external=None,
-        job_title=None,
-        login_name=None,
-        name=None,
-        principal_type: Optional[int] = None,
-        user_id: UserIdInfo = UserIdInfo(),
-        user_principal_name: Optional[str] = None,
-    ):
-        """
-        :param int id_: Id of the Principal in SharePoint's UserInfo List.
-        :param str directory_object_id:
-        :param str email: Email address of the Principal.
-        :param str expiration:
-        :param bool is_active: Boolean value representing if the Principal is Active.
-        :param bool is_external: Boolean value representing if the Principal is an external user.
-        :param str job_title: The Job Title of the Principal.
-        :param str login_name: LoginName of the Principal.
-        :param str name: Name of the Principal.
-        """
-        self.id = id_
-        self.directoryObjectId = directory_object_id
-        self.email = email
-        self.expiration = expiration
-        self.isActive = is_active
-        self.isExternal = is_external
-        self.jobTitle = job_title
-        self.loginName = login_name
-        self.name = name
-        self.principalType = principal_type
-        self.userId = user_id
-        self.userPrincipalName = user_principal_name
+    id: str | None = None
+    directoryObjectId: str | None = None
+    email: str | None = None
+    expiration: str | None = None
+    isActive: bool | None = None
+    isExternal: bool | None = None
+    jobTitle: str | None = None
+    loginName: str | None = None
+    name: str | None = None
+    principalType: int | None = None
+    userId: UserIdInfo = field(default_factory=UserIdInfo)
+    userPrincipalName: str | None = None
 
     @property
     def entity_type_name(self):

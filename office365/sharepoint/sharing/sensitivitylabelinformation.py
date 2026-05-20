@@ -1,24 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SensitivityLabelInformation(ClientValue):
-    def __init__(
-        self,
-        color: Optional[str] = None,
-        display_name: Optional[str] = None,
-        has_irm_protection: Optional[bool] = None,
-        id_: Optional[str] = None,
-        sensitivity_label_protection_type: Optional[str] = None,
-        tooltip: Optional[str] = None,
-    ):
-        self.color = color
-        self.displayName = display_name
-        self.hasIRMProtection = has_irm_protection
-        self.id = id_
-        self.sensitivityLabelProtectionType = sensitivity_label_protection_type
-        self.tooltip = tooltip
+    color: str | None = None
+    displayName: str | None = None
+    hasIRMProtection: bool | None = None
+    id: str | None = None
+    sensitivityLabelProtectionType: str | None = None
+    tooltip: str | None = None
 
     @property
     def entity_type_name(self):

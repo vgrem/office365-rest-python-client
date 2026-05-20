@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.sitesharingreportjobdata import (
@@ -6,18 +8,12 @@ from office365.sharepoint.sharing.sitesharingreportjobdata import (
 )
 
 
+@dataclass
 class SiteSharingReportStatus(ClientValue):
-    def __init__(
-        self,
-        error_code: Optional[int] = None,
-        job_data: SiteSharingReportJobData = SiteSharingReportJobData(),
-        message: Optional[str] = None,
-        success: Optional[bool] = None,
-    ):
-        self.errorCode = error_code
-        self.jobData = job_data
-        self.message = message
-        self.success = success
+    errorCode: int | None = None
+    jobData: SiteSharingReportJobData = field(default_factory=SiteSharingReportJobData)
+    message: str | None = None
+    success: bool | None = None
 
     @property
     def entity_type_name(self):

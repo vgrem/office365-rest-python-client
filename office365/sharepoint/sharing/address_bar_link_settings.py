@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AddressBarLinkSettings(ClientValue):
-    def __init__(self, link_disabled: Optional[bool] = None, link_permission: Optional[int] = None):
-        self.linkDisabled = link_disabled
-        self.linkPermission = link_permission
+    linkDisabled: bool | None = None
+    linkPermission: int | None = None
 
     ""
 

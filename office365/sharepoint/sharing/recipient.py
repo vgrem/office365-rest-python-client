@@ -1,13 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Recipient(ClientValue):
-    def __init__(self, alias: Optional[str] = None, email: Optional[str] = None, object_id: Optional[str] = None):
-        self.alias = alias
-        self.email = email
-        self.objectId = object_id
+    alias: str | None = None
+    email: str | None = None
+    objectId: str | None = None
 
     @property
     def entity_type_name(self):

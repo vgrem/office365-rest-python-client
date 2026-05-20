@@ -1,13 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CExternalSharingEnforcement(ClientValue):
-    def __init__(self, enforce_block: Optional[bool] = None, expiration: Optional[datetime] = None):
-        self.enforceBlock = enforce_block
-        self.expiration = expiration
+    enforceBlock: bool | None = None
+    expiration: datetime | None = None
 
     @property
     def entity_type_name(self) -> str:

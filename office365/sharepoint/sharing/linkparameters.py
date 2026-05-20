@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class LinkParameters(ClientValue):
-    def __init__(self, nav: Optional[str] = None):
-        self.nav = nav
+    nav: str | None = None
 
     @property
     def entity_type_name(self):

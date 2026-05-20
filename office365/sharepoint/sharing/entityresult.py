@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.entityresultdescription import (
@@ -6,14 +8,10 @@ from office365.sharepoint.sharing.entityresultdescription import (
 )
 
 
+@dataclass
 class SharingEntityResult(ClientValue):
-    def __init__(
-        self,
-        description: SharingEntityResultDescription = SharingEntityResultDescription(),
-        key: Optional[str] = None,
-    ):
-        self.Description = description
-        self.Key = key
+    Description: SharingEntityResultDescription = field(default_factory=SharingEntityResultDescription)
+    Key: str | None = None
 
     @property
     def entity_type_name(self):

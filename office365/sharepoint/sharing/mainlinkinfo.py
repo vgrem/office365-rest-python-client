@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -6,20 +8,13 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.principal import Principal
 
 
+@dataclass
 class MainLinkInfo(ClientValue):
-    def __init__(
-        self,
-        accessors: ClientValueCollection[Principal] = ClientValueCollection(Principal),
-        audience: Optional[int] = None,
-        role: Optional[int] = None,
-        share_id: Optional[UUID] = None,
-        url: Optional[str] = None,
-    ):
-        self.accessors = accessors
-        self.audience = audience
-        self.role = role
-        self.shareId = share_id
-        self.url = url
+    accessors: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
+    audience: int | None = None
+    role: int | None = None
+    shareId: UUID | None = None
+    url: str | None = None
 
     @property
     def entity_type_name(self):

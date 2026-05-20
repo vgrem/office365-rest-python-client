@@ -1,20 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.itemsharingsettings import ItemSharingSettings
 from office365.sharepoint.sharing.mainlinkinfo import MainLinkInfo
 
 
+@dataclass
 class MainAccessInformation(ClientValue):
-    def __init__(
-        self,
-        default_main_link_role: Optional[int] = None,
-        main_link: MainLinkInfo = MainLinkInfo(),
-        sharing_settings: ItemSharingSettings = ItemSharingSettings(),
-    ):
-        self.defaultMainLinkRole = default_main_link_role
-        self.mainLink = main_link
-        self.sharingSettings = sharing_settings
+    defaultMainLinkRole: int | None = None
+    mainLink: MainLinkInfo = field(default_factory=MainLinkInfo)
+    sharingSettings: ItemSharingSettings = field(default_factory=ItemSharingSettings)
 
     @property
     def entity_type_name(self):

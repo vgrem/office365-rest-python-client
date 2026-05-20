@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharingEntityResultDescription(ClientValue):
-    def __init__(self, result: Optional[int] = None, result_string: Optional[str] = None):
-        self.Result = result
-        self.ResultString = result_string
+    Result: int | None = None
+    ResultString: str | None = None
 
     @property
     def entity_type_name(self):

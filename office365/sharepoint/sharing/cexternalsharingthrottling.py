@@ -1,13 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CExternalSharingThrottling(ClientValue):
-    def __init__(self, expiration: Optional[datetime] = None, limit_level: Optional[int] = None):
-        self.expiration = expiration
-        self.limitLevel = limit_level
+    expiration: datetime | None = None
+    limitLevel: int | None = None
 
     @property
     def entity_type_name(self):

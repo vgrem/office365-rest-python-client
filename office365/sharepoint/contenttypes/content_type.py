@@ -100,7 +100,7 @@ class ContentType(Entity):
         return self.properties.get("EditFormClientSideComponentProperties", None)
 
     @property
-    def id(self):
+    def id(self) -> ContentTypeId:
         """
         Specifies an identifier for the content type as specified in [MS-WSSTS] section 2.1.2.8.1.
         """

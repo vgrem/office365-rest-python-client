@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DomainRestrictionSettings(ClientValue):
-    def __init__(
-        self,
-        domain_restriction_mode: Optional[int] = None,
-        domain_restriction_mode_at_site: Optional[int] = None,
-        restricted_domains: Optional[str] = None,
-        restricted_domains_at_site: Optional[str] = None,
-    ):
-        self.domainRestrictionMode = domain_restriction_mode
-        self.domainRestrictionModeAtSite = domain_restriction_mode_at_site
-        self.restrictedDomains = restricted_domains
-        self.restrictedDomainsAtSite = restricted_domains_at_site
+    domainRestrictionMode: int | None = None
+    domainRestrictionModeAtSite: int | None = None
+    restrictedDomains: str | None = None
+    restrictedDomainsAtSite: str | None = None
 
     ""
 

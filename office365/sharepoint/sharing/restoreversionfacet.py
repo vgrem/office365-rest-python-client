@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RestoreVersionFacet(ClientValue):
-    def __init__(self, from_version: Optional[str] = None):
-        self.fromVersion = from_version
+    fromVersion: str | None = None
 
     @property
     def entity_type_name(self):

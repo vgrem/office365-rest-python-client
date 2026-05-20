@@ -1,19 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 
 
+@dataclass
 class SharingSettingsAbilities(ClientValue):
-    def __init__(
-        self,
-        can_get_block_sharing_push_down: SharingAbilityStatus = SharingAbilityStatus(),
-        can_get_item_members_can_share: SharingAbilityStatus = SharingAbilityStatus(),
-        can_manage_block_sharing_push_down: SharingAbilityStatus = SharingAbilityStatus(),
-        can_manage_item_members_can_share: SharingAbilityStatus = SharingAbilityStatus(),
-    ):
-        self.canGetBlockSharingPushDown = can_get_block_sharing_push_down
-        self.canGetItemMembersCanShare = can_get_item_members_can_share
-        self.canManageBlockSharingPushDown = can_manage_block_sharing_push_down
-        self.canManageItemMembersCanShare = can_manage_item_members_can_share
+    canGetBlockSharingPushDown: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canGetItemMembersCanShare: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canManageBlockSharingPushDown: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canManageItemMembersCanShare: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
 
     @property
     def entity_type_name(self):

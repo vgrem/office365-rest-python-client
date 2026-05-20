@@ -1,27 +1,21 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.links.info import SharingLinkInfo
 
 
+@dataclass
 class SharingLinkDefaultTemplate(ClientValue):
     """"""
 
-    def __init__(
-        self,
-        link_details=SharingLinkInfo(),
-        password_protected: Optional[bool] = None,
-        role: Optional[int] = None,
-        scope: Optional[int] = None,
-        share_kind: Optional[int] = None,
-        track_link_users: Optional[bool] = None,
-    ):
-        self.linkDetails = link_details
-        self.passwordProtected = password_protected
-        self.role = role
-        self.scope = scope
-        self.shareKind = share_kind
-        self.trackLinkUsers = track_link_users
+    linkDetails: SharingLinkInfo = field(default_factory=SharingLinkInfo)
+    passwordProtected: bool | None = None
+    role: int | None = None
+    scope: int | None = None
+    shareKind: int | None = None
+    trackLinkUsers: bool | None = None
 
     @property
     def entity_type_name(self):

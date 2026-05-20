@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharingLinkExpirationAbilityStatus(ClientValue):
-    def __init__(self, default_expiration_in_days: Optional[int] = None):
-        self.defaultExpirationInDays = default_expiration_in_days
+    defaultExpirationInDays: int | None = None
 
     @property
     def entity_type_name(self):

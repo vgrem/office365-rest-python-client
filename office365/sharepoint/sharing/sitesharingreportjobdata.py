@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteSharingReportJobData(ClientValue):
-    def __init__(self, folder_url: Optional[str] = None, web_url: Optional[str] = None):
-        self.folderUrl = folder_url
-        self.webUrl = web_url
+    folderUrl: str | None = None
+    webUrl: str | None = None
 
     @property
     def entity_type_name(self):

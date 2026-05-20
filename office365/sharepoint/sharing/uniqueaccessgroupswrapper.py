@@ -1,13 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.uniqueaccessgroupinfo import UniqueAccessGroupInfo
 
 
+@dataclass
 class UniqueAccessGroupsWrapper(ClientValue):
-    def __init__(
-        self,
-        discoverable_by_organization: UniqueAccessGroupInfo = UniqueAccessGroupInfo(),
-    ):
-        self.discoverableByOrganization = discoverable_by_organization
+    discoverableByOrganization: UniqueAccessGroupInfo = field(default_factory=UniqueAccessGroupInfo)
 
     @property
     def entity_type_name(self):

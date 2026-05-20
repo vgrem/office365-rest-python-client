@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharingLinkTemplate(ClientValue):
-    def __init__(
-        self,
-        password_protected: Optional[bool] = None,
-        role: Optional[int] = None,
-        scope: Optional[int] = None,
-        variant: Optional[int] = None,
-    ):
-        self.passwordProtected = password_protected
-        self.role = role
-        self.scope = scope
-        self.variant = variant
+    passwordProtected: bool | None = None
+    role: int | None = None
+    scope: int | None = None
+    variant: int | None = None
 
     @property
     def entity_type_name(self):
