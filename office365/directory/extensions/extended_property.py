@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
@@ -17,6 +17,6 @@ class MultiValueLegacyExtendedProperty(Entity):
     """An extended property that contains a collection of values."""
 
     @property
-    def value(self):
+    def value(self) -> StringCollection:
         """A collection of property values."""
         return self.properties.get("value", StringCollection())

@@ -1,24 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FolderDeleteParameters(ClientValue):
-    def __init__(
-        self,
-        bypass_shared_lock=None,
-        delete_if_empty=None,
-        etag_match=None,
-        bypass_checked_out: Optional[bool] = None,
-        e_tag_match: Optional[str] = None,
-    ):
-        """
-        :param bool bypass_shared_lock:
-        :param bool delete_if_empty:
-        :param bool etag_match:
-        """
-        self.BypassSharedLock = bypass_shared_lock
-        self.DeleteIfEmpty = delete_if_empty
-        self.ETagMatch = etag_match
-        self.BypassCheckedOut = bypass_checked_out
-        self.ETagMatch = e_tag_match
+    BypassSharedLock: bool | None = None
+    DeleteIfEmpty: bool | None = None
+    BypassCheckedOut: bool | None = None
+    ETagMatch: str | None = None

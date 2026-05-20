@@ -63,7 +63,7 @@ class FolderCollection(EntityCollection[Folder]):
                 if server_relative_url is None:
                     return
                 path = os.path.join(server_relative_url, name)
-                coloring_info = FolderColoringInformation(color_hex=color_hex)
+                coloring_info = FolderColoringInformation(ColorHex=color_hex)
                 self.context.folder_coloring.create_folder(path, coloring_info, return_type=return_type)
 
             if self.parent is not None:
