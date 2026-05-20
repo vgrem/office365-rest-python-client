@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,19 +9,13 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
+@dataclass
 class UpdateTemplateInfoV2(ClientValue):
-    def __init__(
-        self,
-        deleted_placeholder_column_ids: StringCollection = StringCollection(),
-        new_name: Optional[str] = None,
-        operation: Optional[int] = None,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
-        set_template_view_as_default_view: Optional[bool] = None,
-        url: Optional[str] = None,
-    ):
-        self.deleted_placeholder_column_ids = deleted_placeholder_column_ids
-        self.new_name = new_name
-        self.operation = operation
-        self.placeholders = placeholders
-        self.set_template_view_as_default_view = set_template_view_as_default_view
-        self.url = url
+    deleted_placeholder_column_ids: StringCollection = field(default_factory=StringCollection)
+    new_name: Optional[str] = None
+    operation: Optional[int] = None
+    placeholders: ClientValueCollection[PlaceholderV2] = field(
+        default_factory=lambda: ClientValueCollection(PlaceholderV2)
+    )
+    set_template_view_as_default_view: Optional[bool] = None
+    url: Optional[str] = None

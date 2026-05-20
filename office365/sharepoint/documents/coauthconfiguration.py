@@ -1,16 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CoAuthConfiguration(ClientValue):
-    def __init__(
-        self,
-        source_session_id: Optional[str] = None,
-        update_date: datetime = datetime.min,
-        update_reason: Optional[int] = None,
-    ):
-        self.source_session_id = source_session_id
-        self.update_date = update_date
-        self.update_reason = update_reason
+    source_session_id: Optional[str] = None
+    update_date: datetime = field(default_factory=lambda: datetime.min)
+    update_reason: Optional[int] = None

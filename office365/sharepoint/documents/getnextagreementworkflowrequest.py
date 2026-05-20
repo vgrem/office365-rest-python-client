@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GetNextAgreementWorkFlowRequest(ClientValue):
-    def __init__(self, current_state: Optional[int] = None, document_uri: Optional[str] = None):
-        self.current_state = current_state
-        self.document_uri = document_uri
+    current_state: Optional[int] = None
+    document_uri: Optional[str] = None

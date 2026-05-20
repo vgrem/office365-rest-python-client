@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CAAEFieldElement(ClientValue):
-    def __init__(self, id_: Optional[str] = None, version: Optional[str] = None):
-        self.id = id_
-        self.version = version
+    id: Optional[str] = None
+    version: Optional[str] = None

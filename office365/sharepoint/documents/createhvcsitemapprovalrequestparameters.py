@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CreateHVCSItemApprovalRequestParameters(ClientValue):
-    def __init__(self, approval_config: Optional[str] = None):
-        self.approval_config = approval_config
+    approval_config: Optional[str] = None

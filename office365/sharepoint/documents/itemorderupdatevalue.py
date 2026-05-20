@@ -1,12 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ItemOrderUpdateValue(ClientValue):
-    def __init__(
-        self, has_exception: Optional[bool] = None, item_id: Optional[int] = None, updated_order: Optional[float] = None
-    ):
-        self.has_exception = has_exception
-        self.item_id = item_id
-        self.updated_order = updated_order
+    has_exception: Optional[bool] = None
+    item_id: Optional[int] = None
+    updated_order: Optional[float] = None

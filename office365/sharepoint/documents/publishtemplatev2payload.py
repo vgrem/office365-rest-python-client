@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,17 +9,12 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 from office365.sharepoint.documents.snippet import Snippet
 
 
+@dataclass
 class PublishTemplateV2Payload(ClientValue):
-    def __init__(
-        self,
-        destination_list_content_type_id: Optional[str] = None,
-        destination_site_content_type_id: Optional[str] = None,
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
-        snippets: ClientValueCollection[Snippet] = ClientValueCollection(Snippet),
-        url: Optional[str] = None,
-    ):
-        self.destination_list_content_type_id = destination_list_content_type_id
-        self.destination_site_content_type_id = destination_site_content_type_id
-        self.placeholders = placeholders
-        self.snippets = snippets
-        self.url = url
+    destination_list_content_type_id: Optional[str] = None
+    destination_site_content_type_id: Optional[str] = None
+    placeholders: ClientValueCollection[PlaceholderV2] = field(
+        default_factory=lambda: ClientValueCollection(PlaceholderV2)
+    )
+    snippets: ClientValueCollection[Snippet] = field(default_factory=lambda: ClientValueCollection(Snippet))
+    url: Optional[str] = None
