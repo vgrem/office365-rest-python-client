@@ -1,13 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PointInTimeRestoreFacet(ClientValue):
-    def __init__(self, restore_to_date_time: Optional[str] = None):
-        self.restoreToDateTime = restore_to_date_time
-
-    ""
+    restoreToDateTime: Optional[str] = None
 
     @property
     def entity_type_name(self):

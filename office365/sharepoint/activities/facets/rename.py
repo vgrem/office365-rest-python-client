@@ -1,12 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RenameFacet(ClientValue):
-    def __init__(self, old_name=None):
-        """
-        :param str old_name:
-        """
-        self.oldName = old_name
+    oldName: Optional[str] = None
 
     @property
     def entity_type_name(self):

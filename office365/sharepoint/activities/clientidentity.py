@@ -1,20 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ActivityClientIdentity(ClientValue):
-    def __init__(
-        self,
-        email: Optional[str] = None,
-        name: Optional[str] = None,
-        id_: Optional[str] = None,
-        provider: Optional[str] = None,
-    ):
-        self.email = email
-        self.name = name
-        self.id = id_
-        self.provider = provider
+    email: Optional[str] = None
+    name: Optional[str] = None
+    id: Optional[str] = None
+    provider: Optional[str] = None
 
     @property
     def entity_type_name(self):

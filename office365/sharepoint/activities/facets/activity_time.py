@@ -1,18 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ActivityTimeFacet(ClientValue):
-    """"""
-
-    def __init__(self, last_recorded_time=None, observed_time=None, recorded_time=None):
-        """
-        :param str last_recorded_time:
-        :param str observed_time:
-        :param str recorded_time:
-        """
-        self.lastRecordedTime = last_recorded_time
-        self.observedTime = observed_time
-        self.recordedTime = recorded_time
+    lastRecordedTime: Optional[str] = None
+    observedTime: Optional[str] = None
+    recordedTime: Optional[str] = None
 
     @property
     def entity_type_name(self):

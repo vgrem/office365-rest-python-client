@@ -1,40 +1,33 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
+@dataclass
 class ResourceFacet(ClientValue):
-    def __init__(
-        self,
-        content_type_id=None,
-        file_system_object_type=None,
-        file_type=None,
-        item_id=None,
-        item_unique_id=None,
-        list_id=None,
-        org_id=None,
-        server_relative_path=SPResPath(),
-        site_id=None,
-        title=None,
-        web_id=None,
-    ):
-        """
-        :param str content_type_id: The ID of the content type
-        :param int file_system_object_type: List item’s object type in file system.
-        :param int file_type: The list item’s file type
-        :param str item_id: Identifies the changed item.
-        :param str item_unique_id: The Document identifier of the item
-        """
-        self.contentTypeId = content_type_id
-        self.fileSystemObjectType = file_system_object_type
-        self.fileType = file_type
-        self.itemId = item_id
-        self.itemUniqueId = item_unique_id
-        self.listId = list_id
-        self.orgId = org_id
-        self.serverRelativePath = server_relative_path
-        self.siteId = site_id
-        self.title = title
-        self.webId = web_id
+    """Fields:
+    contentTypeId: The ID of the content type
+    fileSystemObjectType: List item's object type in file system.
+    fileType: The list item's file type
+    itemId: Identifies the changed item.
+    itemUniqueId: The Document identifier of the item
+    """
+
+    contentTypeId: Optional[str] = None
+    fileSystemObjectType: Optional[int] = None
+    fileType: Optional[int] = None
+    itemId: Optional[str] = None
+    itemUniqueId: Optional[str] = None
+    listId: Optional[str] = None
+    orgId: Optional[str] = None
+    serverRelativePath: SPResPath = field(default_factory=SPResPath)
+    siteId: Optional[str] = None
+    title: Optional[str] = None
+    webId: Optional[str] = None
 
     @property
     def entity_type_name(self):

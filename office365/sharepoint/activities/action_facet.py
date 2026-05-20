@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.activities.facets.add_to_onedrive import AddToOneDriveFacet
 from office365.sharepoint.activities.facets.checkin import CheckinFacet
@@ -23,59 +27,28 @@ from office365.sharepoint.sharing.restorefacet import RestoreFacet
 from office365.sharepoint.sharing.restoreversionfacet import RestoreVersionFacet
 
 
+@dataclass
 class ActionFacet(ClientValue):
-    def __init__(
-        self,
-        add_to_one_drive=AddToOneDriveFacet(),
-        checkin=CheckinFacet(),
-        checkout=CheckoutFacet(),
-        comment=GetCommentFacet(),
-        create=CreateFacet(),
-        delete=DeleteFacet(),
-        discard_checkout=DiscardCheckoutFacet(),
-        edit=EditFacet(),
-        mention=GetMentionFacet(),
-        move=MoveFacet(),
-        point_in_time_restore=PointInTimeRestoreFacet(),
-        rename=RenameFacet(),
-        share=SharingFacet(),
-        task_completed=TaskCompletedFacet(),
-        version=VersionFacet(),
-        restore: RestoreFacet = RestoreFacet(),
-        restore_version: RestoreVersionFacet = RestoreVersionFacet(),
-        task_created: TaskCreatedFacet = TaskCreatedFacet(),
-        task_reassigned: TaskReassignedFacet = TaskReassignedFacet(),
-        task_reopened: TaskReopenedFacet = TaskReopenedFacet(),
-    ):
-        """
-        :param AddToOneDriveFacet add_to_one_drive:
-        :param CheckinFacet checkin:
-        :param CheckoutFacet checkout:
-        :param GetCommentFacet comment:
-        :param CreateFacet create:
-        :param RenameFacet rename:
-        :param SharingFacet share:
-        """
-        self.addToOneDrive = add_to_one_drive
-        self.checkin = checkin
-        self.checkout = checkout
-        self.comment = comment
-        self.create = create
-        self.delete = delete
-        self.discardCheckout = discard_checkout
-        self.edit = edit
-        self.mention = mention
-        self.move = move
-        self.pointInTimeRestore = point_in_time_restore
-        self.rename = rename
-        self.share = share
-        self.taskCompleted = task_completed
-        self.version = version
-        self.restore = restore
-        self.restoreVersion = restore_version
-        self.taskCreated = task_created
-        self.taskReassigned = task_reassigned
-        self.taskReopened = task_reopened
+    addToOneDrive: AddToOneDriveFacet = field(default_factory=AddToOneDriveFacet)
+    checkin: CheckinFacet = field(default_factory=CheckinFacet)
+    checkout: CheckoutFacet = field(default_factory=CheckoutFacet)
+    comment: GetCommentFacet = field(default_factory=GetCommentFacet)
+    create: CreateFacet = field(default_factory=CreateFacet)
+    delete: DeleteFacet = field(default_factory=DeleteFacet)
+    discardCheckout: DiscardCheckoutFacet = field(default_factory=DiscardCheckoutFacet)
+    edit: EditFacet = field(default_factory=EditFacet)
+    mention: GetMentionFacet = field(default_factory=GetMentionFacet)
+    move: MoveFacet = field(default_factory=MoveFacet)
+    pointInTimeRestore: PointInTimeRestoreFacet = field(default_factory=PointInTimeRestoreFacet)
+    rename: RenameFacet = field(default_factory=RenameFacet)
+    share: SharingFacet = field(default_factory=SharingFacet)
+    taskCompleted: TaskCompletedFacet = field(default_factory=TaskCompletedFacet)
+    version: VersionFacet = field(default_factory=VersionFacet)
+    restore: RestoreFacet = field(default_factory=RestoreFacet)
+    restoreVersion: RestoreVersionFacet = field(default_factory=RestoreVersionFacet)
+    taskCreated: TaskCreatedFacet = field(default_factory=TaskCreatedFacet)
+    taskReassigned: TaskReassignedFacet = field(default_factory=TaskReassignedFacet)
+    taskReopened: TaskReopenedFacet = field(default_factory=TaskReopenedFacet)
 
     def __repr__(self):  # type: ignore[override]
         return self.facet_type or ""
