@@ -1,12 +1,16 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ListCollectionPosition(ClientValue):
-    def __init__(self, paging_info="Paged=TRUE&p_ID=0"):
-        """
-        :param str paging_info:
-        """
-        self.PagingInfo = paging_info
+    """Fields:
+    PagingInfo (str):
+    """
+
+    PagingInfo: Optional[str] = "Paged=TRUE&p_ID=0"
 
     @property
     def entity_type_name(self):

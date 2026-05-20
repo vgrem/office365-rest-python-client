@@ -1,38 +1,29 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DocumentLibraryInformation(ClientValue):
-    """Specifies the information for a document library on a site."""
+    """Specifies the information for a document library on a site.
 
-    def __init__(
-        self,
-        title: Optional[str] = None,
-        absolute_url: Optional[str] = None,
-        server_relative_url: Optional[str] = None,
-        drive_id: Optional[str] = None,
-        from_cross_farm: Optional[bool] = None,
-        is_default_document_library: Optional[bool] = None,
-        id_: Optional[str] = None,
-        modified: datetime = datetime.min,
-        modified_friendly_display: Optional[str] = None,
-    ):
-        """
-        :param str title:Identifies the title of the document library
-        :param str absolute_url: Absolute Url of the document library.
-        :param str server_relative_url: Identifies the server-relative URL of the document library.
-        :param str drive_id:
-        :param bool from_cross_farm:
-        :param bool is_default_document_library:
-        """
-        self.Title = title
-        self.AbsoluteUrl = absolute_url
-        self.ServerRelativeUrl = server_relative_url
-        self.DriveId = drive_id
-        self.FromCrossFarm = from_cross_farm
-        self.IsDefaultDocumentLibrary = is_default_document_library
-        self.Id = id_
-        self.Modified = modified
-        self.ModifiedFriendlyDisplay = modified_friendly_display
+    Fields:
+        Title (str): Identifies the title of the document library
+        AbsoluteUrl (str): Absolute Url of the document library.
+        ServerRelativeUrl (str): Identifies the server-relative URL of the document library.
+        DriveId (str):
+        FromCrossFarm (bool):
+        IsDefaultDocumentLibrary (bool):
+    """
+
+    Title: Optional[str] = None
+    AbsoluteUrl: Optional[str] = None
+    ServerRelativeUrl: Optional[str] = None
+    DriveId: Optional[str] = None
+    FromCrossFarm: Optional[bool] = None
+    IsDefaultDocumentLibrary: Optional[bool] = None
+    Id: Optional[str] = None
+    Modified: datetime = datetime.min
+    ModifiedFriendlyDisplay: Optional[str] = None

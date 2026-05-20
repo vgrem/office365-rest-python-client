@@ -783,9 +783,9 @@ class List(SecurableObject):
             view_xml = "<View/>"
         payload = {
             "parameters": RenderListDataParameters(
-                view_xml=view_xml,
-                render_options=render_options,
-                expand_groups=expand_groups,
+                ViewXml=view_xml,
+                RenderOptions=render_options,
+                ExpandGroups=expand_groups,
             ),
         }
         qry = ServiceOperationQuery(self, "RenderListDataAsStream", None, payload, None, return_type)

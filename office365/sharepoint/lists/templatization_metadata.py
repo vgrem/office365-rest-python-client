@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -9,15 +10,13 @@ from office365.sharepoint.documents.contentassemblyfileinfo import (
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 
+@dataclass
 class TemplatizationMetaData(ClientValue):
-    def __init__(
-        self,
-        file_info: ContentAssemblyFileInfo = ContentAssemblyFileInfo(),
-        is_template_view_default: Optional[bool] = None,
-        placeholder_column_type_info: ClientValueCollection[ColumnTypeInfo] = ClientValueCollection(ColumnTypeInfo),
-        placeholders: ClientValueCollection[PlaceholderV2] = ClientValueCollection(PlaceholderV2),
-    ):
-        self.FileInfo = file_info
-        self.IsTemplateViewDefault = is_template_view_default
-        self.PlaceholderColumnTypeInfo = placeholder_column_type_info
-        self.Placeholders = placeholders
+    FileInfo: ContentAssemblyFileInfo = field(default_factory=ContentAssemblyFileInfo)
+    IsTemplateViewDefault: Optional[bool] = None
+    PlaceholderColumnTypeInfo: ClientValueCollection[ColumnTypeInfo] = field(
+        default_factory=lambda: ClientValueCollection(ColumnTypeInfo)
+    )
+    Placeholders: ClientValueCollection[PlaceholderV2] = field(
+        default_factory=lambda: ClientValueCollection(PlaceholderV2)
+    )

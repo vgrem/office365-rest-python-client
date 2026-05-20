@@ -248,7 +248,7 @@ class Web(SecurableObject):
         def _get_list_data_as_stream():
             assert self.url is not None
             list_abs_url = self.url + path
-            parameters = RenderListDataParameters(view_xml=view_xml)
+            parameters = RenderListDataParameters(ViewXml=view_xml)
             List.get_list_data_as_stream(self.context, list_abs_url, parameters, return_type=return_type)
 
         self.ensure_property("Url", _get_list_data_as_stream)
