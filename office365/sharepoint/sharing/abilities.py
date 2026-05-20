@@ -16,6 +16,13 @@ class SharingAbilities(ClientValue):
     """
     Represents the matrix of possible sharing abilities for direct sharing and tokenized sharing links along
     with the state of each capability for the current user.
+
+    Fields:
+        anonymousLinkAbilities: Indicates abilities for anonymous access links.
+        directSharingAbilities: Indicates abilities for direct sharing of a document using the canonical URL.
+        organizationLinkAbilities: Indicates abilities for organization access links.
+        peopleSharingLinkAbilities: Indicates abilities for tokenized sharing links that are configured to support
+            only a predefined restricted membership set.
     """
 
     anonymousLinkAbilities: SharingLinkAbilities = field(default_factory=SharingLinkAbilities)

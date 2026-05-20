@@ -8,7 +8,15 @@ from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 
 @dataclass
 class DirectSharingAbilities(ClientValue):
-    """Represents the set of capabilities for direct sharing for the current user."""
+    """
+    Represents the set of capabilities for direct sharing for the current user.
+
+    Fields:
+        canAddExternalPrincipal: Indicates whether the current user can share to new external users.
+        canAddInternalPrincipal: Indicates whether the current user can share to internal users.
+        canRequestGrantAccess: Indicates whether the current user can initiate a request for someone with higher
+            permissions to grant access.
+    """
 
     canAddExternalPrincipal: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     canAddInternalPrincipal: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)

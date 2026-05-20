@@ -17,6 +17,12 @@ class SharingLinkAbilities(ClientValue):
     """
     Represents the set of capabilities for specific configurations of tokenized sharing link for the current user
     and whether they are enabled or not.
+
+    Fields:
+        canGetEditLink: Indicates whether the current user can get an existing tokenized sharing link that
+            provides edit access.
+        canGetReadLink: Indicates whether the current user can get an existing tokenized sharing link that
+            provides read access.
     """
 
     canAddNewExternalPrincipals: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
