@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 from uuid import UUID
 
@@ -5,22 +6,14 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
 
 
+@dataclass
 class GetSourceItemMetadataForODCMountPointRequest(ClientValue):
-    def __init__(
-        self,
-        is_create_mount_point_flow: Optional[bool] = None,
-        mounted_remote_item_unique_ids: GuidCollection = GuidCollection(),
-        remote_item_list_id: Optional[UUID] = None,
-        remote_item_site_id: Optional[UUID] = None,
-        remote_item_unique_ids: GuidCollection = GuidCollection(),
-        remote_item_web_id: Optional[UUID] = None,
-    ):
-        self.IsCreateMountPointFlow = is_create_mount_point_flow
-        self.MountedRemoteItemUniqueIds = mounted_remote_item_unique_ids
-        self.RemoteItemListId = remote_item_list_id
-        self.RemoteItemSiteId = remote_item_site_id
-        self.RemoteItemUniqueIds = remote_item_unique_ids
-        self.RemoteItemWebId = remote_item_web_id
+    IsCreateMountPointFlow: Optional[bool] = None
+    MountedRemoteItemUniqueIds: GuidCollection = field(default_factory=GuidCollection)
+    RemoteItemListId: Optional[UUID] = None
+    RemoteItemSiteId: Optional[UUID] = None
+    RemoteItemUniqueIds: GuidCollection = field(default_factory=GuidCollection)
+    RemoteItemWebId: Optional[UUID] = None
 
     @property
     def entity_type_name(self):

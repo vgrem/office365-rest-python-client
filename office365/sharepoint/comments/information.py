@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,16 +7,11 @@ from office365.sharepoint.comments.client.identity import Identity
 from office365.sharepoint.comments.contentanchor import ContentAnchor
 
 
+@dataclass
 class CommentInformation(ClientValue):
-    def __init__(
-        self,
-        text: Optional[str] = None,
-        mentions: ClientValueCollection[Identity] = ClientValueCollection(Identity),
-        content_anchor: ContentAnchor = ContentAnchor(),
-    ):
-        self.text = text
-        self.mentions = mentions
-        self.contentAnchor = content_anchor
+    text: Optional[str] = None
+    mentions: ClientValueCollection[Identity] = field(default_factory=lambda: ClientValueCollection(Identity))
+    contentAnchor: ContentAnchor = field(default_factory=ContentAnchor)
 
     @property
     def entity_type_name(self):

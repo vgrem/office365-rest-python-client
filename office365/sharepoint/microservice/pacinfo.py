@@ -1,22 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PacInfo(ClientValue):
-    def __init__(
-        self,
-        endpoint: Optional[str] = None,
-        is_app_only: Optional[bool] = None,
-        scenario: Optional[str] = None,
-        token: Optional[str] = None,
-        version: Optional[int] = None,
-    ):
-        self.Endpoint = endpoint
-        self.IsAppOnly = is_app_only
-        self.Scenario = scenario
-        self.Token = token
-        self.Version = version
+    Endpoint: Optional[str] = None
+    IsAppOnly: Optional[bool] = None
+    Scenario: Optional[str] = None
+    Token: Optional[str] = None
+    Version: Optional[int] = None
 
     @property
     def entity_type_name(self):

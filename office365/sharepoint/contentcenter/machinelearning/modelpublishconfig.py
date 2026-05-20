@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.compliance.classification.publishconfig import (
@@ -8,18 +10,14 @@ from office365.sharepoint.contentcenter.machinelearning.extractorpublishconfig i
 )
 
 
+@dataclass
 class SPModelPublishConfig(ClientValue):
-    def __init__(
-        self,
-        classification_publish_configs: ClientValueCollection[SPClassificationPublishConfig] = ClientValueCollection(
-            SPClassificationPublishConfig
-        ),
-        extractor_publish_configs: ClientValueCollection[SPExtractorPublishConfig] = ClientValueCollection(
-            SPExtractorPublishConfig
-        ),
-    ):
-        self.ClassificationPublishConfigs = classification_publish_configs
-        self.ExtractorPublishConfigs = extractor_publish_configs
+    ClassificationPublishConfigs: ClientValueCollection[SPClassificationPublishConfig] = field(
+        default_factory=lambda: ClientValueCollection(SPClassificationPublishConfig)
+    )
+    ExtractorPublishConfigs: ClientValueCollection[SPExtractorPublishConfig] = field(
+        default_factory=lambda: ClientValueCollection(SPExtractorPublishConfig)
+    )
 
     @property
     def entity_type_name(self):

@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SerializableType(ClientValue):
-    def __init__(self, type_: Optional[str] = None):
-        self.type = type_
+    type: Optional[str] = None
 
     @property
     def entity_type_name(self):

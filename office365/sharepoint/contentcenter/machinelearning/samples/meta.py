@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MachineLearningSampleMeta(ClientValue):
-    def __init__(self, extracted_text: Optional[str] = None):
-        self.ExtractedText = extracted_text
+    ExtractedText: Optional[str] = None
 
     @property
     def entity_type_name(self):

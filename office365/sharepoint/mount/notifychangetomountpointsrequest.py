@@ -1,10 +1,12 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
 
 
+@dataclass
 class NotifyChangeToMountPointsRequest(ClientValue):
-    def __init__(self, mount_point_unique_ids: GuidCollection = GuidCollection()):
-        self.MountPointUniqueIds = mount_point_unique_ids
+    MountPointUniqueIds: GuidCollection = field(default_factory=GuidCollection)
 
     @property
     def entity_type_name(self):

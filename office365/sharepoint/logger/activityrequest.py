@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class LogActivityRequest(ClientValue):
-    def __init__(self, last_access_time: Optional[str] = None, list_item_unique_id: Optional[str] = None):
-        self.LastAccessTime = last_access_time
-        self.ListItemUniqueId = list_item_unique_id
+    LastAccessTime: Optional[str] = None
+    ListItemUniqueId: Optional[str] = None
 
     @property
     def entity_type_name(self):

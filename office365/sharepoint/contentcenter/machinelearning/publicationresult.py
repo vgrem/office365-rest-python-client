@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,16 +7,11 @@ from office365.sharepoint.contentcenter.machinelearning.publicationentitydata im
 )
 
 
+@dataclass
 class SPMachineLearningPublicationResult(ClientValue):
-    def __init__(
-        self,
-        error_message: Optional[str] = None,
-        publication: SPMachineLearningPublicationEntityData = SPMachineLearningPublicationEntityData(),
-        status_code: Optional[int] = None,
-    ):
-        self.ErrorMessage = error_message
-        self.Publication = publication
-        self.StatusCode = status_code
+    ErrorMessage: Optional[str] = None
+    Publication: SPMachineLearningPublicationEntityData = field(default_factory=SPMachineLearningPublicationEntityData)
+    StatusCode: Optional[int] = None
 
     @property
     def entity_type_name(self):

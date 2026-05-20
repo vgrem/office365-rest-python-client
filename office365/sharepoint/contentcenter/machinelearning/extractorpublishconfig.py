@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPExtractorPublishConfig(ClientValue):
-    def __init__(
-        self,
-        column_internal_name: Optional[str] = None,
-        column_name: Optional[str] = None,
-        column_type: Optional[str] = None,
-        extractor_id: Optional[str] = None,
-    ):
-        self.ColumnInternalName = column_internal_name
-        self.ColumnName = column_name
-        self.ColumnType = column_type
-        self.ExtractorId = extractor_id
+    ColumnInternalName: Optional[str] = None
+    ColumnName: Optional[str] = None
+    ColumnType: Optional[str] = None
+    ExtractorId: Optional[str] = None
 
     @property
     def entity_type_name(self):

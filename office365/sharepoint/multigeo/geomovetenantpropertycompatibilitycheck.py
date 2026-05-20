@@ -1,16 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GeoMoveTenantPropertyCompatibilityCheck(ClientValue):
-    def __init__(
-        self,
-        geo_move_tenant_property_check_result: Optional[int] = None,
-        property_name: Optional[str] = None,
-    ):
-        self.GeoMoveTenantPropertyCheckResult = geo_move_tenant_property_check_result
-        self.PropertyName = property_name
+    GeoMoveTenantPropertyCheckResult: Optional[int] = None
+    PropertyName: Optional[str] = None
 
     @property
     def entity_type_name(self):

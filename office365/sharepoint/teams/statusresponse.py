@@ -1,17 +1,14 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.teams.publishingstatus import TeamsPublishingStatus
 
 
+@dataclass
 class TeamsPublishingStatusResponse(ClientValue):
-    def __init__(
-        self,
-        audience_id: Optional[str] = None,
-        status: TeamsPublishingStatus = TeamsPublishingStatus(),
-    ):
-        self.AudienceId = audience_id
-        self.Status = status
+    AudienceId: Optional[str] = None
+    Status: TeamsPublishingStatus = field(default_factory=TeamsPublishingStatus)
 
     @property
     def entity_type_name(self):

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Iterator, Union
 
 from typing_extensions import Self
@@ -6,6 +7,7 @@ from office365.runtime.client_value import ClientValue
 from office365.sharepoint.permissions.kind import PermissionKind
 
 
+@dataclass
 class BasePermissions(ClientValue):
     """Specifies a set of built-in permissions."""
 
@@ -13,10 +15,8 @@ class BasePermissions(ClientValue):
     _MAX_BITS = 64
     _FULL_MASK = 0xFFFF
 
-    def __init__(self, high: int = 0, low: int = 0):
-        super().__init__()
-        self.High = high
-        self.Low = low
+    High: int = 0
+    Low: int = 0
 
     def __repr__(self):
         perms = self.permission_levels

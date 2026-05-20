@@ -1,10 +1,13 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GetTeamChannelSiteOwnerResponse(ClientValue):
-    def __init__(self, owner=None, secondary_contact=None):
-        self.Owner = owner
-        self.SecondaryContact = secondary_contact
+    Owner: Optional[str] = None
+    SecondaryContact: Optional[str] = None
 
     @property
     def entity_type_name(self):

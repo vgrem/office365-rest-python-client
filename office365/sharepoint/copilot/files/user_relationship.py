@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CopilotFileUserRelationship(ClientValue):
-    def __init__(self, last_access_date_time: Optional[datetime] = None):
-        self.LastAccessDateTime = last_access_date_time
+    LastAccessDateTime: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

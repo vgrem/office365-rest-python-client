@@ -1,9 +1,11 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AppLicense(ClientValue):
-    def __init__(self, raw_xml_license_token: Optional[str] = None):
-        """Specifies a marketplace license."""
-        self.RawXMLLicenseToken = raw_xml_license_token
+    """Specifies a marketplace license."""
+
+    RawXMLLicenseToken: Optional[str] = None

@@ -1,19 +1,15 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPDependentModel(ClientValue):
-    def __init__(
-        self,
-        last_refereshed_time_utc: Optional[datetime] = None,
-        model_id: Optional[str] = None,
-        model_type: Optional[str] = None,
-    ):
-        self.LastRefereshedTimeUtc = last_refereshed_time_utc
-        self.ModelId = model_id
-        self.ModelType = model_type
+    LastRefereshedTimeUtc: Optional[datetime] = None
+    ModelId: Optional[str] = None
+    ModelType: Optional[str] = None
 
     @property
     def entity_type_name(self):

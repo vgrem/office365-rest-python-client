@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,27 +8,14 @@ from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 from office365.sharepoint.types.resource_path import ResourcePath
 
 
+@dataclass
 class BrandCenterConfiguration(ClientValue):
-    """ """
-
-    def __init__(
-        self,
-        brand_colors_list_id=None,
-        brand_colors_list_url=None,
-        brand_font_library_id: Optional[str] = None,
-        brand_font_library_url: ResourcePath = ResourcePath(),
-        is_brand_center_site_feature_enabled: Optional[bool] = None,
-        is_public_cdn_enabled: Optional[bool] = None,
-        org_assets: OrgAssets = OrgAssets(),
-        site_id: Optional[str] = None,
-        site_url: Optional[str] = None,
-    ):
-        self.BrandColorsListId = brand_colors_list_id
-        self.BrandColorsListUrl = brand_colors_list_url
-        self.BrandFontLibraryId = brand_font_library_id
-        self.BrandFontLibraryUrl = brand_font_library_url
-        self.IsBrandCenterSiteFeatureEnabled = is_brand_center_site_feature_enabled
-        self.IsPublicCdnEnabled = is_public_cdn_enabled
-        self.OrgAssets = org_assets
-        self.SiteId = site_id
-        self.SiteUrl = site_url
+    BrandColorsListId: Optional[str] = None
+    BrandColorsListUrl: Optional[str] = None
+    BrandFontLibraryId: Optional[str] = None
+    BrandFontLibraryUrl: ResourcePath = field(default_factory=ResourcePath)
+    IsBrandCenterSiteFeatureEnabled: Optional[bool] = None
+    IsPublicCdnEnabled: Optional[bool] = None
+    OrgAssets: OrgAssets = field(default_factory=OrgAssets)
+    SiteId: Optional[str] = None
+    SiteUrl: Optional[str] = None

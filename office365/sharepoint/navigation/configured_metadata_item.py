@@ -1,38 +1,29 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ConfiguredMetadataNavigationItem(ClientValue):
-    """Represents a configured metadata navigation item."""
+    """Represents a configured metadata navigation item.
 
-    def __init__(
-        self,
-        field_display_name: Optional[str] = None,
-        field_title: Optional[str] = None,
-        field_type_as_string: Optional[str] = None,
-        is_content_type_field: Optional[bool] = None,
-        is_folder_hierarchy: Optional[bool] = None,
-        is_hierarchy: Optional[bool] = None,
-        is_multi_value_lookup: Optional[bool] = None,
-        is_taxonomy_field: Optional[bool] = None,
-    ):
-        """
-        :param str field_display_name: The display name of the field that this item refers to.
-        :param str field_title: The internal name of the field that this item refers to.
-        :param str field_type_as_string: The type of the field that this item refers to.
-        :param bool is_content_type_field: Indicates whether the type of this field is a content type.
-        :param bool is_folder_hierarchy: Indicates whether this item is a folder hierarchy.
-        :param bool is_hierarchy: Indicates whether this item is hierarchical.
-        """
-        self.FieldDisplayName = field_display_name
-        self.FieldTitle = field_title
-        self.FieldTypeAsString = field_type_as_string
-        self.IsContentTypeField = is_content_type_field
-        self.IsFolderHierarchy = is_folder_hierarchy
-        self.IsHierarchy = is_hierarchy
-        self.IsMultiValueLookup = is_multi_value_lookup
-        self.IsTaxonomyField = is_taxonomy_field
+    field_display_name: The display name of the field that this item refers to.
+    field_title: The internal name of the field that this item refers to.
+    field_type_as_string: The type of the field that this item refers to.
+    is_content_type_field: Indicates whether the type of this field is a content type.
+    is_folder_hierarchy: Indicates whether this item is a folder hierarchy.
+    is_hierarchy: Indicates whether this item is hierarchical.
+    """
+
+    FieldDisplayName: Optional[str] = None
+    FieldTitle: Optional[str] = None
+    FieldTypeAsString: Optional[str] = None
+    IsContentTypeField: Optional[bool] = None
+    IsFolderHierarchy: Optional[bool] = None
+    IsHierarchy: Optional[bool] = None
+    IsMultiValueLookup: Optional[bool] = None
+    IsTaxonomyField: Optional[bool] = None
 
     @property
     def entity_type_name(self):

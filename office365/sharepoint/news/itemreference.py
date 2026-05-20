@@ -1,21 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class NewsItemReference(ClientValue):
-    def __init__(
-        self,
-        item_id: Optional[int] = None,
-        library_id: Optional[str] = None,
-        site_id: Optional[str] = None,
-        web_id: Optional[str] = None,
-    ):
-        super().__init__()
-        self.ItemId = item_id
-        self.LibraryId = library_id
-        self.SiteId = site_id
-        self.WebId = web_id
+    ItemId: Optional[int] = None
+    LibraryId: Optional[str] = None
+    SiteId: Optional[str] = None
+    WebId: Optional[str] = None
 
     @property
     def entity_type_name(self):

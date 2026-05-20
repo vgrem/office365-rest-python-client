@@ -64,7 +64,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         """
         return_type = ClientResult(context, str())
         binding_type = ClientPeoplePickerWebServiceInterface(context)
-        payload = {"queryParams": ClientPeoplePickerQueryParameters(query_string=query_string)}
+        payload = {"queryParams": ClientPeoplePickerQueryParameters(QueryString=query_string)}
         qry = ServiceOperationQuery(
             binding_type,
             "ClientPeoplePickerResolveUser",
@@ -92,8 +92,8 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return_type = ClientResult(context, str())
         binding_type = ClientPeoplePickerWebServiceInterface(context)
         params = ClientPeoplePickerQueryParameters(
-            query_string=query_string,
-            maximum_entity_suggestions=maximum_entity_suggestions,
+            QueryString=query_string,
+            MaximumEntitySuggestions=maximum_entity_suggestions,
         )
         payload = {"queryParams": params}
         qry = ServiceOperationQuery(
@@ -116,7 +116,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         :param str email_address: Specifies the principal for which information is being requested.
 
         """
-        request = PickerEntityInformationRequest(email_address=email_address, principal_type=PrincipalType.All)
+        request = PickerEntityInformationRequest(EmailAddress=email_address, PrincipalType=PrincipalType.All)
         return_type = PickerEntityInformation(context)
         binding_type = ClientPeoplePickerWebServiceInterface(context)
         payload = {"entityInformationRequest": request}

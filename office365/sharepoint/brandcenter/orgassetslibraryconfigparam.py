@@ -1,16 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class OrgAssetsLibraryConfigParam(ClientValue):
-    def __init__(
-        self,
-        is_copilot_searchable: Optional[bool] = None,
-        is_copilot_searchable_present: Optional[bool] = None,
-    ):
-        self.IsCopilotSearchable = is_copilot_searchable
-        self.IsCopilotSearchablePresent = is_copilot_searchable_present
+    IsCopilotSearchable: Optional[bool] = None
+    IsCopilotSearchablePresent: Optional[bool] = None
 
     @property
     def entity_type_name(self):

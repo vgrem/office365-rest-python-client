@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from datetime import time
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ContentAnchor(ClientValue):
-    def __init__(self, timeline_offset: Optional[time] = None):
-        self.timelineOffset = timeline_offset
+    timelineOffset: Optional[time] = None
 
     @property
     def entity_type_name(self):

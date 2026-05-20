@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -7,26 +8,16 @@ from office365.sharepoint.identity.defaultdocumentlibrary import (
 )
 
 
+@dataclass
 class SPRubySite(ClientValue):
-    def __init__(
-        self,
-        channel_group_id: Optional[str] = None,
-        created_date_time: Optional[datetime] = None,
-        default_document_library: SPDefaultDocumentLibrary = SPDefaultDocumentLibrary(),
-        description: Optional[str] = None,
-        id_: Optional[str] = None,
-        last_modified_date_time: Optional[datetime] = None,
-        name: Optional[str] = None,
-        web_url: Optional[str] = None,
-    ):
-        self.channelGroupId = channel_group_id
-        self.createdDateTime = created_date_time
-        self.defaultDocumentLibrary = default_document_library
-        self.description = description
-        self.id = id_
-        self.lastModifiedDateTime = last_modified_date_time
-        self.name = name
-        self.webUrl = web_url
+    channelGroupId: Optional[str] = None
+    createdDateTime: Optional[datetime] = None
+    defaultDocumentLibrary: SPDefaultDocumentLibrary = field(default_factory=SPDefaultDocumentLibrary)
+    description: Optional[str] = None
+    id: Optional[str] = None
+    lastModifiedDateTime: Optional[datetime] = None
+    name: Optional[str] = None
+    webUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):
