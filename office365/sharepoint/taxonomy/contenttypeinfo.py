@@ -1,26 +1,18 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ContentTypeInfo(ClientValue):
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        group: Optional[str] = None,
-        id_: Optional[str] = None,
-        is_hidden: Optional[bool] = None,
-        is_sealed: Optional[bool] = None,
-        name: Optional[str] = None,
-        parent_name: Optional[str] = None,
-    ):
-        self.Description = description
-        self.Group = group
-        self.Id = id_
-        self.IsHidden = is_hidden
-        self.IsSealed = is_sealed
-        self.Name = name
-        self.ParentName = parent_name
+    Description: Optional[str] = None
+    Group: Optional[str] = None
+    Id: Optional[str] = None
+    IsHidden: Optional[bool] = None
+    IsSealed: Optional[bool] = None
+    Name: Optional[str] = None
+    ParentName: Optional[str] = None
 
     @property
     def entity_type_name(self):

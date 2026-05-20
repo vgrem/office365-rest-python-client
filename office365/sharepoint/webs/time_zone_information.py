@@ -1,20 +1,21 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TimeZoneInformation(ClientValue):
-    """Provides information used to define a time zone."""
+    """Provides information used to define a time zone.
 
-    def __init__(self, bias=None, standard_bias=None, daylight_bias=None):
-        """
+    Bias: Gets the bias in the number of minutes that the time zone differs from
+        Coordinated Universal Time (UTC).
+    DaylightBias: Gets the bias in the number of minutes that daylight time for the time zone
+        differs from Coordinated Universal Time (UTC).
+    StandardBias: Gets the bias in the number of minutes that standard time for the time zone differs
+        from coordinated universal time (UTC).
+    """
 
-        :param int bias: Gets the bias in the number of minutes that the time zone differs from
-            Coordinated Universal Time (UTC).
-        :param daylight_bias: Gets the bias in the number of minutes that daylight time for the time zone
-            differs from Coordinated Universal Time (UTC).
-        :param standard_bias: Gets the bias in the number of minutes that standard time for the time zone differs
-             from coordinated universal time (UTC).
-        """
-        super().__init__()
-        self.Bias = bias
-        self.DaylightBias = daylight_bias
-        self.StandardBias = standard_bias
+    Bias: Optional[int] = None
+    DaylightBias: Optional[int] = None
+    StandardBias: Optional[int] = None
