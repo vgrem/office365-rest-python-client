@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TranslationNotificationRecipient(ClientValue):
-    def __init__(self, login_name: Optional[str] = None):
-        self.LoginName = login_name
+    LoginName: Optional[str] = None

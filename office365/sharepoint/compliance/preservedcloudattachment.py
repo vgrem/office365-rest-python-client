@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PreservedCloudAttachment(ClientValue):
-    def __init__(self, composite_document_id: Optional[str] = None, url: Optional[str] = None):
-        self.CompositeDocumentId = composite_document_id
-        self.Url = url
+    CompositeDocumentId: Optional[str] = None
+    Url: Optional[str] = None
 
     @property
     def entity_type_name(self):

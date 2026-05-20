@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
@@ -5,24 +6,16 @@ from uuid import UUID
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TranslationJobInfo(ClientValue):
-    def __init__(
-        self,
-        canceled: Optional[bool] = None,
-        cancel_time: Optional[datetime] = None,
-        job_id: Optional[UUID] = None,
-        name: Optional[str] = None,
-        partially_submitted: Optional[bool] = None,
-        submitted_time: Optional[datetime] = None,
-    ):
-        self.Canceled = canceled
-        self.CancelTime = cancel_time
-        self.JobId = job_id
-        self.Name = name
-        self.PartiallySubmitted = partially_submitted
-        self.SubmittedTime = submitted_time
+    """The TranslationJobInfo type contains information about a previously submitted translation job."""
 
-    "The TranslationJobInfo type contains information about a previously submitted translation job."
+    Canceled: Optional[bool] = None
+    CancelTime: Optional[datetime] = None
+    JobId: Optional[UUID] = None
+    Name: Optional[str] = None
+    PartiallySubmitted: Optional[bool] = None
+    SubmittedTime: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

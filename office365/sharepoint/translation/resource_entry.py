@@ -1,7 +1,10 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPResourceEntry(ClientValue):
-    def __init__(self, lcid=None, value=None):
-        self.LCID = lcid
-        self.Value = value
+    LCID: Optional[int] = None
+    Value: Optional[str] = None
