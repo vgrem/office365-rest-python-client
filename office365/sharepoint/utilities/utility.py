@@ -26,8 +26,11 @@ class Utility(Entity):
     for modifying access to sites, and for various other tasks in managing deployment.
     """
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.Utilities.Utility"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.Utilities.Utility")
+        return self._resource_path
 
     @staticmethod
     def create_email_body_for_invitation(context: ClientContext, page_address: str) -> ClientResult[str]:

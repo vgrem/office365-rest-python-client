@@ -15,8 +15,11 @@ from office365.sharepoint.entity_collection import EntityCollection
 
 
 class SPHelper(Entity):
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.Directory.SPHelper"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.Directory.SPHelper")
+        return self._resource_path
 
     @staticmethod
     def is_member_of(

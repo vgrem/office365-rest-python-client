@@ -26,8 +26,11 @@ def _ensure_user(user: Union[str, User], action: Optional[Callable[[str], None]]
 class PeopleManager(Entity):
     """Provides methods for operations related to people."""
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.UserProfiles.PeopleManager"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.UserProfiles.PeopleManager")
+        return self._resource_path
 
     @staticmethod
     def get_trending_tags(context) -> HashTagCollection:

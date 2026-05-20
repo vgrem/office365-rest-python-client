@@ -10,8 +10,11 @@ from office365.sharepoint.sites.manager.topsitefilesresult import TopSiteFilesRe
 class SiteManagerService(Entity):
     """ """
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("Microsoft.SharePoint.SiteManager.SiteManagerService"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("Microsoft.SharePoint.SiteManager.SiteManagerService")
+        return self._resource_path
 
     def top_files(self, max_count: Optional[int] = None) -> ClientResult[TopSiteFilesResult]:
         """ """

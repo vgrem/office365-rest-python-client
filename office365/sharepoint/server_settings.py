@@ -9,8 +9,11 @@ from office365.sharepoint.sites.language_collection import LanguageCollection
 class ServerSettings(Entity):
     """Provides methods for obtaining server properties."""
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.ServerSettings"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.ServerSettings")
+        return self._resource_path
 
     @staticmethod
     def is_sharepoint_online(context) -> ClientResult[bool]:

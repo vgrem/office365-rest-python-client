@@ -15,8 +15,11 @@ class SocialRestThread(Entity):
     request to a protocol server using [MS-CSOMREST]. It is not available using [MS-CSOM].
     """
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.Social.SocialRestThread"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.Social.SocialRestThread")
+        return self._resource_path
 
     def like(self, post_id: str) -> Self:
         """

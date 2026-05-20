@@ -25,8 +25,11 @@ from office365.sharepoint.search.result import SearchResult
 class SearchService(Entity):
     """SearchService exposes OData Service Operations."""
 
-    def __init__(self, context: ClientContext):
-        super().__init__(context, StaticPath("Microsoft.Office.Server.Search.REST.SearchService"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("Microsoft.Office.Server.Search.REST.SearchService")
+        return self._resource_path
 
     def export(self, user: Union[str, User], start_time: datetime) -> ClientResult[str]:
         """

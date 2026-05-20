@@ -6,8 +6,11 @@ from office365.sharepoint.entity import Entity
 
 
 class DirectorySession(Entity):
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.Directory.DirectorySession"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.Directory.DirectorySession")
+        return self._resource_path
 
     @property
     def me(self) -> User:

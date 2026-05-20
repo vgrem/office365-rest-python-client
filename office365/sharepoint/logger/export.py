@@ -7,10 +7,14 @@ from office365.sharepoint.logger.fileinfocollection import LogFileInfoCollection
 
 
 class LogExport(Entity):
-    def __init__(self, context):
-        """This is the primary class that should be instantiated to obtain metadata about the
-        logs that you can download."""
-        super().__init__(context, StaticPath("Microsoft.Online.SharePoint.SPLogger.LogExport"))
+    """This is the primary class that should be instantiated to obtain metadata about the
+    logs that you can download."""
+
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("Microsoft.Online.SharePoint.SPLogger.LogExport")
+        return self._resource_path
 
     def get_files(self) -> LogFileInfoCollection:
         """ """

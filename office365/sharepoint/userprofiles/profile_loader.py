@@ -15,8 +15,11 @@ if TYPE_CHECKING:
 class ProfileLoader(Entity):
     """The ProfileLoader class provides access to the current user's profile."""
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.UserProfiles.ProfileLoader.GetProfileLoader"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.UserProfiles.ProfileLoader.GetProfileLoader")
+        return self._resource_path
 
     @staticmethod
     def get_profile_loader(context: ClientContext) -> ProfileLoader:

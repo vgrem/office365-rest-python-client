@@ -14,8 +14,11 @@ from office365.sharepoint.search.reports.base import ReportBase
 class SearchSetting(Entity):
     """This object provides the REST operations defined under search settings."""
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("Microsoft.Office.Server.Search.REST.SearchSetting"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("Microsoft.Office.Server.Search.REST.SearchSetting")
+        return self._resource_path
 
     def get_query_configuration(
         self,

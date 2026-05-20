@@ -7,8 +7,11 @@ from office365.sharepoint.tenant.cdn_url import TenantCdnUrl
 
 
 class TenantCdnApi(Entity):
-    def __init__(self, context):
-        super().__init__(context, StaticPath("Microsoft.SharePoint.TenantCdn.TenantCdnApi"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("Microsoft.SharePoint.TenantCdn.TenantCdnApi")
+        return self._resource_path
 
     def get_cdn_urls(self, items=None):
         """

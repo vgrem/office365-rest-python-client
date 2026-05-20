@@ -16,8 +16,11 @@ class DocumentId(Entity):
     to get documents by their Document ID.
     """
 
-    def __init__(self, context):
-        super().__init__(context, StaticPath("SP.DocumentManagement.DocumentId"))
+    @property
+    def resource_path(self):
+        if self._resource_path is None:
+            self._resource_path = StaticPath("SP.DocumentManagement.DocumentId")
+        return self._resource_path
 
     def reset_docid_by_server_relative_path(self, decoded_url: str) -> Self:
         """In case the document identifier assigned by the document id feature is not unique, MUST re-assign
