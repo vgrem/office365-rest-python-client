@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Audio(ClientValue):
     """
     The Audio resource groups audio-related properties on an item into a single structure.
@@ -9,14 +14,7 @@ class Audio(ClientValue):
     The properties of the Audio resource are populated by extracting metadata from the file.
     """
 
-    def __init__(self, album=None, album_artist=None, artist=None, bitrate=None):
-        """
-        :param str album: The title of the album for this audio file.
-        :param str album_artist: The artist named on the album for the audio file.
-        :param str artist: The performing artist for the audio file.
-        :param long bitrate: Bitrate expressed in kbps.
-        """
-        self.album = album
-        self.albumArtist = album_artist
-        self.artist = artist
-        self.bitrate = bitrate
+    album: str | None = None
+    albumArtist: str | None = None
+    artist: str | None = None
+    bitrate: int | None = None

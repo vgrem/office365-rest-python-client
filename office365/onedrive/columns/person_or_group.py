@@ -1,24 +1,15 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PersonOrGroupColumn(ClientValue):
     """The personOrGroupColumn on a columnDefinition resource indicates that the column's values represent
     a person or group chosen from the directory."""
 
-    def __init__(
-        self,
-        allow_multiple_selection: bool | None = None,
-        choose_from_type: str | None = None,
-        display_as: str | None = None,
-    ):
-        """
-        :param bool allow_multiple_selection: Indicates whether multiple values can be selected from the source.
-        :param str choose_from_type: Whether to allow selection of people only, or people and groups.
-             Must be one of peopleAndGroups or peopleOnly.
-        :param str display_as: How to display the information about the person or group chosen.
-        """
-        self.allowMultipleSelection = allow_multiple_selection
-        self.chooseFromType = choose_from_type
-        self.displayAs = display_as
+    allowMultipleSelection: bool | None = None
+    chooseFromType: str | None = None
+    displayAs: str | None = None

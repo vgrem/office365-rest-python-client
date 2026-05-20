@@ -37,7 +37,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         """
         from office365.onedrive.columns.text import TextColumn
 
-        return self.add(name=name, text=TextColumn(max_length=max_length, text_type=text_type))
+        return self.add(name=name, text=TextColumn(maxLength=max_length, textType=text_type))
 
     def add_hyperlink_or_picture(self, name: str, is_picture: bool | None = None):
         """
@@ -52,7 +52,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(
             name=name,
-            hyperlinkOrPicture=HyperlinkOrPictureColumn(is_picture=is_picture),
+            hyperlinkOrPicture=HyperlinkOrPictureColumn(isPicture=is_picture),
         )
 
     def add_lookup(

@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Image(ClientValue):
     """
     The Image resource groups image-related properties into a single structure. If a DriveItem has a
@@ -9,10 +14,5 @@ class Image(ClientValue):
     Note: If the service is unable to determine the width and height of the image, the Image resource may be empty.
     """
 
-    def __init__(self, height=None, width=None):
-        """
-        :param int height:
-        :param int width:
-        """
-        self.height = height
-        self.width = width
+    height: int | None = None
+    width: int | None = None

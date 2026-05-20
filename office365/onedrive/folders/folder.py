@@ -1,20 +1,17 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.onedrive.folders.view import FolderView
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Folder(ClientValue):
     """
     The Folder resource groups folder-related data on an item into a single structure.
     DriveItems with a non-null folder facet are containers for other DriveItems.
     """
 
-    def __init__(self, child_count: int | None = None, view: FolderView | None = None):
-        """
-        :param int child_count: Number of children contained immediately within this container.
-        :param FolderView view: A collection of properties defining the recommended view for the folder.
-        """
-        super().__init__()
-        self.childCount = child_count
-        self.view = view
+    childCount: int | None = None
+    view: FolderView | None = None

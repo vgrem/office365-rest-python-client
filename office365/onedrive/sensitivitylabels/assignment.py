@@ -1,27 +1,17 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.onedrive.sensitivitylabels.assignment_method import (
     SensitivityLabelAssignmentMethod,
 )
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SensitivityLabelAssignment(ClientValue):
     """Provides details about a sensitivity label assigned to a file in SharePoint or OneDrive for Business."""
 
-    def __init__(
-        self,
-        assignment_method: SensitivityLabelAssignmentMethod | None = None,
-        sensitivity_label_id: str | None = None,
-        tenant_id: str | None = None,
-    ):
-        """
-        :param str assignment_method: Indicates whether the label assignment is done automatically, as a standard,
-            or a privileged operation.
-        :param str sensitivity_label_id: The unique identifier for the sensitivity label assigned to the file.
-        : 	The unique identifier for the tenant that hosts the file when this label is applied.
-        :param str tenant_id: The unique identifier for the tenant that hosts the file when this label is applied.
-        """
-        self.assignmentMethod = assignment_method
-        self.sensitivityLabelId = sensitivity_label_id
-        self.tenantId = tenant_id
+    assignmentMethod: SensitivityLabelAssignmentMethod | None = None
+    sensitivityLabelId: str | None = None
+    tenantId: str | None = None

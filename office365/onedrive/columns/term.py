@@ -1,20 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TermColumn(ClientValue):
     """Represents a managed metadata column in SharePoint."""
 
-    def __init__(
-        self,
-        allow_multiple_values: bool | None = None,
-        show_fully_qualified_name: bool | None = None,
-    ):
-        """
-        :param bool allow_multiple_values: Specifies whether the column will allow more than one value.
-        :param bool show_fully_qualified_name: Specifies whether to display the entire term path or only the term label.
-        """
-        super().__init__()
-        self.allowMultipleValues = allow_multiple_values
-        self.showFullyQualifiedName = show_fully_qualified_name
+    allowMultipleValues: bool | None = None
+    showFullyQualifiedName: bool | None = None

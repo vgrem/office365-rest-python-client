@@ -510,7 +510,7 @@ class DriveItem(BaseItem):
         if isinstance(parent, DriveItem):
 
             def _drive_item_loaded():
-                parent_reference = ItemReference(drive_id=parent.parent_reference.driveId, id_=parent.id)
+                parent_reference = ItemReference(driveId=parent.parent_reference.driveId, id=parent.id)
                 _copy(parent_reference)
 
             parent.ensure_property("parentReference", _drive_item_loaded)
@@ -550,7 +550,7 @@ class DriveItem(BaseItem):
         if isinstance(parent, DriveItem):
 
             def _drive_item_loaded():
-                _move(ItemReference(id_=parent.id))
+                _move(ItemReference(id=parent.id))
 
             parent.ensure_property("parentReference", _drive_item_loaded)
         elif parent is not None:

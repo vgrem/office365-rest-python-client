@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class GeoCoordinates(ClientValue):
     """
     The GeoCoordinates resource provides geographic coordinates and elevation of a location based on metadata
@@ -10,15 +13,9 @@ class GeoCoordinates(ClientValue):
     a known location associated with it.
     """
 
-    def __init__(self, altitude: float | None = None, latitude: float | None = None, longitude: float | None = None):
-        """
-        :param float altitude: The altitude (height), in feet, above sea level for the item.
-        :param float latitude: The latitude, in decimal, for the item
-        :param float longitude: The longitude, in decimal, for the item
-        """
-        self.altitude = altitude
-        self.latitude = latitude
-        self.longitude = longitude
+    altitude: float | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
     @property
     def entity_type_name(self):

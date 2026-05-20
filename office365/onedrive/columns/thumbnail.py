@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ThumbnailColumn(ClientValue):
     """This column stores thumbnail values."""
 
-    def __init__(self, is_picture: bool | None = None):
-        """
-        :param bool is_picture:
-        """
-        self.isPicture = is_picture
+    isPicture: bool | None = None

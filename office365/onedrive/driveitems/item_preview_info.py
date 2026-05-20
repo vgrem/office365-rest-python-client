@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ItemPreviewInfo(ClientValue):
     """Contains information about how to embed a preview of a driveItem.
 
@@ -15,12 +20,6 @@ class ItemPreviewInfo(ClientValue):
     param1=value&param2=another%20value
     """
 
-    def __init__(self, get_url=None, post_parameters=None, post_url=None):
-        """
-        :param str get_url: URL suitable for embedding using HTTP GET (iframes, etc.)
-        :param str post_parameters: POST parameters to include if using postUrl
-        :param str post_url: URL suitable for embedding using HTTP POST (form post, JS, etc.)
-        """
-        self.getUrl = get_url
-        self.postParameters = post_parameters
-        self.postUrl = post_url
+    getUrl: str | None = None
+    postParameters: str | None = None
+    postUrl: str | None = None

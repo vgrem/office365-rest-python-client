@@ -1,11 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WorkbookRangeReference(ClientValue):
     """"""
 
-    def __init__(self, address=None):
-        """
-        :param str address:
-        """
-        self.address = address
+    address: str | None = None

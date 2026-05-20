@@ -1,23 +1,14 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TextColumn(ClientValue):
     """The textColumn on a columnDefinition resource indicates that the column's values are text."""
 
-    def __init__(
-        self,
-        max_length: int | None = None,
-        allow_multiple_lines: bool | None = None,
-        text_type: str | None = None,
-    ):
-        """
-        :param int max_length: The maximum number of characters for the value.
-        :param bool allow_multiple_lines: Whether to allow multiple lines of text.
-        :param str text_type: The type of text being stored. Must be one of plain or richText
-        """
-        super().__init__()
-        self.maxLength = max_length
-        self.allowMultipleLines = allow_multiple_lines
-        self.textType = text_type
+    maxLength: int | None = None
+    allowMultipleLines: bool | None = None
+    textType: str | None = None

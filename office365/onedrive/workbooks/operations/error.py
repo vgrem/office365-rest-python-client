@@ -1,15 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WorkbookOperationError(ClientValue):
     """Represents an error from a failed workbook operation."""
 
-    def __init__(self, code=None, innerError=None, message=None):
-        """
-        :param str code:
-        :param str innerError:
-        :param str message:
-        """
-        self.code = code
-        self.innerError = innerError
-        self.message = message
+    code: str | None = None
+    innerError: str | None = None
+    message: str | None = None
