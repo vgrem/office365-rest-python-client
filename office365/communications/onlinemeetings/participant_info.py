@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MeetingParticipantInfo(ClientValue):
-    """Information about a participant in a meeting."""
+    """Information about a participant in a meeting.
 
-    def __init__(self, identity: IdentitySet = IdentitySet(), role: str | None = None, upn: str | None = None):
-        """
-        :param IdentitySet identity: Identity information of the participant.
-        :param str role: Specifies the participant's role in the meeting.
-        :param str upn: User principal name of the participant.
-        """
-        self.identity = identity
-        self.role = role
-        self.upn = upn
+    Fields:
+        identity: Identity information of the participant.
+        role: Specifies the participant's role in the meeting.
+        upn: User principal name of the participant.
+    """
+
+    identity: IdentitySet = field(default_factory=IdentitySet)
+    role: str | None = None
+    upn: str | None = None

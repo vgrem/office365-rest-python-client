@@ -22,7 +22,6 @@ from tests import (
     test_site_url,
     test_team_site_url,
     test_tenant,
-    test_user_credentials,
     test_username,
 )
 from tests.sharepoint.sharepoint_case import SPTestCase
@@ -176,7 +175,7 @@ class TestSharePointClient(SPTestCase):
         self.assertIsNotNone(lib.title)
 
     def test_17_test_client_result(self):
-        client = ClientContext(test_site_url).with_credentials(test_user_credentials)
+        client = ClientContext(test_site_url)
         result = ClientResult(client, StringCollection())
         self.assertIsInstance(result.value, StringCollection)
 

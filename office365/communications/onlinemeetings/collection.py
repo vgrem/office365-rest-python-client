@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
@@ -11,6 +12,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
+@dataclass
 class ChatInfo(ClientValue):
     pass
 

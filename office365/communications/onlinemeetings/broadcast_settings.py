@@ -1,22 +1,25 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.communications.broadcastmeetingaudience import BroadcastMeetingAudience
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class BroadcastMeetingSettings(ClientValue):
-    """Represents settings related to a live event in Microsoft Teams."""
+    """Represents settings related to a live event in Microsoft Teams.
 
-    def __init__(
-        self,
-        allowed_audience: BroadcastMeetingAudience | None = None,
-        is_attendee_report_enabled: bool | None = None,
-        is_question_and_answer_enabled: bool | None = None,
-        is_recording_enabled: bool | None = None,
-        is_video_on_demand_enabled: bool | None = None,
-    ):
-        self.allowedAudience = allowed_audience
-        self.isAttendeeReportEnabled = is_attendee_report_enabled
-        self.isQuestionAndAnswerEnabled = is_question_and_answer_enabled
-        self.isRecordingEnabled = is_recording_enabled
-        self.isVideoOnDemandEnabled = is_video_on_demand_enabled
+    Fields:
+        allowedAudience: ...
+        isAttendeeReportEnabled: ...
+        isQuestionAndAnswerEnabled: ...
+        isRecordingEnabled: ...
+        isVideoOnDemandEnabled: ...
+    """
+
+    allowedAudience: BroadcastMeetingAudience | None = None
+    isAttendeeReportEnabled: bool | None = None
+    isQuestionAndAnswerEnabled: bool | None = None
+    isRecordingEnabled: bool | None = None
+    isVideoOnDemandEnabled: bool | None = None
