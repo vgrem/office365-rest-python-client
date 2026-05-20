@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class HeroImage(ClientValue):
-    def __init__(self, image: Optional[str] = None):
-        self.image = image
+    image: Optional[str] = None
 
     @property
     def entity_type_name(self):

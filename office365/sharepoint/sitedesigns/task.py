@@ -1,24 +1,17 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteDesignTask(ClientValue):
-    def __init__(
-        self,
-        id_: Optional[str] = None,
-        logon_name: Optional[str] = None,
-        site_design_id: Optional[str] = None,
-        site_design_store: Optional[int] = None,
-        site_id: Optional[str] = None,
-        web_id: Optional[str] = None,
-    ):
-        self.ID = id_
-        self.LogonName = logon_name
-        self.SiteDesignID = site_design_id
-        self.SiteDesignStore = site_design_store
-        self.SiteID = site_id
-        self.WebID = web_id
+    ID: Optional[str] = None
+    LogonName: Optional[str] = None
+    SiteDesignID: Optional[str] = None
+    SiteDesignStore: Optional[int] = None
+    SiteID: Optional[str] = None
+    WebID: Optional[str] = None
 
     @property
     def entity_type_name(self):

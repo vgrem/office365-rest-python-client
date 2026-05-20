@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,14 +6,10 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sitedesigns.webpartmodel import WebPartModel
 
 
+@dataclass
 class SectionModel(ClientValue):
-    def __init__(
-        self,
-        index: Optional[int] = None,
-        web_parts: ClientValueCollection[WebPartModel] = ClientValueCollection(WebPartModel),
-    ):
-        self.index = index
-        self.webParts = web_parts
+    index: Optional[int] = None
+    webParts: ClientValueCollection[WebPartModel] = field(default_factory=lambda: ClientValueCollection(WebPartModel))
 
     @property
     def entity_type_name(self):

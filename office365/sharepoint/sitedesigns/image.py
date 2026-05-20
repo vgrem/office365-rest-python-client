@@ -1,14 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteDesignImage(ClientValue):
-    def __init__(self, display_name: Optional[str] = None, image_url: Optional[str] = None):
-        self.DisplayName = display_name
-        self.ImageUrl = image_url
-
-    ""
+    DisplayName: Optional[str] = None
+    ImageUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

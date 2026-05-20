@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,14 +6,12 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sitescripts.action_status import SiteScriptActionStatus
 
 
+@dataclass
 class SPSiteScriptStatusAndSchema(ClientValue):
-    def __init__(
-        self,
-        action_status: ClientValueCollection[SiteScriptActionStatus] = ClientValueCollection(SiteScriptActionStatus),
-        schema: Optional[str] = None,
-    ):
-        self.ActionStatus = action_status
-        self.Schema = schema
+    ActionStatus: ClientValueCollection[SiteScriptActionStatus] = field(
+        default_factory=lambda: ClientValueCollection(SiteScriptActionStatus)
+    )
+    Schema: Optional[str] = None
 
     @property
     def entity_type_name(self):

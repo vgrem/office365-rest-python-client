@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -8,16 +9,15 @@ from office365.sharepoint.sitedesigns.messagecardactionbutton import (
 from office365.sharepoint.sitedesigns.messagecardinput import MessageCardInput
 
 
+@dataclass
 class PotentialAction(ClientValue):
-    def __init__(
-        self,
-        actions: ClientValueCollection[MessageCardActionButton] = ClientValueCollection(MessageCardActionButton),
-        inputs: ClientValueCollection[MessageCardInput] = ClientValueCollection(MessageCardInput),
-        type_: Optional[str] = None,
-    ):
-        self.actions = actions
-        self.inputs = inputs
-        self.type = type_
+    actions: ClientValueCollection[MessageCardActionButton] = field(
+        default_factory=lambda: ClientValueCollection(MessageCardActionButton)
+    )
+    inputs: ClientValueCollection[MessageCardInput] = field(
+        default_factory=lambda: ClientValueCollection(MessageCardInput)
+    )
+    type: Optional[str] = None
 
     @property
     def entity_type_name(self):
