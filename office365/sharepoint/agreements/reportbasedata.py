@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,19 +8,15 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.agreements.datapair import AgreementDataPair
 
 
+@dataclass
 class AgreementReportBaseData(ClientValue):
-    def __init__(
-        self,
-        by_expiration_status: ClientValueCollection[AgreementDataPair] = ClientValueCollection(AgreementDataPair),
-        error_message: Optional[str] = None,
-        expired: Optional[int] = None,
-        in_effect: Optional[int] = None,
-        in_progress_by_state: ClientValueCollection[AgreementDataPair] = ClientValueCollection(AgreementDataPair),
-        near_expiration: Optional[int] = None,
-    ):
-        self.by_expiration_status = by_expiration_status
-        self.error_message = error_message
-        self.expired = expired
-        self.in_effect = in_effect
-        self.in_progress_by_state = in_progress_by_state
-        self.near_expiration = near_expiration
+    by_expiration_status: ClientValueCollection[AgreementDataPair] = field(
+        default_factory=lambda: ClientValueCollection(AgreementDataPair)
+    )
+    error_message: Optional[str] = None
+    expired: Optional[int] = None
+    in_effect: Optional[int] = None
+    in_progress_by_state: ClientValueCollection[AgreementDataPair] = field(
+        default_factory=lambda: ClientValueCollection(AgreementDataPair)
+    )
+    near_expiration: Optional[int] = None

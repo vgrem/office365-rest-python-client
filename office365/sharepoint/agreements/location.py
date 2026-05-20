@@ -1,19 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AgreementLocation(ClientValue):
-    def __init__(
-        self,
-        category_label: Optional[str] = None,
-        library_id: Optional[str] = None,
-        site_id: Optional[str] = None,
-        web_id: Optional[str] = None,
-        folder_id: Optional[int] = None,
-    ):
-        self.CategoryLabel = category_label
-        self.LibraryId = library_id
-        self.SiteId = site_id
-        self.WebId = web_id
-        self.FolderId = folder_id
+    CategoryLabel: Optional[str] = None
+    LibraryId: Optional[str] = None
+    SiteId: Optional[str] = None
+    WebId: Optional[str] = None
+    FolderId: Optional[int] = None

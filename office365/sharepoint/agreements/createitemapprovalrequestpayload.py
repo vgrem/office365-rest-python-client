@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CreateItemApprovalRequestPayload(ClientValue):
-    def __init__(self, approval_config: Optional[str] = None, restrict_doc_edit: Optional[bool] = None):
-        self.approvalConfig = approval_config
-        self.restrictDocEdit = restrict_doc_edit
+    approvalConfig: Optional[str] = None
+    restrictDocEdit: Optional[bool] = None
 
     @property
     def entity_type_name(self):

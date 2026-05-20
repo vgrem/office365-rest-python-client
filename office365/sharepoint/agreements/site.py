@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -7,25 +10,14 @@ from office365.sharepoint.sites.template import SiteTemplate
 from office365.sharepoint.viva.resourcevisualization import ResourceVisualization
 
 
+@dataclass
 class SPAgreementsSite(ClientValue):
-    def __init__(
-        self,
-        created_date_time: datetime = datetime.min,
-        description: Optional[str] = None,
-        group_id: Optional[str] = None,
-        last_modified_date_time: datetime = datetime.min,
-        resource_visualization: ResourceVisualization = ResourceVisualization(),
-        share_point_ids: SharePointIds = SharePointIds(),
-        template: SiteTemplate = SiteTemplate(),
-        title: Optional[str] = None,
-        web_url: Optional[str] = None,
-    ):
-        self.CreatedDateTime = created_date_time
-        self.Description = description
-        self.GroupId = group_id
-        self.LastModifiedDateTime = last_modified_date_time
-        self.ResourceVisualization = resource_visualization
-        self.SharePointIds = share_point_ids
-        self.Template = template
-        self.Title = title
-        self.WebUrl = web_url
+    CreatedDateTime: datetime = datetime.min
+    Description: Optional[str] = None
+    GroupId: Optional[str] = None
+    LastModifiedDateTime: datetime = datetime.min
+    ResourceVisualization: ResourceVisualization = field(default_factory=ResourceVisualization)
+    SharePointIds: SharePointIds = field(default_factory=SharePointIds)
+    Template: SiteTemplate = field(default_factory=SiteTemplate)
+    Title: Optional[str] = None
+    WebUrl: Optional[str] = None

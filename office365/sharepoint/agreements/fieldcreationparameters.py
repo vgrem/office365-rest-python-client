@@ -1,20 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FieldCreationParameters(ClientValue):
-    def __init__(
-        self,
-        data_source: Optional[str] = None,
-        data_type: Optional[str] = None,
-        description: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.DataSource = data_source
-        self.DataType = data_type
-        self.Description = description
-        self.Title = title
+    DataSource: Optional[str] = None
+    DataType: Optional[str] = None
+    Description: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

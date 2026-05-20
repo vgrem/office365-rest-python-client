@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AgreementCountryResponse(ClientValue):
-    def __init__(self, country_key: Optional[str] = None, display_name: Optional[str] = None):
-        self.country_key = country_key
-        self.display_name = display_name
+    country_key: Optional[str] = None
+    display_name: Optional[str] = None

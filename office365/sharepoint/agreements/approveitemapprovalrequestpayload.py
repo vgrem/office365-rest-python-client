@@ -1,22 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ApproveItemApprovalRequestPayload(ClientValue):
-    def __init__(
-        self,
-        approval_id: Optional[str] = None,
-        comments: Optional[str] = None,
-        item_id: Optional[str] = None,
-        url: Optional[str] = None,
-        version: Optional[str] = None,
-    ):
-        self.approvalId = approval_id
-        self.comments = comments
-        self.itemId = item_id
-        self.url = url
-        self.version = version
+    approvalId: Optional[str] = None
+    comments: Optional[str] = None
+    itemId: Optional[str] = None
+    url: Optional[str] = None
+    version: Optional[str] = None
 
     @property
     def entity_type_name(self):

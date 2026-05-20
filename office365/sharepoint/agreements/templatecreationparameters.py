@@ -1,18 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TemplateCreationParameters(ClientValue):
-    def __init__(
-        self,
-        source_file_unique_id: Optional[str] = None,
-        source_library_id: Optional[str] = None,
-        template_name: Optional[str] = None,
-    ):
-        self.SourceFileUniqueId = source_file_unique_id
-        self.SourceLibraryId = source_library_id
-        self.TemplateName = template_name
+    SourceFileUniqueId: Optional[str] = None
+    SourceLibraryId: Optional[str] = None
+    TemplateName: Optional[str] = None
 
     @property
     def entity_type_name(self):

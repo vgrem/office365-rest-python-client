@@ -1,22 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CancelItemApprovalRequestPayload(ClientValue):
-    def __init__(
-        self,
-        approval_id: Optional[str] = None,
-        item_id: Optional[str] = None,
-        make_document_draft: Optional[bool] = None,
-        url: Optional[str] = None,
-        version: Optional[str] = None,
-    ):
-        self.approvalId = approval_id
-        self.itemId = item_id
-        self.makeDocumentDraft = make_document_draft
-        self.url = url
-        self.version = version
+    approvalId: Optional[str] = None
+    itemId: Optional[str] = None
+    makeDocumentDraft: Optional[bool] = None
+    url: Optional[str] = None
+    version: Optional[str] = None
 
     @property
     def entity_type_name(self):
