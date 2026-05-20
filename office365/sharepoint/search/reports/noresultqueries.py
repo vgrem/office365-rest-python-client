@@ -1,14 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.reports.noresultitem import ReportNoResultItem
 
 
+@dataclass
 class ReportNoResultQueries(ClientValue):
-    def __init__(
-        self,
-        reports: ClientValueCollection[ReportNoResultItem] = ClientValueCollection(ReportNoResultItem),
-    ):
-        self.Reports = reports
+    Reports: ClientValueCollection[ReportNoResultItem] = field(
+        default_factory=lambda: ClientValueCollection(ReportNoResultItem)
+    )
 
     @property
     def entity_type_name(self):

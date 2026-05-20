@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class QuerySuggestionQuery(ClientValue):
-    def __init__(self, is_personal: Optional[bool] = None, query: Optional[str] = None):
-        self.IsPersonal = is_personal
-        self.Query = query
+    IsPersonal: bool | None = None
+    Query: str | None = None
 
     @property
     def entity_type_name(self):

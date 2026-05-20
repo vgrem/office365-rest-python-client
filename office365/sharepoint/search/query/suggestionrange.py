@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class QuerySuggestionRange(ClientValue):
-    def __init__(self, length: Optional[int] = None, start: Optional[int] = None):
-        self.Length = length
-        self.Start = start
+    Length: int | None = None
+    Start: int | None = None
 
     @property
     def entity_type_name(self):

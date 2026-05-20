@@ -1,13 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class CustomQuerySuggestions(ClientValue):
-    def __init__(self, lcid: Optional[int] = None, queries: StringCollection = StringCollection()):
-        self.LCID = lcid
-        self.Queries = queries
+    LCID: int | None = None
+    Queries: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):

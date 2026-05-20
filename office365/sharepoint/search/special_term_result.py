@@ -1,24 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SpecialTermResult(ClientValue):
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        is_visual_best_bet: Optional[bool] = None,
-        pi_search_result_id: Optional[str] = None,
-        render_template_id: Optional[str] = None,
-        title: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.Description = description
-        self.IsVisualBestBet = is_visual_best_bet
-        self.PiSearchResultId = pi_search_result_id
-        self.RenderTemplateId = render_template_id
-        self.Title = title
-        self.Url = url
+    Description: str | None = None
+    IsVisualBestBet: bool | None = None
+    PiSearchResultId: str | None = None
+    RenderTemplateId: str | None = None
+    Title: str | None = None
+    Url: str | None = None
 
     "Represents a row in the Table property of a SpecialTermResults Table"
 

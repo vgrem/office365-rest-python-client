@@ -1,18 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.reports.queryrulesdata import ReportQueryRulesData
 
 
+@dataclass
 class ReportQueryRulesItem(ClientValue):
-    def __init__(
-        self,
-        date: Optional[str] = None,
-        report: ClientValueCollection[ReportQueryRulesData] = ClientValueCollection(ReportQueryRulesData),
-    ):
-        self.Date = date
-        self.Report = report
+    Date: str | None = None
+    Report: ClientValueCollection[ReportQueryRulesData] = field(
+        default_factory=lambda: ClientValueCollection(ReportQueryRulesData)
+    )
 
     @property
     def entity_type_name(self):

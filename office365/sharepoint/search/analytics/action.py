@@ -1,22 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AnalyticsAction(ClientValue):
-    def __init__(
-        self,
-        action_type: Optional[str] = None,
-        expire_time: Optional[datetime] = None,
-        properties: Optional[dict] = None,
-        user_time: Optional[datetime] = None,
-    ):
-        """Represents the action in a Microsoft.SharePoint.Client.Search.Analytics.AnalyticsSignal Object."""
-        self.ActionType = action_type
-        self.ExpireTime = expire_time
-        self.Properties = properties
-        self.UserTime = user_time
+    """Represents the action in a Microsoft.SharePoint.Client.Search.Analytics.AnalyticsSignal Object."""
+
+    ActionType: str | None = None
+    ExpireTime: datetime | None = None
+    Properties: dict | None = None
+    UserTime: datetime | None = None
 
     @property
     def entity_type_name(self):

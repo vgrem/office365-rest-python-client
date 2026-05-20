@@ -1,31 +1,22 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class QueryAutoCompletionMatch(ClientValue):
     """Represents one match in the Source for the Query"""
 
-    def __init__(
-        self,
-        alternation=None,
-        key=None,
-        length: Optional[int] = None,
-        match_type: Optional[str] = None,
-        score: Optional[float] = None,
-        source_name: Optional[str] = None,
-        start: Optional[int] = None,
-        value: Optional[str] = None,
-    ):
-        """ """
-        self.Alternation = alternation
-        self.Key = key
-        self.Length = length
-        self.MatchType = match_type
-        self.Score = score
-        self.SourceName = source_name
-        self.Start = start
-        self.Value = value
+    Alternation: str | None = None
+    Key: str | None = None
+    Length: int | None = None
+    MatchType: str | None = None
+    Score: float | None = None
+    SourceName: str | None = None
+    Start: int | None = None
+    Value: str | None = None
 
     @property
     def entity_type_name(self):

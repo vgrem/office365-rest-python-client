@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ExpandedQueryParameters(ClientValue):
-    def __init__(self, properties: Optional[dict] = None):
-        self.Properties = properties
+    Properties: dict | None = None
 
     "This object contains the dictionary of the expanded query parameters."
 

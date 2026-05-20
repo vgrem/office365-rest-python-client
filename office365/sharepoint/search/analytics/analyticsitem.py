@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AnalyticsItem(ClientValue):
-    def __init__(self, id_: Optional[str] = None, properties: Optional[dict] = None):
-        self.Id = id_
-        self.Properties = properties
+    Id: str | None = None
+    Properties: dict | None = None
 
     @property
     def entity_type_name(self):

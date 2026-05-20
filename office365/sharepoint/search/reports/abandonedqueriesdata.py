@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ReportAbandonedQueriesData(ClientValue):
-    def __init__(
-        self,
-        abandoned_percentage: Optional[float] = None,
-        query_text: Optional[str] = None,
-        result_source: Optional[str] = None,
-        total: Optional[int] = None,
-    ):
-        self.AbandonedPercentage = abandoned_percentage
-        self.QueryText = query_text
-        self.ResultSource = result_source
-        self.Total = total
+    AbandonedPercentage: float | None = None
+    QueryText: str | None = None
+    ResultSource: str | None = None
+    Total: int | None = None
 
     @property
     def entity_type_name(self):

@@ -1,34 +1,23 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ReportQueryRulesData(ClientValue):
-    def __init__(
-        self,
-        dictionary_terms: Optional[str] = None,
-        owner_type: Optional[str] = None,
-        percentage_promoted_result: Optional[str] = None,
-        promoted_result_clicks: Optional[str] = None,
-        promoted_result_id: Optional[str] = None,
-        promoted_result_url: Optional[str] = None,
-        promoted_result_url_name: Optional[str] = None,
-        query_rule: Optional[str] = None,
-        query_rule_id: Optional[str] = None,
-        result_source: Optional[str] = None,
-        times_fired: Optional[str] = None,
-    ):
-        self.DictionaryTerms = dictionary_terms
-        self.OwnerType = owner_type
-        self.PercentagePromotedResult = percentage_promoted_result
-        self.PromotedResultClicks = promoted_result_clicks
-        self.PromotedResultId = promoted_result_id
-        self.PromotedResultURL = promoted_result_url
-        self.PromotedResultURLName = promoted_result_url_name
-        self.QueryRule = query_rule
-        self.QueryRuleId = query_rule_id
-        self.ResultSource = result_source
-        self.TimesFired = times_fired
+    DictionaryTerms: str | None = None
+    OwnerType: str | None = None
+    PercentagePromotedResult: str | None = None
+    PromotedResultClicks: str | None = None
+    PromotedResultId: str | None = None
+    PromotedResultURL: str | None = None
+    PromotedResultURLName: str | None = None
+    QueryRule: str | None = None
+    QueryRuleId: str | None = None
+    ResultSource: str | None = None
+    TimesFired: str | None = None
 
     @property
     def entity_type_name(self):

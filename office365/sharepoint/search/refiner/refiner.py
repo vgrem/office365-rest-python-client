@@ -1,19 +1,18 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.refiner.entry import RefinerEntry
 
 
+@dataclass
 class Refiner(ClientValue):
-    def __init__(
-        self,
-        entries: ClientValueCollection[RefinerEntry] = ClientValueCollection(RefinerEntry),
-        name: Optional[str] = None,
-    ):
-        """A refiner contains a list with entries, of the RefinerEntry types"""
-        self.Entries = entries
-        self.Name = name
+    """A refiner contains a list with entries, of the RefinerEntry types"""
+
+    Entries: ClientValueCollection[RefinerEntry] = field(default_factory=lambda: ClientValueCollection(RefinerEntry))
+    Name: str | None = None
 
     @property
     def entity_type_name(self):

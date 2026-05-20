@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.search.reports.numberofqueriesitem import (
@@ -5,12 +9,11 @@ from office365.sharepoint.search.reports.numberofqueriesitem import (
 )
 
 
+@dataclass
 class ReportNumberOfQueries(ClientValue):
-    def __init__(
-        self,
-        reports: ClientValueCollection[ReportNumberOfQueriesItem] = ClientValueCollection(ReportNumberOfQueriesItem),
-    ):
-        self.Reports = reports
+    Reports: ClientValueCollection[ReportNumberOfQueriesItem] = field(
+        default_factory=lambda: ClientValueCollection(ReportNumberOfQueriesItem)
+    )
 
     @property
     def entity_type_name(self):

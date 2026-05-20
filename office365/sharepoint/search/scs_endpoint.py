@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ScsEndpoint(ClientValue):
-    def __init__(self, farm_label: Optional[str] = None, push_service_location: Optional[str] = None):
-        self.FarmLabel = farm_label
-        self.PushServiceLocation = push_service_location
+    FarmLabel: str | None = None
+    PushServiceLocation: str | None = None
 
     " "
 

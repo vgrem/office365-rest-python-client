@@ -1,23 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PromotedResults(ClientValue):
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        is_visual: Optional[bool] = None,
-        last_modified_time: Optional[datetime] = None,
-        title: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.Description = description
-        self.IsVisual = is_visual
-        self.LastModifiedTime = last_modified_time
-        self.Title = title
-        self.Url = url
+    Description: str | None = None
+    IsVisual: bool | None = None
+    LastModifiedTime: datetime | None = None
+    Title: str | None = None
+    Url: str | None = None
 
     @property
     def entity_type_name(self):

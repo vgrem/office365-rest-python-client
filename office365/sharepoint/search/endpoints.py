@@ -1,25 +1,20 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.search.query.context import QueryContext
 
 
+@dataclass
 class SearchEndpoints(ClientValue):
     """This property contains the search endpoints."""
 
-    def __init__(
-        self,
-        admin_endpoint=None,
-        query_context=QueryContext(),
-        afd_endpoint: Optional[str] = None,
-        geolocation: Optional[str] = None,
-        query_endpoint: Optional[str] = None,
-    ):
-        self.AdminEndpoint = admin_endpoint
-        self.QueryContext = query_context
-        self.AfdEndpoint = afd_endpoint
-        self.Geolocation = geolocation
-        self.QueryEndpoint = query_endpoint
+    AdminEndpoint: str | None = None
+    QueryContext: QueryContext = field(default_factory=QueryContext)
+    AfdEndpoint: str | None = None
+    Geolocation: str | None = None
+    QueryEndpoint: str | None = None
 
     @property
     def entity_type_name(self):
