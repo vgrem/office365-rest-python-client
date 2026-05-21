@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -6,13 +10,12 @@ from office365.sharepoint.migrationcenter.service.performance.throughput_data im
 )
 
 
+@dataclass
 class PerformanceDashboardData(ClientValue):
-    """"""
 
-    def __init__(self, bottleneck_list=None, recommendation_list=None, throughput_trend=None):
-        self.BottleneckList = StringCollection(bottleneck_list)
-        self.RecommendationList = StringCollection(recommendation_list)
-        self.ThroughputTrend = ClientValueCollection(ThroughputData, throughput_trend)
+    BottleneckList: StringCollection | None = None
+    RecommendationList: StringCollection | None = None
+    ThroughputTrend: ClientValueCollection[ThroughputData] | None = None
 
     @property
     def entity_type_name(self):

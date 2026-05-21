@@ -1,35 +1,24 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ActivityIdentityItem(ClientValue):
-    def __init__(
-        self,
-        client_id=None,
-        clientIdProvider=None,
-        displayName=None,
-        email=None,
-        userPrincipalName=None,
-        client_id_provider: Optional[str] = None,
-        display_name: Optional[str] = None,
-        user_principal_name: Optional[str] = None,
-    ):
-        """
-        :param str client_id:
-        :param str clientIdProvider:
-        :param str displayName:
-        :param str email:
-        :param str userPrincipalName:
-        """
-        self.clientId = client_id
-        self.clientIdProvider = clientIdProvider
-        self.displayName = displayName
-        self.email = email
-        self.userPrincipalName = userPrincipalName
-        self.clientIdProvider = client_id_provider
-        self.displayName = display_name
-        self.userPrincipalName = user_principal_name
+    """
+    :param str client_id:
+    :param str clientIdProvider:
+    :param str displayName:
+    :param str email:
+    :param str userPrincipalName:
+    """
+    clientId: str | None = None
+    clientIdProvider: str | None = None
+    displayName: str | None = None
+    email: str | None = None
+    userPrincipalName: str | None = None
 
     @property
     def entity_type_name(self):

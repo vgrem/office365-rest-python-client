@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from http import HTTPStatus
 from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast
 from urllib.parse import quote, unquote
 
@@ -8,6 +9,7 @@ import requests
 from requests import Response
 from typing_extensions import Self
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
@@ -138,6 +140,17 @@ class File(AbstractFile):
         qry = FunctionQuery(self, "$value", return_type=return_type)
         self.context.add_query(qry)
         return return_type
+
+    def get_exists(self) -> ClientResult[bool]:
+        result = ClientResult(self.context, bool())
+        result.set_property("__value", False)
+        try:
+            self.select(["Exists"]).get().after_execute(lambda: result.set_property("__value", True))
+        except ClientRequestException as e:
+            if e.response.status_code == HTTPStatus.NOT_FOUND:
+                return result
+            else:
+                raise ValueError(e.response.text) from e
 
     def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:
         """Returns a link for downloading the file without authentication.

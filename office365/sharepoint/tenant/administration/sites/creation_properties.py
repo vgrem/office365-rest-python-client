@@ -1,48 +1,34 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteCreationProperties(ClientValue):
-    def __init__(
-        self,
-        title=None,
-        url=None,
-        owner=None,
-        owner_name=None,
-        template=None,
-        site_uni_name=None,
-        compatibility_level: Optional[int] = None,
-        lcid: Optional[str] = None,
-        time_zone_id: Optional[int] = None,
-        enable_agreements_solution: Optional[bool] = None,
-        storage_maximum_level: Optional[int] = None,
-        storage_warning_level: Optional[int] = None,
-        user_code_maximum_level: Optional[float] = None,
-        user_code_warning_level: Optional[float] = None,
-    ):
-        """Sets the initial properties for a new site when it is created.
+    """Sets the initial properties for a new site when it is created.
 
-        :param str owner: Gets or sets the login name of the owner of the new site
-        :param str url: Gets or sets the new site’s URL.
-        :param str template: Gets or sets the web template name of the new site.
-        :param str site_uni_name:
-        """
-        super().__init__()
-        self.Url = url
-        self.Owner = owner
-        self.OwnerName = owner_name
-        self.Title = title
-        self.Template = template
-        self.SiteUniName = site_uni_name
-        self.CompatibilityLevel = compatibility_level
-        self.Lcid = lcid
-        self.TimeZoneId = time_zone_id
-        self.EnableAgreementsSolution = enable_agreements_solution
-        self.StorageMaximumLevel = storage_maximum_level
-        self.StorageWarningLevel = storage_warning_level
-        self.UserCodeMaximumLevel = user_code_maximum_level
-        self.UserCodeWarningLevel = user_code_warning_level
+    :param str owner: Gets or sets the login name of the owner of the new site
+    :param str url: Gets or sets the new site's URL.
+    :param str template: Gets or sets the web template name of the new site.
+    :param str site_uni_name:
+    """
+
+    Url: str | None = None
+    Owner: str | None = None
+    OwnerName: str | None = None
+    Title: str | None = None
+    Template: str | None = None
+    SiteUniName: str | None = None
+    CompatibilityLevel: int | None = None
+    Lcid: str | None = None
+    TimeZoneId: int | None = None
+    EnableAgreementsSolution: bool | None = None
+    StorageMaximumLevel: int | None = None
+    StorageWarningLevel: int | None = None
+    UserCodeMaximumLevel: float | None = None
+    UserCodeWarningLevel: float | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

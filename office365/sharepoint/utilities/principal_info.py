@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.principal.type import PrincipalType
@@ -9,63 +13,36 @@ from office365.sharepoint.sharing.inherited_from import InheritedFrom
 from office365.sharepoint.sharing.principal import Principal
 
 
+@dataclass
 class PrincipalInfo(ClientValue):
-    """Represents principal information.
+
+    """
+    Represents principal information.
 
     Provides comprehensive information about a SharePoint principal (user/group).
     Handles null values safely and provides type-safe access to principal properties.
 
     Example:
-        >>> info = PrincipalInfo(display_name="John Doe", principal_type=PrincipalType.User)
-        >>> print(info)  # "User: John Doe"
+    >>> info = PrincipalInfo(display_name="John Doe", principal_type=PrincipalType.User)
+    >>> print(info)  # "User: John Doe"
     """
 
-    def __init__(
-        self,
-        principal_id: Optional[str] = None,
-        display_name: Optional[str] = None,
-        email: Optional[str] = None,
-        login_name: Optional[str] = None,
-        department: Optional[str] = None,
-        job_title: Optional[str] = None,
-        principal_type: Optional[PrincipalType] = None,
-        can_be_modified: SharingAbilityStatus = SharingAbilityStatus(),
-        expiration_date_time_on_ace: Optional[datetime] = None,
-        inherited_from: InheritedFrom = InheritedFrom(),
-        is_inherited: Optional[bool] = None,
-        members: ClientValueCollection[Principal] = ClientValueCollection(Principal),
-        principal: Principal = Principal(),
-        role: Optional[int] = None,
-        mobile: Optional[str] = None,
-        sip_address: Optional[str] = None,
-    ):
-        """Initialize principal information.
-
-        Args:
-            principal_id: Unique identifier (-1 if external to site)
-            display_name: Human-readable display name
-            email: Email address
-            login_name: System login identifier
-            department: Organizational department
-            job_title: Job position title
-            principal_type: Type of principal (User/Group/etc)
-        """
-        self.PrincipalId = principal_id
-        self.DisplayName = display_name
-        self.Email = email
-        self.LoginName = login_name
-        self.Department = department
-        self.JobTitle = job_title
-        self.PrincipalType = principal_type
-        self.canBeModified = can_be_modified
-        self.ExpirationDateTimeOnACE = expiration_date_time_on_ace
-        self.inheritedFrom = inherited_from
-        self.isInherited = is_inherited
-        self.members = members
-        self.principal = principal
-        self.role = role
-        self.Mobile = mobile
-        self.SIPAddress = sip_address
+    PrincipalId: Optional[str] = None
+    DisplayName: Optional[str] = None
+    Email: Optional[str] = None
+    LoginName: Optional[str] = None
+    Department: Optional[str] = None
+    JobTitle: Optional[str] = None
+    PrincipalType: Optional[PrincipalType] = None
+    canBeModified: SharingAbilityStatus = SharingAbilityStatus()
+    ExpirationDateTimeOnACE: Optional[datetime] = None
+    inheritedFrom: InheritedFrom = InheritedFrom()
+    isInherited: Optional[bool] = None
+    members: ClientValueCollection[Principal] = ClientValueCollection(Principal)
+    principal: Principal = Principal()
+    role: Optional[int] = None
+    Mobile: Optional[str] = None
+    SIPAddress: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,24 +1,21 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WacToken(ClientValue):
-    def __init__(
-        self,
-        access_token: Optional[str] = None,
-        access_token_ttl: Optional[int] = None,
-        app_url: Optional[str] = None,
-        error_message_to_display: Optional[str] = None,
-        fav_icon_target: Optional[str] = None,
-        redirect_url: Optional[str] = None,
-    ):
-        self.AccessToken = access_token
-        self.AccessTokenTtl = access_token_ttl
-        self.AppUrl = app_url
-        self.ErrorMessageToDisplay = error_message_to_display
-        self.FavIconTarget = fav_icon_target
-        self.RedirectUrl = redirect_url
+
+    AccessToken: Optional[str] = None
+    AccessTokenTtl: Optional[int] = None
+    AppUrl: Optional[str] = None
+    ErrorMessageToDisplay: Optional[str] = None
+    FavIconTarget: Optional[str] = None
+    RedirectUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

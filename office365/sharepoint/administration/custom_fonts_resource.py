@@ -1,24 +1,20 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CustomFontsResource(ClientValue):
-    def __init__(
-        self,
-        byte_array: Optional[bytes] = None,
-        file_name: Optional[str] = None,
-        full_path: Optional[str] = None,
-        maj_ver: Optional[int] = None,
-        type_: Optional[int] = None,
-    ):
-        self.byteArray = byte_array
-        self.fileName = file_name
-        self.fullPath = full_path
-        self.MajVer = maj_ver
-        self.type = type_
 
-    " "
+    byteArray: Optional[bytes] = None
+    fileName: Optional[str] = None
+    fullPath: Optional[str] = None
+    MajVer: Optional[int] = None
+    type: Optional[int] = None
 
     @property
     def entity_type_name(self):

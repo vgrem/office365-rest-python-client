@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SystemSiteLockExpirationResult(ClientValue):
-    """"""
 
-    def __init__(self, error=None, expiration=None):
-        self.Error = error
-        self.Expiration = expiration
+    Error = None
+    Expiration = None

@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FileRequestBrandingCdnInfo(ClientValue):
-    def __init__(
-        self, background_file_public_cdn_url: Optional[str] = None, logo_file_public_cdn_url: Optional[str] = None
-    ):
-        self.BackgroundFilePublicCdnUrl = background_file_public_cdn_url
-        self.LogoFilePublicCdnUrl = logo_file_public_cdn_url
+
+    BackgroundFilePublicCdnUrl: Optional[str] = None
+    LogoFilePublicCdnUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

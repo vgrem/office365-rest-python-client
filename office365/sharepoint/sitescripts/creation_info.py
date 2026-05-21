@@ -1,13 +1,19 @@
+
+
+from __future__ import annotations
 from typing import Optional
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteScriptCreationInfo(ClientValue):
-    def __init__(self, content: Optional[str] = None, description: Optional[str] = None, title: Optional[str] = None):
-        self.Content = content
-        self.Description = description
-        self.Title = title
+
+    Content: Optional[str] = None
+    Description: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

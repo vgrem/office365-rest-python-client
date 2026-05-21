@@ -1,23 +1,17 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharedWithMeDocumentUser(ClientValue):
     """Represents a user of a document that is shared with the current user."""
 
-    def __init__(self, _id=None, login_name=None, sip_address=None, title=None, id_: Optional[str] = None):
-        """
-        :param str _id: Identifier
-        :param str login_name: Specifies the login name of the user.
-        :param str sip_address: Specifies the sip address of the user.
-        :param str title: Specifies the title of the user.
-        """
-        self.Id = _id
-        self.LoginName = login_name
-        self.SipAddress = sip_address
-        self.Title = title
-        self.Id = id_
+    Id: Optional[str] = None
+    LoginName: Optional[str] = None
+    SipAddress: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

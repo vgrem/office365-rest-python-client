@@ -1,29 +1,23 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WebCreationInformation(ClientValue):
+
     """Represents metadata about site creation."""
 
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        language: Optional[int] = None,
-        title: Optional[str] = None,
-        url: Optional[str] = None,
-        use_same_permissions_as_parent_site: Optional[bool] = None,
-        web_template: Optional[str] = None,
-    ):
-        super().__init__()
-        self.Title = None
-        self.Url = None
-        self.Description = description
-        self.Language = language
-        self.Title = title
-        self.Url = url
-        self.UseSamePermissionsAsParentSite = use_same_permissions_as_parent_site
-        self.WebTemplate = web_template
+    Title: Optional[str] = None
+    Url: Optional[str] = None
+    Description: Optional[str] = None
+    Language: Optional[int] = None
+    UseSamePermissionsAsParentSite: Optional[bool] = None
+    WebTemplate: Optional[str] = None
 
     @property
     def entity_type_name(self):

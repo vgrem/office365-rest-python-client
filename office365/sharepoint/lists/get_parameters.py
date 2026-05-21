@@ -1,17 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.lists.collection_position import ListCollectionPosition
 
 
+@dataclass
 class GetListsParameters(ClientValue):
-    def __init__(
-        self,
-        position=ListCollectionPosition(),
-        row_limit: int = 100,
-        list_collection_position: ListCollectionPosition = ListCollectionPosition(),
-    ):
-        self.ListCollectionPosition = position
-        self.RowLimit = row_limit
-        self.ListCollectionPosition = list_collection_position
+    ListCollectionPosition: ListCollectionPosition = field(default_factory=ListCollectionPosition)
+    RowLimit: int = 100
 
     @property
     def entity_type_name(self):

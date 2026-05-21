@@ -1,5 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -11,54 +13,36 @@ from office365.sharepoint.tenant.administration.parameter import Parameter
 from office365.sharepoint.tenant.administration.target_property import TargetProperty
 
 
+@dataclass
 class AuditData(ClientValue):
-    def __init__(
-        self,
-        client_ip=None,
-        correlation_id=None,
-        event_source=None,
-        item_type=None,
-        list_item_unique_id=None,
-        modified_properties=None,
-        site=None,
-        team_name=None,
-        user_id=None,
-        creation_time: Optional[datetime] = None,
-        event_data: Optional[str] = None,
-        event_data_parsed: EventData = EventData(),
-        id_: Optional[str] = None,
-        name: Optional[str] = None,
-        new_value: Optional[str] = None,
-        object_id: Optional[str] = None,
-        old_value: Optional[str] = None,
-        parameters: ClientValueCollection[Parameter] = ClientValueCollection(Parameter),
-        target: ClientValueCollection[TargetProperty] = ClientValueCollection(TargetProperty),
-        target_user_or_group_name: Optional[str] = None,
-        target_user_or_group_type: Optional[str] = None,
-        user_type: Optional[int] = None,
-    ):
-        self.ClientIP = client_ip
-        self.CorrelationId = correlation_id
-        self.EventSource = event_source
-        self.ItemType = item_type
-        self.ListItemUniqueId = list_item_unique_id
-        self.ModifiedProperties = ClientValueCollection(ModifiedProperty, modified_properties)
-        self.Site = site
-        self.TeamName = team_name
-        self.UserId = user_id
-        self.CreationTime = creation_time
-        self.EventData = event_data
-        self.EventDataParsed = event_data_parsed
-        self.Id = id_
-        self.Name = name
-        self.NewValue = new_value
-        self.ObjectId = object_id
-        self.OldValue = old_value
-        self.Parameters = parameters
-        self.Target = target
-        self.TargetUserOrGroupName = target_user_or_group_name
-        self.TargetUserOrGroupType = target_user_or_group_type
-        self.UserType = user_type
+    ClientIP: str | None = None
+    CorrelationId: str | None = None
+    EventSource: str | None = None
+    ItemType: str | None = None
+    ListItemUniqueId: str | None = None
+    ModifiedProperties: ClientValueCollection[ModifiedProperty] = field(
+        default_factory=lambda: ClientValueCollection(ModifiedProperty)
+    )
+    Site: str | None = None
+    TeamName: str | None = None
+    UserId: str | None = None
+    CreationTime: datetime | None = None
+    EventData: str | None = None
+    EventDataParsed: EventData = field(default_factory=lambda: EventData())
+    Id: str | None = None
+    Name: str | None = None
+    NewValue: str | None = None
+    ObjectId: str | None = None
+    OldValue: str | None = None
+    Parameters: ClientValueCollection[Parameter] = field(
+        default_factory=lambda: ClientValueCollection(Parameter)
+    )
+    Target: ClientValueCollection[TargetProperty] = field(
+        default_factory=lambda: ClientValueCollection(TargetProperty)
+    )
+    TargetUserOrGroupName: str | None = None
+    TargetUserOrGroupType: str | None = None
+    UserType: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

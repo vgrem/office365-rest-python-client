@@ -1,54 +1,43 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.role import Role
 
 
+@dataclass
 class UserSharingResult(ClientValue):
     """Specifies a sharing result for an individual user that method UpdateDocumentSharingInfo
-    (section 3.2.5.187.2.1.1) returns."""
+    (section 3.2.5.187.2.1.1) returns.
 
-    def __init__(
-        self,
-        allowed_roles: Optional[List[Role]] = None,
-        current_role: Optional[Role] = None,
-        display_name: Optional[str] = None,
-        email: Optional[str] = None,
-        invitation_link: Optional[str] = None,
-        is_user_known: Optional[bool] = None,
-        message: Optional[str] = None,
-        status: Optional[bool] = None,
-        user: Optional[str] = None,
-        expiration_date_time_on_ace: Optional[datetime] = None,
-        other_mails: Optional[str] = None,
-    ):
-        """
-        :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
-        :param int current_role: Specifies the role that the user is currently assigned to.
-        :param str display_name: Gets the display name of the user.
-        :param str email: Gets the user email.
-        :param str invitation_link: Gets the invitation link.
-        :param bool is_user_known: Specifies whether the user is known to the server. If "true", the user is known to
-            the server; if "false", user is unknown.
-        :param str message: Specifies a message string that explains the reason when the Status  property is "false".
-        :param bool status: Specifies whether the sharing update for the user was completed successfully. If "true",
-            the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
-        :param str user: Specifies the identifier of a user.
-        """
-        super().__init__()
-        self.AllowedRoles = ClientValueCollection(Role, allowed_roles)
-        self.CurrentRole = current_role
-        self.DisplayName = display_name
-        self.Email = email
-        self.InvitationLink = invitation_link
-        self.IsUserKnown = is_user_known
-        self.Message = message
-        self.Status = status
-        self.User = user
-        self.ExpirationDateTimeOnACE = expiration_date_time_on_ace
-        self.OtherMails = other_mails
+    :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
+    :param int current_role: Specifies the role that the user is currently assigned to.
+    :param str display_name: Gets the display name of the user.
+    :param str email: Gets the user email.
+    :param str invitation_link: Gets the invitation link.
+    :param bool is_user_known: Specifies whether the user is known to the server. If "true", the user is known to
+        the server; if "false", user is unknown.
+    :param str message: Specifies a message string that explains the reason when the Status  property is "false".
+    :param bool status: Specifies whether the sharing update for the user was completed successfully. If "true",
+        the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
+    :param str user: Specifies the identifier of a user.
+    """
+    AllowedRoles: ClientValueCollection[Role] = field(
+        default_factory=lambda: ClientValueCollection(Role)
+    )
+    CurrentRole: Role | None = None
+    DisplayName: str | None = None
+    Email: str | None = None
+    InvitationLink: str | None = None
+    IsUserKnown: bool | None = None
+    Message: str | None = None
+    Status: bool | None = None
+    User: str | None = None
+    ExpirationDateTimeOnACE: datetime | None = None
+    OtherMails: str | None = None
 
     @property
     def current_role_name(self):

@@ -1,20 +1,24 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WikiPageCreationInformation(ClientValue):
-    def __init__(self, server_relative_url, content, wiki_html_content: Optional[str] = None):
-        """
-        Specifies wiki page creation information
 
-        :param str server_relative_url: The server-relative URL of the wiki page to be created.
-        :param str content: The HTML content of the wiki page.
-        """
-        super().__init__()
-        self.ServerRelativeUrl = server_relative_url
-        self.WikiHtmlContent = content
-        self.WikiHtmlContent = wiki_html_content
+    """
+    Specifies wiki page creation information
+
+    :param str server_relative_url: The server-relative URL of the wiki page to be created.
+    :param str content: The HTML content of the wiki page.
+    """
+
+    ServerRelativeUrl
+    WikiHtmlContent: Optional[str] = None
 
     @property
     def entity_type_name(self):

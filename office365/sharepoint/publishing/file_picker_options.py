@@ -1,21 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 
 
+@dataclass
 class FilePickerOptions(ClientValue):
-    def __init__(
-        self,
-        search_enabled=None,
-        central_asset_repository=OrgAssets(),
-        org_assets=OrgAssets(),
-        bing_search_enabled: Optional[bool] = None,
-    ):
-        self.BingSearchEnabled = search_enabled
-        self.CentralAssetRepository = central_asset_repository
-        self.OrgAssets = org_assets
-        self.BingSearchEnabled = bing_search_enabled
+    BingSearchEnabled: bool | None = None
+    CentralAssetRepository: OrgAssets = field(default_factory=OrgAssets)
+    OrgAssets: OrgAssets = field(default_factory=OrgAssets)
 
     @property
     def entity_type_name(self):

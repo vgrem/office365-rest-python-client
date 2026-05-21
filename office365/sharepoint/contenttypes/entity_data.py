@@ -1,12 +1,17 @@
+from __future__ import annotations
+
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ContentTypeEntityData(ClientValue):
-    def __init__(self, name=None, description=None, group=None, parent_content_type_id=None):
-        self.Name = name
-        self.Description = description
-        self.Group = group
-        self.ParentContentTypeId = parent_content_type_id
+
+    Name = None
+    Description = None
+    Group = None
+    ParentContentTypeId = None
 
     @property
     def entity_type_name(self):

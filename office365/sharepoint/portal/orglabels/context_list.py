@@ -1,12 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.portal.orglabels.context import OrgLabelsContext
 
 
+@dataclass
 class OrgLabelsContextList(ClientValue):
-    def __init__(self, is_last_page=None, labels=None):
-        self.IsLastPage = is_last_page
-        self.Labels = ClientValueCollection(OrgLabelsContext, labels)
+    IsLastPage: bool | None = None
+    Labels: ClientValueCollection[OrgLabelsContext] = field(default_factory=lambda: ClientValueCollection(OrgLabelsContext))
 
     @property
     def entity_type_name(self):

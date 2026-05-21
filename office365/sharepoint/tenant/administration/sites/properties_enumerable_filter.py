@@ -1,37 +1,30 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SitePropertiesEnumerableFilter(ClientValue):
-    def __init__(
-        self,
-        _filter,
-        start_index=None,
-        include_detail=None,
-        include_personal_site=None,
-        group_id_defined=None,
-        template=None,
-        archived_by=None,
-        archived_time=None,
-        archive_status=None,
-    ):
-        """
-        :param str _filter:
-        :param str start_index:
-        :param bool include_detail:
-        :param int include_personal_site:
-        :param int group_id_defined:
-        :param str template:
-        """
-        super().__init__()
-        self.ArchivedBy = archived_by
-        self.Filter = _filter
-        self.GroupIdDefined = group_id_defined
-        self.IncludeDetail = include_detail
-        self.IncludePersonalSite = include_personal_site
-        self.StartIndex = start_index
-        self.Template = template
-        self.ArchivedTime = archived_time
-        self.ArchiveStatus = archive_status
+    """
+    :param str _filter:
+    :param str start_index:
+    :param bool include_detail:
+    :param int include_personal_site:
+    :param int group_id_defined:
+    :param str template:
+    """
+
+    Filter: str | None = None
+    StartIndex: str | None = None
+    IncludeDetail: bool | None = None
+    IncludePersonalSite: int | None = None
+    GroupIdDefined: int | None = None
+    Template: str | None = None
+    ArchivedBy: str | None = None
+    ArchivedTime: str | None = None
+    ArchiveStatus: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

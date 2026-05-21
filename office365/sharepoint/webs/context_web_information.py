@@ -1,42 +1,27 @@
+from __future__ import annotations
+
 import math
 import time
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class ContextWebInformation(ClientValue):
+
     """Specifies metadata about a site."""
 
-    def __init__(
-        self,
-        form_digest_value: Optional[str] = None,
-        form_digest_timeout_secs: Optional[int] = None,
-        form_digest_timeout_seconds: Optional[int] = None,
-        library_version: Optional[str] = None,
-        site_full_url: Optional[str] = None,
-        supported_schema_versions: StringCollection = StringCollection(),
-        web_full_url: Optional[str] = None,
-    ):
-        """
-        :param str form_digest_value: An object that is inserted into a page and is used by a protocol server
-             to validate client requests. The validation is specific to a user, site, and time period.
-        :param int form_digest_timeout_secs: Specifies the amount of time in seconds before security validation expires.
-        """
-        super().__init__()
-        self.FormDigestValue = form_digest_value
-        self.FormDigestTimeoutSeconds = form_digest_timeout_secs
-        self.LibraryVersion = None
-        self.SiteFullUrl = None
-        self.SupportedSchemaVersions = None
-        self.WebFullUrl = None
-        self._valid_from = time.time()
-        self.FormDigestTimeoutSeconds = form_digest_timeout_seconds
-        self.LibraryVersion = library_version
-        self.SiteFullUrl = site_full_url
-        self.SupportedSchemaVersions = supported_schema_versions
-        self.WebFullUrl = web_full_url
+    FormDigestValue: Optional[str] = None
+    FormDigestTimeoutSeconds: Optional[int] = None
+    LibraryVersion: Optional[str] = None
+    SiteFullUrl: Optional[str] = None
+    SupportedSchemaVersions: StringCollection = StringCollection()
+    WebFullUrl: Optional[str] = None
+    _valid_from
 
     @property
     def is_valid(self):

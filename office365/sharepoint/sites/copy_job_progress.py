@@ -1,10 +1,10 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class CopyJobProgress(ClientValue):
-    """"""
-
-    def __init__(self, job_state=None, logs=None):
-        self.JobState = job_state
-        self.Logs = StringCollection(logs)
+    JobState: str | None = None
+    Logs: StringCollection = field(default_factory=StringCollection)

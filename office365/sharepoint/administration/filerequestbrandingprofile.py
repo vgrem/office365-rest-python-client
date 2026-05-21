@@ -1,27 +1,23 @@
+from __future__ import annotations
+
 from typing import Optional
 from uuid import UUID
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FileRequestBrandingProfile(ClientValue):
-    def __init__(
-        self,
-        background_file_id: Optional[UUID] = None,
-        background_file_name: Optional[str] = None,
-        background_file_url: Optional[str] = None,
-        logo_file_id: Optional[UUID] = None,
-        logo_file_name: Optional[str] = None,
-        logo_file_url: Optional[str] = None,
-        profile_type: Optional[int] = None,
-    ):
-        self.BackgroundFileId = background_file_id
-        self.BackgroundFileName = background_file_name
-        self.BackgroundFileUrl = background_file_url
-        self.LogoFileId = logo_file_id
-        self.LogoFileName = logo_file_name
-        self.LogoFileUrl = logo_file_url
-        self.ProfileType = profile_type
+
+    BackgroundFileId: Optional[UUID] = None
+    BackgroundFileName: Optional[str] = None
+    BackgroundFileUrl: Optional[str] = None
+    LogoFileId: Optional[UUID] = None
+    LogoFileName: Optional[str] = None
+    LogoFileUrl: Optional[str] = None
+    ProfileType: Optional[int] = None
 
     @property
     def entity_type_name(self):

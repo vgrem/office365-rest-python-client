@@ -1,27 +1,19 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOTenantWebTemplate(ClientValue):
-    def __init__(
-        self,
-        compatibility_level: Optional[int] = None,
-        description: Optional[str] = None,
-        display_category: Optional[str] = None,
-        id_: Optional[int] = None,
-        lcid: Optional[int] = None,
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        super().__init__()
-        self.CompatibilityLevel = compatibility_level
-        self.Description = description
-        self.DisplayCategory = display_category
-        self.Id = id_
-        self.Lcid = lcid
-        self.Name = name
-        self.Title = title
+    CompatibilityLevel: int | None = None
+    Description: str | None = None
+    DisplayCategory: str | None = None
+    Id: int | None = None
+    Lcid: int | None = None
+    Name: str | None = None
+    Title: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

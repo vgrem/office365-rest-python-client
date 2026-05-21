@@ -1,12 +1,18 @@
+
+
+from __future__ import annotations
 from typing import Optional
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class JsonTheme(ClientValue):
-    def __init__(self, name: Optional[str] = None, theme_json: Optional[str] = None):
-        self.name = name
-        self.themeJson = theme_json
+
+    name: Optional[str] = None
+    themeJson: Optional[str] = None
 
     @property
     def entity_type_name(self):

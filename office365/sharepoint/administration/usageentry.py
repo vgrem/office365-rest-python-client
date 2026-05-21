@@ -1,22 +1,20 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UsageEntry(ClientValue):
-    def __init__(
-        self,
-        event_type_id: Optional[int] = None,
-        item_id: Optional[str] = None,
-        scope_id: Optional[str] = None,
-        site: Optional[str] = None,
-        user: Optional[str] = None,
-    ):
-        self.EventTypeId = event_type_id
-        self.ItemId = item_id
-        self.ScopeId = scope_id
-        self.Site = site
-        self.User = user
+
+    EventTypeId: Optional[int] = None
+    ItemId: Optional[str] = None
+    ScopeId: Optional[str] = None
+    Site: Optional[str] = None
+    User: Optional[str] = None
 
     @property
     def entity_type_name(self):

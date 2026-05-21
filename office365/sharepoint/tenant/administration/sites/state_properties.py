@@ -1,21 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteStateProperties(ClientValue):
-    def __init__(
-        self,
-        group_site_relationship: Optional[int] = None,
-        is_archived: Optional[bool] = None,
-        is_site_on_hold: Optional[bool] = None,
-        lock_state: Optional[int] = None,
-    ) -> None:
-        super().__init__()
-        self.GroupSiteRelationship = group_site_relationship
-        self.IsArchived = is_archived
-        self.IsSiteOnHold = is_site_on_hold
-        self.LockState = lock_state
+    GroupSiteRelationship: int | None = None
+    IsArchived: bool | None = None
+    IsSiteOnHold: bool | None = None
+    LockState: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

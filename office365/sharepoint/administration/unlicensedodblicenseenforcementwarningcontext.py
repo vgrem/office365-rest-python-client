@@ -1,19 +1,19 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UnlicensedOdbLicenseEnforcementWarningContext(ClientValue):
-    def __init__(
-        self,
-        generated_on: Optional[datetime] = None,
-        warning_status: Optional[int] = None,
-        warning_status_effective_until: Optional[datetime] = None,
-    ):
-        self.GeneratedOn = generated_on
-        self.WarningStatus = warning_status
-        self.WarningStatusEffectiveUntil = warning_status_effective_until
+
+    GeneratedOn: Optional[datetime] = None
+    WarningStatus: Optional[int] = None
+    WarningStatusEffectiveUntil: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

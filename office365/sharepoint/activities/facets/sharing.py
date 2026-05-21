@@ -1,16 +1,22 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.activities.identity import ActivityIdentity
 
 
+@dataclass
 class SharingFacet(ClientValue):
-    def __init__(self, recipients=None, sharing_type=None):
-        """
-        :param list[ActivityIdentity] recipients:
-        :param str sharing_type:
-        """
-        self.recipients = ClientValueCollection(ActivityIdentity, recipients)
-        self.sharingType = sharing_type
+    """
+    :param list[ActivityIdentity] recipients:
+    :param str sharing_type:
+    """
+    recipients: ClientValueCollection[ActivityIdentity] = field(
+        default_factory=lambda: ClientValueCollection(ActivityIdentity)
+    )
+    sharingType: str | None = None
 
     @property
     def entity_type_name(self):

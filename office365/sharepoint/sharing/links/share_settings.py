@@ -1,74 +1,60 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.principal import Principal
 
 
+@dataclass
 class ShareLinkSettings(ClientValue):
-    """Represents the settings the retrieval or creation/update of a tokenized sharing link"""
+    """Represents the settings the retrieval or creation/update of a tokenized sharing link
 
-    def __init__(
-        self,
-        allow_anonymous_access=None,
-        application_link=None,
-        link_kind=None,
-        expiration=None,
-        password=None,
-        password_protected=None,
-        role=None,
-        track_link_users=None,
-        share_id=None,
-        update_password=None,
-        description: Optional[str] = None,
-        embeddable: Optional[bool] = None,
-        invitees_to_remove: ClientValueCollection[Principal] = ClientValueCollection(Principal),
-        limit_use_to_application: Optional[bool] = None,
-        nav: Optional[str] = None,
-        non_default_link: Optional[bool] = None,
-        restrict_share_membership: Optional[bool] = None,
-        restrict_to_existing_relationships: Optional[bool] = None,
-        scope: Optional[int] = None,
-    ):
-        """
-        :param bool allow_anonymous_access: Indicates if the tokenized sharing link supports anonymous access.
-             This value is optional and defaults to false for Flexible links (section 3.2.5.315.1.7) and is ignored
-             for other link kinds.
-        :param bool application_link:
-        :param int link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-            This value MUST NOT be set to Uninitialized (section 3.2.5.315.1.1) nor Direct (section 3.2.5.315.1.2)
-        :param str password: Optional password value to apply to the tokenized sharing link, if it can support password
-            protection. If this value is null or empty when the updatePassword parameter is set, any existing password
-            on the tokenized sharing link MUST be cleared. Any other value will be applied to the tokenized sharing link
-            as a password setting.
-        :param bool password_protected:
-        :param int role: The role to be used for the tokenized sharing link. This is required for Flexible links
-            and ignored for all other kinds.
-        :param bool track_link_users:
-        :param str share_id: The optional unique identifier of an existing section tokenized sharing link to be
-             retrieved and updated if necessary.
-        :param bool update_password:
-        """
-        self.allowAnonymousAccess = allow_anonymous_access
-        self.applicationLink = application_link
-        self.linkKind = link_kind
-        self.expiration = expiration
-        self.password = password
-        self.passwordProtected = True if password else password_protected
-        self.role = role
-        self.shareId = share_id
-        self.trackLinkUsers = track_link_users
-        self.updatePassword = update_password
-        self.description = description
-        self.embeddable = embeddable
-        self.inviteesToRemove = invitees_to_remove
-        self.limitUseToApplication = limit_use_to_application
-        self.nav = nav
-        self.nonDefaultLink = non_default_link
-        self.restrictShareMembership = restrict_share_membership
-        self.restrictToExistingRelationships = restrict_to_existing_relationships
-        self.scope = scope
+    :param bool allow_anonymous_access: Indicates if the tokenized sharing link supports anonymous access.
+         This value is optional and defaults to false for Flexible links (section 3.2.5.315.1.7) and is ignored
+         for other link kinds.
+    :param bool application_link:
+    :param int link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
+        This value MUST NOT be set to Uninitialized (section 3.2.5.315.1.1) nor Direct (section 3.2.5.315.1.2)
+    :param str password: Optional password value to apply to the tokenized sharing link, if it can support password
+        protection. If this value is null or empty when the updatePassword parameter is set, any existing password
+        on the tokenized sharing link MUST be cleared. Any other value will be applied to the tokenized sharing link
+        as a password setting.
+    :param bool password_protected:
+    :param int role: The role to be used for the tokenized sharing link. This is required for Flexible links
+        and ignored for all other kinds.
+    :param bool track_link_users:
+    :param str share_id: The optional unique identifier of an existing section tokenized sharing link to be
+         retrieved and updated if necessary.
+    :param bool update_password:
+    """
+    allowAnonymousAccess: bool | None = None
+    applicationLink: bool | None = None
+    linkKind: int | None = None
+    expiration: str | None = None
+    password: str | None = None
+    password_protected: bool | None = field(default=None, repr=False)
+    passwordProtected: bool | None = field(init=False, default=None)
+    role: int | None = None
+    shareId: str | None = None
+    trackLinkUsers: bool | None = None
+    updatePassword: bool | None = None
+    description: str | None = None
+    embeddable: bool | None = None
+    inviteesToRemove: ClientValueCollection[Principal] = field(
+        default_factory=lambda: ClientValueCollection(Principal)
+    )
+    limitUseToApplication: bool | None = None
+    nav: str | None = None
+    nonDefaultLink: bool | None = None
+    restrictShareMembership: bool | None = None
+    restrictToExistingRelationships: bool | None = None
+    scope: int | None = None
 
     @property
     def entity_type_name(self):
         return "SP.Sharing.ShareLinkSettings"
+
+    def __post_init__(self):
+        self.passwordProtected = True if self.password else self.password_protected

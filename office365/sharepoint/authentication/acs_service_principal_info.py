@@ -1,27 +1,23 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class SPACSServicePrincipalInfo(ClientValue):
-    def __init__(
-        self,
-        application_endpoint_authorities=None,
-        display_name=None,
-        app_domains: Optional[StringCollection] = None,
-        app_id: Optional[str] = None,
-        app_identifier: Optional[str] = None,
-        redirect_uri: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.ApplicationEndpointAuthorities = StringCollection(application_endpoint_authorities)
-        self.DisplayName = display_name
-        self.appDomains = app_domains
-        self.appId = app_id
-        self.appIdentifier = app_identifier
-        self.redirectUri = redirect_uri
-        self.title = title
+
+    ApplicationEndpointAuthorities: StringCollection | None = None
+    DisplayName = None
+    appDomains: Optional[StringCollection] = None
+    appId: Optional[str] = None
+    appIdentifier: Optional[str] = None
+    redirectUri: Optional[str] = None
+    title: Optional[str] = None
 
     @property
     def entity_type_name(self):

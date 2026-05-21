@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.translation.notifications.recipient import (
@@ -5,11 +9,9 @@ from office365.sharepoint.translation.notifications.recipient import (
 )
 
 
+@dataclass
 class TranslationNotificationRecipientCollection(ClientValue):
-    def __init__(self, language_code=None, recipients=None):
-        """
-        :param str language_code:
-        :param list[str] recipients:
-        """
-        self.LanguageCode = language_code
-        self.Recipients = ClientValueCollection(TranslationNotificationRecipient, recipients)
+    LanguageCode: str | None = None
+    Recipients: ClientValueCollection[TranslationNotificationRecipient] = field(
+        default_factory=lambda: ClientValueCollection(TranslationNotificationRecipient)
+    )

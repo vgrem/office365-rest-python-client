@@ -1,18 +1,19 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.utilities.jsontheme import JsonTheme
 
 
+@dataclass
 class ThemingOptions(ClientValue):
-    def __init__(
-        self,
-        hide_default_themes: Optional[bool] = None,
-        theme_previews: ClientValueCollection[JsonTheme] = ClientValueCollection(JsonTheme),
-    ):
-        self.hideDefaultThemes = hide_default_themes
-        self.themePreviews = theme_previews
+
+    hideDefaultThemes: Optional[bool] = None
+    themePreviews: ClientValueCollection[JsonTheme] = ClientValueCollection(JsonTheme)
 
     @property
     def entity_type_name(self):

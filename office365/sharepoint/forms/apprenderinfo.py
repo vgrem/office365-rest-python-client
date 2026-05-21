@@ -1,18 +1,18 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AppRenderInfo(ClientValue):
-    def __init__(
-        self,
-        background_color: Optional[str] = None,
-        primary_device_height: Optional[str] = None,
-        primary_device_width: Optional[str] = None,
-    ):
-        self.BackgroundColor = background_color
-        self.PrimaryDeviceHeight = primary_device_height
-        self.PrimaryDeviceWidth = primary_device_width
+
+    BackgroundColor: Optional[str] = None
+    PrimaryDeviceHeight: Optional[str] = None
+    PrimaryDeviceWidth: Optional[str] = None
 
     @property
     def entity_type_name(self):

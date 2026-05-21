@@ -1,33 +1,30 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class SiteScriptSerializationInfo(ClientValue):
-    def __init__(
-        self,
-        include_branding=None,
-        included_lists=None,
-        include_links_to_exported_items=None,
-        include_regional_settings=None,
-        include_site_external_sharing_capability=None,
-        include_theme=None,
-        included_pages: Optional[StringCollection] = None,
-    ):
-        """
-        :param bool include_branding:
-        :param list[str] included_lists:
-        :param bool include_site_external_sharing_capability:
-        :param bool include_theme:
-        """
-        self.IncludeBranding = include_branding
-        self.IncludedLists = StringCollection(included_lists)
-        self.IncludeLinksToExportedItems = include_links_to_exported_items
-        self.IncludeRegionalSettings = include_regional_settings
-        self.IncludeSiteExternalSharingCapability = include_site_external_sharing_capability
-        self.IncludeTheme = include_theme
-        self.IncludedPages = included_pages
+
+    """
+    :param bool include_branding:
+    :param list[str] included_lists:
+    :param bool include_site_external_sharing_capability:
+    :param bool include_theme:
+    """
+
+    IncludeBranding = None
+    IncludedLists: StringCollection | None = None
+    IncludeLinksToExportedItems = None
+    IncludeRegionalSettings = None
+    IncludeSiteExternalSharingCapability = None
+    IncludeTheme = None
+    IncludedPages: Optional[StringCollection] = None
 
     @property
     def entity_type_name(self):

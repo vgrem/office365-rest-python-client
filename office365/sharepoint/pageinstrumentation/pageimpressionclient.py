@@ -1,16 +1,17 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PageImpressionClient(ClientValue):
-    def __init__(
-        self,
-        base_page_correlation_id: Optional[str] = None,
-        client_id_to_click_info_map: Optional[dict] = None,
-    ):
-        self.BasePageCorrelationId = base_page_correlation_id
-        self.ClientIdToClickInfoMap = client_id_to_click_info_map
+
+    BasePageCorrelationId: Optional[str] = None
+    ClientIdToClickInfoMap: Optional[dict] = None
 
     @property
     def entity_type_name(self):

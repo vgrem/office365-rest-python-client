@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.portal.channels.info import ChannelInfo
 
 
+@dataclass
 class ChannelInfoCollection(ClientValue):
-    def __init__(self, value=None, cache_updated_time: Optional[datetime] = None):
-        self.value = ClientValueCollection(ChannelInfo, value)
-        self.CacheUpdatedTime = cache_updated_time
+    value: ClientValueCollection[ChannelInfo] = field(default_factory=lambda: ClientValueCollection(ChannelInfo))
+    CacheUpdatedTime: datetime | None = None
 
     @property
     def entity_type_name(self):

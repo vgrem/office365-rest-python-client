@@ -1,15 +1,21 @@
+from __future__ import annotations
+
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class SiteScriptSerializationResult(ClientValue):
-    def __init__(self, json=None, warnings=None):
-        """
-        :param str json:
-        :param list[str] warnings:
-        """
-        self.JSON = json
-        self.Warnings = StringCollection(warnings)
+
+    """
+    :param str json:
+    :param list[str] warnings:
+    """
+
+    JSON = None
+    Warnings: StringCollection | None = None
 
     @property
     def entity_type_name(self):

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.powerapps.environment_context import (
@@ -5,12 +9,12 @@ from office365.sharepoint.tenant.administration.powerapps.environment_context im
 )
 
 
+@dataclass
 class SyntexPowerAppsEnvironmentsContext(ClientValue):
-    """ """
-
-    def __init__(self, environments=None, timer_job_sync_disabled=None):
-        self.Environments = ClientValueCollection(PowerAppsEnvironmentContext, environments)
-        self.TimerJobSyncDisabled = timer_job_sync_disabled
+    Environments: ClientValueCollection[PowerAppsEnvironmentContext] = field(
+        default_factory=lambda: ClientValueCollection(PowerAppsEnvironmentContext)
+    )
+    TimerJobSyncDisabled: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

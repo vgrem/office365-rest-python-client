@@ -1,24 +1,21 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class NewsItem(ClientValue):
-    def __init__(
-        self,
-        backup_picture_url: Optional[str] = None,
-        caption: Optional[str] = None,
-        item_id: Optional[int] = None,
-        picture_alt_text: Optional[str] = None,
-        picture_url: Optional[str] = None,
-        properties: Optional[str] = None,
-    ):
-        self.backupPictureUrl = backup_picture_url
-        self.caption = caption
-        self.itemId = item_id
-        self.pictureAltText = picture_alt_text
-        self.pictureUrl = picture_url
-        self.properties = properties
+
+    backupPictureUrl: Optional[str] = None
+    caption: Optional[str] = None
+    itemId: Optional[int] = None
+    pictureAltText: Optional[str] = None
+    pictureUrl: Optional[str] = None
+    properties: Optional[str] = None
 
     @property
     def entity_type_name(self):

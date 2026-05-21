@@ -1,26 +1,21 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class BaseGptRequestOptions(ClientValue):
-    def __init__(
-        self,
-        frequency_penalty: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        presence_penalty: Optional[float] = None,
-        stop: Optional[str] = None,
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
-    ):
-        self.FrequencyPenalty = frequency_penalty
-        self.MaxTokens = max_tokens
-        self.PresencePenalty = presence_penalty
-        self.Stop = stop
-        self.Temperature = temperature
-        self.TopP = top_p
 
-    ""
+    FrequencyPenalty: Optional[float] = None
+    MaxTokens: Optional[int] = None
+    PresencePenalty: Optional[float] = None
+    Stop: Optional[str] = None
+    Temperature: Optional[float] = None
+    TopP: Optional[float] = None
 
     @property
     def entity_type_name(self):

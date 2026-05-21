@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class OrgNewsSiteInfo(ClientValue):
-    def __init__(self, site_id: Optional[str] = None, url: Optional[str] = None, web_id: Optional[str] = None):
-        self.SiteId = site_id
-        self.Url = url
-        self.WebId = web_id
+
+    SiteId: Optional[str] = None
+    Url: Optional[str] = None
+    WebId: Optional[str] = None
 
     @property
     def entity_type_name(self):

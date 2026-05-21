@@ -1,25 +1,22 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ShortcutInformation(ClientValue):
-    def __init__(
-        self,
-        added_by_id: Optional[int] = None,
-        id_: Optional[str] = None,
-        name: Optional[str] = None,
-        scenario: Optional[int] = None,
-        time_created: Optional[datetime] = None,
-        time_last_modified: Optional[datetime] = None,
-    ):
-        self.AddedById = added_by_id
-        self.Id = id_
-        self.Name = name
-        self.Scenario = scenario
-        self.TimeCreated = time_created
-        self.TimeLastModified = time_last_modified
+
+    AddedById: Optional[int] = None
+    Id: Optional[str] = None
+    Name: Optional[str] = None
+    Scenario: Optional[int] = None
+    TimeCreated: Optional[datetime] = None
+    TimeLastModified: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

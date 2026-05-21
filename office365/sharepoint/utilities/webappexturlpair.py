@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class WebAppExtUrlPair(ClientValue):
-    def __init__(self, ext: Optional[str] = None, wac_url: Optional[str] = None):
-        self.Ext = ext
-        self.WacUrl = wac_url
+
+    Ext: Optional[str] = None
+    WacUrl: Optional[str] = None
 
     @property
     def entity_type_name(self):

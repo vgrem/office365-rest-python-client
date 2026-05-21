@@ -1,31 +1,23 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SecondaryAdministratorsInfo(ClientValue):
-    def __init__(
-        self,
-        email=None,
-        loginName=None,
-        userPrincipalName=None,
-        login_name: Optional[str] = None,
-        name: Optional[str] = None,
-        user_principal_name: Optional[str] = None,
-    ):
-        """
+    """
+    :param str email:
+    :param str login_name:
+    :param str name:
+    :param str user_principal_name:
+    """
 
-        :param str email:
-        :param str loginName:
-        :param str userPrincipalName:
-        """
-        super().__init__()
-        self.email = email
-        self.loginName = loginName
-        self.userPrincipalName = userPrincipalName
-        self.loginName = login_name
-        self.name = name
-        self.userPrincipalName = user_principal_name
+    email: str | None = None
+    loginName: str | None = None
+    name: str | None = None
+    userPrincipalName: str | None = None
 
     @property
     def entity_type_name(self) -> str:

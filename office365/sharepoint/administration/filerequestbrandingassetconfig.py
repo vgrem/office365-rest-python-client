@@ -1,22 +1,20 @@
+from __future__ import annotations
+
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.administration.filerequestbrandingprofile import FileRequestBrandingProfile
 
 
+@dataclass
 class FileRequestBrandingAssetConfig(ClientValue):
-    def __init__(
-        self,
-        asset_library_relative_url: Optional[str] = None,
-        asset_library_url: Optional[str] = None,
-        branded_profiles: ClientValueCollection[FileRequestBrandingProfile] = ClientValueCollection(
-            FileRequestBrandingProfile
-        ),
-    ):
-        self.AssetLibraryRelativeUrl = asset_library_relative_url
-        self.AssetLibraryUrl = asset_library_url
-        self.BrandedProfiles = branded_profiles
+
+    AssetLibraryRelativeUrl: Optional[str] = None
+    AssetLibraryUrl: Optional[str] = None
+    BrandedProfiles: ClientValueCollection[FileRequestBrandingProfile] = ClientValueCollection(FileRequestBrandingProfile)
 
     @property
     def entity_type_name(self):

@@ -78,7 +78,7 @@ class GroupSiteManager(ClientObject):
         """
         Creates a modern site
         """
-        payload = GroupCreationInformation(display_name, alias, is_public, optional_params)
+        payload = GroupCreationInformation(display_name, alias, is_public, optional_params or GroupCreationParams())
         return_type = ClientResult(self.context, GroupSiteInfo())
         qry = ServiceOperationQuery(self, "CreateGroupEx", None, payload, None, return_type)
         self.context.add_query(qry)

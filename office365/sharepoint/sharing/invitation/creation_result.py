@@ -1,26 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPInvitationCreationResult(ClientValue):
     """Specifies a result of adding an invitation."""
-
-    def __init__(
-        self,
-        email: Optional[str] = None,
-        error: Optional[str] = None,
-        invitation_link: Optional[str] = None,
-        succeeded: Optional[bool] = None,
-    ):
-        super().__init__()
-        self.Email = None
-        self.InvitationLink = None
-        self.Succeeded = None
-        self.Email = email
-        self.Error = error
-        self.InvitationLink = invitation_link
-        self.Succeeded = succeeded
+    Email: str | None = None
+    Error: str | None = None
+    InvitationLink: str | None = None
+    Succeeded: bool | None = None
 
     @property
     def entity_type_name(self):

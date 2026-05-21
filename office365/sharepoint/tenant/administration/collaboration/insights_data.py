@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.collaboration.collaborativeonedriveuser import (
@@ -8,22 +12,22 @@ from office365.sharepoint.tenant.administration.collaboration.collaborativeusers
 )
 
 
+@dataclass
 class CollaborationInsightsData(ClientValue):
-    def __init__(
-        self,
-        last_report_date=None,
-        collaborative_users=None,
-        collaborative_one_drive_users: ClientValueCollection[CollaborativeOneDriveUser] = ClientValueCollection(
-            CollaborativeOneDriveUser
-        ),
-    ):
-        """
-        :param str last_report_date:
-        :param list[CollaborativeUsers] collaborative_users:
-        """
-        self.collaborativeUsers = ClientValueCollection(CollaborativeUsers, collaborative_users)
-        self.lastReportDate = last_report_date
-        self.collaborativeOneDriveUsers = collaborative_one_drive_users
+    """
+    :param str last_report_date:
+    :param list[CollaborativeUsers] collaborative_users:
+    """
+
+    collaborativeUsers: ClientValueCollection[CollaborativeUsers] = field(
+        default_factory=lambda: ClientValueCollection(CollaborativeUsers)
+    )
+    lastReportDate: str | None = None
+    collaborativeOneDriveUsers: ClientValueCollection[CollaborativeOneDriveUser] = (
+        field(
+            default_factory=lambda: ClientValueCollection(CollaborativeOneDriveUser)
+        )
+    )
 
     @property
     def entity_type_name(self):  # type: ignore[override]

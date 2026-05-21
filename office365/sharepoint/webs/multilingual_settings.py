@@ -9,6 +9,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.translation.notifications.recipient_col import (
     TranslationNotificationRecipientCollection,
 )
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.translation.notifications.recipient_set_request import (
     TranslationNotificationRecipientSetRequest,
 )
@@ -26,7 +27,9 @@ class MultilingualSettings(Entity):
         """
         :param list notification_recipients:
         """
-        request = TranslationNotificationRecipientSetRequest(notification_recipients)
+        request = TranslationNotificationRecipientSetRequest(
+            ClientValueCollection(TranslationNotificationRecipientCollection, notification_recipients)
+        )
         qry = ServiceOperationQuery(self, "SetNotificationRecipients", None, request)
         self.context.add_query(qry)
         return self

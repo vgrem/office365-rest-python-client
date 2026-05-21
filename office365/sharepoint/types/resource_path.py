@@ -2,20 +2,23 @@ from __future__ import annotations
 
 from typing import Optional
 
+
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.utilities import get_absolute_url, is_absolute_url, urlparse
 
 
+@dataclass
 class ResourcePath(ClientValue):
-    def __init__(self, decoded_url: Optional[str] = None):
-        """
-        Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
-        other artifacts in the database.
 
-        :param str decoded_url: Gets the path in the decoded form.
-        """
-        super().__init__()
-        self.DecodedUrl = decoded_url
+    """
+    Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
+    other artifacts in the database.
+
+    :param str decoded_url: Gets the path in the decoded form.
+    """
+
+    DecodedUrl: Optional[str] = None
 
     @staticmethod
     def create_absolute(site_url: str, path: str) -> ResourcePath:
