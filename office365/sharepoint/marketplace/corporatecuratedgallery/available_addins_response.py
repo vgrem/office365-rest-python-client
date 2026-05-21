@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.marketplace.corporatecuratedgallery.addins.instance_info import (
@@ -16,7 +16,9 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.sperrorwithserverr
 class SPAvailableAddinsResponse(ClientValue):
 
     addins: ClientValueCollection[SPAddinInstanceInfo] | None = None
-    errorsWithServerRelativeUrl: ClientValueCollection[SPErrorWithServerRelativeUrl] = ClientValueCollection(SPErrorWithServerRelativeUrl)
+    errorsWithServerRelativeUrl: ClientValueCollection[SPErrorWithServerRelativeUrl] = field(
+        default_factory=lambda: ClientValueCollection(SPErrorWithServerRelativeUrl)
+    )
 
     @property
     def entity_type_name(self):

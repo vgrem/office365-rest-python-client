@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.lists.data_validation_failure import ListDataValidationFailure
@@ -15,4 +15,4 @@ class ListDataValidationExceptionValue(ClientValue):
     """
 
     FieldFailures: ClientValueCollection[ListDataValidationFailure] | None = None
-    ItemFailure: ListDataValidationFailure = ListDataValidationFailure()
+    ItemFailure: ListDataValidationFailure = field(default_factory=ListDataValidationFailure)

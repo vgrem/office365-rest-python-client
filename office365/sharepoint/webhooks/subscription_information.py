@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -19,7 +19,7 @@ class SubscriptionInformation(ClientValue):
     expirationDateTime: Optional[datetime] = None
     clientState: Optional[str] = None
     resourceData: Optional[str] = None
-    scenarios: StringCollection = StringCollection()
+    scenarios: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):

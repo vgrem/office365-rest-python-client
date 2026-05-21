@@ -14,7 +14,9 @@ class WopiWebAppProperties(ClientValue):
 
     App: Optional[str] = None
     BootstrapperUrl: Optional[str] = None
-    ListByAction: ClientValueCollection[WebAppUrlsByAction] = ClientValueCollection(WebAppUrlsByAction)
+    ListByAction: ClientValueCollection[WebAppUrlsByAction] = field(
+        default_factory=lambda: ClientValueCollection(WebAppUrlsByAction)
+    )
 
     @property
     def entity_type_name(self):

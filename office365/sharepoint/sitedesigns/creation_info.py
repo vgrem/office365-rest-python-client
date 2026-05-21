@@ -4,7 +4,7 @@ import uuid
 from typing import Optional
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -47,13 +47,17 @@ class SiteDesignCreationInfo(ClientValue):
     RequiresTeamsConnected = None
     RequiresYammerConnected = None
     SupportedWebTemplates: StringCollection | None = None
-    ExpandedPreviewImages: ClientValueCollection[SiteDesignImage] = ClientValueCollection(SiteDesignImage)
+    ExpandedPreviewImages: ClientValueCollection[SiteDesignImage] = field(
+        default_factory=lambda: ClientValueCollection(SiteDesignImage)
+    )
     SupportedWebTemplateSubtypes: Optional[StringCollection] = None
     TargetPlatforms: Optional[StringCollection] = None
     TeamChannels: Optional[StringCollection] = None
     TeamImageAltText: Optional[str] = None
     TeamImageUrl: Optional[str] = None
-    TeamInstalledApps: ClientValueCollection[TeamAppInfo] = ClientValueCollection(TeamAppInfo)
+    TeamInstalledApps: ClientValueCollection[TeamAppInfo] = field(
+        default_factory=lambda: ClientValueCollection(TeamAppInfo)
+    )
     TeamTemplate: Optional[str] = None
     TemplateAssets: Optional[StringCollection] = None
     TemplateFeatures: Optional[StringCollection] = None

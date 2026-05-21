@@ -13,7 +13,9 @@ from office365.sharepoint.utilities.jsontheme import JsonTheme
 class ThemingOptions(ClientValue):
 
     hideDefaultThemes: Optional[bool] = None
-    themePreviews: ClientValueCollection[JsonTheme] = ClientValueCollection(JsonTheme)
+    themePreviews: ClientValueCollection[JsonTheme] = field(
+        default_factory=lambda: ClientValueCollection(JsonTheme)
+    )
 
     @property
     def entity_type_name(self):

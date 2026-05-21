@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.principal.type import PrincipalType
@@ -34,12 +34,12 @@ class PrincipalInfo(ClientValue):
     Department: Optional[str] = None
     JobTitle: Optional[str] = None
     PrincipalType: Optional[PrincipalType] = None
-    canBeModified: SharingAbilityStatus = SharingAbilityStatus()
+    canBeModified: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     ExpirationDateTimeOnACE: Optional[datetime] = None
-    inheritedFrom: InheritedFrom = InheritedFrom()
+    inheritedFrom: InheritedFrom = field(default_factory=InheritedFrom)
     isInherited: Optional[bool] = None
-    members: ClientValueCollection[Principal] = ClientValueCollection(Principal)
-    principal: Principal = Principal()
+    members: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
+    principal: Principal = field(default_factory=Principal)
     role: Optional[int] = None
     Mobile: Optional[str] = None
     SIPAddress: Optional[str] = None

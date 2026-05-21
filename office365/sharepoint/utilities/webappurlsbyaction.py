@@ -13,7 +13,9 @@ from office365.sharepoint.utilities.webappexturlpair import WebAppExtUrlPair
 class WebAppUrlsByAction(ClientValue):
 
     Action: Optional[str] = None
-    UrlsByExt: ClientValueCollection[WebAppExtUrlPair] = ClientValueCollection(WebAppExtUrlPair)
+    UrlsByExt: ClientValueCollection[WebAppExtUrlPair] = field(
+        default_factory=lambda: ClientValueCollection(WebAppExtUrlPair)
+    )
 
     @property
     def entity_type_name(self):

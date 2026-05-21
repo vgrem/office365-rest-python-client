@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.administration.orgassets.library import OrgAssetsLibrary
@@ -10,8 +10,12 @@ from office365.sharepoint.administration.orgassets.library import OrgAssetsLibra
 @dataclass
 class OrgAssetsLibraryCollection(ClientValue):
 
-    OrgAssetsLibraries: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(OrgAssetsLibrary)
-    Items: ClientValueCollection[OrgAssetsLibrary] = ClientValueCollection(OrgAssetsLibrary)
+    OrgAssetsLibraries: ClientValueCollection[OrgAssetsLibrary] = field(
+        default_factory=lambda: ClientValueCollection(OrgAssetsLibrary)
+    )
+    Items: ClientValueCollection[OrgAssetsLibrary] = field(
+        default_factory=lambda: ClientValueCollection(OrgAssetsLibrary)
+    )
 
     @property
     def entity_type_name(self):

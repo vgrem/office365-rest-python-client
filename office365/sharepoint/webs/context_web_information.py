@@ -5,7 +5,7 @@ import time
 from typing import Optional
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -19,7 +19,7 @@ class ContextWebInformation(ClientValue):
     FormDigestTimeoutSeconds: Optional[int] = None
     LibraryVersion: Optional[str] = None
     SiteFullUrl: Optional[str] = None
-    SupportedSchemaVersions: StringCollection = StringCollection()
+    SupportedSchemaVersions: StringCollection = field(default_factory=StringCollection)
     WebFullUrl: Optional[str] = None
     _valid_from: float = 0.0
 
