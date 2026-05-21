@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AlternativeSecurityId(ClientValue):
     """"""
 
-    def __init__(self, type_=None, key=None):
-        self.type = type_
-        self.key = key
+    type: int | None = None
+    key: str | None = None

@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CloudPcAuditProperty(ClientValue):
-    def __init__(self, display_name: str | None = None, new_value: str | None = None, old_value: str | None = None):
-        self.displayName = display_name
-        self.newValue = new_value
-        self.oldValue = old_value
+    displayName: str | None = None
+    newValue: str | None = None
+    oldValue: str | None = None
 
     @property
     def entity_type_name(self):

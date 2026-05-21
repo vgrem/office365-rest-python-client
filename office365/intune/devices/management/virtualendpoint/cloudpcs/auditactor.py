@@ -1,37 +1,27 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from office365.intune.devices.management.virtualendpoint.cloudpcs.userrolescopetaginfo import CloudPcUserRoleScopeTagInfo
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class CloudPcAuditActor(ClientValue):
-    def __init__(
-        self,
-        application_display_name: str | None = None,
-        application_id: str | None = None,
-        ip_address: str | None = None,
-        remote_tenant_id: str | None = None,
-        remote_user_id: str | None = None,
-        service_principal_name: str | None = None,
-        user_id: str | None = None,
-        user_permissions: StringCollection = StringCollection(),
-        user_principal_name: str | None = None,
-        user_role_scope_tags: ClientValueCollection[CloudPcUserRoleScopeTagInfo] = ClientValueCollection(
-            CloudPcUserRoleScopeTagInfo
-        ),
-    ):
-        self.applicationDisplayName = application_display_name
-        self.applicationId = application_id
-        self.ipAddress = ip_address
-        self.remoteTenantId = remote_tenant_id
-        self.remoteUserId = remote_user_id
-        self.servicePrincipalName = service_principal_name
-        self.userId = user_id
-        self.userPermissions = user_permissions
-        self.userPrincipalName = user_principal_name
-        self.userRoleScopeTags = user_role_scope_tags
+    applicationDisplayName: str | None = None
+    applicationId: str | None = None
+    ipAddress: str | None = None
+    remoteTenantId: str | None = None
+    remoteUserId: str | None = None
+    servicePrincipalName: str | None = None
+    userId: str | None = None
+    userPermissions: StringCollection = field(default_factory=StringCollection)
+    userPrincipalName: str | None = None
+    userRoleScopeTags: ClientValueCollection[CloudPcUserRoleScopeTagInfo] = field(
+        default_factory=lambda: ClientValueCollection(CloudPcUserRoleScopeTagInfo)
+    )
 
     @property
     def entity_type_name(self):

@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AuditResource(ClientValue):
-    """A class containing the properties for Audit Resource."""
+    """A class containing the properties for Audit Resource.
 
-    def __init__(self, audit_resource_type=None):
-        """
-        :param str audit_resource_type: Audit resource's type.
-        """
-        self.auditResourceType = audit_resource_type
+    :param str audit_resource_type: Audit resource's type.
+    """
+
+    auditResourceType: str | None = None

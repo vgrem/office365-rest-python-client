@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionhealthcheck import (
@@ -9,18 +10,13 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class CloudPcOnPremisesConnectionStatusDetail(ClientValue):
-    def __init__(
-        self,
-        end_date_time: datetime | None = None,
-        health_checks: ClientValueCollection[CloudPcOnPremisesConnectionHealthCheck] = ClientValueCollection(
-            CloudPcOnPremisesConnectionHealthCheck
-        ),
-        start_date_time: datetime | None = None,
-    ):
-        self.endDateTime = end_date_time
-        self.healthChecks = health_checks
-        self.startDateTime = start_date_time
+    endDateTime: datetime | None = None
+    healthChecks: ClientValueCollection[CloudPcOnPremisesConnectionHealthCheck] = field(
+        default_factory=lambda: ClientValueCollection(CloudPcOnPremisesConnectionHealthCheck)
+    )
+    startDateTime: datetime | None = None
 
     @property
     def entity_type_name(self):

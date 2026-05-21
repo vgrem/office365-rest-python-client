@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CloudPcManagementGroupAssignmentTarget(ClientValue):
-    def __init__(self, group_id: str | None = None, service_plan_id: str | None = None):
-        self.groupId = group_id
-        self.servicePlanId = service_plan_id
+    groupId: str | None = None
+    servicePlanId: str | None = None
 
     @property
     def entity_type_name(self):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionhealthcheckerrortype import (
@@ -11,26 +12,16 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CloudPcOnPremisesConnectionHealthCheck(ClientValue):
-    def __init__(
-        self,
-        additional_detail: str | None = None,
-        correlation_id: str | None = None,
-        display_name: str | None = None,
-        end_date_time: datetime | None = None,
-        error_type: ErrorType = ErrorType.none,
-        recommended_action: str | None = None,
-        start_date_time: datetime | None = None,
-        status: CloudPcOnPremisesConnectionStatus = CloudPcOnPremisesConnectionStatus.none,
-    ):
-        self.additionalDetail = additional_detail
-        self.correlationId = correlation_id
-        self.displayName = display_name
-        self.endDateTime = end_date_time
-        self.errorType = error_type
-        self.recommendedAction = recommended_action
-        self.startDateTime = start_date_time
-        self.status = status
+    additionalDetail: str | None = None
+    correlationId: str | None = None
+    displayName: str | None = None
+    endDateTime: datetime | None = None
+    errorType: ErrorType = ErrorType.none
+    recommendedAction: str | None = None
+    startDateTime: datetime | None = None
+    status: CloudPcOnPremisesConnectionStatus = CloudPcOnPremisesConnectionStatus.none
 
     @property
     def entity_type_name(self):

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CloudPcProvisioningPolicyAutopatch(ClientValue):
-    def __init__(self, autopatch_group_id: str | None = None):
-        self.autopatchGroupId = autopatch_group_id
+    autopatchGroupId: str | None = None
 
     @property
     def entity_type_name(self):

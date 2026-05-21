@@ -1,20 +1,16 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CloudPcSourceDeviceImage(ClientValue):
-    def __init__(
-        self,
-        display_name: str | None = None,
-        resource_id: str | None = None,
-        subscription_display_name: str | None = None,
-        subscription_id: str | None = None,
-    ):
-        self.displayName = display_name
-        self.resourceId = resource_id
-        self.subscriptionDisplayName = subscription_display_name
-        self.subscriptionId = subscription_id
+    displayName: str | None = None
+    resourceId: str | None = None
+    subscriptionDisplayName: str | None = None
+    subscriptionId: str | None = None
 
     @property
     def entity_type_name(self):
