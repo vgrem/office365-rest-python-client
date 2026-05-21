@@ -14,8 +14,8 @@ class SubscriptionInformation(ClientValue):
 
     """Parameter class for webhook Update and Create REST operations."""
 
-    notificationUrl
-    resource
+    notificationUrl: Optional[str] = None
+    resource: Optional[str] = None
     expirationDateTime: Optional[datetime] = None
     clientState: Optional[str] = None
     resourceData: Optional[str] = None

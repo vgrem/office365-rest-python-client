@@ -53,5 +53,5 @@ class TestContentType(SPTestCase):
         self.assertTrue(before_count, len(web_cts) + 1)
 
     def test9_get_content_types_changes(self):
-        result = self.client.web.get_changes(ChangeQuery(content_type=True)).execute_query()
+        result = self.client.web.get_changes(ChangeQuery(ContentType=True)).execute_query()
         self.assertGreater(len(result), 0)

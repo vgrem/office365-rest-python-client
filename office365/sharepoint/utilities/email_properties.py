@@ -26,8 +26,8 @@ class EmailProperties(ClientValue):
 
     Body: str
     Subject: str
-    From: Optional[str] = None
     To: StringCollection
+    From: Optional[str] = None
     CC: StringCollection | None = None
     BCC: StringCollection | None = None
     AdditionalHeaders: Optional[Dict] = None

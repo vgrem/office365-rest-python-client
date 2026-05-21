@@ -51,10 +51,10 @@ class TaxonomyField(FieldLookup):
             return_type = TaxonomyField(fields.context)
         fields.add_child(return_type)
         params = TaxonomyFieldCreateXmlParameters(
-            name,
-            term_set_id,
-            term_store_id=term_store_id,
-            allow_multiple_values=allow_multiple_values,
+            Name=name,
+            TermSetId=term_set_id,
+            SspId=term_store_id,
+            AllowMultipleValues=allow_multiple_values,
         )
 
         def _create_taxonomy_field_inner():

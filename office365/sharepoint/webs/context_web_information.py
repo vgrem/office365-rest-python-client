@@ -21,7 +21,7 @@ class ContextWebInformation(ClientValue):
     SiteFullUrl: Optional[str] = None
     SupportedSchemaVersions: StringCollection = StringCollection()
     WebFullUrl: Optional[str] = None
-    _valid_from
+    _valid_from: float = 0.0
 
     @property
     def is_valid(self):

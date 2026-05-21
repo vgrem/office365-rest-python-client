@@ -310,7 +310,7 @@ class Site(Entity):
         :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(site=True, fetch_limit=100)
+            query = ChangeQuery(Site=True, FetchLimit=100)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)

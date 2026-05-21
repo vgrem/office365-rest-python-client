@@ -215,10 +215,10 @@ class Web(SecurableObject):
         """
         result = ClientResult(self.context, SiteScriptSerializationResult())
         info = SiteScriptSerializationInfo(
-            include_branding,
-            included_lists,
-            include_links_to_exported_items,
-            include_regional_settings,
+            IncludeBranding=include_branding,
+            IncludedLists=StringCollection(included_lists) if included_lists else None,
+            IncludeLinksToExportedItems=include_links_to_exported_items,
+            IncludeRegionalSettings=include_regional_settings,
         )
 
         def _get_site_script():
@@ -571,7 +571,7 @@ class Web(SecurableObject):
         :param int row_limit: Specifies a limit for the number of lists in the query that are returned per page
         """
         return_type = ListCollection(self.context)
-        payload = {"getListsParams": GetListsParameters(row_limit=row_limit)}
+        payload = {"getListsParams": GetListsParameters(RowLimit=row_limit)}
         qry = ServiceOperationQuery(self, "GetLists", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -1082,7 +1082,7 @@ class Web(SecurableObject):
         :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(web=True, fetch_limit=100)
+            query = ChangeQuery(Web=True, FetchLimit=100)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)

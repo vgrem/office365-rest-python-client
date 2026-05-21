@@ -13,9 +13,9 @@ class AlertCreationInformation(ClientValue):
 
     """An object that contain the properties used to create a new SP.Alert"""
 
-    AlertFrequency
+    AlertFrequency: Optional[int] = None
     AlertTemplateName: Optional[str] = None
-    AlertType
+    AlertType: Optional[int] = None
     AlertTime: datetime = datetime.min
     AlwaysNotify: Optional[bool] = None
     DeliveryChannels: Optional[int] = None

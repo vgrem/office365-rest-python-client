@@ -79,10 +79,10 @@ class SitePage(SitePageMetadata):
         :param str topic_header:
         """
         payload = SitePageFieldsData(
-            title=title,
-            canvas_content=canvas_content,
-            banner_image_url=banner_image_url,
-            topic_header=topic_header,
+            Title=title,
+            CanvasContent1=canvas_content,
+            BannerImageUrl=banner_image_url,
+            TopicHeader=topic_header,
         )
         qry = ServiceOperationQuery(self, "SavePage", None, payload, "pageStream")
         self.context.add_query(qry)
@@ -99,10 +99,10 @@ class SitePage(SitePageMetadata):
         :param str topic_header:
         """
         payload = SitePageFieldsData(
-            title=title,
-            canvas_content=canvas_content,
-            banner_image_url=banner_image_url,
-            topic_header=topic_header,
+            Title=title,
+            CanvasContent1=canvas_content,
+            BannerImageUrl=banner_image_url,
+            TopicHeader=topic_header,
         )
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "SaveDraft", None, payload, "sitePage", return_type)
@@ -120,10 +120,10 @@ class SitePage(SitePageMetadata):
         :param str topic_header:
         """
         payload = SitePageFieldsData(
-            title=title,
-            canvas_content=canvas_content,
-            banner_image_url=banner_image_url,
-            topic_header=topic_header,
+            Title=title,
+            CanvasContent1=canvas_content,
+            BannerImageUrl=banner_image_url,
+            TopicHeader=topic_header,
         )
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "SavePageAsDraft", None, payload, "pageStream", return_type)
@@ -186,7 +186,7 @@ class SitePage(SitePageMetadata):
         Schedules the page publication for a certain date
         :param datetime.datetime publish_start_date: The pending publication scheduled date
         """
-        payload = SitePageFieldsData(publish_start_date=publish_start_date)
+        payload = SitePageFieldsData(PublishStartDate=publish_start_date)
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "SchedulePublish", None, payload, "sitePage", result)
         self.context.add_query(qry)

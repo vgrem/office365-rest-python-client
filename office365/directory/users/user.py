@@ -185,7 +185,7 @@ class User(DirectoryObject):
                     for sku_id in add_licenses
                 ],
             ),
-            "removeLicenses": StringCollection(remove_licenses),
+            "removeLicenses": StringCollection(remove_licenses or []),
         }
         qry = ServiceOperationQuery(self, "assignLicense", None, params, None, self)
         self.context.add_query(qry)

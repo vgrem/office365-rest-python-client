@@ -17,7 +17,7 @@ class WikiPageCreationInformation(ClientValue):
     :param str content: The HTML content of the wiki page.
     """
 
-    ServerRelativeUrl
+    ServerRelativeUrl: Optional[str] = None
     WikiHtmlContent: Optional[str] = None
 
     @property

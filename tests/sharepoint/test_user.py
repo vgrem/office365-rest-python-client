@@ -35,7 +35,7 @@ class TestSharePointUser(SPTestCase):
         self.assertIsInstance(perms_result.value, BasePermissions)
 
     def test6_get_user_changes(self):
-        result = self.client.site.get_changes(ChangeQuery(user=True)).execute_query()
+        result = self.client.site.get_changes(ChangeQuery(User=True)).execute_query()
         self.assertGreater(len(result), 0)
         # self.assertEqual(changes.entity_type_name, "Collection(SP.Change)")
 

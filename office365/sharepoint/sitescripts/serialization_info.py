@@ -18,12 +18,12 @@ class SiteScriptSerializationInfo(ClientValue):
     :param bool include_theme:
     """
 
-    IncludeBranding = None
-    IncludedLists: StringCollection | None = None
-    IncludeLinksToExportedItems = None
-    IncludeRegionalSettings = None
-    IncludeSiteExternalSharingCapability = None
-    IncludeTheme = None
+    IncludeBranding: Optional[bool] = None
+    IncludedLists: Optional[StringCollection] = None
+    IncludeLinksToExportedItems: Optional[bool] = None
+    IncludeRegionalSettings: Optional[bool] = None
+    IncludeSiteExternalSharingCapability: Optional[bool] = None
+    IncludeTheme: Optional[bool] = None
     IncludedPages: Optional[StringCollection] = None
 
     @property

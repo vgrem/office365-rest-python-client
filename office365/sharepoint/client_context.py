@@ -22,6 +22,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.utilities import get_absolute_url, urlparse
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
@@ -345,7 +346,7 @@ class ClientContext(ClientRuntimeContext):
             elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
                 return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
 
-        opt_params = GroupCreationParams(owners=owners)
+        opt_params = GroupCreationParams(Owners=StringCollection(owners or []))
         self.group_site_manager.create_group_ex(title, alias, is_public, opt_params).after_execute(_after_site_created)
         return return_type
 

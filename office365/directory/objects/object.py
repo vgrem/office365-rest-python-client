@@ -22,7 +22,7 @@ class DirectoryObject(Entity):
         :param list[str] ids: The unique identifiers for the objects
         """
         return_type = ClientResult(self.context, StringCollection())
-        payload = {"ids": StringCollection(ids)}
+        payload = {"ids": StringCollection(ids or [])}
         qry = ServiceOperationQuery(self, "checkMemberObjects", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

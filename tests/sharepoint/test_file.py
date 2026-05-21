@@ -115,7 +115,7 @@ class TestSharePointFile(SPTestCase):
     #    self.assertEqual(file.name, file_url)
 
     def test_19_get_files_changes(self):
-        changes = self.__class__.file.listItemAllFields.get_changes(ChangeQuery(item=True)).execute_query()
+        changes = self.__class__.file.listItemAllFields.get_changes(ChangeQuery(Item=True)).execute_query()
         self.assertGreater(len(changes), 0)
 
     def test_20_delete_file(self):

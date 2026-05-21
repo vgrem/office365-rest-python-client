@@ -661,7 +661,7 @@ class List(SecurableObject):
         def _root_folder_loaded():
             assert self.root_folder.server_relative_url is not None
             page_url = self.root_folder.server_relative_url + "/" + page_name
-            wiki_props = WikiPageCreationInformation(page_url, page_content)
+            wiki_props = WikiPageCreationInformation(ServerRelativeUrl=page_url, WikiHtmlContent=page_content)
             Utility.create_wiki_page_in_context_web(self.context, wiki_props, return_type)
 
         self.ensure_property("RootFolder", _root_folder_loaded)
@@ -680,7 +680,7 @@ class List(SecurableObject):
             URL or an absolute URL. If the value is not null or the decoded url value not being empty string,
             the decoded url value MUST point to a location within the list.
         """
-        parameters = ListItemCreationInformationUsingPath(leaf_name, object_type, folder_path=folder_url)
+        parameters = ListItemCreationInformationUsingPath(leaf_name, object_type, FolderPath=folder_url)
         return_type = ListItem(self.context)
         payload = {"parameters": parameters}
         qry = ServiceOperationQuery(self, "AddItemUsingPath", None, payload, None, return_type)
@@ -749,7 +749,7 @@ class List(SecurableObject):
         :param ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(list_=True)
+            query = ChangeQuery(List=True)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)

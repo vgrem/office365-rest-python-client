@@ -16,7 +16,7 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
 
         :param list[str] user_ids: Specify the risky user IDs to dismiss in the request body.
         """
-        payload = {"userIds": StringCollection(user_ids)}
+        payload = {"userIds": StringCollection(user_ids or [])}
         qry = ServiceOperationQuery(self, "confirmCompromised", None, payload)
         self.context.add_query(qry)
         return self
@@ -26,7 +26,7 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
 
         :param list[str] user_ids: Specify the risky user IDs to dismiss in the request body.
         """
-        payload = {"userIds": StringCollection(user_ids)}
+        payload = {"userIds": StringCollection(user_ids or [])}
         qry = ServiceOperationQuery(self, "dismiss", None, payload)
         self.context.add_query(qry)
         return self

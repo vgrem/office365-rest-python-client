@@ -13,12 +13,15 @@ class TaxonomyFieldCreateXmlParameters(ClientValue):
 
     """:param str name:"""
 
-    Name
-    SspId = None
-    TermSetId
-    AnchorId = '00000000-0000-0000-0000-000000000000'
-    FieldId
-    AllowMultipleValues = False
+    Name: Optional[str] = None
+    SspId: Optional[str] = None
+    TermSetId: Optional[str] = None
+    AnchorId: str = '00000000-0000-0000-0000-000000000000'
+    FieldId: Optional[str] = None
+    AllowMultipleValues: bool = False
+    ListId: Optional[str] = None
+    WebId: Optional[str] = None
+    TextFieldId: Optional[str] = None
 
     @property
     def type_name(self):

@@ -112,7 +112,7 @@ class TestView(SPTestCase):
         self.assertEqual(0, len(result))
 
     def test_13_get_view_changes(self):
-        result = self.client.site.get_changes(ChangeQuery(view=True)).execute_query()
+        result = self.client.site.get_changes(ChangeQuery(View=True)).execute_query()
         self.assertGreater(len(result), 0)
 
     def test_14_delete_view(self):

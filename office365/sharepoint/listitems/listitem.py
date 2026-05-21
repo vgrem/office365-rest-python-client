@@ -130,7 +130,7 @@ class ListItem(SecurableObject):
         """
         return_type = ClientResult(self.context, ShareLinkResponse())
         request = ShareLinkRequest(
-            settings=ShareLinkSettings(link_kind=link_kind, expiration=expiration, role=role, password=password)
+            settings=ShareLinkSettings(linkKind=link_kind, expiration=expiration.isoformat() if expiration else None, role=role, password=password)
         )
         if password:
             assert request.settings is not None
@@ -232,7 +232,7 @@ class ListItem(SecurableObject):
         :param office365.sharepoint.changeQuery.ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(item=True)
+            query = ChangeQuery(Item=True)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)

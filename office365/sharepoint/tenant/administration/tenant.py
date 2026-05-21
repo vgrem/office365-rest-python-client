@@ -681,7 +681,7 @@ class Tenant(Entity):
         :param str owner: Sets the login name of the owner of the new site.
         """
         return_type = SpoOperation(self.context)
-        payload = {"siteCreationProperties": SiteCreationProperties(title=title, url=url, owner=owner)}
+        payload = {"siteCreationProperties": SiteCreationProperties(Title=title, Url=url, Owner=owner)}
         qry = ServiceOperationQuery(self, "CreateSite", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

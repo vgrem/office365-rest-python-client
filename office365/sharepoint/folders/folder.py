@@ -180,7 +180,7 @@ class Folder(Entity):
         return_type.set_property("ServerRelativePath", SPResPath(new_relative_path))
 
         def _move_folder():
-            opt = MoveCopyOptions(retain_editor_and_modified_on_move=retain_editor_and_modified)
+            opt = MoveCopyOptions(RetainEditorAndModifiedOnMove=retain_editor_and_modified)
             assert self.server_relative_path is not None
             MoveCopyUtil.move_folder_by_path(self.context, self.server_relative_path.DecodedUrl, new_relative_path, opt)
 
@@ -248,7 +248,7 @@ class Folder(Entity):
         :param ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(folder=True)
+            query = ChangeQuery(Folder=True)
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)
@@ -364,7 +364,7 @@ class Folder(Entity):
         def _copy_to(destination_folder: Folder) -> None:
             destination_url = "/".join([x or "" for x in [destination_folder.server_relative_url, self.name]])
             return_type.set_property("ServerRelativeUrl", destination_url)
-            opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
+            opts = MoveCopyOptions(KeepBoth=keep_both, ResetAuthorAndCreatedOnCopy=reset_author_and_created)
             MoveCopyUtil.copy_folder(self.context, self.server_relative_url, destination_url, opts)
 
         def _source_folder_resolved():
@@ -392,7 +392,7 @@ class Folder(Entity):
         def _copy_folder_by_path(destination_folder: Folder) -> None:
             destination_url = "/".join([x or "" for x in [str(destination_folder.server_relative_path), self.name]])
             return_type.set_property("ServerRelativePath", destination_url)
-            opts = MoveCopyOptions(keep_both=keep_both, reset_author_and_created_on_copy=reset_author_and_created)
+            opts = MoveCopyOptions(KeepBoth=keep_both, ResetAuthorAndCreatedOnCopy=reset_author_and_created)
             MoveCopyUtil.copy_folder_by_path(self.context, str(self.server_relative_path), destination_url, opts)
 
         def _source_folder_resolved():
