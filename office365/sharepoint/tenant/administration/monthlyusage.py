@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class MonthlyUsage(ClientValue):
-    def __init__(
-        self,
-        created_date: Optional[str] = None,
-        promotion_granted: Optional[int] = None,
-        promotion_remaining: Optional[int] = None,
-        promotion_used: Optional[int] = None,
-    ):
-        self.CreatedDate = created_date
-        self.PromotionGranted = promotion_granted
-        self.PromotionRemaining = promotion_remaining
-        self.PromotionUsed = promotion_used
+    CreatedDate: str | None = None
+    PromotionGranted: int | None = None
+    PromotionRemaining: int | None = None
+    PromotionUsed: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

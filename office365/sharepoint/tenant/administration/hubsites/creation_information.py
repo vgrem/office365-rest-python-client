@@ -1,39 +1,24 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class HubSiteCreationInformation(ClientValue):
-    def __init__(
-        self,
-        description: Optional[str] = None,
-        enable_permissions_sync: Optional[bool] = None,
-        enforced_ec_ts: Optional[str] = None,
-        enforced_ec_ts_version: Optional[int] = None,
-        hide_name_in_navigation: Optional[bool] = None,
-        logo_url: Optional[str] = None,
-        parent_hub_site_id: Optional[str] = None,
-        permissions_sync_tag: Optional[int] = None,
-        requires_join_approval: Optional[bool] = None,
-        site_design_id: Optional[str] = None,
-        site_id: Optional[str] = None,
-        site_url: Optional[str] = None,
-        targets: Optional[str] = None,
-        tenant_instance_id: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.Description = description
-        self.EnablePermissionsSync = enable_permissions_sync
-        self.EnforcedECTs = enforced_ec_ts
-        self.EnforcedECTsVersion = enforced_ec_ts_version
-        self.HideNameInNavigation = hide_name_in_navigation
-        self.LogoUrl = logo_url
-        self.ParentHubSiteId = parent_hub_site_id
-        self.PermissionsSyncTag = permissions_sync_tag
-        self.RequiresJoinApproval = requires_join_approval
-        self.SiteDesignId = site_design_id
-        self.SiteId = site_id
-        self.SiteUrl = site_url
-        self.Targets = targets
-        self.TenantInstanceId = tenant_instance_id
-        self.Title = title
+    Description: str | None = None
+    EnablePermissionsSync: bool | None = None
+    EnforcedECTs: str | None = None
+    EnforcedECTsVersion: int | None = None
+    HideNameInNavigation: bool | None = None
+    LogoUrl: str | None = None
+    ParentHubSiteId: str | None = None
+    PermissionsSyncTag: int | None = None
+    RequiresJoinApproval: bool | None = None
+    SiteDesignId: str | None = None
+    SiteId: str | None = None
+    SiteUrl: str | None = None
+    Targets: str | None = None
+    TenantInstanceId: str | None = None
+    Title: str | None = None

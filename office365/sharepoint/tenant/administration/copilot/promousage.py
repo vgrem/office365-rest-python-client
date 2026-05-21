@@ -1,22 +1,19 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.monthlyusage import MonthlyUsage
 
 
+@dataclass
 class SPOCopilotPromoUsage(ClientValue):
-    def __init__(
-        self,
-        is_copilot_promo_eligible: Optional[bool] = None,
-        is_copilot_promo_status_enabled: Optional[bool] = None,
-        monthly_usage: ClientValueCollection[MonthlyUsage] = ClientValueCollection(MonthlyUsage),
-    ):
-        self.IsCopilotPromoEligible = is_copilot_promo_eligible
-        self.IsCopilotPromoStatusEnabled = is_copilot_promo_status_enabled
-        self.MonthlyUsage = monthly_usage
-
-    ""
+    IsCopilotPromoEligible: bool | None = None
+    IsCopilotPromoStatusEnabled: bool | None = None
+    MonthlyUsage: ClientValueCollection[MonthlyUsage] = field(
+        default_factory=lambda: ClientValueCollection(MonthlyUsage)
+    )
 
     @property
     def entity_type_name(self):  # type: ignore[override]

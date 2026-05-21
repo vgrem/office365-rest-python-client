@@ -1,30 +1,21 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOCopilotAgentInsightsCopilotAgentsOnSitesDetails(ClientValue):
-    def __init__(
-        self,
-        copilot_name: Optional[str] = None,
-        external_sharing: Optional[str] = None,
-        restrict_site_access_enabled: Optional[str] = None,
-        restrict_site_discovery_enabled: Optional[str] = None,
-        sensitivity: Optional[str] = None,
-        site_name: Optional[str] = None,
-        site_owner: Optional[str] = None,
-        template: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.CopilotName = copilot_name
-        self.ExternalSharing = external_sharing
-        self.RestrictSiteAccessEnabled = restrict_site_access_enabled
-        self.RestrictSiteDiscoveryEnabled = restrict_site_discovery_enabled
-        self.Sensitivity = sensitivity
-        self.SiteName = site_name
-        self.SiteOwner = site_owner
-        self.Template = template
-        self.URL = url
+    CopilotName: str | None = None
+    ExternalSharing: str | None = None
+    RestrictSiteAccessEnabled: str | None = None
+    RestrictSiteDiscoveryEnabled: str | None = None
+    Sensitivity: str | None = None
+    SiteName: str | None = None
+    SiteOwner: str | None = None
+    Template: str | None = None
+    URL: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

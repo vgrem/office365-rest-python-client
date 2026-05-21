@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,22 +9,16 @@ from office365.sharepoint.tenant.administration.audit.search_request_status impo
 )
 
 
+@dataclass
 class PageResponse(ClientValue):
-    def __init__(
-        self,
-        continuation_token: Optional[str] = None,
-        page_number: Optional[int] = None,
-        page_result: ClientValueCollection[AuditSearchRequestStatus] = ClientValueCollection(AuditSearchRequestStatus),
-        page_size: Optional[int] = None,
-        total_count: Optional[int] = None,
-        total_pages: Optional[int] = None,
-    ):
-        self.ContinuationToken = continuation_token
-        self.PageNumber = page_number
-        self.PageResult = page_result
-        self.PageSize = page_size
-        self.TotalCount = total_count
-        self.TotalPages = total_pages
+    ContinuationToken: str | None = None
+    PageNumber: int | None = None
+    PageResult: ClientValueCollection[AuditSearchRequestStatus] = field(
+        default_factory=lambda: ClientValueCollection(AuditSearchRequestStatus)
+    )
+    PageSize: int | None = None
+    TotalCount: int | None = None
+    TotalPages: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,28 +1,20 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPDataGovernanceInsightExportedReport(ClientValue):
-    def __init__(
-        self,
-        created_date_time: Optional[str] = None,
-        label_name: Optional[str] = None,
-        report_content: Optional[str] = None,
-        report_entity: Optional[str] = None,
-        report_name_eeeu: Optional[str] = None,
-        report_name_site_permissions: Optional[str] = None,
-        report_name_user_permissions: Optional[str] = None,
-        sharing_link_type: Optional[str] = None,
-    ):
-        self.CreatedDateTime = created_date_time
-        self.LabelName = label_name
-        self.ReportContent = report_content
-        self.ReportEntity = report_entity
-        self.ReportNameEEEU = report_name_eeeu
-        self.ReportNameSitePermissions = report_name_site_permissions
-        self.ReportNameUserPermissions = report_name_user_permissions
-        self.SharingLinkType = sharing_link_type
+    CreatedDateTime: str | None = None
+    LabelName: str | None = None
+    ReportContent: str | None = None
+    ReportEntity: str | None = None
+    ReportNameEEEU: str | None = None
+    ReportNameSitePermissions: str | None = None
+    ReportNameUserPermissions: str | None = None
+    SharingLinkType: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

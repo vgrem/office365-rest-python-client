@@ -1,21 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPContainerTypeBillingProperties(ClientValue):
-    def __init__(
-        self,
-        azure_subscription_id: Optional[UUID] = None,
-        billing_policy_id: Optional[UUID] = None,
-        region: Optional[str] = None,
-        resource_group: Optional[str] = None,
-    ):
-        self.AzureSubscriptionId = azure_subscription_id
-        self.BillingPolicyId = billing_policy_id
-        self.Region = region
-        self.ResourceGroup = resource_group
+    AzureSubscriptionId: UUID | None = None
+    BillingPolicyId: UUID | None = None
+    Region: str | None = None
+    ResourceGroup: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

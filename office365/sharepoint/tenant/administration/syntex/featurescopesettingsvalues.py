@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SyntexFeatureScopeSettingsValues(ClientValue):
-    def __init__(
-        self, enabled: Optional[bool] = None, file_name: Optional[str] = None, site_scoping_mode: Optional[int] = None
-    ):
-        self.Enabled = enabled
-        self.FileName = file_name
-        self.SiteScopingMode = site_scoping_mode
+    Enabled: bool | None = None
+    FileName: str | None = None
+    SiteScopingMode: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

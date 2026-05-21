@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class InsightsSummaryResponse(ClientValue):
-    def __init__(self, insights_summary: Optional[str] = None, total_paged_count: Optional[int] = None):
-        self.insightsSummary = insights_summary
-        self.totalPagedCount = total_paged_count
+    insightsSummary: str | None = None
+    totalPagedCount: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

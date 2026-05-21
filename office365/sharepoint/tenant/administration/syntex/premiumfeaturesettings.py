@@ -1,19 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
 
 
+@dataclass
 class SyntexPremiumFeatureSettings(ClientValue):
-    def __init__(
-        self,
-        site_list: GuidCollection = GuidCollection(),
-        site_list_file_name: Optional[str] = None,
-        status: Optional[int] = None,
-    ):
-        self.SiteList = site_list
-        self.SiteListFileName = site_list_file_name
-        self.Status = status
+    SiteList: GuidCollection = field(default_factory=GuidCollection)
+    SiteListFileName: str | None = None
+    Status: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

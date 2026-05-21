@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class EsignatureThirdPartyProvidersInfo(ClientValue):
-    def __init__(self, is_enabled: Optional[bool] = None, provider_name: Optional[str] = None):
-        self.IsEnabled = is_enabled
-        self.ProviderName = provider_name
+    IsEnabled: bool | None = None
+    ProviderName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

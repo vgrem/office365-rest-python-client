@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.serviceprioritizationappregistration import (
@@ -5,14 +7,11 @@ from office365.sharepoint.tenant.administration.serviceprioritizationappregistra
 )
 
 
+@dataclass
 class SPOServicePrioritizationAppRegistrations(ClientValue):
-    def __init__(
-        self,
-        registrations: ClientValueCollection[SPOServicePrioritizationAppRegistration] = ClientValueCollection(
-            SPOServicePrioritizationAppRegistration
-        ),
-    ):
-        self.Registrations = registrations
+    Registrations: ClientValueCollection[SPOServicePrioritizationAppRegistration] = field(
+        default_factory=lambda: ClientValueCollection(SPOServicePrioritizationAppRegistration)
+    )
 
     @property
     def entity_type_name(self):  # type: ignore[override]

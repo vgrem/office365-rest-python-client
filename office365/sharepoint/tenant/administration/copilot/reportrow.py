@@ -1,10 +1,12 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class ReportRow(ClientValue):
-    def __init__(self, row: StringCollection = StringCollection()):
-        self.Row = row
+    Row: StringCollection = field(default_factory=lambda: StringCollection())
 
     @property
     def entity_type_name(self):  # type: ignore[override]

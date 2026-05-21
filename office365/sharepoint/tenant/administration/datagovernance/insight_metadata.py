@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPDataGovernanceInsightMetadata(ClientValue):
-    def __init__(self, report_id: Optional[UUID] = None, status: Optional[str] = None):
-        self.ReportId = report_id
-        self.Status = status
-
-    " "
+    ReportId: UUID | None = None
+    Status: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

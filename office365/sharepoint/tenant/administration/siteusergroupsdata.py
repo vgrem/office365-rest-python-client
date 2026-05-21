@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -6,18 +8,12 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.user_info import UserInfo
 
 
+@dataclass
 class SiteUserGroupsData(ClientValue):
-    def __init__(
-        self,
-        members: ClientValueCollection[UserInfo] = ClientValueCollection(UserInfo),
-        owners: ClientValueCollection[UserInfo] = ClientValueCollection(UserInfo),
-        site_id: Optional[UUID] = None,
-        visitors: ClientValueCollection[UserInfo] = ClientValueCollection(UserInfo),
-    ):
-        self.members = members
-        self.owners = owners
-        self.siteId = site_id
-        self.visitors = visitors
+    members: ClientValueCollection[UserInfo] = field(default_factory=lambda: ClientValueCollection(UserInfo))
+    owners: ClientValueCollection[UserInfo] = field(default_factory=lambda: ClientValueCollection(UserInfo))
+    siteId: UUID | None = None
+    visitors: ClientValueCollection[UserInfo] = field(default_factory=lambda: ClientValueCollection(UserInfo))
 
     @property
     def entity_type_name(self):  # type: ignore[override]

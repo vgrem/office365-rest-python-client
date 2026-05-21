@@ -1,5 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.contentmanagementassessmentpolicyreportdetails import (
@@ -10,40 +12,23 @@ from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails i
 )
 
 
+@dataclass
 class ContentManagementAssessmentResults(ClientValue):
-    def __init__(
-        self,
-        last_updated_time: Optional[datetime] = None,
-        requested_time: Optional[datetime] = None,
-        site_lifecycle_management_impacted_file_url: Optional[str] = None,
-        site_lifecycle_management_policy_execution_id: Optional[int] = None,
-        site_lifecycle_management_policy_id: Optional[str] = None,
-        site_lifecycle_management_policy_last_updated_time: Optional[datetime] = None,
-        site_lifecycle_management_policy_result_state: Optional[int] = None,
-        site_lifecycle_management_report_details: CMAPolicyDetails = CMAPolicyDetails(),
-        site_permissions_report_definition_id: Optional[str] = None,
-        site_permissions_report_details: SitePermissionsReportDetails = SitePermissionsReportDetails(),
-        site_permissions_report_id: Optional[str] = None,
-        site_permissions_report_last_updated_time: Optional[datetime] = None,
-        site_permissions_report_queued_time: Optional[datetime] = None,
-        site_permissions_report_result_state: Optional[int] = None,
-        total_count_of_sites_in_tenant: Optional[str] = None,
-    ):
-        self.lastUpdatedTime = last_updated_time
-        self.requestedTime = requested_time
-        self.siteLifecycleManagementImpactedFileUrl = site_lifecycle_management_impacted_file_url
-        self.siteLifecycleManagementPolicyExecutionId = site_lifecycle_management_policy_execution_id
-        self.siteLifecycleManagementPolicyId = site_lifecycle_management_policy_id
-        self.siteLifecycleManagementPolicyLastUpdatedTime = site_lifecycle_management_policy_last_updated_time
-        self.siteLifecycleManagementPolicyResultState = site_lifecycle_management_policy_result_state
-        self.siteLifecycleManagementReportDetails = site_lifecycle_management_report_details
-        self.sitePermissionsReportDefinitionId = site_permissions_report_definition_id
-        self.sitePermissionsReportDetails = site_permissions_report_details
-        self.sitePermissionsReportId = site_permissions_report_id
-        self.sitePermissionsReportLastUpdatedTime = site_permissions_report_last_updated_time
-        self.sitePermissionsReportQueuedTime = site_permissions_report_queued_time
-        self.sitePermissionsReportResultState = site_permissions_report_result_state
-        self.totalCountOfSitesInTenant = total_count_of_sites_in_tenant
+    lastUpdatedTime: datetime | None = None
+    requestedTime: datetime | None = None
+    siteLifecycleManagementImpactedFileUrl: str | None = None
+    siteLifecycleManagementPolicyExecutionId: int | None = None
+    siteLifecycleManagementPolicyId: str | None = None
+    siteLifecycleManagementPolicyLastUpdatedTime: datetime | None = None
+    siteLifecycleManagementPolicyResultState: int | None = None
+    siteLifecycleManagementReportDetails: CMAPolicyDetails = field(default_factory=CMAPolicyDetails)
+    sitePermissionsReportDefinitionId: str | None = None
+    sitePermissionsReportDetails: SitePermissionsReportDetails = field(default_factory=SitePermissionsReportDetails)
+    sitePermissionsReportId: str | None = None
+    sitePermissionsReportLastUpdatedTime: datetime | None = None
+    sitePermissionsReportQueuedTime: datetime | None = None
+    sitePermissionsReportResultState: int | None = None
+    totalCountOfSitesInTenant: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

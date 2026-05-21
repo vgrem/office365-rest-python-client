@@ -1,21 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TenantCdnUrl(ClientValue):
-    def __init__(
-        self,
-        cdn_url: Optional[str] = None,
-        expiration_time_utc: Optional[datetime] = None,
-        is_cdn_url_available: Optional[bool] = None,
-        item_url: Optional[str] = None,
-    ):
-        self.CdnUrl = cdn_url
-        self.ExpirationTimeUtc = expiration_time_utc
-        self.IsCdnUrlAvailable = is_cdn_url_available
-        self.ItemUrl = item_url
+    CdnUrl: str | None = None
+    ExpirationTimeUtc: datetime | None = None
+    IsCdnUrlAvailable: bool | None = None
+    ItemUrl: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

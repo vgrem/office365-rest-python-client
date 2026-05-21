@@ -1,18 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ContentManagementAssessmentPolicyReportDetails(ClientValue):
-    def __init__(
-        self,
-        total_impacted_sites: Optional[int] = None,
-        total_inactive_sites: Optional[int] = None,
-        total_ownerless_sites: Optional[int] = None,
-    ):
-        self.totalImpactedSites = total_impacted_sites
-        self.totalInactiveSites = total_inactive_sites
-        self.totalOwnerlessSites = total_ownerless_sites
+    totalImpactedSites: int | None = None
+    totalInactiveSites: int | None = None
+    totalOwnerlessSites: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,58 +1,35 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOFileVersionBatchDeleteJobProgress(ClientValue):
-    def __init__(
-        self,
-        batch_delete_mode: Optional[int] = None,
-        complete_time_in_utc: Optional[datetime] = None,
-        delete_older_than: Optional[datetime] = None,
-        error_message: Optional[str] = None,
-        files_processed: Optional[int] = None,
-        file_type_selections: Optional[str] = None,
-        last_process_time_in_utc: Optional[datetime] = None,
-        lists_processed: Optional[int] = None,
-        lists_synced: Optional[int] = None,
-        list_sync_failed: Optional[int] = None,
-        major_version_limit: Optional[int] = None,
-        major_with_minor_versions_limit: Optional[int] = None,
-        request_time_in_utc: Optional[datetime] = None,
-        status: Optional[str] = None,
-        storage_released_in_bytes: Optional[int] = None,
-        sync_list_policy: Optional[bool] = None,
-        url: Optional[str] = None,
-        versions_deleted: Optional[int] = None,
-        versions_failed: Optional[int] = None,
-        versions_processed: Optional[int] = None,
-        work_item_id: Optional[UUID] = None,
-    ):
-        self.BatchDeleteMode = batch_delete_mode
-        self.CompleteTimeInUTC = complete_time_in_utc
-        self.DeleteOlderThan = delete_older_than
-        self.ErrorMessage = error_message
-        self.FilesProcessed = files_processed
-        self.FileTypeSelections = file_type_selections
-        self.LastProcessTimeInUTC = last_process_time_in_utc
-        self.ListsProcessed = lists_processed
-        self.ListsSynced = lists_synced
-        self.ListSyncFailed = list_sync_failed
-        self.MajorVersionLimit = major_version_limit
-        self.MajorWithMinorVersionsLimit = major_with_minor_versions_limit
-        self.RequestTimeInUTC = request_time_in_utc
-        self.Status = status
-        self.StorageReleasedInBytes = storage_released_in_bytes
-        self.SyncListPolicy = sync_list_policy
-        self.Url = url
-        self.VersionsDeleted = versions_deleted
-        self.VersionsFailed = versions_failed
-        self.VersionsProcessed = versions_processed
-        self.WorkItemId = work_item_id
-
-    ""
+    BatchDeleteMode: int | None = None
+    CompleteTimeInUTC: datetime | None = None
+    DeleteOlderThan: datetime | None = None
+    ErrorMessage: str | None = None
+    FilesProcessed: int | None = None
+    FileTypeSelections: str | None = None
+    LastProcessTimeInUTC: datetime | None = None
+    ListsProcessed: int | None = None
+    ListsSynced: int | None = None
+    ListSyncFailed: int | None = None
+    MajorVersionLimit: int | None = None
+    MajorWithMinorVersionsLimit: int | None = None
+    RequestTimeInUTC: datetime | None = None
+    Status: str | None = None
+    StorageReleasedInBytes: int | None = None
+    SyncListPolicy: bool | None = None
+    Url: str | None = None
+    VersionsDeleted: int | None = None
+    VersionsFailed: int | None = None
+    VersionsProcessed: int | None = None
+    WorkItemId: UUID | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SyntexCheckManagementAllowedResponse(ClientValue):
-    def __init__(self, allowed_billing_only: Optional[bool] = None, allowed_license_or_billing: Optional[bool] = None):
-        self.allowedBillingOnly = allowed_billing_only
-        self.allowedLicenseOrBilling = allowed_license_or_billing
+    allowedBillingOnly: bool | None = None
+    allowedLicenseOrBilling: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

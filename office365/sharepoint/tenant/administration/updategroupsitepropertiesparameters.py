@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UpdateGroupSitePropertiesParameters(ClientValue):
-    def __init__(self, storage_maximum_level: Optional[int] = None, storage_warning_level: Optional[int] = None):
-        self.storageMaximumLevel = storage_maximum_level
-        self.storageWarningLevel = storage_warning_level
+    storageMaximumLevel: int | None = None
+    storageWarningLevel: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

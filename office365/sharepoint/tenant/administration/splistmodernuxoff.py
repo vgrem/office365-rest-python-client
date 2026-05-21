@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPListModernUXOff(ClientValue):
-    def __init__(
-        self, is_hidden: Optional[bool] = None, is_read_only: Optional[bool] = None, value: Optional[bool] = None
-    ):
-        self.IsHidden = is_hidden
-        self.IsReadOnly = is_read_only
-        self.Value = value
+    IsHidden: bool | None = None
+    IsReadOnly: bool | None = None
+    Value: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

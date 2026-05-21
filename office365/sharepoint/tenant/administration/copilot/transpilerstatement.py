@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TranspilerStatement(ClientValue):
-    def __init__(
-        self, arguments: Optional[dict] = None, returns: Optional[str] = None, statement_name: Optional[str] = None
-    ):
-        self.Arguments = arguments
-        self.Returns = returns
-        self.StatementName = statement_name
+    Arguments: dict = field(default_factory=dict)
+    Returns: str | None = None
+    StatementName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources import (
@@ -6,12 +8,10 @@ from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources im
 )
 
 
+@dataclass
 class AdaptiveCardConfig(ClientValue):
-    def __init__(self, data: BaseRawDataSources = BaseRawDataSources(), feature_name: Optional[str] = None):
-        self.data = data
-        self.featureName = feature_name
-
-    ""
+    data: BaseRawDataSources = field(default_factory=BaseRawDataSources)
+    featureName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

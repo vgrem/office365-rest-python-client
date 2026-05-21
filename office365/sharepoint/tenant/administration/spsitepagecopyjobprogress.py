@@ -1,25 +1,19 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPSitePageCopyJobProgress(ClientValue):
-    def __init__(
-        self,
-        error_message: Optional[str] = None,
-        job_state: Optional[str] = None,
-        new_page_url: Optional[str] = None,
-        source_page_name: Optional[str] = None,
-        status_message: Optional[str] = None,
-        work_item_id: Optional[UUID] = None,
-    ):
-        self.ErrorMessage = error_message
-        self.JobState = job_state
-        self.NewPageUrl = new_page_url
-        self.SourcePageName = source_page_name
-        self.StatusMessage = status_message
-        self.WorkItemId = work_item_id
+    ErrorMessage: str | None = None
+    JobState: str | None = None
+    NewPageUrl: str | None = None
+    SourcePageName: str | None = None
+    StatusMessage: str | None = None
+    WorkItemId: UUID | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

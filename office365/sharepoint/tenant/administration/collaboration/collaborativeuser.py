@@ -1,22 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CollaborativeUser(ClientValue):
-    def __init__(
-        self,
-        total_file_interaction: Optional[int] = None,
-        total_files_shared_externally: Optional[int] = None,
-        total_files_shared_internally: Optional[int] = None,
-        total_files_viewed_or_edited: Optional[int] = None,
-        user_principal_name: Optional[str] = None,
-    ):
-        self.totalFileInteraction = total_file_interaction
-        self.totalFilesSharedExternally = total_files_shared_externally
-        self.totalFilesSharedInternally = total_files_shared_internally
-        self.totalFilesViewedOrEdited = total_files_viewed_or_edited
-        self.userPrincipalName = user_principal_name
+    totalFileInteraction: int | None = None
+    totalFilesSharedExternally: int | None = None
+    totalFilesSharedInternally: int | None = None
+    totalFilesViewedOrEdited: int | None = None
+    userPrincipalName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ColumnsInfo(ClientValue):
-    def __init__(self, column_name: Optional[str] = None, view_field_name: Optional[str] = None):
-        self.columnName = column_name
-        self.viewFieldName = view_field_name
+    columnName: str | None = None
+    viewFieldName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

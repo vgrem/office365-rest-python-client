@@ -1,17 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SmtpServer(ClientValue):
-    def __init__(self, value=None, is_readonly=None, is_read_only: Optional[bool] = None):
-        """
-        :param str value:
-        :param bool is_readonly:
-        """
-        self.Value = value
-        self.IsReadOnly = is_readonly
-        self.IsReadOnly = is_read_only
+    """:param str value:
+    :param bool is_readonly:"""
+
+    Value = None
+    IsReadOnly: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

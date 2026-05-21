@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -7,16 +9,12 @@ from office365.sharepoint.tenant.administration.container.properties import (
 )
 
 
+@dataclass
 class SPContainerCollection(ClientValue):
-    def __init__(
-        self,
-        container_collection: ClientValueCollection[SPContainerProperties] = ClientValueCollection(
-            SPContainerProperties
-        ),
-        paging_token: Optional[str] = None,
-    ):
-        self.ContainerCollection = container_collection
-        self.PagingToken = paging_token
+    ContainerCollection: ClientValueCollection[SPContainerProperties] = field(
+        default_factory=lambda: ClientValueCollection(SPContainerProperties)
+    )
+    PagingToken: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

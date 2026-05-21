@@ -1,34 +1,24 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOAppBillingProperties(ClientValue):
-    """ """
+    """:param str application_id: The application ID.
+    :param str azure_region: The Azure region.
+    :param bool is_activated:"""
 
-    def __init__(
-        self,
-        application_id=None,
-        azure_region=None,
-        is_activated=None,
-        resource_group: Optional[str] = None,
-        subscription_id: Optional[UUID] = None,
-        subscription_state: Optional[str] = None,
-        usage_charges: Optional[str] = None,
-    ):
-        """
-        :param str application_id: The application ID.
-        :param str azure_region: The Azure region.
-        :param bool is_activated:
-        """
-        self.ApplicationId = application_id
-        self.AzureRegion = azure_region
-        self.IsActivated = is_activated
-        self.ResourceGroup = resource_group
-        self.SubscriptionId = subscription_id
-        self.SubscriptionState = subscription_state
-        self.UsageCharges = usage_charges
+    ApplicationId = None
+    AzureRegion = None
+    IsActivated = None
+    ResourceGroup: str | None = None
+    SubscriptionId: UUID | None = None
+    SubscriptionState: str | None = None
+    UsageCharges: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

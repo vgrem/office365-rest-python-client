@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteCohortsSummary(ClientValue):
-    def __init__(
-        self,
-        externally_shared_sites_count: Optional[int] = None,
-        group_connected_sites_count: Optional[int] = None,
-        inactive_sites_count: Optional[int] = None,
-        total_sites_count: Optional[int] = None,
-    ):
-        self.ExternallySharedSitesCount = externally_shared_sites_count
-        self.GroupConnectedSitesCount = group_connected_sites_count
-        self.InactiveSitesCount = inactive_sites_count
-        self.TotalSitesCount = total_sites_count
+    ExternallySharedSitesCount: int | None = None
+    GroupConnectedSitesCount: int | None = None
+    InactiveSitesCount: int | None = None
+    TotalSitesCount: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

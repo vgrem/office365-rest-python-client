@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.transpilerresponse import (
@@ -6,16 +8,11 @@ from office365.sharepoint.tenant.administration.transpilerresponse import (
 )
 
 
+@dataclass
 class CopilotTranspilerResponse(ClientValue):
-    def __init__(
-        self,
-        data: TranspilerResponse = TranspilerResponse(),
-        error_message: Optional[str] = None,
-        is_eligible: Optional[bool] = None,
-    ):
-        self.data = data
-        self.errorMessage = error_message
-        self.isEligible = is_eligible
+    data: TranspilerResponse = field(default_factory=TranspilerResponse)
+    errorMessage: str | None = None
+    isEligible: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

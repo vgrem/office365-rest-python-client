@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOCopilotAgentInsightsSiteDistribution(ClientValue):
-    def __init__(
-        self, copilot_agents: Optional[int] = None, sites: Optional[int] = None, template: Optional[str] = None
-    ):
-        self.CopilotAgents = copilot_agents
-        self.Sites = sites
-        self.Template = template
+    CopilotAgents: int | None = None
+    Sites: int | None = None
+    Template: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

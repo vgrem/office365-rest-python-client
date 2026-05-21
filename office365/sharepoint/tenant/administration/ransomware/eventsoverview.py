@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TenantAdminRansomwareEventsOverview(ClientValue):
-    def __init__(self, active_events_count: Optional[int] = None, open_events_count: Optional[int] = None):
-        self.activeEventsCount = active_events_count
-        self.openEventsCount = open_events_count
+    activeEventsCount: int | None = None
+    openEventsCount: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

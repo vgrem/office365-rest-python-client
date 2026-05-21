@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOServicePrioritizationAppRegistration(ClientValue):
-    def __init__(
-        self,
-        app_id: Optional[str] = None,
-        enabled: Optional[bool] = None,
-        policy_id: Optional[str] = None,
-        quota_multiplier: Optional[int] = None,
-    ):
-        self.AppId = app_id
-        self.Enabled = enabled
-        self.PolicyId = policy_id
-        self.QuotaMultiplier = quota_multiplier
+    AppId: str | None = None
+    Enabled: bool | None = None
+    PolicyId: str | None = None
+    QuotaMultiplier: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

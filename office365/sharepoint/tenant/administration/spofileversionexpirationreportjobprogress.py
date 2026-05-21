@@ -1,20 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOFileVersionExpirationReportJobProgress(ClientValue):
-    def __init__(
-        self,
-        error_message: Optional[str] = None,
-        report_url: Optional[str] = None,
-        status: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.ErrorMessage = error_message
-        self.ReportUrl = report_url
-        self.Status = status
-        self.Url = url
+    ErrorMessage: str | None = None
+    ReportUrl: str | None = None
+    Status: str | None = None
+    Url: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

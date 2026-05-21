@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.copilot.adaptive_card_config import (
@@ -6,14 +8,10 @@ from office365.sharepoint.tenant.administration.copilot.adaptive_card_config imp
 )
 
 
+@dataclass
 class TranspilerResponse(ClientValue):
-    def __init__(
-        self,
-        config: AdaptiveCardConfig = AdaptiveCardConfig(),
-        schema_version: Optional[str] = None,
-    ):
-        self.config = config
-        self.schemaVersion = schema_version
+    config: AdaptiveCardConfig = field(default_factory=AdaptiveCardConfig)
+    schemaVersion: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

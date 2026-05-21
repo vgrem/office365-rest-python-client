@@ -1,15 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPOListParameters(ClientValue):
-    def __init__(self, id_: Optional[UUID] = None, title: Optional[str] = None):
-        self.Id = id_
-        self.Title = title
-
-    ""
+    Id: UUID | None = None
+    Title: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

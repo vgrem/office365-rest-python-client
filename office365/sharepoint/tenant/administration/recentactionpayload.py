@@ -1,40 +1,27 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TenantAdminRecentActionPayload(ClientValue):
-    def __init__(
-        self,
-        admin_action_id: Optional[str] = None,
-        admin_action_source: Optional[str] = None,
-        admin_action_status: Optional[str] = None,
-        admin_action_type: Optional[str] = None,
-        correlation_id: Optional[UUID] = None,
-        created_time: Optional[datetime] = None,
-        is_part_of_bulk_update: Optional[bool] = None,
-        key: Optional[str] = None,
-        name: Optional[str] = None,
-        new_value: Optional[str] = None,
-        old_value: Optional[str] = None,
-        url: Optional[str] = None,
-        user_email: Optional[str] = None,
-    ):
-        self.adminActionId = admin_action_id
-        self.adminActionSource = admin_action_source
-        self.adminActionStatus = admin_action_status
-        self.adminActionType = admin_action_type
-        self.correlationId = correlation_id
-        self.createdTime = created_time
-        self.isPartOfBulkUpdate = is_part_of_bulk_update
-        self.key = key
-        self.name = name
-        self.newValue = new_value
-        self.oldValue = old_value
-        self.url = url
-        self.userEmail = user_email
+    adminActionId: str | None = None
+    adminActionSource: str | None = None
+    adminActionStatus: str | None = None
+    adminActionType: str | None = None
+    correlationId: UUID | None = None
+    createdTime: datetime | None = None
+    isPartOfBulkUpdate: bool | None = None
+    key: str | None = None
+    name: str | None = None
+    newValue: str | None = None
+    oldValue: str | None = None
+    url: str | None = None
+    userEmail: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

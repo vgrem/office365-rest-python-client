@@ -1,10 +1,12 @@
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteCreationData(ClientValue):
-    def __init__(self, count=None, site_creation_source_guid=None):
-        self.Count = count
-        self.SiteCreationSourceGuid = site_creation_source_guid
+    Count = None
+    SiteCreationSourceGuid = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

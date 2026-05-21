@@ -1,27 +1,19 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CollaborationInsightsOverview(ClientValue):
-    def __init__(
-        self,
-        last_report_date: Optional[datetime] = None,
-        total_guests: Optional[int] = None,
-        total_internal_users: Optional[int] = None,
-        total_one_drives: Optional[int] = None,
-        total_sites: Optional[int] = None,
-        total_users: Optional[int] = None,
-    ):
-        self.lastReportDate = last_report_date
-        self.totalGuests = total_guests
-        self.totalInternalUsers = total_internal_users
-        self.totalOneDrives = total_one_drives
-        self.totalSites = total_sites
-        self.totalUsers = total_users
-
-    ""
+    lastReportDate: datetime | None = None
+    totalGuests: int | None = None
+    totalInternalUsers: int | None = None
+    totalOneDrives: int | None = None
+    totalSites: int | None = None
+    totalUsers: int | None = None
 
     @property
     def entity_type_name(self) -> str:

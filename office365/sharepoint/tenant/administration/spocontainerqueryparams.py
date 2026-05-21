@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,18 +12,15 @@ from office365.sharepoint.tenant.administration.container.sortorder import (
 )
 
 
+@dataclass
 class SPOContainerQueryParams(ClientValue):
-    def __init__(
-        self,
-        filter_by_columns_list: ClientValueCollection[SPContainerFilterOrder] = ClientValueCollection(
-            SPContainerFilterOrder
-        ),
-        order_by_columns_list: ClientValueCollection[SPContainerSortOrder] = ClientValueCollection(SPContainerSortOrder),
-        paging_token: Optional[str] = None,
-    ):
-        self.FilterByColumnsList = filter_by_columns_list
-        self.OrderByColumnsList = order_by_columns_list
-        self.PagingToken = paging_token
+    FilterByColumnsList: ClientValueCollection[SPContainerFilterOrder] = field(
+        default_factory=lambda: ClientValueCollection(SPContainerFilterOrder)
+    )
+    OrderByColumnsList: ClientValueCollection[SPContainerSortOrder] = field(
+        default_factory=lambda: ClientValueCollection(SPContainerSortOrder)
+    )
+    PagingToken: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

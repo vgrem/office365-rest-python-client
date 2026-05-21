@@ -1,62 +1,46 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DisableGroupify(ClientValue):
-    """ """
-
-    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
-        self.IsReadOnly = is_read_only
-        self.Value = value
-
-    def __repr__(self):
-        return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
+    IsReadOnly: bool | None = None
+    Value: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableGroupify"
 
 
+@dataclass
 class EnableAutoNewsDigest(ClientValue):
-    """ """
-
-    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
-        self.IsReadOnly = is_read_only
-        self.Value = value
-
-    def __repr__(self):
-        return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
+    IsReadOnly: bool | None = None
+    Value: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.EnableAutoNewsDigest"
 
 
+@dataclass
 class DisableSelfServiceSiteCreation(ClientValue):
-    """ """
-
-    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[bool] = None) -> None:
-        self.IsReadOnly = is_read_only
-        self.Value = value
-
-    def __repr__(self):
-        return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
+    IsReadOnly: bool | None = None
+    Value: bool | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableSelfServiceSiteCreation"
 
 
+@dataclass
 class AutoQuotaEnabled(ClientValue):
     """Automatic quota management type"""
 
-    def __init__(self, is_read_only=None, value=None):
-        self.IsReadOnly = is_read_only
-        self.Value = value
-
-    def __repr__(self):
-        return f"(IsReadOnly={self.IsReadOnly}, Value={self.Value})"
+    IsReadOnly = None
+    Value = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

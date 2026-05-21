@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ReportMetadata(ClientValue):
-    def __init__(self, report_metadata_details: Optional[dict] = None):
-        self.ReportMetadataDetails = report_metadata_details
+    ReportMetadataDetails: dict = field(default_factory=dict)
 
     @property
     def entity_type_name(self):  # type: ignore[override]

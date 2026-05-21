@@ -1,17 +1,15 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class SPContentEventsCustomEmailProperty(ClientValue):
-    def __init__(
-        self,
-        category: Optional[int] = None,
-        email_addresses: StringCollection = StringCollection(),
-    ):
-        self.Category = category
-        self.EmailAddresses = email_addresses
+    Category: int | None = None
+    EmailAddresses: StringCollection = field(default_factory=lambda: StringCollection())
 
     @property
     def entity_type_name(self):  # type: ignore[override]

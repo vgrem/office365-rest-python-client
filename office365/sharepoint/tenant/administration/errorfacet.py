@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ErrorFacet(ClientValue):
-    def __init__(self, code: Optional[str] = None, message: Optional[str] = None):
-        self.Code = code
-        self.Message = message
+    Code: str | None = None
+    Message: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

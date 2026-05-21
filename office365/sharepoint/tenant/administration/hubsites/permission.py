@@ -1,16 +1,17 @@
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class HubSitePermission(ClientValue):
-    def __init__(self, display_name=None, principal_name=None, rights=None):
-        """
-        :param str display_name:
-        :param str principal_name:
-        :param int rights:
-        """
-        self.DisplayName = display_name
-        self.PrincipalName = principal_name
-        self.Rights = rights
+    """:param str display_name:
+    :param str principal_name:
+    :param int rights:"""
+
+    DisplayName = None
+    PrincipalName = None
+    Rights = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

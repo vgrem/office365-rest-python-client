@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,30 +10,18 @@ from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysett
 )
 
 
+@dataclass
 class SPOFileVersionPolicySettings(ClientValue):
-    def __init__(
-        self,
-        enable_auto_expiration_version_trim: Optional[bool] = None,
-        expire_versions_after_days: Optional[int] = None,
-        file_types_for_version_expiration: Optional[StringCollection] = None,
-        major_version_limit: Optional[int] = None,
-        major_with_minor_versions_limit: Optional[int] = None,
-        minor_versions_enabled: Optional[bool] = None,
-        versioning_enabled: Optional[bool] = None,
-        version_policy_file_type_override: ClientValueCollection[
-            SPOFileVersionFileTypePolicySettings
-        ] = ClientValueCollection(SPOFileVersionFileTypePolicySettings),
-    ):
-        self.EnableAutoExpirationVersionTrim = enable_auto_expiration_version_trim
-        self.ExpireVersionsAfterDays = expire_versions_after_days
-        self.FileTypesForVersionExpiration = file_types_for_version_expiration
-        self.MajorVersionLimit = major_version_limit
-        self.MajorWithMinorVersionsLimit = major_with_minor_versions_limit
-        self.MinorVersionsEnabled = minor_versions_enabled
-        self.VersioningEnabled = versioning_enabled
-        self.VersionPolicyFileTypeOverride = version_policy_file_type_override
-
-    ""
+    EnableAutoExpirationVersionTrim: bool | None = None
+    ExpireVersionsAfterDays: int | None = None
+    FileTypesForVersionExpiration: StringCollection | None = None
+    MajorVersionLimit: int | None = None
+    MajorWithMinorVersionsLimit: int | None = None
+    MinorVersionsEnabled: bool | None = None
+    VersioningEnabled: bool | None = None
+    VersionPolicyFileTypeOverride: ClientValueCollection[SPOFileVersionFileTypePolicySettings] = field(
+        default_factory=lambda: ClientValueCollection(SPOFileVersionFileTypePolicySettings)
+    )
 
     @property
     def entity_type_name(self):  # type: ignore[override]

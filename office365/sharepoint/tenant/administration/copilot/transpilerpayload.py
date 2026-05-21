@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.tenant.administration.copilot.transpilerstatement import (
@@ -5,12 +7,11 @@ from office365.sharepoint.tenant.administration.copilot.transpilerstatement impo
 )
 
 
+@dataclass
 class CopilotTranspilerPayload(ClientValue):
-    def __init__(
-        self,
-        statement_list: ClientValueCollection[TranspilerStatement] = ClientValueCollection(TranspilerStatement),
-    ):
-        self.StatementList = statement_list
+    StatementList: ClientValueCollection[TranspilerStatement] = field(
+        default_factory=lambda: ClientValueCollection(TranspilerStatement)
+    )
 
     @property
     def entity_type_name(self):  # type: ignore[override]

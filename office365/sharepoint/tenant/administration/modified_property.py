@@ -1,22 +1,16 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ModifiedProperty(ClientValue):
-    def __init__(
-        self,
-        name: Optional[str] = None,
-        new_value: Optional[str] = None,
-        old_value: Optional[str] = None,
-        display_name: Optional[str] = None,
-    ):
-        self.Name = name
-        self.NewValue = new_value
-        self.OldValue = old_value
-        self.displayName = display_name
-
-    ""
+    Name: str | None = None
+    NewValue: str | None = None
+    OldValue: str | None = None
+    displayName: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -1,14 +1,13 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.user_info import UserInfo
 
 
+@dataclass
 class SiteUserGroupInfo(ClientValue):
-    def __init__(
-        self,
-        user_group: ClientValueCollection[UserInfo] = ClientValueCollection(UserInfo),
-    ):
-        self.userGroup = user_group
+    userGroup: ClientValueCollection[UserInfo] = field(default_factory=lambda: ClientValueCollection(UserInfo))
 
     @property
     def entity_type_name(self):  # type: ignore[override]

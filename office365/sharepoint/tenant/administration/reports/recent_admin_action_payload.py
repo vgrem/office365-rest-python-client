@@ -1,29 +1,20 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class RecentAdminActionReportPayload(ClientValue):
-    def __init__(
-        self,
-        actions: Optional[str] = None,
-        name: Optional[str] = None,
-        query_end_date: Optional[datetime] = None,
-        query_start_date: Optional[datetime] = None,
-        report_type: Optional[int] = None,
-        sites: Optional[str] = None,
-        users: Optional[str] = None,
-    ):
-        self.actions = actions
-        self.name = name
-        self.queryEndDate = query_end_date
-        self.queryStartDate = query_start_date
-        self.reportType = report_type
-        self.sites = sites
-        self.users = users
-
-    " "
+    actions: str | None = None
+    name: str | None = None
+    queryEndDate: datetime | None = None
+    queryStartDate: datetime | None = None
+    reportType: int | None = None
+    sites: str | None = None
+    users: str | None = None
 
     @property
     def entity_type_name(self) -> str:

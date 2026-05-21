@@ -1,12 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SPContainerSortOrder(ClientValue):
-    def __init__(self, ascending: Optional[bool] = None, sorting_field: Optional[int] = None):
-        self.Ascending = ascending
-        self.SortingField = sorting_field
+    Ascending: bool | None = None
+    SortingField: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

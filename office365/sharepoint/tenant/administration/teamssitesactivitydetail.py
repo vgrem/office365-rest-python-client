@@ -1,13 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TeamsSitesActivityDetail(ClientValue):
-    def __init__(self, last_activity_date: Optional[datetime] = None, team_id: Optional[str] = None):
-        self.LastActivityDate = last_activity_date
-        self.TeamId = team_id
+    LastActivityDate: datetime | None = None
+    TeamId: str | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

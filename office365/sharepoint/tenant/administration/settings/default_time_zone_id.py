@@ -1,14 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TenantDefaultTimeZoneId(ClientValue):
-    def __init__(self, is_read_only: Optional[bool] = None, value: Optional[int] = None):
-        self.IsReadOnly = is_read_only
-        self.Value = value
-
-    " "
+    IsReadOnly: bool | None = None
+    Value: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

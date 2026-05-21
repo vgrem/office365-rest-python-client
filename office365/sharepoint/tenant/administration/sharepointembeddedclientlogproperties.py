@@ -1,22 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SharePointEmbeddedClientLogProperties(ClientValue):
-    def __init__(
-        self,
-        identifier: Optional[str] = None,
-        log_message: Optional[str] = None,
-        log_type: Optional[int] = None,
-        operation: Optional[int] = None,
-        operation_status: Optional[int] = None,
-    ):
-        self.Identifier = identifier
-        self.LogMessage = log_message
-        self.LogType = log_type
-        self.Operation = operation
-        self.OperationStatus = operation_status
+    Identifier: str | None = None
+    LogMessage: str | None = None
+    LogType: int | None = None
+    Operation: int | None = None
+    OperationStatus: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]

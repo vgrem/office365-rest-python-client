@@ -1,27 +1,20 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class InsightsQueueItem(ClientValue):
-    def __init__(
-        self,
-        insights_completion_time: Optional[datetime] = None,
-        insights_scenario: Optional[int] = None,
-        item_id: Optional[int] = None,
-        report_creation_time: Optional[datetime] = None,
-        report_data_file_name: Optional[str] = None,
-        report_id: Optional[str] = None,
-        status: Optional[int] = None,
-    ):
-        self.insightsCompletionTime = insights_completion_time
-        self.insightsScenario = insights_scenario
-        self.itemId = item_id
-        self.reportCreationTime = report_creation_time
-        self.reportDataFileName = report_data_file_name
-        self.reportId = report_id
-        self.status = status
+    insightsCompletionTime: datetime | None = None
+    insightsScenario: int | None = None
+    itemId: int | None = None
+    reportCreationTime: datetime | None = None
+    reportDataFileName: str | None = None
+    reportId: str | None = None
+    status: int | None = None
 
     @property
     def entity_type_name(self):  # type: ignore[override]
