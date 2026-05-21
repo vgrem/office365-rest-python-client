@@ -72,11 +72,11 @@ class Application(DirectoryObject):
 
         params = KeyCredential(
             usage="Verify",
-            key_type="AsymmetricX509Cert",
-            start_datetime=start_datetime.isoformat(),
-            end_datetime=end_datetime.isoformat(),
+            type="AsymmetricX509Cert",
+            startDateTime=start_datetime.isoformat(),
+            endDateTime=end_datetime.isoformat(),
             key=base64.b64encode(cert_data).decode("utf-8"),
-            display_name=f"CN={display_name}",
+            displayName=f"CN={display_name}",
         )
         self.key_credentials.add(params)
         self.update()

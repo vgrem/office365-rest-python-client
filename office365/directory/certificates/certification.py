@@ -1,29 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Certification(ClientValue):
-    """Represents the certification details of an application."""
+    """Represents the certification details of an application.
 
-    def __init__(
-        self,
-        certification_details_url: str | None = None,
-        certification_expiration_date_time: datetime | None = None,
-        is_certified_by_microsoft: bool | None = None,
-        is_publisher_attested: bool | None = None,
-        last_certification_date_time: datetime | None = None,
-    ):
-        """
-        :param str certification_details_url:
-        """
-        self.certificationDetailsUrl = certification_details_url
-        self.certificationExpirationDateTime = certification_expiration_date_time
-        self.isCertifiedByMicrosoft = is_certified_by_microsoft
-        self.isPublisherAttested = is_publisher_attested
-        self.lastCertificationDateTime = last_certification_date_time
+    :param str certification_details_url:
+    """
+
+    certificationDetailsUrl: str | None = None
+    certificationExpirationDateTime: datetime | None = None
+    isCertifiedByMicrosoft: bool | None = None
+    isPublisherAttested: bool | None = None
+    lastCertificationDateTime: datetime | None = None
 
     @property
     def entity_type_name(self):

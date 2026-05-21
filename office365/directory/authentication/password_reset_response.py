@@ -1,13 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PasswordResetResponse(ClientValue):
-    """
-    Represents the new system-generated password after a password reset operation.
+    """Represents the new system-generated password after a password reset operation.
+
+    :param str new_password: The Azure AD-generated password.
     """
 
-    def __init__(self, new_password=None):
-        """
-        :param str new_password: The Azure AD-generated password.
-        """
-        self.newPassword = new_password
+    newPassword: str | None = None
