@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.directory.authentication.configuration_base import (
     ApiAuthenticationConfigurationBase,
 )
@@ -7,6 +11,7 @@ from office365.directory.certificates.pkcs12_information import (
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
     """
     A type derived from apiAuthenticationConfigurationBase that is used to represent
@@ -14,9 +19,4 @@ class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
     This is used to retrieve the public properties of uploaded certificates.
     """
 
-    def __init__(self, certificates=None):
-        """
-        :param list[Pkcs12CertificateInformation] certificates:
-        """
-        super().__init__()
-        self.certificateList = ClientValueCollection(Pkcs12CertificateInformation, certificates)
+    certificateList: ClientValueCollection[Pkcs12CertificateInformation] = field(default_factory=lambda: ClientValueCollection(Pkcs12CertificateInformation))

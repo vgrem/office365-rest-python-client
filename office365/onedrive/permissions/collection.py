@@ -63,8 +63,8 @@ class PermissionCollection(EntityCollection[Permission]):
                 "grantedToIdentities": [
                     {
                         identity_type: Identity(
-                            display_name=getattr(identity, "display_name", str(identity)),
-                            _id=getattr(identity, "id", str(identity)),
+                            displayName=getattr(identity, "display_name", str(identity)),
+                            id=getattr(identity, "id", str(identity)),
                         )
                     }
                 ],

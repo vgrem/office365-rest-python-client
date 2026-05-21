@@ -94,7 +94,7 @@ class Application(DirectoryObject):
 
         :param str display_name: App display name
         """
-        params = PasswordCredential(display_name=display_name)
+        params = PasswordCredential(displayName=display_name)
         result = ClientResult(self.context, params)
         qry = ServiceOperationQuery(self, "addPassword", None, params, None, result)
         self.context.add_query(qry)

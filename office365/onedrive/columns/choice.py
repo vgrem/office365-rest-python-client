@@ -1,29 +1,18 @@
 from __future__ import annotations
 
-from typing import List
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class ChoiceColumn(ClientValue):
     """
     The choiceColumn on a columnDefinition resource indicates that the column's values can be selected
     from a list of choices.
     """
 
-    def __init__(
-        self,
-        allow_text_entry: bool | None = True,
-        choices: List[str] | None = None,
-        display_as: str | None = None,
-    ):
-        """
-        :param bool allow_text_entry: If true, allows custom values that aren't in the configured choices.
-        :param list[str] choices: The list of values available for this column.
-        :param str display_as: How the choices are to be presented in the UX. Must be one of checkBoxes,
-            dropDownMenu, or radioButtons
-        """
-        self.allowTextEntry = allow_text_entry
-        self.choices = StringCollection(choices)
-        self.displayAs = display_as
+    allowTextEntry: bool | None = True
+    choices: StringCollection = field(default_factory=StringCollection)
+    displayAs: str | None = None

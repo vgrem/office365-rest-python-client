@@ -1,8 +1,11 @@
+from dataclasses import dataclass
+
 from office365.planner.tasks.check_list_item import PlannerChecklistItem
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
-class PlannerChecklistItems(ClientValueCollection):
+@dataclass(init=False)
+class PlannerChecklistItems(ClientValueCollection[PlannerChecklistItem]):
     """The plannerChecklistItemCollection resource represents the collection of checklist items on a task.
     It is an Open Type. It is part of the task details object.
     The value in the property-value pair is the checklistItem object.

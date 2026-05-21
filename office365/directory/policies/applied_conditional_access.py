@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class AppliedConditionalAccessPolicy(ClientValue):
     """Indicates the attributes related to applied conditional access policy or policies that are triggered
     by a sign-in activity.
@@ -10,20 +15,11 @@ class AppliedConditionalAccessPolicy(ClientValue):
     For more information, see Permissions for viewing applied conditional access (CA) policies in sign-ins.
     """
 
-    def __init__(
-        self, display_name=None, enforced_grant_controls=None, enforced_session_controls=None, id_=None, result=None
-    ):
-        """
-        :param str display_name: Refers to the name of the conditional access policy
-        :param list[str] enforced_grant_controls: Refers to the grant controls enforced by the conditional access policy
-        :param list[str] enforced_session_controls: Refers to the session controls enforced by the conditional
-            access policy
-        """
-        self.displayName = display_name
-        self.enforcedGrantControls = StringCollection(enforced_grant_controls)
-        self.enforcedSessionControls = StringCollection(enforced_session_controls)
-        self.id = id_
-        self.result = result
+    displayName: str | None = None
+    enforcedGrantControls: StringCollection = field(default_factory=StringCollection)
+    enforcedSessionControls: StringCollection = field(default_factory=StringCollection)
+    id: str | None = None
+    result: str | None = None
 
     @property
     def entity_type_name(self):

@@ -621,7 +621,7 @@ class Tenant(Entity):
         """
         payload = {
             "secondaryAdministratorsFieldsData": SecondaryAdministratorsFieldsData(
-                site_id, StringCollection(emails), StringCollection(names)
+                site_id, StringCollection(emails or []), StringCollection(names or [])
             )
         }
         qry = ServiceOperationQuery(self, "SetSiteSecondaryAdministrators", None, payload, None, None)

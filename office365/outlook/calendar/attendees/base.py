@@ -1,19 +1,14 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.mail.recipient import Recipient
 
 
+@dataclass
 class AttendeeBase(Recipient):
     """The type of attendees."""
 
-    def __init__(self, email_address: Optional[EmailAddress] = None, attendee_type: Optional[str] = None):
-        """
-
-        :param office365.mail.emailAddress.EmailAddress email_address: Includes the name and SMTP address of the
-            attendees
-        :param str attendee_type: The type of attendees. The possible values are: required, optional, resource.
-            Currently if the attendees is a person, findMeetingTimes always considers the person is of the Required type.
-        """
-        super().__init__(email_address or EmailAddress())
-        self.type = attendee_type
+    type: str | None = None

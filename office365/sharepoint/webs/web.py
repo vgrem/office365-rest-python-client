@@ -882,7 +882,7 @@ class Web(SecurableObject):
         :param list[str] component_ids: List of requested component identifiers.
         """
         return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentQueryResult))
-        payload = {"componentIds": StringCollection(component_ids)}
+        payload = {"componentIds": StringCollection(component_ids or [])}
         qry = ServiceOperationQuery(self, "GetClientSideComponentsById", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type

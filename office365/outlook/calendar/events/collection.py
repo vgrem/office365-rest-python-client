@@ -53,7 +53,7 @@ class EventCollection(DeltaCollection[Event]):
         if attendees is not None:
             kwargs["attendees"] = ClientValueCollection(
                 Attendee,
-                [Attendee(EmailAddress(v), attendee_type="required") for v in attendees],
+                [Attendee(EmailAddress(v), type="required") for v in attendees],
             )
 
         return super().add(**kwargs)

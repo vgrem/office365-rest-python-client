@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.outlook.calendar.timezones.base import TimeZoneBase
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class WorkingHours(ClientValue):
     """
     Represents the days of the week and hours in a specific time zone that the user works.
@@ -17,14 +22,7 @@ class WorkingHours(ClientValue):
     they can still respect your working hours in the appropriate time zone.
     """
 
-    def __init__(self, days_of_week=None, end_time=None, start_time=None, timezone=TimeZoneBase()):
-        """
-        :param list[str] days_of_week: The days of the week on which the user works.
-        :param TimeZoneBase timezone: The time zone to which the working hours apply.
-        :param str end_time: The time of the day that the user stops working.
-        :param str start_time: The time of the day that the user starts working.
-        """
-        self.daysOfWeek = StringCollection(days_of_week)
-        self.timeZone = timezone
-        self.endTime = end_time
-        self.startTime = start_time
+    daysOfWeek: StringCollection = field(default_factory=StringCollection)
+    timeZone: TimeZoneBase = field(default_factory=TimeZoneBase)
+    endTime: str | None = None
+    startTime: str | None = None

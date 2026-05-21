@@ -1,10 +1,11 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ScheduleEntity(ClientValue):
-    """"""
-
-    def __init__(self, end_datetime=datetime.min):
-        self.endDateTime = end_datetime
+    endDateTime: datetime = datetime.min

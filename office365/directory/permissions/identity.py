@@ -1,24 +1,17 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class Identity(ClientValue):
     """The Identity resource represents an identity of an actor. For example, an actor can be a user, device,
     or application."""
 
-    def __init__(self, display_name: Optional[str] = None, _id: Optional[str] = None, id_: Optional[str] = None):
-        """
-        :param str display_name: The display name of the identity. Note that this might not always be available or up
-            to date. For example, if a user changes their display name, the API might show the new value in a future
-            response, but the items associated with the user won't show up as having changed when using delta.
-
-        :param str _id: Unique identifier for the identity.
-        """
-        super().__init__()
-        self.displayName = display_name
-        self.id = _id
-        self.id = id_
+    displayName: str | None = None
+    id: str | None = None
 
     def __repr__(self):
         return repr(self.to_json())

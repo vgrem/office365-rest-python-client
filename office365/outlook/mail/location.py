@@ -1,4 +1,6 @@
-from typing import List, Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
@@ -6,6 +8,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class Location(ClientValue):
     """
     Represents location information of an event.
@@ -16,36 +19,16 @@ class Location(ClientValue):
     Bing Autosuggest, or Bing local search.
     """
 
-    def __init__(
-        self,
-        address: PhysicalAddress = PhysicalAddress(),
-        coordinates: Optional[List[OutlookGeoCoordinates]] = None,
-        display_name: Optional[str] = None,
-        location_email_address: Optional[str] = None,
-        location_type: Optional[str] = None,
-        location_uri: Optional[str] = None,
-        unique_id: Optional[str] = None,
-        unique_id_type: Optional[str] = None,
-    ):
-        """
-        :param PhysicalAddress address: The street address of the location.
-        :param list[OutlookGeoCoordinates] coordinates:
-        :param str display_name: The name associated with the location.
-        :param str location_email_address: Optional email address of the location.
-        :param str location_type: The type of location.
-        :param str location_uri: Optional URI representing the location.
-        :param str unique_id: For internal use only.
-        :param str unique_id_type: For internal use only.
-        """
-        super().__init__()
-        self.address = address
-        self.coordinates = ClientValueCollection(OutlookGeoCoordinates, coordinates)
-        self.displayName = display_name
-        self.locationEmailAddress = location_email_address
-        self.locationType = location_type
-        self.locationUri = location_uri
-        self.uniqueId = unique_id
-        self.uniqueIdType = unique_id_type
+    address: PhysicalAddress = field(default_factory=PhysicalAddress)
+    coordinates: ClientValueCollection = field(
+        default_factory=lambda: ClientValueCollection(OutlookGeoCoordinates)
+    )
+    displayName: str | None = None
+    locationEmailAddress: str | None = None
+    locationType: str | None = None
+    locationUri: str | None = None
+    uniqueId: str | None = None
+    uniqueIdType: str | None = None
 
     @property
     def entity_type_name(self):

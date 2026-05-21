@@ -1,14 +1,17 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.principal.users.user import User
 
 
+@dataclass
 class FieldUserValue(FieldLookupValue):
-    def __init__(self, user_id: int, email: Optional[str] = None):
-        """Represents the value of a user fields for a list item."""
-        super().__init__(user_id)
-        self.Email = email
+    """Represents the value of a user fields for a list item."""
+
+    Email: Optional[str] = None
 
     @staticmethod
     def from_user(user: User) -> "FieldUserValue":

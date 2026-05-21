@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class ApiAuthenticationConfigurationBase(ClientValue):
     """
     The base type to hold authentication information for calling an API.
@@ -14,8 +19,4 @@ class ApiAuthenticationConfigurationBase(ClientValue):
          certificates of an API connector)
     """
 
-    def __init__(self, order=None):
-        """
-        :param list[str] order:
-        """
-        self.order = StringCollection(order)
+    order: StringCollection = field(default_factory=StringCollection)

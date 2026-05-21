@@ -141,11 +141,11 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def get_exists(self) -> ClientResult[bool]:
+    def get_exists(self) -> ClientResult[bool] | None:
         result = ClientResult(self.context, bool())
         result.set_property("__value", False)
         try:
-            self.select(["Exists"]).get().after_execute(lambda: result.set_property("__value", True))
+            self.select(["Exists"]).get().after_execute(lambda : result.set_property("__value", True))
         except ClientRequestException as e:
             if e.response.status_code == HTTPStatus.NOT_FOUND:
                 return result

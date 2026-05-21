@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 import uuid
 from enum import Enum
 from typing import Any, Dict, Generic, Iterator, List, Optional, Type, TypeVar, Union
@@ -12,6 +13,7 @@ from office365.runtime.utilities import parse_enum
 ValueT = TypeVar("ValueT")
 
 
+@dataclass(init=False)
 class ClientValueCollection(ClientValue, Generic[ValueT]):
     """A type-safe collection of ClientValue objects or primitives.
 
@@ -36,21 +38,19 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         >>> addr_collection.add(Address())
     """
 
-    def __init__(
-        self,
-        item_type: Type[ValueT],
-        initial_values: Optional[List[ValueT]] = None,
-    ):
+    _item_type: Type[ValueT] = field(init=False)
+    _data: list[ValueT] = field(default_factory=list)
+
+    def __init__(self, item_type: Type[ValueT] = None, _data: Optional[List[ValueT]] = None):  # type: ignore[assignment]
         """Initialize a typed collection.
 
         Args:
             item_type: The type of items in this collection
-            initial_values: Optional initial values (list or dict for complex types)
+            _data: Optional initial values (list or dict for complex types)
         """
-        super().__init__()
-        if initial_values is None:
-            initial_values = []
-        self._data: list[ValueT] = initial_values
+        if _data is None:
+            _data = []
+        self._data = _data
         self._item_type = item_type
 
     def add(self, value: ValueT) -> Self:

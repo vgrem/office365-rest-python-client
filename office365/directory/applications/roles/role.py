@@ -1,38 +1,25 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class AppRole(ClientValue):
     """
     Represents an application role that can be requested by (and granted to) a client application,
     or that can be used to assign an application to users or groups in a specified role.
     """
 
-    def __init__(
-        self,
-        id_=None,
-        allowed_member_types=None,
-        description=None,
-        display_name=None,
-        is_enabled=None,
-        origin=None,
-        value=None,
-    ):
-        """
-        :param list[str] allowed_member_types: Specifies whether this app role can be assigned to users and groups
-            (by setting to ["User"]), to other application's (by setting to ["Application"], or both (by setting to
-            ["User", "Application"]). App roles supporting assignment to other applications' service principals are
-            also known as application permissions. The "Application" value is only supported for app roles defined
-            on application entities.
-        :param str value:
-        """
-        self.id = id_
-        self.allowedMemberTypes = StringCollection(allowed_member_types)
-        self.description = description
-        self.displayName = display_name
-        self.isEnabled = is_enabled
-        self.origin = origin
-        self.value = value
+    id: str | None = None
+    allowedMemberTypes: StringCollection = field(default_factory=StringCollection)
+    description: str | None = None
+    displayName: str | None = None
+    isEnabled: bool | None = None
+    origin: str | None = None
+    value: str | None = None
 
     def __str__(self):
         return f"{self.allowedMemberTypes}  {self.value}"

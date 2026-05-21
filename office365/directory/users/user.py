@@ -181,7 +181,7 @@ class User(DirectoryObject):
             "addLicenses": ClientValueCollection(
                 AssignedLicense,
                 [
-                    (AssignedLicense(sku_id=sku_id) if not isinstance(sku_id, AssignedLicense) else sku_id)
+                    (AssignedLicense(skuId=sku_id) if not isinstance(sku_id, AssignedLicense) else sku_id)
                     for sku_id in add_licenses
                 ],
             ),
