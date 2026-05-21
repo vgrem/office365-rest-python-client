@@ -1,11 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ChannelIdentity(ClientValue):
     """Contains basic identification information about a channel in Microsoft Teams."""
 
-    def __init__(self, channel_id: Optional[str] = None, team_id: Optional[str] = None) -> None:
-        self.channelId = channel_id
-        self.teamId = team_id
+    channelId: str | None = None
+    teamId: str | None = None

@@ -1,8 +1,12 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ProvisionChannelEmailResult(ClientValue):
     """Represents the email address provisioned for a channel."""
 
-    def __init__(self, email=None):
-        self.email = email
+    email: str | None = None
