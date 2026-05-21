@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PortalLaunchWaveGroup(ClientValue):
-    def __init__(self, id_: Optional[str] = None, site_url: Optional[str] = None, user_group_name: Optional[str] = None):
-        self.Id = id_
-        self.SiteUrl = site_url
-        self.UserGroupName = user_group_name
+    Id: Optional[str] = None
+    SiteUrl: Optional[str] = None
+    UserGroupName: Optional[str] = None
 
     @property
     def entity_type_name(self):

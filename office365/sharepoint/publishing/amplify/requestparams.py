@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -7,14 +8,12 @@ from office365.sharepoint.publishing.amplify.requestendpoint import (
 )
 
 
+@dataclass
 class AmplifyRequestParams(ClientValue):
-    def __init__(
-        self,
-        endpoints: ClientValueCollection[AmplifyRequestEndpoint] = ClientValueCollection(AmplifyRequestEndpoint),
-        use_new_publishing_stack: Optional[bool] = None,
-    ):
-        self.Endpoints = endpoints
-        self.UseNewPublishingStack = use_new_publishing_stack
+    Endpoints: ClientValueCollection[AmplifyRequestEndpoint] = field(
+        default_factory=lambda: ClientValueCollection(AmplifyRequestEndpoint)
+    )
+    UseNewPublishingStack: Optional[bool] = None
 
     @property
     def entity_type_name(self):

@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PropertyValue(ClientValue):
-    def __init__(self, term_id: Optional[str] = None, value: Optional[str] = None):
-        self.TermId = term_id
-        self.Value = value
+    TermId: Optional[str] = None
+    Value: Optional[str] = None
 
     @property
     def entity_type_name(self):

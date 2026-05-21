@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ProfileCoreProperties(ClientValue):
-    def __init__(self, picture_url: Optional[str] = None, title: Optional[str] = None):
-        self.PictureUrl = picture_url
-        self.Title = title
+    PictureUrl: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

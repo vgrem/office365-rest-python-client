@@ -1,61 +1,37 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.publishing.profilepropertyvieweditpolicy import (
     ProfilePropertyViewEditPolicy,
 )
 
 
+@dataclass
 class ProfileViewEditPolicies(ClientValue):
-    def __init__(
-        self,
-        about_me: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        assistant: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        birthday: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        cell_phone: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        department: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        display_name: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        fax: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        hire_date: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        home_phone: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        interests: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        job_title: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        location: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        office: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        personal_site_url: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        picture_url: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        projects: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        responsibilities: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        schools: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        sip_address: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        skills: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        sps_department: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        sps_job_title: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        work_email: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-        work_phone: ProfilePropertyViewEditPolicy = ProfilePropertyViewEditPolicy(),
-    ):
-        self.AboutMe = about_me
-        self.Assistant = assistant
-        self.Birthday = birthday
-        self.CellPhone = cell_phone
-        self.Department = department
-        self.DisplayName = display_name
-        self.Fax = fax
-        self.HireDate = hire_date
-        self.HomePhone = home_phone
-        self.Interests = interests
-        self.JobTitle = job_title
-        self.Location = location
-        self.Office = office
-        self.PersonalSiteUrl = personal_site_url
-        self.PictureUrl = picture_url
-        self.Projects = projects
-        self.Responsibilities = responsibilities
-        self.Schools = schools
-        self.SipAddress = sip_address
-        self.Skills = skills
-        self.SpsDepartment = sps_department
-        self.SpsJobTitle = sps_job_title
-        self.WorkEmail = work_email
-        self.WorkPhone = work_phone
+    AboutMe: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Assistant: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Birthday: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    CellPhone: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Department: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    DisplayName: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Fax: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    HireDate: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    HomePhone: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Interests: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    JobTitle: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Location: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Office: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    PersonalSiteUrl: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    PictureUrl: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Projects: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Responsibilities: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Schools: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    SipAddress: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    Skills: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    SpsDepartment: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    SpsJobTitle: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    WorkEmail: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
+    WorkPhone: ProfilePropertyViewEditPolicy = field(default_factory=lambda: ProfilePropertyViewEditPolicy())
 
     @property
     def entity_type_name(self):

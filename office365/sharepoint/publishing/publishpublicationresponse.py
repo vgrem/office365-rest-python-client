@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PublishPublicationResponse(ClientValue):
-    def __init__(self, error_code: Optional[int] = None, message: Optional[str] = None, status: Optional[bool] = None):
-        self.ErrorCode = error_code
-        self.Message = message
-        self.Status = status
+    ErrorCode: Optional[int] = None
+    Message: Optional[str] = None
+    Status: Optional[bool] = None
 
     @property
     def entity_type_name(self):

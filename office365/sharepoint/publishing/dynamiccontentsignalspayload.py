@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,18 +7,18 @@ from office365.sharepoint.publishing.dynamicfaqsingalsdata import DynamicFaqSing
 from office365.sharepoint.publishing.faqsignaldata import FaqSignalData
 
 
+@dataclass
 class DynamicContentSignalsPayload(ClientValue):
-    def __init__(
-        self,
-        additional_data: ClientValueCollection[DynamicFaqSingalsData] = ClientValueCollection(DynamicFaqSingalsData),
-        aggregated_data: ClientValueCollection[DynamicFaqSingalsData] = ClientValueCollection(DynamicFaqSingalsData),
-        faq_signals: ClientValueCollection[FaqSignalData] = ClientValueCollection(FaqSignalData),
-        id_: Optional[str] = None,
-    ):
-        self.AdditionalData = additional_data
-        self.AggregatedData = aggregated_data
-        self.FaqSignals = faq_signals
-        self.Id = id_
+    AdditionalData: ClientValueCollection[DynamicFaqSingalsData] = field(
+        default_factory=lambda: ClientValueCollection(DynamicFaqSingalsData)
+    )
+    AggregatedData: ClientValueCollection[DynamicFaqSingalsData] = field(
+        default_factory=lambda: ClientValueCollection(DynamicFaqSingalsData)
+    )
+    FaqSignals: ClientValueCollection[FaqSignalData] = field(
+        default_factory=lambda: ClientValueCollection(FaqSignalData)
+    )
+    Id: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SiteSharingEmailContext(ClientValue):
-    def __init__(
-        self,
-        custom_description: Optional[str] = None,
-        custom_title: Optional[str] = None,
-        message: Optional[str] = None,
-        url: Optional[str] = None,
-    ):
-        self.CustomDescription = custom_description
-        self.CustomTitle = custom_title
-        self.Message = message
-        self.Url = url
+    CustomDescription: Optional[str] = None
+    CustomTitle: Optional[str] = None
+    Message: Optional[str] = None
+    Url: Optional[str] = None
 
     @property
     def entity_type_name(self):

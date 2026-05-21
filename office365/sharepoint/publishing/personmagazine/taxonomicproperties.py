@@ -1,22 +1,21 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.propertyvalue import PropertyValue
 
 
+@dataclass
 class TaxonomicProperties(ClientValue):
-    def __init__(
-        self,
-        interest: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
-        past_projects: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
-        responsibilities: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
-        schools: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
-        skills: ClientValueCollection[PropertyValue] = ClientValueCollection(PropertyValue),
-    ):
-        self.Interest = interest
-        self.PastProjects = past_projects
-        self.Responsibilities = responsibilities
-        self.Schools = schools
-        self.Skills = skills
+    Interest: ClientValueCollection[PropertyValue] = field(default_factory=lambda: ClientValueCollection(PropertyValue))
+    PastProjects: ClientValueCollection[PropertyValue] = field(
+        default_factory=lambda: ClientValueCollection(PropertyValue)
+    )
+    Responsibilities: ClientValueCollection[PropertyValue] = field(
+        default_factory=lambda: ClientValueCollection(PropertyValue)
+    )
+    Schools: ClientValueCollection[PropertyValue] = field(default_factory=lambda: ClientValueCollection(PropertyValue))
+    Skills: ClientValueCollection[PropertyValue] = field(default_factory=lambda: ClientValueCollection(PropertyValue))
 
     @property
     def entity_type_name(self):

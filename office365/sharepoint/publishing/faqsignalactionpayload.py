@@ -1,15 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class FaqSignalActionPayload(ClientValue):
-    def __init__(
-        self, action_type: Optional[int] = None, question_id: Optional[str] = None, signal_type: Optional[int] = None
-    ):
-        self.ActionType = action_type
-        self.QuestionId = question_id
-        self.SignalType = signal_type
+    ActionType: Optional[int] = None
+    QuestionId: Optional[str] = None
+    SignalType: Optional[int] = None
 
     @property
     def entity_type_name(self):

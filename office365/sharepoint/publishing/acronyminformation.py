@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AcronymInformation(ClientValue):
-    def __init__(
-        self,
-        acronym: Optional[str] = None,
-        color: Optional[str] = None,
-        lcid: Optional[int] = None,
-        text: Optional[str] = None,
-    ):
-        self.Acronym = acronym
-        self.Color = color
-        self.Lcid = lcid
-        self.Text = text
+    Acronym: Optional[str] = None
+    Color: Optional[str] = None
+    Lcid: Optional[int] = None
+    Text: Optional[str] = None
 
     @property
     def entity_type_name(self):

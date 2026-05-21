@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SchedulePublicationResponse(ClientValue):
-    def __init__(self, publication_status: Optional[int] = None):
-        self.PublicationStatus = publication_status
+    PublicationStatus: Optional[int] = None
 
     @property
     def entity_type_name(self):

@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class TimeFrameStatistics(ClientValue):
-    def __init__(self, date: Optional[datetime] = None):
-        self.Date = date
+    Date: Optional[datetime] = None
 
     @property
     def entity_type_name(self):

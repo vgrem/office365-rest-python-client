@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -6,16 +7,11 @@ from office365.sharepoint.publishing.sharepointpublishingstatus import (
 )
 
 
+@dataclass
 class SharePointPublishingStatusResponse(ClientValue):
-    def __init__(
-        self,
-        site_id: Optional[str] = None,
-        status: SharePointPublishingStatus = SharePointPublishingStatus(),
-        web_id: Optional[str] = None,
-    ):
-        self.SiteId = site_id
-        self.Status = status
-        self.WebId = web_id
+    SiteId: Optional[str] = None
+    Status: SharePointPublishingStatus = field(default_factory=lambda: SharePointPublishingStatus())
+    WebId: Optional[str] = None
 
     @property
     def entity_type_name(self):

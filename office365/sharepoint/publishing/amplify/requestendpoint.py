@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class AmplifyRequestEndpoint(ClientValue):
-    def __init__(self, data: Optional[str] = None, endpoint_type: Optional[int] = None):
-        self.Data = data
-        self.EndpointType = endpoint_type
+    Data: Optional[str] = None
+    EndpointType: Optional[int] = None
 
     @property
     def entity_type_name(self):

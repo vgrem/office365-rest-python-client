@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CampaignAssociation(ClientValue):
-    def __init__(self, campaign_id: Optional[int] = None, publication_id: Optional[int] = None):
-        self.CampaignId = campaign_id
-        self.PublicationId = publication_id
+    CampaignId: Optional[int] = None
+    PublicationId: Optional[int] = None
 
     @property
     def entity_type_name(self):

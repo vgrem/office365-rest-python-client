@@ -1,20 +1,15 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CampaignMetadata(ClientValue):
-    def __init__(
-        self,
-        color: Optional[str] = None,
-        description: Optional[str] = None,
-        logo: Optional[str] = None,
-        title: Optional[str] = None,
-    ):
-        self.Color = color
-        self.Description = description
-        self.Logo = logo
-        self.Title = title
+    Color: Optional[str] = None
+    Description: Optional[str] = None
+    Logo: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

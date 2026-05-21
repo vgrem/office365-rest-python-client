@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class PublishSiteInformation(ClientValue):
-    def __init__(self, site_type: Optional[int] = None, site_url: Optional[str] = None, title: Optional[str] = None):
-        self.SiteType = site_type
-        self.SiteUrl = site_url
-        self.Title = title
+    SiteType: Optional[int] = None
+    SiteUrl: Optional[str] = None
+    Title: Optional[str] = None
 
     @property
     def entity_type_name(self):

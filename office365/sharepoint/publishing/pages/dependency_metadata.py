@@ -1,37 +1,24 @@
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.publishing.webpartdetailswrapper import WebPartDetailsWrapper
 
 
+@dataclass
 class SitePageDependencyMetadata(ClientValue):
-    """ """
-
-    def __init__(
-        self,
-        dependency_item_path=None,
-        is_in_page_site_assets_folder=None,
-        list_id=None,
-        related_web_parts=None,
-        site_id=None,
-        related_web_parts_details: ClientValueCollection[WebPartDetailsWrapper] = ClientValueCollection(
-            WebPartDetailsWrapper
-        ),
-        type_: Optional[str] = None,
-        unique_id: Optional[str] = None,
-        web_id: Optional[str] = None,
-    ):
-        self.DependencyItemPath = dependency_item_path
-        self.IsInPageSiteAssetsFolder = is_in_page_site_assets_folder
-        self.ListId = list_id
-        self.RelatedWebParts = StringCollection(related_web_parts)
-        self.SiteId = site_id
-        self.RelatedWebPartsDetails = related_web_parts_details
-        self.Type = type_
-        self.UniqueId = unique_id
-        self.WebId = web_id
+    DependencyItemPath: Any = None
+    IsInPageSiteAssetsFolder: Any = None
+    ListId: Any = None
+    RelatedWebParts: Any = None
+    SiteId: Any = None
+    RelatedWebPartsDetails: ClientValueCollection[WebPartDetailsWrapper] = field(
+        default_factory=lambda: ClientValueCollection(WebPartDetailsWrapper)
+    )
+    Type: Optional[str] = None
+    UniqueId: Optional[str] = None
+    WebId: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,17 +1,14 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
+@dataclass
 class PrePublishValidationsErrorCodesForSharePointSite(ClientValue):
-    def __init__(
-        self,
-        error_codes: ClientValueCollection[int] = ClientValueCollection(int),
-        site_id: Optional[str] = None,
-    ):
-        self.ErrorCodes = error_codes
-        self.SiteId = site_id
+    ErrorCodes: ClientValueCollection[int] = field(default_factory=lambda: ClientValueCollection(int))
+    SiteId: Optional[str] = None
 
     @property
     def entity_type_name(self):

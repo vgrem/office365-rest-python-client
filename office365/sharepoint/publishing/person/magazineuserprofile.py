@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -10,80 +11,45 @@ from office365.sharepoint.publishing.person.customproperty import PersonCustomPr
 from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 
 
+@dataclass
 class PersonMagazineUserProfile(ClientValue):
-    def __init__(
-        self,
-        aad_object_id: Optional[str] = None,
-        about_me: Optional[str] = None,
-        about_me_truncated: Optional[str] = None,
-        assistant: PersonCore = PersonCore(),
-        birth_date: ProfileDateTime = ProfileDateTime(),
-        birthday: Optional[str] = None,
-        date_time_custom_properties: ClientValueCollection[DateTimeCustomProperty] = ClientValueCollection(
-            DateTimeCustomProperty
-        ),
-        department_name: Optional[str] = None,
-        display_name: Optional[str] = None,
-        email: Optional[str] = None,
-        fax: Optional[str] = None,
-        has_edit_permission: Optional[bool] = None,
-        hire_date: ProfileDateTime = ProfileDateTime(),
-        home_phone: Optional[str] = None,
-        interest: Optional[str] = None,
-        lync: Optional[str] = None,
-        mobile_phone: Optional[str] = None,
-        office: Optional[str] = None,
-        office_location: Optional[str] = None,
-        one_drive_url: Optional[str] = None,
-        past_projects: Optional[str] = None,
-        person_type_custom_properties: ClientValueCollection[PersonCustomProperty] = ClientValueCollection(
-            PersonCustomProperty
-        ),
-        phone: Optional[str] = None,
-        picture_url: Optional[str] = None,
-        point_publishing_personal_site_url: Optional[str] = None,
-        responsibilities: Optional[str] = None,
-        schools: Optional[str] = None,
-        skills: Optional[str] = None,
-        sps_department: Optional[str] = None,
-        sps_job_title: Optional[str] = None,
-        string_custom_properties: Optional[dict] = None,
-        title: Optional[str] = None,
-        user_name: Optional[str] = None,
-    ):
-        self.AadObjectId = aad_object_id
-        self.AboutMe = about_me
-        self.AboutMeTruncated = about_me_truncated
-        self.Assistant = assistant
-        self.BirthDate = birth_date
-        self.Birthday = birthday
-        self.DateTimeCustomProperties = date_time_custom_properties
-        self.DepartmentName = department_name
-        self.DisplayName = display_name
-        self.Email = email
-        self.Fax = fax
-        self.HasEditPermission = has_edit_permission
-        self.HireDate = hire_date
-        self.HomePhone = home_phone
-        self.Interest = interest
-        self.Lync = lync
-        self.MobilePhone = mobile_phone
-        self.Office = office
-        self.OfficeLocation = office_location
-        self.OneDriveUrl = one_drive_url
-        self.PastProjects = past_projects
-        self.PersonTypeCustomProperties = person_type_custom_properties
-        self.Phone = phone
-        self.PictureUrl = picture_url
-        self.PointPublishingPersonalSiteUrl = point_publishing_personal_site_url
-        self.Responsibilities = responsibilities
-        self.Schools = schools
-        self.Skills = skills
-        self.SpsDepartment = sps_department
-        self.SpsJobTitle = sps_job_title
-        self.StringCustomProperties = string_custom_properties
-        self.Title = title
-        self.UserName = user_name
+    AadObjectId: Optional[str] = None
+    AboutMe: Optional[str] = None
+    AboutMeTruncated: Optional[str] = None
+    Assistant: PersonCore = field(default_factory=lambda: PersonCore())
+    BirthDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    Birthday: Optional[str] = None
+    DateTimeCustomProperties: ClientValueCollection[DateTimeCustomProperty] = field(
+        default_factory=lambda: ClientValueCollection(DateTimeCustomProperty)
+    )
+    DepartmentName: Optional[str] = None
+    DisplayName: Optional[str] = None
+    Email: Optional[str] = None
+    Fax: Optional[str] = None
+    HasEditPermission: Optional[bool] = None
+    HireDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    HomePhone: Optional[str] = None
+    Interest: Optional[str] = None
+    Lync: Optional[str] = None
+    MobilePhone: Optional[str] = None
+    Office: Optional[str] = None
+    OfficeLocation: Optional[str] = None
+    OneDriveUrl: Optional[str] = None
+    PastProjects: Optional[str] = None
+    PersonTypeCustomProperties: ClientValueCollection[PersonCustomProperty] = field(
+        default_factory=lambda: ClientValueCollection(PersonCustomProperty)
+    )
+    Phone: Optional[str] = None
+    PictureUrl: Optional[str] = None
+    PointPublishingPersonalSiteUrl: Optional[str] = None
+    Responsibilities: Optional[str] = None
+    Schools: Optional[str] = None
+    Skills: Optional[str] = None
+    SpsDepartment: Optional[str] = None
+    SpsJobTitle: Optional[str] = None
+    StringCustomProperties: dict = field(default_factory=dict)
+    Title: Optional[str] = None
+    UserName: Optional[str] = None
 
     @property
     def entity_type_name(self):

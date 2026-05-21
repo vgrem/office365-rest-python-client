@@ -1,3 +1,6 @@
+from dataclasses import dataclass, field
+from typing import Any
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.authoringschemafeatureversion import (
@@ -5,30 +8,19 @@ from office365.sharepoint.publishing.authoringschemafeatureversion import (
 )
 
 
+@dataclass
 class SitePageCoAuthState(ClientValue):
-    def __init__(
-        self,
-        action=None,
-        has_reached_minor_versions_limit=None,
-        is_new_session=None,
-        is_partition_flushed=None,
-        lock_action=None,
-        lock_duration=None,
-        overwrite_existing_version=None,
-        shared_lock_id=None,
-        authoring_schema_feature_versions: ClientValueCollection[AuthoringSchemaFeatureVersion] = ClientValueCollection(
-            AuthoringSchemaFeatureVersion
-        ),
-    ):
-        self.Action = action
-        self.HasReachedMinorVersionsLimit = has_reached_minor_versions_limit
-        self.IsNewSession = is_new_session
-        self.IsPartitionFlushed = is_partition_flushed
-        self.LockAction = lock_action
-        self.LockDuration = lock_duration
-        self.OverwriteExistingVersion = overwrite_existing_version
-        self.SharedLockId = shared_lock_id
-        self.AuthoringSchemaFeatureVersions = authoring_schema_feature_versions
+    Action: Any = None
+    HasReachedMinorVersionsLimit: Any = None
+    IsNewSession: Any = None
+    IsPartitionFlushed: Any = None
+    LockAction: Any = None
+    LockDuration: Any = None
+    OverwriteExistingVersion: Any = None
+    SharedLockId: Any = None
+    AuthoringSchemaFeatureVersions: ClientValueCollection[AuthoringSchemaFeatureVersion] = field(
+        default_factory=lambda: ClientValueCollection(AuthoringSchemaFeatureVersion)
+    )
 
     @property
     def entity_type_name(self):

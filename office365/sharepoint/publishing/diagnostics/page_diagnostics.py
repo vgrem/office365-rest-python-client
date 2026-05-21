@@ -1,24 +1,15 @@
-from typing import Optional
+from dataclasses import dataclass
+from typing import Any, Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.publishing.diagnostics.page_result import (
-    PageDiagnosticsResult,
-)
 
 
+@dataclass
 class PageDiagnostics(ClientValue):
-    def __init__(
-        self,
-        results=None,
-        latest_draft_version: Optional[str] = None,
-        latest_published_version: Optional[str] = None,
-        page_file_name: Optional[str] = None,
-    ):
-        self.Results = ClientValueCollection(PageDiagnosticsResult, results)
-        self.LatestDraftVersion = latest_draft_version
-        self.LatestPublishedVersion = latest_published_version
-        self.PageFileName = page_file_name
+    Results: Any = None
+    LatestDraftVersion: Optional[str] = None
+    LatestPublishedVersion: Optional[str] = None
+    PageFileName: Optional[str] = None
 
     @property
     def entity_type_name(self):

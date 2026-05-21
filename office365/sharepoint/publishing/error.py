@@ -1,10 +1,12 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
+@dataclass
 class Error(ClientValue):
-    def __init__(self, details: StringCollection = StringCollection()):
-        self.Details = details
+    Details: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):

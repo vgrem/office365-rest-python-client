@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CallToAction(ClientValue):
-    def __init__(self, is_transpile_ready: Optional[bool] = None, text: Optional[str] = None, url: Optional[str] = None):
-        self.IsTranspileReady = is_transpile_ready
-        self.Text = text
-        self.Url = url
+    IsTranspileReady: Optional[bool] = None
+    Text: Optional[str] = None
+    Url: Optional[str] = None
 
     @property
     def entity_type_name(self):

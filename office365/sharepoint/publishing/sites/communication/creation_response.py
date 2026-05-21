@@ -1,10 +1,13 @@
+from dataclasses import dataclass
+from typing import Any
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class CommunicationSiteCreationResponse(ClientValue):
-    def __init__(self, site_status=None, site_url=None):
-        self.SiteStatus = site_status
-        self.SiteUrl = site_url
+    SiteStatus: Any = None
+    SiteUrl: Any = None
 
     @property
     def entity_type_name(self):

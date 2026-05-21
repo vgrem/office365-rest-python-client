@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SendTestTeamsMessageResponse(ClientValue):
-    def __init__(self, error_code: Optional[int] = None, response: Optional[bool] = None):
-        self.ErrorCode = error_code
-        self.Response = response
+    ErrorCode: Optional[int] = None
+    Response: Optional[bool] = None
 
     @property
     def entity_type_name(self):

@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DateTimeCustomProperty(ClientValue):
-    def __init__(self, custom_property_name: Optional[str] = None):
-        self.CustomPropertyName = custom_property_name
+    CustomPropertyName: Optional[str] = None
 
     @property
     def entity_type_name(self):

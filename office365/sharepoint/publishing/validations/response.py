@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -9,41 +10,29 @@ from office365.sharepoint.publishing.validations.errorcodesforsharepointsite imp
     PrePublishValidationsErrorCodesForSharePointSite,
 )
 from office365.sharepoint.publishing.validations.errorcodesforteams import (
-    PrePublishValidationsErrorCodesForTeams,
+    PrePublishValidationsErrorCodesForTeams as _PrePublishValidationsErrorCodesForTeams,
 )
 from office365.sharepoint.publishing.validations.prepublishvalidationserrorcodesforvivaengage import (
-    PrePublishValidationsErrorCodesForVivaEngage,
+    PrePublishValidationsErrorCodesForVivaEngage as _PrePublishValidationsErrorCodesForVivaEngage,
 )
 
 
+@dataclass
 class PrePublishValidationsResponse(ClientValue):
-    def __init__(
-        self,
-        error_codes: ClientValueCollection[int] = ClientValueCollection(int),
-        pre_publish_validations_error_codes_for_emails: ClientValueCollection[
-            PrePublishValidationsErrorCodesForEmail
-        ] = ClientValueCollection(PrePublishValidationsErrorCodesForEmail),
-        pre_publish_validations_error_codes_for_share_point_sites: ClientValueCollection[
-            PrePublishValidationsErrorCodesForSharePointSite
-        ] = ClientValueCollection(PrePublishValidationsErrorCodesForSharePointSite),
-        pre_publish_validations_error_codes_for_teams: Optional[
-            ClientValueCollection[PrePublishValidationsErrorCodesForTeams]
-        ] = None,
-        pre_publish_validations_error_codes_for_viva_engage: Optional[
-            PrePublishValidationsErrorCodesForVivaEngage
-        ] = None,
-        pre_publish_validations_error_codes_for_viva_engage_v2: ClientValueCollection[
-            PrePublishValidationsErrorCodesForVivaEngage
-        ] = ClientValueCollection(PrePublishValidationsErrorCodesForVivaEngage),
-    ):
-        self.ErrorCodes = error_codes
-        self.PrePublishValidationsErrorCodesForEmails = pre_publish_validations_error_codes_for_emails
-        self.PrePublishValidationsErrorCodesForSharePointSites = (
-            pre_publish_validations_error_codes_for_share_point_sites
-        )
-        self.PrePublishValidationsErrorCodesForTeams = pre_publish_validations_error_codes_for_teams
-        self.PrePublishValidationsErrorCodesForVivaEngage = pre_publish_validations_error_codes_for_viva_engage
-        self.PrePublishValidationsErrorCodesForVivaEngageV2 = pre_publish_validations_error_codes_for_viva_engage_v2
+    ErrorCodes: ClientValueCollection[int] = field(default_factory=lambda: ClientValueCollection(int))
+    PrePublishValidationsErrorCodesForEmails: ClientValueCollection[PrePublishValidationsErrorCodesForEmail] = field(
+        default_factory=lambda: ClientValueCollection(PrePublishValidationsErrorCodesForEmail)
+    )
+    PrePublishValidationsErrorCodesForSharePointSites: ClientValueCollection[
+        PrePublishValidationsErrorCodesForSharePointSite
+    ] = field(default_factory=lambda: ClientValueCollection(PrePublishValidationsErrorCodesForSharePointSite))
+    PrePublishValidationsErrorCodesForTeams: Optional[ClientValueCollection[_PrePublishValidationsErrorCodesForTeams]] = (
+        None
+    )
+    PrePublishValidationsErrorCodesForVivaEngage: Optional[_PrePublishValidationsErrorCodesForVivaEngage] = None
+    PrePublishValidationsErrorCodesForVivaEngageV2: ClientValueCollection[
+        _PrePublishValidationsErrorCodesForVivaEngage
+    ] = field(default_factory=lambda: ClientValueCollection(_PrePublishValidationsErrorCodesForVivaEngage))
 
     @property
     def entity_type_name(self):

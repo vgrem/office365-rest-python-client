@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.person.magazineuserprofile import (
@@ -5,16 +7,12 @@ from office365.sharepoint.publishing.person.magazineuserprofile import (
 )
 
 
+@dataclass
 class PersonMagazineUserProfileData(ClientValue):
-    def __init__(
-        self,
-        manager_chain: ClientValueCollection[PersonMagazineUserProfile] = ClientValueCollection(
-            PersonMagazineUserProfile
-        ),
-        primary: PersonMagazineUserProfile = PersonMagazineUserProfile(),
-    ):
-        self.ManagerChain = manager_chain
-        self.Primary = primary
+    ManagerChain: ClientValueCollection[PersonMagazineUserProfile] = field(
+        default_factory=lambda: ClientValueCollection(PersonMagazineUserProfile)
+    )
+    Primary: PersonMagazineUserProfile = field(default_factory=lambda: PersonMagazineUserProfile())
 
     @property
     def entity_type_name(self):

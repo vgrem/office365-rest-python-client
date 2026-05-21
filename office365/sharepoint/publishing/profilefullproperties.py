@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
@@ -5,58 +6,32 @@ from office365.sharepoint.publishing.person.identity import PersonIdentity
 from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 
 
+@dataclass
 class ProfileFullProperties(ClientValue):
-    def __init__(
-        self,
-        about_me: Optional[str] = None,
-        about_me_truncated: Optional[str] = None,
-        assistant: PersonIdentity = PersonIdentity(),
-        birth_date: ProfileDateTime = ProfileDateTime(),
-        department_name: Optional[str] = None,
-        email: Optional[str] = None,
-        fax: Optional[str] = None,
-        has_edit_permission: Optional[bool] = None,
-        hire_date: ProfileDateTime = ProfileDateTime(),
-        home_phone: Optional[str] = None,
-        interest: Optional[str] = None,
-        lync: Optional[str] = None,
-        mobile_phone: Optional[str] = None,
-        office: Optional[str] = None,
-        office_location: Optional[str] = None,
-        one_drive_url: Optional[str] = None,
-        past_projects: Optional[str] = None,
-        phone: Optional[str] = None,
-        point_publishing_personal_site_url: Optional[str] = None,
-        responsibilities: Optional[str] = None,
-        schools: Optional[str] = None,
-        skills: Optional[str] = None,
-        sps_department: Optional[str] = None,
-        sps_job_title: Optional[str] = None,
-    ):
-        self.AboutMe = about_me
-        self.AboutMeTruncated = about_me_truncated
-        self.Assistant = assistant
-        self.BirthDate = birth_date
-        self.DepartmentName = department_name
-        self.Email = email
-        self.Fax = fax
-        self.HasEditPermission = has_edit_permission
-        self.HireDate = hire_date
-        self.HomePhone = home_phone
-        self.Interest = interest
-        self.Lync = lync
-        self.MobilePhone = mobile_phone
-        self.Office = office
-        self.OfficeLocation = office_location
-        self.OneDriveUrl = one_drive_url
-        self.PastProjects = past_projects
-        self.Phone = phone
-        self.PointPublishingPersonalSiteUrl = point_publishing_personal_site_url
-        self.Responsibilities = responsibilities
-        self.Schools = schools
-        self.Skills = skills
-        self.SpsDepartment = sps_department
-        self.SpsJobTitle = sps_job_title
+    AboutMe: Optional[str] = None
+    AboutMeTruncated: Optional[str] = None
+    Assistant: PersonIdentity = field(default_factory=lambda: PersonIdentity())
+    BirthDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    DepartmentName: Optional[str] = None
+    Email: Optional[str] = None
+    Fax: Optional[str] = None
+    HasEditPermission: Optional[bool] = None
+    HireDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    HomePhone: Optional[str] = None
+    Interest: Optional[str] = None
+    Lync: Optional[str] = None
+    MobilePhone: Optional[str] = None
+    Office: Optional[str] = None
+    OfficeLocation: Optional[str] = None
+    OneDriveUrl: Optional[str] = None
+    PastProjects: Optional[str] = None
+    Phone: Optional[str] = None
+    PointPublishingPersonalSiteUrl: Optional[str] = None
+    Responsibilities: Optional[str] = None
+    Schools: Optional[str] = None
+    Skills: Optional[str] = None
+    SpsDepartment: Optional[str] = None
+    SpsJobTitle: Optional[str] = None
 
     @property
     def entity_type_name(self):

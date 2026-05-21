@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class ToolDetails(ClientValue):
-    def __init__(self, name: Optional[str] = None, version: Optional[str] = None):
-        self.Name = name
-        self.Version = version
+    Name: Optional[str] = None
+    Version: Optional[str] = None
 
     @property
     def entity_type_name(self):

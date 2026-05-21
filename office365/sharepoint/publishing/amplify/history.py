@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.amplify.historyresult import (
@@ -5,14 +7,11 @@ from office365.sharepoint.publishing.amplify.historyresult import (
 )
 
 
+@dataclass
 class AmplifyPublishingHistory(ClientValue):
-    def __init__(
-        self,
-        results: ClientValueCollection[AmplifyPublishingHistoryResult] = ClientValueCollection(
-            AmplifyPublishingHistoryResult
-        ),
-    ):
-        self.results = results
+    results: ClientValueCollection[AmplifyPublishingHistoryResult] = field(
+        default_factory=lambda: ClientValueCollection(AmplifyPublishingHistoryResult)
+    )
 
     @property
     def entity_type_name(self):

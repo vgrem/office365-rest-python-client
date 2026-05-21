@@ -1,15 +1,13 @@
+from dataclasses import dataclass
+from typing import Any
+
 from office365.runtime.client_value import ClientValue
-from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.publishing.portalhealth.details import PortalHealthDetails
 
 
+@dataclass
 class PortalHealthStatus(ClientValue):
-    def __init__(self, details=None, status=None):
-        """
-        :param int status:
-        """
-        self.Details = ClientValueCollection(PortalHealthDetails, details)
-        self.Status = status
+    Details: Any = None
+    Status: Any = None
 
     @property
     def entity_type_name(self):

@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class SubmitInfo(ClientValue):
-    def __init__(self, submitted_at: Optional[datetime] = None, submitted_by: Optional[str] = None):
-        self.SubmittedAt = submitted_at
-        self.SubmittedBy = submitted_by
+    SubmittedAt: Optional[datetime] = None
+    SubmittedBy: Optional[str] = None
 
     @property
     def entity_type_name(self):

@@ -1,22 +1,17 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UserInfo(ClientValue):
-    def __init__(
-        self,
-        email: Optional[str] = None,
-        login_name: Optional[str] = None,
-        name: Optional[str] = None,
-        user_principal_name: Optional[str] = None,
-    ):
-        self.email = email
-        self.loginName = login_name
-        self.name = name
-        self.userPrincipalName = user_principal_name
+    """Represents user information of a user with consistent color and acronym for client rendering."""
 
-    "Represents user information of a user with consistent color and acronym for client rendering."
+    email: Optional[str] = None
+    loginName: Optional[str] = None
+    name: Optional[str] = None
+    userPrincipalName: Optional[str] = None
 
     @property
     def entity_type_name(self):
