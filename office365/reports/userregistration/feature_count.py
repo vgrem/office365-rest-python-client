@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.authentication.methods.feature import AuthenticationMethodFeature
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class UserRegistrationFeatureCount(ClientValue):
     """Represents the number of users registered or capable for multifactor authentication, self-service password
     reset, and passwordless authentication."""
 
-    def __init__(self, feature: AuthenticationMethodFeature | None = None, user_count: int | None = None):
-        self.feature = feature
-        self.userCount = user_count
+    feature: AuthenticationMethodFeature | None = None
+    userCount: int | None = None
 
     @property
     def entity_type_name(self):
