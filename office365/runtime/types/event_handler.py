@@ -1,22 +1,3 @@
-"""
-Modernized EventHandler for Python 3.8+
-
-Key changes from the py2-era version:
-  - TypeVar(bound=Callable) -> ParamSpec: captures the actual listener signature,
-    so callers get argument checking at the call site too
-  - List[F] -> list[...] builtin annotations via from __future__ import annotations
-    (PEP 585 syntax works in annotations on 3.8 when evaluation is deferred)
-  - Self and ParamSpec from typing_extensions (backport; no stdlib version
-    needed -- typing_extensions is already a transitive dep of most py3 projects)
-  - threading.Lock: the original was not thread-safe; += and -= without
-    a lock are data races under concurrent use
-  - __isub__ now uses discard semantics (no ValueError on missing listener)
-    with an explicit strict= flag if the caller wants ValueError on missing
-  - __len__ return type annotation was missing
-  - once=True clears upfront on a snapshot rather than mutating _listeners
-    mid-iteration (the original [:] copy was safe but fragile to reason about)
-"""
-
 from __future__ import annotations
 
 import logging

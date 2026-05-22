@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.fields.choice import FieldChoice
 from office365.sharepoint.fields.geolocation_value import FieldGeolocationValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
@@ -8,16 +10,15 @@ from office365.sharepoint.fields.multi_user_value import FieldMultiUserValue
 from office365.sharepoint.fields.url_value import FieldUrlValue
 from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.lists.list import List
 
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestFieldValue(SPTestCase):
-    target_list: List = None
-    target_item: ListItem = None
-    target_field: FieldMultiChoice = None
+    target_list: list | None = None
+    target_item: ListItem | None = None
+    target_field: FieldMultiChoice | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -47,7 +48,7 @@ class TestFieldValue(SPTestCase):
         create_info = {
             "Title": "Task1",
         }
-        self.__class__.target_item = self.target_list.add_item(create_info).execute_query()
+        type(self).target_item = self.target_list.add_item(create_info).execute_query()
         self.client.load(items)
         self.client.execute_query()
         self.assertGreaterEqual(len(items), 1)
@@ -55,18 +56,16 @@ class TestFieldValue(SPTestCase):
     def test3_create_multi_lookup_field(self):
         result = self.target_list.fields.add_lookup_field(
             title=self.multi_lookup_field_name,
-            lookup_list=self.target_list.id,
+            lookup_list=self.target_list,
             lookup_field_name="Title",
             allow_multiple_values=True,
         ).execute_query()
         self.assertEqual(result.type_as_string, "LookupMulti")
 
     def test4_set_field_multi_lookup_value(self):
-        item_to_update = self.__class__.target_list.get_item_by_id(self.__class__.target_item.id)
-        lookup_id = self.__class__.target_item.id
         field_value = FieldMultiLookupValue()
-        field_value.add(FieldLookupValue(lookup_id))
-        updated = item_to_update.set_property(self.multi_lookup_field_name, field_value).update().execute_query()
+        field_value.add(FieldLookupValue(LookupId=self.target_item.id))
+        updated = self.target_item.set_property(self.multi_lookup_field_name, field_value).update().execute_query()
         self.assertIsInstance(updated.properties[self.multi_lookup_field_name], FieldMultiLookupValue)
 
     def test5_create_user_multi_field(self):
@@ -80,8 +79,8 @@ class TestFieldValue(SPTestCase):
         current_user = self.client.web.current_user
         value = FieldMultiUserValue()
         value.add(FieldUserValue.from_user(current_user))
-        item_to_update = self.__class__.target_item
-        item_to_update.set_property(self.user_multi_field_name, value).update().execute_query()
+        self.target_item.set_property(self.user_multi_field_name, value).update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.user_multi_field_name))
 
     def test7_create_list_multi_choice_field(self):
         choices = ["Not Started", "In Progress", "Completed", "Deferred"]
@@ -89,13 +88,13 @@ class TestFieldValue(SPTestCase):
             title=self.multi_choice_field_name, values=choices, multiple_values=True
         ).execute_query()
         self.assertIsInstance(result, FieldMultiChoice)
-        self.__class__.target_field = result
+        type(self).target_field = result
 
     def test8_set_field_multi_choice_value(self):
-        item_to_update = self.__class__.target_item
         multi_choice_value = FieldMultiChoiceValue(["In Progress"])
-        item_to_update.set_property(self.multi_choice_field_name, multi_choice_value)
-        item_to_update.update().execute_query()
+        self.target_item.set_property(self.multi_choice_field_name, multi_choice_value)
+        self.target_item.update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.multi_choice_field_name))
 
     def test9_create_list_choice_field(self):
         choices = ["Not Started", "In Progress", "Completed", "Deferred"]
@@ -105,10 +104,10 @@ class TestFieldValue(SPTestCase):
         self.assertIsInstance(created_field, FieldChoice)
 
     def test_10_set_field_choice_value(self):
-        item_to_update = self.__class__.target_item
         choice_value = "In Progress"
-        item_to_update.set_property(self.choice_field_name, choice_value)
-        item_to_update.update().execute_query()
+        self.target_item.set_property(self.choice_field_name, choice_value)
+        self.target_item.update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.choice_field_name))
 
     def test_11_get_lookup_field_choices(self):
         result = self.target_list.get_lookup_field_choices(self.multi_choice_field_name).execute_query()
@@ -120,24 +119,21 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(result.type_as_string, "URL")
 
     def test_13_set_url_field_value(self):
-        item_to_update = self.__class__.target_item
-        url = "https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-server/ms472498(v=office.15)"
-        field_value = FieldUrlValue(url)
-        updated = item_to_update.set_property(self.url_field_name, field_value).update().get().execute_query()
-        self.assertIsNotNone(updated.properties.get(self.url_field_name))
-        # self.assertIsInstance(updated.properties.get('DocumentationLink'), FieldUrlValue)
+        field_value = FieldUrlValue(
+            "https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-server/ms472498(v=office.15)"
+        )
+        self.target_item.set_property(self.url_field_name, field_value).update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.url_field_name))
 
     def test_14_create_list_geolocation_field(self):
         geo_field = self.target_list.fields.add_geolocation_field(self.geo_field_name).execute_query()
         self.assertIsNotNone(geo_field.resource_path)
         self.assertEqual(geo_field.type_as_string, "Geolocation")
-        # self.assertIsInstance(geo_field, FieldGeolocation)
 
     def test_15_set_geo_field_value(self):
-        item_to_update = self.__class__.target_item
         field_value = FieldGeolocationValue(59.940117, 29.8145056)
-        updated = item_to_update.set_property(self.geo_field_name, field_value).update().get().execute_query()
-        self.assertIsNotNone(updated.properties.get(self.geo_field_name))
+        self.target_item.set_property(self.geo_field_name, field_value).update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.geo_field_name))
 
     def test_16_create_list_user_field(self):
         user_field = self.target_list.fields.add_user_field(self.user_field_name).execute_query()
@@ -145,11 +141,10 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(user_field.type_as_string, "User")
 
     def test_17_set_user_field_value(self):
-        item_to_update = self.__class__.target_item
         current_user = self.client.web.current_user
         user_value = FieldUserValue.from_user(current_user)
-        updated = item_to_update.set_property(self.user_field_name, user_value).update().execute_query()
-        self.assertIsNotNone(updated.properties.get(self.user_field_name))
+        self.target_item.set_property(self.user_field_name, user_value).update().execute_query()
+        self.assertIsNotNone(self.target_item.properties.get(self.user_field_name))
 
     def test_18_create_list_lookup_field(self):
         lookup_field = self.target_list.fields.add_lookup_field(
@@ -160,9 +155,8 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(lookup_field.type_as_string, "Lookup")
 
     def test_19_set_lookup_field_value(self):
-        item_to_update = self.__class__.target_item
         lookup_items = self.client.web.default_document_library().get_items().execute_query()
         if len(lookup_items) > 0:
             lookup_value = FieldLookupValue(LookupId=lookup_items[0].properties["Id"])
-            updated = item_to_update.set_property(self.lookup_field_name, lookup_value).update().execute_query()
-            self.assertIsNotNone(updated.properties.get(self.lookup_field_name))
+            self.target_item.set_property(self.lookup_field_name, lookup_value).update().execute_query()
+            self.assertIsNotNone(self.target_item.properties.get(self.lookup_field_name))
