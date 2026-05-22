@@ -191,6 +191,17 @@ class ListItem(SecurableObject):
         self.set_property(field_name, actual_value).update()
         return self
 
+    def set_url_field_value(self, field_name: str, url: str, description: str | None = None) -> Self:
+        """Sets the value of a URL (hyperlink) field and persists the change.
+
+        Args:
+            field_name: The internal name of the URL field.
+            url: The URL value (e.g. ``"https://example.com"``).
+            description: Optional display text for the link.
+        """
+        self.set_property(field_name, FieldUrlValue(url, Description=description)).update()
+        return self
+
     def set_rating(self, value: int) -> ClientResult[float]:
         """
         Rates an item within the specified list. The return value is the average rating for the specified list item.

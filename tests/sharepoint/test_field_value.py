@@ -6,7 +6,6 @@ from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_choice import FieldMultiChoice
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.multi_user_value import FieldMultiUserValue
-from office365.sharepoint.fields.url_value import FieldUrlValue
 from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
 
@@ -117,10 +116,10 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(result.type_as_string, "URL")
 
     def test_13_set_url_field_value(self):
-        field_value = FieldUrlValue(
-            "https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-server/ms472498(v=office.15)"
-        )
-        self.target_item.set_property(self.url_field_name, field_value).update().execute_query()
+        self.target_item.set_url_field_value(
+            self.url_field_name,
+            "https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-server/ms472498(v=office.15)",
+        ).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.url_field_name))
 
     def test_14_create_list_geolocation_field(self):
