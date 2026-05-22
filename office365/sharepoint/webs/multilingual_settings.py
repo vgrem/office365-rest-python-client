@@ -2,6 +2,7 @@ from typing import List
 
 from typing_extensions import Self
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -9,7 +10,6 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.translation.notifications.recipient_col import (
     TranslationNotificationRecipientCollection,
 )
-from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.translation.notifications.recipient_set_request import (
     TranslationNotificationRecipientSetRequest,
 )

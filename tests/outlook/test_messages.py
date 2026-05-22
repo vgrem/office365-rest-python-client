@@ -37,9 +37,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         self.assertLessEqual(1, len(result))
         self.assertIsNotNone(result[0].resource_path)
 
-    @requires_delegated(
-        "Mail.Read", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
-    )
+    @requires_delegated("Mail.Read", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
     def test6_search_messages(self):
         """Test searching messages."""
         result = self.client.me.messages.search("Meet for lunch").execute_query()
@@ -77,9 +75,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         assert len(attachments) == expected_count
         draft.delete_object().execute_query()
 
-    @requires_delegated(
-        "Mail.Send", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
-    )
+    @requires_delegated("Mail.Send", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
     def test10_send_message(self):
         message = self.client.me.messages.add(subject="Meet for lunch?", body="The new cafeteria is open.")
         message.to_recipients.add(Recipient.from_email(test_user_principal_name))

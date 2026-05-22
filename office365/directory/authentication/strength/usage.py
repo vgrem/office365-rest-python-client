@@ -15,5 +15,9 @@ class AuthenticationStrengthUsage(ClientValue):
     references Conditional Access policies that don't require such a claim.
     """
 
-    mfa: ClientValueCollection[ConditionalAccessPolicy] = field(default_factory=lambda: ClientValueCollection(ConditionalAccessPolicy))
-    none: ClientValueCollection[ConditionalAccessPolicy] = field(default_factory=lambda: ClientValueCollection(ConditionalAccessPolicy))
+    mfa: ClientValueCollection[ConditionalAccessPolicy] = field(
+        default_factory=lambda: ClientValueCollection(ConditionalAccessPolicy)
+    )
+    none: ClientValueCollection[ConditionalAccessPolicy] = field(
+        default_factory=lambda: ClientValueCollection(ConditionalAccessPolicy)
+    )

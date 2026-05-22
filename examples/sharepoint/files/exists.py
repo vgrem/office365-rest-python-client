@@ -10,7 +10,9 @@ from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-file_url = "Shared Documents/Financial Sample.xlsx"
+file_url = "Shared Documents/Financial Sample11.xlsx"
 result = ctx.web.get_file_by_server_relative_url(file_url).get_exists().execute_query()
-if not result.value:
-    print("File not found")
+if result.value:
+    print(f"File '{file_url}' exists.")
+else:
+    print(f"File '{file_url}' not found.")

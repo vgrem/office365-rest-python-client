@@ -10,7 +10,9 @@ from office365.sharepoint.portal.orglabels.context import OrgLabelsContext
 @dataclass
 class OrgLabelsContextList(ClientValue):
     IsLastPage: bool | None = None
-    Labels: ClientValueCollection[OrgLabelsContext] = field(default_factory=lambda: ClientValueCollection(OrgLabelsContext))
+    Labels: ClientValueCollection[OrgLabelsContext] = field(
+        default_factory=lambda: ClientValueCollection(OrgLabelsContext)
+    )
 
     @property
     def entity_type_name(self):

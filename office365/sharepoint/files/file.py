@@ -141,19 +141,21 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
-    def get_exists(self) -> ClientResult[bool] | None:
+    def get_exists(self) -> ClientResult[bool]:
         result = ClientResult(self.context, bool())
         result.set_property("__value", False)
         try:
 
             def _after_exists(_):
                 result.set_property("__value", True)
+
             self.select(["Exists"]).get().after_execute(_after_exists)
         except ClientRequestException as e:
             if e.response is not None and e.response.status_code == HTTPStatus.NOT_FOUND:
                 return result
             else:
                 raise ValueError(e.response.text if e.response is not None else "") from e
+        return result
 
     def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:
         """Returns a link for downloading the file without authentication.

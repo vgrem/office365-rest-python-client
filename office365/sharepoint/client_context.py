@@ -14,16 +14,10 @@ from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.http.http_method import HttpMethod
-from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v3.batch_request import ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.queries.delete_entity import DeleteEntityQuery
-from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.utilities import get_absolute_url, urlparse
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
@@ -34,6 +28,7 @@ from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.publishing.sites.communication.creation_response import (
     CommunicationSiteCreationResponse,
 )
+from office365.sharepoint.request import SharePointRequest
 from office365.sharepoint.request_user_context import RequestUserContext
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.hubsites.collection import (
@@ -62,7 +57,6 @@ class ClientContext(ClientRuntimeContext):
     def __init__(
         self,
         base_url: str,
-        auth_context: Optional[AuthenticationContext] = None,
         environment: Optional[AzureEnvironment] = None,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
@@ -71,20 +65,12 @@ class ClientContext(ClientRuntimeContext):
         Instantiates a SharePoint client context
 
         :param str base_url: Absolute Web or Site Url
-        :param AuthenticationContext or None auth_context: Authentication context
         """
         super().__init__()
-        if auth_context is None:
-            auth_context = AuthenticationContext(
-                url=base_url,
-                environment=environment or AzureEnvironment.Global,
-                allow_ntlm=allow_ntlm,
-                browser_mode=browser_mode,
-            )
-        self._auth_context = auth_context
+        self._base_url = base_url.rstrip("/")
+        self._environment = environment or AzureEnvironment.Global
         self._web = None
         self._site = None
-        self._ctx_web_info = None
         self._pending_request = None
 
     @staticmethod
@@ -98,7 +84,7 @@ class ClientContext(ClientRuntimeContext):
         ctx = ClientContext(root_site_url)
 
         def _init_context(return_type):
-            ctx._auth_context.url = return_type.value
+            ctx.pending_request().authentication_context.url = return_type.value
 
         Web.get_web_url_from_page_url(ctx, full_url).after_execute(_init_context)
         return ctx
@@ -224,7 +210,7 @@ class ClientContext(ClientRuntimeContext):
         """
         batch_request = ODataBatchV3Request(JsonLightFormat())
         batch_request.beforeExecute += self.authentication_context.authenticate_request  # type: ignore[operator]
-        batch_request.beforeExecute += self._ensure_form_digest  # type: ignore[operator]
+        batch_request.beforeExecute += self.pending_request().ensure_form_digest  # type: ignore[operator]
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
             batch_request.execute_query(qry)
@@ -232,35 +218,14 @@ class ClientContext(ClientRuntimeContext):
                 success_callback(qry.return_type)
         return self
 
-    def pending_request(self) -> ODataRequest:
+    def pending_request(self) -> SharePointRequest:
         """Provides access to underlying request instance"""
         if self._pending_request is None:
-            self._pending_request = ODataRequest(JsonLightFormat())
-            self._pending_request.beforeExecute += self.authentication_context.authenticate_request
-            self._pending_request.beforeExecute += self._build_modification_query
+            self._pending_request = SharePointRequest(
+                base_url=self._base_url,
+                environment=self._environment,
+            )
         return self._pending_request
-
-    def _ensure_form_digest(self, request: RequestOptions) -> None:
-        if not self.context_info.is_valid:
-            self._ctx_web_info = self._get_context_web_information()
-        assert self._ctx_web_info is not None
-        request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
-
-    def _get_context_web_information(self):
-        """Returns an ContextWebInformation object that specifies metadata about the site"""
-        client = ODataRequest(JsonLightFormat())
-        client.beforeExecute += self.authentication_context.authenticate_request
-        for e in self.pending_request().beforeExecute:
-            if not EventHandler.is_system(e):
-                client.beforeExecute += e
-        request = RequestOptions(f"{self.service_root_url}/contextInfo")
-        request.method = HttpMethod.Post
-        response = client.execute_request_direct(request)
-        json_format = JsonLightFormat()
-        json_format.function = "GetContextWebInformation"
-        return_value = ContextWebInformation()
-        client.map_json(response.json(), return_value, json_format)
-        return return_value
 
     def execute_query_with_incremental_retry(self, max_retry=5):
         """Handles throttling requests."""
@@ -289,24 +254,10 @@ class ClientContext(ClientRuntimeContext):
         :param str url: Site Url
         """
         ctx = copy.deepcopy(self)
-        ctx._auth_context.url = url
-        ctx._ctx_web_info = None
+        ctx._base_url = url
         if clear_queries:
             ctx.clear()
         return ctx
-
-    def _build_modification_query(self, request: RequestOptions) -> None:
-        """Constructs SharePoint specific modification OData request"""
-        if request.method == HttpMethod.Post:
-            self._ensure_form_digest(request)
-        # set custom SharePoint control headers
-        if isinstance(self.pending_request().json_format, JsonLightFormat):
-            if isinstance(self.current_query, DeleteEntityQuery):
-                request.ensure_header("X-HTTP-Method", "DELETE")
-                request.ensure_header("IF-MATCH", "*")
-            elif isinstance(self.current_query, UpdateEntityQuery):
-                request.ensure_header("X-HTTP-Method", "MERGE")
-                request.ensure_header("IF-MATCH", "*")
 
     def create_modern_site(self, title: str, alias: str, owner: Optional[Union[str, User]] = None) -> Site:
         """
@@ -390,10 +341,8 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def context_info(self) -> ContextWebInformation:
-        """Returns an ContextWebInformation object that specifies metadata about the site"""
-        if self._ctx_web_info is None:
-            self._ctx_web_info = ContextWebInformation()
-        return self._ctx_web_info
+        """Returns a ContextWebInformation object that specifies metadata about the site."""
+        return self.pending_request().context_info
 
     @property
     def web(self) -> Web:
@@ -838,12 +787,11 @@ class ClientContext(ClientRuntimeContext):
 
     @property
     def base_url(self) -> str:
-        """Represents absolute Web or Site Url"""
-        return self.authentication_context.url
+        return self._base_url
 
     @property
     def authentication_context(self) -> AuthenticationContext:
-        return self._auth_context
+        return self.pending_request().authentication_context
 
     @property
     def service_root_url(self) -> str:

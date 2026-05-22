@@ -22,7 +22,7 @@ class TestFieldValue(SPTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.multi_lookup_field_name = "PredecessorsAlt"
+        cls.multi_lookup_field_name = "PredecessorsAlt2"
         cls.url_field_name = "DocumentationLink"
         cls.geo_field_name = "Place"
         cls.choice_field_name = "TaskStatus"
@@ -66,7 +66,7 @@ class TestFieldValue(SPTestCase):
         lookup_id = self.__class__.target_item.id
         field_value = FieldMultiLookupValue()
         field_value.add(FieldLookupValue(lookup_id))
-        updated = item_to_update.set_property(self.multi_lookup_field_name, field_value).update().get().execute_query()
+        updated = item_to_update.set_property(self.multi_lookup_field_name, field_value).update().execute_query()
         self.assertIsInstance(updated.properties[self.multi_lookup_field_name], FieldMultiLookupValue)
 
     def test5_create_user_multi_field(self):
@@ -148,7 +148,7 @@ class TestFieldValue(SPTestCase):
         item_to_update = self.__class__.target_item
         current_user = self.client.web.current_user
         user_value = FieldUserValue.from_user(current_user)
-        updated = item_to_update.set_property(self.user_field_name, user_value).update().get().execute_query()
+        updated = item_to_update.set_property(self.user_field_name, user_value).update().execute_query()
         self.assertIsNotNone(updated.properties.get(self.user_field_name))
 
     def test_18_create_list_lookup_field(self):
@@ -163,6 +163,6 @@ class TestFieldValue(SPTestCase):
         item_to_update = self.__class__.target_item
         lookup_items = self.client.web.default_document_library().get_items().execute_query()
         if len(lookup_items) > 0:
-            lookup_value = FieldLookupValue(lookup_id=lookup_items[0].properties["Id"])
-            updated = item_to_update.set_property(self.lookup_field_name, lookup_value).update().get().execute_query()
+            lookup_value = FieldLookupValue(LookupId=lookup_items[0].properties["Id"])
+            updated = item_to_update.set_property(self.lookup_field_name, lookup_value).update().execute_query()
             self.assertIsNotNone(updated.properties.get(self.lookup_field_name))

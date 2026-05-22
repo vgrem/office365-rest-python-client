@@ -136,8 +136,7 @@ class FieldCollection(EntityCollection[Field]):
                         <Field Type="LookupMulti" Mult="TRUE" DisplayName="{title}" Required="FALSE" Hidden="TRUE" \
                         ShowField="{lookup_field_name}" List="{{{lookup_list_id}}}" StaticName="{title}" Name="{title}">
                         </Field>
-                        """.format(
-                    )
+                        """.format(title=title, lookup_field_name=lookup_field_name, lookup_list_id=lookup_list_id)
                 self.create_field_as_xml(field_schema, return_type=return_type)
             else:
                 self.add_field(

@@ -14,6 +14,4 @@ class MeetingParticipants(ClientValue):
     """Participants in a meeting."""
 
     organizer: MeetingParticipantInfo = field(default_factory=MeetingParticipantInfo)
-    attendees: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(MeetingParticipantInfo)
-    )
+    attendees: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(MeetingParticipantInfo))

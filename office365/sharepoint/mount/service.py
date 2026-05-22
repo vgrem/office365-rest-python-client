@@ -2,9 +2,9 @@ from typing import List
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.mount.requests.get_remote_item_Info import (
     GetRemoteItemInfoRequest,
 )

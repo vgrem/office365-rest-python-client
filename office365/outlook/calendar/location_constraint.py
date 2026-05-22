@@ -12,7 +12,5 @@ class LocationConstraint(ClientValue):
     """The conditions stated by a client for the location of a meeting."""
 
     isRequired: bool | None = None
-    locations: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(LocationConstraintItem)
-    )
+    locations: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(LocationConstraintItem))
     suggestLocation: bool | None = None

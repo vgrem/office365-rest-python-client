@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from office365.outlook.calendar.attendees.base import AttendeeBase
-from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 
 

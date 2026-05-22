@@ -105,3 +105,4 @@ lint.pylint.max-statements = 60
 
 [tool.pyright]
 include = ["office365"]
+extraPaths = [".venv/lib/python3.11/site-packages"]

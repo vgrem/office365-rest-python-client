@@ -11,4 +11,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class RolePermission(ClientValue):
     """Contains the set of ResourceActions determining the allowed and not allowed permissions for each role."""
 
-    resourceActions: ClientValueCollection[ResourceAction] = field(default_factory=lambda: ClientValueCollection(ResourceAction))
+    resourceActions: ClientValueCollection[ResourceAction] = field(
+        default_factory=lambda: ClientValueCollection(ResourceAction)
+    )

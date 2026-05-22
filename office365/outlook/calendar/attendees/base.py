@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
-from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.mail.recipient import Recipient
 
 

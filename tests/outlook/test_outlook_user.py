@@ -28,16 +28,12 @@ class TestOutlookUser(GraphDelegatedTestCase):
         result = self.client.me.outlook.supported_time_zones().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated(
-        "Mail.Read", "Mail.Read.Shared", or_roles=["Exchange Administrator", "Global Administrator"]
-    )
+    @requires_delegated("Mail.Read", "Mail.Read.Shared", or_roles=["Exchange Administrator", "Global Administrator"])
     def test4_get_mail_tips(self):
         result = self.client.me.get_mail_tips([test_user_principal_name]).execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated(
-        "MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
-    )
+    @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
     def test5_enable_automatic_replies(self):
         start = datetime.now()
         end = start + timedelta(days=7)
@@ -54,8 +50,6 @@ class TestOutlookUser(GraphDelegatedTestCase):
         result = self.client.me.select(["MailboxSettings"]).get().execute_query()
         self.assertIsNotNone(result.mailbox_settings)
 
-    @requires_delegated(
-        "MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
-    )
+    @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
     def test7_disable_automatic_replies(self):
         self.client.me.disable_automatic_replies_setting().execute_query()

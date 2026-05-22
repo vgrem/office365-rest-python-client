@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-
-from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.principal.type import PrincipalType
@@ -15,7 +14,6 @@ from office365.sharepoint.sharing.principal import Principal
 
 @dataclass
 class PrincipalInfo(ClientValue):
-
     """
     Represents principal information.
 

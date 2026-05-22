@@ -17,12 +17,11 @@ class LinkInfo(ClientValue):
     :param bool is_inherited: Boolean that indicates if the tokenized sharing link is present due to
          inherited permissions from a parent object.
     """
+
     inherited_from: InheritedFrom = field(default_factory=InheritedFrom)
     isInherited: bool | None = None
     linkDetails: SharingLinkInfo = field(default_factory=SharingLinkInfo)
-    linkMembers: ClientValueCollection[Principal] = field(
-        default_factory=lambda: ClientValueCollection(Principal)
-    )
+    linkMembers: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
     linkStatus: int | None = None
     totalLinkMembersCount: int | None = None
 

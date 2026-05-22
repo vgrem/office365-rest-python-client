@@ -130,7 +130,12 @@ class ListItem(SecurableObject):
         """
         return_type = ClientResult(self.context, ShareLinkResponse())
         request = ShareLinkRequest(
-            settings=ShareLinkSettings(linkKind=link_kind, expiration=expiration.isoformat() if expiration else None, role=role, password=password)
+            settings=ShareLinkSettings(
+                linkKind=link_kind,
+                expiration=expiration.isoformat() if expiration else None,
+                role=role,
+                password=password,
+            )
         )
         if password:
             assert request.settings is not None
@@ -675,11 +680,11 @@ class ListItem(SecurableObject):
                 super().set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, FieldMultiLookupValue):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super().set_property(f"{name}Id", collection)
-                super().set_property(name, value, False)
+                super().set_property(f"{name}Id", collection, False)
+                super().set_property(name, value, True)
             elif isinstance(value, FieldLookupValue):
-                super().set_property(f"{name}Id", value.LookupId)
-                super().set_property(name, value, False)
+                super().set_property(f"{name}Id", value.LookupId, False)
+                super().set_property(name, value, True)
             else:
                 super().set_property(name, value, persist_changes)
         else:

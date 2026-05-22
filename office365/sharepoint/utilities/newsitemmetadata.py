@@ -1,16 +1,14 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class NewsItemMetaData(ClientValue):
-
     fileExtension: Optional[str] = None
     newsType: Optional[int] = None
     progId: Optional[str] = None

@@ -38,20 +38,6 @@ class ClientRuntimeContext(ABC):
         """Whether there are pending queries to execute."""
         return len(self._queries) > 0
 
-    def build_request(self, query: ClientQuery) -> RequestOptions:
-        """Builds a request from the given query.
-
-        Args:
-            query: The query to build request for
-
-        Returns:
-            Configured request options
-        """
-        self._current_query = query
-        request = self.pending_request().build_request(query)
-        self.pending_request().beforeExecute(request)
-        return request
-
     def execute_query_retry(
         self,
         max_retry: int = 5,

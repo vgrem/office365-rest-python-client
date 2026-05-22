@@ -2,17 +2,15 @@ from __future__ import annotations
 
 import math
 import time
+from dataclasses import dataclass, field
 from typing import Optional
 
-
-from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
 
 @dataclass
 class ContextWebInformation(ClientValue):
-
     """Specifies metadata about a site."""
 
     FormDigestValue: Optional[str] = None

@@ -13,7 +13,9 @@ class TargetResource(ClientValue):
     """Represents target resource types associated with audit activity."""
 
     displayName: str | None = None
-    ModifiedProperties: ClientValueCollection[ModifiedProperty] = field(default_factory=lambda: ClientValueCollection(ModifiedProperty))
+    ModifiedProperties: ClientValueCollection[ModifiedProperty] = field(
+        default_factory=lambda: ClientValueCollection(ModifiedProperty)
+    )
     userPrincipalName: str | None = None
     groupType: GroupType = GroupType.none
     id: str | None = None

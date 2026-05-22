@@ -13,9 +13,7 @@ class ScheduleInformation(ClientValue):
     """Represents the availability of a user, distribution list, or resource (room or equipment)
     for a specified time period."""
 
-    scheduleItems: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(ScheduleItem)
-    )
+    scheduleItems: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(ScheduleItem))
     scheduleId: str | None = None
     availabilityView: str | None = None
     error: str | None = None

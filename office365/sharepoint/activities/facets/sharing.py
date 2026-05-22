@@ -13,6 +13,7 @@ class SharingFacet(ClientValue):
     :param list[ActivityIdentity] recipients:
     :param str sharing_type:
     """
+
     recipients: ClientValueCollection[ActivityIdentity] = field(
         default_factory=lambda: ClientValueCollection(ActivityIdentity)
     )

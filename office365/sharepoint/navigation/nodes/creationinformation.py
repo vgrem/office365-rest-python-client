@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class NavigationNodeCreationInformation(ClientValue):
-
     """
     Describes a new navigation node to be created.
 
@@ -27,7 +25,7 @@ class NavigationNodeCreationInformation(ClientValue):
     Url: Optional[str] = None
     IsExternal: bool = False
     AsLastNode: bool = False
-    PreviousNode: Optional['NavigationNodeCreationInformation'] = None
+    PreviousNode: Optional["NavigationNodeCreationInformation"] = None
 
     @property
     def entity_type_name(self):

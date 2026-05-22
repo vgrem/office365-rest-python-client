@@ -34,12 +34,8 @@ class AuditData(ClientValue):
     NewValue: str | None = None
     ObjectId: str | None = None
     OldValue: str | None = None
-    Parameters: ClientValueCollection[Parameter] = field(
-        default_factory=lambda: ClientValueCollection(Parameter)
-    )
-    Target: ClientValueCollection[TargetProperty] = field(
-        default_factory=lambda: ClientValueCollection(TargetProperty)
-    )
+    Parameters: ClientValueCollection[Parameter] = field(default_factory=lambda: ClientValueCollection(Parameter))
+    Target: ClientValueCollection[TargetProperty] = field(default_factory=lambda: ClientValueCollection(TargetProperty))
     TargetUserOrGroupName: str | None = None
     TargetUserOrGroupType: str | None = None
     UserType: int | None = None

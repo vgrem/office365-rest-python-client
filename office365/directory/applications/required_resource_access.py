@@ -14,7 +14,9 @@ class RequiredResourceAccess(ClientValue):
     roles through the requiredResourceAccess property, which is a collection of requiredResourceAccess objects.
     """
 
-    resourceAccess: ClientValueCollection[ResourceAccess] = field(default_factory=lambda: ClientValueCollection(ResourceAccess))
+    resourceAccess: ClientValueCollection[ResourceAccess] = field(
+        default_factory=lambda: ClientValueCollection(ResourceAccess)
+    )
     resourceAppId: str | None = None
 
     def __repr__(self):

@@ -32,12 +32,8 @@ class SitePageFieldsData(ClientValue):
     TopicHeader: str | None = None
     PublishStartDate: str | None = None
     AuthorByline: StringCollection = field(default_factory=StringCollection)
-    AuthoringMetadata: SitePageAuthoringMetadata = field(
-        default_factory=SitePageAuthoringMetadata
-    )
-    BoostProperties: SitePageBoostProperties = field(
-        default_factory=SitePageBoostProperties
-    )
+    AuthoringMetadata: SitePageAuthoringMetadata = field(default_factory=SitePageAuthoringMetadata)
+    BoostProperties: SitePageBoostProperties = field(default_factory=SitePageBoostProperties)
     CallToAction: str | None = None
     CanvasContent1: str | None = None
     CanvasJson1: str | None = None

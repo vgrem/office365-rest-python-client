@@ -15,8 +15,12 @@ class ApiApplication(ClientValue):
 
     acceptMappedClaims: bool | None = None
     knownClientApplications: StringCollection = field(default_factory=StringCollection)
-    oauth2PermissionScopes: ClientValueCollection[PermissionScope] = field(default_factory=lambda: ClientValueCollection(PermissionScope))
-    preAuthorizedApplications: ClientValueCollection[PreAuthorizedApplication] = field(default_factory=lambda: ClientValueCollection(PreAuthorizedApplication))
+    oauth2PermissionScopes: ClientValueCollection[PermissionScope] = field(
+        default_factory=lambda: ClientValueCollection(PermissionScope)
+    )
+    preAuthorizedApplications: ClientValueCollection[PreAuthorizedApplication] = field(
+        default_factory=lambda: ClientValueCollection(PreAuthorizedApplication)
+    )
     requestedAccessTokenVersion: int | None = None
 
     @property

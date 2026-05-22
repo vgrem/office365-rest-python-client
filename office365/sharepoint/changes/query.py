@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class ChangeQuery(ClientValue):
-
     """Defines a query that is performed against the change log."""
 
     Item: bool = False

@@ -43,7 +43,16 @@ class GroupCollection(CountCollection[Group]):
         :param list[str] owners: The group owners
         :param list[str] members: The group members
         """
-        params = GroupProfile(mailNickname=name, displayName=name, description=description, mailEnabled=True, securityEnabled=False, groupTypes=StringCollection(["Unified"]), owners=owners, members=members)
+        params = GroupProfile(
+            mailNickname=name,
+            displayName=name,
+            description=description,
+            mailEnabled=True,
+            securityEnabled=False,
+            groupTypes=StringCollection(["Unified"]),
+            owners=owners,
+            members=members,
+        )
         return self.add(params)
 
     def create_security(self, name: str, description: str | None = None) -> Group:
@@ -52,7 +61,14 @@ class GroupCollection(CountCollection[Group]):
         :param str name: The display name for the group
         :param str description: An optional description for the group
         """
-        params = GroupProfile(mailNickname=name, displayName=name, description=description, mailEnabled=False, securityEnabled=True, groupTypes=StringCollection([]))
+        params = GroupProfile(
+            mailNickname=name,
+            displayName=name,
+            description=description,
+            mailEnabled=False,
+            securityEnabled=True,
+            groupTypes=StringCollection([]),
+        )
         return self.add(params)
 
     def create_with_team(self, group_name: str) -> Group:

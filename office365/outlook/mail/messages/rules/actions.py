@@ -16,9 +16,7 @@ class MessageRuleActions(ClientValue):
     assignCategories: StringCollection = field(default_factory=StringCollection)
     copyToFolder: str | None = None
     delete: bool | None = None
-    forwardAsAttachmentTo: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(Recipient)
-    )
+    forwardAsAttachmentTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))
     forwardTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))
     markAsRead: bool | None = None
     markImportance: Importance | None = None

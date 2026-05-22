@@ -11,4 +11,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class HuntingQueryResults(ClientValue):
     """The results of running a query for advanced hunting."""
 
-    results: ClientValueCollection[HuntingRowResult] = field(default_factory=lambda: ClientValueCollection(HuntingRowResult))
+    results: ClientValueCollection[HuntingRowResult] = field(
+        default_factory=lambda: ClientValueCollection(HuntingRowResult)
+    )

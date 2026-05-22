@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class AttachmentCreationInformation(ClientValue):
-
     """
     Represents properties that can be set when creating a file by using the AttachmentFiles.Add method.
 

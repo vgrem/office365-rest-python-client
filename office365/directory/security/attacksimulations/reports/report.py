@@ -20,4 +20,6 @@ class SimulationReport(ClientValue):
     """
 
     overview: SimulationReportOverview = field(default_factory=SimulationReportOverview)
-    simulationUsers: ClientValueCollection[UserSimulationDetails] = field(default_factory=lambda: ClientValueCollection(UserSimulationDetails))
+    simulationUsers: ClientValueCollection[UserSimulationDetails] = field(
+        default_factory=lambda: ClientValueCollection(UserSimulationDetails)
+    )

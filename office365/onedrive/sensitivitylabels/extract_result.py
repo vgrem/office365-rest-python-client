@@ -11,6 +11,4 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class ExtractSensitivityLabelsResult(ClientValue):
     """Represents the response format for the extractSensitivityLabels API."""
 
-    labels: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(SensitivityLabelAssignment)
-    )
+    labels: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(SensitivityLabelAssignment))

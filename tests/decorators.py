@@ -62,8 +62,7 @@ def requires_delegated(
                 self.skipTest("No client available")
 
             has_scope = any(
-                has_delegated_permission(client, s, test_client_id)
-                or has_app_permission(client, s, test_client_id)
+                has_delegated_permission(client, s, test_client_id) or has_app_permission(client, s, test_client_id)
                 for s in scopes
             )
             has_dir_role = any(has_role(client, r) for r in (or_roles or []))

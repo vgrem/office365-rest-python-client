@@ -11,6 +11,7 @@ class ShareLinkResponse(ClientValue):
     """
     Represents a response for a request for the retrieval or creation/update of a tokenized sharing link.
     """
+
     sharingLinkInfo: SharingLinkInfo = field(default_factory=SharingLinkInfo)
 
     def __str__(self):

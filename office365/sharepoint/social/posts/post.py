@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
-
-from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -18,7 +17,9 @@ class SocialPost(ClientValue):
     """The SocialPost specifies a post read from the server."""
 
     Attachment: SocialAttachment = field(default_factory=SocialAttachment)
-    Overlays: ClientValueCollection[SocialDataOverlay] = field(default_factory=lambda: ClientValueCollection(SocialDataOverlay))
+    Overlays: ClientValueCollection[SocialDataOverlay] = field(
+        default_factory=lambda: ClientValueCollection(SocialDataOverlay)
+    )
     Source: SocialLink = field(default_factory=SocialLink)
     LikerInfo: SocialPostActorInfo = field(default_factory=SocialPostActorInfo)
     Attributes: Optional[int] = None

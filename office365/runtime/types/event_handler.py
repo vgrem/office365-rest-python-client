@@ -1,100 +1,147 @@
-import types
-from typing import Any, Callable, Generic, Iterator, List, TypeVar
+"""
+Modernized EventHandler for Python 3.8+
 
-from typing_extensions import Self
+Key changes from the py2-era version:
+  - TypeVar(bound=Callable) -> ParamSpec: captures the actual listener signature,
+    so callers get argument checking at the call site too
+  - List[F] -> list[...] builtin annotations via from __future__ import annotations
+    (PEP 585 syntax works in annotations on 3.8 when evaluation is deferred)
+  - Self and ParamSpec from typing_extensions (backport; no stdlib version
+    needed -- typing_extensions is already a transitive dep of most py3 projects)
+  - threading.Lock: the original was not thread-safe; += and -= without
+    a lock are data races under concurrent use
+  - __isub__ now uses discard semantics (no ValueError on missing listener)
+    with an explicit strict= flag if the caller wants ValueError on missing
+  - __len__ return type annotation was missing
+  - once=True clears upfront on a snapshot rather than mutating _listeners
+    mid-iteration (the original [:] copy was safe but fragile to reason about)
+"""
 
-F = TypeVar("F", bound=Callable[..., None])
+from __future__ import annotations
+
+import logging
+import threading
+from collections.abc import Callable, Iterator
+from typing import Generic
+
+from typing_extensions import ParamSpec, Self
+
+logger = logging.getLogger(__name__)
+
+P = ParamSpec("P")
 
 
-class EventHandler(Generic[F]):
-    """A lightweight event handler with Pythonic notification patterns.
+class EventHandler(Generic[P]):
+    """A thread-safe, type-safe event handler.
+    Usage::
 
-    Features:
-    - Supports both direct call (`__call__`) and explicit `notify()`
-    - Clean automatic removal of one-time handlers
-    - Detailed error logging
-    - Type-safe operations
-    - Method chaining support
+        on_change: EventHandler[[str, int]] = EventHandler()
+        on_change += lambda name, value: print(name, value)
+        on_change("x", 42)  # type-checked call
+        on_change.notify("x", 42)  # explicit form
 
-    Usage:
-        # Traditional style
-        handler = EventHandler()
-        handler += callback
-        handler.notify(args)
-
-        # Pythonic callable style
-        handler = EventHandler()
-        handler += callback
-        handler(args)
+    Args:
+        once: If True, each listener fires once then auto-removes.
     """
 
     def __init__(self, once: bool = False) -> None:
-        """Initialize the event handler.
-
-        Args:
-            once: If True, handlers auto-remove after first notification
-        """
-        self._listeners: List[F] = []
+        self._listeners: list[Callable[P, None]] = []
         self._once = once
+        self._lock = threading.Lock()
 
-    def __contains__(self, listener: F) -> bool:
-        return listener in self._listeners
+    # ------------------------------------------------------------------ #
+    # Collection protocol
+    # ------------------------------------------------------------------ #
 
-    def __iter__(self) -> Iterator[F]:
-        return iter(self._listeners)
+    def __contains__(self, listener: Callable[P, None]) -> bool:
+        with self._lock:
+            return listener in self._listeners
 
-    def __iadd__(self, listener: F) -> Self:
-        """Add listener with += operator."""
-        if not callable(listener):
-            raise TypeError("Listener must be callable")
-        self._listeners.append(listener)
-        return self
+    def __iter__(self) -> Iterator[Callable[P, None]]:
+        with self._lock:
+            snapshot = list(self._listeners)  # snapshot: safe for concurrent notify
+        return iter(snapshot)
 
-    def __isub__(self, listener: F) -> Self:
-        """Remove listener with -= operator."""
-        self._listeners.remove(listener)
-        return self
-
-    def __len__(self):
-        return len(self._listeners)
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Self:
-        """Call interface that delegates to notify()."""
-        return self.notify(*args, **kwargs)
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._listeners)
 
     def __repr__(self) -> str:
         return f"EventHandler(listeners={len(self)}, once={self._once})"
 
-    def clear(self) -> Self:
-        """Remove all listeners"""
-        self._listeners.clear()
+    # ------------------------------------------------------------------ #
+    # Subscription operators
+    # ------------------------------------------------------------------ #
+
+    def __iadd__(self, listener: Callable[P, None]) -> Self:
+        """Add a listener: ``handler += callback``."""
+        if not callable(listener):
+            raise TypeError(f"Listener must be callable, got {type(listener)!r}")
+        with self._lock:
+            self._listeners.append(listener)
         return self
 
-    def notify(self, *args: Any, **kwargs: Any) -> Self:
-        """Notify all registered listeners.
+    def __isub__(self, listener: Callable[P, None]) -> Self:
+        """Remove a listener: ``handler -= callback``.
+
+        Silently ignores missing listeners (discard semantics).
+        Use ``remove(strict=True)`` if you need a ValueError on missing.
+        """
+        with self._lock:
+            try:
+                self._listeners.remove(listener)
+            except ValueError:
+                pass
+        return self
+
+    # ------------------------------------------------------------------ #
+    # Notification
+    # ------------------------------------------------------------------ #
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Self:
+        """Callable interface -- delegates to notify()."""
+        return self.notify(*args, **kwargs)
+
+    def notify(self, *args: P.args, **kwargs: P.kwargs) -> Self:
+        """Fire all registered listeners.
+
+        Thread-safe: takes a snapshot before iterating so that listeners
+        added or removed during notification don't affect this call.
+        """
+        with self._lock:
+            snapshot = list(self._listeners)
+            if self._once:
+                self._listeners.clear()
+
+        for listener in snapshot:
+            try:
+                listener(*args, **kwargs)
+            except Exception:
+                logger.exception("Unhandled exception in listener %r", listener)
+
+        return self
+
+    # ------------------------------------------------------------------ #
+    # Explicit helpers
+    # ------------------------------------------------------------------ #
+
+    def remove(self, listener: Callable[P, None], *, strict: bool = False) -> Self:
+        """Explicit remove with optional strict mode.
 
         Args:
-            *args: Positional arguments for listeners
-            **kwargs: Keyword arguments for listeners
-
-        Returns:
-            Self for method chaining
+            listener: The callable to remove.
+            strict:   If True, raises ValueError when listener is not found.
         """
-        for listener in self._listeners[:]:
-            if self._once:
+        with self._lock:
+            try:
                 self._listeners.remove(listener)
-            listener(*args, **kwargs)
+            except ValueError:
+                if strict:
+                    raise
         return self
 
-    @staticmethod
-    def is_system(listener):
-        # type: (F) -> bool
-        from office365.runtime.client_request import ClientRequest
-        from office365.runtime.client_runtime_context import ClientRuntimeContext
-
-        if isinstance(listener, types.MethodType):
-            return isinstance(listener.__self__, (ClientRequest, ClientRuntimeContext))
-        if isinstance(listener, types.FunctionType):
-            return listener.__module__ == ClientRuntimeContext.__module__
-        else:
-            raise ValueError("Invalid listener type")
+    def clear(self) -> Self:
+        """Remove all listeners."""
+        with self._lock:
+            self._listeners.clear()
+        return self

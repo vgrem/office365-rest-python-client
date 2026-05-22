@@ -82,9 +82,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         existing_channel = TestGraphChannel.target_team.channels[channel.id].get().execute_query()
         self.assertEqual(existing_channel.id, channel.id)
 
-    @requires_delegated(
-        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All", or_roles=["Global Administrator"]
-    )
+    @requires_delegated("ChannelMember.Read.All", "ChannelMember.ReadWrite.All", or_roles=["Global Administrator"])
     def test6_list_allowed_members(self):
         """Test listing allowed members of a channel"""
         assert TestGraphChannel.target_channel is not None

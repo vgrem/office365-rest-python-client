@@ -51,6 +51,7 @@ class ClientRequest(ABC):
         """Submits a pending request to the server"""
         try:
             request = self.build_request(query)
+            self.beforeExecute(request)
             response = self.execute_request_direct(request)
             self.process_response(response, query)
             self.afterExecute(response)

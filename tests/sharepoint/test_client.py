@@ -1,4 +1,3 @@
-from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.query_options import QueryOptions
@@ -34,12 +33,7 @@ class TestSharePointClient(SPTestCase):
         self.assertIsNotNone(result.value.WebFullUrl)
 
     def test2_connect_with_app_principal_alt(self):
-        context_auth = AuthenticationContext(url=test_site_url)
-        context_auth.acquire_token_for_app(
-            client_id=test_client_id,
-            client_secret=test_client_secret,
-        )
-        ctx = ClientContext(test_site_url, context_auth)
+        ctx = ClientContext(test_site_url).with_client_credentials(test_client_id, test_client_secret)
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 

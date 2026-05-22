@@ -9,7 +9,6 @@ from office365.sharepoint.administration.orgassets.library import OrgAssetsLibra
 
 @dataclass
 class OrgAssetsLibraryCollection(ClientValue):
-
     OrgAssetsLibraries: ClientValueCollection[OrgAssetsLibrary] = field(
         default_factory=lambda: ClientValueCollection(OrgAssetsLibrary)
     )

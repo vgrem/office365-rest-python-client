@@ -19,4 +19,6 @@ class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
     This is used to retrieve the public properties of uploaded certificates.
     """
 
-    certificateList: ClientValueCollection[Pkcs12CertificateInformation] = field(default_factory=lambda: ClientValueCollection(Pkcs12CertificateInformation))
+    certificateList: ClientValueCollection[Pkcs12CertificateInformation] = field(
+        default_factory=lambda: ClientValueCollection(Pkcs12CertificateInformation)
+    )

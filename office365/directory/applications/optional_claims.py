@@ -14,9 +14,13 @@ class OptionalClaims(ClientValue):
     An application can configure a different set of optional claims to be returned in each token type.
     The optionalClaims property of the application is an optionalClaims object."""
 
-    accessToken: ClientValueCollection[OptionalClaim] = field(default_factory=lambda: ClientValueCollection(OptionalClaim))
+    accessToken: ClientValueCollection[OptionalClaim] = field(
+        default_factory=lambda: ClientValueCollection(OptionalClaim)
+    )
     idToken: ClientValueCollection[OptionalClaim] = field(default_factory=lambda: ClientValueCollection(OptionalClaim))
-    saml2Token: ClientValueCollection[OptionalClaim] = field(default_factory=lambda: ClientValueCollection(OptionalClaim))
+    saml2Token: ClientValueCollection[OptionalClaim] = field(
+        default_factory=lambda: ClientValueCollection(OptionalClaim)
+    )
 
     @property
     def entity_type_name(self):

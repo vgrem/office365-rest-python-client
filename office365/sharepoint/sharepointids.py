@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class SharePointIds(ClientValue):
-
     hub_site_id: Optional[str] = None
     site_id: Optional[str] = None
     site_url: Optional[str] = None

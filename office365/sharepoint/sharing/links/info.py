@@ -28,6 +28,7 @@ class SharingLinkInfo(ClientValue):
     :param bool track_link_users:
     :param str share_token_string:
     """
+
     AllowsAnonymousAccess: bool | None = None
     ApplicationId: str | None = None
     Created: str | None = None

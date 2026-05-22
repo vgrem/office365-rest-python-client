@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class FieldLookupValue(ClientValue):
-
     """
     Specifies the value of a lookup for a fields within a list item.
 

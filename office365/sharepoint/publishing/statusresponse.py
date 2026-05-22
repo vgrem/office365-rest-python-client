@@ -23,7 +23,9 @@ class PublishingStatusResponse(ClientValue):
     TeamsPublishingStatus: ClientValueCollection[TeamsPublishingStatusResponse] = field(
         default_factory=lambda: ClientValueCollection(TeamsPublishingStatusResponse)
     )
-    VivaEngagePublishingStatus: _VivaEngagePublishingStatus = field(default_factory=lambda: _VivaEngagePublishingStatus())
+    VivaEngagePublishingStatus: _VivaEngagePublishingStatus = field(
+        default_factory=lambda: _VivaEngagePublishingStatus()
+    )
     VivaEngageV2PublishingStatus: ClientValueCollection[_VivaEngagePublishingStatus] = field(
         default_factory=lambda: ClientValueCollection(_VivaEngagePublishingStatus)
     )

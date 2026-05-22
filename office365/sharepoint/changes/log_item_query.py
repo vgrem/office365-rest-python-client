@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class ChangeLogItemQuery(ClientValue):
-
     """
     Specifies an object that is used as the input parameter of
     GetListItemChangesSinceToken (section 3.2.5.79.2.1.7) method.

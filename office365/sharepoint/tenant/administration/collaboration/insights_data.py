@@ -23,10 +23,8 @@ class CollaborationInsightsData(ClientValue):
         default_factory=lambda: ClientValueCollection(CollaborativeUsers)
     )
     lastReportDate: str | None = None
-    collaborativeOneDriveUsers: ClientValueCollection[CollaborativeOneDriveUser] = (
-        field(
-            default_factory=lambda: ClientValueCollection(CollaborativeOneDriveUser)
-        )
+    collaborativeOneDriveUsers: ClientValueCollection[CollaborativeOneDriveUser] = field(
+        default_factory=lambda: ClientValueCollection(CollaborativeOneDriveUser)
     )
 
     @property

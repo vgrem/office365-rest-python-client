@@ -8,9 +8,14 @@ from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
+from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.queries.delete_entity import DeleteEntityQuery
+from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.sharepoint.webs.context_web_information import ContextWebInformation
 
 
 class SharePointRequest(ODataRequest):
@@ -47,7 +52,46 @@ class SharePointRequest(ODataRequest):
             allow_ntlm=allow_ntlm,
             browser_mode=browser_mode,
         )
+        self._ctx_web_info = None
         self.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
+        self.beforeExecute += self.ensure_form_digest  # type: ignore[operator]
+
+    def build_request(self, query: ClientQuery) -> RequestOptions:
+        request = super().build_request(query)
+        if isinstance(self.json_format, JsonLightFormat):
+            if isinstance(query, DeleteEntityQuery):
+                request.ensure_header("X-HTTP-Method", "DELETE")
+                request.ensure_header("IF-MATCH", "*")
+            elif isinstance(query, UpdateEntityQuery):
+                request.ensure_header("X-HTTP-Method", "MERGE")
+                request.ensure_header("IF-MATCH", "*")
+        return request
+
+    def _get_context_web_information(self):
+        """Returns a ContextWebInformation object that specifies metadata about the site."""
+        request = RequestOptions(f"{self.service_root_url}/contextInfo")
+        request.method = HttpMethod.Post
+        response = self.execute_request_direct(request)
+        json_format = JsonLightFormat()
+        json_format.function = "GetContextWebInformation"
+        return_value = ContextWebInformation()
+        self.map_json(response.json(), return_value, json_format)
+        return return_value
+
+    def ensure_form_digest(self, request: RequestOptions) -> None:
+        if request.url.endswith("/contextInfo"):
+            return
+        if not self.context_info.is_valid:
+            self._ctx_web_info = self._get_context_web_information()
+        assert self._ctx_web_info is not None
+        request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
+
+    @property
+    def context_info(self) -> ContextWebInformation:
+        """Returns a ContextWebInformation object that specifies metadata about the site."""
+        if self._ctx_web_info is None:
+            self._ctx_web_info = ContextWebInformation()
+        return self._ctx_web_info
 
     def execute_request(self, path: str) -> Response:
         """

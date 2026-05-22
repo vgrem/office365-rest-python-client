@@ -17,7 +17,9 @@ class WebApplication(ClientValue):
     logoutUrl: str | None = None
     redirectUris: StringCollection = field(default_factory=StringCollection)
     implicitGrantSettings: ImplicitGrantSettings = field(default_factory=ImplicitGrantSettings)
-    redirectUriSettings: ClientValueCollection[RedirectUriSettings] = field(default_factory=lambda: ClientValueCollection(RedirectUriSettings))
+    redirectUriSettings: ClientValueCollection[RedirectUriSettings] = field(
+        default_factory=lambda: ClientValueCollection(RedirectUriSettings)
+    )
 
     @property
     def entity_type_name(self):

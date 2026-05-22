@@ -1,15 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class LLMColumnInfo(ClientValue):
-
     AnalyzeImageDetailLevel: Optional[str] = None
     AnalyzeImageWithVision: Optional[bool] = None
     AutofillColumnType: Optional[str] = None

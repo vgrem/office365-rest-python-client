@@ -5,9 +5,13 @@ from typing import Callable, Dict, Optional
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
+from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.queries.delete_entity import DeleteEntityQuery
+from office365.runtime.queries.update_entity import UpdateEntityQuery
 
 
 class GraphRequest(ODataRequest):
@@ -115,6 +119,14 @@ class GraphRequest(ODataRequest):
         """
         token = self._auth_context.acquire_token()
         request.set_header("Authorization", f"Bearer {token.accessToken}")
+
+    def build_request(self, query: ClientQuery) -> RequestOptions:
+        request = super().build_request(query)
+        if isinstance(query, UpdateEntityQuery):
+            request.method = HttpMethod.Patch
+        elif isinstance(query, DeleteEntityQuery):
+            request.method = HttpMethod.Delete
+        return request
 
     @property
     def service_root_url(self) -> str:

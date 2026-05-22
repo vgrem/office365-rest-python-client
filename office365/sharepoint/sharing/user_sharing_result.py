@@ -25,9 +25,8 @@ class UserSharingResult(ClientValue):
         the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
     :param str user: Specifies the identifier of a user.
     """
-    AllowedRoles: ClientValueCollection[Role] = field(
-        default_factory=lambda: ClientValueCollection(Role)
-    )
+
+    AllowedRoles: ClientValueCollection[Role] = field(default_factory=lambda: ClientValueCollection(Role))
     CurrentRole: Role | None = None
     DisplayName: str | None = None
     Email: str | None = None

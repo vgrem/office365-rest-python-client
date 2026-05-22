@@ -1,22 +1,19 @@
 from __future__ import annotations
 
-import uuid
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class TaxonomyFieldCreateXmlParameters(ClientValue):
-
     """:param str name:"""
 
     Name: Optional[str] = None
     SspId: Optional[str] = None
     TermSetId: Optional[str] = None
-    AnchorId: str = '00000000-0000-0000-0000-000000000000'
+    AnchorId: str = "00000000-0000-0000-0000-000000000000"
     FieldId: Optional[str] = None
     AllowMultipleValues: bool = False
     ListId: Optional[str] = None

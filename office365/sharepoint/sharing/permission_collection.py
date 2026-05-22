@@ -24,13 +24,12 @@ class PermissionCollection(ClientValue):
         only if the caller is an Auditor.
     :param int total_number_of_principals:
     """
+
     appConsentPrincipals: ClientValueCollection[PrincipalInfo] = field(
         default_factory=lambda: ClientValueCollection(PrincipalInfo)
     )
     hasInheritedLinks: bool | None = None
-    links: ClientValueCollection[LinkInfo] = field(
-        default_factory=lambda: ClientValueCollection(LinkInfo)
-    )
+    links: ClientValueCollection[LinkInfo] = field(default_factory=lambda: ClientValueCollection(LinkInfo))
     principals: ClientValueCollection[PrincipalInfo] = field(
         default_factory=lambda: ClientValueCollection(PrincipalInfo)
     )

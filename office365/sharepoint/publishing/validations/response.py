@@ -26,9 +26,9 @@ class PrePublishValidationsResponse(ClientValue):
     PrePublishValidationsErrorCodesForSharePointSites: ClientValueCollection[
         PrePublishValidationsErrorCodesForSharePointSite
     ] = field(default_factory=lambda: ClientValueCollection(PrePublishValidationsErrorCodesForSharePointSite))
-    PrePublishValidationsErrorCodesForTeams: Optional[ClientValueCollection[_PrePublishValidationsErrorCodesForTeams]] = (
-        None
-    )
+    PrePublishValidationsErrorCodesForTeams: Optional[
+        ClientValueCollection[_PrePublishValidationsErrorCodesForTeams]
+    ] = None
     PrePublishValidationsErrorCodesForVivaEngage: Optional[_PrePublishValidationsErrorCodesForVivaEngage] = None
     PrePublishValidationsErrorCodesForVivaEngageV2: ClientValueCollection[
         _PrePublishValidationsErrorCodesForVivaEngage

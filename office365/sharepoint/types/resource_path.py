@@ -1,16 +1,14 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
-
-from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from office365.runtime.utilities import get_absolute_url, is_absolute_url, urlparse
 
 
 @dataclass
 class ResourcePath(ClientValue):
-
     """
     Represents the full (absolute) or parts (relative) path of a site collection, web, file, folder or
     other artifacts in the database.

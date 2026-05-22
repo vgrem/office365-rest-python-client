@@ -7,7 +7,6 @@ from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.search.query.auto_completion_results import (

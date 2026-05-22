@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import uuid
+from dataclasses import dataclass, field
 from typing import Optional
 
-
-from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -14,7 +13,6 @@ from office365.sharepoint.webs.teamappinfo import TeamAppInfo
 
 @dataclass
 class SiteDesignCreationInfo(ClientValue):
-
     """
     :param str or None _id: The ID of the site design to apply.
     :param str or None title: The display name of the site design.

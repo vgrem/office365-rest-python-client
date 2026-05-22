@@ -9,7 +9,6 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 @dataclass
 class OrgAssetsLibrary(ClientValue):
-
     DisplayName: Optional[str] = None
     FileType: Optional[str] = None
     LibraryUrl: ResourcePath = field(default_factory=ResourcePath)

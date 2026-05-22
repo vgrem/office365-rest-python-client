@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 import uuid
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Generic, Iterator, List, Optional, Type, TypeVar, Union
 
@@ -126,7 +126,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         json = [v for v in self]  # type: ignore[assignment]
         for i, v in enumerate(json):
             if isinstance(v, ClientValue):
-                json[i] = v.to_json(json_format)  # type: ignore[assignment]
+                json[i] = v.to_json()  # type: ignore[assignment]
             elif isinstance(v, uuid.UUID):
                 json[i] = str(v)  # type: ignore[assignment]
         if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:

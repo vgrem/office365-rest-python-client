@@ -12,9 +12,7 @@ class TestPage(GraphDelegatedTestCase):
 
     target_page: Optional[OnenotePage] = None
 
-    @requires_delegated(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"]
-    )
+    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"])
     def test1_create_page(self):
         """Create a new OneNote page."""
 

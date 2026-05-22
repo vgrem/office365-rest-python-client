@@ -29,6 +29,7 @@ class ShareLinkSettings(ClientValue):
          retrieved and updated if necessary.
     :param bool update_password:
     """
+
     allowAnonymousAccess: bool | None = None
     applicationLink: bool | None = None
     linkKind: int | None = None
@@ -42,9 +43,7 @@ class ShareLinkSettings(ClientValue):
     updatePassword: bool | None = None
     description: str | None = None
     embeddable: bool | None = None
-    inviteesToRemove: ClientValueCollection[Principal] = field(
-        default_factory=lambda: ClientValueCollection(Principal)
-    )
+    inviteesToRemove: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
     limitUseToApplication: bool | None = None
     nav: str | None = None
     nonDefaultLink: bool | None = None

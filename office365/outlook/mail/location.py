@@ -20,9 +20,7 @@ class Location(ClientValue):
     """
 
     address: PhysicalAddress = field(default_factory=PhysicalAddress)
-    coordinates: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(OutlookGeoCoordinates)
-    )
+    coordinates: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(OutlookGeoCoordinates))
     displayName: str | None = None
     locationEmailAddress: str | None = None
     locationType: str | None = None

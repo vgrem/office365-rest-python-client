@@ -12,7 +12,5 @@ class ColumnValidation(ClientValue):
     """Represents properties that validates column values."""
 
     formula: str | None = None
-    descriptions: ClientValueCollection = field(
-        default_factory=lambda: ClientValueCollection(DisplayNameLocalization)
-    )
+    descriptions: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(DisplayNameLocalization))
     defaultLanguage: str | None = None

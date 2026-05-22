@@ -64,13 +64,9 @@ from office365.outlook.calendar.rooms.list import RoomList
 from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.http.http_method import HttpMethod
-from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.batch_request import ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.queries.delete_entity import DeleteEntityQuery
-from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.search.entity import SearchEntity
 from office365.search.external.connection import ExternalConnection
 from office365.search.external.external import External
@@ -197,20 +193,12 @@ class GraphClient(ClientRuntimeContext):
             self._pending_request = GraphRequest(tenant=self._tenant, environment=self._environment)
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
-            self._pending_request.beforeExecute += self._build_specific_query  # type: ignore[operator]
         return self._pending_request
 
     @property
     def service_root_url(self) -> str:
         """Get the Graph API service root URL"""
         return self.pending_request().service_root_url
-
-    def _build_specific_query(self, request: RequestOptions) -> None:
-        """Build Graph-specific HTTP request"""
-        if isinstance(self.current_query, UpdateEntityQuery):
-            request.method = HttpMethod.Patch
-        elif isinstance(self.current_query, DeleteEntityQuery):
-            request.method = HttpMethod.Delete
 
     @property
     def admin(self) -> Admin:

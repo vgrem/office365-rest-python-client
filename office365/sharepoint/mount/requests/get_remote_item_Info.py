@@ -1,17 +1,15 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Optional
 from uuid import UUID
 
-
-from dataclasses import dataclass, field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 @dataclass
 class GetRemoteItemInfoRequest(ClientValue):
-
     RemoteItemUniqueIds: StringCollection | None = None
     IsCreateMountPointFlow: Optional[bool] = None
     MountedRemoteItemUniqueIds: GuidCollection = field(default_factory=GuidCollection)

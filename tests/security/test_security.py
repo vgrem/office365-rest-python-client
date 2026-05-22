@@ -1,4 +1,3 @@
-
 from tests.decorators import requires_app_permission
 from tests.graph_case import GraphApplicationTestCase
 

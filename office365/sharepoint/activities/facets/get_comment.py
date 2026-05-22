@@ -17,6 +17,7 @@ class GetCommentFacet(ClientValue):
     :param str parent_comment_id:
     :param list[ActivityIdentity] participants:
     """
+
     assignees: ClientValueCollection[ActivityIdentity] = field(
         default_factory=lambda: ClientValueCollection(ActivityIdentity)
     )

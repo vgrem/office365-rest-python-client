@@ -14,6 +14,7 @@ class ActivityIdentityItem(ClientValue):
     :param str email:
     :param str userPrincipalName:
     """
+
     clientId: str | None = None
     clientIdProvider: str | None = None
     displayName: str | None = None

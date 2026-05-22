@@ -1,4 +1,3 @@
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphApplicationTestCase
 

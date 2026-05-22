@@ -15,8 +15,12 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class SynchronizationStatus(ClientValue):
     """Represents the current status of the synchronizationJob."""
 
-    progress: ClientValueCollection[SynchronizationProgress] = field(default_factory=lambda: ClientValueCollection(SynchronizationProgress))
+    progress: ClientValueCollection[SynchronizationProgress] = field(
+        default_factory=lambda: ClientValueCollection(SynchronizationProgress)
+    )
     quarantine: SynchronizationQuarantine = field(default_factory=SynchronizationQuarantine)
     lastExecution: SynchronizationTaskExecution = field(default_factory=SynchronizationTaskExecution)
     lastSuccessfulExecution: SynchronizationTaskExecution = field(default_factory=SynchronizationTaskExecution)
-    lastSuccessfulExecutionWithExports: SynchronizationTaskExecution = field(default_factory=SynchronizationTaskExecution)
+    lastSuccessfulExecutionWithExports: SynchronizationTaskExecution = field(
+        default_factory=SynchronizationTaskExecution
+    )

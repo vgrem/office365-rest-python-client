@@ -27,4 +27,3 @@ class AddFieldOptions(IntFlag):
 
     AddFieldCheckDisplayName = 32
     """Specifies to confirm that no other field has the same display name."""
-

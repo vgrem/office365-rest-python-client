@@ -1,9 +1,7 @@
-
-
 from __future__ import annotations
-from typing import Dict, List, Optional
 
 from dataclasses import dataclass
+from typing import Dict, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -11,7 +9,6 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class EmailProperties(ClientValue):
-
     """
     Specifies the definition of the email to send which includes both the message fields and body
 

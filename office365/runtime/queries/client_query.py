@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -45,7 +44,9 @@ class ClientQuery(Generic[ReturnT]):
 
     def build_request(self) -> RequestOptions:
         """Builds a request"""
-        return self.context.build_request(self)
+        request = self.context.pending_request().build_request(self)
+        self.context.pending_request().beforeExecute(request)
+        return request
 
     def execute_query(self) -> ReturnT | None:
         """Executes the query and returns the result.
