@@ -105,8 +105,7 @@ class TestFieldValue(SPTestCase):
 
     def test_10_set_field_choice_value(self):
         choice_value = "In Progress"
-        self.target_item.set_property(self.choice_field_name, choice_value)
-        self.target_item.update().execute_query()
+        self.target_item.set_choice_field_value(self.choice_field_name, choice_value).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.choice_field_name))
 
     def test_11_get_lookup_field_choices(self):

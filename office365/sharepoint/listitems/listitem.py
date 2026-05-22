@@ -175,6 +175,16 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    def set_choice_field_value(self, field_name: str, field_value: str) -> Self:
+        """Sets the value of a Choice or MultiChoice field and persists the change.
+
+        Args:
+            field_name: The internal name of the choice field.
+            field_value: The value to set (e.g. \"In Progress\").
+        """
+        self.set_property(field_name, field_value).update()
+        return self
+
     def set_rating(self, value: int) -> ClientResult[float]:
         """
         Rates an item within the specified list. The return value is the average rating for the specified list item.
