@@ -4,7 +4,6 @@ from office365.sharepoint.fields.choice import FieldChoice
 from office365.sharepoint.fields.geolocation_value import FieldGeolocationValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_choice import FieldMultiChoice
-from office365.sharepoint.fields.multi_choice_value import FieldMultiChoiceValue
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.multi_user_value import FieldMultiUserValue
 from office365.sharepoint.fields.url_value import FieldUrlValue
@@ -91,9 +90,9 @@ class TestFieldValue(SPTestCase):
         type(self).target_field = result
 
     def test8_set_field_multi_choice_value(self):
-        multi_choice_value = FieldMultiChoiceValue(["In Progress"])
-        self.target_item.set_property(self.multi_choice_field_name, multi_choice_value)
-        self.target_item.update().execute_query()
+        self.target_item.set_choice_field_value(
+            self.multi_choice_field_name, ["In Progress"]
+        ).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.multi_choice_field_name))
 
     def test9_create_list_choice_field(self):

@@ -19,6 +19,7 @@ from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.comments.collection import CommentCollection
 from office365.sharepoint.fields.image_value import ImageFieldValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
+from office365.sharepoint.fields.multi_choice_value import FieldMultiChoiceValue
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.string_values import FieldStringValues
 from office365.sharepoint.fields.url_value import FieldUrlValue
@@ -175,14 +176,19 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    def set_choice_field_value(self, field_name: str, field_value: str) -> Self:
+    def set_choice_field_value(self, field_name: str, field_value: str | list[str]) -> Self:
         """Sets the value of a Choice or MultiChoice field and persists the change.
 
         Args:
             field_name: The internal name of the choice field.
-            field_value: The value to set (e.g. \"In Progress\").
+            field_value: The value to set — a plain string for single-choice
+                fields, or a list of strings for multi-choice fields
+                (e.g. ``["In Progress", "Completed"]``).
         """
-        self.set_property(field_name, field_value).update()
+        actual_value = field_value
+        if isinstance(actual_value, list):
+            actual_value = FieldMultiChoiceValue(actual_value)
+        self.set_property(field_name, actual_value).update()
         return self
 
     def set_rating(self, value: int) -> ClientResult[float]:
