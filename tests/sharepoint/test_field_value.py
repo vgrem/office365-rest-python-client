@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from office365.sharepoint.fields.choice import FieldChoice
-from office365.sharepoint.fields.geolocation_value import FieldGeolocationValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_choice import FieldMultiChoice
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
@@ -128,8 +127,9 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(geo_field.type_as_string, "Geolocation")
 
     def test_15_set_geo_field_value(self):
-        field_value = FieldGeolocationValue(59.940117, 29.8145056)
-        self.target_item.set_property(self.geo_field_name, field_value).update().execute_query()
+        self.target_item.set_geo_field_value(
+            self.geo_field_name, 59.940117, 29.8145056
+        ).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.geo_field_name))
 
     def test_16_create_list_user_field(self):

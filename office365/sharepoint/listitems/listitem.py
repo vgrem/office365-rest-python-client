@@ -17,6 +17,7 @@ from office365.sharepoint.attachments.collection import AttachmentCollection
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.comments.collection import CommentCollection
+from office365.sharepoint.fields.geolocation_value import FieldGeolocationValue
 from office365.sharepoint.fields.image_value import ImageFieldValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_choice_value import FieldMultiChoiceValue
@@ -200,6 +201,17 @@ class ListItem(SecurableObject):
             description: Optional display text for the link.
         """
         self.set_property(field_name, FieldUrlValue(url, Description=description)).update()
+        return self
+
+    def set_geo_field_value(self, field_name: str, latitude: float, longitude: float) -> Self:
+        """Sets the value of a Geolocation field and persists the change.
+
+        Args:
+            field_name: The internal name of the geolocation field.
+            latitude: The latitude value.
+            longitude: The longitude value.
+        """
+        self.set_property(field_name, FieldGeolocationValue(latitude, longitude)).update()
         return self
 
     def set_rating(self, value: int) -> ClientResult[float]:
