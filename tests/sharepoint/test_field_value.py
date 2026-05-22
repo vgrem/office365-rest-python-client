@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from office365.sharepoint.fields.choice import FieldChoice
-from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.fields.multi_choice import FieldMultiChoice
 from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.multi_user_value import FieldMultiUserValue
@@ -154,6 +153,7 @@ class TestFieldValue(SPTestCase):
     def test_19_set_lookup_field_value(self):
         lookup_items = self.client.web.default_document_library().get_items().execute_query()
         if len(lookup_items) > 0:
-            lookup_value = FieldLookupValue(LookupId=lookup_items[0].properties["Id"])
-            self.target_item.set_property(self.lookup_field_name, lookup_value).update().execute_query()
+            self.target_item.set_lookup_field_value(
+                self.lookup_field_name, lookup_items[0].properties["Id"]
+            ).execute_query()
             self.assertIsNotNone(self.target_item.properties.get(self.lookup_field_name))

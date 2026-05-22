@@ -227,6 +227,16 @@ class ListItem(SecurableObject):
         self.set_property(field_name, collection).update()
         return self
 
+    def set_lookup_field_value(self, field_name: str, lookup_id: int) -> Self:
+        """Sets the value of a single-value lookup field and persists the change.
+
+        Args:
+            field_name: The internal name of the lookup field.
+            lookup_id: The lookup item ID.
+        """
+        self.set_property(field_name, FieldLookupValue(LookupId=lookup_id)).update()
+        return self
+
     def set_rating(self, value: int) -> ClientResult[float]:
         """
         Rates an item within the specified list. The return value is the average rating for the specified list item.
