@@ -60,9 +60,9 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(result.type_as_string, "LookupMulti")
 
     def test4_set_field_multi_lookup_value(self):
-        field_value = FieldMultiLookupValue()
-        field_value.add(FieldLookupValue(LookupId=self.target_item.id))
-        updated = self.target_item.set_property(self.multi_lookup_field_name, field_value).update().execute_query()
+        updated = self.target_item.set_multi_lookup_field_value(
+            self.multi_lookup_field_name, [self.target_item.id]
+        ).execute_query()
         self.assertIsInstance(updated.properties[self.multi_lookup_field_name], FieldMultiLookupValue)
 
     def test5_create_user_multi_field(self):

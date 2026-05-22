@@ -214,6 +214,19 @@ class ListItem(SecurableObject):
         self.set_property(field_name, FieldGeolocationValue(latitude, longitude)).update()
         return self
 
+    def set_multi_lookup_field_value(self, field_name: str, lookup_ids: list[int]) -> Self:
+        """Sets the value of a multi-lookup field and persists the change.
+
+        Args:
+            field_name: The internal name of the lookup field.
+            lookup_ids: The list of lookup item IDs (e.g. ``[1, 2, 3]``).
+        """
+        collection = FieldMultiLookupValue()
+        for lid in lookup_ids:
+            collection.add(FieldLookupValue(LookupId=lid))
+        self.set_property(field_name, collection).update()
+        return self
+
     def set_rating(self, value: int) -> ClientResult[float]:
         """
         Rates an item within the specified list. The return value is the average rating for the specified list item.
