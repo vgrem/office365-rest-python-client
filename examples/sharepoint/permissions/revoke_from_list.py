@@ -1,5 +1,5 @@
 """
-Revoke a user's access from a SharePoint web/site.
+Revoke a user's permissions from a list or library.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 """
@@ -14,5 +14,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-result = ctx.web.remove_role_assignment(test_user_principal_name, RoleType.Contributor).execute_query()
-print("Access revoked")
+doc_lib = ctx.web.default_document_library()
+doc_lib.remove_role_assignment(test_user_principal_name, RoleType.Contributor).execute_query()
+print("Access revoked from list")

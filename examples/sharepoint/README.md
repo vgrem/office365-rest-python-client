@@ -24,7 +24,7 @@ prints clear output.
 | [`sitedesigns/`](./sitedesigns/) | [README](./sitedesigns/README.md) | Site designs, site scripts, provisioning automation |
 | [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
 | [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
-| [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check permissions |
+| [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check, break/reset inheritance, role definitions |
 | [`pages/`](./pages/) | [README](./pages/README.md) | Create and publish pages |
 | [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | [README](./contenttypes/README.md) | Create and manage content types |

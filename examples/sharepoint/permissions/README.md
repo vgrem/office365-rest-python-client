@@ -1,38 +1,33 @@
 # Working with Permissions in SharePoint
 
-Permissions in SharePoint are managed through **role assignments** —
-a user or group is assigned a **role definition** (like Full Control,
-Edit, Read) on a **securable object** (site, list, folder, or file).
-
----
+Permissions are managed through **role assignments** — a user or group is
+assigned a **role definition** (Full Control, Edit, Read) on a **securable
+object** (site, list, folder, or file).
 
 ## 🔐 Get Permissions
 
-```python
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
-)
-
-# Get permissions for a site
-roles = ctx.web.role_assignments.get().execute_query()
-for role in roles:
-    print(f"{role.member.title}: {role.role_definition_bindings}")
-```
-
 | What | File | Notes |
 |------|------|-------|
-| **Get permissions for a site** | [`get_for_site.py`](./get_for_site.py) | Role assignments on the web |
-| **Get permissions for a list** | [`get_for_list.py`](./get_for_list.py) | Role assignments on a list |
-| **Get permissions for a file** | [`get_for_file.py`](./get_for_file.py) | Role assignments on a file |
+| **Effective permissions (site)** | [`get_for_site.py`](./get_for_site.py) | Current user's permissions on the web |
+| **Effective permissions (list)** | [`get_for_list.py`](./get_for_list.py) | Current user's permissions on a list |
+| **Effective permissions (file)** | [`get_for_file.py`](./get_for_file.py) | Current user's permissions on a file |
+| **Role definitions** | [`get_role_definitions.py`](./get_role_definitions.py) | All permission levels available on the site |
 
 ## ✏️ Grant & Revoke
 
 | What | File | Notes |
 |------|------|-------|
-| **Grant permissions** | [`grant_to_web.py`](./grant_to_web.py) | Add a user/group to a role |
-| **Revoke permissions** | [`revoke_from_web.py`](./revoke_from_web.py) | Remove a user/group from a role |
+| **Grant to site** | [`grant_to_web.py`](./grant_to_web.py) | Add a user/group role on a web |
+| **Revoke from site** | [`revoke_from_web.py`](./revoke_from_web.py) | Remove a user/group role on a web |
+| **Grant to list** | [`grant_to_list.py`](./grant_to_list.py) | Add a user/group role on a list |
+| **Revoke from list** | [`revoke_from_list.py`](./revoke_from_list.py) | Remove a user/group role on a list |
+
+## 🔓 Inheritance
+
+| What | File | Notes |
+|------|------|-------|
+| **Break inheritance** | [`break_inheritance.py`](./break_inheritance.py) | Create unique permissions on a list |
+| **Reset inheritance** | [`reset_inheritance.py`](./reset_inheritance.py) | Revert to parent permissions |
 
 ---
 

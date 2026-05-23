@@ -1,10 +1,8 @@
 """
-Return effective user permissions for a SharePoint site.
+Reset permission inheritance on a list (revert to parent permissions).
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 """
-
-from pprint import pprint
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
@@ -15,5 +13,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-result = ctx.web.get_user_effective_permissions(ctx.web.current_user).execute_query()
-pprint(result.value.permission_levels)
+doc_lib = ctx.web.default_document_library()
+doc_lib.reset_role_inheritance().execute_query()
+print("Permission inheritance reset on list")
