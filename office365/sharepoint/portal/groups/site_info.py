@@ -16,7 +16,7 @@ class GroupSiteInfo(ClientValue):
         SiteStatus: Site status.
     """
 
-    SiteStatus: SiteStatus = SiteStatus.None_
+    SiteStatus: SiteStatus = SiteStatus.Unknown
     SiteUrl: Optional[str] = None
     DocumentsUrl: Optional[str] = None
     ErrorMessage: Optional[str] = None

@@ -16,4 +16,4 @@ class SiteStatus(Enum):
     Error = 3
     """Error. An error occurred while provisioning the site."""
 
-    None_ = -1
+    Unknown = -1

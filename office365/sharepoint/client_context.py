@@ -287,10 +287,10 @@ class ClientContext(ClientRuntimeContext):
         site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
 
         def _after_site_create(result: ClientResult[SPSiteCreationResponse]) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
+            if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError(result.value)
-            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
-                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
+            elif result.value.SiteStatus == SiteStatus.Ready:
+                return_type.set_property("__siteUrl", result.value.SiteUrl)
 
         (self.site_manager.create(title, site_url, owner).after_execute(_after_site_create))
         return return_type
@@ -307,10 +307,10 @@ class ClientContext(ClientRuntimeContext):
         return_type = Site(self)
 
         def _after_site_created(result: ClientResult[GroupSiteInfo]) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
-                raise ValueError(result.value.ErrorMessage)  # type: ignore[attr-defined]
-            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
-                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
+            if result.value.SiteStatus == SiteStatus.Error:
+                raise ValueError(result.value.ErrorMessage)
+            elif result.value.SiteStatus == SiteStatus.Ready:
+                return_type.set_property("__siteUrl", result.value.SiteUrl)
 
         opt_params = GroupCreationParams(Owners=StringCollection(owners or []))
         self.group_site_manager.create_group_ex(title, alias, is_public, opt_params).after_execute(_after_site_created)
@@ -329,10 +329,10 @@ class ClientContext(ClientRuntimeContext):
         def _after_site_created(
             result: ClientResult[CommunicationSiteCreationResponse],
         ) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:  # type: ignore[attr-defined]
+            if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError("Site creation error")
-            elif result.value.SiteStatus == SiteStatus.Ready:  # type: ignore[attr-defined]
-                return_type.set_property("__siteUrl", result.value.SiteUrl)  # type: ignore[attr-defined]
+            elif result.value.SiteStatus == SiteStatus.Ready:
+                return_type.set_property("__siteUrl", result.value.SiteUrl)
 
         self.site_pages.communication_site.create(title, site_url).after_execute(_after_site_created)
         return return_type

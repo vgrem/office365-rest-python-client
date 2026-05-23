@@ -25,9 +25,9 @@ class SiteDesignCreationInfo(ClientValue):
     """
 
     Id = None
-    Title = None
-    Description = None
-    WebTemplate = None
+    Title: str | None = None
+    Description: str | None = None
+    WebTemplate: str | None = None
     SiteScriptIds: ClientValueCollection[uuid.UUID] | None = None
     DesignPackageId = None
     DesignType = None

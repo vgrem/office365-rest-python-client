@@ -10,7 +10,7 @@ from office365.sharepoint.portal.sites.status import SiteStatus
 @dataclass
 class SPSiteCreationResponse(ClientValue):
     SiteId: Optional[str] = None
-    SiteStatus: SiteStatus = SiteStatus.None_
+    SiteStatus: SiteStatus = SiteStatus.Unknown
     SiteUrl: Optional[str] = None
 
     def __repr__(self) -> str:

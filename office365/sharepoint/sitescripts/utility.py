@@ -44,9 +44,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_list_designs(
-        context: ClientContext, store: str | None = None
-    ) -> ClientResult[SiteDesignMetadata]:
+    def get_list_designs(context: ClientContext, store: str | None = None) -> ClientResult[SiteDesignMetadata]:
         """Gets list designs.
 
         Args:
@@ -61,9 +59,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def add_site_design_task(
-        context: ClientContext, web_url: str, site_design_id: str
-    ) -> ClientResult[SiteDesignTask]:
+    def add_site_design_task(context: ClientContext, web_url: str, site_design_id: str) -> ClientResult[SiteDesignTask]:
         """Schedules a site design for asynchronous application to a site.
 
         Args:
@@ -148,7 +144,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def delete_site_script(context: ClientContext, id_: str) -> None:
+    def delete_site_script(context: ClientContext, id_: str) -> SiteScriptUtility:
         """Deletes a site script.
 
         Args:
@@ -160,6 +156,7 @@ class SiteScriptUtility(Entity):
         qry = ServiceOperationQuery(utility, "DeleteSiteScript", None, payload, None, None)
         qry.static = True
         context.add_query(qry)
+        return utility
 
     @staticmethod
     def get_site_scripts(
@@ -198,9 +195,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def create_site_design(
-        context: ClientContext, info: SiteDesignCreationInfo
-    ) -> ClientResult[SiteDesignMetadata]:
+    def create_site_design(context: ClientContext, info: SiteDesignCreationInfo) -> ClientResult[SiteDesignMetadata]:
         """Creates a site design available when users create a new site from the SharePoint start page.
 
         Args:
@@ -215,9 +210,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def update_site_design(
-        context: ClientContext, update_info: SiteDesignMetadata
-    ) -> ClientResult[SiteDesignMetadata]:
+    def update_site_design(context: ClientContext, update_info: SiteDesignMetadata) -> ClientResult[SiteDesignMetadata]:
         """Updates a site design with new values.
 
         Args:
@@ -252,9 +245,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_site_design_stages(
-        context: ClientContext, site_design_id: str
-    ) -> ClientResult:
+    def get_site_design_stages(context: ClientContext, site_design_id: str) -> ClientResult:
         """Gets the stages of a site design.
 
         Args:
@@ -287,9 +278,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
-    def get_site_design_rights(
-        context: ClientContext, id_: str
-    ) -> EntityCollection[SiteDesignPrincipal]:
+    def get_site_design_rights(context: ClientContext, id_: str) -> EntityCollection[SiteDesignPrincipal]:
         """Gets principals that have access to a site design.
 
         Args:
@@ -306,7 +295,7 @@ class SiteScriptUtility(Entity):
     @staticmethod
     def grant_site_design_rights(
         context: ClientContext, _id: str, principal_names: list[str], granted_rights: int
-    ) -> None:
+    ) -> SiteScriptUtility:
         """Grants access to a site design for one or more principals.
 
         Args:
@@ -324,9 +313,10 @@ class SiteScriptUtility(Entity):
         qry = ServiceOperationQuery(utility, "GrantSiteDesignRights", None, payload)
         qry.static = True
         context.add_query(qry)
+        return utility
 
     @staticmethod
-    def delete_site_design(context: ClientContext, _id: str) -> None:
+    def delete_site_design(context: ClientContext, _id: str) -> SiteScriptUtility:
         """Deletes a site design.
 
         Args:
@@ -337,6 +327,7 @@ class SiteScriptUtility(Entity):
         qry = ServiceOperationQuery(utility, "DeleteSiteDesign", [_id])
         qry.static = True
         context.add_query(qry)
+        return utility
 
     @property
     def entity_type_name(self) -> str:

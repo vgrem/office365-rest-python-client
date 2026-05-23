@@ -13,7 +13,7 @@ class SiteScriptSerializationResult(ClientValue):
     :param list[str] warnings:
     """
 
-    JSON = None
+    JSON: str | None = None
     Warnings: StringCollection | None = None
 
     @property
