@@ -13,7 +13,7 @@ prints clear output.
 | [`alm/`](./alm/) | [README](./alm/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
 | [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, share, versions, permissions |
 | [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
-| [`lists/`](./lists/) | *(coming soon)* | Create, read, import, export, filter, paging |
+| [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
 | [`folders/`](./folders/) | *(coming soon)* | Create, delete, copy, move, share, list |
 | [`sites/`](./sites/) | *(coming soon)* | Create, delete, clone, status |
 | [`webs/`](./webs/) | *(coming soon)* | Properties, lists, roles, changes, activities |
