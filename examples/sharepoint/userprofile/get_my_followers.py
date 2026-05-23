@@ -1,9 +1,7 @@
-"""Gets user profile properties (metadata) for the specified user.
+"""Gets the people who are following the current user.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
-
-from pprint import pprint
 
 from office365.sharepoint.client_context import ClientContext
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
@@ -14,6 +12,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-me = ctx.web.current_user
-properties = ctx.people_manager.get_properties_for(me).execute_query()
-pprint(properties.user_profile_properties)
+followers = ctx.people_manager.get_my_followers().execute_query()
+for person in followers:
+    print(f"{person.display_name}  ({person.email})")

@@ -29,6 +29,7 @@ prints clear output.
 | [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | [README](./contenttypes/README.md) | Create and manage content types |
 | [`features/`](./features/) | [README](./features/README.md) | Activate and deactivate site features |
+| [`userprofile/`](./userprofile/) | [README](./userprofile/README.md) | Profile properties, followers, trending tags, OneDrive |
 | [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
 
 ### Smaller categories
@@ -36,7 +37,7 @@ prints clear output.
 [`customactions/`](./customactions/) · [`eventreceivers/`](./eventreceivers/) ·
 [`audit/`](./audit/) · [`groups/`](./groups/) ·
 [`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
-[`webhooks/`](./webhooks/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
+[`webhooks/`](./webhooks/) · [`teams/`](./teams/)
 
 ---
 

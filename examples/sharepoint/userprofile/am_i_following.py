@@ -1,4 +1,4 @@
-"""Gets the people who are following the specified user.
+"""Check if the current user is following a specific user.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 """
@@ -12,7 +12,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-user = ctx.site.root_web.site_users.get_by_email(test_user_principal_name)
-result = ctx.people_manager.get_followers_for(user).execute_query()
-for follower in result:
-    print(follower.display_name)
+user = ctx.web.ensure_user(test_user_principal_name).execute_query()
+assert user.login_name is not None
+result = ctx.people_manager.am_i_following(user.login_name).execute_query()
+print(f"Following {user.login_name}: {result.value}")
