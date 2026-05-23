@@ -27,7 +27,7 @@ prints clear output.
 | [`pages/`](./pages/) | [README](./pages/README.md) | Create and publish pages |
 | [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | [README](./contenttypes/README.md) | Create and manage content types |
-| [`features/`](./features/) | *(coming soon)* | Activate and deactivate site features |
+| [`features/`](./features/) | [README](./features/README.md) | Activate and deactivate site features |
 | [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
 
 ### Smaller categories
