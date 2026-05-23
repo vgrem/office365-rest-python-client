@@ -32,6 +32,7 @@ link = ctx.web.get_file_by_server_relative_url("/sites/team/Shared Docs/report.d
 | **Share a file (org-wide)** | [`share_file_organizational.py`](./share_file_organizational.py) | Company-wide link |
 | **Share a file with password** | [`share_file_with_password.py`](./share_file_with_password.py) | Password-protected link |
 | **Share a folder** | [`share_folder.py`](./share_folder.py) | With specific people |
+| **Share a folder (org-wide)** | [`share_folder_organizational.py`](./share_folder_organizational.py) | Company-wide link |
 | **Share a folder (anonymous)** | [`share_folder_anonymous.py`](./share_folder_anonymous.py) | Anonymous "Anyone" link |
 | **Share a web / site** | [`share_web.py`](./share_web.py) | Grant access to a site |
 | **Create anonymous link** | [`create_anonymous_link.py`](./create_anonymous_link.py) | "Anyone with the link" |

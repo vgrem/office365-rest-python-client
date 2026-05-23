@@ -28,4 +28,4 @@ result = ctx.web.share(test_user_principal_name_alt, ExternalSharingSiteOption.V
 if result.error_message is not None:
     sys.exit("Web sharing failed: {0}".format(result.error_message))
 
-print("Web '{0}' has been shared with user '{1}'".format(result.url, test_user_principal_name_alt))
+print(f"Web '{result.url}' has been shared with user '{test_user_principal_name_alt}'")
