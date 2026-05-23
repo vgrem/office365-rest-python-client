@@ -5,7 +5,7 @@ from office365.sharepoint.tenant.management.externalusers.external_user import (
 )
 
 
-class ExternalUserCollection(EntityCollection):
+class ExternalUserCollection(EntityCollection[ExternalUser]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, ExternalUser, resource_path)
 
