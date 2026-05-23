@@ -15,7 +15,7 @@ prints clear output.
 | [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
 | [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
 | [`folders/`](./folders/) | [README](./folders/README.md) | Create, delete, copy, move, share, list |
-| [`sites/`](./sites/) | *(coming soon)* | Create, delete, clone, status |
+| [`sites/`](./sites/) | [README](./sites/README.md) | Create, delete, clone, status |
 | [`webs/`](./webs/) | *(coming soon)* | Properties, lists, roles, changes, activities |
 | [`tenant/`](./tenant/) | *(coming soon)* | Site collections, admin, licensing |
 | [`fields/`](./fields/) | *(coming soon)* | Create lookup, date, choice, taxonomy fields |
