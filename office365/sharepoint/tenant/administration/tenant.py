@@ -34,6 +34,10 @@ from office365.sharepoint.tenant.administration.copilot.promousage import (
     SPOCopilotPromoUsage,
 )
 from office365.sharepoint.tenant.administration.deletedsiteproperties import DeletedSiteProperties
+from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
+from office365.sharepoint.tenant.administration.hubsites.collection import (
+    HubSiteCollection,
+)
 from office365.sharepoint.tenant.administration.hubsites.properties import (
     HubSiteProperties,
 )
@@ -397,8 +401,12 @@ class Tenant(Entity):
         """
         return self.sites.get_lock_state_by_id(site_id)
 
-    def hub_sites(self, site_url):
-        pass
+    def hub_sites(self) -> HubSiteCollection:
+        """Gets information about all hub sites that the current user can access.
+
+        Delegates to SPHubSitesUtility.GetHubSites().
+        """
+        return SPHubSitesUtility(self.context).get_hub_sites()
 
     def get_power_apps_environments(self):
         """ """
@@ -412,15 +420,15 @@ class Tenant(Entity):
 
     def get_ransomware_activities(self) -> ClientResult[bytes]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         payload = {"parameters": RenderListDataParameters()}
         qry = ServiceOperationQuery(self, "GetRansomwareActivities", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_ransomware_events_overview(self) -> ClientResult[AnyStr]:
+    def get_ransomware_events_overview(self) -> ClientResult[bytes]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bytes())
         qry = ServiceOperationQuery(self, "GetRansomwareEventsOverview", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -468,7 +476,7 @@ class Tenant(Entity):
 
     def get_sp_list_item_count(self, list_name: str) -> ClientResult[int]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, int())
         payload = {"listName": list_name}
         qry = ServiceOperationQuery(self, "GetSPListItemCount", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -476,7 +484,7 @@ class Tenant(Entity):
 
     def get_sp_list_root_folder_properties(self, list_name: str) -> ClientResult[dict]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, dict())
         payload = {"listName": list_name}
         qry = ServiceOperationQuery(self, "GetSPListRootFolderProperties", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -497,7 +505,7 @@ class Tenant(Entity):
 
     def check_tenant_intune_license(self) -> ClientResult[bool]:
         """Checks whether a tenant has the Intune license."""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "CheckTenantIntuneLicense", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
