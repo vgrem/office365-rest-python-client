@@ -10,7 +10,7 @@ import json
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.links.kind import SharingLinkKind
 from office365.sharepoint.webs.web import Web
-from tests import test_team_site_url, test_user_credentials
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 sharing_messages = {
     0: "A value has not been initialized",
@@ -22,7 +22,12 @@ sharing_messages = {
     6: "A tokenized sharing link where properties can change without affecting link URL",
 }
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
+ctx = ClientContext(test_team_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 
 local_path = "../../data/SharePoint User Guide.docx"
 lib = ctx.web.default_document_library()

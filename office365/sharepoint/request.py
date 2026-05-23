@@ -56,6 +56,10 @@ class SharePointRequest(ODataRequest):
         self.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
         self.beforeExecute += self.ensure_form_digest  # type: ignore[operator]
 
+    def set_service_root(self, url: str) -> None:
+        super().set_service_root(url)
+        self._auth_context.url = url
+
     def build_request(self, query: ClientQuery) -> RequestOptions:
         request = super().build_request(query)
         if isinstance(self.json_format, JsonLightFormat):

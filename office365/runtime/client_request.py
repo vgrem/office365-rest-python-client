@@ -17,6 +17,7 @@ from office365.runtime.types.event_handler import EventHandler
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
         self._transport = transport or RequestsTransport()
+        self._service_root_url: str | None = None
         self.beforeExecute = EventHandler()
         self.afterExecute = EventHandler()
 
@@ -46,6 +47,10 @@ class ClientRequest(ABC):
         Args:
             response: Raw HTTP response
             query: Original query that generated this response"""
+
+    def set_service_root(self, url: str) -> None:
+        """Update the service root URL. Subclasses may additionally sync auth state."""
+        self._service_root_url = url
 
     def execute_query(self, query: ClientQuery) -> None:
         """Submits a pending request to the server"""

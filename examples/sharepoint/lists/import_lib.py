@@ -10,7 +10,7 @@ from faker import Faker
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
-from tests import test_team_site_url, test_user_credentials
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 
 def import_files(target_folder: Folder, files_amount: Optional[int] = None) -> None:
@@ -38,7 +38,12 @@ def import_folders(
 
 
 if __name__ == "__main__":
-    ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
+    ctx = ClientContext(test_team_site_url).with_username_and_password(
+        tenant=test_tenant,
+        client_id=test_client_id,
+        username=test_username,
+        password=test_password,
+    )
     lib = ctx.web.lists.get_by_title("Documents_Archive")
     # run_folders_import(lib, 1, True, 1000)
     import_files(lib.root_folder, 500)

@@ -106,7 +106,6 @@ class GraphClient(ClientRuntimeContext):
         """
 
         super().__init__()
-        self._pending_request = None
         self._token_callback = token_callback
         self._tenant = tenant
         self._token_cache = token_cache
@@ -193,7 +192,7 @@ class GraphClient(ClientRuntimeContext):
             self._pending_request = GraphRequest(tenant=self._tenant, environment=self._environment)
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
-        return self._pending_request
+        return self._pending_request  # type: ignore[return-value]
 
     @property
     def service_root_url(self) -> str:

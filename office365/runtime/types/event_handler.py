@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import logging
 import threading
 from collections.abc import Callable, Iterator
@@ -126,3 +127,11 @@ class EventHandler(Generic[P]):
         with self._lock:
             self._listeners.clear()
         return self
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result._listeners = copy.deepcopy(self._listeners, memo)
+        result._once = self._once
+        result._lock = threading.Lock()
+        return result

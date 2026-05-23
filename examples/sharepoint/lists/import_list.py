@@ -10,7 +10,7 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
-from tests import test_team_site_url, test_user_credentials
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 
 def print_progress(return_types: List[ClientObject | ClientResult]) -> None:
@@ -54,5 +54,10 @@ def run(context: ClientContext) -> None:
 
 
 if __name__ == "__main__":
-    ctx = ClientContext(test_team_site_url).with_credentials(test_user_credentials)
+    ctx = ClientContext(test_team_site_url).with_username_and_password(
+        tenant=test_tenant,
+        client_id=test_client_id,
+        username=test_username,
+        password=test_password,
+    )
     run(ctx)

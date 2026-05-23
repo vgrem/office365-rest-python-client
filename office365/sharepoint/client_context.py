@@ -71,7 +71,6 @@ class ClientContext(ClientRuntimeContext):
         self._environment = environment or AzureEnvironment.Global
         self._web = None
         self._site = None
-        self._pending_request = None
 
     @staticmethod
     def from_url(full_url: str) -> ClientContext:
@@ -225,7 +224,7 @@ class ClientContext(ClientRuntimeContext):
                 base_url=self._base_url,
                 environment=self._environment,
             )
-        return self._pending_request
+        return self._pending_request  # type: ignore[return-value]
 
     def execute_query_with_incremental_retry(self, max_retry=5):
         """Handles throttling requests."""
@@ -247,6 +246,13 @@ class ClientContext(ClientRuntimeContext):
             failure_callback=_try_process_if_failed,
         )
 
+    def set_url(self, url: str) -> Self:
+        """Updates the target URL for this context and its authentication."""
+        self._base_url = url.rstrip("/")
+        if self._pending_request is not None:
+            self._pending_request.set_service_root(self._base_url)
+        return self
+
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
         """
         Creates a clone of ClientContext
@@ -254,7 +260,7 @@ class ClientContext(ClientRuntimeContext):
         :param str url: Site Url
         """
         ctx = copy.deepcopy(self)
-        ctx._base_url = url
+        ctx.set_url(url)
         if clear_queries:
             ctx.clear()
         return ctx

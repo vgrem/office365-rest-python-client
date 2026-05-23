@@ -10,9 +10,12 @@ from random import randint
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import (
     test_admin_site_url,
+    test_client_id,
+    test_password,
     test_site_url,
-    test_user_credentials,
+    test_tenant,
     test_user_principal_name_alt,
+    test_username,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +25,12 @@ alias = str(randint(0, 10000))
 title = "Custom Site"
 site_url = f"{test_site_url}/sites/{alias}"
 
-tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
+tenant = Tenant.from_url(test_admin_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 
 logger.info(f"Creating a site at: {site_url}")
 site = tenant.create_site_sync(site_url, test_user_principal_name_alt).execute_query()

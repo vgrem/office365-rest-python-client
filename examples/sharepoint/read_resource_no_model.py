@@ -7,9 +7,14 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 import json
 
 from office365.sharepoint.request import SharePointRequest
-from tests import test_site_url, test_user_credentials
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-request = SharePointRequest(test_site_url).with_credentials(test_user_credentials)
+request = SharePointRequest(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 
 try:
     response = request.execute_request("web/currentUser")

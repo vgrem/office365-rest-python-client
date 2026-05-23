@@ -28,6 +28,7 @@ class ClientRuntimeContext(ABC):
     def __init__(self) -> None:
         self._queries = []
         self._current_query = None
+        self._pending_request: ClientRequest | None = None
 
     @property
     def current_query(self) -> ClientQuery | None:
@@ -178,13 +179,13 @@ class ClientRuntimeContext(ABC):
         return self
 
     def clear(self) -> Self:
-        """Clears all pending queries.
+        """Clears pending state and resets the pending request.
 
-        Returns:
-            Self for method chaining
+        A new request is created lazily on the next call to ``pending_request()``.
         """
         self._current_query = None
         self._queries = []
+        self._pending_request = None
         return self
 
     def get_metadata(self) -> ClientResult[AnyStr]:

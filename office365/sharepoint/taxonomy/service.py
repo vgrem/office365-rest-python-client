@@ -21,8 +21,8 @@ class TaxonomyService(ClientRuntimeContext):
         self._pending_request.beforeExecute += context.authentication_context.authenticate_request
         self._service_root_url = f"{context.service_root_url}/v2.1"
 
-    def pending_request(self):
-        return self._pending_request
+    def pending_request(self) -> ODataRequest:
+        return self._pending_request  # type: ignore[return-value]
 
     @property
     def service_root_url(self) -> str:

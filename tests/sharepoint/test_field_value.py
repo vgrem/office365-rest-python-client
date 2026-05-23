@@ -87,9 +87,7 @@ class TestFieldValue(SPTestCase):
         type(self).target_field = result
 
     def test8_set_field_multi_choice_value(self):
-        self.target_item.set_choice_field_value(
-            self.multi_choice_field_name, ["In Progress"]
-        ).execute_query()
+        self.target_item.set_choice_field_value(self.multi_choice_field_name, ["In Progress"]).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.multi_choice_field_name))
 
     def test9_create_list_choice_field(self):
@@ -126,9 +124,7 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(geo_field.type_as_string, "Geolocation")
 
     def test_15_set_geo_field_value(self):
-        self.target_item.set_geo_field_value(
-            self.geo_field_name, 59.940117, 29.8145056
-        ).execute_query()
+        self.target_item.set_geo_field_value(self.geo_field_name, 59.940117, 29.8145056).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.geo_field_name))
 
     def test_16_create_list_user_field(self):
