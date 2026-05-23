@@ -1,13 +1,8 @@
 """
-Creates a site script that applies a custom theme.
-
-Site scripts are used with site designs to apply customizations
-to SharePoint sites.
+Get metadata for a specific site design by ID.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
 """
-
-import json
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
@@ -19,13 +14,13 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-
-site_script = {
-    "$schema": "schema.json",
-    "actions": [{"verb": "applyTheme", "themeName": "Contoso Theme"}],
-    "bindata": {},
-    "version": 1,
-}
-
-result = SiteScriptUtility.create_site_script(ctx, "Contoso theme script", "", site_script).execute_query()
-print(json.dumps(result.value.to_json(), indent=4))
+designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
+if designs:
+    target = designs[0]
+    assert target.Id is not None
+    detail = SiteScriptUtility.get_site_design_metadata(ctx, target.Id).execute_query()
+    print(f"Title: {detail.Title}")
+    print(f"Description: {detail.Description}")
+    print(f"WebTemplate: {detail.WebTemplate}")
+    print(f"SiteScriptIds: {detail.SiteScriptIds}")
+    print(f"Id: {detail.Id}")

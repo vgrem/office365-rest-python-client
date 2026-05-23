@@ -8,8 +8,13 @@ https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 result = ctx.web.get_site_script(included_lists=["Shared Documents"]).execute_query()
 print(result.value.JSON)

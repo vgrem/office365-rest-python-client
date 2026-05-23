@@ -21,6 +21,7 @@ prints clear output.
 | [`fields/`](./fields/) | [README](./fields/README.md) | Create lookup, date, choice, taxonomy fields |
 | [`sharing/`](./sharing/) | [README](./sharing/README.md) | Share files/folders, create anonymous links |
 | [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
+| [`sitedesigns/`](./sitedesigns/) | [README](./sitedesigns/README.md) | Site designs, site scripts, provisioning automation |
 | [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
 | [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
 | [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check permissions |
@@ -34,8 +35,7 @@ prints clear output.
 
 [`audit/`](./audit/) · [`groups/`](./groups/) ·
 [`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
-[`webhooks/`](./webhooks/) · [`sitedesigns/`](./sitedesigns/) ·
-[`sitescripts/`](./sitescripts/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
+[`webhooks/`](./webhooks/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
 
 ---
 

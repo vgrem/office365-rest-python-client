@@ -1,13 +1,11 @@
 """
-Generates a site script from an existing list.
-
-Site scripts can be generated from existing lists to capture
-their configuration for reuse.
+List all site designs available in the tenant.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
 """
 
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.sitescripts.utility import SiteScriptUtility
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
 ctx = ClientContext(test_site_url).with_username_and_password(
@@ -16,6 +14,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-target_list = ctx.web.default_document_library()
-result = target_list.get_site_script().execute_query()
-print(result.value)
+designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
+for d in designs:
+    print(f"  {d.Title}  (ID: {d.Id}, WebTemplate: {d.WebTemplate})")
+print(f"Total: {len(designs)} site design(s)")
