@@ -190,6 +190,15 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(ClientCredential(client_id, client_secret))
         return self
 
+    def with_cookies(self, cookie_source, ttl_seconds=None):
+        """Initializes authentication using browser-session cookies.
+
+        :param cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+        :param ttl_seconds: Optional max age for cached cookies before reloading from source.
+        """
+        self.authentication_context.with_cookies(cookie_source, ttl_seconds)
+        return self
+
     def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
         Initializes a client to acquire a token via user or client credentials

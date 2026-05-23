@@ -10,6 +10,7 @@ from typing_extensions import Self
 from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
+from office365.runtime.auth.providers.cookie_provider import CookieAuthProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
@@ -197,6 +198,20 @@ class AuthenticationContext:
             request.set_header("Authorization", _get_authorization_header(self._cached_token))
 
         self._authenticate = _authenticate
+        return self
+
+    def with_cookies(
+        self,
+        cookie_source: Callable[[], Dict[str, str]] | Any,
+        ttl_seconds: int | None = None,
+    ) -> Self:
+        """Initializes authentication using browser-session cookies.
+
+        :param cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+        :param ttl_seconds: Optional max age for cached cookies before reloading from source.
+        """
+        provider = CookieAuthProvider(cookie_source, ttl_seconds)
+        self._authenticate = provider.authenticate_request
         return self
 
     def with_username_and_password(
