@@ -32,14 +32,15 @@ link = ctx.web.get_file_by_server_relative_url("/sites/team/Shared Docs/report.d
 | **Share a file (org-wide)** | [`share_file_org.py`](./share_file_org.py) | Company-wide link |
 | **Share a file with password** | [`share_file_with_password.py`](./share_file_with_password.py) | Password-protected link |
 | **Share a folder** | [`share_folder.py`](./share_folder.py) | With specific people |
+| **Share a folder (anonymous)** | [`share_folder_anon.py`](./share_folder_anon.py) | Anonymous "Anyone" link |
 | **Share a web / site** | [`share_web.py`](./share_web.py) | Grant access to a site |
 | **Create anonymous link** | [`create_anon_link.py`](./create_anon_link.py) | "Anyone with the link" |
-
-## 🔍 Get Sharing Info
-
-| What | File | Notes |
-|------|------|-------|
-| **Get sharing info for a folder** | [`get_folder_sharing_info.py`](./get_folder_sharing_info.py) | Links, permissions, audience |
+| **Update sharing link** | [`update_sharing_link.py`](./update_sharing_link.py) | Change expiration date |
+| **Remove sharing link** | [`remove_sharing_link.py`](./remove_sharing_link.py) | Delete an existing link |
+| **Get file sharing info** | [`get_file_sharing_info.py`](./get_file_sharing_info.py) | Links, users, permissions |
+| **Get folder sharing info** | [`get_folder_sharing_info.py`](./get_folder_sharing_info.py) | Links, permissions, audience |
+| **Get site sharing** | [`get_site_sharing.py`](./get_site_sharing.py) | Current sharing capability |
+| **Set site sharing** | [`set_site_sharing.py`](./set_site_sharing.py) | Change sharing capability |
 
 ---
 
