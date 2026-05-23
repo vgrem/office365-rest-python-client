@@ -1,70 +1,57 @@
-# SharePoint Examples
+# SharePoint REST API Examples
 
-This directory contains examples for SharePoint REST API v1.
+This directory contains examples for the SharePoint REST API v1
+(`office365.sharepoint`). Each example uses a minimal auth setup and
+prints clear output.
 
-### Working with sites and webs
-- **Get web properties**: [`webs/get_props.py`](./webs/get_props.py)
-- **Get all webs**: [`webs/get_all.py`](./webs/get_all.py)
-- **Get changes**: [`webs/get_changes.py`](./webs/get_changes.py)
-- **Create communication site**: [`sites/create_comm.py`](./sites/create_comm.py)
-- **Create team site**: [`sites/create_team.py`](./sites/create_team.py)
+---
 
-### Working with folders and files
-- **Download a file**: [`files/download.py`](./files/download.py)
-- **Upload a file**: [`files/upload.py`](./files/upload.py)
-- **Upload large file**: [`files/upload_large.py`](./files/upload_large.py)
-- **Create a folder**: [`folders/create.py`](./folders/create.py)
-- **Delete a folder**: [`folders/delete.py`](./folders/delete.py)
-- **Move a file**: [`files/move_file.py`](./files/move_file.py)
-- **Copy a folder**: [`folders/copy_folder.py`](./folders/copy_folder.py)
-- **List file version history**: [`files/versions/list.py`](./files/versions/list.py)
+## 📁 Category guides
 
-### Working with lists and list items
-- **Create a list**: [`lists/create.py`](./lists/create.py)
-- **Read list items (paged)**: [`lists/read_paged.py`](./lists/read_paged.py)
-- **Read all list items**: [`lists/read_all.py`](./lists/read_all.py)
-- **Create a list item**: [`listitems/create.py`](./listitems/create.py)
-- **Update items in batch**: [`listitems/update_batch.py`](./listitems/update_batch.py)
-- **Delete a list item**: [`listitems/delete.py`](./listitems/delete.py)
-- **Filter items**: [`listitems/filter.py`](./listitems/filter.py)
+| Directory | README | Covers |
+|-----------|--------|--------|
+| [`alm/`](./alm/) | [README](./alm/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
+| [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, share, versions, permissions |
+| [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
+| [`lists/`](./lists/) | *(coming soon)* | Create, read, import, export, filter, paging |
+| [`folders/`](./folders/) | *(coming soon)* | Create, delete, copy, move, share, list |
+| [`sites/`](./sites/) | *(coming soon)* | Create, delete, clone, status |
+| [`webs/`](./webs/) | *(coming soon)* | Properties, lists, roles, changes, activities |
+| [`tenant/`](./tenant/) | *(coming soon)* | Site collections, admin, licensing |
+| [`fields/`](./fields/) | *(coming soon)* | Create lookup, date, choice, taxonomy fields |
+| [`sharing/`](./sharing/) | *(coming soon)* | Share files/folders, create anonymous links |
+| [`search/`](./search/) | *(coming soon)* | Query sites, content, sorting |
+| [`taxonomy/`](./taxonomy/) | *(coming soon)* | Term sets, term groups, managed metadata |
+| [`users/`](./users/) | *(coming soon)* | Current user, site users, permissions |
+| [`permissions/`](./permissions/) | *(coming soon)* | Grant, revoke, check permissions |
+| [`pages/`](./pages/) | *(coming soon)* | Create and publish pages |
+| [`views/`](./views/) | *(coming soon)* | Create and manage list views |
+| [`contenttypes/`](./contenttypes/) | *(coming soon)* | Create and manage content types |
+| [`features/`](./features/) | *(coming soon)* | Activate and deactivate site features |
+| [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
 
-### Working with fields
-- **Create lookup field**: [`fields/create_lookup.py`](./fields/create_lookup.py)
-- **Create date field**: [`fields/create_date.py`](./fields/create_date.py)
-- **Create choice field**: [`fields/create_choice.py`](./fields/create_choice.py)
-- **Create taxonomy field**: [`fields/create_taxonomy.py`](./fields/create_taxonomy.py)
+### Smaller categories
 
-### Working with permissions
-- **Get permissions for list**: [`permissions/get_for_list.py`](./permissions/get_for_list.py)
-- **Grant permissions to web**: [`permissions/grant_to_web.py`](./permissions/grant_to_web.py)
-- **Revoke permissions**: [`permissions/revoke_from_web.py`](./permissions/revoke_from_web.py)
+[`apps/`](./apps/) · [`audit/`](./audit/) · [`groups/`](./groups/) ·
+[`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
+[`pushnotifications/`](./pushnotifications/) · [`sitedesigns/`](./sitedesigns/) ·
+[`sitescripts/`](./sitescripts/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
 
-### Working with taxonomy
-- **Get field value**: [`taxonomy/get_field_value.py`](./taxonomy/get_field_value.py)
-- **Create taxonomy field**: [`taxonomy/create_field.py`](./taxonomy/create_field.py)
-- **Get term set**: [`taxonomy/get_term_set.py`](./taxonomy/get_term_set.py)
+---
 
-### Working with search
-- **Search sites**: [`search/search_sites.py`](./search/search_sites.py)
-- **Search with sorting**: [`search/search_sort_list.py`](./search/search_sort_list.py)
+## Getting started
 
-### Working with sharing
-- **Share a file**: [`sharing/share_file_org.py`](./sharing/share_file_org.py)
-- **Share a folder**: [`sharing/share_folder.py`](./sharing/share_folder.py)
-- **Create anonymous link**: [`sharing/create_anon_link.py`](./sharing/create_anon_link.py)
+```python
+from office365.sharepoint.client_context import ClientContext
+from tests import test_team_site_url, test_client_id, test_client_secret
 
-### Working with tenant administration
-- **Get all site collections**: [`tenant/get_all_sites.py`](./tenant/get_all_sites.py)
-- **Set site admin**: [`tenant/set_site_admin.py`](./tenant/set_site_admin.py)
-- **Delete sites**: [`tenant/delete_sites.py`](./tenant/delete_sites.py)
-- **Export tenant settings**: [`tenant/export_tenant_settings.py`](./tenant/export_tenant_settings.py)
+ctx = ClientContext(test_team_site_url).with_client_credentials(
+    test_client_id, test_client_secret
+)
+```
 
-### Working with users and groups
-- **Get current user**: [`users/whoami.py`](./users/whoami.py)
-- **List site users**: [`users/list_site_users.py`](./users/list_site_users.py)
-- **Add user to web**: [`users/add_to_web.py`](./users/add_to_web.py)
-- **Manage groups**: [`groups/add_remove.py`](./groups/add_remove.py)
+Replace the test imports with your own credentials when running outside the test suite.
 
-### Authentication examples
-- **Modern auth methods**: [`auth/modern/`](./auth/modern/)
-- **Legacy auth methods**: [`auth/legacy/`](./auth/legacy/)
+## Official docs
+
+- [SharePoint REST API overview](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
