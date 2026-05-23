@@ -43,7 +43,7 @@ class ObjectSharingInformation(Entity):
         """
         binding_type = ObjectSharingInformation(context)
         payload = {"docId": doc_id}
-        return_type = ClientResult(context)
+        return_type = ClientResult(context, int())
         qry = ServiceOperationQuery(
             binding_type,
             "CanCurrentUserShareRemote",
