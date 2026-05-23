@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.publishing.pages.page import SitePage
 
 from tests.sharepoint.sharepoint_case import SPTestCase
@@ -6,7 +8,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestMultilingual(SPTestCase):
     """"""
 
-    site_page: SitePage = None
+    site_page: SitePage | None = None
 
     def test1_is_web_multilingual(self):
         web = (
@@ -23,10 +25,11 @@ class TestMultilingual(SPTestCase):
         page_title = "My Page"
         site_page = self.client.site_pages.create_page(page_title, language="en-us").execute_query()
         self.assertIsNotNone(site_page.resource_path)
-        self.__class__.site_page = site_page
+        type(self).site_page = site_page
 
     def test3_get_page_language(self):
-        site_page = self.__class__.site_page.get().select(["Language"]).execute_query()
+        assert self.site_page is not None
+        site_page = self.site_page.get().select(["Language"]).execute_query()
         self.assertIsNotNone(site_page.language)
 
     # The Machine Translations Service API will no longer be supported as of the end of July 2022

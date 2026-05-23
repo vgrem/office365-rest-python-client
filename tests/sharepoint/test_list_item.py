@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from time import sleep
 
 from office365.sharepoint.listitems.caml.query import CamlQuery
@@ -10,9 +12,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointListItem(SPTestCase):
-    target_list: List = None
-    target_item: ListItem = None
-    deleted_item_guid: str = None
+    target_list: List | None = None
+    target_item: ListItem | None = None
+    deleted_item_guid: str | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -30,7 +32,7 @@ class TestSharePointListItem(SPTestCase):
         item_properties = {"Title": self.default_title}
         new_item = self.target_list.add_item(item_properties).execute_query()
         self.assertIsNotNone(new_item.properties["Title"])
-        self.__class__.target_item = new_item
+        type(self).target_item = new_item
 
     def test2_enable_folders_in_list(self):
         def _init_list():
@@ -46,12 +48,14 @@ class TestSharePointListItem(SPTestCase):
         self.assertIsNotNone(result.server_relative_url)
 
     def test4_get_list_item(self):
-        item_id = self.__class__.target_item.id
+        assert self.target_item is not None
+        item_id = self.target_item.id
         result = self.target_list.get_item_by_id(item_id).get().execute_query()
         self.assertIsNotNone(result.id)
 
     def test5_get_list_item_via_caml(self):
-        item_id = self.__class__.target_item.id
+        assert self.target_item is not None
+        item_id = self.target_item.id
         caml_query = CamlQuery.parse(
             f"<Where><Eq><FieldRef Name='ID' /><Value Type='Counter'>{item_id}</Value></Eq></Where>"
         )
@@ -59,11 +63,13 @@ class TestSharePointListItem(SPTestCase):
         self.assertEqual(len(result), 1)
 
     def test6_get_wopi_frame_url(self):
-        result = self.__class__.target_item.get_wopi_frame_url(SPWOPIAction.default).execute_query()
+        assert self.target_item is not None
+        result = self.target_item.get_wopi_frame_url(SPWOPIAction.default).execute_query()
         self.assertIsNotNone(result.value)
 
     def test7_update_listItem(self):
-        item_to_update = self.__class__.target_item.get().execute_query()
+        assert self.target_item is not None
+        item_to_update = self.target_item.get().execute_query()
         last_updated = item_to_update.properties["Modified"]
 
         sleep(1)
@@ -75,7 +81,8 @@ class TestSharePointListItem(SPTestCase):
         self.assertNotEqual(self.default_title, new_title)
 
     def test8_systemUpdate_listItem(self):
-        item_to_update = self.__class__.target_item.get().execute_query()
+        assert self.target_item is not None
+        item_to_update = self.target_item.get().execute_query()
         last_updated = item_to_update.properties["Modified"]
 
         new_title = create_unique_name("Task item %s")
@@ -86,43 +93,52 @@ class TestSharePointListItem(SPTestCase):
         self.assertNotEqual(self.default_title, new_title)
 
     def test9_update_overwrite_version(self):
-        item_to_update = self.__class__.target_item
+        assert self.target_item is not None
+        item_to_update = self.target_item
         item_to_update.update_overwrite_version().execute_query()
 
     def test_11_get_versions(self):
-        versions = self.__class__.target_item.versions.get().execute_query()
+        assert self.target_item is not None
+        versions = self.target_item.versions.get().execute_query()
         self.assertIsNotNone(versions.resource_path)
 
     def test_12_get_dlp_policy_tip(self):
-        result = self.__class__.target_item.get_dlp_policy_tip.get().execute_query()
+        assert self.target_item is not None
+        result = self.target_item.get_dlp_policy_tip.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test_13_enable_comments(self):
-        result = self.__class__.target_item.set_comments_disabled(False).execute_query()
+        assert self.target_item is not None
+        result = self.target_item.set_comments_disabled(False).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test_10_get_comments(self):
-        comments = self.__class__.target_item.get_comments().execute_query()
+        assert self.target_item is not None
+        comments = self.target_item.get_comments().execute_query()
         self.assertIsNotNone(comments.resource_path)
 
     def test_14_recycle_item(self):
-        item_to_recycle = self.__class__.target_item
+        assert self.target_item is not None
+        item_to_recycle = self.target_item
         result = item_to_recycle.recycle().execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.deleted_item_guid = result.value
+        type(self).deleted_item_guid = result.value
 
     def test_15_restore_item(self):
-        recycle_item = self.client.web.recycle_bin.get_by_id(self.__class__.deleted_item_guid)
+        assert self.deleted_item_guid is not None
+        recycle_item = self.client.web.recycle_bin.get_by_id(self.deleted_item_guid)
         recycle_item.restore().execute_query()
         self.assertIsNotNone(recycle_item.resource_path)
 
     def test_16_set_rating(self):
-        result = self.__class__.target_item.set_rating(1).execute_query()
+        assert self.target_item is not None
+        result = self.target_item.set_rating(1).execute_query()
         self.assertIsNotNone(result.value)
 
     def test_17_delete_list_item(self):
-        item_id = self.__class__.target_item.properties["Id"]
-        item_to_delete = self.__class__.target_item
+        assert self.target_item is not None
+        item_id = self.target_item.properties["Id"]
+        item_to_delete = self.target_item
         item_to_delete.delete_object().execute_query()
 
         result = self.target_list.items.filter(f"Id eq {item_id}").get().execute_query()

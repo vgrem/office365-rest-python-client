@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.directory.session import DirectorySession
 
@@ -12,11 +14,11 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestDirectorySession(SPTestCase):
-    client: ClientContext = None
+    client: ClientContext | None = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestDirectorySession, cls).setUpClass()
+        super().setUpClass()
         client = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
@@ -36,7 +38,7 @@ class TestDirectorySession(SPTestCase):
         # self.assertGreater(len(result.value), 0)
 
     # def test_4_user_member_of(self):
-    #    result = self.__class__.session.me.is_member_of("").execute_query()
+    #    result = self.session.me.is_member_of("").execute_query()
     #    self.assertIsNotNone(result.value)
 
     def test_5_check_site_availability(self):

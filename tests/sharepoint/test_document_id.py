@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from office365.sharepoint.lists.list import List
 
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointDocumentId(SPTestCase):
-    target_lib: List = None
+    target_lib: List | None = None
 
     @classmethod
     def setUpClass(cls):

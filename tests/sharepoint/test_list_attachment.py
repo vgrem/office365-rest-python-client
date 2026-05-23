@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os.path
 from io import BytesIO
 
@@ -10,9 +12,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 class TestListItemAttachment(SPTestCase):
     attachment_file_name = "Sample.txt"
-    target_item: ListItem = None
+    target_item: ListItem | None = None
     attachment_path = f"{os.path.dirname(__file__)}/../data/{attachment_file_name}"
-    target_attachment: Attachment = None
+    target_attachment: Attachment | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -31,32 +33,35 @@ class TestListItemAttachment(SPTestCase):
         with open(self.attachment_path, "rb") as f:
             result = self.target_item.attachment_files.upload(f).execute_query()
         self.assertIsNotNone(result.file_name)
-        self.__class__.target_attachment = result
+        type(self).target_attachment = result
 
     def test2_list_attachments(self):
-        result = self.__class__.target_item.attachment_files.get().execute_query()
+        result = self.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test3_get_by_filename(self):
-        result = self.__class__.target_item.attachment_files.get_by_filename(self.attachment_file_name)
+        result = self.target_item.attachment_files.get_by_filename(self.attachment_file_name)
         self.assertIsNotNone(result.resource_path)
 
     def test4_download_attachment(self):
+        assert self.target_attachment is not None
         f = BytesIO()
-        self.__class__.target_attachment.download(f).execute_query()
+        self.target_attachment.download(f).execute_query()
         self.assertIsNotNone(f.read())
 
     def test5_update_attachment(self):
+        assert self.target_attachment is not None
         local_f = BytesIO(b"new attachment content goes here")
-        self.__class__.target_attachment.upload(local_f).execute_query()
+        self.target_attachment.upload(local_f).execute_query()
 
         remote_f = BytesIO()
-        self.__class__.target_attachment.download(remote_f).execute_query()
+        self.target_attachment.download(remote_f).execute_query()
         local_content = local_f.getvalue()
         remote_content = remote_f.getvalue()
         self.assertEqual(local_content, remote_content)
 
     def test6_delete_attachments(self):
-        self.__class__.target_attachment.delete_object().execute_query()
-        result = self.__class__.target_item.attachment_files.get().execute_query()
+        assert self.target_attachment is not None
+        self.target_attachment.delete_object().execute_query()
+        result = self.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 0)

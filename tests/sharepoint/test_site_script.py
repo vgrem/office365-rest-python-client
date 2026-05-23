@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.sitescripts.metadata import SiteScriptMetadata
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
 
@@ -5,7 +7,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSiteScript(SPTestCase):
-    site_script_meta: SiteScriptMetadata = None
+    site_script_meta: SiteScriptMetadata | None = None
     site_script_count = None
 
     def test_1_create(self):
@@ -18,14 +20,15 @@ class TestSiteScript(SPTestCase):
 
         result = SiteScriptUtility.create_site_script(self.client, "Contoso theme script", "", script).execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.site_script_meta = result.value
+        type(self).site_script_meta = result.value
 
     def test_2_list_site_scripts(self):
         result = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.site_script_count = len(result.value)
+        type(self).site_script_count = len(result.value)
 
     def test_3_delete_site_script(self):
+        assert self.site_script_meta is not None
         SiteScriptUtility.delete_site_script(self.client, self.site_script_meta.Id).execute_query()
         result_after = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertEqual(self.site_script_count - 1, len(result_after.value))

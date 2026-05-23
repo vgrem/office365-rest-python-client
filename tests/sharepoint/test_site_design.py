@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from uuid import UUID
 
 from office365.sharepoint.sitedesigns.creation_info import SiteDesignCreationInfo
@@ -8,7 +10,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSiteDesign(SPTestCase):
-    site_design_metadata: SiteDesignMetadata = None
+    site_design_metadata: SiteDesignMetadata | None = None
     site_design_count = None
 
     def test_1_create(self):
@@ -20,15 +22,16 @@ class TestSiteDesign(SPTestCase):
         )
         result = SiteScriptUtility.create_site_design(self.client, info).execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.site_design_metadata = result.value
+        type(self).site_design_metadata = result.value
 
     def test_2_list(self):
         result = SiteScriptUtility.get_site_designs(self.client).execute_query()
         self.assertIsNotNone(result.value)
         self.assertGreater(len(result.value), 0)
-        self.__class__.site_design_count = len(result.value)
+        type(self).site_design_count = len(result.value)
 
     def test_3_delete(self):
+        assert self.site_design_metadata is not None
         SiteScriptUtility.delete_site_design(self.client, self.site_design_metadata.Id).execute_query()
         result = SiteScriptUtility.get_site_designs(self.client).execute_query()
         self.assertEqual(self.site_design_count - 1, len(result.value))

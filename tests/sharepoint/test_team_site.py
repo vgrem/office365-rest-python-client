@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 
 from office365.sharepoint.client_context import ClientContext
@@ -15,7 +17,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestTeamSite(SPTestCase):
-    target_site: Site = None
+    target_site: Site | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -33,25 +35,27 @@ class TestTeamSite(SPTestCase):
         site_name = f"TeamSite{uuid.uuid4().hex}"
         site = self.client.create_team_site(site_name, "Team Site", True).execute_query()
         self.assertIsNotNone(site.url)
-        self.__class__.target_site = site
+        type(self).target_site = site
 
     def test3_get_site_status(self):
+        assert self.target_site is not None
         result = self.client.group_site_manager.get_status(self.target_site).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus == SiteStatus.Ready)
 
     # def test4_get_notebook_url(self):
-    #    group_id = self.__class__.target_site.group_id
+    #    group_id = self.target_site.group_id
     #    result = self.client.group_site_manager.notebook(group_id).execute_query()
     #    self.assertIsNotNone(result.value)
 
     # def test5_get_team_channels(self):
-    #    group_id = self.__class__.target_site.group_id
+    #    group_id = self.target_site.group_id
     #    result = self.client.group_site_manager.get_team_channels(group_id).execute_query()
     #    self.assertIsNotNone(result.value)
 
     def test6_delete_site(self):
-        self.__class__.target_site.delete_object().execute_query()
+        assert self.target_site is not None
+        self.target_site.delete_object().execute_query()
 
     def test7_get_current_user_joined_teams(self):
         result = self.client.group_site_manager.get_current_user_joined_teams().execute_query()

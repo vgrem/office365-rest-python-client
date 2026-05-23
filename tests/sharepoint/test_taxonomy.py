@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.groups.group import TermGroup
@@ -9,9 +11,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSPTaxonomy(SPTestCase):
-    target_field: Field = None
-    target_term_group: TermGroup = None
-    target_term_set: TermSet = None
+    target_field: Field | None = None
+    target_term_group: TermGroup | None = None
+    target_term_set: TermSet | None = None
 
     def test1_get_term_store(self):
         term_store = self.client.taxonomy.term_store.get().execute_query()
@@ -22,16 +24,18 @@ class TestSPTaxonomy(SPTestCase):
         term_group = self.client.taxonomy.term_store.term_groups.get_by_name("Geography").get().execute_query()
         self.assertIsNotNone(term_group.resource_path)
         self.assertIsInstance(term_group, TermGroup)
-        self.__class__.target_term_group = term_group
+        type(self).target_term_group = term_group
 
     def test3_get_term_sets(self):
-        term_sets = self.__class__.target_term_group.term_sets.get().execute_query()
+        assert self.target_term_group is not None
+        term_sets = self.target_term_group.term_sets.get().execute_query()
         self.assertGreater(len(term_sets), 0)
         self.assertIsInstance(term_sets[0], TermSet)
-        self.__class__.target_term_set = term_sets[0]
+        type(self).target_term_set = term_sets[0]
 
     def test4_get_terms(self):
-        terms = self.__class__.target_term_set.terms.get().execute_query()
+        assert self.target_term_set is not None
+        terms = self.target_term_set.terms.get().execute_query()
         self.assertGreater(len(terms), 0)
         self.assertIsInstance(terms[0], Term)
 
@@ -48,10 +52,11 @@ class TestSPTaxonomy(SPTestCase):
         )
         self.assertIsNotNone(tax_field.resource_path)
         # self.assertTrue(tax_field.properties.get('IsTermSetValid'))
-        self.__class__.target_field = tax_field
+        type(self).target_field = tax_field
 
     def test7_get_tax_field(self):
-        existing_field = self.__class__.target_field.get().execute_query()
+        assert self.target_field is not None
+        existing_field = self.target_field.get().execute_query()
         self.assertTrue(existing_field.type_as_string, "TaxonomyFieldType")
         self.assertIsInstance(existing_field, TaxonomyField)
         self.assertIsNotNone(existing_field.text_field_id)
@@ -62,4 +67,5 @@ class TestSPTaxonomy(SPTestCase):
         self.assertIsNotNone(text_field.internal_name)
 
     def test8_delete_tax_field(self):
-        self.__class__.target_field.delete_object().execute_query()
+        assert self.target_field is not None
+        self.target_field.delete_object().execute_query()

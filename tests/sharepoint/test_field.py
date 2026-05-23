@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 
 from office365.sharepoint.fields.field import Field
@@ -7,7 +9,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestField(SPTestCase):
-    target_field: Field = None
+    target_field: Field | None = None
     target_field_name = "Title"
 
     def test_1_get_site_fields(self):
@@ -33,10 +35,11 @@ class TestField(SPTestCase):
         field = self.client.site.root_web.fields.add_text_field(field_name).execute_query()
         self.assertEqual(field.title, field_name)
         self.assertIsInstance(field, FieldText)
-        self.__class__.target_field = field
+        type(self).target_field = field
 
     def test_5_update_site_field(self):
-        field = self.__class__.target_field
+        assert self.target_field is not None
+        field = self.target_field
         updated_field_name = "Title_" + uuid.uuid4().hex
         field.set_property("Title", updated_field_name).update().execute_query()
 
@@ -45,4 +48,5 @@ class TestField(SPTestCase):
         self.assertEqual(updated_field.title, updated_field_name)
 
     def test_6_delete_site_field(self):
+        assert self.target_field is not None
         self.target_field.delete_object().execute_query()

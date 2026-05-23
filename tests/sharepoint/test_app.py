@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 
 from office365.sharepoint.client_context import ClientContext
@@ -18,10 +20,10 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestApp(SPTestCase):
-    tenant_app_catalog: TenantCorporateCatalogAccessor = None
-    admin_client: ClientContext = None
-    app: CorporateCatalogAppMetadata = None
-    site_col_app_catalog: TenantCorporateCatalogAccessor = None
+    tenant_app_catalog: TenantCorporateCatalogAccessor | None = None
+    admin_client: ClientContext | None = None
+    app: CorporateCatalogAppMetadata | None = None
+    site_col_app_catalog: TenantCorporateCatalogAccessor | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -40,20 +42,21 @@ class TestApp(SPTestCase):
 
     def test3_add_app(self):
         app_path = f"{os.path.dirname(__file__)}/../data/react-banner.sppkg"
-        app_file = self.__class__.tenant_app_catalog.app_from_path(app_path, True).execute_query()
+        app_file = self.tenant_app_catalog.app_from_path(app_path, True).execute_query()
         self.assertIsNotNone(app_file.resource_path)
 
     def test4_list_apps(self):
-        apps = self.__class__.tenant_app_catalog.available_apps.get().execute_query()
+        apps = self.tenant_app_catalog.available_apps.get().execute_query()
         self.assertIsNotNone(apps.resource_path)
 
     def test5_get_app(self):
-        app = self.__class__.tenant_app_catalog.available_apps.get_by_title("Starter Kit - Banner").execute_query()
+        assert self.app is not None
+        app = self.tenant_app_catalog.available_apps.get_by_title("Starter Kit - Banner").execute_query()
         self.assertIsNotNone(app.resource_path)
-        self.__class__.app = app
+        type(self).app = app
 
     # def test6_remove_app(self):
-    #    self.__class__.app.remove().execute_query()
+    #    self.app.remove().execute_query()
 
     def test6_list_site_collection_app_catalogs_sites(self):
         sites = self.tenant_app_catalog.site_collection_app_catalogs_sites.get().execute_query()
@@ -65,10 +68,10 @@ class TestApp(SPTestCase):
         )
         result = site_client.web.site_collection_app_catalog.get().execute_query()
         self.assertIsNotNone(result.resource_path)
-        # self.__class__.site_col_app_catalog = result
+        # type(self).site_col_app_catalog = result
 
     # def test6_available_addins(self):
-    #    result = self.__class__.admin_client.web.available_addins([test_team_site_url]).execute_query()
+    #    result = self.admin_client.web.available_addins([test_team_site_url]).execute_query()
     #    self.assertIsNotNone(result.value)
 
     # def test7_create_credential_field(self):
@@ -77,7 +80,7 @@ class TestApp(SPTestCase):
     #    self.assertIsNotNone(result.value)
 
     # def test8_list_app_requests(self):
-    #    result = self.__class__.app_catalog.app_requests().execute_query()
+    #    result = self.app_catalog.app_requests().execute_query()
     #    self.assertIsNotNone(result.value)
 
     def test9_get_addin_principals_having_permissions_in_sites(self):

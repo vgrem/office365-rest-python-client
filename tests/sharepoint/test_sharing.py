@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from urllib.parse import urljoin
 
 from office365.sharepoint.client_context import ClientContext
@@ -27,7 +29,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointSharing(SPTestCase):
-    target_user: User = None
+    target_user: User | None = None
     target_file_url = urljoin(test_site_url, "/SitePages/Home.aspx")
 
     @classmethod

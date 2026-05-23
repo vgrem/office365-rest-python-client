@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 
 from office365.sharepoint.lists.templates.type import ListTemplateType
@@ -10,7 +12,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSite(SPTestCase):
-    site_response: SPSiteCreationResponse = None
+    site_response: SPSiteCreationResponse | None = None
 
     def test1_if_site_loaded(self):
         site = self.client.site.get().execute_query()
@@ -56,29 +58,32 @@ class TestSite(SPTestCase):
         site_url = f"{test_site_url}/sites/{uuid.uuid4().hex}"
         result = self.client.site_manager.create("Comm Site", site_url, test_user_principal_name_alt).execute_query()
         self.assertIsNotNone(result.value)
-        self.__class__.site_response = result.value
+        type(self).site_response = result.value
 
     def test_12_get_site_status(self):
-        site_url = self.__class__.site_response.SiteUrl
+        assert self.site_response is not None
+        site_url = self.site_response.SiteUrl
         result = self.client.site_manager.get_status(site_url).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus != SiteStatus.Error)
 
     def test_13_get_site_url(self):
-        site_id = self.__class__.site_response.SiteId
+        assert self.site_response is not None
+        site_id = self.site_response.SiteId
         result = self.client.site_manager.get_site_url(site_id).execute_query()
         self.assertIsNotNone(result.value)
-        self.assertTrue(self.__class__.site_response.SiteUrl == result.value)
+        self.assertTrue(self.site_response.SiteUrl == result.value)
 
     def test_14_is_deletable(self):
         result = self.client.site.is_deletable().execute_query()
         self.assertIsNotNone(result.value)
 
     def test_15_delete_site(self):
+        assert self.site_response is not None
         from office365.sharepoint.client_context import ClientContext
 
         admin_ctx = ClientContext(self.client.base_url).with_credentials(test_admin_credentials)
-        site_id = self.__class__.site_response.SiteId
+        site_id = self.site_response.SiteId
         admin_ctx.site_manager.delete(site_id).execute_query()
 
     # def test_16_get_block_download_policy_for_files_data(self):

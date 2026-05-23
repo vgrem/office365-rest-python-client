@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
@@ -107,7 +109,7 @@ class TestUserProfile(SPTestCase):
         result = PromotedSites.get_promoted_links_as_tiles(self.my_client).execute_query()
         self.assertIsNotNone(result.value)
         self.assertGreater(len(result.value), 0)
-        self.__class__.promoted_links = result.value
+        type(self).promoted_links = result.value
 
     def test_16_get_promoted_links_as_tiles(self):
         from office365.sharepoint.userprofiles.promoted_sites import PromotedSites

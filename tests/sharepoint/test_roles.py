@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.kind import PermissionKind
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
@@ -7,7 +9,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestRoles(SPTestCase):
-    target_role: RoleDefinition = None
+    target_role: RoleDefinition | None = None
     role_name = "Create and Manage Alerts 456"
 
     def test1_create_role(self):
@@ -16,7 +18,7 @@ class TestRoles(SPTestCase):
         permissions.set(PermissionKind.ManageAlerts)
         result = self.client.web.role_definitions.add(permissions, self.role_name).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.__class__.target_role = result
+        type(self).target_role = result
 
     def test2_get_by_type(self):
         result = self.client.web.role_definitions.get_by_type(RoleType.Contributor).get().execute_query()
@@ -27,6 +29,7 @@ class TestRoles(SPTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test4_add_role_assignment(self):
+        assert self.target_role is not None
         target_user = self.client.web.current_user
         result = self.client.web.add_role_assignment(target_user, self.target_role).execute_query()
         self.assertIsNotNone(result.resource_path)
@@ -42,9 +45,11 @@ class TestRoles(SPTestCase):
         self.assertIsNotNone(result.principal_id)
 
     def test7_remove_role_assignment(self):
+        assert self.target_role is not None
         target_user = self.client.web.current_user
         result = self.client.web.remove_role_assignment(target_user, self.target_role).execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test8_delete_role(self):
+        assert self.target_role is not None
         self.target_role.delete_object().execute_query()

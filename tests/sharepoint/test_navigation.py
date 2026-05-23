@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 from office365.sharepoint.navigation.nodes.creationinformation import (
     NavigationNodeCreationInformation,
@@ -9,7 +11,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestNavigation(SPTestCase):
-    target_node: NavigationNode = None
+    target_node: NavigationNode | None = None
 
     def test_2_is_global_nav_enabled(self):
         result = self.client.navigation_service.global_nav_enabled().execute_query()
@@ -28,11 +30,13 @@ class TestNavigation(SPTestCase):
         )
         new_node = self.client.web.navigation.quick_launch.add(node_create_info).execute_query()
         self.assertIsNotNone(new_node.resource_path)
-        self.__class__.target_node = new_node
+        type(self).target_node = new_node
 
     def test_5_get_navigation_node_by_id(self):
-        node_id = self.__class__.target_node.properties.get("Id")
-        result = self.client.web.navigation.quick_launch.get_by_id(node_id).get().execute_query()
+        assert self.target_node is not None
+        node_id = self.target_node.properties.get("Id")
+        assert node_id is not None
+        result = self.client.web.navigation.quick_launch.get_by_id(int(node_id)).get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     def test_6_get_navigation_node_by_index(self):
@@ -40,8 +44,8 @@ class TestNavigation(SPTestCase):
         self.assertIsNotNone(result.resource_path)
 
     def test_7_delete_navigation_node(self):
-        node_to_del = self.__class__.target_node
-        node_to_del.delete_object().execute_query()
+        assert self.target_node is not None
+        self.target_node.delete_object().execute_query()
 
     def test8_get_publishing_navigation_provider_type(self):
         result = self.client.navigation_service.get_publishing_navigation_provider_type().execute_query()

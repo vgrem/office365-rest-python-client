@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 
@@ -5,8 +7,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestCompliance(SPTestCase):
-    target_list: List = None
-    list_item: ListItem = None
+    target_list: List | None = None
+    list_item: ListItem | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -24,6 +26,7 @@ class TestCompliance(SPTestCase):
     #    self.assertIsNotNone(result.value)
 
     def test_3_get_list_compliance_tag(self):
+        assert self.list_item is not None
         result = self.target_list.get_compliance_tag().execute_query()
         self.assertIsNotNone(result.value)
 

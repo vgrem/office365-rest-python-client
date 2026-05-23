@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
 from tests import test_admin_site_url, test_client_credentials
@@ -5,7 +7,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestReports(SPTestCase):
-    tenant: Tenant = None
+    tenant: Tenant | None = None
 
     @classmethod
     def setUpClass(cls):

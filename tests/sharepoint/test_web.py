@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from random import randint
 
@@ -14,13 +16,13 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointWeb(SPTestCase):
-    target_web: Web = None
-    target_user: User = None
+    target_web: Web | None = None
+    target_user: User | None = None
 
     def test1_get_current_user(self):
         result = self.client.web.current_user.get().execute_query()
         self.assertIsNotNone(result.login_name)
-        self.__class__.target_user = result
+        type(self).target_user = result
 
     def test2_get_web_from_page_url(self):
         page_url = f"{test_site_url}/SitePages/Home.aspx"
@@ -40,7 +42,8 @@ class TestSharePointWeb(SPTestCase):
         self.assertIsInstance(result.value, bool)
 
     def test5_get_user_permissions(self):
-        result = self.client.web.get_user_effective_permissions(self.__class__.target_user.login_name).execute_query()
+        assert self.target_user is not None
+        result = self.client.web.get_user_effective_permissions(self.target_user.login_name).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 
     def test6_can_create_web(self):
@@ -48,7 +51,7 @@ class TestSharePointWeb(SPTestCase):
         creation_info = WebCreationInformation()
         creation_info.Url = target_web_name
         creation_info.Title = target_web_name
-        self.__class__.target_web = self.client.web.webs.add(creation_info).execute_query()
+        type(self).target_web = self.client.web.webs.add(creation_info).execute_query()
 
         results = self.client.web.webs.filter(f"Title eq '{target_web_name}'").get().execute_query()
         self.assertEqual(len(results), 1)
@@ -60,17 +63,19 @@ class TestSharePointWeb(SPTestCase):
 
     def test8_if_web_updated(self):
         """Test to update Web resource"""
-        web_title_updated = self.__class__.target_web.properties["Title"] + "_updated"
-        self.__class__.target_web.set_property("Title", web_title_updated)
-        self.__class__.target_web.update().execute_query()
+        assert self.target_web is not None
+        web_title_updated = self.target_web.properties["Title"] + "_updated"
+        self.target_web.set_property("Title", web_title_updated)
+        self.target_web.update().execute_query()
 
-        updated_web = self.__class__.target_web.get().execute_query()
+        updated_web = self.target_web.get().execute_query()
         self.assertEqual(web_title_updated, updated_web.properties["Title"])
 
     def test9_if_web_deleted(self):
         """Test to delete Web resource"""
-        title = self.__class__.target_web.properties["Title"]
-        self.__class__.target_web.delete_object().execute_query()
+        assert self.target_web is not None
+        title = self.target_web.properties["Title"]
+        self.target_web.delete_object().execute_query()
 
         results = self.client.web.webs.filter(f"Title eq '{title}'").get().execute_query()
         self.assertEqual(len(results), 0)
@@ -85,13 +90,15 @@ class TestSharePointWeb(SPTestCase):
         self.assertIsNotNone(site_pages.title)
 
     def test_12_get_user_perms(self):
-        result = self.client.web.get_user_effective_permissions(self.__class__.target_user.login_name).execute_query()
+        assert self.target_user is not None
+        result = self.client.web.get_user_effective_permissions(self.target_user.login_name).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
         self.assertGreater(len(result.value.permission_levels), 0)
 
     def test_13_get_user_by_id(self):
-        result_user = self.client.web.get_user_by_id(self.__class__.target_user.id).get().execute_query()
-        self.assertEqual(result_user.login_name, self.__class__.target_user.login_name)
+        assert self.target_user is not None
+        result_user = self.client.web.get_user_by_id(self.target_user.id).get().execute_query()
+        self.assertEqual(result_user.login_name, self.target_user.login_name)
 
     def test_14_get_catalog(self):
         catalog = self.client.web.get_catalog(ListTemplateType.MasterPageCatalog).get().execute_query()

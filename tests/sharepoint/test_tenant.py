@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus
@@ -25,8 +27,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestTenant(SPTestCase):
-    target_site_props: SiteProperties = None
-    target_site: Site = None
+    target_site_props: SiteProperties | None = None
+    target_site: Site | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -90,7 +92,7 @@ class TestTenant(SPTestCase):
         # self.client.load(current_user)
         # self.client.execute_query()
 
-    #    props = SiteCreationProperties(self.__class__.target_site_url, current_user.properties['UserPrincipalName'])
+    #    props = SiteCreationProperties(self.target_site_url, current_user.properties['UserPrincipalName'])
     #    site_props = self.tenant.ensure_site(props)
     #    self.client.execute_query()
     #    self.assertIsNotNone(site_props)
@@ -99,10 +101,11 @@ class TestTenant(SPTestCase):
         site_props = self.tenant.get_site_properties_by_url(test_site_url, True).execute_query()
         self.assertIsNotNone(site_props.url)
         # self.assertIsNotNone(site_props.resource_path)
-        self.__class__.target_site_props = site_props
+        type(self).target_site_props = site_props
 
     def test_11_update_site(self):
-        site_props_to_update = self.__class__.target_site_props
+        assert self.target_site_props is not None
+        site_props_to_update = self.target_site_props
         site_props_to_update.set_property("SharingCapability", SharingCapabilities.ExternalUserAndGuestSharing)
         site_props_to_update.update().execute_query()
 
@@ -112,7 +115,7 @@ class TestTenant(SPTestCase):
     #    self.assertTrue(site_props_to_update.properties['Status'], 'Active')
 
     # def test_12_delete_site(self):
-    #    site_url = self.__class__.target_site_props.properties['SiteUrl']
+    #    site_url = self.target_site_props.properties['SiteUrl']
     #    self.tenant.remove_site(site_url)
     #    self.client.execute_query()
 

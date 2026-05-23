@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.principal.groups.group import Group
 
 from tests import create_unique_name, test_user_principal_name
@@ -5,7 +7,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointGroup(SPTestCase):
-    result_group: Group = None
+    result_group: Group | None = None
 
     @classmethod
     def setUpClass(cls):
@@ -16,9 +18,10 @@ class TestSharePointGroup(SPTestCase):
         grp_title = create_unique_name("Custom Group")
         result = self.client.web.site_groups.add(grp_title).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.__class__.result_group = result
+        type(self).result_group = result
 
     def test2_add_user_to_group(self):
+        assert self.result_group is not None
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
@@ -26,6 +29,7 @@ class TestSharePointGroup(SPTestCase):
         self.assertIsNotNone(result.id)
 
     def test3_get_group_users(self):
+        assert self.result_group is not None
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
@@ -33,6 +37,7 @@ class TestSharePointGroup(SPTestCase):
         self.assertGreaterEqual(len(result), 1)
 
     def test4_expand_to_principals(self):
+        assert self.result_group is not None
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
@@ -40,6 +45,7 @@ class TestSharePointGroup(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test5_remove_user_from_group(self):
+        assert self.result_group is not None
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
@@ -47,6 +53,7 @@ class TestSharePointGroup(SPTestCase):
         self.assertEqual(len(result), 0)
 
     def test6_delete_group(self):
+        assert self.result_group is not None
         if not self.result_group:
             self.skipTest("Prerequisite failed - no group created")
 
