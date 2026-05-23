@@ -1,4 +1,4 @@
-"""Demonstrates how to create a Choice field in a SharePoint list
+"""Demonstrates how to update an existing field (title, required, etc.)
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
@@ -13,8 +13,8 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     password=test_password,
 )
 lib = ctx.web.default_document_library()
-field = lib.fields.add_choice_field(
-    title="TaskStatus", values=["Not Started", "In Progress", "Completed", "Deferred"]
-).execute_query()
-print(f"Choice field created: {field.internal_name}")
-field.delete_object().execute_query()
+field = lib.fields.get_by_internal_name_or_title("Title")
+field.set_property("Title", "Document Title")
+field.set_property("Required", True)
+field.update().execute_query()
+print(f"Field updated: {field.internal_name}")

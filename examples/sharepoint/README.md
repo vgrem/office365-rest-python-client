@@ -18,7 +18,7 @@ prints clear output.
 | [`sites/`](./sites/) | [README](./sites/README.md) | Create, delete, clone, status |
 | [`webs/`](./webs/) | [README](./webs/README.md) | Properties, lists, roles, changes, activities |
 | [`tenant/`](./tenant/) | [README](./tenant/README.md) | Site collections, admin, licensing |
-| [`fields/`](./fields/) | [README](./fields/README.md) | Create lookup, date, choice, taxonomy fields |
+| [`fields/`](./fields/) | [README](./fields/README.md) | CRUD for all field types — text, number, date, choice, lookup, user, taxonomy, calculated |
 | [`sharing/`](./sharing/) | [README](./sharing/README.md) | Share files/folders, create anonymous links |
 | [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
 | [`sitedesigns/`](./sitedesigns/) | [README](./sitedesigns/README.md) | Site designs, site scripts, provisioning automation |

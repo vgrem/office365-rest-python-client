@@ -1,4 +1,4 @@
-"""Demonstrates how to create a Choice field in a SharePoint list
+"""Demonstrates how to retrieve all fields (site columns) from a SharePoint site
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
@@ -12,9 +12,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-lib = ctx.web.default_document_library()
-field = lib.fields.add_choice_field(
-    title="TaskStatus", values=["Not Started", "In Progress", "Completed", "Deferred"]
-).execute_query()
-print(f"Choice field created: {field.internal_name}")
-field.delete_object().execute_query()
+web_fields = ctx.web.fields.get().execute_query()
+for f in web_fields:
+    print(f"Field name {f.internal_name}")

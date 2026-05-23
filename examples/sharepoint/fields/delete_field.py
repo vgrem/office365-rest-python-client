@@ -1,4 +1,4 @@
-"""Demonstrates how to create a Choice field in a SharePoint list
+"""Demonstrates how to delete a field from a list
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
 """
@@ -13,8 +13,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     password=test_password,
 )
 lib = ctx.web.default_document_library()
-field = lib.fields.add_choice_field(
-    title="TaskStatus", values=["Not Started", "In Progress", "Completed", "Deferred"]
-).execute_query()
-print(f"Choice field created: {field.internal_name}")
+field = lib.fields.get_by_internal_name_or_title("Notes")
 field.delete_object().execute_query()
+print("Field deleted")

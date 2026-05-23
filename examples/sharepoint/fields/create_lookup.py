@@ -4,17 +4,20 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import create_unique_name, test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-field_name = create_unique_name("MultilookupField")
-client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-lookup_list = client.web.default_document_library()
-
-field = client.web.fields.add_lookup_field(
-    title=field_name,
+ctx = ClientContext(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
+lookup_list = ctx.web.default_document_library()
+field = ctx.web.fields.add_lookup_field(
+    title="RelatedDocument",
     lookup_list=lookup_list,
     lookup_field_name="Title",
     allow_multiple_values=True,
 ).execute_query()
-print(f"Field  {field_name} has been created")
-field.delete_object().execute_query()  # clean up
+print(f"Lookup field created: {field.internal_name}")
+field.delete_object().execute_query()

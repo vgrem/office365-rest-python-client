@@ -5,52 +5,43 @@ text, number, date, choice, lookup, taxonomy, calculated, and more.
 Fields can be created at the **web level** (available everywhere) or
 at the **list level** (scoped to a single list).
 
-This page groups examples by **what you want to do** — not by API endpoint.
-
----
-
 ## ✏️ Create Fields
 
-```python
-from office365.sharepoint.client_context import ClientContext
+| What | File | Notes |
+|------|------|-------|
+| **Text field** | [`create_text_field.py`](./create_text_field.py) | Single line of text |
+| **Number field** | [`create_number_field.py`](./create_number_field.py) | Numeric value |
+| **Date field** | [`create_date.py`](./create_date.py) | Date/time column |
+| **Choice field** | [`create_choice.py`](./create_choice.py) | Single or multi-value dropdown |
+| **Lookup field** | [`create_lookup.py`](./create_lookup.py) | Reference another list |
+| **User field** | [`create_user_field.py`](./create_user_field.py) | Person/Group picker |
+| **Calculated field** | [`create_calculated.py`](./create_calculated.py) | Formula-based value |
+| **Taxonomy field** | [`create_taxonomy.py`](./create_taxonomy.py) | Managed metadata term set |
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
-)
-
-# Get a target list
-target_list = ctx.web.lists.get_by_title("Documents")
-
-# Create a choice field
-field = target_list.fields.add_choice_field("TaskStatus", ["Not Started", "In Progress", "Completed"]).execute_query()
-
-# Create a lookup field
-field = target_list.fields.add_lookup_field("RelatedDocuments", target_list.id, "Title").execute_query()
-
-# Create a date/time field
-field = target_list.fields.add_date_time_field("DueDate").execute_query()
-```
+## 🔍 Read Fields
 
 | What | File | Notes |
 |------|------|-------|
-| **Create choice field** | [`create_choice.py`](./create_choice.py) | Single or multi-value |
-| **Create lookup field** | [`create_lookup.py`](./create_lookup.py) | Reference another list |
-| **Create date/time field** | [`create_date.py`](./create_date.py) | Date only or date + time |
-| **Create calculated field** | [`create_calculated.py`](./create_calculated.py) | Formula-based value |
-| **Create taxonomy field** | [`create_taxonomy.py`](./create_taxonomy.py) | Managed metadata term set |
+| **Get fields from list** | [`get_fields_from_list.py`](./get_fields_from_list.py) | All columns scoped to a list |
+| **Get fields from web** | [`get_fields_from_web.py`](./get_fields_from_web.py) | Site columns available globally |
 
-## 🔍 Get Fields
+## ✏️ Update Fields
 
 | What | File | Notes |
 |------|------|-------|
-| **Get fields from a list** | [`get_from_list.py`](./get_from_list.py) | All fields scoped to a list |
-| **Get fields from web** | [`get_from_web.py`](./get_from_web.py) | Site columns available globally |
+| **Update field** | [`update_field.py`](./update_field.py) | Change title, required, or other properties |
+
+## 🗑️ Delete Fields
+
+| What | File | Notes |
+|------|------|-------|
+| **Delete field** | [`delete_field.py`](./delete_field.py) | Remove a field from a list |
 
 ## ↔️ Copy Fields
 
 | What | File | Notes |
 |------|------|-------|
-| **Copy field between lists** | [`copy_field.py`](./copy_field.py) | Duplicate field definition |
+| **Copy field between sites** | [`copy_field.py`](./copy_field.py) | Duplicate field via schema XML |
 
 ---
 
