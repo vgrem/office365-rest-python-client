@@ -94,10 +94,9 @@ items = target_list.get_items_by_caml_query(caml_xml).execute_query()
 
 ```python
 from office365.sharepoint.client_context import ClientContext
-from tests import test_team_site_url, test_client_id, test_client_secret
 
-ctx = ClientContext(test_team_site_url).with_client_credentials(
-    test_client_id, test_client_secret
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
+    "your_client_id", "your_client_secret"
 )
 
 # Get a reference to a list by title, then work with it
@@ -105,8 +104,6 @@ target_list = ctx.web.lists.get_by_title("Documents")
 props = target_list.get().execute_query()
 print(props.title)
 ```
-
-Replace the test imports with your own credentials when running outside the test suite.
 
 ## Official docs
 

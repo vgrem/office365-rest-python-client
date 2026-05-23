@@ -108,10 +108,9 @@ All examples use the same pattern:
 
 ```python
 from office365.sharepoint.client_context import ClientContext
-from tests import test_team_site_url, test_client_id, test_client_secret
 
-ctx = ClientContext(test_team_site_url).with_client_credentials(
-    test_client_id, test_client_secret
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
+    "your_client_id", "your_client_secret"
 )
 
 # Get a reference to a list, then work with its items
@@ -120,8 +119,6 @@ items = target_list.items.get().execute_query()
 for item in items:
     print(item.properties.get("Title"))
 ```
-
-Replace the test imports with your own credentials when running outside the test suite.
 
 ## Official docs
 

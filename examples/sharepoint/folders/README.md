@@ -107,10 +107,9 @@ folder.copy_to("/sites/team/Shared Documents/Backup").execute_query()
 
 ```python
 from office365.sharepoint.client_context import ClientContext
-from tests import test_team_site_url, test_client_id, test_client_secret
 
-ctx = ClientContext(test_team_site_url).with_client_credentials(
-    test_client_id, test_client_secret
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
+    "your_client_id", "your_client_secret"
 )
 
 # Get a folder reference
@@ -119,8 +118,6 @@ files = folder.files.get().execute_query()
 for f in files:
     print(f.name)
 ```
-
-Replace the test imports with your own credentials when running outside the test suite.
 
 ## Official docs
 
