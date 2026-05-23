@@ -22,6 +22,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 
 # Export current web configuration as a site script
 serialized = SiteScriptUtility.get_site_script_from_web(ctx, test_site_url).execute_query()
+assert serialized.value.JSON is not None
 print(f"Generated site script ({len(serialized.value.JSON)} chars)")
 
 # Create the site script from the exported JSON
