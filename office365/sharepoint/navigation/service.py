@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
@@ -12,11 +16,14 @@ from office365.sharepoint.navigation.menu.state import MenuState
 from office365.sharepoint.navigation.provider_type import NavigationProviderType
 from office365.sharepoint.navigation.publishing_navigation_provider_type import PublishingNavigationProviderType
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class NavigationService(Entity):
     """The entry point for REST-based navigation service operations."""
 
-    def __init__(self, context):
+    def __init__(self, context: ClientContext):
         """The entry point for REST-based navigation service operations."""
         super().__init__(
             context,
@@ -31,8 +38,9 @@ class NavigationService(Entity):
         Gets a publishing navigation provider type when publishing feature is turned on for the site (2).
         If navigation provider is not found on the site MUST return InvalidSiteMapProvider type.
 
-        :param NavigationProviderType map_provider_name: The server will use "SPNavigationProvider" as provider name
-            if mapProviderName is not specified.
+        Args:
+            map_provider_name: The server will use "SPNavigationProvider" as provider name
+                if mapProviderName is not specified.
         """
         return_type = ClientResult(self.context, PublishingNavigationProviderType.InvalidSiteMapProvider)
         params = {"mapProviderName": map_provider_name.value}
@@ -41,14 +49,12 @@ class NavigationService(Entity):
         return return_type
 
     def global_nav(self) -> ClientResult[MenuState]:
-        """"""
         return_type = ClientResult(self.context, MenuState())
         qry = ServiceOperationQuery(self, "GlobalNav", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def global_nav_enabled(self) -> ClientResult[bool]:
-        """ """
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "GlobalNavEnabled", None, None, None, return_type)
         self.context.add_query(qry)
@@ -56,18 +62,20 @@ class NavigationService(Entity):
 
     def set_global_nav_enabled(self, is_enabled: bool) -> Self:
         """
-        :param bool is_enabled:
+        Args:
+            is_enabled: Whether global navigation is enabled.
         """
         qry = ServiceOperationQuery(self, "SetGlobalNavEnabled", None, {"isEnabled": is_enabled})
         self.context.add_query(qry)
         return self
 
-    def menu_node_key(self, current_url, map_provider_name=None):
+    def menu_node_key(self, current_url: str, map_provider_name: str | None = None) -> ClientResult[str]:
         """
         Returns the unique key for a node within the menu tree. If a key cannot be found, an exception is returned.
 
-        :param str current_url: A URL relative to the site collection identifying the node within the menu tree.
-        :param str map_provider_name: The name identifying a provider to use for the lookup
+        Args:
+            current_url: A URL relative to the site collection identifying the node within the menu tree.
+            map_provider_name: The name identifying a provider to use for the lookup
         """
         return_type = ClientResult(self.context, str())
         params = {"currentUrl": current_url, "mapProviderName": map_provider_name}
@@ -79,19 +87,20 @@ class NavigationService(Entity):
         self,
         menu_node_key: str,
         map_provider_name: NavigationProviderType,
-        depth=None,
-        custom_properties=None,
+        depth: int | None = None,
+        custom_properties: str | None = None,
     ) -> ClientResult[MenuState]:
         """
         Returns the menu tree rooted at the specified root node for a given provider.
 
-        :param str menu_node_key: A unique key identifying the node that will be used as root node in the returned
-            result
-        :param NavigationProviderType map_provider_name: The name identifying a provider to use for the lookup
-        :param int depth:  The number of levels to include in the returned site map. If no value is specified,
-           a depth of 10 is used.
-        :param str custom_properties: A comma separated list of custom properties to request.
-            The character "\" is used to escape commas, allowing comma to be part of the property names.
+        Args:
+            menu_node_key: A unique key identifying the node that will be used as root node in the returned
+                result
+            map_provider_name: The name identifying a provider to use for the lookup
+            depth: The number of levels to include in the returned site map. If no value is specified,
+                a depth of 10 is used.
+            custom_properties: A comma separated list of custom properties to request.
+                The character "\\" is used to escape commas, allowing comma to be part of the property names.
         """
         return_type = ClientResult(self.context, MenuState())
         payload = {
@@ -107,9 +116,10 @@ class NavigationService(Entity):
     def save_menu_state(self, menu_node_key: str, map_provider_name: NavigationProviderType) -> ClientResult[int]:
         """Updates the menu tree rooted at the specified root node for a given provider.
 
-        :param str menu_node_key: A unique key identifying the node that will be used as root node in the returned
-            result
-        :param NavigationProviderType map_provider_name: The name identifying a provider to use for the lookup
+        Args:
+            menu_node_key: A unique key identifying the node that will be used as root node in the returned
+                result
+            map_provider_name: The name identifying a provider to use for the lookup
         """
         return_type = ClientResult(self.context, int())
         payload = {
@@ -136,5 +146,5 @@ class NavigationService(Entity):
         return super().get_property(name, default_value)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Navigation.REST.NavigationServiceRest"

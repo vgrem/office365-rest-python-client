@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -16,15 +17,15 @@ class ConfiguredMetadataNavigationItem(ClientValue):
     is_hierarchy: Indicates whether this item is hierarchical.
     """
 
-    FieldDisplayName: Optional[str] = None
-    FieldTitle: Optional[str] = None
-    FieldTypeAsString: Optional[str] = None
-    IsContentTypeField: Optional[bool] = None
-    IsFolderHierarchy: Optional[bool] = None
-    IsHierarchy: Optional[bool] = None
-    IsMultiValueLookup: Optional[bool] = None
-    IsTaxonomyField: Optional[bool] = None
+    FieldDisplayName: str | None = None
+    FieldTitle: str | None = None
+    FieldTypeAsString: str | None = None
+    IsContentTypeField: bool | None = None
+    IsFolderHierarchy: bool | None = None
+    IsHierarchy: bool | None = None
+    IsMultiValueLookup: bool | None = None
+    IsTaxonomyField: bool | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.MetadataNavigation.ConfiguredMetadataNavigationItem"

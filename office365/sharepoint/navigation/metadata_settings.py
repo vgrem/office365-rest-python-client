@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -20,13 +20,15 @@ class MetadataNavigationSettings(Entity):
     def get_configured_settings(
         context: ClientContext,
         url: str,
-        return_type: Optional[ClientResult[ConfiguredMetadataNavigationItemCollection]] = None,
+        return_type: ClientResult[ConfiguredMetadataNavigationItemCollection] | None = None,
     ):
         """
         Retrieves the configured metadata navigation settings for the list with the specified url.
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str url: Specifies list url
-        :param ClientResult return_type: Return type
+
+        Args:
+            context: SharePoint context
+            url: Specifies list url
+            return_type: Return type
         """
 
         if return_type is None:
@@ -45,5 +47,5 @@ class MetadataNavigationSettings(Entity):
         return return_type
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.MetadataNavigation.MetadataNavigationSettings"

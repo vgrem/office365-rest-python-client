@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
@@ -9,7 +9,7 @@ class Navigation(Entity):
     """Represents navigation operations at the site collection level."""
 
     @property
-    def use_shared(self) -> Optional[bool]:
+    def use_shared(self) -> bool | None:
         """Gets a value that specifies whether the site inherits navigation."""
         return self.properties.get("UseShared", None)
 

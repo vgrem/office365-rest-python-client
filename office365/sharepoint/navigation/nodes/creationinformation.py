@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -10,23 +9,14 @@ from office365.runtime.client_value import ClientValue
 class NavigationNodeCreationInformation(ClientValue):
     """
     Describes a new navigation node to be created.
-
-    :param NavigationNodeCreationInformation previous_node: Gets or sets a value that specifies the navigation node
-    after which the new navigation node will appear in the navigation node collection.
-    :param bool as_last_node: Gets or sets a value that specifies whether the navigation node will be created
-    as the last node in the collection.
-    :param str url: Gets or sets a value that specifies the URL to be stored with the navigation node.
-    :param str title: Gets or sets a value that specifies the anchor text for the node navigation link.
-    :param bool is_external: Gets or sets a value that specifies whether the navigation node URL potentially
-    corresponds to pages outside of the site collection.
     """
 
-    Title: Optional[str] = None
-    Url: Optional[str] = None
+    Title: str | None = None
+    Url: str | None = None
     IsExternal: bool = False
     AsLastNode: bool = False
-    PreviousNode: Optional["NavigationNodeCreationInformation"] = None
+    PreviousNode: NavigationNodeCreationInformation | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.NavigationNode"

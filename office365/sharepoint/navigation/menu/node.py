@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -15,17 +14,17 @@ class MenuNode(ClientValue):
     navigation nodes.
     """
 
-    AudienceIds: Optional[List[str]] = None
-    CurrentLCID: Optional[int] = None
-    IsDeleted: Optional[bool] = None
-    IsHidden: Optional[bool] = None
+    AudienceIds: list[str] | None = None
+    CurrentLCID: int | None = None
+    IsDeleted: bool | None = None
+    IsHidden: bool | None = None
     Key = None
     Nodes: ClientValueCollection[MenuNode] | None = None
     NodeType = None
     OpenInNewWindow = None
-    SimpleUrl: Optional[str] = None
-    Title: Optional[str] = None
+    SimpleUrl: str | None = None
+    Title: str | None = None
     Translations: ClientValueCollection[SPResourceEntry] | None = None
-    CustomProperties: Optional[dict] = None
-    FriendlyUrlSegment: Optional[str] = None
-    IsTitleForExistingLanguage: Optional[bool] = None
+    CustomProperties: dict | None = None
+    FriendlyUrlSegment: str | None = None
+    IsTitleForExistingLanguage: bool | None = None

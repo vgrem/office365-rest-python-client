@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
@@ -14,5 +16,5 @@ class ConfiguredMetadataNavigationItemCollection(ClientValue):
     Items: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(ConfiguredMetadataNavigationItem))
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.MetadataNavigation.ConfiguredMetadataNavigationItemCollection"

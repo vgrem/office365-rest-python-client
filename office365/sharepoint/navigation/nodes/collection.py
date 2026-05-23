@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -9,11 +13,14 @@ from office365.sharepoint.navigation.nodes.creationinformation import (
 )
 from office365.sharepoint.navigation.nodes.node import NavigationNode
 
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
+
 
 class NavigationNodeCollection(EntityCollection[NavigationNode]):
     """Represents a collection of NavigationNode resources."""
 
-    def __init__(self, context, resource_path=None):
+    def __init__(self, context: ClientContext, resource_path=None):
         super().__init__(context, NavigationNode, resource_path)
 
     def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:
@@ -32,8 +39,9 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         """
         Moves a navigation node after a specified navigation node in the navigation node collection.
 
-        :param int node_id: Identifier of the navigation node that is moved.
-        :param int previous_node_id: Identifier of the navigation node after which the node identified by nodeId moves to
+        Args:
+            node_id: Identifier of the navigation node that is moved.
+            previous_node_id: Identifier of the navigation node after which the node identified by nodeId moves to
         """
         params = {"nodeId": node_id, "previousNodeId": previous_node_id}
         qry = ServiceOperationQuery(self, "MoveAfter", params)
@@ -44,7 +52,8 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         """
         Returns the navigation node at the specified index.
 
-        :param int index: The index of the navigation node to be returned.
+        Args:
+            index: The index of the navigation node to be returned.
         """
         return_type = NavigationNode(self.context)
         self.add_child(return_type)
@@ -56,6 +65,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         """Returns the navigation node with the specified identifier.
         It MUST return NULL if no navigation node corresponds to the specified identifier.
 
-        :param int node_id: Specifies the identifier of the navigation node.
+        Args:
+            node_id: Specifies the identifier of the navigation node.
         """
         return NavigationNode(self.context, ServiceOperationPath("GetById", [node_id], self.resource_path))

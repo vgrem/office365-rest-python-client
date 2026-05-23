@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.navigation.home_site_navigation_settings import HomeSiteNavigationSettings
@@ -13,5 +15,5 @@ class NavigationServiceRest(Entity):
         )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Navigation.REST.NavigationServiceRest"
