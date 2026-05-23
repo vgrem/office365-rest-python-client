@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Generic, Iterator, List, Optional, Type, TypeVar, Union
+from typing import Any, Generic, Iterator, TypeVar, cast
 
 from typing_extensions import Self
 
@@ -24,33 +26,28 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
     - SharePoint-compatible metadata generation
 
     Example:
-        >>> # Create a collection of strings
         >>> str_collection = ClientValueCollection(str, ["a", "b"])
         >>> str_collection.add("c")
 
-        >>> # Create a collection of UUIDs
         >>> uuid_collection = ClientValueCollection(uuid.UUID)
         >>> uuid_collection.add(uuid.uuid4())
 
-        >>> # Create a collection of complex types
         >>> class Address(ClientValue): ...
         >>> addr_collection = ClientValueCollection(Address)
         >>> addr_collection.add(Address())
     """
 
-    _item_type: Type[ValueT] = field(init=False)
+    _item_type: type[ValueT] | None = field(init=False)
     _data: list[ValueT] = field(default_factory=list)
 
-    def __init__(self, item_type: Type[ValueT] = None, _data: Optional[List[ValueT]] = None):  # type: ignore[assignment]
+    def __init__(self, item_type: type[ValueT] | None = None, _data: list[ValueT] | None = None):
         """Initialize a typed collection.
 
         Args:
             item_type: The type of items in this collection
             _data: Optional initial values (list or dict for complex types)
         """
-        if _data is None:
-            _data = []
-        self._data = _data
+        self._data = _data or []
         self._item_type = item_type
 
     def add(self, value: ValueT) -> Self:
@@ -65,7 +62,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         Raises:
             TypeError: If value doesn't match collection type
         """
-        if not isinstance(value, self._item_type):
+        if self._item_type is not None and not isinstance(value, self._item_type):
             raise TypeError(f"Expected {self._item_type}, got {type(value)}")
         self._data.append(value)
         return self
@@ -101,9 +98,11 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         return len(self._data)
 
     def __repr__(self) -> str:
-        return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"
+        if self._item_type is not None:
+            return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"
+        return f"ClientValueCollection[?]({self._data!r})"
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Union[List[Any], Dict[str, Any]]:  # type: ignore[reportIncompatibleMethodOverride]
+    def to_json(self, json_format: ODataJsonFormat | None = None) -> list[Any] | dict[str, Any]:  # type: ignore[reportIncompatibleMethodOverride]
         """Serializes the collection to OData JSON format.
 
         Args:
@@ -112,9 +111,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
                 - JsonLightFormat: Returns metadata-enriched structure
 
         Returns:
-            Union[List, Dict]: Serialized data in either:
-                - Simple array format
-                - JsonLight format with metadata
+            list or dict: Serialized data
 
         Example Outputs:
             Simple: ["a", "b", "c"]
@@ -136,7 +133,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
             }
         return json
 
-    def create_typed_value(self, initial_value: Optional[ValueT] = None) -> ValueT:
+    def create_typed_value(self, initial_value: ValueT | None = None) -> ValueT:
         """Creates a new item of the collection's type.
 
         Args:
@@ -146,22 +143,32 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
             A new instance of the collection's item type
 
         Raises:
+            TypeError: If collection item type is not set
             ValueError: If initial_value cannot be converted to item_type
         """
-        if initial_value is None:
-            return uuid.uuid4() if self._item_type == uuid.UUID else self._item_type()  # type: ignore[reportReturnType]
-        elif self._item_type == uuid.UUID:
-            return uuid.UUID(initial_value)  # type: ignore[reportReturnType,reportArgumentType]
-        elif issubclass(self._item_type, Enum):
-            return parse_enum(self._item_type, initial_value)  # type: ignore[reportReturnType,reportArgumentType]
-        elif issubclass(self._item_type, ClientValue):
-            value = self._item_type()
-            [value.set_property(k, v, False) for k, v in initial_value.items()]  # type: ignore[reportAttributeAccessIssue]
-            return value
-        else:
-            return initial_value  # type: ignore[reportReturnType]
+        if self._item_type is None:
+            raise TypeError("Collection item type is not set")
 
-    def set_property(self, index: int, value: Any, persist_changes: bool = False):  # type: ignore[reportIncompatibleMethodOverride]
+        if initial_value is None:
+            if self._item_type is uuid.UUID:
+                return cast(ValueT, uuid.uuid4())
+            return cast(ValueT, self._item_type())
+
+        if self._item_type is uuid.UUID:
+            return cast(ValueT, uuid.UUID(cast(str, initial_value)))
+
+        if issubclass(self._item_type, Enum):
+            return cast(ValueT, parse_enum(self._item_type, cast(str, initial_value)))  # type: ignore[arg-type]
+
+        if issubclass(self._item_type, ClientValue) and isinstance(initial_value, dict):
+            value = self._item_type()
+            for k, v in initial_value.items():
+                value.set_property(k, v, False)
+            return cast(ValueT, value)
+
+        return cast(ValueT, initial_value)
+
+    def set_property(self, index: int, value: Any, persist_changes: bool = False) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Adds an item to the collection after type conversion.
 
         Args:
@@ -178,11 +185,13 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
 
     @property
     def entity_type_name(self) -> str:
-        from office365.runtime.odata.type import ODataType
-
         """Gets the OData type name for this collection.
 
         Returns:
             str: The collection type name (e.g., "Collection(Edm.String)")
         """
+        from office365.runtime.odata.type import ODataType
+
+        if self._item_type is None:
+            return "Collection(Edm.Unknown)"
         return f"Collection({ODataType.resolve_type_name(self._item_type)})"

@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.taxonomy.item import TaxonomyItem
@@ -13,12 +13,13 @@ class TermGroup(TaxonomyItem):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
-    def get_term_sets_by_name(self, label, lcid=None):
+    def get_term_sets_by_name(self, label: str, lcid: int | None = None):
         """
         Search term set by name
 
-        :param str label: The name of the TermSet object.
-        :param int lcid: LCID of the language.
+        Args:
+            label: The name of the TermSet object.
+            lcid: LCID of the language.
         """
         return_type = TermSetCollection(self.context)
 
@@ -42,7 +43,7 @@ class TermGroup(TaxonomyItem):
         )
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """Gets the name of the Term Group"""
         return self.properties.get("displayName", None)
 

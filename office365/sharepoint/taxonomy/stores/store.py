@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -32,17 +32,18 @@ class TermStore(TaxonomyItem):
     def search_term(
         self,
         label: str,
-        set_id: Optional[str] = None,
-        parent_term_id: Optional[str] = None,
-        language_tag: Optional[str] = None,
+        set_id: str | None = None,
+        parent_term_id: str | None = None,
+        language_tag: str | None = None,
     ):
         """
         Search term by name
 
-        :param str label:
-        :param str set_id:
-        :param str or None parent_term_id:
-        :param str or None language_tag:
+        Args:
+            label:
+            set_id:
+            parent_term_id:
+            language_tag:
         """
         return_type = TaxonomyItemCollection[Term](self.context, Term, self.resource_path)
         params = {
@@ -56,7 +57,7 @@ class TermStore(TaxonomyItem):
         return return_type
 
     @property
-    def default_language_tag(self) -> Optional[str]:
+    def default_language_tag(self) -> str | None:
         """Gets or sets the LCID of the default working language."""
         return self.properties.get("defaultLanguageTag", None)
 

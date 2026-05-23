@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
@@ -10,12 +10,12 @@ class TaxonomyItem(ClientObject):
     when the item is last modified."""
 
     @property
-    def id(self) -> Optional[str]:
+    def id(self) -> str | None:
         """Gets the Id of the current TaxonomyItem"""
         return self.properties.get("id", None)
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Gets the name of the current TaxonomyItem object"""
         return self.properties.get("name", None)
 

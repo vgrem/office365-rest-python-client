@@ -1,24 +1,26 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class TaxonomyFieldCreateXmlParameters(ClientValue):
-    """:param str name:"""
+    """
+    Args:
+        name: Field name.
+    """
 
-    Name: Optional[str] = None
-    SspId: Optional[str] = None
-    TermSetId: Optional[str] = None
+    Name: str | None = None
+    SspId: str | None = None
+    TermSetId: str | None = None
     AnchorId: str = "00000000-0000-0000-0000-000000000000"
-    FieldId: Optional[str] = None
+    FieldId: str | None = None
     AllowMultipleValues: bool = False
-    ListId: Optional[str] = None
-    WebId: Optional[str] = None
-    TextFieldId: Optional[str] = None
+    ListId: str | None = None
+    WebId: str | None = None
+    TextFieldId: str | None = None
 
     @property
     def type_name(self):

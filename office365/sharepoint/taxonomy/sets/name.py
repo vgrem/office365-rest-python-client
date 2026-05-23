@@ -1,20 +1,21 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class LocalizedName(ClientValue):
-    """
-    Represents the localized name used in the term store, which identifies the name in the localized language.
+    """Represents the localized name used in the term store, which identifies the name in the localized language.
     For more information, see localizedLabel.
 
-    :param str name: The name in the localized language.
-    :param str language_tag: The language tag for the label.
+    Args:
+        name: The name in the localized language.
+        language_tag: The language tag for the label.
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     languageTag: str = "en-US"
 
     def __repr__(self):

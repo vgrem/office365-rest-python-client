@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
@@ -23,19 +24,19 @@ class TaxonomyMetadata(ClientValue):
         term_set_list: Comma-separated list of term set IDs
     """
 
-    anchorId: Optional[str] = None
-    excludedTermset: Optional[bool] = None
-    excludeKeyword: Optional[bool] = None
-    isAddTerms: Optional[bool] = None
-    isIncludeDeprecated: Optional[bool] = None
-    isIncludePathData: Optional[bool] = None
-    isIncludeUnavailable: Optional[bool] = None
-    isSpanTermSets: Optional[bool] = None
-    isSpanTermStores: Optional[bool] = None
-    lcid: Optional[int] = None
-    sspList: Optional[str] = None
-    termSetList: Optional[str] = None
+    anchorId: str | None = None
+    excludedTermset: bool | None = None
+    excludeKeyword: bool | None = None
+    isAddTerms: bool | None = None
+    isIncludeDeprecated: bool | None = None
+    isIncludePathData: bool | None = None
+    isIncludeUnavailable: bool | None = None
+    isSpanTermSets: bool | None = None
+    isSpanTermStores: bool | None = None
+    lcid: int | None = None
+    sspList: str | None = None
+    termSetList: str | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.Publishing.TaxonomyMetadata"

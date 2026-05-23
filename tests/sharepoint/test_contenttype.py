@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from random import randint
 
 from office365.sharepoint.changes.query import ChangeQuery
@@ -11,7 +13,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestContentType(SPTestCase):
-    target_ct: ContentType = None
+    target_ct: ContentType | None = None
     localized_title: str = "Contoso Dokumentti"
 
     def test1_list_site_content_types(self):
@@ -23,34 +25,37 @@ class TestContentType(SPTestCase):
         self.assertIsNotNone(result.name)
 
     def test3_create_content_type(self):
-        cti = ContentTypeCreationInformation("Contoso Document" + str(randint(0, 1000)))
+        cti = ContentTypeCreationInformation(f"Contoso Document {randint(0, 1000)}")
         ct = self.client.site.root_web.content_types.add(cti).execute_query()
         self.assertIsNotNone(ct.name)
-        self.__class__.target_ct = ct
+        type(self).target_ct = ct
 
     def test4_update_content_type(self):
-        ct = self.__class__.target_ct
+        assert self.target_ct is not None
+        ct = self.target_ct
         ct.description = "New desc"
         ct.update(True).execute_query()
         self.assertIsNotNone(ct.description)
 
     def test5_set_value_for_ui_culture(self):
-        ct = self.__class__.target_ct
+        assert self.target_ct is not None
+        ct = self.target_ct
         result = ct.name_resource.set_value_for_ui_culture("fi-FI", self.localized_title).execute_query()
         self.assertIsNotNone(result.value)
 
     def test6_get_value_for_ui_culture(self):
-        ct = self.__class__.target_ct
+        assert self.target_ct is not None
+        ct = self.target_ct
         result = ct.name_resource.get_value_for_ui_culture("fi-FI").execute_query()
         self.assertIsNotNone(result.value)
-        # self.assertEqual(result.value, self.localized_title)
 
     def test8_delete_content_type(self):
+        assert self.target_ct is not None
         web_cts = self.client.site.root_web.content_types.get().execute_query()
         before_count = len(web_cts)
-        self.__class__.target_ct.delete_object().execute_query()
+        self.target_ct.delete_object().execute_query()
         web_cts = self.client.site.root_web.content_types.get().execute_query()
-        self.assertTrue(before_count, len(web_cts) + 1)
+        self.assertEqual(before_count, len(web_cts) + 1)
 
     def test9_get_content_types_changes(self):
         result = self.client.web.get_changes(ChangeQuery(ContentType=True)).execute_query()

@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from office365.sharepoint.publishing.pages.service import SitePageService
-from office365.sharepoint.webs.web import Web
 
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestClientSideComponent(SPTestCase):
-    target_web: Web = None
 
     def test1_get_all_client_side_components(self):
         result = self.client.web.get_all_client_side_components().execute_query()

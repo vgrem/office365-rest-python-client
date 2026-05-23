@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -9,9 +10,9 @@ from office365.runtime.types.collections import StringCollection
 class ContentTypeSyndicationResult(ClientValue):
     FailedContentTypeErrors: StringCollection = field(default_factory=StringCollection)
     FailedContentTypeIDs: StringCollection = field(default_factory=StringCollection)
-    FailedReason: Optional[int] = None
-    IsPassed: Optional[bool] = None
+    FailedReason: int | None = None
+    IsPassed: bool | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.Taxonomy.ContentTypeSync.ContentTypeSyndicationResult"

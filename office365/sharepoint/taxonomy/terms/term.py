@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,17 +15,17 @@ class Term(TaxonomyItem):
         return f"{self.id}"
 
     @property
-    def is_deprecated(self) -> Optional[bool]:
+    def is_deprecated(self) -> bool | None:
         """"""
         return self.properties.get("isDeprecated", None)
 
     @property
-    def children_count(self) -> Optional[int]:
+    def children_count(self) -> int | None:
         """"""
         return self.properties.get("childrenCount", None)
 
     @property
-    def created_datetime(self) -> Optional[datetime]:
+    def created_datetime(self) -> datetime | None:
         """"""
         return self.properties.get("createdDateTime", datetime.min)
 

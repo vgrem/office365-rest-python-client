@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.types.resource_path import ResourcePath
@@ -8,9 +9,9 @@ from office365.sharepoint.types.resource_path import ResourcePath
 
 @dataclass
 class TranslationStatus(ClientValue):
-    Culture: Optional[str] = None
-    FileStatus: Optional[int] = None
-    HasPublishedVersion: Optional[bool] = None
-    LastModified: Optional[datetime] = None
+    Culture: str | None = None
+    FileStatus: int | None = None
+    HasPublishedVersion: bool | None = None
+    LastModified: datetime | None = None
     Path: ResourcePath = field(default_factory=ResourcePath)
-    Title: Optional[str] = None
+    Title: str | None = None

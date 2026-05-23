@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Union
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -20,13 +22,13 @@ class FeatureCollection(EntityCollection[Feature]):
         featdef_scope: int,
         verify_if_activated: bool = False,
     ) -> Feature:
-        """
-        Adds the feature to the collection of activated features and returns the added feature.
+        """Adds the feature to the collection of activated features and returns the added feature.
 
-        :param str feature_id: The feature identifier of the feature to be added.
-        :param bool force: Specifies whether to continue with the operation even if there are errors.
-        :param int featdef_scope: The feature scope for this feature.
-        :param bool verify_if_activated: Verify if activated first to avoid System.Data.DuplicateNameException exception
+        Args:
+            feature_id: The feature identifier of the feature to be added.
+            force: Whether to continue even if there are errors.
+            featdef_scope: The feature scope for this feature.
+            verify_if_activated: Verify if activated first to avoid System.Data.DuplicateNameException.
         """
         return_type = Feature(self.context)
         self.add_child(return_type)
@@ -53,10 +55,10 @@ class FeatureCollection(EntityCollection[Feature]):
         return return_type
 
     def get_by_id(self, feature_id: str) -> Feature:
-        """Returns the feature for the given feature identifier. Returns NULL if no feature is available for the given
-            feature identifier.
+        """Returns the feature for the given feature identifier.
 
-        :param str feature_id:  The feature identifier of the feature to be returned.
+        Args:
+            feature_id: The feature identifier of the feature to be returned.
         """
         return Feature(
             self.context,

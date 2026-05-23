@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.definitions.definition import FeatureDefinition
@@ -9,10 +11,16 @@ class FeatureDefinitionCollection(EntityCollection[FeatureDefinition]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, FeatureDefinition, resource_path, parent)
 
-    def get_feature_definition(self, feature_display_name, compatibility_level=None):
-        """
-        :param str feature_display_name:
-        :param int compatibility_level:
+    def get_feature_definition(
+        self,
+        feature_display_name: str,
+        compatibility_level: int | None = None,
+    ) -> FeatureDefinition:
+        """Retrieves a feature definition by display name.
+
+        Args:
+            feature_display_name: The display name of the feature definition.
+            compatibility_level: Optional compatibility level filter.
         """
         return_type = FeatureDefinition(self.context)
         payload = {
