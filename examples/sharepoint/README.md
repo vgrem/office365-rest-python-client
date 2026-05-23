@@ -20,7 +20,7 @@ prints clear output.
 | [`tenant/`](./tenant/) | [README](./tenant/README.md) | Site collections, admin, licensing |
 | [`fields/`](./fields/) | [README](./fields/README.md) | Create lookup, date, choice, taxonomy fields |
 | [`sharing/`](./sharing/) | [README](./sharing/README.md) | Share files/folders, create anonymous links |
-| [`search/`](./search/) | *(coming soon)* | Query sites, content, sorting |
+| [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
 | [`taxonomy/`](./taxonomy/) | *(coming soon)* | Term sets, term groups, managed metadata |
 | [`users/`](./users/) | *(coming soon)* | Current user, site users, permissions |
 | [`permissions/`](./permissions/) | *(coming soon)* | Grant, revoke, check permissions |
