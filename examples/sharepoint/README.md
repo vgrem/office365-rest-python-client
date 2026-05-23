@@ -10,7 +10,7 @@ prints clear output.
 
 | Directory | README | Covers |
 |-----------|--------|--------|
-| [`alm/`](./alm/) | [README](./alm/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
+| [`app-catalog/`](./app-catalog/) | [README](./app-catalog/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
 | [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, share, versions, permissions |
 | [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
 | [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
@@ -32,7 +32,7 @@ prints clear output.
 
 ### Smaller categories
 
-[`apps/`](./apps/) · [`audit/`](./audit/) · [`groups/`](./groups/) ·
+[`audit/`](./audit/) · [`groups/`](./groups/) ·
 [`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
 [`webhooks/`](./webhooks/) · [`sitedesigns/`](./sitedesigns/) ·
 [`sitescripts/`](./sitescripts/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
