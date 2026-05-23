@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import TYPE_CHECKING, Any, AnyStr, Callable, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Type
 
 from requests import Response
 from typing_extensions import Self
@@ -188,13 +188,13 @@ class ClientRuntimeContext(ABC):
         self._pending_request = None
         return self
 
-    def get_metadata(self) -> ClientResult[AnyStr]:
+    def get_metadata(self) -> ClientResult[bytes]:
         """Retrieves service metadata.
 
         Returns:
             ClientResult containing metadata XML
         """
-        return_type = ClientResult(self)
+        return_type = ClientResult(self, bytes())
 
         def _construct_request(request: RequestOptions) -> None:
             request.url += "/$metadata"

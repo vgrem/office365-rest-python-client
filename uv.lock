@@ -2745,6 +2745,7 @@ examples = [
     { name = "faker" },
 ]
 notebooks = [
+    { name = "jinja2" },
     { name = "jupyter" },
     { name = "nbformat" },
     { name = "pandas", version = "2.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -2777,6 +2778,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "faker", marker = "extra == 'examples'" },
+    { name = "jinja2", marker = "extra == 'notebooks'" },
     { name = "jupyter", marker = "extra == 'notebooks'" },
     { name = "msal", specifier = ">=1.28,<2" },
     { name = "nbformat", marker = "extra == 'notebooks'" },

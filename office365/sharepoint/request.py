@@ -73,18 +73,19 @@ class SharePointRequest(ODataRequest):
 
     def _get_context_web_information(self):
         """Returns a ContextWebInformation object that specifies metadata about the site."""
+        client = ODataRequest(JsonLightFormat())
+        client._transport = self._transport
+        client.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
         request = RequestOptions(f"{self.service_root_url}/contextInfo")
         request.method = HttpMethod.Post
-        response = self.execute_request_direct(request)
+        response = client.execute_request_direct(request)
         json_format = JsonLightFormat()
         json_format.function = "GetContextWebInformation"
         return_value = ContextWebInformation()
-        self.map_json(response.json(), return_value, json_format)
+        client.map_json(response.json(), return_value, json_format)
         return return_value
 
     def ensure_form_digest(self, request: RequestOptions) -> None:
-        if request.url.endswith("/contextInfo"):
-            return
         if not self.context_info.is_valid:
             self._ctx_web_info = self._get_context_web_information()
         assert self._ctx_web_info is not None
