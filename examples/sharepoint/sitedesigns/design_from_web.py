@@ -4,6 +4,7 @@ Create a site script from an existing web, then bundle it into a site design.
 https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
 """
 
+import json
 import uuid
 
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -24,8 +25,6 @@ serialized = SiteScriptUtility.get_site_script_from_web(ctx, test_site_url).exec
 print(f"Generated site script ({len(serialized.value.JSON)} chars)")
 
 # Create the site script from the exported JSON
-import json
-
 script_result = SiteScriptUtility.create_site_script(
     ctx, "Exported from web", "Auto-exported site script", json.loads(serialized.value.JSON)
 ).execute_query()
