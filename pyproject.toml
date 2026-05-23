@@ -52,6 +52,11 @@ optional-dependencies.examples = [
 optional-dependencies.ntlm = [
   "requests-ntlm",
 ]
+optional-dependencies.notebooks = [
+  "pandas>=1.3.0",
+  "jupyter",
+  "nbformat",
+]
 urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 
 [dependency-groups]
