@@ -401,7 +401,7 @@ class Tenant(Entity):
         """
         return self.sites.get_lock_state_by_id(site_id)
 
-    def hub_sites(self) -> HubSiteCollection:
+    def get_hub_sites(self) -> HubSiteCollection:
         """Gets information about all hub sites that the current user can access.
 
         Delegates to SPHubSitesUtility.GetHubSites().

@@ -17,7 +17,7 @@ class GetExternalUsersResults(Entity):
         return self.properties.get("UserCollectionPosition", None)
 
     @property
-    def external_user_collection(self):
+    def external_user_collection(self) -> ExternalUserCollection:
         return self.properties.get(
             "ExternalUserCollection",
             ExternalUserCollection(self.context, ResourcePath("ExternalUserCollection")),
