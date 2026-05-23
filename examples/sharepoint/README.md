@@ -25,7 +25,7 @@ prints clear output.
 | [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
 | [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check permissions |
 | [`pages/`](./pages/) | [README](./pages/README.md) | Create and publish pages |
-| [`views/`](./views/) | *(coming soon)* | Create and manage list views |
+| [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | *(coming soon)* | Create and manage content types |
 | [`features/`](./features/) | *(coming soon)* | Activate and deactivate site features |
 | [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
