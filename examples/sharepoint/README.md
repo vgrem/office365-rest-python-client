@@ -17,7 +17,7 @@ prints clear output.
 | [`folders/`](./folders/) | [README](./folders/README.md) | Create, delete, copy, move, share, list |
 | [`sites/`](./sites/) | [README](./sites/README.md) | Create, delete, clone, status |
 | [`webs/`](./webs/) | [README](./webs/README.md) | Properties, lists, roles, changes, activities |
-| [`tenant/`](./tenant/) | *(coming soon)* | Site collections, admin, licensing |
+| [`tenant/`](./tenant/) | [README](./tenant/README.md) | Site collections, admin, licensing |
 | [`fields/`](./fields/) | *(coming soon)* | Create lookup, date, choice, taxonomy fields |
 | [`sharing/`](./sharing/) | *(coming soon)* | Share files/folders, create anonymous links |
 | [`search/`](./search/) | *(coming soon)* | Query sites, content, sorting |
