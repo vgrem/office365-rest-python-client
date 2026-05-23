@@ -208,8 +208,8 @@ class ClientContext(ClientRuntimeContext):
         :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
         """
         batch_request = ODataBatchV3Request(JsonLightFormat())
-        batch_request.beforeExecute += self.authentication_context.authenticate_request  # type: ignore[operator]
-        batch_request.beforeExecute += self.pending_request().ensure_form_digest  # type: ignore[operator]
+        batch_request.beforeExecute += self.authentication_context.authenticate_request
+        batch_request.beforeExecute += self.pending_request().ensure_form_digest
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
             batch_request.execute_query(qry)

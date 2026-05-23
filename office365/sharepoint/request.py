@@ -53,8 +53,8 @@ class SharePointRequest(ODataRequest):
             browser_mode=browser_mode,
         )
         self._ctx_web_info = None
-        self.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
-        self.beforeExecute += self.ensure_form_digest  # type: ignore[operator]
+        self.beforeExecute += self._auth_context.authenticate_request
+        self.beforeExecute += self.ensure_form_digest
 
     def set_service_root(self, url: str) -> None:
         super().set_service_root(url)
@@ -75,7 +75,7 @@ class SharePointRequest(ODataRequest):
         """Returns a ContextWebInformation object that specifies metadata about the site."""
         client = ODataRequest(JsonLightFormat())
         client._transport = self._transport
-        client.beforeExecute += self._auth_context.authenticate_request  # type: ignore[operator]
+        client.beforeExecute += self._auth_context.authenticate_request
         request = RequestOptions(f"{self.service_root_url}/contextInfo")
         request.method = HttpMethod.Post
         response = client.execute_request_direct(request)

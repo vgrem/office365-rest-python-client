@@ -178,7 +178,7 @@ class GraphClient(ClientRuntimeContext):
             success_callback: Optional callback for successful requests
         """
         batch_request = ODataV4BatchRequest(V4JsonFormat())
-        batch_request.beforeExecute += self.pending_request().authenticate_request  # type: ignore[operator]
+        batch_request.beforeExecute += self.pending_request().authenticate_request
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
             batch_request.execute_query(qry)

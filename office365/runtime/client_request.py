@@ -18,8 +18,8 @@ class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
         self._transport = transport or RequestsTransport()
         self._service_root_url: str | None = None
-        self.beforeExecute = EventHandler()
-        self.afterExecute = EventHandler()
+        self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
+        self.afterExecute: EventHandler[[Response]] = EventHandler()
 
     @property
     def transport(self) -> BaseTransport:
