@@ -33,6 +33,7 @@ prints clear output.
 
 ### Smaller categories
 
+[`customactions/`](./customactions/) · [`eventreceivers/`](./eventreceivers/) ·
 [`audit/`](./audit/) · [`groups/`](./groups/) ·
 [`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
 [`webhooks/`](./webhooks/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
