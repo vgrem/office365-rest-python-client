@@ -6,6 +6,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-
 
 import uuid
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sitedesigns.creation_info import SiteDesignCreationInfo
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
@@ -35,7 +36,7 @@ design_info = SiteDesignCreationInfo(
     Title="Contoso site",
     Description="Standard Contoso team site with branding",
     WebTemplate="64",  # 64 = team site, 68 = communication site
-    SiteScriptIds=[uuid.UUID(script_id)],
+    SiteScriptIds=ClientValueCollection(uuid.UUID, [uuid.UUID(script_id)]),
 )
 design = SiteScriptUtility.create_site_design(ctx, design_info).execute_query()
 print(f"Site design created: {design.value.Title} (ID: {design.value.Id})")
