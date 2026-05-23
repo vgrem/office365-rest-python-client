@@ -23,7 +23,7 @@ prints clear output.
 | [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
 | [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
 | [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
-| [`permissions/`](./permissions/) | *(coming soon)* | Grant, revoke, check permissions |
+| [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check permissions |
 | [`pages/`](./pages/) | *(coming soon)* | Create and publish pages |
 | [`views/`](./views/) | *(coming soon)* | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | *(coming soon)* | Create and manage content types |
