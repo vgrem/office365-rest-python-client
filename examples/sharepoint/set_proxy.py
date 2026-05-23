@@ -1,23 +1,34 @@
 """
-Demonstrates how to configure a proxy for SharePoint requests.
+Demonstrates how to configure a proxy for all SharePoint REST API requests.
 
-https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
+Best practice: set proxy at the transport level by passing a pre-configured
+``requests.Session`` to ``RequestsTransport``.  This ensures the proxy
+applies to ALL requests, including internal ones (form digest).
+
+For MSAL authentication requests to login.microsoftonline.com, set the
+``HTTPS_PROXY`` environment variable instead — MSAL reads it automatically.
+
+Usage:
+    export HTTPS_PROXY="http://proxy:8080"
+    python set_proxy.py
+
+See https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 """
 
+import requests
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.webs.web import Web
-from tests import test_client_id, test_client_secret, test_site_url
+from office365.runtime.transport.requests_transport import RequestsTransport
 
+session = requests.Session()
+session.proxies = {
+    "http": "http://proxy:8080",
+    "https": "http://proxy:8080",
+}
 
-def set_proxy(request):
-    print("Inject proxy settings...")
-    # proxies = {settings.get('default', 'site_url'): 'https://127.0.0.1:8888'}
-    # request.proxies = proxies
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
+    "your_client_id", "your_client_secret"
+)
+ctx.pending_request().transport = RequestsTransport(session)
 
-
-ctx = ClientContext(test_site_url).with_client_credentials(test_client_id, test_client_secret)
-
-ctx.pending_request().beforeExecute += set_proxy
-
-result = Web.get_context_web_information(ctx).execute_query()
-print(result.value.LibraryVersion)
+web = ctx.web.get().execute_query()
+print(f"Connected to: {web.url}")
