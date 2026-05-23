@@ -14,13 +14,13 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
-if designs:
-    target = designs[0]
+result = SiteScriptUtility.get_site_designs(ctx).execute_query()
+if result.value:
+    target = result.value[0]
     assert target.Id is not None
     detail = SiteScriptUtility.get_site_design_metadata(ctx, target.Id).execute_query()
-    print(f"Title: {detail.Title}")
-    print(f"Description: {detail.Description}")
-    print(f"WebTemplate: {detail.WebTemplate}")
-    print(f"SiteScriptIds: {detail.SiteScriptIds}")
-    print(f"Id: {detail.Id}")
+    print(f"Title: {detail.value.Title}")
+    print(f"Description: {detail.value.Description}")
+    print(f"WebTemplate: {detail.value.WebTemplate}")
+    print(f"SiteScriptIds: {detail.value.SiteScriptIds}")
+    print(f"Id: {detail.value.Id}")

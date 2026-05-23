@@ -16,7 +16,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-scripts = SiteScriptUtility.get_site_scripts(ctx).execute_query()
-for s in scripts:
+result = SiteScriptUtility.get_site_scripts(ctx).execute_query()
+for s in result.value:
     print(f"  {s.Title}  (ID: {s.Id}, Version: {s.Version})")
-print(f"Total: {len(scripts)} site script(s)")
+print(f"Total: {len(result.value)} site script(s)")

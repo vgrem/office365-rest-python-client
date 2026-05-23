@@ -14,9 +14,9 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-scripts = SiteScriptUtility.get_site_scripts(ctx).execute_query()
-if scripts:
-    target = scripts[0]
+result = SiteScriptUtility.get_site_scripts(ctx).execute_query()
+if result.value:
+    target = result.value[0]
     assert target.Id is not None
     SiteScriptUtility.delete_site_script(ctx, target.Id).execute_query()
     print(f"Deleted site script: {target.Title} (ID: {target.Id})")

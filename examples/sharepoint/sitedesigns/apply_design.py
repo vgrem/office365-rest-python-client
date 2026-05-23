@@ -14,11 +14,9 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
-if designs:
-    target = designs[0]
+result = SiteScriptUtility.get_site_designs(ctx).execute_query()
+if result.value:
+    target = result.value[0]
     assert target.Id is not None
-    task = SiteScriptUtility.add_site_design_task(
-        ctx, test_site_url, target.Id
-    ).execute_query()
+    task = SiteScriptUtility.add_site_design_task(ctx, test_site_url, target.Id).execute_query()
     print(f"Site design '{target.Title}' applied (task ID: {task.value.ID})")

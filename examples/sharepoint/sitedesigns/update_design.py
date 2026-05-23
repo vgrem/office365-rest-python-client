@@ -15,13 +15,13 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
-if designs:
-    target = designs[0]
+result = SiteScriptUtility.get_site_designs(ctx).execute_query()
+if result.value:
+    target = result.value[0]
     # Build update payload with new description
     update_info = SiteDesignMetadata(id_=target.Id)
     update_info.Title = target.Title
     update_info.Description = f"{target.Description} (updated)"
     update_info.WebTemplate = target.WebTemplate
-    result = SiteScriptUtility.update_site_design(ctx, update_info).execute_query()
-    print(f"Updated: {result.Title} — {result.Description}")
+    updated = SiteScriptUtility.update_site_design(ctx, update_info).execute_query()
+    print(f"Updated: {updated.value.Title} — {updated.value.Description}")

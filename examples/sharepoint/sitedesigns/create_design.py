@@ -38,4 +38,4 @@ design_info = SiteDesignCreationInfo(
     SiteScriptIds=[uuid.UUID(script_id)],
 )
 design = SiteScriptUtility.create_site_design(ctx, design_info).execute_query()
-print(f"Site design created: {design.Title} (ID: {design.Id})")
+print(f"Site design created: {design.value.Title} (ID: {design.value.Id})")

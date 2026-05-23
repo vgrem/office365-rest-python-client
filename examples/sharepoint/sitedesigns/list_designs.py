@@ -14,7 +14,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-designs = SiteScriptUtility.get_site_designs(ctx).execute_query()
-for d in designs:
+result = SiteScriptUtility.get_site_designs(ctx).execute_query()
+for d in result.value:
     print(f"  {d.Title}  (ID: {d.Id}, WebTemplate: {d.WebTemplate})")
-print(f"Total: {len(designs)} site design(s)")
+print(f"Total: {len(result.value)} site design(s)")

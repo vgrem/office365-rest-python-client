@@ -19,9 +19,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 )
 
 # Export current web configuration as a site script
-serialized = SiteScriptUtility.get_site_script_from_web(
-    ctx, test_site_url
-).execute_query()
+serialized = SiteScriptUtility.get_site_script_from_web(ctx, test_site_url).execute_query()
 print(f"Generated site script ({len(serialized.value.JSON)} chars)")
 
 # Create the site script from the exported JSON
@@ -39,4 +37,4 @@ design_info = SiteDesignCreationInfo(
     SiteScriptIds=[uuid.UUID(script_result.value.Id)],
 )
 design = SiteScriptUtility.create_site_design(ctx, design_info).execute_query()
-print(f"Site design created: {design.Title} (ID: {design.Id})")
+print(f"Site design created: {design.value.Title} (ID: {design.value.Id})")
