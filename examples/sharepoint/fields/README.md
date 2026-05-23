@@ -22,13 +22,13 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cre
 target_list = ctx.web.lists.get_by_title("Documents")
 
 # Create a choice field
-field = target_list.fields.add_choice_field("Status", ["Not Started", "In Progress", "Completed"]).execute_query()
+field = target_list.fields.add_choice_field("TaskStatus", ["Not Started", "In Progress", "Completed"]).execute_query()
 
 # Create a lookup field
-field = target_list.fields.add_lookup_field("RelatedDoc", target_list.id, "Title").execute_query()
+field = target_list.fields.add_lookup_field("RelatedDocuments", target_list.id, "Title").execute_query()
 
 # Create a date/time field
-field = target_list.fields.add_date_time_field("Deadline").execute_query()
+field = target_list.fields.add_date_time_field("DueDate").execute_query()
 ```
 
 | What | File | Notes |
