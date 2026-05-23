@@ -34,7 +34,7 @@ prints clear output.
 
 [`apps/`](./apps/) · [`audit/`](./audit/) · [`groups/`](./groups/) ·
 [`hubsites/`](./hubsites/) · [`migration/`](./migration/) · [`navigation/`](./navigation/) ·
-[`pushnotifications/`](./pushnotifications/) · [`sitedesigns/`](./sitedesigns/) ·
+[`webhooks/`](./webhooks/) · [`sitedesigns/`](./sitedesigns/) ·
 [`sitescripts/`](./sitescripts/) · [`teams/`](./teams/) · [`userprofile/`](./userprofile/)
 
 ---
