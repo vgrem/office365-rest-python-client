@@ -15,6 +15,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.utilities import get_absolute_url
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 
 
@@ -197,6 +198,9 @@ class SharePointRequest(ODataRequest):
             password: The password
             scopes: Scopes requested to access a protected API (a resource)
         """
+        if scopes is None:
+            resource = get_absolute_url(self.base_url)
+            scopes = [f"{resource}/.default"]
         self._auth_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
