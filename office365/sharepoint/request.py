@@ -180,6 +180,26 @@ class SharePointRequest(ODataRequest):
         self._auth_context.with_device_flow(tenant, client_id, scopes)
         return self
 
+    def with_username_and_password(
+        self,
+        tenant: str,
+        client_id: str,
+        username: str,
+        password: str,
+        scopes: Optional[list[str]] = None,
+    ) -> Self:
+        """Initialize with username/password authentication (MSAL ROPC flow).
+
+        Args:
+            tenant: Tenant name or identifier, e.g. "contoso.onmicrosoft.com"
+            client_id: The OAuth client ID of the calling application
+            username: Typically a UPN in the form of an email address
+            password: The password
+            scopes: Scopes requested to access a protected API (a resource)
+        """
+        self._auth_context.with_username_and_password(tenant, client_id, username, password, scopes)
+        return self
+
     def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """
         Authenticate interactively via browser
