@@ -35,7 +35,7 @@ This page groups examples by **what you want to do** — not by API endpoint.
 | **Specific version** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Download by version label |
 | **All versions** | [`download_versions.py`](./download_versions.py) | Download every version |
 
-## 👁️ View & Inspect
+## 🔍 Browse & Discover
 
 | What | File | Notes |
 |------|------|-------|

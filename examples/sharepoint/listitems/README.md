@@ -33,7 +33,7 @@ item.delete_object().execute_query()
 | **Delete items in bulk** | [`delete_bulk.py`](./delete_bulk.py) | Many deletes, single request |
 | **Copy items between lists** | [`copy_items.py`](./copy_items.py) | |
 
-## 👁️ Read & Query
+## 🔍 Read & Query
 
 ```python
 # Read all items
