@@ -2,40 +2,31 @@
 
 SharePoint search uses the **REST query API** to find sites, documents,
 and list items across the tenant. Queries are written as simple text
-or with property filters and sort orders.
+or with property filters, refiners, and sort orders.
 
 This page groups examples by **what you want to do** — not by API endpoint.
 
 ---
 
-## 🔍 Basic Search
-
-```python
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
-)
-
-# Simple keyword search
-result = ctx.search.query("financial report").execute_query()
-for item in result.value:
-    print(item.Title, item.Path)
-```
+## 🔍 Query
 
 | What | File | Notes |
 |------|------|-------|
-| **Simple search** | [`search_simple.py`](./search_simple.py) | Keyword query across all content |
-| **Search documents only** | [`search_documents.py`](./search_documents.py) | Scope to document libraries |
-| **Search sites only** | [`search_site_only.py`](./search_site_only.py) | Scope to site collections |
-| **Search with sorting** | [`search_sort_list.py`](./search_sort_list.py) | Sort by managed property |
-| **Search all sites** | [`search_sites.py`](./search_sites.py) | Enumerate accessible sites |
+| **Keyword search** | [`query_keyword.py`](./query_keyword.py) | Simple keyword query across all content |
+| **Search documents** | [`query_documents.py`](./query_documents.py) | Scope to document libraries (`IsDocument:1`) |
+| **Search sites** | [`query_sites.py`](./query_sites.py) | Enumerate accessible sites (`contentclass:STS_Site`) |
+| **Search by site** | [`query_by_site.py`](./query_by_site.py) | Limit scope with `Path:` managed property |
+| **Search by content type** | [`query_by_content_type.py`](./query_by_content_type.py) | Filter by `ContentType:` managed property |
+| **Search with filters** | [`query_with_filter.py`](./query_with_filter.py) | Author / date-range KQL filters |
+| **Search with sorting** | [`query_with_sort.py`](./query_with_sort.py) | Sort by managed property (`Sort`) |
+| **Search with refinement** | [`query_with_refinement.py`](./query_with_refinement.py) | Faceted search — refiners and drill-down |
+| **Search with pagination** | [`query_paged.py`](./query_paged.py) | Page through large result sets |
 
-## 📤 Export Search Results
+## 📤 Export
 
 | What | File | Notes |
 |------|------|-------|
-| **Export search reports** | [`export_reports.py`](./export_reports.py) | Save query results to file |
+| **Export search reports** | [`export_reports.py`](./export_reports.py) | Tenant-level search usage reports |
 
 ---
 

@@ -133,13 +133,13 @@ class SearchService(Entity):
             "enableSorting": enable_sorting,
         }
         if refinement_filters:
-            params["refinementFilters"] = str(StringCollection(refinement_filters))
+            params["refinementFilters"] = ",".join(refinement_filters)
         if sort_list:
-            params["sortList"] = str(StringCollection([str(s) for s in sort_list]))
+            params["sortList"] = ",".join(str(s) for s in sort_list)
         if select_properties:
-            params["selectProperties"] = str(StringCollection(select_properties))
+            params["selectProperties"] = ",".join(select_properties)
         if refiners:
-            params["refiners"] = str(StringCollection(refiners))
+            params["refiners"] = ",".join(refiners)
         params.update(**kwargs)
         return_type: ClientResult[SearchResult] = ClientResult(self.context, SearchResult())
         qry = FunctionQuery(self, "query", params, return_type)

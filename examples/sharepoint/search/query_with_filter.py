@@ -1,11 +1,10 @@
 """
-Demonstrates how to sort search results using the SharePoint Search REST service.
+Search with property filters — author, date range, and custom managed properties.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.search.query.sort.sort import Sort
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
 ctx = ClientContext(test_site_url).with_username_and_password(
@@ -14,13 +13,12 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-result = ctx.search.post_query(
-    query_text="IsDocument:1",
-    sort_list=[Sort("LastModifiedTime", 1)],
-    select_properties=["Path", "LastModifiedTime"],
+# KQL syntax: Author:"John Smith" AND LastModifiedTime>2024-01-01
+result = ctx.search.query(
+    query_text='Author:"John Smith" LastModifiedTime>2024-01-01',
+    select_properties=["Path", "Title", "Author", "LastModifiedTime"],
     row_limit=20,
 ).execute_query()
-
 results = result.value.PrimaryQueryResult.RelevantResults
 for row in results.Table.Rows:
-    print(row.Cells["Path"], row.Cells["LastModifiedTime"])
+    print(row.Cells["Path"], row.Cells.get("Author", ""), row.Cells.get("LastModifiedTime", ""))
