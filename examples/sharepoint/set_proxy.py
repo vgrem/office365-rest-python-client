@@ -16,8 +16,8 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 """
 
 import requests
-from office365.sharepoint.client_context import ClientContext
 from office365.runtime.transport.requests_transport import RequestsTransport
+from office365.sharepoint.client_context import ClientContext
 
 session = requests.Session()
 session.proxies = {
