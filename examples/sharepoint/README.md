@@ -22,7 +22,7 @@ prints clear output.
 | [`sharing/`](./sharing/) | [README](./sharing/README.md) | Share files/folders, create anonymous links |
 | [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
 | [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
-| [`users/`](./users/) | *(coming soon)* | Current user, site users, permissions |
+| [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
 | [`permissions/`](./permissions/) | *(coming soon)* | Grant, revoke, check permissions |
 | [`pages/`](./pages/) | *(coming soon)* | Create and publish pages |
 | [`views/`](./views/) | *(coming soon)* | Create and manage list views |
