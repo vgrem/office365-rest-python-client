@@ -622,6 +622,9 @@ class DriveItem(BaseItem):
         require_sign_in: bool = True,
         send_invitation: bool = True,
         roles: list[str] | None = None,
+        expiration_datetime: datetime | None = None,
+        password: str | None = None,
+        retain_inherited_permissions: bool | None = None,
     ) -> EntityCollection[Permission]:
         """Sends a sharing invitation for a driveItem.
         A sharing invitation provides permissions to the recipients and optionally
@@ -632,6 +635,9 @@ class DriveItem(BaseItem):
         :param bool require_sign_in: Specifies whether the recipient of the invitation is required to sign in.
         :param bool send_invitation: Specifies whether an email is sent to the recipient of the invitation.
         :param list[str] roles: Specify the roles that are granted to the recipients of the sharing invitation.
+        :param datetime.datetime expiration_datetime: The dateTime after which the permission expires.
+        :param str password: Password set on the invite by the creator (OneDrive Personal only).
+        :param bool retain_inherited_permissions: If true, existing inherited permissions are retained.
         """
         if roles is None:
             roles = ["read"]
