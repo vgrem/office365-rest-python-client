@@ -220,6 +220,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Discard check out of a driveItem",
+    )
     def discard_checkout(self) -> Self:
         """Discard the check out of a driveItem. This action releases a driveItem resource that was previously
         checked out. Any changes made to the item while it was checked out are discarded.
@@ -243,18 +248,33 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Follow a driveItem",
+    )
     def follow(self) -> Self:
         """Follow a driveItem."""
         qry = ServiceOperationQuery[DriveItem](self, "follow")
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Unfollow a driveItem",
+    )
     def unfollow(self) -> Self:
         """Unfollow a driveItem."""
         qry = ServiceOperationQuery[DriveItem](self, "unfollow")
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Check out a driveItem to prevent edits by others",
+    )
     def checkout(self) -> Self:
         """
         Check out a driveItem resource to prevent others from editing the document, and prevent your changes
@@ -264,6 +284,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Check in a checked-out driveItem",
+    )
     def checkin(self, comment: str, checkin_as: str | None = None) -> Self:
         """
         Check in a checked out driveItem resource, which makes the version of the document available to others.
@@ -326,14 +351,25 @@ class DriveItem(BaseItem):
     def upload(self, name: str, content: bytes | None = None) -> DriveItem:
         """Upload file content. Supports files up to 4MB."""
 
-        return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
-        self.children.add_child(return_type)
-        qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)  # type: ignore[reportArgumentType]
+        return_type = DriveItem(self.context)
 
-        def _modify_query(request: RequestOptions) -> None:
-            request.method = HttpMethod.Put
+        def _build_upload_query():
+            drive_id = self.parent_reference.driveId
+            item_id = self.id
+            canonical = DriveItem(
+                self.context,
+                ResourcePath(item_id, ResourcePath("items", ResourcePath(drive_id, ResourcePath("drives")))),
+            )
+            upload_item = DriveItem(self.context, UrlPath(name, canonical.resource_path))
+            canonical.children.add_child(upload_item)
+            qry = ServiceOperationQuery(upload_item, "content", None, content, None, return_type)
 
-        self.context.add_query(qry).before_execute(_modify_query)
+            def _modify_query(request: RequestOptions) -> None:
+                request.method = HttpMethod.Put
+
+            self.context.add_query(qry).before_execute(_modify_query)
+
+        self.ensure_properties(["id", "parentReference"], _build_upload_query)
         return return_type
 
     def upload_file(self, path_or_file: str | IO) -> DriveItem:
