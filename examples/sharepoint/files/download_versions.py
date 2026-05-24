@@ -9,7 +9,7 @@ import tempfile
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
-from tests import test_client_id, test_client_secret, test_tenant, test_site_url
+from tests import test_client_id, test_client_secret, test_site_url, test_tenant
 
 
 def download_file_versions(source_file: File, target_path: str):

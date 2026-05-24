@@ -55,7 +55,7 @@ from office365.intune.devices.management.management import DeviceManagement
 from office365.intune.organizations.contact import OrgContact
 from office365.intune.organizations.organization import Organization
 from office365.intune.print.print import Print
-from office365.onedrive.drives.drive import Drive
+from office365.onedrive.drives.collection import DriveCollection
 from office365.onedrive.shares.collection import SharesCollection
 from office365.onedrive.sites.sites_with_root import SitesWithRoot
 from office365.onedrive.storage.storage import Storage
@@ -225,9 +225,9 @@ class GraphClient(ClientRuntimeContext):
         return DeviceAppManagement(self, ResourcePath("deviceAppManagement"))
 
     @property
-    def drives(self) -> EntityCollection[Drive]:
+    def drives(self) -> "DriveCollection":
         """Get one drives"""
-        return EntityCollection(self, Drive, ResourcePath("drives"))
+        return DriveCollection(self, ResourcePath("drives"))
 
     @property
     def users(self) -> UserCollection:

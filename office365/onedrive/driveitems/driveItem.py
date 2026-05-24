@@ -11,6 +11,7 @@ from requests import Response
 from typing_extensions import Self
 
 from office365.delta_path import DeltaPath
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
@@ -758,6 +759,18 @@ class DriveItem(BaseItem):
         return self.properties.get("webDavUrl", None)
 
     @property
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="List children of a driveItem (folder)",
+    )
     def children(self) -> EntityCollection["DriveItem"]:
         """Collection containing Item objects for the immediate children of Item. Only items representing folders
         have children.

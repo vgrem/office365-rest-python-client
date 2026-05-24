@@ -15,5 +15,4 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 )
 roles = ctx.web.role_definitions.get().execute_query()
 for role in roles:
-    print(f"  {role.properties['Name']}  (ID: {role.properties['Id']}, "
-          f"Order: {role.properties.get('Order', '')})")
+    print(f"  {role.properties['Name']}  (ID: {role.properties['Id']}, Order: {role.properties.get('Order', '')})")

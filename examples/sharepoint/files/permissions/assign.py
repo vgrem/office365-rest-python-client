@@ -9,8 +9,8 @@ from office365.sharepoint.sharing.role_type import RoleType
 from tests import (
     test_client_id,
     test_client_secret,
-    test_tenant,
     test_site_url,
+    test_tenant,
     test_user_principal_name,
 )
 

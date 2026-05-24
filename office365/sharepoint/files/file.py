@@ -683,8 +683,12 @@ class File(AbstractFile):
             def _construct_request(request: RequestOptions) -> None:
                 request.stream = True
                 request.method = HttpMethod.Get
+                if file_object.seekable():
+                    file_object.seek(0)
+                    file_object.truncate()
 
             def _process_response(response: requests.Response) -> None:
+                self.context.pending_request().beforeExecute -= _construct_request
                 bytes_read = 0
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     bytes_read += len(chunk)
@@ -692,7 +696,7 @@ class File(AbstractFile):
                         chunk_downloaded(bytes_read)
                     file_object.write(chunk)
 
-            self.context.add_query(qry).before_execute(_construct_request).after_execute(
+            self.context.add_query(qry).before_execute(_construct_request, once=False).after_execute(
                 _process_response, include_response=True
             )
 

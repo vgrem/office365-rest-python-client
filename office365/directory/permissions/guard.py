@@ -63,9 +63,7 @@ def has_delegated_permission(
     return scope in _cached_delegated_permissions(client, client_id, resource)
 
 
-def has_app_permission(
-    client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph
-) -> bool:
+def has_app_permission(client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph) -> bool:
     """True if the app has the application permission (app role) assigned on the resource."""
     return any(role.value == scope for role in _cached_app_permissions(client, client_id, resource))
 

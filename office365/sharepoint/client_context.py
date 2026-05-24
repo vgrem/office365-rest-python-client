@@ -88,7 +88,9 @@ class ClientContext(ClientRuntimeContext):
         Web.get_web_url_from_page_url(ctx, full_url).after_execute(_init_context)
         return ctx
 
-    def with_client_secret(self, tenant: str, client_id: str, client_secret: str, scopes: Optional[List[str]] = None) -> Self:
+    def with_client_secret(
+        self, tenant: str, client_id: str, client_secret: str, scopes: Optional[List[str]] = None
+    ) -> Self:
         """Initializes a client to acquire a token via client secret (MSAL app-only).
 
         Args:

@@ -32,6 +32,10 @@ class NavigationNode(Entity):
     @property
     def children(self) -> NavigationNodeCollection:
         """Gets the collection of child nodes of the navigation node."""
+        from office365.sharepoint.navigation.nodes.collection import (
+            NavigationNodeCollection,
+        )
+
         return self.properties.get(
             "Children",
             NavigationNodeCollection(self.context, ResourcePath("Children", self.resource_path)),

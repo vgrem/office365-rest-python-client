@@ -6,7 +6,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.role_type import RoleType
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username, test_user_principal_name
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_user_principal_name, test_username
 
 ctx = ClientContext(test_site_url).with_username_and_password(
     tenant=test_tenant,

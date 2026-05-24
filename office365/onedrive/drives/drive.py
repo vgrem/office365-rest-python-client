@@ -23,7 +23,14 @@ class Drive(BaseItem):
     SharePoint."""
 
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Get metadata about a drive",
     )
@@ -104,7 +111,14 @@ class Drive(BaseItem):
 
     @property
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Get root folder of a drive",
     )
