@@ -88,6 +88,18 @@ class ClientContext(ClientRuntimeContext):
         Web.get_web_url_from_page_url(ctx, full_url).after_execute(_init_context)
         return ctx
 
+    def with_client_secret(self, tenant: str, client_id: str, client_secret: str, scopes: Optional[List[str]] = None) -> Self:
+        """Initializes a client to acquire a token via client secret (MSAL app-only).
+
+        Args:
+            tenant: Tenant name, e.g. "contoso.onmicrosoft.com"
+            client_id: Application client ID
+            client_secret: Client secret value
+            scopes: Scopes requested to access a protected API (optional)
+        """
+        self.authentication_context.with_client_secret(tenant, client_id, client_secret, scopes)
+        return self
+
     def with_client_certificate(
         self,
         tenant: str,

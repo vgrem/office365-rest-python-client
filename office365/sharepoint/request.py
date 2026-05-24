@@ -136,6 +136,21 @@ class SharePointRequest(ODataRequest):
         self._auth_context.with_cookies(cookie_source, ttl_seconds)  # type: ignore[arg-type]
         return self
 
+    def with_client_secret(self, tenant: str, client_id: str, client_secret: str, scopes: Optional[List[str]] = None) -> Self:
+        """Authenticate using client secret (MSAL app-only).
+
+        Args:
+            tenant: Tenant name
+            client_id: Application client ID
+            client_secret: Client secret value
+            scopes: Requested permission scopes (optional)
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self._auth_context.with_client_secret(tenant, client_id, client_secret, scopes)
+        return self
+
     def with_client_certificate(
         self,
         tenant: str,

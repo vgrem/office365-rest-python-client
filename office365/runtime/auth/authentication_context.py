@@ -49,6 +49,43 @@ class AuthenticationContext:
         self._browser_mode = browser_mode
         self._token_expires = datetime.max.replace(tzinfo=timezone.utc)
 
+    def with_client_secret(
+        self,
+        tenant: str,
+        client_id: str,
+        client_secret: str,
+        scopes: List[str] | None = None,
+    ) -> Self:
+        """Authenticate using client secret (MSAL app-only).
+
+        Args:
+            tenant: Tenant name (e.g., "contoso.onmicrosoft.com")
+            client_id: Application client ID
+            client_secret: Client secret value
+            scopes: Requested permission scopes (optional, defaults to {site_url}/.default)
+
+        Returns:
+            Self: Supports method chaining
+        """
+        if scopes is None:
+            resource = get_absolute_url(self.url)
+            scopes = [f"{resource}/.default"]
+
+        def _acquire_token():
+            authority_url = f"{get_login_authority(self._environment)}/{tenant}"
+            import msal
+
+            app = msal.ConfidentialClientApplication(
+                client_id,
+                authority=authority_url,
+                client_credential={"client_secret": client_secret},
+            )
+            result = app.acquire_token_for_client(scopes)
+            return TokenResponse.from_json(result)
+
+        self.with_access_token(_acquire_token)
+        return self
+
     def with_client_certificate(
         self,
         tenant: str,
