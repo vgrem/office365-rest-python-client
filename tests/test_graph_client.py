@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 
 from office365.onedrive.internal.paths.url import UrlPath
@@ -34,15 +36,17 @@ class TestGraphClient(GraphDelegatedTestCase):
 
     def test5_resolve_drive_url_path(self):
         parent_path = self.client.me.drive.root.resource_path
+        assert parent_path is not None
         path = UrlPath("Sample.docx", UrlPath("2018", UrlPath("archive", parent_path)))
         item_id = uuid.uuid4().hex
-        path.patch(item_id)
+        path.set_key(item_id)
         self.assertEqual(f"/me/drive/items/{item_id}", str(path))
 
     def test6_resolve_drive_children_path(self):
         path = self.client.me.drive.root.children.resource_path
+        assert path is not None
         item_id = uuid.uuid4().hex
-        path.patch(item_id)
+        path.set_key(item_id)
         self.assertEqual(f"/me/drive/items/{item_id}", str(path))
 
     def test7_build_drive_children_path(self):
@@ -56,8 +60,9 @@ class TestGraphClient(GraphDelegatedTestCase):
 
     def test_10_resolve_drive_root_path(self):
         path = self.client.me.drive.root.resource_path
+        assert path is not None
         item_id = uuid.uuid4().hex
-        path.patch(item_id)
+        path.set_key(item_id)
         self.assertEqual(f"/me/drive/items/{item_id}", str(path))
 
     def test_11_build_site_root_path(self):
@@ -69,7 +74,8 @@ class TestGraphClient(GraphDelegatedTestCase):
         set_id = uuid.uuid4().hex
         term_id = uuid.uuid4().hex
         path = self.client.sites.root.term_store.groups[group_id].sets[set_id].children.resource_path
-        path = path.patch(term_id)
+        assert path is not None
+        path = path.set_key(term_id)
         self.assertEqual(
             f"/sites/root/termStore/groups/{group_id}/sets/{set_id}/terms/{term_id}",
             str(path),
