@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.conflict_behavior import ConflictBehavior
@@ -20,6 +21,15 @@ from office365.runtime.queries.function import FunctionQuery
 class Drive(BaseItem):
     """The drive resource is the top level object representing a user's OneDrive or a document library in
     SharePoint."""
+
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Get metadata about a drive",
+    )
+    def get(self):
+        """Retrieve drive metadata"""
+        return super().get()
 
     def create_bundle(self, name: str, children: list | None = None) -> DriveItem:
         """
