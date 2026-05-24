@@ -65,6 +65,7 @@ class PermissionReport:
         if not req.directory_roles or not self._client:
             return []
         from office365.directory.permissions.guard import has_role
+
         return [r for r in req.directory_roles if has_role(self._client, r)]
 
     @property
@@ -72,22 +73,16 @@ class PermissionReport:
         return not self.missing_delegated and not self.missing_application
 
     def __str__(self) -> str:
-        return json.dumps({
-            "method": self.method,
-            "required": {
-                "delegated": self.required.delegated,
-                "application": self.required.application,
+        return json.dumps(
+            {
+                "method": self.method,
+                "required": vars(self.required),
+                "granted": {"delegated": self.granted_delegated, "application": self.granted_application},
+                "missing": {"delegated": self.missing_delegated, "application": self.missing_application},
+                "has_all": self.has_all,
             },
-            "granted": {
-                "delegated": self.granted_delegated,
-                "application": self.granted_application,
-            },
-            "missing": {
-                "delegated": self.missing_delegated,
-                "application": self.missing_application,
-            },
-            "has_all": self.has_all,
-        }, indent=2)
+            indent=2,
+        )
 
 
 def verify_permissions(
@@ -95,6 +90,13 @@ def verify_permissions(
     method,
     client_id: str | None = None,
 ) -> PermissionReport:
+    if client_id is None:
+        client_id = getattr(client, "_client_id", None)
+        if client_id is None:
+            raise ValueError(
+                "client_id is required. Pass it explicitly or call "
+                "with_client_secret / with_certificate on the GraphClient first."
+            )
     """Check whether the permissions declared on a method are actually granted.
 
     Reads the ``@require_permission`` metadata from the method and compares
@@ -117,9 +119,6 @@ def verify_permissions(
         A :class:`PermissionReport` describing which scopes are present
         and which are missing.
     """
-
-    if client_id is None:
-        client_id = getattr(client, "_client_id", None)
 
     perms = get_permissions(client, client_id, ResourceName.Graph)
 
