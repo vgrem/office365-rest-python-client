@@ -176,6 +176,11 @@ class DriveItem(BaseItem):
         """
         return self.upload(name, None)
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a sharing link for a driveItem",
+    )
     def create_link(
         self,
         link_type: str,
@@ -313,17 +318,14 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return qry.return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Upload file content (up to 4MB)",
+    )
     def upload(self, name: str, content: bytes | None = None) -> DriveItem:
-        """The simple upload API allows you to provide the contents of a new file or update the contents of an
-        existing file in a single API call.
+        """Upload file content. Supports files up to 4MB."""
 
-        Note: This method only supports files up to 4MB in size.
-
-        :param name: The contents of the request body should be the binary stream of the file to be uploaded.
-        :type name: str
-        :param content: The contents of the request body should be the binary stream of the file to be uploaded.
-        :type content: str or bytes or None
-        """
         return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
         self.children.add_child(return_type)
         qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)  # type: ignore[reportArgumentType]
@@ -379,6 +381,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Download the contents of a driveItem",
+    )
     def download(self, file_object: IO) -> Self:
         """
         Download the contents of the primary stream (file) of a DriveItem. Only driveItems with the file property
@@ -603,6 +610,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Send a sharing invitation for a driveItem",
+    )
     def invite(
         self,
         recipients: list[str],
@@ -610,30 +622,16 @@ class DriveItem(BaseItem):
         require_sign_in: bool = True,
         send_invitation: bool = True,
         roles: list[str] | None = None,
-        expiration_datetime: datetime | None = None,
-        password: str | None = None,
-        retain_inherited_permissions: bool | None = None,
-    ) -> PermissionCollection:
-        """
-        Sends a sharing invitation for a driveItem. A sharing invitation provides permissions to the recipients
-        and optionally sends them an email with a sharing link.
+    ) -> EntityCollection[Permission]:
+        """Sends a sharing invitation for a driveItem.
+        A sharing invitation provides permissions to the recipients and optionally
+        sends them an email with a sharing link.
 
-        :param list[str] recipients: A collection of recipients who will receive access and the sharing
-            invitation.
-        :param str message: A plain text formatted message that is included in the sharing invitation.
-            Maximum length 2000 characters.
-        :param bool require_sign_in: Specifies whether the recipient of the invitation is required to sign-in to view
-            the shared item.
-        :param bool send_invitation: If true, a sharing link is sent to the recipient. Otherwise, a permission is
-            granted directly without sending a notification.
-        :param list[str] roles: Specify the roles that are to be granted to the recipients of the sharing invitation.
-        :param datetime.datetime expiration_datetime: Specifies the dateTime after which the permission expires.
-            For OneDrive for Business and SharePoint, expirationDateTime is only applicable for sharingLink permissions.
-            Available on OneDrive for Business, SharePoint, and premium personal OneDrive accounts.
-        :param str password: The password set on the invite by the creator. Optional and OneDrive Personal only.
-        :param bool retain_inherited_permissions: Optional. If true (default), any existing inherited permissions
-            are retained on the shared item when sharing this item for the first time. If false, all existing
-            permissions are removed when sharing for the first time.
+        :param list[str] recipients: A list of recipients for the invitation.
+        :param str message: A plain text formatted message that is included in the invitation.
+        :param bool require_sign_in: Specifies whether the recipient of the invitation is required to sign in.
+        :param bool send_invitation: Specifies whether an email is sent to the recipient of the invitation.
+        :param list[str] roles: Specify the roles that are granted to the recipients of the sharing invitation.
         """
         if roles is None:
             roles = ["read"]
