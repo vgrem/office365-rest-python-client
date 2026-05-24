@@ -58,7 +58,6 @@ class PermissionReport:
                 "method": self.method,
                 "required": vars(self.required),
                 "granted": {"delegated": self.granted_delegated, "application": self.granted_application},
-                "missing": {"delegated": self.missing_delegated, "application": self.missing_application},
                 "has_all": self.has_all,
             },
             indent=2,
