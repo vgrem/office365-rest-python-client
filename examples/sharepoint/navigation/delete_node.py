@@ -1,5 +1,5 @@
 """
-Print the top navigation bar of a SharePoint site.
+Delete a navigation node by ID.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
@@ -14,5 +14,10 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     password=test_password,
 )
 nav = ctx.web.navigation.top_navigation_bar.get().execute_query()
-for item in nav:
-    print(f"{item.title}  ({item.url})")
+if nav:
+    node = nav[0]
+    node_id = node.properties.get("Id")
+    assert node_id is not None
+    target = ctx.web.navigation.top_navigation_bar.get_by_id(node_id).get().execute_query()
+    target.delete_object().execute_query()
+    print(f"Deleted navigation node ID: {node_id}")
