@@ -89,7 +89,7 @@ def verify_permissions(
     req: PermissionRequirement | None = getattr(method, "__required_permissions__", None)
     if req is None:
         return PermissionReport(
-            method=getattr(method, "__name__", str(method)),
+            method=getattr(method, "__qualname__", str(method)),
             required=PermissionRequirement(),
             missing_delegated=["(no @require_permission annotation found)"],
         )
@@ -98,7 +98,7 @@ def verify_permissions(
         client_id = getattr(client, "_client_id", None)
         if client_id is None:
             return PermissionReport(
-                method=getattr(method, "__name__", str(method)),
+                method=getattr(method, "__qualname__", str(method)),
                 required=req,
                 missing_delegated=["(client_id unknown)"],
                 missing_application=["(client_id unknown)"],
@@ -131,7 +131,7 @@ def verify_permissions(
                 granted_roles.append(role)
 
     return PermissionReport(
-        method=getattr(method, "__name__", str(method)),
+        method=getattr(method, "__qualname__", str(method)),
         required=req,
         missing_delegated=missing_delegated,
         missing_application=missing_application,
