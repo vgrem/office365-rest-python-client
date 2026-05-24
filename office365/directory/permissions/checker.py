@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 
 from office365.directory.permissions.guard import get_permissions
@@ -34,27 +35,22 @@ class PermissionReport:
     granted_roles: list[str] = field(default_factory=list)
 
     def __str__(self) -> str:
-        lines = [f"{self.method} — required permissions:"]
-        for s in self.required.delegated:
-            lines.append(f"  delegated:   {s}")
-        for s in self.required.application:
-            lines.append(f"  application: {s}")
-        lines.append("")
-        if self.granted_delegated or self.granted_application:
-            lines.append("Granted:")
-            for s in self.granted_delegated:
-                lines.append(f"  delegated:   {s}")
-            for s in self.granted_application:
-                lines.append(f"  application: {s}")
-        if self.missing_delegated or self.missing_application:
-            lines.append("Missing:")
-            for s in self.missing_delegated:
-                lines.append(f"  delegated:   {s}")
-            for s in self.missing_application:
-                lines.append(f"  application: {s}")
-        if not self.missing_delegated and not self.missing_application:
-            lines.append("All required scopes granted ✅")
-        return "\n".join(lines)
+        return json.dumps({
+            "method": self.method,
+            "required": {
+                "delegated": self.required.delegated,
+                "application": self.required.application,
+            },
+            "granted": {
+                "delegated": self.granted_delegated,
+                "application": self.granted_application,
+            },
+            "missing": {
+                "delegated": self.missing_delegated,
+                "application": self.missing_application,
+            },
+            "has_all": self.has_all,
+        }, indent=2)
 
     @property
     def has_all(self) -> bool:
