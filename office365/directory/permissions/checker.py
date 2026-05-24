@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Any
 
 from office365.directory.permissions.guard import ResourcePermissions, get_permissions
 from office365.directory.permissions.require_permission import PermissionRequirement
@@ -28,20 +27,10 @@ class PermissionReport:
     computed from ``required`` vs ``perms``.
     """
 
+    method: str
+    required: PermissionRequirement
     perms: ResourcePermissions
-    _method: Any = field(repr=False, default=None)
-    _client: Any = field(repr=False, default=None)
-
-    @property
-    def method(self) -> str:
-        name = self._method.__qualname__ if self._method else "(unknown)"
-        if self._method and not getattr(self._method, "__required_permissions__", None):
-            name += " (no @require_permission)"
-        return name
-
-    @property
-    def required(self) -> PermissionRequirement:
-        return getattr(self._method, "__required_permissions__", None) or PermissionRequirement()
+    granted_roles: list[str] = field(default_factory=list)
 
     @property
     def granted_delegated(self) -> list[str]:
@@ -58,15 +47,6 @@ class PermissionReport:
     @property
     def missing_application(self) -> list[str]:
         return [s for s in self.required.application if s not in self.perms.application]
-
-    @property
-    def granted_roles(self) -> list[str]:
-        req = self.required
-        if not req.directory_roles or not self._client:
-            return []
-        from office365.directory.permissions.guard import has_role
-
-        return [r for r in req.directory_roles if has_role(self._client, r)]
 
     @property
     def has_all(self) -> bool:
@@ -90,13 +70,6 @@ def verify_permissions(
     method,
     client_id: str | None = None,
 ) -> PermissionReport:
-    if client_id is None:
-        client_id = getattr(client, "_client_id", None)
-        if client_id is None:
-            raise ValueError(
-                "client_id is required. Pass it explicitly or call "
-                "with_client_secret / with_certificate on the GraphClient first."
-            )
     """Check whether the permissions declared on a method are actually granted.
 
     Reads the ``@require_permission`` metadata from the method and compares
@@ -120,6 +93,26 @@ def verify_permissions(
         and which are missing.
     """
 
-    perms = get_permissions(client, client_id, ResourceName.Graph)
+    if client_id is None:
+        client_id = getattr(client, "_client_id", None)
+        if client_id is None:
+            raise ValueError(
+                "client_id is required. Pass it explicitly or call "
+                "with_client_secret / with_certificate on the GraphClient first."
+            )
 
-    return PermissionReport(_method=method, perms=perms, _client=client)
+    perms = get_permissions(client, client_id, ResourceName.Graph)
+    req = getattr(method, "__required_permissions__", None) or PermissionRequirement()
+
+    granted_roles: list[str] = []
+    if req.directory_roles:
+        from office365.directory.permissions.guard import has_role
+
+        granted_roles = [r for r in req.directory_roles if has_role(client, r)]
+
+    return PermissionReport(
+        method=method.__qualname__,
+        required=req,
+        perms=perms,
+        granted_roles=granted_roles,
+    )
