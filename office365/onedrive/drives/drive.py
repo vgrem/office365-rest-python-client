@@ -103,6 +103,11 @@ class Drive(BaseItem):
         return self.properties.get("owner", IdentitySet())
 
     @property
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Get root folder of a drive",
+    )
     def root(self) -> DriveItem:
         """The root folder of the drive."""
         return self.properties.get(
