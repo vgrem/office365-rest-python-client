@@ -40,25 +40,15 @@ class PermissionReport:
     def granted_application(self) -> list[str]:
         return [s for s in self.required.application if s in self.perms.application]
 
-    @property
-    def missing_delegated(self) -> list[str]:
-        return [s for s in self.required.delegated if s not in self.perms.delegated]
-
-    @property
-    def missing_application(self) -> list[str]:
-        return [s for s in self.required.application if s not in self.perms.application]
-
-    @property
-    def has_all(self) -> bool:
-        return not self.missing_delegated and not self.missing_application
-
     def __str__(self) -> str:
+        granted_delegated = [s for s in self.required.delegated if s in self.perms.delegated]
+        granted_application = [s for s in self.required.application if s in self.perms.application]
         return json.dumps(
             {
                 "method": self.method,
                 "required": vars(self.required),
-                "granted": {"delegated": self.granted_delegated, "application": self.granted_application},
-                "has_all": self.has_all,
+                "granted": {"delegated": granted_delegated, "application": granted_application},
+                "has_all": not bool(set(self.required.delegated) - set(granted_delegated) or set(self.required.application) - set(granted_application)),
             },
             indent=2,
         )
