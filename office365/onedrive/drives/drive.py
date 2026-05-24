@@ -151,6 +151,11 @@ class Drive(BaseItem):
         )
 
     @property
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All"],
+        notes="List items the signed-in user is following. Not supported for personal Microsoft accounts.",
+    )
     def following(self) -> EntityCollection[DriveItem]:
         """The list of items the user is following. Only in OneDrive for Business."""
         return self.properties.get(
