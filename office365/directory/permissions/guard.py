@@ -1,13 +1,17 @@
-"""Reusable permission and role check functions for Microsoft Graph.
+"""Reusable permission and role check functions for Microsoft Graph and other Entra ID resources.
 
 Usage:
     from office365.directory.permissions.guard import has_delegated_permission, has_app_permission, has_role
+    from office365.directory.permissions.resource_name import ResourceName
 
     if has_delegated_permission(client, "Mail.Read", client_id):
         send_mail()
 
     if has_app_permission(client, "Application.Read.All", client_id):
         list_apps()
+
+    if has_app_permission(client, "Sites.Read.All", client_id, ResourceName.SharePoint):
+        download_file()
 
     if has_role(client, "Global Administrator"):
         do_admin_stuff()
@@ -18,25 +22,30 @@ from __future__ import annotations
 from functools import lru_cache
 
 from office365.directory.applications.roles.collection import AppRoleCollection
+from office365.directory.permissions.resource_name import ResourceName
 from office365.directory.rolemanagement.role import DirectoryRole
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
 from office365.runtime.types.collections import StringCollection
 
 
-@lru_cache(maxsize=1)
-def _cached_app_permissions(client: GraphClient, client_id: str) -> AppRoleCollection:
-    """Get and cache application permissions for a client."""
-    resource = client.service_principals.get_by_name("Microsoft Graph")
-    result = resource.get_application_permissions(client_id).execute_query()
+@lru_cache(maxsize=None)
+def _cached_app_permissions(
+    client: GraphClient, client_id: str, resource: str = ResourceName.Graph
+) -> AppRoleCollection:
+    """Get and cache application permissions for a client on a given resource."""
+    sp = client.service_principals.get_by_name(resource)
+    result = sp.get_application_permissions(client_id).execute_query()
     return result.value  # type: ignore[return-value]
 
 
-@lru_cache(maxsize=1)
-def _cached_delegated_permissions(client: GraphClient, client_id: str) -> StringCollection:
-    """Get and cache delegated permissions for a client."""
-    resource = client.service_principals.get_by_name("Microsoft Graph")
-    result = resource.get_delegated_permissions(client_id).execute_query()
+@lru_cache(maxsize=None)
+def _cached_delegated_permissions(
+    client: GraphClient, client_id: str, resource: str = ResourceName.Graph
+) -> StringCollection:
+    """Get and cache delegated permissions for a client on a given resource."""
+    sp = client.service_principals.get_by_name(resource)
+    result = sp.get_delegated_permissions(client_id).execute_query()
     return result.value  # type: ignore[return-value]
 
 
@@ -47,14 +56,18 @@ def _cached_directory_roles(client: GraphClient) -> EntityCollection[DirectoryRo
     return result  # type: ignore[return-value]
 
 
-def has_delegated_permission(client: GraphClient, scope: str, client_id: str) -> bool:
-    """True if the app has the delegated permission (OAuth scope) assigned."""
-    return scope in _cached_delegated_permissions(client, client_id)
+def has_delegated_permission(
+    client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph
+) -> bool:
+    """True if the app has the delegated permission (OAuth scope) assigned on the resource."""
+    return scope in _cached_delegated_permissions(client, client_id, resource)
 
 
-def has_app_permission(client: GraphClient, scope: str, client_id: str) -> bool:
-    """True if the app has the application permission (app role) assigned."""
-    return any(role.value == scope for role in _cached_app_permissions(client, client_id))
+def has_app_permission(
+    client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph
+) -> bool:
+    """True if the app has the application permission (app role) assigned on the resource."""
+    return any(role.value == scope for role in _cached_app_permissions(client, client_id, resource))
 
 
 def has_role(client: GraphClient, role_name: str) -> bool:
