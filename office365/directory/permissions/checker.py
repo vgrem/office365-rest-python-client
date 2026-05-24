@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
 from office365.directory.permissions.guard import get_permissions, ResourcePermissions
 from office365.directory.permissions.require_permission import PermissionRequirement
@@ -27,10 +28,20 @@ class PermissionReport:
     computed from ``required`` vs ``perms``.
     """
 
-    method: str
-    required: PermissionRequirement
     perms: ResourcePermissions
     granted_roles: list[str] = field(default_factory=list)
+    _method: Any = field(repr=False, default=None)
+
+    @property
+    def method(self) -> str:
+        name = self._method.__qualname__ if self._method else "(unknown)"
+        if self._method and not getattr(self._method, "__required_permissions__", None):
+            name += " (no @require_permission)"
+        return name
+
+    @property
+    def required(self) -> PermissionRequirement:
+        return getattr(self._method, "__required_permissions__", None) or PermissionRequirement()
 
     @property
     def granted_delegated(self) -> list[str]:
@@ -99,27 +110,15 @@ def verify_permissions(
         and which are missing.
     """
 
-    req: PermissionRequirement | None = getattr(method, "__required_permissions__", None)
-    if req is None:
-        return PermissionReport(
-            method=method.__qualname__,
-            required=PermissionRequirement(),
-            perms=ResourcePermissions("(annotation missing)"),
-        )
-
     if client_id is None:
         client_id = getattr(client, "_client_id", None)
 
     perms = get_permissions(client, client_id, ResourceName.Graph)
+    req = getattr(method, "__required_permissions__", None)
 
     granted_roles: list[str] = []
-    if req.directory_roles:
+    if req and req.directory_roles:
         from office365.directory.permissions.guard import has_role
         granted_roles = [r for r in req.directory_roles if has_role(client, r)]
 
-    return PermissionReport(
-        method=method.__qualname__,
-        required=req,
-        perms=perms,
-        granted_roles=granted_roles,
-    )
+    return PermissionReport(_method=method, perms=perms, granted_roles=granted_roles)
