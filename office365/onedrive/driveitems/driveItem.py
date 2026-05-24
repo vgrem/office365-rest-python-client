@@ -68,6 +68,15 @@ class DriveItem(BaseItem):
     """The driveItem resource represents a file, folder, or other item stored in a drive. All file system objects in
     OneDrive and SharePoint are returned as driveItem resources"""
 
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Get metadata for a driveItem",
+    )
+    def get(self):
+        """Retrieve drive item metadata"""
+        return super().get()
+
     def assign_sensitivity_label(
         self,
         sensitivity_label_id: str,
@@ -565,7 +574,14 @@ class DriveItem(BaseItem):
         return self.move(name=new_name)
 
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Search the hierarchy of items for items matching a query",
     )
@@ -876,7 +892,14 @@ class DriveItem(BaseItem):
 
     @property
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Track changes to a drive item and its children over time",
     )
