@@ -31,6 +31,9 @@ class UrlPath(EntityPath):
     def segment(self):
         return f":/{self._key}:/"
 
+    def patch(self, key):
+        self.__class__ = EntityPath
+
     @property
     def delimiter(self) -> str:
         return ""
