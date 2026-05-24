@@ -33,6 +33,7 @@ from office365.runtime.types.collections import StringCollection
 @dataclass
 class ResourcePermissions:
     """All granted permissions for a given Entra ID resource."""
+
     resource: str
     application: list[str] = field(default_factory=list)
     delegated: list[str] = field(default_factory=list)
@@ -94,7 +95,7 @@ def get_permissions(client: GraphClient, client_id: str, resource: str = Resourc
     delegated_scopes = _cached_delegated_permissions(client, client_id, resource)
     return ResourcePermissions(
         resource=resource,
-        application=[r.value for r in app_roles],
+        application=[r.value for r in app_roles if r.value is not None],
         delegated=list(delegated_scopes),
     )
 
