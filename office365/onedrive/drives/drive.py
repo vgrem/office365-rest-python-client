@@ -169,8 +169,13 @@ class Drive(BaseItem):
         return self.properties.get("quota", Quota())
 
     @property
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Access special folders by canonical name (e.g. 'Documents', 'CameraRoll')",
+    )
     def special(self) -> EntityCollection[DriveItem]:
-        """Collection of auth folders available in OneDrive. Read-only. Nullable."""
+        """Collection of special folders available in OneDrive. Read-only. Nullable."""
         return self.properties.get(
             "special",
             EntityCollection(self.context, DriveItem, ResourcePath("special", self.resource_path)),

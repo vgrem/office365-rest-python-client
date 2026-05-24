@@ -564,6 +564,11 @@ class DriveItem(BaseItem):
         """
         return self.move(name=new_name)
 
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Search the hierarchy of items for items matching a query",
+    )
     def search(self, query_text: str) -> EntityCollection["DriveItem"]:
         """Search the hierarchy of items for items matching a query. You can search within a folder hierarchy,
         a whole drive, or files shared with the current user.
@@ -870,6 +875,11 @@ class DriveItem(BaseItem):
         )
 
     @property
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Track changes to a drive item and its children over time",
+    )
     def delta(self) -> EntityCollection["DriveItem"]:
         """Tracks changes to a drive item and its children over time."""
         return self.properties.get(
