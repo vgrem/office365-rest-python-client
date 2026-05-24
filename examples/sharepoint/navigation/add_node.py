@@ -23,4 +23,4 @@ node_info = NavigationNodeCreationInformation(
     AsLastNode=True,
 )
 node = ctx.web.navigation.quick_launch.add(node_info).execute_query()
-print(f"Node added: {node.title} (ID: {node.properties.get('Id', '')})")
+print(f"Node added: {node.title} (ID: {node.id or ''})")

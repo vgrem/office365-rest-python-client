@@ -16,7 +16,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 nav = ctx.web.navigation.top_navigation_bar.get().execute_query()
 if nav:
     node = nav[0]
-    node_id = node.properties.get("Id")
+    node_id = node.id
     assert node_id is not None
     target = ctx.web.navigation.top_navigation_bar.get_by_id(node_id).get().execute_query()
     target.delete_object().execute_query()

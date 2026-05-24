@@ -18,7 +18,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 # Get the first Quick Launch node to use as parent
 nav = ctx.web.navigation.quick_launch.get().execute_query()
 if nav:
-    parent_id = nav[0].properties.get("Id")
+    parent_id = nav[0].id
     assert parent_id is not None
     parent_node = ctx.web.navigation.quick_launch.get_by_id(parent_id).get().execute_query()
 

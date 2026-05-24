@@ -25,6 +25,11 @@ class NavigationNode(Entity):
         return self.url or self.entity_type_name
 
     @property
+    def id(self) -> int | None:
+        """Gets the unique identifier of the navigation node."""
+        return self.properties.get("Id", None)
+
+    @property
     def children(self) -> NavigationNodeCollection:
         """Gets the collection of child nodes of the navigation node."""
         return self.properties.get(
