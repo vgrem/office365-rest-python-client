@@ -104,9 +104,9 @@ class Entity(ClientObject):
                 if self.parent_collection is None:
                     self._resource_path = ResourcePath(value)
                 elif isinstance(self.parent_collection.resource_path, EntityPath):
-                    self._resource_path = self.parent_collection.resource_path.patch(value)
+                    self._resource_path = self.parent_collection.resource_path.set_segment(value)
                 else:
                     self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
             else:
-                self._resource_path.patch(value)
+                self._resource_path.set_segment(value)
         return self

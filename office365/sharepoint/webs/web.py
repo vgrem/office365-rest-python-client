@@ -2473,7 +2473,7 @@ class Web(SecurableObject):
         if name == "Url":
             self._web_url = value
             assert self._resource_path is not None
-            self._resource_path.patch(value)
+            self._resource_path.set_segment(value)
         return self
 
     @property

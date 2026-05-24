@@ -32,7 +32,7 @@ class AlertCollection(EntityCollection[Alert]):
 
         :param str id_alert: The Id of the alert to search.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "Contains", {"idAlert": id_alert}, None, None, return_type)
         self.context.add_query(qry)
         return return_type

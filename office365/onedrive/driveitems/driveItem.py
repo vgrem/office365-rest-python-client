@@ -57,7 +57,6 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -355,23 +354,12 @@ class DriveItem(BaseItem):
         return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
         self.children.add_child(return_type)
 
-        def _upload():
-            #drive_id = self.parent_reference.driveId
-            #item_id = self.id
-            #canonical = DriveItem(
-            #    self.context,
-            #    ResourcePath(item_id, ResourcePath("items", ResourcePath(drive_id, ResourcePath("drives")))),
-            #)
-            #upload_item = DriveItem(self.context, UrlPath(name, canonical.resource_path))
-            #canonical.children.add_child(upload_item)
-            qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)
+        qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)
 
-            def _modify_query(request: RequestOptions) -> None:
-                request.method = HttpMethod.Put
+        def _modify_query(request: RequestOptions) -> None:
+            request.method = HttpMethod.Put
 
-            self.context.add_query(qry).before_execute(_modify_query)
-
-        self.ensure_properties(["id", "parentReference"], _upload)
+        self.context.add_query(qry).before_execute(_modify_query)
         return return_type
 
     def upload_file(self, path_or_file: str | IO) -> DriveItem:
@@ -387,6 +375,8 @@ class DriveItem(BaseItem):
             return self.upload(name, content)
 
     def upload_folder(self, path: str, file_uploaded: Callable[["DriveItem"], None] | None = None) -> DriveItem:
+        """Uploads a folder"""
+
         def _after_file_upload(return_type: DriveItem) -> None:
             if callable(file_uploaded):
                 file_uploaded(return_type)
@@ -400,7 +390,6 @@ class DriveItem(BaseItem):
                 else:
                     target_folder.create_folder(name).after_execute(partial(_upload_folder, cur_path))
 
-        """Uploads a folder"""
         _upload_folder(path, self)
         return self
 
@@ -420,7 +409,14 @@ class DriveItem(BaseItem):
         return return_type
 
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Download the contents of a driveItem",
     )
@@ -990,4 +986,3 @@ class DriveItem(BaseItem):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
-

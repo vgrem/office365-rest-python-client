@@ -15,9 +15,9 @@ def _url_to_shared_token(url: str) -> str:
 class SharedPath(EntityPath):
     """Shared token path"""
 
-    def patch(self, key):
+    def set_key(self, segment):
         self._key = "items"
-        self._parent = ResourcePath(key, ResourcePath("drives"))
+        self._parent = ResourcePath(segment, ResourcePath("drives"))
         self.__class__ = ResourcePath  # type: ignore
         return self
 

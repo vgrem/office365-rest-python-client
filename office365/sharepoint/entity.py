@@ -159,5 +159,5 @@ class Entity(ClientObject):
                 if self.parent_collection:
                     self._resource_path = EntityPath(value, self.parent_collection.resource_path)
             else:
-                self._resource_path.patch(value)
+                self._resource_path.set_segment(value)
         return self

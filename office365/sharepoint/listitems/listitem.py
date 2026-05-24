@@ -757,7 +757,7 @@ class ListItem(SecurableObject):
             if self._resource_path is None and self.parent_collection is not None:
                 self._resource_path = EntityPath(value, self.parent_collection.resource_path)  # type: ignore[arg-type]
             else:
-                self._resource_path.patch(value)  # type: ignore[arg-type]
+                self._resource_path.set_segment(value)  # type: ignore[arg-type]
         return self
 
     def _set_taxonomy_field_value(self, name: str, value: TaxonomyFieldValueCollection) -> None:

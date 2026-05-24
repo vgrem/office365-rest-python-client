@@ -76,17 +76,13 @@ class ClientObject:
 
     def remove_from_parent_collection(self) -> Self:
         """
-        Removes this object from its parent collection.
+        Removes this object from its parent collection, if one exists.
 
         Returns:
             The current instance for method chaining
-
-        Raises:
-            ValueError: If no parent collection exists
         """
-        if self._parent_collection is None:
-            raise ValueError("Cannot remove from parent collection: no parent collection exists")
-        self._parent_collection.remove_child(self)
+        if self._parent_collection is not None:
+            self._parent_collection.remove_child(self)
         return self
 
     def clear_state(self) -> Self:

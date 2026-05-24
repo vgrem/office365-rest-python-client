@@ -45,5 +45,5 @@ class SPActivityEntity(Entity):
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
         if name == self.property_ref_name:
-            self._resource_path.patch(value)
+            self._resource_path.set_segment(value)
         return self

@@ -50,11 +50,7 @@ class ServiceOperationQuery(ClientQuery[ReturnT]):
     @property
     def url(self) -> str:
         """Gets the full URL for the service operation call."""
-        orig_url = super().url
-        if self.static:
-            return "".join([self.context.service_root_url, str(self.path)])
-        else:
-            return "/".join([orig_url, self.path.segment])
+        return "".join([self.context.service_root_url, str(self.path)])
 
     @property
     def name(self) -> str | None:

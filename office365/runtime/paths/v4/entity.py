@@ -9,9 +9,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class EntityPath(ResourcePath):
     def __init__(
-        self, key: str | None = None, parent: ResourcePath | None = None, collection: ResourcePath | None = None
+        self, segment: str | None = None, parent: ResourcePath | None = None, collection: ResourcePath | None = None
     ) -> None:
-        super().__init__(key, parent)
+        super().__init__(segment, parent)
         self._collection = collection
 
     @property
@@ -29,8 +29,8 @@ class EntityPath(ResourcePath):
     def segment(self):
         return str(self._key or "<key>")
 
-    def patch(self, key: Union[int, str]) -> Self:
+    def set_key(self, segment: Union[int, str]) -> Self:
         """Patches the path"""
-        self._key = key
+        self._key = segment
         self._parent = self.collection
         return self

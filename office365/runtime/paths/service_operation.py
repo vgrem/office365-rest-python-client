@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict, List, Optional, Union
 
 from office365.runtime.client_value import ClientValue
@@ -35,7 +37,7 @@ class ServiceOperationPath(ResourcePath):
     @property
     def name(self) -> str | None:
         """Gets the name of the service operation."""
-        return str(self._key) if self._key is not None else None
+        return str(self._segment) if self._segment is not None else None
 
     @property
     def parameters(self) -> Optional[Union[List, Dict, ClientValue]]:

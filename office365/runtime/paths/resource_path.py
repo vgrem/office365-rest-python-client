@@ -15,20 +15,20 @@ class ResourcePath:
 
     def __init__(
         self,
-        key: Optional[Union[int, str]] = None,
+        segment: Optional[Union[int, str]] = None,
         parent: Optional["ResourcePath"] = None,
     ) -> None:
         """
         Initialize a new resource path segment.
 
         Args:
-            key: The identifier for this path segment (e.g., item ID or name)
+            segment: The identifier for this path segment (e.g., item ID or name)
             parent: The parent path segment (None for root segments)
         """
-        self._key = key
+        self._key = segment
         self._parent = parent
 
-    def patch(self, key: Union[int, str]) -> Self:
+    def set_key(self, segment: Union[int, str]) -> Self:
         """
         Updates the path segment key if not already set.
 
@@ -39,10 +39,10 @@ class ResourcePath:
             self: Supports method chaining
 
         Example:
-            >>> path = ResourcePath().patch("items")
+            >>> path = ResourcePath().set_key("items")
         """
         if self._key is None:
-            self._key = key
+            self._key = segment
         return self
 
     def __iter__(self) -> Iterator[ResourcePath]:
