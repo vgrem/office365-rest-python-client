@@ -41,9 +41,13 @@ class PermissionReport:
         return [s for s in self.required.application if s in self.perms.application]
 
     def __str__(self) -> str:
-        delegated = ", ".join(s for s in self.required.delegated if s in self.perms.delegated)
-        application = ", ".join(s for s in self.required.application if s in self.perms.application)
-        return json.dumps({"method": self.method, "delegated": delegated, "application": application})
+        return json.dumps(
+            {
+                "method": self.method,
+                "delegated": ", ".join(self.granted_delegated),
+                "application": ", ".join(self.granted_application),
+            }
+        )
 
 
 def verify_permissions(
