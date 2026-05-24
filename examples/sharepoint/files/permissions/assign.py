@@ -7,12 +7,14 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/fi
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.role_type import RoleType
 from tests import (
-    test_client_credentials,
-    test_team_site_url,
+    test_client_id,
+    test_client_secret,
+    test_tenant,
+    test_site_url,
     test_user_principal_name,
 )
 
-client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+client = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 file_url = "Shared Documents/Financial Sample.xlsx"
 
 

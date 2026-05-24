@@ -9,7 +9,7 @@ import tempfile
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_client_secret, test_tenant, test_site_url
 
 
 def download_file_versions(source_file: File, target_path: str):
@@ -27,7 +27,7 @@ def download_specific_file_version(source_file: File, version: int, target_path:
     print(f"[Ok] file version {version.url} has been downloaded into: {target_path}")
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 file_url = "SitePages/Home.aspx"
 remote_file = ctx.web.get_file_by_server_relative_path(file_url)
 local_path = os.path.join(tempfile.mkdtemp(), os.path.basename(file_url))

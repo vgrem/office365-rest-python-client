@@ -3,9 +3,9 @@ Demonstrates how to copy a file within a site
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
+ctx = ClientContext(test_site_url).with_username_and_password(
     tenant=test_tenant,
     client_id=test_client_id,
     username=test_username,
@@ -17,4 +17,4 @@ file_from = ctx.web.get_file_by_server_relative_path("Shared Documents/Financial
 folder_to = ctx.web.get_folder_by_server_relative_path("Shared Documents/archive")
 # folder_to = "Shared Documents/archive/2002/02"
 file_to = file_from.copyto_using_path(folder_to, True).execute_query()
-print("{0} copied into {1}".format(file_from, file_to))
+print(f"{file_from} copied into {file_to}")

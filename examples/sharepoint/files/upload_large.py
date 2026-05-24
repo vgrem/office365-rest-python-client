@@ -7,7 +7,7 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-fol
 import os
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
 
 def print_upload_progress(offset: int) -> None:
@@ -15,7 +15,7 @@ def print_upload_progress(offset: int) -> None:
     print(f"Uploaded '{offset}' bytes from '{file_size}'...[{round(offset / file_size * 100, 2)}%]")
 
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
+ctx = ClientContext(test_site_url).with_username_and_password(
     tenant=test_tenant,
     client_id=test_client_id,
     username=test_username,

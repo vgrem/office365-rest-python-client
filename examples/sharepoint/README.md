@@ -11,7 +11,7 @@ prints clear output.
 | Directory | README | Covers |
 |-----------|--------|--------|
 | [`app-catalog/`](./app-catalog/) | [README](./app-catalog/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
-| [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, share, versions, permissions |
+| [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, check out/in, publish, approve, share, versions, permissions |
 | [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
 | [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
 | [`folders/`](./folders/) | [README](./folders/README.md) | Create, delete, copy, move, share, list |

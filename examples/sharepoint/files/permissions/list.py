@@ -10,13 +10,13 @@ from office365.sharepoint.client_context import ClientContext
 from tests import (
     test_client_id,
     test_password,
-    test_team_site_url,
+    test_site_url,
     test_tenant,
     test_user_principal_name_alt,
     test_username,
 )
 
-client = ClientContext(test_team_site_url).with_username_and_password(
+client = ClientContext(test_site_url).with_username_and_password(
     tenant=test_tenant,
     client_id=test_client_id,
     username=test_username,
