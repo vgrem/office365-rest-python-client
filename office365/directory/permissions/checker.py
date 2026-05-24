@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from office365.directory.permissions.guard import get_permissions, ResourcePermissions
+from office365.directory.permissions.guard import ResourcePermissions, get_permissions
 from office365.directory.permissions.require_permission import PermissionRequirement
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
@@ -29,8 +29,8 @@ class PermissionReport:
     """
 
     perms: ResourcePermissions
-    granted_roles: list[str] = field(default_factory=list)
     _method: Any = field(repr=False, default=None)
+    _client: Any = field(repr=False, default=None)
 
     @property
     def method(self) -> str:
@@ -58,6 +58,14 @@ class PermissionReport:
     @property
     def missing_application(self) -> list[str]:
         return [s for s in self.required.application if s not in self.perms.application]
+
+    @property
+    def granted_roles(self) -> list[str]:
+        req = self.required
+        if not req.directory_roles or not self._client:
+            return []
+        from office365.directory.permissions.guard import has_role
+        return [r for r in req.directory_roles if has_role(self._client, r)]
 
     @property
     def has_all(self) -> bool:
@@ -114,11 +122,5 @@ def verify_permissions(
         client_id = getattr(client, "_client_id", None)
 
     perms = get_permissions(client, client_id, ResourceName.Graph)
-    req = getattr(method, "__required_permissions__", None)
 
-    granted_roles: list[str] = []
-    if req and req.directory_roles:
-        from office365.directory.permissions.guard import has_role
-        granted_roles = [r for r in req.directory_roles if has_role(client, r)]
-
-    return PermissionReport(_method=method, perms=perms, granted_roles=granted_roles)
+    return PermissionReport(_method=method, perms=perms, _client=client)
