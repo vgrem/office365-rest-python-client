@@ -32,6 +32,7 @@ class UrlPath(EntityPath):
         return f":/{self._key}:/"
 
     def patch(self, key):
+        self._key = key
         self.__class__ = EntityPath
 
     @property

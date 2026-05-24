@@ -57,6 +57,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -351,25 +352,26 @@ class DriveItem(BaseItem):
     def upload(self, name: str, content: bytes | None = None) -> DriveItem:
         """Upload file content. Supports files up to 4MB."""
 
-        return_type = DriveItem(self.context)
+        return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
+        self.children.add_child(return_type)
 
-        def _build_upload_query():
-            drive_id = self.parent_reference.driveId
-            item_id = self.id
-            canonical = DriveItem(
-                self.context,
-                ResourcePath(item_id, ResourcePath("items", ResourcePath(drive_id, ResourcePath("drives")))),
-            )
-            upload_item = DriveItem(self.context, UrlPath(name, canonical.resource_path))
-            canonical.children.add_child(upload_item)
-            qry = ServiceOperationQuery(upload_item, "content", None, content, None, return_type)
+        def _upload():
+            #drive_id = self.parent_reference.driveId
+            #item_id = self.id
+            #canonical = DriveItem(
+            #    self.context,
+            #    ResourcePath(item_id, ResourcePath("items", ResourcePath(drive_id, ResourcePath("drives")))),
+            #)
+            #upload_item = DriveItem(self.context, UrlPath(name, canonical.resource_path))
+            #canonical.children.add_child(upload_item)
+            qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)
 
             def _modify_query(request: RequestOptions) -> None:
                 request.method = HttpMethod.Put
 
             self.context.add_query(qry).before_execute(_modify_query)
 
-        self.ensure_properties(["id", "parentReference"], _build_upload_query)
+        self.ensure_properties(["id", "parentReference"], _upload)
         return return_type
 
     def upload_file(self, path_or_file: str | IO) -> DriveItem:
@@ -755,10 +757,20 @@ class DriveItem(BaseItem):
         :param int zoom: Optional. Zoom level to start at, if applicable.
 
         """
-        payload = {"page": page, "zoom": zoom}
         return_type = ClientResult[ItemPreviewInfo](self.context, ItemPreviewInfo())
-        qry = ServiceOperationQuery(self, "preview", None, payload, None, return_type)
-        self.context.add_query(qry)
+
+        def _preview():
+            canonical = DriveItem(
+                self.context,
+                ResourcePath(
+                    self.id,
+                    ResourcePath("items", ResourcePath(self.parent_reference.driveId, ResourcePath("drives"))),
+                ),
+            )
+            qry = ServiceOperationQuery(canonical, "preview", None, {"page": page, "zoom": zoom}, None, return_type)
+            self.context.add_query(qry)
+
+        self.ensure_properties(["id", "parentReference"], _preview)
         return return_type
 
     def validate_permission(self, challenge_token: str | None = None, password: str | None = None) -> Self:
@@ -965,6 +977,10 @@ class DriveItem(BaseItem):
             SubscriptionCollection(self.context, ResourcePath("subscriptions", self.resource_path)),
         )
 
+    @property
+    def property_ref_name(self) -> str:
+        return "id"
+
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
@@ -974,3 +990,4 @@ class DriveItem(BaseItem):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
