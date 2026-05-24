@@ -14,7 +14,9 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     password=test_password,
 )
 # KQL syntax: Author:"John Smith" AND LastModifiedTime>2024-01-01
-result = ctx.search.query(
+# post_query is used instead of query to avoid URL encoding issues
+# with special KQL characters (quotes, >) in the GET request path
+result = ctx.search.post_query(
     query_text='Author:"John Smith" LastModifiedTime>2024-01-01',
     select_properties=["Path", "Title", "Author", "LastModifiedTime"],
     row_limit=20,
