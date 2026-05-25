@@ -12,7 +12,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-ct = ctx.web.content_types.get_by_name("Project Document").execute_query()
+ct = ctx.web.content_types.get_by_name("Document").execute_query()
 print(f"Name: {ct.name}")
 print(f"Description: {ct.description}")
 print(f"ID: {ct.id}")

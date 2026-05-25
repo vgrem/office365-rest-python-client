@@ -13,5 +13,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-ct = ctx.web.content_types.add(ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")).execute_query()
+info = ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")
+ct = ctx.web.content_types.add(info).execute_query()
 print(f"Content type created: {ct.name}")
