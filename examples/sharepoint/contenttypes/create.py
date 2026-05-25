@@ -4,7 +4,7 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.contenttypes.content_type import ContentType
+from office365.sharepoint.contenttypes.creation_information import ContentTypeCreationInformation
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
 ctx = ClientContext(test_site_url).with_username_and_password(
@@ -13,7 +13,5 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-ct = ctx.web.content_types.add(
-    ContentType(name="Project Document", description="For Contoso projects")
-).execute_query()
+ct = ctx.web.content_types.add(ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")).execute_query()
 print(f"Content type created: {ct.name}")
