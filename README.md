@@ -80,11 +80,9 @@ Two clients, different auth capabilities:
 | **Interactive** (browser) | `with_interactive(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows) |
 | **Device code** | `with_device_flow(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) |
 | **NTLM** (on-prem only) | `with_user_credentials(username, password)` | Delegated | — | ✅ On-prem only | [Example](examples/sharepoint/auth/legacy/with_ntlm.py) |
-| **Client secret** (Azure AD) | `with_client_secret(tenant, client_id, secret)` | App-only | — | ⚠️ Works but not recommended¹ | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) |
+| **Client secret** (Azure AD) | `with_client_secret(tenant, client_id, secret)` | App-only | — | ❌ Not documented | [Microsoft's own migration guidance](https://mc.merill.net/message/MC1184649) confirms: replace legacy ACS auth with OAuth2 client credentials flow using certificates, not client secrets, for SharePoint access. |
 | ~~SAML user auth~~ | `with_user_credentials(username, password)` | Delegated | ❌ | 🚫 Retired May 2026 | [MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement) |
 | ~~ACS app-only~~ | `with_credentials(ClientCredential(...))` | App-only | — | 🚫 Retired Apr 2026 | [Notice](https://aka.ms/retirement/acs/support) |
-
-¹ Client secret tokens work against SharePoint REST API in practice, but Microsoft's official guidance recommends **certificate-based auth** for SharePoint app-only. Certificate auth is more secure and is the explicitly documented approach. Use `with_client_secret` for `GraphClient` where it is fully supported.
 
 ### GraphClient — Microsoft Graph auth
 
