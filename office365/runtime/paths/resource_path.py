@@ -28,7 +28,7 @@ class ResourcePath:
         self._key = segment
         self._parent = parent
 
-    def set_key(self, segment: Union[int, str]) -> Self:
+    def set_segment(self, segment: Union[int, str]) -> Self:
         """
         Updates the path segment key if not already set.
 
@@ -39,7 +39,7 @@ class ResourcePath:
             self: Supports method chaining
 
         Example:
-            >>> path = ResourcePath().set_key("items")
+            >>> path = ResourcePath().set_segment("items")
         """
         if self._key is None:
             self._key = segment

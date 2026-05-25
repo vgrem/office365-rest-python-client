@@ -29,7 +29,7 @@ class EntityPath(ResourcePath):
     def segment(self):
         return str(self._key or "<key>")
 
-    def set_key(self, segment: Union[int, str]) -> Self:
+    def set_segment(self, segment: Union[int, str]) -> Self:
         """Patches the path"""
         self._key = segment
         self._parent = self.collection

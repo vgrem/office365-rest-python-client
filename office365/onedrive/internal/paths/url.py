@@ -31,7 +31,7 @@ class UrlPath(EntityPath):
     def segment(self):
         return f":/{self._key}:/"
 
-    def set_key(self, segment):
+    def set_segment(self, segment):
         self._key = segment
         self.__class__ = EntityPath  # type: ignore
         self._parent = self.collection
