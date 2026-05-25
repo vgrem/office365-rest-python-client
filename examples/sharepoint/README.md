@@ -25,7 +25,7 @@ prints clear output.
 | [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
 | [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
 | [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check, break/reset inheritance, role definitions |
-| [`pages/`](./pages/) | [README](./pages/README.md) | Create and publish pages |
+| [`pages/`](./pages/) | [README](./pages/README.md) | CRUD, publish, promote to news |
 | [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
 | [`contenttypes/`](./contenttypes/) | [README](./contenttypes/README.md) | Create and manage content types |
 | [`features/`](./features/) | [README](./features/README.md) | Activate and deactivate site features |
