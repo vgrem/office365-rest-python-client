@@ -4,6 +4,7 @@ from typing import Optional, Union
 
 from typing_extensions import TYPE_CHECKING
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.columns.definition import ColumnDefinition
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -16,6 +17,11 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
     def __init__(self, context, resource_path, parent):
         super().__init__(context, ColumnDefinition, resource_path, parent)
 
+    @require_permission(
+        delegated=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a number column",
+    )
     def add_number(self, name: str, minimum: float | None = None, maximum: float | None = None):
         """
         Creates a number column
@@ -27,6 +33,11 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, number=NumberColumn(minimum, maximum))
 
+    @require_permission(
+        delegated=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a text column",
+    )
     def add_text(self, name: str, max_length: int | None = None, text_type: str | None = None):
         """
         Creates a text column
@@ -39,6 +50,11 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
 
         return self.add(name=name, text=TextColumn(maxLength=max_length, textType=text_type))
 
+    @require_permission(
+        delegated=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a hyperlink or picture column",
+    )
     def add_hyperlink_or_picture(self, name: str, is_picture: bool | None = None):
         """
         Creates a hyperlink or picture column
@@ -55,6 +71,11 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
             hyperlinkOrPicture=HyperlinkOrPictureColumn(isPicture=is_picture),
         )
 
+    @require_permission(
+        delegated=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a lookup column referencing another list",
+    )
     def add_lookup(
         self,
         name: str,
