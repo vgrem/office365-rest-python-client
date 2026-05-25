@@ -1,12 +1,17 @@
-"""Demonstrates how to delete a content type from a site.
+"""Demonstrates how to delete a content type from a SharePoint site.
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-
-ct = ctx.web.content_types.get_by_name("Contoso Document")
+ctx = ClientContext(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
+ct = ctx.web.content_types.get_by_name("Project Document").execute_query()
 ct.delete_object().execute_query()
+print("Content type deleted")

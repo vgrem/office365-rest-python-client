@@ -1,10 +1,9 @@
-"""Demonstrates how to create a content type on a SharePoint site.
+"""Demonstrates how to add a content type to a list.
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
 """
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.contenttypes.content_type import ContentType
 from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
 ctx = ClientContext(test_site_url).with_username_and_password(
@@ -13,7 +12,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-ct = ctx.web.content_types.add(
-    ContentType(name="Project Document", description="For Contoso projects")
-).execute_query()
-print(f"Content type created: {ct.name}")
+target_list = ctx.web.lists.get_by_title("Documents")
+ct = ctx.web.content_types.get_by_name("Project Document").execute_query()
+target_list.content_types.add(ct).execute_query()
+print(f"Content type added to list: {ct.name}")
