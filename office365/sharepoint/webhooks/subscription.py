@@ -9,6 +9,11 @@ class Subscription(Entity):
     """A subscription for receiving notifications at a specified endpoint."""
 
     @property
+    def id(self) -> Optional[str]:
+        """Gets the unique identifier of the subscription."""
+        return self.properties.get("id", None)
+
+    @property
     def application_id(self) -> Optional[str]:
         """Identifier of the application used to create the subscription."""
         return self.properties.get("applicationId", None)
