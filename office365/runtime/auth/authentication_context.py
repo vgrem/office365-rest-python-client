@@ -78,7 +78,7 @@ class AuthenticationContext:
             app = msal.ConfidentialClientApplication(
                 client_id,
                 authority=authority_url,
-                client_credential={"client_secret": client_secret},
+                client_credential=client_secret,
             )
             result = app.acquire_token_for_client(scopes)
             return TokenResponse.from_json(result)
