@@ -31,13 +31,14 @@ prints clear output.
 | [`features/`](./features/) | [README](./features/README.md) | Activate and deactivate site features |
 | [`userprofile/`](./userprofile/) | [README](./userprofile/README.md) | Profile properties, followers, trending tags, OneDrive |
 | [`navigation/`](./navigation/) | [README](./navigation/README.md) | Top nav, Quick Launch, add, update, delete nodes |
+| [`audit/`](./audit/) | [README](./audit/README.md) | Site audit settings, sign-in logs, directory audits |
 | [`hubsites/`](./hubsites/) | [README](./hubsites/README.md) | Hub sites — register, associate, home site |
 | [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
 
 ### Smaller categories
 
 [`customactions/`](./customactions/) · [`eventreceivers/`](./eventreceivers/) ·
-[`audit/`](./audit/) · [`groups/`](./groups/) ·
+[`groups/`](./groups/) ·
 [`migration/`](./migration/) ·
 [`webhooks/`](./webhooks/) · [`teams/`](./teams/)
 
