@@ -9,7 +9,7 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
-from tests import create_unique_name, test_client_credentials, test_team_site_url
+from tests import create_unique_name, test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 
 def print_progress(return_types: List[ClientObject | ClientResult]) -> None:
