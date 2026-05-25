@@ -13,6 +13,6 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-admins = ctx.site.site_collection_administrators.get().execute_query()
-for admin in admins:
-    print(f"{admin.title}  ({admin.email})")
+result = ctx.site.get_site_administrators().execute_query()
+for info in result.value:
+    print(info)

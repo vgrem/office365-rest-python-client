@@ -13,5 +13,5 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-my_site = ctx.site.get_personal_site().execute_query()
+my_site = ctx.web.current_user.get_personal_site().execute_query()
 print(f"Personal site: {my_site.url}")

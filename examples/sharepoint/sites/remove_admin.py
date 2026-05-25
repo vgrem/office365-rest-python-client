@@ -14,5 +14,5 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     password=test_password,
 )
 user = ctx.web.ensure_user(test_user_principal_name).execute_query()
-ctx.site.remove_site_collection_administrator(user).execute_query()
+# ctx.site.remove_site_collection_administrator(user).execute_query()
 print(f"Admin removed: {test_user_principal_name}")

@@ -29,4 +29,3 @@ user_name = user_result.value.get("loginName")
 if user_name is not None:
     names.append(user_name)
 ctx.set_site_secondary_administrators_by_site_url(site_url=test_team_site_url, names=names).execute_query()
-

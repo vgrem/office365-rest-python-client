@@ -275,7 +275,7 @@ class Site(Entity):
 
     def is_comm_site(self) -> ClientResult[bool]:
         """Determines whether a site is communication site"""
-        return_type: ClientResult[bool] = ClientResult(self.context)
+        return_type: ClientResult[bool] = ClientResult(self.context, bool())
 
         def _site_loaded():
             SPHSite.is_comm_site(self.context, self.url, return_type)
@@ -285,7 +285,7 @@ class Site(Entity):
 
     def is_valid_home_site(self) -> ClientResult[bool]:
         """Determines whether a site is landing site for your intranet."""
-        return_type: ClientResult[bool] = ClientResult(self.context)
+        return_type: ClientResult[bool] = ClientResult(self.context, bool())
 
         def _site_loaded():
             SPHSite.is_valid_home_site(self.context, self.url, return_type)
@@ -332,14 +332,14 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_site_administrators(self):
+    def get_site_administrators(self) -> ClientResult[ClientValueCollection[SiteAdministratorsInfo]]:
         """Gets site collection administrators"""
         return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
 
-        def _site_loaded():
+        def _get_site_administrators():
             self.context.tenant.get_site_administrators(self.id, return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Id", _site_loaded)
+        self.ensure_property("Id", _get_site_administrators)
         return return_type
 
     def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:

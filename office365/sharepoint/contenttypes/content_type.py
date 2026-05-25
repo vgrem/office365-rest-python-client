@@ -38,7 +38,7 @@ class ContentType(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_default(self, value:bool) -> Self:
+    def set_default(self, value: bool) -> Self:
         self.set_property("Default", value)
         return self
 
