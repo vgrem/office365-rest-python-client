@@ -5,11 +5,15 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-o
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
 
-client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-site = client.site.get().execute_query()
-print("Site url: {}".format(site.url))
-
-result = site.is_valid_home_site().execute_query()
-print("Is home site: {}".format(result.value))
+ctx = ClientContext(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
+web = ctx.web.get().execute_query()
+print(f"Title: {web.title}")
+print(f"URL: {web.url}")
+print(f"Template: {web.web_template}")

@@ -4,40 +4,18 @@ Creates a classic site collection (not group-connected).
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
-import logging
-from random import randint
-
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import (
-    test_admin_site_url,
-    test_client_id,
-    test_password,
-    test_site_url,
-    test_tenant,
-    test_user_principal_name_alt,
-    test_username,
-)
+from tests import test_admin_site_url, test_client_id, test_password, test_tenant, test_username
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-alias = str(randint(0, 10000))
-title = "Custom Site"
-site_url = f"{test_site_url}/sites/{alias}"
-
-tenant = Tenant.from_url(test_admin_site_url).with_username_and_password(
+ctx = ClientContext(test_admin_site_url).with_username_and_password(
     tenant=test_tenant,
     client_id=test_client_id,
     username=test_username,
     password=test_password,
 )
-
-logger.info(f"Creating a site at: {site_url}")
-site = tenant.create_site_sync(site_url, test_user_principal_name_alt).execute_query()
-
-logger.info("\nSite created successfully:")
-logger.info(f"  URL: {site.url}")
-
-# Cleanup - delete the test site
-tenant.remove_site(site_url).execute_query()  # cleanup
-logger.info("\nSite deleted successfully")
+admin = Tenant(ctx)
+admin.create_site(
+    {"Url": f"{test_admin_site_url}/sites/ClassicSite", "Title": "Classic Site"}
+).execute_query()
+print("Classic site created")

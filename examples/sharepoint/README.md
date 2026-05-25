@@ -15,7 +15,7 @@ prints clear output.
 | [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
 | [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
 | [`folders/`](./folders/) | [README](./folders/README.md) | Create, delete, copy, move, share, list |
-| [`sites/`](./sites/) | [README](./sites/README.md) | Create, delete, clone, status |
+| [`sites/`](./sites/) | [README](./sites/README.md) | Create (team, comm, classic), get, update, add/remove admins, delete |
 | [`webs/`](./webs/) | [README](./webs/README.md) | Properties, lists, roles, changes, activities |
 | [`tenant/`](./tenant/) | [README](./tenant/README.md) | Site collections, admin, licensing |
 | [`fields/`](./fields/) | [README](./fields/README.md) | CRUD for all field types — text, number, date, choice, lookup, user, taxonomy, calculated |

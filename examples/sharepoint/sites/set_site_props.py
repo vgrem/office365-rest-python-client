@@ -1,5 +1,5 @@
 """
-Gets the personal site (OneDrive) for the current user.
+Set site collection properties (title, description, etc.).
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
@@ -13,5 +13,7 @@ ctx = ClientContext(test_site_url).with_username_and_password(
     username=test_username,
     password=test_password,
 )
-my_site = ctx.site.get_personal_site().execute_query()
-print(f"Personal site: {my_site.url}")
+web = ctx.web.get().execute_query()
+web.set_property("Title", "Updated Title")
+web.update().execute_query()
+print(f"Site title updated: {web.title}")
