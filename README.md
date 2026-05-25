@@ -17,9 +17,9 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 - [Installation](#installation)
 - [Which client do I need?](#which-client-do-i-need)
 - [Authentication](#authentication)
-  - [ClientContext — SharePoint](#clientcontext--sharepoint-auth)
-  - [GraphClient — Microsoft Graph](#graphclient--microsoft-graph-auth)
-  - [Azure Environments (national clouds)](#azure-environments)
+  - [ClientContext — SharePoint auth](#clientcontext--sharepoint-auth)
+  - [GraphClient — Microsoft Graph auth](#graphclient--microsoft-graph-auth)
+  - [Azure Environments](#azure-environments)
 - [SharePoint — ClientContext](#sharepoint--clientcontext)
 - [Microsoft Graph — GraphClient](#microsoft-graph--graphclient)
 - [Dependencies](#dependencies)
@@ -59,162 +59,42 @@ pip install git+https://github.com/vgrem/office365-rest-python-client.git
 
 ## Authentication
 
-> ⚠️ **ACS Retirement:** Azure Access Control Service (ACS) app-only auth is fully retired as of April 2026. `UserCredential` (SAML/IDCRL) is retired as of May 1, 2026. Both have been removed from the library. Migrate to Azure AD auth. [Learn more](https://aka.ms/retirement/acs/support)
+> All modern auth flows use **Azure AD** via the [MSAL](https://github.com/AzureAD/microsoft-authentication-library-for-python) library.
+> Legacy flows (ACS, SAML) are fully retired as of April/May 2026.
+>
+> [ACS retirement notice](https://aka.ms/retirement/acs/support) | [SAML retirement MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement)
 
----
+Two clients, different auth capabilities:
 
-### ClientContext — SharePoint Auth
+| | `ClientContext` | `GraphClient` |
+|---|---|---|
+| **Target** | SharePoint REST API v1 | Microsoft Graph API |
+| **Resource** | `{tenant}.sharepoint.com` | `graph.microsoft.com` |
 
-#### App-only: Certificate (recommended for automation)
+### ClientContext — SharePoint auth
 
-No user interaction. Ideal for scripts, pipelines, and services.
+| Flow | Method | User/App | MFA | Status | Docs |
+|------|--------|----------|-----|--------|------|
+| **Certificate** (Azure AD) | `with_client_certificate(tenant, client_id, thumbprint, cert_path)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) |
+| **Username & password** (MSAL ROPC) | `with_username_and_password(tenant, client_id, username, password)` | Delegated | ❌ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) |
+| **Interactive** (browser) | `with_interactive(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows) |
+| **Device code** | `with_device_flow(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) |
+| **NTLM** (on-prem only) | `with_user_credentials(username, password)` | Delegated | — | ✅ On-prem only | [Example](examples/sharepoint/auth/legacy/with_ntlm.py) |
+| **Client secret** (Azure AD) | `with_client_secret(tenant, client_id, secret)` | App-only | — | ⚠️ Works but not recommended¹ | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) |
+| ~~SAML user auth~~ | `with_user_credentials(username, password)` | Delegated | ❌ | 🚫 Retired May 2026 | [MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement) |
+| ~~ACS app-only~~ | `with_credentials(ClientCredential(...))` | App-only | — | 🚫 Retired Apr 2026 | [Notice](https://aka.ms/retirement/acs/support) |
 
-```python
-from office365.sharepoint.client_context import ClientContext
+¹ Client secret tokens work against SharePoint REST API in practice, but Microsoft's official guidance recommends **certificate-based auth** for SharePoint app-only. Certificate auth is more secure and is the explicitly documented approach. Use `with_client_secret` for `GraphClient` where it is fully supported.
 
-ctx = ClientContext("{site_url}").with_client_certificate(
-    tenant="{tenant}",           # e.g. contoso.onmicrosoft.com
-    client_id="{client_id}",
-    thumbprint="{thumbprint}",
-    cert_path="/path/to/cert.pem"
-)
-```
+### GraphClient — Microsoft Graph auth
 
-[Setup guide](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) | [Example](examples/sharepoint/auth/modern/with_certificate.py)
-
-#### App-only: Client secret
-
-```python
-ctx = ClientContext("{site_url}").with_client_secret(
-    tenant="{tenant}",
-    client_id="{client_id}",
-    client_secret="{client_secret}"
-)
-```
-
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) | [Example](examples/sharepoint/auth/modern/with_client_secret.py)
-
-#### User auth: Username & password (MSAL ROPC)
-
-Non-interactive user auth. Requires no MFA on the account.
-
-```python
-ctx = ClientContext("{site_url}").with_username_and_password(
-    tenant="{tenant}",
-    client_id="{client_id}",
-    username="{username}",
-    password="{password}"
-)
-```
-
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) | [Example](examples/sharepoint/auth/modern/with_username_and_password.py)
-
-#### User auth: Interactive (MFA-compatible)
-
-Opens a browser. Works with MFA and Conditional Access.
-
-```python
-ctx = ClientContext("{site_url}").with_interactive(
-    tenant="{tenant}",
-    client_id="{client_id}"
-)
-```
-
-> Prerequisite: add `http://localhost` as a Redirect URI in your Azure app registration.
-
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows#interactive-and-non-interactive-authentication) | [Example](examples/sharepoint/auth/modern/with_interactive.py)
-
-#### User auth: Device code
-
-Authenticate on another device via a displayed code. Useful for headless environments.
-
-```python
-ctx = ClientContext("{site_url}").with_device_flow(
-    tenant="{tenant}",
-    client_id="{client_id}"
-)
-```
-
-[Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) | [Example](examples/sharepoint/auth/modern/with_device_flow.py)
-
-#### On-premise: NTLM
-
-For SharePoint Server (2016, 2019, Subscription Edition). Requires `pip install office365-rest-python-client[ntlm]`.
-
-```python
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext("http://sharepoint.company.com/sites/project", allow_ntlm=True).with_user_credentials(
-    username="DOMAIN\\username",
-    password="password"
-)
-```
-
-[Example](examples/sharepoint/auth/legacy/with_ntlm.py)
-
----
-
-### GraphClient — Microsoft Graph Auth
-
-#### Client secret
-
-```python
-from office365.graph_client import GraphClient
-
-client = GraphClient(tenant="{tenant}").with_client_secret(
-    client_id="{client_id}",
-    client_secret="{client_secret}"
-)
-```
-
-[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_client_secret.py)
-
-#### Certificate
-
-```python
-client = GraphClient(tenant="{tenant}").with_client_certificate(
-    client_id="{client_id}",
-    thumbprint="{thumbprint}",
-    private_key="{private_key}"
-)
-```
-
-[Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) | [Example](examples/auth/with_certificate.py)
-
-#### Interactive (MFA-compatible)
-
-```python
-client = GraphClient(tenant="{tenant}").with_token_interactive(
-    client_id="{client_id}"
-)
-```
-
-#### Username & password (MSAL ROPC)
-
-```python
-client = GraphClient(tenant="{tenant}").with_username_and_password(
-    client_id="{client_id}",
-    username="{username}",
-    password="{password}"
-)
-```
-
-#### Custom token acquisition
-
-Bring your own MSAL or any OAuth 2.0-compliant token provider:
-
-```python
-import msal
-
-def acquire_token():
-    app = msal.ConfidentialClientApplication(
-        client_id, authority=f"https://login.microsoftonline.com/{tenant}",
-        client_credential=client_secret
-    )
-    return app.acquire_token_for_client(["https://graph.microsoft.com/.default"])
-
-client = GraphClient(acquire_token)
-```
+| Flow | Method | User/App | MFA | Status | Docs |
+|------|--------|----------|-----|--------|------|
+| **Client secret** | `with_client_secret(client_id, secret)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) |
+| **Certificate** | `with_client_certificate(client_id, thumbprint, key)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) |
+| **Interactive** | `with_token_interactive(client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows) |
+| **Username & password** | `with_username_and_password(client_id, username, password)` | Delegated | ❌ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) |
+| **Custom token** | `GraphClient(acquire_token_func)` | Both | ✅ | ✅ Supported | — |
 
 ---
 
