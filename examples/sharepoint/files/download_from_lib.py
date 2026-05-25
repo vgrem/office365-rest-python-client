@@ -29,10 +29,14 @@ items = (
 download_root_path = Path(tempfile.mkdtemp())
 
 for item in items:
-    download_path = download_root_path / item.properties.get("FileDirRef").lstrip("/")
+    dir_ref = item.properties.get("FileDirRef")
+    assert dir_ref is not None
+    download_path = download_root_path / dir_ref.lstrip("/")
     download_path.mkdir(parents=True, exist_ok=True)
 
-    download_file_path = download_path / item.properties.get("FileLeafRef")
+    leaf_ref = item.properties.get("FileLeafRef")
+    assert leaf_ref is not None
+    download_file_path = download_path / leaf_ref
 
     with open(download_file_path, "wb") as f:
         item.file.download(f).execute_query()
