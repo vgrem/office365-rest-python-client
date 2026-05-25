@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
@@ -20,10 +21,20 @@ class SetCollection(EntityCollection[Set]):
         super().__init__(context, Set, resource_path)
         self._parent_group = parent_group
 
+    @require_permission(
+        delegated=["TermStore.Read.All", "TermStore.ReadWrite.All"],
+        application=["TermStore.Read.All", "TermStore.ReadWrite.All"],
+        notes="Get term set by name",
+    )
     def get_by_name(self, name: str) -> Set:
         """Returns the TermSet specified by its name."""
         return self.single(f"displayName eq '{name}'")
 
+    @require_permission(
+        delegated=["TermStore.ReadWrite.All"],
+        application=["TermStore.ReadWrite.All"],
+        notes="Create a new term set",
+    )
     def add(self, name: str, parent_group: Group | None = None) -> Set:
         """Create a new set object.
 

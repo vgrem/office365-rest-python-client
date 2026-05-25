@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.collection import GroupCollection
@@ -12,6 +13,11 @@ from office365.runtime.types.collections import StringCollection
 class Store(Entity):
     """Represents a taxonomy term store."""
 
+    @require_permission(
+        delegated=["TermStore.Read.All", "TermStore.ReadWrite.All"],
+        application=["TermStore.Read.All", "TermStore.ReadWrite.All"],
+        notes="Get all term sets across all groups",
+    )
     def get_all_term_sets(self) -> EntityCollection[Set]:
         """Returns a collection containing a flat list of all TermSet objects."""
         return_type = EntityCollection(self.context, Set)

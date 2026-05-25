@@ -1,3 +1,4 @@
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.terms.label import LocalizedLabel
 from office365.onedrive.termstore.terms.term import Term
@@ -13,6 +14,11 @@ class TermCollection(EntityCollection[Term]):
         super().__init__(context, Term, resource_path)
         self._parent_set = parent_set
 
+    @require_permission(
+        delegated=["TermStore.ReadWrite.All"],
+        application=["TermStore.ReadWrite.All"],
+        notes="Create a new term in a term set",
+    )
     def add(self, label: str) -> Term:
         """Create a new term object.
 
