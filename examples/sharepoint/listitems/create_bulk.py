@@ -17,7 +17,12 @@ def print_progress(return_types: List[ClientObject | ClientResult]) -> None:
     print("{0} list items has been created".format(items_count))
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_team_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 tasks_list = ctx.web.lists.get_by_title("Company Tasks")
 
 num_of_items = 512

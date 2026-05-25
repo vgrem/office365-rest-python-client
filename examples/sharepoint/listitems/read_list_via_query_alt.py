@@ -7,7 +7,7 @@ import json
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
 
 
 def print_progress(items_read: int):
@@ -26,7 +26,12 @@ def create_paged_query(page_size: int):
     return qry
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_team_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 target_list = ctx.web.lists.get_by_title("Contacts_Large")
 list_qry = create_paged_query(50)
 assert list_qry.ViewXml is not None

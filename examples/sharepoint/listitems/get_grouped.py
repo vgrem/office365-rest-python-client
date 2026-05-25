@@ -6,7 +6,7 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 import json
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
 
 view_xml = """
    <View>
@@ -22,7 +22,12 @@ view_xml = """
    </View>
    """
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_team_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 lib = ctx.web.lists.get_by_title("Site Pages")
 result = lib.render_list_data(view_xml).execute_query()
 data = json.loads(result.value)

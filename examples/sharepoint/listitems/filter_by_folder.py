@@ -5,7 +5,7 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from tests import test_client_credentials, test_team_site_url
+from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
 
 
 def create_custom_query():
@@ -14,7 +14,12 @@ def create_custom_query():
     return qry
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_team_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 lib = ctx.web.lists.get_by_title("Documents")
 result = lib.get_items(create_custom_query()).execute_query()
 for item in result:

@@ -17,7 +17,12 @@ from tests import (
     test_user_principal_name,
 )
 
-ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(test_site_url).with_username_and_password(
+    tenant=test_tenant,
+    client_id=test_client_id,
+    username=test_username,
+    password=test_password,
+)
 
 target_list = ctx.web.lists.get_by_title("Documents")
 items = target_list.items.get().top(1).execute_query()
