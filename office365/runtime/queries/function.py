@@ -36,12 +36,6 @@ class FunctionQuery(ClientQuery[ReturnT]):
         return self._path
 
     @property
-    def url(self) -> str:
-        """Gets the full URL for the function call."""
-        orig_url = super().url
-        return f"{orig_url}/{self.path.segment}"
-
-    @property
     def name(self) -> str | None:
         """Gets the name of the method being called."""
         return self._path.name

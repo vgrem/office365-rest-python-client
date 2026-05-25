@@ -48,11 +48,6 @@ class ServiceOperationQuery(ClientQuery[ReturnT]):
             return ServiceOperationPath(self._method_name, self._method_params, self.binding_type.resource_path)
 
     @property
-    def url(self) -> str:
-        """Gets the full URL for the service operation call."""
-        return "".join([self.context.service_root_url, str(self.path)])
-
-    @property
     def name(self) -> str | None:
         """Gets the name of the method being called."""
         return self._method_name

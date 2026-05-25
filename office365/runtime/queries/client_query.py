@@ -62,10 +62,10 @@ class ClientQuery(Generic[ReturnT]):
 
     @property
     def url(self) -> str:
+        """Builds the full request URL from the query's service root and resource path."""
         if self.binding_type is not None:
-            return self.binding_type.resource_url or ""
-        else:
-            return self.context.service_root_url
+            return "".join([self.context.service_root_url, str(self.path)])
+        return self.context.service_root_url
 
     @property
     def query_options(self) -> QueryOptions | None:
