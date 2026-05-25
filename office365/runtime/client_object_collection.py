@@ -297,39 +297,37 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         return self.get().before_execute(_construct_request)
 
     def first(self, expression: str) -> ClientObjectT:
-        """
-        Get the first item matching the filter criteria.
+        """Get the first item matching the filter criteria.
 
         Args:
             expression: OData filter expression
 
         Returns:
-            ClientObjectT: The first matching item
+            The first matching item
 
         Raises:
-            ValueError: If no matching items found
+            NotFoundException: If no matching items found
         """
         return_type = self.create_typed_object()
         self.add_child(return_type)
 
         def _after_loaded(col: ClientObjectCollection) -> None:
             if len(col) < 1:
-                message = f"Not found for filter: {self.query_options.filter}"
-                raise ValueError(message)
-            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
+                raise NotFoundException(return_type, expression)
+            for k, v in col[0].properties.items():
+                return_type.set_property(k, v, False)
 
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
     def single(self, expression: str) -> ClientObjectT:
-        """
-        Get exactly one item matching the filter criteria.
+        """Get exactly one item matching the filter criteria.
 
         Args:
             expression: OData filter expression
 
         Returns:
-            ClientObjectT: The single matching item
+            The single matching item
 
         Raises:
             NotFoundException: If no items match
@@ -341,10 +339,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         def _after_loaded(col: ClientObjectCollection) -> None:
             if len(col) == 0:
                 raise NotFoundException(return_type, expression)
-            elif len(col) > 1:
-                message = f"Ambiguous match found for filter: {expression}"
-                raise ValueError(message)
-            [return_type.set_property(k, v, False) for k, v in col[0].properties.items()]
+            if len(col) > 1:
+                raise ValueError(f"Ambiguous match found for filter: {expression}")
+            for k, v in col[0].properties.items():
+                return_type.set_property(k, v, False)
 
         self.get().filter(expression).top(2).after_execute(_after_loaded)
         return return_type
