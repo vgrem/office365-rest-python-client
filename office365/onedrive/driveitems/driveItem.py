@@ -165,6 +165,11 @@ class DriveItem(BaseItem):
         _get_folders(self)
         return return_type
 
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Get a driveItem by its server-relative path",
+    )
     def get_by_path(self, url_path: str) -> DriveItem:
         """Retrieve DriveItem by server relative path"""
         return DriveItem(self.context, UrlPath(url_path, self.resource_path), self.children)
@@ -335,6 +340,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry).after_execute(_start_upload)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create an upload session for large file uploads",
+    )
     def create_upload_session(self, item: DriveItemUploadableProperties) -> ClientResult[UploadSession]:
         """Creates a temporary storage location where the bytes of the file will be saved until the complete file is
         uploaded.
@@ -501,6 +511,11 @@ class DriveItem(BaseItem):
         self.get_content().before_execute(_construct_request).after_execute(_process_response, include_response=True)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Create a new folder in a drive",
+    )
     def create_folder(
         self,
         name: str,
@@ -522,6 +537,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Convert file content to a different format",
+    )
     def convert(self, format_name: str) -> ClientResult[AnyStr]:
         """Converts the contents of an item in a specific format
 
@@ -530,6 +550,11 @@ class DriveItem(BaseItem):
         """
         return self.get_content(format_name)
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Copy a driveItem to a new parent or name",
+    )
     def copy(
         self,
         name: str | None = None,
@@ -576,6 +601,11 @@ class DriveItem(BaseItem):
             _copy(parent)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Move a driveItem to a new parent",
+    )
     def move(
         self,
         name: str | None = None,
@@ -716,6 +746,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Permanently delete a driveItem (cannot be restored)",
+    )
     def permanent_delete(self):
         """
         Permanently delete a driveItem.
@@ -726,6 +761,11 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Restore a deleted driveItem from the recycle bin",
+    )
     def restore(self, parent_reference: ItemReference | None = None, name: str | None = None) -> DriveItem:
         """
         Restore a driveItem that has been deleted and is currently in the recycle bin.
@@ -769,6 +809,11 @@ class DriveItem(BaseItem):
         self.ensure_properties(["id", "parentReference"], _preview)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Validate sharing permission by challenge token or password",
+    )
     def validate_permission(self, challenge_token: str | None = None, password: str | None = None) -> Self:
         """ """
         payload = {"challengeToken": challenge_token, "password": password}
