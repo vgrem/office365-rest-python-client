@@ -1,6 +1,0 @@
-<AppPermissionRequests AllowAppOnlyPolicy="true">
-     <AppPermissionRequest Scope="http://sharepoint/content/sitecollection" Right="FullControl" />
-     <AppPermissionRequest Scope="http://sharepoint/search" Right="QueryAsUserIgnoreAppPrincipal"/>
-     <AppPermissionRequest Scope="http://sharepoint/social/tenant" Right="FullControl" />
-     <AppPermissionRequest Scope="http://sharepoint/taxonomy" Right="FullControl" />
-</AppPermissionRequests>

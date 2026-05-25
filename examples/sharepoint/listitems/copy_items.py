@@ -4,7 +4,7 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_tenant, test_username, test_site_url, test_team_site_url
+from tests import test_client_id, test_password, test_site_url, test_team_site_url, test_tenant, test_username
 
 source_site_url = test_site_url
 target_site_url = test_team_site_url

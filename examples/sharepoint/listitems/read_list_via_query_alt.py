@@ -7,7 +7,7 @@ import json
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 
 def print_progress(items_read: int):

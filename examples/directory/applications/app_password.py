@@ -5,7 +5,6 @@ https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-r
 
 from office365.graph_client import GraphClient
 from tests import (
-    test_client_credentials,
     test_client_id,
     test_password,
     test_tenant,
@@ -13,6 +12,6 @@ from tests import (
 )
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-target_app = client.applications.get_by_app_id(test_client_credentials.clientId)
+target_app = client.applications.get_by_app_id(test_client_id)
 result = target_app.add_password("Password friendly name").execute_query()
 print(result.value)

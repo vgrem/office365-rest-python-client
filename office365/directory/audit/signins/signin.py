@@ -100,6 +100,13 @@ class SignIn(Entity):
         return self.properties.get("riskDetail", None)
 
     @property
+    def user_display_name(self) -> Optional[str]:
+        """
+        Display name of the user that initiated the sign-in. Supports $filter (eq operator only).
+        """
+        return self.properties.get("userDisplayName", None)
+
+    @property
     def user_id(self) -> Optional[str]:
         """
         ID of the user that initiated the sign-in. Supports $filter (eq operator only).

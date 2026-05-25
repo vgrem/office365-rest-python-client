@@ -11,7 +11,14 @@ class DriveItemVersion(BaseItemVersion):
     """The DriveItemVersion resource represents a specific version of a DriveItem."""
 
     @require_permission(
-        delegated=["Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Restore a previous version of a DriveItem to be the current version",
     )

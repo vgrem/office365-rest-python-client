@@ -24882,6 +24882,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="resourceRoleScopes" Type="Collection(graph.accessPackageResourceRoleScope)" ContainsTarget="true"/>
             <NavigationProperty Name="resources" Type="Collection(graph.accessPackageResource)" ContainsTarget="true"/>
             <NavigationProperty Name="settings" Type="graph.entitlementManagementSettings" ContainsTarget="true"/>
+            <NavigationProperty Name="subjects" Type="Collection(graph.accessPackageSubject)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="accessReviewSet" BaseType="graph.entity">
             <NavigationProperty Name="definitions" Type="Collection(graph.accessReviewScheduleDefinition)" ContainsTarget="true"/>
@@ -25522,6 +25523,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="permissionGrants" Type="Collection(graph.resourceSpecificPermissionGrant)" ContainsTarget="true"/>
             <NavigationProperty Name="pinnedMessages" Type="Collection(graph.pinnedChatMessageInfo)" ContainsTarget="true"/>
             <NavigationProperty Name="tabs" Type="Collection(graph.teamsTab)" ContainsTarget="true"/>
+            <NavigationProperty Name="targetedMessages" Type="Collection(graph.targetedChatMessage)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="userTeamwork" BaseType="graph.entity">
             <Property Name="locale" Type="Edm.String"/>
@@ -38124,6 +38126,9 @@ within the time frame of their original request."/>
          <EntityType Name="pinnedChatMessageInfo" BaseType="graph.entity">
             <NavigationProperty Name="message" Type="graph.chatMessage"/>
          </EntityType>
+         <EntityType Name="targetedChatMessage" BaseType="graph.chatMessage">
+            <Property Name="recipient" Type="graph.identity"/>
+         </EntityType>
          <EntityType Name="teamworkHostedContent" BaseType="graph.entity" HasStream="true">
             <Property Name="contentBytes" Type="Edm.Binary"/>
             <Property Name="contentType" Type="Edm.String"/>
@@ -44816,6 +44821,20 @@ within the time frame of their original request."/>
             <Parameter Name="bindingParameter" Type="graph.chat"/>
             <Parameter Name="user" Type="graph.teamworkUserIdentity"/>
          </Action>
+         <Action Name="deleteTargetedMessage" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.userTeamwork"/>
+            <Parameter Name="teamId" Type="Edm.String" Nullable="false" Unicode="false"/>
+            <Parameter Name="channelId" Type="Edm.String" Nullable="false" Unicode="false"/>
+            <Parameter Name="messageId" Type="Edm.String" Nullable="false" Unicode="false"/>
+         </Action>
+         <Function Name="getAllRetainedTargetedMessages" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.userTeamwork"/>
+            <ReturnType Type="Collection(graph.targetedChatMessage)"/>
+         </Function>
+         <Function Name="getAllTargetedMessages" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.userTeamwork"/>
+            <ReturnType Type="Collection(graph.targetedChatMessage)"/>
+         </Function>
          <Action Name="replyWithQuote" IsBound="true">
             <Parameter Name="bindingParameter" Type="Collection(graph.chatMessage)"/>
             <Parameter Name="messageIds" Type="Collection(Edm.String)" Nullable="false" Unicode="false"/>
@@ -45462,6 +45481,26 @@ within the time frame of their original request."/>
             <Member Name="tcp" Value="1"/>
             <Member Name="sctp" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
+         <EnumType Name="correlationReason" IsFlags="true">
+            <Member Name="repeatedAlertOccurrence" Value="1"/>
+            <Member Name="sameGeography" Value="2"/>
+            <Member Name="similarArtifacts" Value="4"/>
+            <Member Name="sameTargetedAsset" Value="8"/>
+            <Member Name="sameNetworkSegment" Value="16"/>
+            <Member Name="eventSequence" Value="32"/>
+            <Member Name="timeFrame" Value="64"/>
+            <Member Name="sameThreatSource" Value="128"/>
+            <Member Name="similarTTPsOrBehavior" Value="256"/>
+            <Member Name="sameActor" Value="512"/>
+            <Member Name="sameCampaign" Value="1024"/>
+            <Member Name="sharedIndicators" Value="2048"/>
+            <Member Name="sameAsset" Value="4096"/>
+            <Member Name="networkProximity" Value="8192"/>
+            <Member Name="eventCasualSequence" Value="16384"/>
+            <Member Name="temporalProximity" Value="32768"/>
+            <Member Name="lateralMovementPath" Value="65536"/>
+            <Member Name="unknownFutureValue" Value="131072"/>
          </EnumType>
          <EnumType Name="defenderAvStatus">
             <Member Name="notReporting" Value="0"/>
@@ -46577,6 +46616,9 @@ within the time frame of their original request."/>
             <Property Name="processId" Type="Edm.Int64"/>
             <Property Name="userAccount" Type="microsoft.graph.security.userAccount"/>
          </ComplexType>
+         <ComplexType Name="mergeResponse">
+            <Property Name="targetIncidentId" Type="Edm.String" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="networkConnectionEvidence" BaseType="microsoft.graph.security.alertEvidence">
             <Property Name="destinationAddress" Type="microsoft.graph.security.ipEvidence"/>
             <Property Name="destinationPort" Type="Edm.Int32"/>
@@ -47177,6 +47219,31 @@ within the time frame of their original request."/>
             <Parameter Name="bindingParameter" Type="Collection(microsoft.graph.security.sensor)"/>
             <ReturnType Type="microsoft.graph.security.sensorDeploymentPackage"/>
          </Function>
+         <Action Name="mergeIncidents" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(microsoft.graph.security.incident)"/>
+            <Parameter Name="incidentIds" Type="Collection(Edm.String)" Unicode="false"/>
+            <Parameter Name="incidentComment" Type="Edm.String" Unicode="false">
+               <Annotation Term="Org.OData.Core.V1.OptionalParameter"/>
+            </Parameter>
+            <Parameter Name="mergeReasons" Type="microsoft.graph.security.correlationReason">
+               <Annotation Term="Org.OData.Core.V1.OptionalParameter"/>
+            </Parameter>
+            <ReturnType Type="microsoft.graph.security.mergeResponse"/>
+         </Action>
+         <Action Name="moveAlerts" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(microsoft.graph.security.alert)"/>
+            <Parameter Name="alertIds" Type="Collection(Edm.String)" Unicode="false"/>
+            <Parameter Name="incidentId" Type="Edm.String" Unicode="false">
+               <Annotation Term="Org.OData.Core.V1.OptionalParameter"/>
+            </Parameter>
+            <Parameter Name="alertComment" Type="Edm.String" Unicode="false">
+               <Annotation Term="Org.OData.Core.V1.OptionalParameter"/>
+            </Parameter>
+            <Parameter Name="newCorrelationReasons" Type="microsoft.graph.security.correlationReason">
+               <Annotation Term="Org.OData.Core.V1.OptionalParameter"/>
+            </Parameter>
+            <ReturnType Type="microsoft.graph.security.mergeResponse"/>
+         </Action>
          <Action Name="runHuntingQuery" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.security"/>
             <Parameter Name="query" Type="Edm.String" Unicode="false"/>

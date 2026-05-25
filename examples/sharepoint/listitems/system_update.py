@@ -12,9 +12,12 @@ from datetime import datetime, timedelta
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.user_value import FieldUserValue
 from tests import (
-    test_client_credentials,
+    test_client_id,
+    test_password,
     test_site_url,
+    test_tenant,
     test_user_principal_name,
+    test_username,
 )
 
 ctx = ClientContext(test_site_url).with_username_and_password(

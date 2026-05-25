@@ -1,28 +1,32 @@
-# Authentication Examples
+# Microsoft Graph Authentication
 
-This directory contains examples demonstrating various authentication flows for Microsoft Graph using the `office365-rest-python-client` library.
+GraphClient supports the following authentication flows.
 
-## Examples
+| Flow | Method | File | Notes |
+|------|--------|------|-------|
+| **Client secret** | `with_client_secret(client_id, secret)` | [`with_client_secret.py`](./with_client_secret.py) | App-only, simplest setup |
+| **Certificate** | `GraphClient(tenant).with_client_certificate(client_id, thumbprint, key)` | [`with_client_cert.py`](./with_client_cert.py) | App-only, more secure |
+| **Interactive** | `with_token_interactive(client_id)` | [`interactive.py`](./interactive.py) | User + MFA compatible |
+| **ROPC** | `with_username_and_password(client_id, username, password)` | [`with_user_creds.py`](./with_user_creds.py) | User, no MFA |
+| **National cloud** | `AzureEnvironment.USGovernmentHigh` | [`gcc_high.py`](./gcc_high.py) | GCC, DoD, China |
 
-| File | Authentication Flow |
-|---|---|
-| [interactive.py](interactive.py) | Interactive browser login (built-in) |
-| [interactive_custom.py](interactive_custom.py) | Interactive browser login (custom callback) |
-| [with_client_secret.py](with_client_secret.py) | Client secret (application-only, built-in) |
-| [with_client_secret_custom.py](with_client_secret_custom.py) | Client secret (application-only, custom callback) |
-| [with_client_cert.py](with_client_cert.py) | Client certificate (X.509) |
-| [with_user_creds.py](with_user_creds.py) | Username/password ROPC flow (built-in) |
-| [with_user_creds_custom.py](with_user_creds_custom.py) | Username/password ROPC flow (custom callback) |
-| [with_adal.py](with_adal.py) | Legacy ADAL library (username/password) |
-| [gcc_high.py](gcc_high.py) | GCC High national cloud |
+```python
+from office365.graph_client import GraphClient
 
-## Prerequisites
+# Client secret (recommended for app-only)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
+    client_id="your_client_id", client_secret="your_secret"
+)
 
-- Python 3.8+
-- Azure AD app registration with appropriate permissions
-- Credentials configured in `tests` package (client_id, tenant, secret, etc.)
+# Interactive (MFA-compatible)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_token_interactive(
+    client_id="your_client_id"
+)
+```
 
-## Documentation
+---
+
+## Official docs
 
 - [Microsoft Graph authentication overview](https://learn.microsoft.com/en-us/graph/auth)
-- [Microsoft identity platform authentication flows](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows)
+- [Microsoft identity platform auth flows](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows)

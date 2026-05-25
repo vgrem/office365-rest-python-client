@@ -15,4 +15,4 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 )
 page = ctx.site_pages.pages.get_by_name("MyPage.aspx").get().execute_query()
 page.promote_to_news().execute_query()
-print(f"Page promoted to news: MyPage.aspx")
+print("Page promoted to news: MyPage.aspx")

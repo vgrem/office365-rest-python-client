@@ -7,7 +7,7 @@ import sys
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
-from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 ctx = ClientContext(test_team_site_url).with_username_and_password(
     tenant=test_tenant,

@@ -7,7 +7,7 @@ import tempfile
 
 from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_tenant, test_username, test_team_site_url
+from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
 
 
 def print_progress(attachment_file: Attachment) -> None:

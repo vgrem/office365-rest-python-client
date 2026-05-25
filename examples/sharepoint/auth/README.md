@@ -1,37 +1,49 @@
-# ⚠️ Azure ACS Retirement in Microsoft 365: Important Notice
+# SharePoint Authentication
 
-**Target Audience:** Developers and administrators using SharePoint Online, Project Online, or SharePoint Add-ins.
+ClientContext supports the following authentication flows.
 
-## Key Retirement Dates
+## Modern (Azure AD)
 
-Azure Access Control Services (ACS) will be completely retired for Microsoft 365. Mark these critical dates:
+| Flow | Method | File | Notes |
+|------|--------|------|-------|
+| **Certificate** | `with_client_certificate(tenant, client_id, thumbprint, cert_path)` | [`modern/with_certificate.py`](./modern/with_certificate.py) | App-only, recommended |
+| **Username & password** | `with_username_and_password(tenant, client_id, user, pass)` | [`modern/with_username_and_password.py`](./modern/with_username_and_password.py) | User (MSAL ROPC), no MFA |
+| **Interactive** | `with_interactive(tenant, client_id)` | [`modern/with_interactive.py`](./modern/with_interactive.py) | User + MFA |
+| **Device code** | `with_device_flow(tenant, client_id)` | [`modern/with_device_flow.py`](./modern/with_device_flow.py) | User + MFA, headless |
+| **Cookies** | `with_cookies(...)` | [`modern/with_cookies.py`](./modern/with_cookies.py) | Browser session reuse |
+| **Capture cookies** | Playwright | [`capture_cookies_with_playwright.py`](./capture_cookies_with_playwright.py) | Automated cookie capture |
 
-*   **📅 November 1, 2024:** Azure ACS stopped working for **new tenants**.
-*   **📅 April 2, 2026:** Azure ACS will be fully retired and **stop working for all existing tenants** (including Government Clouds).
+## Legacy (deprecated / on-prem)
 
-After April 2, 2026, it will be impossible to use Azure ACS for authentication with SharePoint Online.
+| Flow | File | Status |
+|------|------|--------|
+| **ACS app-only** | [`legacy/with_app_only.py`](./legacy/with_app_only.py) | 🚫 Retired Apr 2026 (on-prem only) |
+| **SAML user auth** | [`legacy/with_user_credential.py`](./legacy/with_user_credential.py) | 🚫 Retired May 2026 |
+| **NTLM** (on-prem) | [`legacy/with_ntlm.py`](./legacy/with_ntlm.py) | ✅ On-prem only |
 
-## Why This Matters for Your Code
+```python
+from office365.sharepoint.client_context import ClientContext
 
-Azure ACS was primarily used for two scenarios in Microsoft 365. Both are affected:
+# Certificate (recommended for app-only automation)
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    tenant="contoso.onmicrosoft.com",
+    client_id="your_client_id",
+    thumbprint="your_thumbprint",
+    cert_path="./cert.pem",
+)
 
-1.  **Provider-Hosted SharePoint Add-ins:** These Add-ins themselves are also retired. You must migrate these solutions.
-2.  **Granting App-Only Access:** Applications using ACS for app-only authentication to SharePoint Online need to transition.
+# Username & password (MSAL ROPC)
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_username_and_password(
+    tenant="contoso.onmicrosoft.com",
+    client_id="your_client_id",
+    username="user@contoso.com",
+    password="your_password",
+)
+```
 
-> **For SharePoint Server On-Premises:** This retirement **does not** impact SharePoint Server on-premises hybrid scenarios. No action is required there.
+---
 
-## Recommended Actions
+## Official docs
 
-Follow these steps to prepare your code and tenant:
-
-### 1. Assess Your Current Usage
-Run the **Microsoft 365 Assessment tool** to scan your tenant. It generates a Power BI report to help you:
-*   Identify all existing Azure ACS application principals.
-*   See their permission scopes and which sites they can access.
-*   Plan the transition to **Microsoft Entra ID**.
-
-### 2. Migrate Your Applications
-You must switch any application currently using Azure ACS to use **Microsoft Entra ID** for authentication and authorization.
-
-*   **🔗 Migration Guidance:** [https://aka.ms/retirement/acs/guidance](https://aka.ms/retirement/acs/guidance)
-*   **🔗 SharePoint Add-in Retirement Info:** [https://aka.ms/retirement/addins/support](https://aka.ms/retirement/addins/support)
+- [SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
+- [Security app-only Azure AD](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread)

@@ -15,4 +15,4 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 )
 page = ctx.site_pages.pages.get_by_name("MyPage.aspx").get().execute_query()
 page.save_page("Updated Title").execute_query()
-print(f"Page updated: MyPage.aspx")
+print("Page updated: MyPage.aspx")
