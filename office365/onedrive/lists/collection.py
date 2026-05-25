@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Union
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.lists.template_type import ListTemplateType
@@ -28,6 +31,11 @@ class ListCollection(EntityCollection[List]):
     def __init__(self, context: "GraphClient", resource_path: ResourcePath | None = None):
         super().__init__(context, List, resource_path)
 
+    @require_permission(
+        delegated=["Sites.ReadWrite.All"],
+        application=["Sites.ReadWrite.All"],
+        notes="Create a new SharePoint list via Microsoft Graph",
+    )
     def add(
         self,
         display_name: str,

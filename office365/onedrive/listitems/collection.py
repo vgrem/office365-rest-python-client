@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, cast
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.listitems.list_item import ListItem
 from office365.runtime.http.request_options import RequestOptions
@@ -35,6 +36,11 @@ class ListItemCollection(EntityCollection[ListItem]):
         """
         self._honor_nonindexed = True
 
+    @require_permission(
+        delegated=["Sites.ReadWrite.All"],
+        application=["Sites.ReadWrite.All"],
+        notes="Create a new list item with the specified field values",
+    )
     def add(self, **kwargs):
         """Create a new list item with the specified field values.
 
@@ -59,6 +65,11 @@ class ListItemCollection(EntityCollection[ListItem]):
         self._honor_nonindexed = value
         return self
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Retrieve list items from a SharePoint list",
+    )
     def get(self) -> Self:
         """Retrieve a list item"""
 
