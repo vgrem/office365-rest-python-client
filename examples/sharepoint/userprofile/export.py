@@ -16,6 +16,7 @@ users = ctx.site.root_web.site_users.filter("IsHiddenInUI eq false").get().top(1
 
 exported_data = {}
 for user in users:
+    assert user.login_name is not None
     exported_data[user.login_name] = ctx.people_manager.get_properties_for(user.login_name)
 ctx.execute_batch()
 print(exported_data)
