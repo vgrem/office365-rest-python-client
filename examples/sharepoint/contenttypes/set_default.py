@@ -14,6 +14,5 @@ ctx = ClientContext(test_site_url).with_username_and_password(
 )
 target_list = ctx.web.lists.get_by_title("Documents")
 ct = target_list.content_types.get_by_name("Project Document").execute_query()
-ct.set_property("Default", True)
-ct.update().execute_query()
+ct.set_default(True).update().execute_query()
 print(f"Default content type set: {ct.name}")

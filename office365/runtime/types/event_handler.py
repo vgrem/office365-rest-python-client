@@ -100,6 +100,7 @@ class EventHandler(Generic[P]):
                 listener(*args, **kwargs)
             except Exception:
                 logger.exception("Unhandled exception in listener %r", listener)
+                raise
 
         return self
 
