@@ -14,19 +14,18 @@ https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
 from office365.directory.permissions.guard import has_delegated_permission, has_role
-from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests import test_admin_principal_name, test_client_id, test_tenant
 
 scope = input("Permission scope: ")
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)  # noqa: F821
 
-if not has_role(client, "Global Administrator") and not has_role(client, "Privileged Role Administrator"):
+if not has_role(privileged_client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator role to grant permissions.")
     exit(1)
 
-if has_delegated_permission(client, scope, test_client_id):
+if has_delegated_permission(privileged_client, scope, test_client_id):
     print(f"Permission '{scope}' is already granted.")
 else:
     print(f"Permission '{scope}' is not granted.")

@@ -6,6 +6,7 @@ on behalf of a signed-in user.
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions
 """
+
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from tests import (

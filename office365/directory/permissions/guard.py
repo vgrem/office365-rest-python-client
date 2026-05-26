@@ -100,6 +100,7 @@ def get_permissions(client: GraphClient, client_id: str, resource: str = Resourc
     )
 
 
-def has_role(client: GraphClient, role_name: str) -> bool:
-    """True if the signed-in user has the directory role."""
-    return any(role.display_name == role_name for role in _cached_directory_roles(client))
+def has_role(client: GraphClient, *role_names: str) -> bool:
+    """True if the signed-in user has at least one of the specified directory roles."""
+    granted = {r.display_name for r in _cached_directory_roles(client)}
+    return any(role in granted for role in role_names)

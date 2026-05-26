@@ -17,7 +17,7 @@ scope = input("Application permission (app role): ")
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
-if not has_role(client, "Global Administrator") and not has_role(client, "Privileged Role Administrator"):
+if not has_role(client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator role to grant permissions.")
     exit(1)
 

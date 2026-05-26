@@ -3,6 +3,7 @@ Revoke an app role assignment from a client service principal
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-application-permissions
 """
+
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from tests import (
