@@ -3,7 +3,7 @@ Revoke an app role assignment from a client service principal
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-application-permissions
 """
-
+from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from tests import (
     test_client_id,
@@ -16,5 +16,5 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 
 
 # Get resource
-resource = client.service_principals.get_by_name("Microsoft Graph")
+resource = client.service_principals.get_by_name(ResourceName.Graph)
 resource.revoke_application_permissions(test_client_id, "MailboxSettings.Read").execute_query()

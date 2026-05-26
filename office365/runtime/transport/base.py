@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Union
+from typing import Tuple
 
 from requests import Response
 from typing_extensions import Self

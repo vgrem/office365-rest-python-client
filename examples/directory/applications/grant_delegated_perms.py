@@ -13,8 +13,9 @@ Requires an administrative role that can grant delegated permissions
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
-from office365.graph_client import GraphClient
 from office365.directory.permissions.guard import has_delegated_permission
+from office365.directory.permissions.resource_name import ResourceName
+from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
 scope = input("Permission scope: ") or "FileStorageContainerType.Manage.All"
@@ -28,7 +29,7 @@ else:
     answer = input("Grant it now via admin consent? (y/N): ")
     if answer.lower() == "y":
         admin = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id)
-        resource = admin.service_principals.get_by_name("Microsoft Graph")
+        resource = admin.service_principals.get_by_name(ResourceName.Graph)
         resource.grant_delegated_permissions(test_client_id, None, scope).execute_query()
         print(f"Permission '{scope}' granted.")
     else:
