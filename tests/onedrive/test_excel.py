@@ -30,14 +30,14 @@ class TestExcel(GraphDelegatedTestCase):
         assert cls.target_item is not None
         cls.target_item.delete_object().execute_query_retry()
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_get_workbook(self):
         """Get the workbook from the uploaded Excel file"""
         assert TestExcel.target_item is not None
         workbook = TestExcel.target_item.workbook.get().execute_query_retry()
         self.assertIsNotNone(workbook.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test2_create_workbook_table(self):
         """Create a workbook table"""
         assert TestExcel.target_item is not None
@@ -45,7 +45,7 @@ class TestExcel(GraphDelegatedTestCase):
         assert table.resource_path is not None
         TestExcel.table = table
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test3_list_workbook_tables(self):
         """List all workbook tables"""
         assert TestExcel.target_item is not None
@@ -53,42 +53,42 @@ class TestExcel(GraphDelegatedTestCase):
         self.assertIsNotNone(tables.resource_path)
         self.assertGreater(len(tables), 0)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test4_data_body_range(self):
         """Get data body range of a table"""
         assert TestExcel.table is not None
         result = TestExcel.table.data_body_range().execute_query()
         self.assertIsNotNone(result.address)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test5_create_table_column(self):
         """Create a column in a workbook table"""
         assert TestExcel.table is not None
         column = TestExcel.table.columns.add(3, "Column4").execute_query()
         self.assertIsNotNone(column.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test6_create_table_column_count(self):
         """Count columns in a workbook table"""
         assert TestExcel.table is not None
         result = TestExcel.table.columns.count().execute_query()
         self.assertGreater(result.value, 0)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test7_list_table_columns(self):
         """List all columns in a workbook table"""
         assert TestExcel.table is not None
         columns = TestExcel.table.columns.get().execute_query()
         self.assertIsNotNone(columns.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test8_list_table_rows(self):
         """List all rows in a workbook table"""
         assert TestExcel.table is not None
         rows = TestExcel.table.rows.get().execute_query()
         self.assertIsNotNone(rows.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test9_create_table_rows(self):
         """Create rows in a workbook table"""
         assert TestExcel.table is not None
@@ -97,7 +97,7 @@ class TestExcel(GraphDelegatedTestCase):
         self.assertIsNotNone(row.index)
         self.assertIsNotNone(row.values)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test_10_table_rows_count(self):
         """Count rows in a workbook table"""
         assert TestExcel.table is not None
@@ -110,14 +110,14 @@ class TestExcel(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.resource_path)
     #    self.assertIsNotNone(result.values)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test_12_table_range(self):
         """Get the range of a workbook table"""
         assert TestExcel.table is not None
         result = TestExcel.table.range().execute_query()
         self.assertIsNotNone(result.address)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test_13_delete_workbook_table(self):
         """Delete a workbook table"""
         assert TestExcel.table is not None
