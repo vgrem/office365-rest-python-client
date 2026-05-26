@@ -9,6 +9,8 @@ Requires a Global Administrator or Privileged Role Administrator role.
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-application-permissions
 """
 
+import sys
+
 from office365.directory.permissions.guard import has_app_permission, has_role
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
@@ -17,7 +19,7 @@ privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(test_
 
 if not has_role(privileged_client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator role to grant permissions.")
-    exit(1)
+    sys.exit(1)
 
 scope = input("Application permission (app role): ")
 

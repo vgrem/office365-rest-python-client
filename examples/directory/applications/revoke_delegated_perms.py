@@ -20,9 +20,7 @@ sp = client.service_principals.get_by_app(test_client_id).get().execute_query()
 assert sp.id is not None
 
 # Query by clientId (scope is not filterable in Graph)
-all_grants = client.oauth2_permission_grants.get().filter(
-    f"clientId eq '{sp.id}'"
-).execute_query()
+all_grants = client.oauth2_permission_grants.get().filter(f"clientId eq '{sp.id}'").execute_query()
 
 # Filter by scope in Python
 grants = [g for g in all_grants if g.scope == scope]

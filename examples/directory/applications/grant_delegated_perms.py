@@ -13,6 +13,8 @@ Requires an administrative role that can grant delegated permissions
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
+import sys
+
 from office365.directory.permissions.guard import has_delegated_permission, has_role
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
@@ -25,7 +27,7 @@ client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, 
 
 if not has_role(client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator role to grant permissions.")
-    exit(1)
+    sys.exit(1)
 
 if has_delegated_permission(client, scope, test_client_id):
     print(f"✅ Permission '{scope}' is already granted.")
