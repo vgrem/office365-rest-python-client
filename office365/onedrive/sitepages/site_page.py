@@ -2,6 +2,7 @@ from typing import Optional, cast
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.sitepages.base import BaseSitePage
@@ -17,6 +18,11 @@ class SitePage(BaseSitePage):
     """This resource represents a page in the sitePages list. It contains the title, layout, and a collection of
     webParts."""
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All"],
+        notes="Get web parts on a page by position",
+    )
     def get_web_parts_by_position(
         self,
         web_part_index=None,
@@ -45,6 +51,11 @@ class SitePage(BaseSitePage):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Sites.ReadWrite.All"],
+        application=["Sites.ReadWrite.All"],
+        notes="Check in and publish a sitePage",
+    )
     def checkin(self, message: str) -> Self:
         """
         Check in the latest version of a sitePage resource, which makes the version of the page available to all users.
@@ -59,6 +70,11 @@ class SitePage(BaseSitePage):
         self.ensure_property("name", _page_loaded)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Publish the latest version of a sitePage",
+    )
     def publish(self):
         """
         Publish the latest version of a sitePage resource, which makes the version of the page available to all users.
