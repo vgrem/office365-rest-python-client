@@ -1,27 +1,18 @@
 """
-Determines whether the delegated permissions is granted by the Microsoft Graph service principal in the tenant.
+Check if a delegated permission (OAuth scope) is granted to your app.
 
-https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions
+https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
-from office365.directory.permissions.resource_name import ResourceName
+from office365.directory.permissions.guard import has_delegated_permission
 from office365.graph_client import GraphClient
-from tests import (
-    test_admin_principal_name,
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-)
+from tests import test_client_id, test_client_secret, test_tenant
+
+scope = input("Permission scope: ")
 
 client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
-resource = client.service_principals.get_by_name(ResourceName.Graph)
-scope = "BackupRestore-Control.Read.All"
-user = client.users.get_by_principal_name(test_admin_principal_name)
-client_app = client.applications.get_by_app_id(test_client_id)
-result = resource.get_delegated_permissions(test_client_id).execute_query()
-found_scope = next((cur_scope for cur_scope in result.value if cur_scope == scope), None)
-if found_scope is None:
-    print("Delegated permission '{0}' is not granted".format(scope))
+if has_delegated_permission(client, scope, test_client_id):
+    print(f"✅ Permission '{scope}' is granted.")
 else:
-    print(result.value)
+    print(f"❌ Permission '{scope}' is not granted.")
