@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
+import requests
 from requests import HTTPError, Response
 from typing_extensions import Self
 
@@ -29,6 +30,35 @@ class ClientRequest(ABC):
     @transport.setter
     def transport(self, value: BaseTransport) -> None:
         self._transport = value
+
+    def with_transport(
+        self,
+        proxies: dict[str, str] | None = None,
+        verify: bool | str | None = None,
+        timeout: int | tuple[int, int] | None = None,
+        session: requests.Session | None = None,
+    ) -> Self:
+        """Configure the HTTP transport (proxy, SSL, timeout, custom session).
+
+        All parameters are optional.  Per-request values (``request.proxies``,
+        ``request.verify``) take precedence over transport-level values.
+
+        Args:
+            proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
+            verify: SSL verification — ``True``, ``False``, or a CA bundle path
+            timeout: Request timeout in seconds
+            session: Custom ``requests.Session`` with pre-configured adapters
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self._transport = RequestsTransport(
+            session=session,
+            proxies=proxies,
+            verify=True if verify is None else verify,
+            timeout=timeout,
+        )
+        return self
 
     @abstractmethod
     def build_request(self, query: ClientQuery) -> RequestOptions:

@@ -161,6 +161,30 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_access_token(token_func)
         return self
 
+    def with_transport(
+        self,
+        proxies: dict[str, str] | None = None,
+        verify: bool | str | None = None,
+        timeout: int | tuple[int, int] | None = None,
+    ) -> Self:
+        """Configure the HTTP transport (proxy, SSL, timeout).
+
+        Note:
+            MSAL authentication requests to ``login.microsoftonline.com`` use
+            their own HTTP client.  Use the ``HTTPS_PROXY`` environment variable
+            to route MSAL traffic through a proxy.
+
+        Args:
+            proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
+            verify: SSL verification — ``True``, ``False``, or a CA bundle path
+            timeout: Request timeout in seconds
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self.pending_request().with_transport(proxies=proxies, verify=verify, timeout=timeout)
+        return self
+
     def with_user_credentials(self, username: str, password: str) -> Self:
         """
         Initializes a client to acquire a token via user credentials.
