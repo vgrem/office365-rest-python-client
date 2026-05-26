@@ -28,3 +28,6 @@ class ResourceName(str, Enum):
     Flow = "Power Automate"
     PowerApps = "PowerApps Service"
     Dynamics = "Dynamics CRM"
+
+    def __str__(self) -> str:
+        return self.value
