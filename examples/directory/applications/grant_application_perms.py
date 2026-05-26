@@ -13,7 +13,7 @@ from office365.directory.permissions.guard import has_app_permission, has_role
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
-scope = input("Application permission (app role): ") or "IdentityRiskyUser.Read.All"
+scope = input("Application permission (app role): ")
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
