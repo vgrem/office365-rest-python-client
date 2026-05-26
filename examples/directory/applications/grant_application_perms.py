@@ -13,22 +13,22 @@ from office365.directory.permissions.guard import has_app_permission, has_role
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
-scope = input("Application permission (app role): ")
+privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
-client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
-
-if not has_role(client, "Global Administrator", "Privileged Role Administrator"):
+if not has_role(privileged_client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator role to grant permissions.")
     exit(1)
 
-if has_app_permission(client, scope, test_client_id):
+scope = input("Application permission (app role): ")
+
+if has_app_permission(privileged_client, scope, test_client_id):
     print(f"Permission '{scope}' is already granted.")
 else:
     print(f"Permission '{scope}' is not granted.")
     answer = input("Grant it now via admin consent? (y/N): ")
     if answer.lower() == "y":
-        resource = client.service_principals.get_by_name("Microsoft Graph")
-        app = client.applications.get_by_app_id(test_client_id)
+        resource = privileged_client.service_principals.get_by_name("Microsoft Graph")
+        app = privileged_client.applications.get_by_app_id(test_client_id)
         resource.grant_application_permissions(app, scope).execute_query()
         print(f"Permission '{scope}' granted.")
     else:
