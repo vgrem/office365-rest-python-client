@@ -33,7 +33,7 @@ if has_delegated_permission(client, scope, test_client_id):
     print(f"✅ Permission '{scope}' is already granted.")
 else:
     print(f"❌ Permission '{scope}' is not granted.")
-    answer = input("Grant it now via admin consent? (y/N): ")
+    answer = "y"  # input("Grant it now via admin consent? (y/N): ")
     if answer.lower() == "y":
         resource = client.service_principals.get_by_name(ResourceName.Graph)
         try:
@@ -41,7 +41,9 @@ else:
             print(f"✅ Permission '{scope}' granted.")
         except ClientRequestException as e:
             if "409" in str(e):
-                print(f"✅ Permission '{scope}' was already granted.")
+                print("❌ Conflict: A grant already exists that blocks this request.")
+                print("   Run 'revoke_delegated_perms' first to remove blocking grants,")
+                print("   then try granting again.")
             else:
                 raise
     else:
