@@ -267,6 +267,20 @@ class ServicePrincipal(DirectoryObject):
         self.ensure_properties(["id", "appId", "appRoles", "appRoleAssignedTo"], _ensure_principal)
         return self
 
+    def revoke_delegated_permissions(self, client_id: str, scope: str) -> Self:
+        def _revoke(all_grants):
+            for g in all_grants:
+                if scope in g.scope.split():
+                    g.delete_object()
+
+        def _client_resolved(sp):
+            self.context.oauth2_permission_grants.get().filter(
+                f"clientId eq '{sp.id}'"
+            ).after_execute(_revoke)
+
+        self.context.service_principals.get_by_app(client_id).get().after_execute(_client_resolved)
+        return self
+
     def remove_password(self, key_id: str) -> Self:
         """
         Remove a password from a servicePrincipal object.
