@@ -23,13 +23,18 @@ class TestSharePointFile(SPTestCase):
         super().setUpClass()
         cls.folder_from = cls.client.web.default_document_library().root_folder.add(create_unique_name("from"))
         cls.folder_to = cls.client.web.default_document_library().root_folder.add(create_unique_name("to"))
+        assert cls.folder_from is not None
+        assert cls.folder_to is not None
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.folder_from is not None
+        assert cls.folder_to is not None
         cls.folder_from.delete_object().execute_query()
         cls.folder_to.delete_object().execute_query()
 
     def test1_upload_file_as_content(self):
+        assert self.folder_from is not None
         path = f"{os.path.dirname(__file__)}/../data/Sample.txt"
         uploaded_file = self.folder_from.files.upload(path).execute_query()
         self.assertEqual(uploaded_file.name, os.path.basename(path))
@@ -37,12 +42,14 @@ class TestSharePointFile(SPTestCase):
         type(self).file = uploaded_file
 
     def test3_get_first_file(self):
+        assert self.folder_from is not None
         files = self.folder_from.files.top(1).get().execute_query()
         self.assertEqual(len(files), 1)
 
     def test4_get_file_from_absolute_url(self):
         assert self.file is not None
         result = self.file.get_absolute_url().execute_query()
+        assert result.value is not None
         file = File.from_url(result.value).with_credentials(test_client_credentials).get().execute_query()
         self.assertIsNotNone(file.server_relative_url)
 
@@ -84,7 +91,7 @@ class TestSharePointFile(SPTestCase):
         versions = self.file.versions.top(1).get().execute_query()
         self.assertEqual(len(versions), 1)
         first_version = versions[0]
-        self.assertIsNotNone(first_version.resource_path)
+        assert first_version.resource_path is not None
         first_version.delete_object().execute_query()
 
     def test_13_download_file_content(self):
@@ -101,17 +108,21 @@ class TestSharePointFile(SPTestCase):
 
     def test_15_copy_file(self):
         assert self.file is not None
+        assert self.folder_to is not None
         copied_file = self.file.copyto(self.folder_to, True).execute_query()
         self.assertIsNotNone(copied_file.server_relative_url)
 
     def test_16_move_file(self):
         assert self.file is not None
+        assert self.folder_to is not None
         file = self.file
         moved_file = file.moveto(self.folder_to, 1).get().execute_query()
+        assert moved_file.server_relative_url is not None
         self.assertIsNotNone(moved_file.server_relative_url)
 
     def test_17_recycle_file(self):
         assert self.file is not None
+        assert self.folder_to is not None
         files_before = self.folder_to.files.get().execute_query()
         result = self.file.recycle().execute_query()
         self.assertIsNotNone(result.value)
@@ -120,6 +131,7 @@ class TestSharePointFile(SPTestCase):
         type(self).deleted_file_guid = result.value
 
     def test_18_restore_file(self):
+        assert self.deleted_file_guid is not None
         result = self.client.web.recycle_bin.get_by_id(self.deleted_file_guid)
         result.restore().execute_query()
         self.assertIsNotNone(result.resource_path)
@@ -136,6 +148,7 @@ class TestSharePointFile(SPTestCase):
 
     def test_20_delete_file(self):
         assert self.file is not None
+        assert self.folder_to is not None
         files_before = self.folder_to.files.get().execute_query()
         self.assertGreater(len(files_before), 0)
         self.file.delete_object().execute_query()
@@ -143,6 +156,7 @@ class TestSharePointFile(SPTestCase):
         self.assertEqual(len(files_after), len(files_before) - 1)
 
     def test_22_upload_large_file(self):
+        assert self.folder_from is not None
         path = f"{os.path.dirname(__file__)}/../data/big_buck_bunny.mp4"
         file_size = os.path.getsize(path)
         size_1mb = 1000000
