@@ -23,7 +23,11 @@ class TestWebPart(GraphDelegatedTestCase):
         assert cls.target_page is not None
         cls.target_page.delete_object().execute_query()
 
-    @requires_delegated("Sites.Read.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated(
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
+    )
     def test1_list_web_parts(self):
         """List web parts on the target page"""
         assert self.target_page is not None

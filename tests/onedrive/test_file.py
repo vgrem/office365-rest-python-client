@@ -31,7 +31,10 @@ class TestFile(GraphDelegatedTestCase):
         cls.target_drive.list.delete_object().execute_query()
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_create_folder(self):
         """Create a folder in the target drive"""
@@ -42,7 +45,10 @@ class TestFile(GraphDelegatedTestCase):
         TestFile.target_folder = folder
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_get_folder_permissions(self):
         """Get permissions of the target folder"""
@@ -51,7 +57,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(folder_perms.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_upload_file(self):
         """Upload a file to the target drive"""
@@ -63,7 +72,10 @@ class TestFile(GraphDelegatedTestCase):
         assert self.target_file.web_url is not None
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_preview_file(self):
         """Get a preview of the target file"""
@@ -75,7 +87,10 @@ class TestFile(GraphDelegatedTestCase):
     #    self.__class__.target_file.validate_permission().execute_query()
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_checkout(self):
         """Check out the target file"""
@@ -85,7 +100,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertEqual(target_item.publication.level, "checkout")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test7_checkin(self):
         """Check in the target file"""
@@ -95,7 +113,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertEqual(target_item.publication.level, "published")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test8_list_versions(self):
         """List versions of the target file"""
@@ -112,7 +133,10 @@ class TestFile(GraphDelegatedTestCase):
     #    self.assertIsNotNone(target_item.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_11_upload_file_session(self):
         """Upload a file using resumable upload session"""
@@ -123,7 +147,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(target_file.web_url)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_12_download_file(self):
         """Download the target file content"""
@@ -132,7 +159,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_13_convert_file(self):
         """Convert the target file to PDF"""
@@ -141,7 +171,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_14_copy_file(self):
         """Copy the target file"""
@@ -159,7 +192,10 @@ class TestFile(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_15_get_activities_by_interval(self):
         """Get activities for the target file by time interval"""
@@ -170,7 +206,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_16_get_item_analytics(self):
         """Get analytics for the target file"""
@@ -179,7 +218,10 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_17_extract_sensitivity_labels(self):
         """Extract sensitivity labels from the target file"""
@@ -192,7 +234,10 @@ class TestFile(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_19_delete_file(self):
         """Delete files from the target drive"""

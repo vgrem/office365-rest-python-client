@@ -20,7 +20,11 @@ class TestShares(GraphDelegatedTestCase):
         cls.file_item.delete_object().execute_query_retry()
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_get_file_by_abs_url(self):
         """Get a file by its absolute URL"""

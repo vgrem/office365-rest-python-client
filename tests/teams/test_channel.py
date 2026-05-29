@@ -30,6 +30,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         if cls.target_team is not None:
             cls.target_team.delete_object().execute_query_retry()
 
+    @requires_delegated(
+        "Team.ReadBasic.All", "TeamSettings.Read.All", or_roles=["Global Administrator", "Teams Administrator"]
+    )
     def test1_get_team(self):
         """Test getting a team by id"""
         assert TestGraphChannel.target_team is not None
@@ -44,7 +47,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         "Group.Read.All",
         "Group.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test2_list_channels(self):
         """Test listing channels for a team"""
@@ -53,7 +56,10 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertGreater(len(channels), 0)
 
     @requires_delegated(
-        "Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
+        "Channel.Create",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test3_create_channel(self):
         """Test creating a channel in a team"""
@@ -71,7 +77,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         "Group.Read.All",
         "Group.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test4_get_channel(self):
         """Test getting a specific channel"""
@@ -82,7 +88,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         existing_channel = TestGraphChannel.target_team.channels[channel.id].get().execute_query()
         self.assertEqual(existing_channel.id, channel.id)
 
-    @requires_delegated("ChannelMember.Read.All", "ChannelMember.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated(
+        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"]
+    )
     def test6_list_allowed_members(self):
         """Test listing allowed members of a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -93,7 +101,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         "Channel.ReadBasic.All",
         "ChannelSettings.Read.All",
         "ChannelSettings.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test7_get_primary_channel(self):
         """Test getting the primary channel"""
@@ -101,7 +109,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         primary_channel = TestGraphChannel.target_team.primary_channel.get().execute_query()
         self.assertIsNotNone(primary_channel.resource_path)
 
-    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"])
     def test9_channel_provision_email(self):
         """Test provisioning email for a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -109,7 +117,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
         result = channel.provision_email().execute_query()  # type: ignore[attr-defined]
         self.assertIsNotNone(result.value)  # type: ignore[attr-defined]
 
-    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("ChannelSettings.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"])
     def test_10_channel_remove_email(self):
         """Test removing email from a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -117,7 +125,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         result = channel.remove_email().execute_query()  # type: ignore[attr-defined]
         self.assertIsNotNone(result.value)  # type: ignore[attr-defined]
 
-    @requires_delegated("ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated(
+        "ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"]
+    )
     def test_11_send_message(self):
         """Test sending a message to a channel"""
         assert TestGraphChannel.target_channel is not None
@@ -125,7 +135,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(message.id)
         TestGraphChannel.target_message = message
 
-    @requires_delegated("ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated(
+        "ChannelMessage.Send", "Group.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"]
+    )
     def test_12_reply_to_message(self):
         """Test replying to a message"""
         assert TestGraphChannel.target_message is not None
@@ -134,7 +146,10 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(reply.id)
 
     @requires_delegated(
-        "Channel.Delete.All", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
+        "Channel.Delete.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_13_delete_channel(self):
         """Test deleting a channel"""

@@ -5,7 +5,7 @@ from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.email_address import EmailAddress
 
 from tests import create_unique_name, test_user_principal_name
-from tests.decorators import requires_delegated, requires_delegated_permission
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -15,7 +15,11 @@ class TestCalendar(GraphDelegatedTestCase):
     cal_name = create_unique_name("Volunteer")
     target_cal: Optional[Calendar] = None
 
-    @requires_delegated_permission("Calendars.Read.Shared", "Calendars.ReadWrite.Shared")
+    @requires_delegated(
+        "Calendars.Read.Shared",
+        "Calendars.ReadWrite.Shared",
+        or_roles=["Exchange Administrator", "Global Administrator"],
+    )
     def test1_find_my_meeting_times(self):
         result = self.client.me.find_meeting_times().execute_query()
         self.assertIsNotNone(result.value.meetingTimeSuggestions)
@@ -109,15 +113,16 @@ class TestCalendar(GraphDelegatedTestCase):
     def test9_create_cal(self):
         result = self.client.me.calendars.add(name=self.cal_name).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.__class__.target_cal = result
+        TestCalendar.target_cal = result
 
     @requires_delegated(
         "Calendars.ReadWrite",
         or_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_10_update_cal(self):
-        cal = self.__class__.target_cal
-        self.__class__.cal_name = self.cal_name + "_Updated"
+        cal = TestCalendar.target_cal
+        assert cal is not None
+        TestCalendar.cal_name = self.cal_name + "_Updated"
         cal.set_property("name", self.cal_name).update().execute_query()
 
     @requires_delegated(
@@ -127,9 +132,9 @@ class TestCalendar(GraphDelegatedTestCase):
         or_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_11_get_cal(self):
-        cal_id = self.__class__.target_cal.id
-        assert cal_id is not None
-        result = self.client.me.calendars[cal_id].select(["name", "owner"]).get().execute_query()
+        cal = TestCalendar.target_cal
+        assert cal is not None and cal.id is not None
+        result = self.client.me.calendars[cal.id].select(["name", "owner"]).get().execute_query()
         self.assertEqual(result.name, self.cal_name)
         self.assertIsInstance(result.owner, EmailAddress)
 
@@ -138,7 +143,8 @@ class TestCalendar(GraphDelegatedTestCase):
         or_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_12_delete_cal(self):
-        cal = self.__class__.target_cal
+        cal = TestCalendar.target_cal
+        assert cal is not None
         cal.delete_object().execute_query()
 
     @requires_delegated(

@@ -13,7 +13,10 @@ class TestGraphTeam(GraphDelegatedTestCase):
     target_team: Optional[Team] = None
 
     @requires_delegated(
-        "Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
+        "Team.Create",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test1_create_team(self):
         """Test creating a team"""
@@ -23,14 +26,17 @@ class TestGraphTeam(GraphDelegatedTestCase):
         TestGraphTeam.target_team = result
 
     @requires_delegated(
-        "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All", or_roles=["Global Administrator"]
+        "Team.ReadBasic.All",
+        "TeamSettings.Read.All",
+        "TeamSettings.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test3_list_all_teams_in_org(self):
         """Test listing all teams in organization"""
         result = self.client.teams.get_all().execute_query()
         self.assertGreater(len(result), 0)
 
-    @requires_delegated("Team.ReadBasic.All", "Team.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("Team.ReadBasic.All", "Team.Read.All", or_roles=["Global Administrator", "Teams Administrator"])
     def test4_list_joined_teams(self):
         """Test listing joined teams"""
         result = self.client.me.joined_teams.get().execute_query()
@@ -45,7 +51,7 @@ class TestGraphTeam(GraphDelegatedTestCase):
         "Group.Read.All",
         "Group.ReadWrite.All",
         "TeamSettings.Read.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test5_get_team(self):
         """Test getting a team"""
@@ -63,7 +69,10 @@ class TestGraphTeam(GraphDelegatedTestCase):
             self.assertFalse(existing_team.is_archived)
 
     @requires_delegated(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
+        "TeamSettings.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test6_update_team(self):
         """Test updating a team"""
@@ -73,7 +82,10 @@ class TestGraphTeam(GraphDelegatedTestCase):
         team.update().execute_query()
 
     @requires_delegated(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All", or_roles=["Global Administrator"]
+        "TeamSettings.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test7_archive_team(self):
         """Test archiving a team"""
@@ -81,7 +93,7 @@ class TestGraphTeam(GraphDelegatedTestCase):
         team = TestGraphTeam.target_team
         team.archive().execute_query()
 
-    @requires_delegated("Group.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("Group.ReadWrite.All", or_roles=["Global Administrator", "Teams Administrator"])
     def test9_delete_team(self):
         """Test deleting a team"""
         assert TestGraphTeam.target_team is not None

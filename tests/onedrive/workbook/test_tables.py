@@ -30,7 +30,7 @@ class TestExcelTables(GraphDelegatedTestCase):
         assert cls.excel_file is not None
         cls.excel_file.delete_object().execute_query_retry()
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_sort_apply(self):
         """Apply sorting to a table"""
         sort_fields = [WorkbookSortField()]

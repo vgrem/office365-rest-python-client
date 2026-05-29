@@ -30,7 +30,7 @@ class TestTeamApps(GraphDelegatedTestCase):
         "Team.ReadBasic.All",
         "Team.Read.All",
         "Team.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "Teams Administrator"],
     )
     def test1_list_team_apps(self):
         """Test listing installed apps for a team"""

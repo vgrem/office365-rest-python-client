@@ -25,7 +25,12 @@ class TestAttachments(GraphDelegatedTestCase):
         assert cls.target_message is not None
         cls.target_message.delete_object().execute_query()
 
-    @requires_delegated("Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All")
+    @requires_delegated(
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Exchange Administrator", "Global Administrator"],
+    )
     def test1_create_upload_session(self):
         """Test creating an upload session for a message attachment."""
         message = TestAttachments.target_message

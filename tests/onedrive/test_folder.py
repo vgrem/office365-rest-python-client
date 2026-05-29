@@ -30,7 +30,10 @@ class TestFolder(GraphDelegatedTestCase):
         cls.target_drive.list.delete_object().execute_query()
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_create_root_folder(self):
         """Create a root folder in the target drive"""
@@ -40,7 +43,10 @@ class TestFolder(GraphDelegatedTestCase):
         TestFolder.target_folder = folder
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_create_child_folder(self):
         """Create a child folder inside the target folder"""
@@ -58,7 +64,7 @@ class TestFolder(GraphDelegatedTestCase):
         "Group.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_get_folder_by_path(self):
         """Get a folder by its path"""
@@ -71,7 +77,10 @@ class TestFolder(GraphDelegatedTestCase):
         )
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_get_folder_permissions(self):
         """Get permissions of the target folder"""
@@ -80,7 +89,10 @@ class TestFolder(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test5_update_folder(self):
         """Update the target folder"""
@@ -89,7 +101,10 @@ class TestFolder(GraphDelegatedTestCase):
         folder.update().execute_query()
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_get_analytics(self):
         """Get analytics for the target folder"""
@@ -98,7 +113,10 @@ class TestFolder(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All", or_roles=["Global Administrator"]
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
+        or_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test7_delete_folder(self):
         """Delete the target folder"""

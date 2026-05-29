@@ -21,7 +21,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
             "+1 732 555 0102",
         ).execute_query()
         self.assertEqual(result.email_addresses[0].name, "Pavel Bansky")
-        self.__class__.target_contact = result
+        TestOutlookContacts.target_contact = result
 
     @requires_delegated(
         "Contacts.Read",

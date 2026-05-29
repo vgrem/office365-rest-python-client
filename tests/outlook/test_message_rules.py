@@ -4,6 +4,7 @@ from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
 from office365.outlook.mail.recipient import Recipient
+from office365.runtime.client_value_collection import ClientValueCollection
 
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -15,9 +16,9 @@ class TestMessageRules(GraphDelegatedTestCase):
     @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
     def test1_create_rule(self):
         actions = MessageRuleActions(
-            forward_to=[Recipient.from_email("AlexW@contoso.com")],
-            stop_processing_rules=True,
-            mark_importance=Importance.normal,
+            forwardTo=ClientValueCollection(Recipient, [Recipient.from_email("AlexW@contoso.com")]),
+            stopProcessingRules=True,
+            markImportance=Importance.normal,
         )
         result = self.client.me.mail_folders["inbox"].message_rules.add("From partner", 2, actions).execute_query()
         self.assertIsNotNone(result.resource_path)
