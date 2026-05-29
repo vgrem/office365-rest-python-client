@@ -54,9 +54,11 @@ class DocumentSet(Folder):
             custom_props = parent_folder.get_property("Properties")
             list_id = custom_props.get("vti_x005f_listname")
             target_list = context.web.lists.get_by_id(list_id)
-            target_list.ensure_property("Title", _create, target_list=target_list)
+            target_list.ensure_property("Title").after_execute(lambda _: _create(target_list=target_list))
 
-        parent_folder.ensure_properties(["UniqueId", "Properties", "ServerRelativeUrl"], _parent_folder_loaded)
+        parent_folder.ensure_properties(["UniqueId", "Properties", "ServerRelativeUrl"]).after_execute(
+            lambda _: _parent_folder_loaded()
+        )
         return return_type
 
     @staticmethod

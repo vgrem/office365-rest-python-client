@@ -44,11 +44,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             self.context.add_query(qry)
 
         if isinstance(parent, ContentType):
-
-            def _parent_loaded():
-                _create(parent.id)
-
-            parent.ensure_property("id", _parent_loaded)
+            parent.ensure_property("id").after_execute(lambda _: _create(parent.id))
         else:
             _create(parent)
 

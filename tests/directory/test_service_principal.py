@@ -11,14 +11,13 @@ from tests.graph_case import GraphDelegatedTestCase
 
 class TestServicePrincipal(GraphDelegatedTestCase):
     target_object: Optional[ServicePrincipal] = None
-    target_app: Optional[Application] = None
     password_creds: Optional[PasswordCredential] = None
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        app_name = create_unique_name("App")
-        cls.target_app = cls.client.applications.add(app_name).execute_query()
+        app_name: str = create_unique_name("App")
+        cls.target_app: Application = cls.client.applications.add(app_name).execute_query()
 
     @classmethod
     def tearDownClass(cls):
@@ -33,6 +32,7 @@ class TestServicePrincipal(GraphDelegatedTestCase):
     def test1_create_service_principal(self):
         """Create a service principal"""
         assert TestServicePrincipal.target_app is not None
+        assert TestServicePrincipal.target_app.app_id is not None
         service_principal = self.client.service_principals.add(TestServicePrincipal.target_app.app_id).execute_query()
         self.assertIsNotNone(service_principal.resource_path)
         TestServicePrincipal.target_object = service_principal
@@ -59,6 +59,7 @@ class TestServicePrincipal(GraphDelegatedTestCase):
     def test4_get_by_app_id(self):
         """Get service principal by app ID"""
         assert TestServicePrincipal.target_app is not None
+        assert TestServicePrincipal.target_app.app_id is not None
         principal = (
             self.client.service_principals.get_by_app_id(TestServicePrincipal.target_app.app_id).get().execute_query()
         )
@@ -84,9 +85,9 @@ class TestServicePrincipal(GraphDelegatedTestCase):
     def test6_remove_password(self):
         """Remove password from the service principal"""
         assert TestServicePrincipal.password_creds is not None
-        key_id = TestServicePrincipal.password_creds.keyId
+        assert TestServicePrincipal.password_creds.keyId is not None
         assert TestServicePrincipal.target_object is not None
-        TestServicePrincipal.target_object.remove_password(key_id).execute_query()
+        TestServicePrincipal.target_object.remove_password(TestServicePrincipal.password_creds.keyId).execute_query()
 
     @requires_delegated(
         "Application.ReadWrite.All",

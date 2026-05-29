@@ -177,7 +177,7 @@ class Site(Entity):
             else:
                 self.context.group_site_manager.delete(self.url)  # type: ignore[arg-type]
 
-        self.ensure_properties(["Url", "GroupId", "Id"], _delete_object)
+        self.ensure_properties(["Url", "GroupId", "Id"]).after_execute(lambda _: _delete_object())
         return self
 
     def check_is_deletable(self) -> ClientResult[bool]:
@@ -187,7 +187,7 @@ class Site(Entity):
         def _check_is_deletable():
             SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Id", _check_is_deletable)
+        self.ensure_property("Id").after_execute(lambda _: _check_is_deletable())
         return return_type
 
     def extend_upgrade_reminder_date(self) -> Self:
@@ -217,7 +217,7 @@ class Site(Entity):
         def _site_loaded():
             SPPolicyStoreProxy.get_available_tags_for_site(self.context, self.url, return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Url", _site_loaded)
+        self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
     def get_block_download_policy_for_files_data(self) -> ClientResult[str]:
@@ -251,7 +251,7 @@ class Site(Entity):
         def _get_site_logo():
             self.context.site_icon_manager.get_site_logo(self.url, return_type=return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Url", _get_site_logo)
+        self.ensure_property("Url").after_execute(lambda _: _get_site_logo())
         return return_type
 
     def get_site_logo_ex(self):
@@ -261,7 +261,7 @@ class Site(Entity):
         def _site_loaded():
             self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("GroupId", _site_loaded)
+        self.ensure_property("GroupId").after_execute(lambda _: _site_loaded())
         return return_type
 
     def set_site_logo(self, relative_logo_url: str) -> Self:
@@ -280,7 +280,7 @@ class Site(Entity):
         def _site_loaded():
             SPHSite.is_comm_site(self.context, self.url, return_type)
 
-        self.ensure_property("Url", _site_loaded)
+        self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
     def is_valid_home_site(self) -> ClientResult[bool]:
@@ -290,7 +290,7 @@ class Site(Entity):
         def _site_loaded():
             SPHSite.is_valid_home_site(self.context, self.url, return_type)
 
-        self.ensure_property("Url", _site_loaded)
+        self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
     def set_as_home_site(self):
@@ -300,7 +300,7 @@ class Site(Entity):
         def _site_loaded():
             self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)  # type: ignore[assignment]
 
-        self.ensure_property("Url", _site_loaded)
+        self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
     def get_changes(self, query=None) -> ChangeCollection:
@@ -339,7 +339,7 @@ class Site(Entity):
         def _get_site_administrators():
             self.context.tenant.get_site_administrators(self.id, return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Id", _get_site_administrators)
+        self.ensure_property("Id").after_execute(lambda _: _get_site_administrators())
         return return_type
 
     def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:
@@ -474,7 +474,7 @@ class Site(Entity):
         def _is_site_deletable():
             SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Url", _is_site_deletable)
+        self.ensure_property("Url").after_execute(lambda _: _is_site_deletable())
         return return_type
 
     def get_catalog(self, type_catalog: Union[ListTemplateType, int]) -> List:

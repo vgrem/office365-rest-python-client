@@ -67,7 +67,7 @@ class FolderCollection(EntityCollection[Folder]):
                 self.context.folder_coloring.create_folder(path, coloring_info, return_type=return_type)
 
             if self.parent is not None:
-                self.parent.ensure_property("ServerRelativeUrl", _add_coloring)
+                self.parent.ensure_property("ServerRelativeUrl").after_execute(lambda _: _add_coloring())
         else:
             self.add_child(return_type)
             qry = ServiceOperationQuery(self, "Add", [name], None, None, return_type)

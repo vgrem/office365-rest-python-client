@@ -52,11 +52,7 @@ class SPSiteManager(Entity):
         from office365.sharepoint.principal.users.user import User
 
         if isinstance(owner, User):
-
-            def _owner_loaded():
-                _create(owner.user_principal_name)
-
-            owner.ensure_property("UserPrincipalName", _owner_loaded)
+            owner.ensure_property("UserPrincipalName").after_execute(lambda _: _create(owner.user_principal_name))
         else:
             _create(owner)
         return return_type

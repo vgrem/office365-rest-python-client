@@ -58,6 +58,7 @@ class TestSharePointSharing(SPTestCase):
 
     def test4_share_file(self):
         target_file_item = self.client.web.get_list_item("/SitePages/Home.aspx")
+        assert self.target_user is not None and self.target_user.user_principal_name is not None
         result = target_file_item.share(self.target_user.user_principal_name).execute_query()
         self.assertIsNone(result.error_message)
 
@@ -76,6 +77,7 @@ class TestSharePointSharing(SPTestCase):
         self.assertIsNone(result.error_message)
 
     def test7_share_web(self):
+        assert self.target_user is not None
         result = self.client.web.share(self.target_user.user_principal_name).execute_query()
         self.assertIsInstance(result, SharingResult)
         self.assertEqual(result.status_code, SharingOperationStatusCode.CompletedSuccessfully)

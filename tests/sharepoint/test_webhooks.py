@@ -23,11 +23,13 @@ class TestSPWebHooks(SPTestCase):
         pass
 
     def test1_create_subscription(self):
+        assert self.target_list is not None
         subscription = self.target_list.subscriptions.add(self.push_service_url).execute_query()
         self.assertIsNotNone(subscription.notification_url)
         type(self).target_subscription = subscription
 
     def test2_list_webhooks(self):
+        assert self.target_list is not None
         subscriptions = self.target_list.subscriptions.get().execute_query()
         self.assertGreater(len(subscriptions), 0)
 

@@ -19,11 +19,13 @@ class TestSharePointFolder(SPTestCase):
         cls.parent_folder = cls.client.web.default_document_library().root_folder
 
     def test1_create_folder(self):
+        assert self.parent_folder is not None
         result = self.parent_folder.folders.add(create_unique_name("input")).execute_query()
         self.assertTrue(result.exists)
         type(self).input_folder = result
 
     def test2_list_sub_folders(self):
+        assert self.parent_folder is not None
         result = self.parent_folder.folders.get().execute_query()
         self.assertGreater(len(result), 1)
         for child_folder in result:
@@ -31,6 +33,7 @@ class TestSharePointFolder(SPTestCase):
 
     def test4_get_folder_by_id(self):
         assert self.input_folder is not None
+        assert self.input_folder.unique_id is not None
         folder_id = self.input_folder.unique_id
         folder = self.client.web.get_folder_by_id(folder_id).get().execute_query()
         self.assertIsNotNone(folder.resource_path)
@@ -38,6 +41,8 @@ class TestSharePointFolder(SPTestCase):
 
     def test5_get_by_path(self):
         assert self.input_folder is not None
+        assert self.input_folder.name is not None
+        assert self.parent_folder is not None
         folder = self.parent_folder.folders.get_by_path(self.input_folder.name).get().execute_query()
         self.assertIsNotNone(folder.unique_id)
 
@@ -67,6 +72,7 @@ class TestSharePointFolder(SPTestCase):
 
     def test_10_copy_folder(self):
         assert self.input_folder is not None
+        assert self.parent_folder is not None
         output_folder = self.parent_folder.folders.add(create_unique_name("output")).execute_query()
         folder_to = self.input_folder.copy_to(output_folder).execute_query()
         files_to = folder_to.files.get().execute_query()
@@ -107,5 +113,6 @@ class TestSharePointFolder(SPTestCase):
 
     def test_16_delete_folders(self):
         assert self.input_folder is not None
+        assert self.output_folder is not None
         self.input_folder.delete_object()
         self.output_folder.delete_object()

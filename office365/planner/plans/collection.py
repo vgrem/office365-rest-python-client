@@ -27,12 +27,9 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
             self.context.add_query(qry)
 
         if isinstance(container, Group):
-
-            def _owner_loaded():
-                assert container.id is not None
-                _add(container.id)
-
-            container.ensure_property("id", _owner_loaded)
+            container.ensure_property("id").after_execute(
+                lambda _: _add(container.id) if container.id is not None else None
+            )
         else:
             _add(container)
 

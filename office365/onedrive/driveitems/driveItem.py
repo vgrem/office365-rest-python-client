@@ -481,8 +481,7 @@ class DriveItem(BaseItem):
         def _download_folder(drive_item: "DriveItem", prev_result: str | None = None) -> None:
             drive_item.ensure_properties(
                 ["children", "name"],
-                partial(_after_folder_downloaded, drive_item, prev_result),
-            )
+            ).after_execute(lambda _: _after_folder_downloaded(drive_item, prev_result))
 
         _download_folder(self)
         return self
@@ -610,7 +609,7 @@ class DriveItem(BaseItem):
                 parent_reference = ItemReference(driveId=parent.parent_reference.driveId, id=parent.id)
                 _copy(parent_reference)
 
-            parent.ensure_property("parentReference", _drive_item_loaded)
+            parent.ensure_property("parentReference").after_execute(lambda _: _drive_item_loaded())
         elif parent is not None:
             _copy(parent)
         return return_type
@@ -654,7 +653,7 @@ class DriveItem(BaseItem):
             def _drive_item_loaded():
                 _move(ItemReference(id=parent.id))
 
-            parent.ensure_property("parentReference", _drive_item_loaded)
+            parent.ensure_property("parentReference").after_execute(lambda _: _drive_item_loaded())
         elif parent is not None:
             _move(parent)
         return return_type
@@ -820,7 +819,7 @@ class DriveItem(BaseItem):
             qry = ServiceOperationQuery(canonical, "preview", None, {"page": page, "zoom": zoom}, None, return_type)
             self.context.add_query(qry)
 
-        self.ensure_properties(["id", "parentReference"], _preview)
+        self.ensure_properties(["id", "parentReference"]).after_execute(lambda _: _preview())
         return return_type
 
     @require_permission(

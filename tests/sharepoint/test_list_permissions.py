@@ -22,6 +22,7 @@ class TestSPListPermissions(SPTestCase):
 
     def test5_assign_perms(self):
         result = self.target_list.add_role_assignment(self.client.web.current_user, RoleType.Contributor).execute_query()
+        assert result.parent_collection is not None
         self.assertEqual(len(result.parent_collection), 1)
 
     def test6_get_user_perms(self):
@@ -40,6 +41,7 @@ class TestSPListPermissions(SPTestCase):
         target_role_def = self.client.web.role_definitions.get_by_type(RoleType.Contributor)
         target_user = self.client.web.current_user
         result = self.target_list.remove_role_assignment(target_user, target_role_def).execute_query()
+        assert result.parent_collection is not None
 
         self.assertEqual(len(result.parent_collection), 0)
 

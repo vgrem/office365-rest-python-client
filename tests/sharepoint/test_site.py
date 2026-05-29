@@ -21,11 +21,13 @@ class TestSite(SPTestCase):
 
     def test2_if_site_exists(self):
         site_url = self.client.site.url
+        assert site_url is not None
         result = Site.exists(self.client, site_url).execute_query()
         self.assertIsNotNone(result.value)
 
     def test3_get_site_by_id(self):
         site_id = self.client.site.id
+        assert site_id is not None
         result = Site.get_url_by_id(self.client, site_id).execute_query()
         self.assertIsNotNone(result.value)
 
@@ -47,6 +49,7 @@ class TestSite(SPTestCase):
 
     def test_10_open_web_by_id(self):
         web = self.client.web.get().execute_query()
+        assert web.id is not None
         child_web = self.client.site.open_web_by_id(web.id).execute_query()
         self.assertIsNotNone(child_web.id)
 
@@ -63,6 +66,7 @@ class TestSite(SPTestCase):
     def test_12_get_site_status(self):
         assert self.site_response is not None
         site_url = self.site_response.SiteUrl
+        assert site_url is not None
         result = self.client.site_manager.get_status(site_url).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus != SiteStatus.Error)
@@ -70,6 +74,7 @@ class TestSite(SPTestCase):
     def test_13_get_site_url(self):
         assert self.site_response is not None
         site_id = self.site_response.SiteId
+        assert site_id is not None
         result = self.client.site_manager.get_site_url(site_id).execute_query()
         self.assertIsNotNone(result.value)
         self.assertTrue(self.site_response.SiteUrl == result.value)
@@ -84,6 +89,7 @@ class TestSite(SPTestCase):
 
         admin_ctx = ClientContext(self.client.base_url).with_credentials(test_admin_credentials)
         site_id = self.site_response.SiteId
+        assert site_id is not None
         admin_ctx.site_manager.delete(site_id).execute_query()
 
     # def test_16_get_block_download_policy_for_files_data(self):

@@ -104,7 +104,7 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
                 qry = CreateEntityQuery(self, params, return_type)
                 self.context.add_query(qry)
 
-            lookup_list.ensure_property("id", _add_lookup)
+            lookup_list.ensure_property("id").after_execute(lambda _: _add_lookup())
             return return_type
         else:
             return self.add(name=name, lookup=LookupColumn(lookup_list, column_name))

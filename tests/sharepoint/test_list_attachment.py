@@ -26,20 +26,24 @@ class TestListItemAttachment(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_item is not None
         cls.target_item.delete_object().execute_query()
         cls.target_item.parent_list.delete_object().execute_query()
 
     def test1_upload_attachment(self):
+        assert self.target_item is not None
         with open(self.attachment_path, "rb") as f:
             result = self.target_item.attachment_files.upload(f).execute_query()
         self.assertIsNotNone(result.file_name)
         type(self).target_attachment = result
 
     def test2_list_attachments(self):
+        assert self.target_item is not None
         result = self.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 1)
 
     def test3_get_by_filename(self):
+        assert self.target_item is not None
         result = self.target_item.attachment_files.get_by_filename(self.attachment_file_name)
         self.assertIsNotNone(result.resource_path)
 
@@ -62,6 +66,7 @@ class TestListItemAttachment(SPTestCase):
 
     def test6_delete_attachments(self):
         assert self.target_attachment is not None
+        assert self.target_item is not None
         self.target_attachment.delete_object().execute_query()
         result = self.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 0)

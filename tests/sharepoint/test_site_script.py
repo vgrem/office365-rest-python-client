@@ -29,6 +29,8 @@ class TestSiteScript(SPTestCase):
 
     def test_3_delete_site_script(self):
         assert self.site_script_meta is not None
+        assert self.site_script_meta.Id is not None
+        assert self.site_script_count is not None
         SiteScriptUtility.delete_site_script(self.client, self.site_script_meta.Id).execute_query()
         result_after = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertEqual(self.site_script_count - 1, len(result_after.value))

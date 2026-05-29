@@ -43,8 +43,7 @@ class Team(Entity):
         def _loaded():
             self.operations[0].poll_for_status(status_type="succeeded")
 
-        self.ensure_property("id", _loaded)
-
+        self.ensure_property("id").after_execute(lambda _: _loaded())
         self.context.execute_query()
         return self
 
@@ -57,7 +56,7 @@ class Team(Entity):
             self.context.groups.add_child(group)
             group.delete_object(permanent_delete)
 
-        self.ensure_property("id", _delete_object)
+        self.ensure_property("id").after_execute(lambda _: _delete_object())
         return self
 
     @property

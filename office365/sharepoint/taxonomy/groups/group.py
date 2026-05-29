@@ -29,7 +29,7 @@ class TermGroup(TaxonomyItem):
         def _group_resolved():
             self.term_sets.get().after_execute(_sets_loaded)
 
-        self.ensure_property("id", _group_resolved)
+        self.ensure_property("id").after_execute(lambda _: _group_resolved())
         return return_type
 
     @property

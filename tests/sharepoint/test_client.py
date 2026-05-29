@@ -162,7 +162,7 @@ class TestSharePointClient(SPTestCase):
         def _owner_loaded():
             self.assertIsNotNone(site.owner.id)
 
-        site.ensure_property("Owner", _owner_loaded).get()
+        site.ensure_property("Owner").after_execute(lambda _: _owner_loaded())
         lib = client.web.default_document_library().get()
         client.execute_query()
         self.assertIsNotNone(me.login_name)

@@ -26,7 +26,7 @@ class User(Entity):
 
             SPHelper.is_member_of(self.context, self.properties["principalName"], group_id, return_type)
 
-        self.ensure_property("principalName", _user_loaded)
+        self.ensure_property("principalName").after_execute(lambda _: _user_loaded())
         return return_type
 
     def get_my_groups(self) -> MyGroupsResult:
@@ -40,7 +40,7 @@ class User(Entity):
 
             SPHelper.get_my_groups(self.context, self.properties["principalName"], 0, 10, return_type)
 
-        self.ensure_property("principalName", _get_my_groups)
+        self.ensure_property("principalName").after_execute(lambda _: _get_my_groups())
         return return_type
 
     @property

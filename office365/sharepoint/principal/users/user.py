@@ -33,7 +33,7 @@ class User(Principal):
             assert self.login_name is not None
             self.context.people_manager.get_properties_for(self.login_name).after_execute(_person_props_loaded)
 
-        self.ensure_property("LoginName", _get_properties_for)
+        self.ensure_property("LoginName").after_execute(lambda _: _get_properties_for())
         return return_type
 
     def get_recent_files(self, top: int = 100) -> ClientResult[str]:
@@ -55,7 +55,7 @@ class User(Principal):
             return_type.set_property("PropertyNames", property_names)
             return_type.set_property("AccountName", self.user_principal_name)
 
-        self.ensure_property("UserPrincipalName", _user_loaded)
+        self.ensure_property("UserPrincipalName").after_execute(lambda _: _user_loaded())
         return return_type
 
     def expire(self) -> Self:

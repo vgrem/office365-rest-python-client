@@ -43,6 +43,7 @@ class TestSharePointWeb(SPTestCase):
 
     def test5_get_user_permissions(self):
         assert self.target_user is not None
+        assert self.target_user.login_name is not None
         result = self.client.web.get_user_effective_permissions(self.target_user.login_name).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 
@@ -91,12 +92,14 @@ class TestSharePointWeb(SPTestCase):
 
     def test_12_get_user_perms(self):
         assert self.target_user is not None
+        assert self.target_user.login_name is not None
         result = self.client.web.get_user_effective_permissions(self.target_user.login_name).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
         self.assertGreater(len(result.value.permission_levels), 0)
 
     def test_13_get_user_by_id(self):
         assert self.target_user is not None
+        assert self.target_user.id is not None
         result_user = self.client.web.get_user_by_id(self.target_user.id).get().execute_query()
         self.assertEqual(result_user.login_name, self.target_user.login_name)
 

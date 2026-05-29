@@ -63,6 +63,7 @@ class TestTenant(SPTestCase):
 
     def test5_get_site_state(self):
         target_site = self.client.site.select(["Id"]).get().execute_query()
+        assert target_site is not None
         result = self.tenant.get_lock_state_by_id(target_site.id)
         self.tenant.execute_query()
         self.assertIsNotNone(result.value)
@@ -73,6 +74,7 @@ class TestTenant(SPTestCase):
 
     def test7_get_site_secondary_administrators(self):
         target_site = self.client.site.select(["Id"]).get().execute_query()
+        assert target_site is not None
         result = self.tenant.get_site_secondary_administrators(target_site.id).execute_query()
         self.assertIsNotNone(result.value)
 

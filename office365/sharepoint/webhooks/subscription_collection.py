@@ -41,7 +41,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
                 _create_and_add_query(SubscriptionInformation(parameters, self._parent.properties["Id"]))
 
             assert self._parent is not None
-            self._parent.ensure_property("Id", _parent_loaded)
+            self._parent.ensure_property("Id").after_execute(lambda _: _parent_loaded())
         return return_type
 
     def remove(self, subscription_id):

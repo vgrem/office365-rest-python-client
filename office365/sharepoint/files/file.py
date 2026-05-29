@@ -102,7 +102,7 @@ class File(AbstractFile):
             assert self.server_relative_url is not None
             Web.create_anonymous_link(self.context, self.server_relative_url, is_edit_link, return_type)
 
-        self.ensure_property("ServerRelativeUrl", _file_loaded)
+        self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _file_loaded())
         return return_type
 
     def create_anonymous_link_with_expiration(
@@ -131,7 +131,7 @@ class File(AbstractFile):
                 return_type,
             )
 
-        self.ensure_property("ServerRelativeUrl", _file_loaded)
+        self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _file_loaded())
         return return_type
 
     def get_content(self) -> ClientResult[bytes]:
@@ -176,7 +176,7 @@ class File(AbstractFile):
         def _loaded():
             return_type.set_property("__value", self.listItemAllFields.properties.get("EncodedAbsUrl"))
 
-        self.listItemAllFields.ensure_property("EncodedAbsUrl", _loaded)
+        self.listItemAllFields.ensure_property("EncodedAbsUrl").after_execute(lambda _: _loaded())
         return return_type
 
     def get_sharing_information(self) -> ObjectSharingInformation:
@@ -319,11 +319,12 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativeUrl", _copyto, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativeUrl").after_execute(lambda _: _copyto(dest))
             else:
                 self.context.web.ensure_folder_path(destination).after_execute(_copyto)
 
-        self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
+        self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_file_resolved())
         return return_type
 
     def copyto_using_path(self, destination, overwrite=False, file_name=None):  # type: ignore[override]
@@ -352,13 +353,15 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativePath", _copyto_using_path, destination)
+                destination.ensure_property("ServerRelativePath").after_execute(
+                    lambda _: _copyto_using_path(destination)
+                )
             else:
                 self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
                     _copyto_using_path
                 )
 
-        self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
+        self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
         return return_type
 
     def moveto(self, destination: Union[str, Folder], flag: int) -> Self:
@@ -384,11 +387,12 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativeUrl", _moveto, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativeUrl").after_execute(lambda _: _moveto(dest))
             else:
                 self.context.web.ensure_folder_path(destination).get().after_execute(_moveto)
 
-        self.ensure_properties(["ServerRelativeUrl", "Name"], _source_file_resolved)
+        self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_file_resolved())
         return self
 
     def move_to_using_path(self, destination: Union[str, Folder], flag: MoveOperations) -> Self:
@@ -413,13 +417,14 @@ class File(AbstractFile):
 
         def _source_file_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativePath", _move_to_using_path, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativePath").after_execute(lambda _: _move_to_using_path(dest))
             else:
                 self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
                     _move_to_using_path
                 )
 
-        self.ensure_properties(["ServerRelativePath", "Name"], _source_file_resolved)
+        self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
         return self
 
     def publish(self, comment: str) -> Self:
@@ -664,7 +669,7 @@ class File(AbstractFile):
         def _download_inner():
             self.get_content().after_execute(_save_content)
 
-        self.ensure_property("ServerRelativePath", _download_inner)
+        self.ensure_property("ServerRelativePath").after_execute(lambda _: _download_inner())
         return self
 
     def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True):
@@ -701,9 +706,9 @@ class File(AbstractFile):
             )
 
         if use_path:
-            self.ensure_property("ServerRelativePath", _download_as_stream)
+            self.ensure_property("ServerRelativePath").after_execute(lambda _: _download_as_stream())
         else:
-            self.ensure_property("ServerRelativeUrl", _download_as_stream)
+            self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _download_as_stream())
         return self
 
     def rename(self, new_file_name: str) -> Self:

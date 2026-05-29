@@ -50,13 +50,13 @@ class SetCollection(EntityCollection[Set]):
 
         if self._parent_group is not None:
             props = {"localizedNames": ClientValueCollection(LocalizedName, [LocalizedName(name)])}
-            self._parent_group.ensure_property("id", _group_loaded, props)
+            self._parent_group.ensure_property("id").after_execute(lambda _: _group_loaded(props))
         elif parent_group is not None:
             props = {
                 "parentGroup": {"id": parent_group.id},
                 "localizedNames": ClientValueCollection(LocalizedName, [LocalizedName(name)]),
             }
-            parent_group.ensure_property("id", _group_loaded, props)
+            parent_group.ensure_property("id").after_execute(lambda _: _group_loaded(props))
         else:
             raise TypeError("Parameter 'parent_group' is not set")
 

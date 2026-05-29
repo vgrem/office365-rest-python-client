@@ -213,7 +213,7 @@ class User(DirectoryObject):
             self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(user, User):
-            user.ensure_property("id", lambda: _assign_manager(user.id))
+            user.ensure_property("id").after_execute(lambda _: _assign_manager(user.id))
         elif hasattr(user, "id"):
             _assign_manager(user.id)  # type: ignore[reportAttributeAccessIssue]
         else:
@@ -264,7 +264,7 @@ class User(DirectoryObject):
             self.context.add_query(query)
 
         if isinstance(site, Site):
-            site.ensure_property("id", lambda: _follow_site(site.id))
+            site.ensure_property("id").after_execute(lambda _: _follow_site(site.id))
         else:
             _follow_site(str(site))
         return self
@@ -286,7 +286,7 @@ class User(DirectoryObject):
             self.context.add_query(query)
 
         if isinstance(site, Site):
-            site.ensure_property("id", lambda: _unfollow_site(site.id))
+            site.ensure_property("id").after_execute(lambda _: _unfollow_site(site.id))
         else:
             _unfollow_site(str(site))
 
@@ -350,7 +350,7 @@ class User(DirectoryObject):
         def _loaded():
             return_type.set_property("webUrl", self.my_site)
 
-        self.ensure_property("mySite", _loaded)
+        self.ensure_property("mySite").after_execute(lambda _: _loaded())
         return return_type
 
     def send_mail(

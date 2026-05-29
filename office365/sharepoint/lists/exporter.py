@@ -82,6 +82,6 @@ class ListExporter:
                 .paged(page_loaded=_export_items)
             )
 
-        source_list.ensure_properties(["SchemaXml", "RootFolder", "ItemCount"], _get_items)
+        source_list.ensure_properties(["SchemaXml", "RootFolder", "ItemCount"]).after_execute(lambda _: _get_items())
 
         return source_list

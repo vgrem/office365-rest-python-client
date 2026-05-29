@@ -158,7 +158,7 @@ class FieldCollection(EntityCollection[Field]):
                 if lookup_list_id is not None:
                     _add_lookup_field(lookup_list_id)
 
-            lookup_list.ensure_property("Id", _lookup_list_loaded)
+            lookup_list.ensure_property("Id").after_execute(lambda _: _lookup_list_loaded())
         else:
             _add_lookup_field(lookup_list)
         return return_type
@@ -290,7 +290,7 @@ class FieldCollection(EntityCollection[Field]):
                     if ts_id is not None and ts_id2 is not None:
                         _create_taxonomy_field(ts_id, ts_id2)
 
-                term_set.ensure_property("id", _term_set_loaded)
+                term_set.ensure_property("id").after_execute(lambda _: _term_set_loaded())
             else:
                 ts_id = term_store.id
                 if ts_id is not None:

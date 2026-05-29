@@ -1,21 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any
 
-from office365.runtime.queries.client_query import ClientQuery, ReturnT
+from office365.runtime.queries.client_query import ClientQuery
 
 if TYPE_CHECKING:
-    from office365.runtime.client_runtime_context import ClientRuntimeContext
+    from office365.runtime.client_object import ClientObject
 
 
-class PendingQuery(ClientQuery[ReturnT]):
-    """A query placeholder that will be resolved with an actual query"""
+class PendingQuery(ClientQuery[Any]):
+    """Placeholder query for ensure_property when property is already cached.
+    Uses binding_type to hit the entity's own API URL, refreshing data from server.
+    """
 
-    def __init__(self, context: ClientRuntimeContext):
-        super().__init__(context)
-
-    def resolve(self, query: ClientQuery[ReturnT]):
-        """Resolve this pending query with an actual query"""
-        self.__dict__.update(query.__dict__)
-        self.__class__ = cast(type, query.__class__)
-        return self
+    def __init__(self, context, client_object: ClientObject):
+        super().__init__(context, binding_type=client_object, return_type=client_object)

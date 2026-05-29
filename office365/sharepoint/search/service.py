@@ -47,12 +47,9 @@ class SearchService(Entity):
             self.context.add_query(qry)
 
         if isinstance(user, User):
-
-            def _user_loaded():
-                assert user.user_principal_name is not None
-                _export(user.user_principal_name)
-
-            user.ensure_property("UserPrincipalName", _user_loaded)
+            user.ensure_property("UserPrincipalName").after_execute(
+                lambda _: _export(user.user_principal_name) if user.user_principal_name is not None else None
+            )
         else:
             _export(user)
         return return_type

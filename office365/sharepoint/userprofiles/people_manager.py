@@ -18,7 +18,7 @@ from office365.sharepoint.userprofiles.personal_site_creation_priority import (
 
 def _ensure_user(user: Union[str, User], action: Optional[Callable[[str], None]] = None) -> None:
     if isinstance(user, User):
-        user.ensure_property("LoginName", lambda: action(user.login_name))  # type: ignore[arg-type]
+        user.ensure_property("LoginName").after_execute(lambda _: action(user.login_name))  # type: ignore[arg-type]
     else:
         action(user)  # type: ignore[arg-type]
 
@@ -62,7 +62,7 @@ class PeopleManager(Entity):
         :param str account_name: Account name of the specified user.
         :return:
         """
-        result = ClientResult(self.context)
+        result = ClientResult(self.context, bool())
         params = {"accountName": account_name}
         qry = ServiceOperationQuery(self, "AmIFollowing", params, None, None, result)
         self.context.add_query(qry)
@@ -88,7 +88,7 @@ class PeopleManager(Entity):
                 assert login_name is not None
                 _get_followers_for(login_name)
 
-            account.ensure_property("LoginName", _account_loaded)
+            account.ensure_property("LoginName").after_execute(lambda _: _account_loaded())
         else:
             _get_followers_for(account)
         return return_type

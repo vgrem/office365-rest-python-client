@@ -42,6 +42,7 @@ class TestUserProfile(SPTestCase):
 
     def test4_get_user_props(self):
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
+        assert target_user is not None
         result = self.my_client.people_manager.get_user_profile_properties(target_user.login_name).execute_query()
         self.assertIsNotNone(result.value)
 
@@ -63,6 +64,7 @@ class TestUserProfile(SPTestCase):
     def test7_start_stop_following(self):
         people_manager = PeopleManager(self.my_client)
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
+        assert target_user is not None
         result = people_manager.am_i_following(target_user.login_name).execute_query()
         if result.value:
             people_manager.stop_following(target_user.login_name).execute_query()
@@ -71,6 +73,7 @@ class TestUserProfile(SPTestCase):
 
     def test8_get_followers_for(self):
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
+        assert target_user is not None
         col = self.my_client.people_manager.get_followers_for(target_user.login_name).execute_query()
         self.assertGreaterEqual(len(col), 0)
 
@@ -115,6 +118,7 @@ class TestUserProfile(SPTestCase):
         from office365.sharepoint.userprofiles.promoted_sites import PromotedSites
 
         for promoted_link in self.promoted_links:
+            assert promoted_link.ID is not None
             PromotedSites.delete_site_link(self.my_client, promoted_link.ID)
         self.my_client.execute_batch()
         after_result = PromotedSites.get_promoted_links_as_tiles(self.my_client).execute_query()

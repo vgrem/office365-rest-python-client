@@ -40,12 +40,9 @@ class UserCollection(EntityCollection[User]):
             self.context.add_query(qry)
 
         if isinstance(user, User):
-
-            def _user_loaded():
-                assert user.login_name is not None
-                _add_user(user.login_name)
-
-            user.ensure_property("LoginName", _user_loaded)
+            user.ensure_property("LoginName").after_execute(
+                lambda _: _add_user(user.login_name) if user.login_name is not None else None
+            )
         else:
             _add_user(user)
         return return_type

@@ -128,6 +128,7 @@ class TestCalendar(GraphDelegatedTestCase):
     )
     def test_11_get_cal(self):
         cal_id = self.__class__.target_cal.id
+        assert cal_id is not None
         result = self.client.me.calendars[cal_id].select(["name", "owner"]).get().execute_query()
         self.assertEqual(result.name, self.cal_name)
         self.assertIsInstance(result.owner, EmailAddress)

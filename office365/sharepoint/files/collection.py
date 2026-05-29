@@ -162,7 +162,7 @@ class FileCollection(EntityCollection[File]):
             qry = ServiceOperationQuery(self, "addTemplateFile", params, None, None, return_type)
             self.context.add_query(qry)
 
-        self.parent.ensure_property("ServerRelativeUrl", _add_template_file)
+        self.parent.ensure_property("ServerRelativeUrl").after_execute(lambda _: _add_template_file())
         return return_type
 
     def get_by_url(self, url: str) -> File:

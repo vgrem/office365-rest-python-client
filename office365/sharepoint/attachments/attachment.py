@@ -37,9 +37,9 @@ class Attachment(Entity):
                 file.get_content().after_execute(_save_content)
 
         if use_path:
-            self.ensure_property("ServerRelativePath", _download_file_by_path)
+            self.ensure_property("ServerRelativePath").after_execute(lambda _: _download_file_by_path())
         else:
-            self.ensure_property("ServerRelativeUrl", _download_file_by_url)
+            self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _download_file_by_url())
         return self
 
     def get_content(self) -> ClientResult[bytes]:
@@ -76,9 +76,9 @@ class Attachment(Entity):
             self.context.add_query(qry)
 
         if use_path:
-            self.ensure_property("ServerRelativePath", _upload_file_by_path)
+            self.ensure_property("ServerRelativePath").after_execute(lambda _: _upload_file_by_path())
         else:
-            self.ensure_property("ServerRelativeUrl", _upload_file_by_url)
+            self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _upload_file_by_url())
         return self
 
     @property

@@ -125,11 +125,7 @@ class GroupSiteManager(ClientObject):
             self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(group, Site):
-
-            def _site_loaded():
-                _get_status(group.group_id)  # type: ignore[arg-type]
-
-            group.ensure_property("GroupId", _site_loaded)
+            group.ensure_property("GroupId").after_execute(lambda _: _get_status(group.group_id))  # type: ignore[arg-type]
         else:
             _get_status(group)
 

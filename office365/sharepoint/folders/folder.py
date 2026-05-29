@@ -83,9 +83,9 @@ class Folder(Entity):
             [return_type.add_child(f) for f in parent.folders]
             if recursive:
                 for folder in parent.folders:
-                    folder.ensure_properties(["Folders"], _get_folders, parent=folder)
+                    folder.ensure_properties(["Folders"]).after_execute(lambda _, f=folder: _get_folders(parent=f))
 
-        self.ensure_properties(["Folders"], _get_folders, parent=self)
+        self.ensure_properties(["Folders"]).after_execute(lambda _: _get_folders(parent=self))
         return return_type
 
     def get_files(self, recursive: bool = False) -> FileCollection:
@@ -103,9 +103,11 @@ class Folder(Entity):
             [return_type.add_child(f) for f in parent.files]
             if recursive:
                 for folder in parent.folders:
-                    folder.ensure_properties(["Files", "Folders"], _get_files, parent=folder)
+                    folder.ensure_properties(["Files", "Folders"]).after_execute(
+                        lambda _, f=folder: _get_files(parent=f)
+                    )
 
-        self.ensure_properties(["Files", "Folders"], _get_files, parent=self)
+        self.ensure_properties(["Files", "Folders"]).after_execute(lambda _: _get_files(parent=self))
         return return_type
 
     def get_sharing_information(self) -> ObjectSharingInformation:
@@ -134,11 +136,12 @@ class Folder(Entity):
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativeUrl", _move_to, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativeUrl").after_execute(lambda _: _move_to(dest))
             else:
                 self.context.web.ensure_folder_path(destination).after_execute(_move_to)
 
-        self.ensure_properties(["ServerRelativeUrl", "Name"], _source_folder_resolved)
+        self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return self
 
     def move_to_using_path(self, destination: Union[str, Folder]) -> Self:
@@ -161,11 +164,12 @@ class Folder(Entity):
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativePath", _move_to_using_path, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativePath").after_execute(lambda _: _move_to_using_path(dest))
             else:
                 self.context.web.ensure_folder_path(destination).after_execute(_move_to_using_path)
 
-        self.ensure_properties(["ServerRelativePath", "Name"], _source_folder_resolved)
+        self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return self
 
     def move_to_using_path_with_parameters(
@@ -184,7 +188,7 @@ class Folder(Entity):
             assert self.server_relative_path is not None
             MoveCopyUtil.move_folder_by_path(self.context, self.server_relative_path.DecodedUrl, new_relative_path, opt)
 
-        self.ensure_property("ServerRelativePath", _move_folder)
+        self.ensure_property("ServerRelativePath").after_execute(lambda _: _move_folder())
         return return_type
 
     def share_link(
@@ -345,7 +349,7 @@ class Folder(Entity):
                 return_type,
             )
 
-        self.ensure_property("ServerRelativePath", _update_document_sharing_info)
+        self.ensure_property("ServerRelativePath").after_execute(lambda _: _update_document_sharing_info())
         return return_type
 
     def copy_to(
@@ -369,11 +373,12 @@ class Folder(Entity):
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativeUrl", _copy_to, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativeUrl").after_execute(lambda _: _copy_to(dest))
             else:
                 self.context.web.ensure_folder_path(destination).after_execute(_copy_to)
 
-        self.ensure_properties(["ServerRelativeUrl", "Name"], _source_folder_resolved)
+        self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return return_type
 
     def copy_to_using_path(
@@ -397,13 +402,14 @@ class Folder(Entity):
 
         def _source_folder_resolved():
             if isinstance(destination, Folder):
-                destination.ensure_property("ServerRelativePath", _copy_folder_by_path, destination)
+                dest = destination
+                destination.ensure_property("ServerRelativePath").after_execute(lambda _: _copy_folder_by_path(dest))
             else:
                 self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
                     _copy_folder_by_path
                 )
 
-        self.ensure_properties(["ServerRelativePath", "Name"], _source_folder_resolved)
+        self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return return_type
 
     @property

@@ -28,7 +28,7 @@ class TaxonomyField(FieldLookup):
         def _set_field_value_by_value():
             item.set_property(self.internal_name, tax_value)
 
-        self.ensure_property("InternalName", _set_field_value_by_value)
+        self.ensure_property("InternalName").after_execute(lambda _: _set_field_value_by_value())
         return self
 
     @staticmethod
@@ -69,14 +69,14 @@ class TaxonomyField(FieldLookup):
                     params.ListId = parent_list.id
                     fields.create_field_as_xml(params.schema_xml, return_type)
 
-                fields.parent.ensure_properties(["Id", "ParentWeb"], _list_loaded)
+                fields.parent.ensure_properties(["Id", "ParentWeb"]).after_execute(lambda _: _list_loaded())
             else:
 
                 def _web_loaded():
                     params.WebId = fields.context.web.id
                     fields.create_field_as_xml(params.schema_xml, return_type)
 
-                fields.context.web.ensure_property("Id", _web_loaded)
+                fields.context.web.ensure_property("Id").after_execute(lambda _: _web_loaded())
 
         def _text_field_created(text_field: FieldMultiLineText) -> None:
             params.TextFieldId = text_field.id

@@ -29,6 +29,7 @@ class TestSPList(SPTestCase):
 
     def test_12_read_list_by_id(self):
         assert self.target_list is not None
+        assert self.target_list.id is not None
         result = self.client.web.lists.get_by_id(self.target_list.id).get().execute_query()
         self.assertEqual(self.target_list.id, result.id)
 

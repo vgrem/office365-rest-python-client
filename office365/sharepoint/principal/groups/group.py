@@ -29,10 +29,10 @@ class Group(Principal):
             self.parent_collection.remove_by_login_name(self.login_name)
         else:
 
-            def _group_loaded():
+            def _remove_self(_):
                 self.parent_collection.remove_by_id(self.id)
 
-            self.ensure_property("Id", _group_loaded)
+            self.ensure_property("Id").after_execute(_remove_self)
         return self
 
     def expand_to_principals(self, max_count: int = 10) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
@@ -48,7 +48,7 @@ class Group(Principal):
             assert self.login_name is not None
             Utility.expand_groups_to_principals(self.context, [self.login_name], max_count, return_type)
 
-        self.ensure_property("LoginName", _expand_to_principals)
+        self.ensure_property("LoginName").after_execute(lambda _: _expand_to_principals())
         return return_type
 
     def set_user_as_owner(self, user: Union[int, Principal]) -> Self:
@@ -62,12 +62,9 @@ class Group(Principal):
             self.context.add_query(qry)
 
         if isinstance(user, Principal):
-
-            def _user_loaded():
-                assert user.id is not None
-                _set_user_as_owner(user.id)
-
-            user.ensure_property("Id", _user_loaded)
+            user.ensure_property("Id").after_execute(
+                lambda _: _set_user_as_owner(user.id) if user.id is not None else None
+            )
         else:
             _set_user_as_owner(user)
         return self

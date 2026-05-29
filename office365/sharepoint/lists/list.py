@@ -108,7 +108,7 @@ class List(SecurableObject):
             assert self.title is not None
             FormsCustomization.can_customize_forms(self.context, self.title, return_type)
 
-        self.ensure_property("Title", _can_customize_forms)
+        self.ensure_property("Title").after_execute(lambda _: _can_customize_forms())
         return return_type
 
     def clear(self):
@@ -199,7 +199,7 @@ class List(SecurableObject):
                 return_type=return_type,
             )
 
-        list_folder.ensure_property("ServerRelativeUrl", _get_compliance_tag)
+        list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _get_compliance_tag())
         return return_type
 
     def set_compliance_tag(
@@ -225,7 +225,7 @@ class List(SecurableObject):
                 sync_to_items,  # type: ignore[arg-type]
             )
 
-        list_folder.ensure_property("ServerRelativeUrl", _set_compliance_tag)
+        list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _set_compliance_tag())
         return self
 
     def get_metadata_navigation_settings(
@@ -244,7 +244,7 @@ class List(SecurableObject):
                 self.context, self.root_folder.server_relative_url, return_type
             )
 
-        self.root_folder.ensure_property("ServerRelativeUrl", _loaded)
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _loaded())
         return return_type
 
     def get_flow_permission_level(self) -> ConnectorResult:
@@ -258,7 +258,7 @@ class List(SecurableObject):
             assert self.title is not None
             FlowPermissions.get_flow_permission_level_on_list(self.context, self.title, return_type)
 
-        self.ensure_property("Title", _loaded)
+        self.ensure_property("Title").after_execute(lambda _: _loaded())
         return return_type
 
     def get_sharing_settings(self) -> ObjectSharingSettings:
@@ -272,7 +272,7 @@ class List(SecurableObject):
             list_abs_path = SPResPath.create_absolute(self.context.base_url, self.root_folder.server_relative_url)
             Web.get_object_sharing_settings(self.context, str(list_abs_path), return_type=return_type)
 
-        self.ensure_property("RootFolder", _get_sharing_settings)
+        self.ensure_property("RootFolder").after_execute(lambda _: _get_sharing_settings())
         return return_type
 
     def get_site_script(self, options: Optional[Dict] = None) -> ClientResult[str]:
@@ -292,7 +292,7 @@ class List(SecurableObject):
                 return_type=return_type,
             )
 
-        self.ensure_property("RootFolder", _list_loaded)
+        self.ensure_property("RootFolder").after_execute(lambda _: _list_loaded())
         return return_type
 
     def ensure_signoff_status_field(self) -> Field:
@@ -646,7 +646,7 @@ class List(SecurableObject):
                 next_qry = ServiceOperationQuery(self, "addItem", None, payload, None, return_type)
                 self.context.add_query(next_qry)
 
-            self.root_folder.ensure_property("ServerRelativeUrl", _add_item)
+            self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _add_item())
         return return_type
 
     def create_wiki_page(self, page_name: str, page_content: str) -> File:
@@ -664,7 +664,7 @@ class List(SecurableObject):
             wiki_props = WikiPageCreationInformation(ServerRelativeUrl=page_url, WikiHtmlContent=page_content)
             Utility.create_wiki_page_in_context_web(self.context, wiki_props, return_type)
 
-        self.ensure_property("RootFolder", _root_folder_loaded)
+        self.ensure_property("RootFolder").after_execute(lambda _: _root_folder_loaded())
         return return_type
 
     def add_item_using_path(self, leaf_name: str, object_type: int, folder_url: str) -> ListItem:
@@ -729,7 +729,7 @@ class List(SecurableObject):
             path = os.path.join(self.root_folder.server_relative_url, url)
             self.items.get_by_url(path).after_execute(_after_loaded, execute_first=True)
 
-        self.ensure_property("RootFolder", _get_item_by_url)
+        self.ensure_property("RootFolder").after_execute(lambda _: _get_item_by_url())
         return return_type
 
     def get_view(self, view_id: str) -> View:
@@ -842,7 +842,7 @@ class List(SecurableObject):
             doc_mng = DocumentId(self.context)
             doc_mng.reset_doc_ids_in_library(self.root_folder.server_relative_url)
 
-        self.ensure_property("RootFolder", _reset_doc_ids)
+        self.ensure_property("RootFolder").after_execute(lambda _: _reset_doc_ids())
         return self
 
     def set_exempt_from_block_download_of_non_viewable_files(self, value: bool) -> Self:
@@ -1128,7 +1128,7 @@ class List(SecurableObject):
     @property
     def root_folder(self) -> Folder:
         """Get a root folder"""
-        return self.properties.get(
+        return self.properties.setdefault(
             "RootFolder",
             Folder(self.context, ResourcePath("RootFolder", self.resource_path)),
         )

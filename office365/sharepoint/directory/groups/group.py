@@ -30,7 +30,7 @@ class Group(Entity):
 
             SPHelper.get_members_info(self.context, self.properties["Id"], row_limit, return_type)
 
-        self.ensure_property("Id", _get_members_info)
+        self.ensure_property("Id").after_execute(lambda _: _get_members_info())
         return return_type
 
     def get_members(self):
@@ -46,7 +46,7 @@ class Group(Entity):
         def _group_loaded():
             SPHelper.get_members(self.context, self.properties["Id"], return_type)
 
-        self.ensure_property("Id", _group_loaded)
+        self.ensure_property("Id").after_execute(lambda _: _group_loaded())
         return return_type
 
     def get_owners(self) -> EntityCollection[User]:
@@ -62,7 +62,7 @@ class Group(Entity):
         def _get_owners():
             SPHelper.get_owners(self.context, self.properties["Id"], return_type)  # type: ignore[arg-type]
 
-        self.ensure_property("Id", _get_owners)
+        self.ensure_property("Id").after_execute(lambda _: _get_owners())
         return return_type
 
     @property

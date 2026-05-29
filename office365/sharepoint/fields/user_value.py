@@ -25,5 +25,5 @@ class FieldUserValue(FieldLookupValue):
             return_type.LookupId = user.id
             return_type.LookupValue = user.login_name
 
-        user.ensure_properties(["Id", "LoginName"], _user_loaded)
+        user.ensure_properties(["Id", "LoginName"]).after_execute(lambda _: _user_loaded())
         return return_type

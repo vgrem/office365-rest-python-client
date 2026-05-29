@@ -32,7 +32,7 @@ from office365.directory.internal.paths.me import MePath
 from office365.directory.invitations.collection import InvitationCollection
 from office365.directory.licenses.subscribed_sku import SubscribedSku
 from office365.directory.objects.collection import DirectoryObjectCollection
-from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
+from office365.directory.permissions.grants.oauth2_collection import OAuth2PermissionGrantCollection
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )
@@ -466,9 +466,9 @@ class GraphClient(ClientRuntimeContext):
         return EntityCollection(self, Place, ResourcePath("places"))
 
     @property
-    def oauth2_permission_grants(self) -> DeltaCollection[OAuth2PermissionGrant]:
+    def oauth2_permission_grants(self) -> OAuth2PermissionGrantCollection:
         """Permission grants container"""
-        return DeltaCollection(self, OAuth2PermissionGrant, ResourcePath("oauth2PermissionGrants"))
+        return OAuth2PermissionGrantCollection(self, ResourcePath("oauth2PermissionGrants"))
 
     @property
     def room_lists(self) -> EntityCollection[RoomList]:

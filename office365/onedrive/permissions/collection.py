@@ -74,7 +74,7 @@ class PermissionCollection(EntityCollection[Permission]):
             self.context.add_query(qry)
 
         if isinstance(identity, Entity):
-            identity.ensure_properties(["displayName"], _add)
+            identity.ensure_properties(["displayName"]).after_execute(lambda _: _add())
         else:
             _add()
         return return_type

@@ -267,49 +267,25 @@ class ClientObject:
             self._properties[name] = value
         return self
 
-    def ensure_property(self, name: str, action: Callable[..., None], *args: Any, **kwargs: Any) -> Self:
-        """
-        Ensures a property is loaded before executing an action.
+    def ensure_property(self, name: str) -> Self:
+        """Ensures a property is loaded before executing an action."""
+        return self.ensure_properties([name])
 
-        Args:
-            name: The property name to ensure
-            action: The callback to execute after ensuring
-            *args: Positional arguments for the callback
-            **kwargs: Keyword arguments for the callback
-
-        Returns:
-            The current instance for method chaining
-        """
-        return self.ensure_properties([name], action, *args, **kwargs)
-
-    def ensure_properties(self, names: List[str], action: Callable[..., None], *args: Any, **kwargs: Any) -> Self:
-        """
-        Ensures multiple properties are loaded before executing an action.
-
-        Args:
-            names: List of property names to ensure
-            action: The callback to execute after ensuring
-            *args: Positional arguments for the callback
-            **kwargs: Keyword arguments for the callback
-
-        Returns:
-            The current instance for method chaining
-        """
+    def ensure_properties(self, names: List[str]) -> Self:
+        """Ensures multiple properties are loaded before executing an action."""
         if self.property_ref_name is not None and self.property_ref_name not in names:
             names.append(self.property_ref_name)
 
         names_to_include = [n for n in names if not self.is_property_available(n)]
-        if len(names_to_include) > 0:
+        if names_to_include:
             from office365.runtime.queries.read_entity import ReadEntityQuery
 
             qry = ReadEntityQuery[ClientObject](self, names_to_include)
-
-            def _after_loaded(return_type):
-                action(*args, **kwargs)
-
-            self.context.add_query(qry).after_execute(_after_loaded)
         else:
-            action(*args, **kwargs)
+            from office365.runtime.queries.pending import PendingQuery
+
+            qry = PendingQuery(self.context, self)
+        self.context.add_query(qry)
         return self
 
     @property

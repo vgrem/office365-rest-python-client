@@ -20,17 +20,15 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestApp(SPTestCase):
-    tenant_app_catalog: TenantCorporateCatalogAccessor | None = None
-    admin_client: ClientContext | None = None
     app: CorporateCatalogAppMetadata | None = None
     site_col_app_catalog: TenantCorporateCatalogAccessor | None = None
 
     @classmethod
     def setUpClass(cls):
-        cls.admin_client = ClientContext(test_admin_site_url).with_username_and_password(
+        cls.admin_client: ClientContext = ClientContext(test_admin_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
-        cls.tenant_app_catalog = cls.admin_client.web.tenant_app_catalog
+        cls.tenant_app_catalog: TenantCorporateCatalogAccessor = cls.admin_client.web.tenant_app_catalog
 
     def test1_load_tenant_app_catalog(self):
         result = self.tenant_app_catalog.get().execute_query()

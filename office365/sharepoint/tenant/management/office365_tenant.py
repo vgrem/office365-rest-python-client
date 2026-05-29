@@ -196,7 +196,7 @@ class Office365Tenant(Entity):
             def _user_loaded():
                 _revoke_all_user_sessions(user.login_name or "")
 
-            user.ensure_property("LoginName", _user_loaded)
+            user.ensure_property("LoginName").after_execute(lambda _: _user_loaded())
         else:
             _revoke_all_user_sessions(user)
         return return_type

@@ -27,9 +27,11 @@ class TestView(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_list is not None
         cls.target_list.delete_object().execute_query()
 
     def test1_create_view(self):
+        assert self.target_list is not None
         view_properties = ViewCreationInformation()
         view_properties.Title = create_unique_name("My Tasks")
         view_properties.PersonalView = True
@@ -60,6 +62,7 @@ class TestView(SPTestCase):
         type(self).target_view = new_view
 
     def test2_list_views(self):
+        assert self.target_list is not None
         result = self.target_list.views.get().execute_query()
         self.assertGreater(len(result), 1)
 
@@ -74,6 +77,7 @@ class TestView(SPTestCase):
         self.assertIsNotNone(result.value)
 
     def test5_get_default_view_items(self):
+        assert self.target_list is not None
         result = self.target_list.default_view.get_items().get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -88,6 +92,7 @@ class TestView(SPTestCase):
         view_to_update = self.target_view
         view_to_update.set_property("Title", title_updated).update().execute_query()
 
+        assert self.target_list is not None
         result = self.target_list.views.filter(f"Title eq '{title_updated}'").get().execute_query()
         self.assertEqual(len(result), 1)
 
@@ -100,18 +105,23 @@ class TestView(SPTestCase):
 
     def test9_add_view_field(self):
         assert self.target_view is not None
+        assert self.target_field is not None
+        assert self.view_fields_count is not None
         self.target_view.view_fields.add_view_field(self.target_field).execute_query()
         after_view_fields = self.target_view.view_fields.get().execute_query()
         self.assertEqual(self.view_fields_count + 1, len(after_view_fields))
 
     def test_10_move_view_field_to(self):
         assert self.target_view is not None
+        assert self.target_field is not None
+        assert self.target_field.internal_name is not None
         self.target_view.view_fields.move_view_field_to(self.target_field, 2).execute_query()
         result = self.target_view.view_fields.get().execute_query()
         self.assertEqual(result[2], self.target_field.internal_name)
 
     def test_11_remove_view_field(self):
         assert self.target_view is not None
+        assert self.target_field is not None
         self.target_view.view_fields.remove_view_field(self.target_field).execute_query()
         result = self.target_view.view_fields.get().execute_query()
         self.assertEqual(self.view_fields_count, len(result))

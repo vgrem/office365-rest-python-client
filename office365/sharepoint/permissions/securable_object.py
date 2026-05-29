@@ -35,7 +35,7 @@ class SecurableObject(Entity):
         def _principal_loaded():
             return_type.set_property("PrincipalId", principal.id)
 
-        principal.ensure_property("Id", _principal_loaded)
+        principal.ensure_property("Id").after_execute(lambda _: _principal_loaded())
         return return_type
 
     def add_role_assignment(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
@@ -52,13 +52,13 @@ class SecurableObject(Entity):
             role = self.context.web.role_definitions.get_by_type(role)
 
         def _ensure_role_def():
-            role.ensure_property("Id", _add_role_assignment)
+            role.ensure_property("Id").after_execute(lambda _: _add_role_assignment())
 
         def _add_role_assignment():
             if principal.id is not None and role.id is not None:
                 self.role_assignments.add_role_assignment(principal.id, role.id)
 
-        principal.ensure_property("Id", _ensure_role_def)
+        principal.ensure_property("Id").after_execute(lambda _: _ensure_role_def())
         return self
 
     def remove_role_assignment(self, principal: Principal | str, role_def: RoleDefinition | RoleType) -> Self:
@@ -79,9 +79,9 @@ class SecurableObject(Entity):
                 self.role_assignments.remove_role_assignment(principal.id, role_def.id)
 
         def _ensure_role_def():
-            role_def.ensure_property("Id", _remove_role_assignment)
+            role_def.ensure_property("Id").after_execute(lambda _: _remove_role_assignment())
 
-        principal.ensure_property("Id", _ensure_role_def)
+        principal.ensure_property("Id").after_execute(lambda _: _ensure_role_def())
         return self
 
     def break_role_inheritance(self, copy_role_assignments=True, clear_sub_scopes=True):
@@ -144,7 +144,7 @@ class SecurableObject(Entity):
                 if user.login_name is not None:
                     _create_and_add_query(user.login_name)
 
-            user.ensure_property("LoginName", _user_loaded)
+            user.ensure_property("LoginName").after_execute(lambda _: _user_loaded())
         else:
             _create_and_add_query(user)
         return return_type

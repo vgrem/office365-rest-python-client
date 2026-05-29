@@ -42,7 +42,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             qry = ServiceOperationQuery(self, "$ref", None, payload)
             self.context.add_query(qry)
 
-        directory_object.ensure_property("id", _add)
+        directory_object.ensure_property("id").after_execute(lambda _: _add())
         return self
 
     def get_available_extension_properties(self, is_synced_from_on_premises=None):
@@ -81,7 +81,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             def _loaded():
                 _remove(directory_object.id)
 
-            directory_object.ensure_property("id", _loaded)
+            directory_object.ensure_property("id").after_execute(lambda _: _loaded())
         else:
             _remove(directory_object)
 

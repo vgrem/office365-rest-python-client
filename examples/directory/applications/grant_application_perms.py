@@ -30,8 +30,7 @@ else:
     answer = input("Grant it now via admin consent? (y/N): ")
     if answer.lower() == "y":
         resource = privileged_client.service_principals.get_by_name("Microsoft Graph")
-        app = privileged_client.applications.get_by_app_id(test_client_id)
-        resource.grant_application_permissions(app, scope).execute_query()
+        resource.grant_application_permissions(test_client_id, scope).execute_query()
         print(f"Permission '{scope}' granted.")
     else:
         print("Skipped.")

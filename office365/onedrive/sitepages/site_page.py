@@ -67,7 +67,7 @@ class SitePage(BaseSitePage):
                 list_item = self._pages_list.items.get_by_name(self.name)
                 list_item.drive_item.checkin(message)
 
-        self.ensure_property("name", _page_loaded)
+        self.ensure_property("name").after_execute(lambda _: _page_loaded())
         return self
 
     @require_permission(

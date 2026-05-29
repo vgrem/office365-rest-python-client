@@ -48,6 +48,7 @@ class TestGraphGroup(GraphDelegatedTestCase):
         """Get a group by ID"""
         assert TestGraphGroup.target_group is not None
         existing_group = TestGraphGroup.target_group
+        assert existing_group.id is not None
         target_group = self.client.groups[existing_group.id].get().execute_query()
         self.assertIsInstance(target_group, Group)
 
@@ -74,6 +75,7 @@ class TestGraphGroup(GraphDelegatedTestCase):
         """Remove an owner from the group"""
         assert TestGraphGroup.target_user is not None
         owner_id = TestGraphGroup.target_user.id
+        assert owner_id is not None
         assert TestGraphGroup.target_group is not None
         grp = TestGraphGroup.target_group
         grp.owners.remove(owner_id).execute_query()
@@ -92,6 +94,7 @@ class TestGraphGroup(GraphDelegatedTestCase):
         """Remove a member from the group"""
         assert TestGraphGroup.target_user is not None
         member_id = TestGraphGroup.target_user.id
+        assert member_id is not None
         assert TestGraphGroup.target_group is not None
         grp = TestGraphGroup.target_group
         grp.members.remove(member_id).execute_query()

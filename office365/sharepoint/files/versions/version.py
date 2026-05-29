@@ -28,7 +28,7 @@ class FileVersion(Entity):
         def _file_version_loaded():
             self.open_binary_stream().after_execute(_save_file)
 
-        self.ensure_property("ID", _file_version_loaded)
+        self.ensure_property("ID").after_execute(lambda _: _file_version_loaded())
         return self
 
     def open_binary_stream(self) -> ClientResult[bytes]:

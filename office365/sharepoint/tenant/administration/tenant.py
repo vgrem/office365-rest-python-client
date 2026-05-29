@@ -163,7 +163,7 @@ class Tenant(Entity):
         def _settings_loaded():
             return_type.set_property("__siteUrl", settings.corporate_catalog_url)
 
-        settings.ensure_property("CorporateCatalogUrl", _settings_loaded)
+        settings.ensure_property("CorporateCatalogUrl").after_execute(lambda _: _settings_loaded())
         return return_type
 
     def get_chat_gpt_response(self) -> ClientResult[ChatGptRequestOptions]:
@@ -944,7 +944,7 @@ class Tenant(Entity):
         def _get_file_version_policy():
             return_type.set_property("__value", self.file_version_policy_xml)
 
-        self.ensure_property("FileVersionPolicyXml", _get_file_version_policy)
+        self.ensure_property("FileVersionPolicyXml").after_execute(lambda _: _get_file_version_policy())
         return return_type
 
     def set_file_version_policy(

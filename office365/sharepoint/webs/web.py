@@ -173,7 +173,7 @@ class Web(SecurableObject):
         def _get_access_request_list():
             return_type.set_property("Url", self.access_request_list_url)
 
-        self.ensure_properties(["AccessRequestListUrl"], _get_access_request_list)
+        self.ensure_properties(["AccessRequestListUrl"]).after_execute(lambda _: _get_access_request_list())
         return return_type
 
     def get_adaptive_card_extensions(self, include_errors: Optional[bool] = None, project=None):
@@ -188,7 +188,7 @@ class Web(SecurableObject):
 
     def get_document_by_doc_id(self, doc_id: str) -> ClientResult[str]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
         qry = ClientQuery(self.context, return_type=return_type)
 
         def _construct_request(request: RequestOptions):
@@ -225,7 +225,7 @@ class Web(SecurableObject):
             assert self.url is not None
             SiteScriptUtility.get_site_script_from_web(self.context, self.url, info, return_type=result)
 
-        self.ensure_property("Url", _get_site_script)
+        self.ensure_property("Url").after_execute(lambda _: _get_site_script())
         return result
 
     def consent_to_power_platform(self) -> FlowSynchronizationResult:
@@ -251,7 +251,7 @@ class Web(SecurableObject):
             parameters = RenderListDataParameters(ViewXml=view_xml)
             List.get_list_data_as_stream(self.context, list_abs_url, parameters, return_type=return_type)
 
-        self.ensure_property("Url", _get_list_data_as_stream)
+        self.ensure_property("Url").after_execute(lambda _: _get_list_data_as_stream())
         return return_type
 
     def get_onedrive_list_data_as_stream(
@@ -350,12 +350,9 @@ class Web(SecurableObject):
             self.context.add_query(qry)
 
         if isinstance(user, User):
-
-            def _user_loaded():
-                assert user.login_name is not None
-                _create_and_add_query(user.login_name)
-
-            user.ensure_property("LoginName", _user_loaded)
+            user.ensure_property("LoginName").after_execute(
+                lambda _: _create_and_add_query(user.login_name) if user.login_name is not None else None
+            )
         else:
             _create_and_add_query(user)
         return return_type
@@ -669,7 +666,7 @@ class Web(SecurableObject):
         def _webs_loaded():
             self._load_sub_webs_inner(self.webs, return_type)
 
-        self.ensure_property("Webs", _webs_loaded)
+        self.ensure_property("Webs").after_execute(lambda _: _webs_loaded())
         return return_type
 
     def _load_sub_webs_inner(self, webs: WebCollection, all_webs: WebCollection):
@@ -680,7 +677,7 @@ class Web(SecurableObject):
                 if len(web.webs) > 0:
                     self._load_sub_webs_inner(web.webs, all_webs)
 
-            cur_web.ensure_property("Webs", _webs_loaded, cur_web)
+            cur_web.ensure_property("Webs").after_execute(lambda _, w=cur_web: _webs_loaded(w))
 
     def get_list_using_path(self, decoded_url: str):
         """
@@ -767,7 +764,7 @@ class Web(SecurableObject):
         :param str page_metadata:
         """
         payload = {"pageMetaData": page_metadata}
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "CreateSitePage", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -1113,7 +1110,7 @@ class Web(SecurableObject):
             When true, the cache is refreshed with the latest updates and then returned. Use this if you just made
             changes and need to see those changes right away.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult(self.context, str())
         payload = {"forceRefresh": force_refresh}
         qry = ServiceOperationQuery(self, "HubSiteData", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -1341,9 +1338,8 @@ class Web(SecurableObject):
                 "AssociatedVisitorGroup",
                 "AssociatedMemberGroup",
                 "AssociatedOwnerGroup",
-            ],
-            _web_resolved,
-        )
+            ]
+        ).after_execute(lambda _: _web_resolved())
         return return_type
 
     def unshare(self):
@@ -1353,7 +1349,7 @@ class Web(SecurableObject):
         def _web_initialized():
             Web.unshare_object(self.context, self.url, return_type=return_type)
 
-        self.ensure_property("Url", _web_initialized)
+        self.ensure_property("Url").after_execute(lambda _: _web_initialized())
         return return_type
 
     @staticmethod
@@ -1407,7 +1403,7 @@ class Web(SecurableObject):
         def _get_default_document_library_url() -> None:
             Web.default_document_library_url(self.context, self.url, return_type)
 
-        self.ensure_property("Url", _get_default_document_library_url)
+        self.ensure_property("Url").after_execute(lambda _: _get_default_document_library_url())
         return return_type
 
     @staticmethod

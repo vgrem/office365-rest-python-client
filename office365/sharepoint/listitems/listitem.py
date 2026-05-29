@@ -106,7 +106,7 @@ class ListItem(SecurableObject):
                 return_type=return_type,
             )
 
-        list_folder.ensure_property("ServerRelativeUrl", _lock_record_item)
+        list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _lock_record_item())
         return return_type
 
     def share_link(
@@ -251,7 +251,7 @@ class ListItem(SecurableObject):
             assert self.id is not None
             Reputation.set_rating(self.context, self.parent_list.id, self.id, value, return_value)
 
-        self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
+        self.parent_list.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _list_item_loaded())
         return return_value
 
     def set_like(self, value: bool) -> ClientResult[int]:
@@ -269,7 +269,7 @@ class ListItem(SecurableObject):
             assert self.id is not None
             Reputation.set_like(self.context, self.parent_list.id, self.id, value, return_value)
 
-        self.parent_list.ensure_properties(["Id", "ParentList"], _list_item_loaded)
+        self.parent_list.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _list_item_loaded())
         return return_value
 
     def get_wopi_frame_url(self, action: SPWOPIAction) -> ClientResult[str]:
@@ -354,7 +354,7 @@ class ListItem(SecurableObject):
                 self.context, user_principal_name
             ).after_execute(_picker_value_resolved)
 
-        self.ensure_property("EncodedAbsUrl", _url_resolved)
+        self.ensure_property("EncodedAbsUrl").after_execute(lambda _: _url_resolved())
         return return_type
 
     def unshare(self) -> SharingResult:
@@ -367,7 +367,7 @@ class ListItem(SecurableObject):
 
             Web.unshare_object(self.context, abs_url, return_type=return_type)
 
-        self.ensure_property("EncodedAbsUrl", _property_resolved)
+        self.ensure_property("EncodedAbsUrl").after_execute(lambda _: _property_resolved())
         return return_type
 
     def get_sharing_information(self) -> ObjectSharingInformation:
@@ -383,7 +383,7 @@ class ListItem(SecurableObject):
                 self.context, self.parent_list.id, self.id, return_type=return_type
             )
 
-        self.ensure_properties(["Id", "ParentList"], _item_resolved)
+        self.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _item_resolved())
         return return_type
 
     def validate_update_list_item(
@@ -471,12 +471,12 @@ class ListItem(SecurableObject):
 
         def _list_loaded():
             if self.parent_list.base_template == ListTemplateType.DocumentLibrary.value:
-                self.ensure_properties(sys_metadata, _system_update)
+                self.ensure_properties(sys_metadata).after_execute(lambda _: _system_update())
             else:
                 next_qry = ServiceOperationQuery(self, "SystemUpdate")
                 self.context.add_query(next_qry)
 
-        self.parent_list.ensure_properties(["BaseTemplate"], _list_loaded)
+        self.parent_list.ensure_properties(["BaseTemplate"]).after_execute(lambda _: _list_loaded())
         return self
 
     def update_overwrite_version(self) -> ListItem:
@@ -776,7 +776,7 @@ class ListItem(SecurableObject):
 
             tax_text_field.select(["StaticName"]).get().after_execute(_tax_text_field_loaded, execute_first=True)
 
-        tax_field.ensure_property("TextField", _tax_field_loaded)
+        tax_field.ensure_property("TextField").after_execute(lambda _: _tax_field_loaded())
 
     def ensure_type_name(self, target_list, action=None):
         """
@@ -792,7 +792,7 @@ class ListItem(SecurableObject):
                 if callable(action):
                     action()
 
-            target_list.ensure_property("ListItemEntityTypeFullName", _list_loaded)
+            target_list.ensure_property("ListItemEntityTypeFullName").after_execute(lambda _: _list_loaded())
         elif callable(action):
             action()
         return self

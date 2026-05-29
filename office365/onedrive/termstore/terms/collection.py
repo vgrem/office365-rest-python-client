@@ -33,5 +33,5 @@ class TermCollection(EntityCollection[Term]):
             self.context.add_query(qry)
 
         if self._parent_set is not None:
-            self._parent_set.ensure_property("id", _set_loaded)
+            self._parent_set.ensure_property("id").after_execute(lambda _: _set_loaded())
         return return_type

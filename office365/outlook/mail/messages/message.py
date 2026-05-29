@@ -114,7 +114,7 @@ class Message(OutlookItem):
             def _message_loaded():
                 self.attachments.resumable_upload(file_path, max_upload_chunk, chunk_uploaded)
 
-            self.ensure_property("id", _message_loaded)
+            self.ensure_property("id").after_execute(lambda _: _message_loaded())
         else:
             with open(file_path, "rb") as file_object:
                 content = file_object.read()
@@ -191,7 +191,7 @@ class Message(OutlookItem):
                 assert destination.id is not None
                 _copy(destination.id)
 
-            destination.ensure_property("id", _loaded)
+            destination.ensure_property("id").after_execute(lambda _: _loaded())
         else:
             _copy(destination)
         return self
@@ -217,7 +217,7 @@ class Message(OutlookItem):
                 assert destination.id is not None
                 _move(destination.id)
 
-            destination.ensure_property("id", _loaded)
+            destination.ensure_property("id").after_execute(lambda _: _loaded())
         else:
             _move(destination)
         return self

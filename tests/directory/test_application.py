@@ -44,6 +44,7 @@ class TestApplication(GraphDelegatedTestCase):
         """Remove password from the application"""
         assert TestApplication.target_app is not None
         assert TestApplication.target_password is not None
+        assert TestApplication.target_password.keyId is not None
         TestApplication.target_app.remove_password(TestApplication.target_password.keyId).execute_query()
 
     def test7_delete_app(self):

@@ -18,10 +18,9 @@ import sys
 from office365.directory.permissions.guard import has_delegated_permission, has_role
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
-from office365.runtime.client_request_exception import ClientRequestException
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
-scope = input("Permission scope: ")
+scope = "FileStorageContainerType.Manage.All"  # input("Permission scope: ")
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
@@ -36,15 +35,7 @@ else:
     answer = "y"  # input("Grant it now via admin consent? (y/N): ")
     if answer.lower() == "y":
         resource = client.service_principals.get_by_name(ResourceName.Graph)
-        try:
-            resource.grant_delegated_permissions(test_client_id, None, scope).execute_query()
-            print(f"✅ Permission '{scope}' granted.")
-        except ClientRequestException as e:
-            if "409" in str(e):
-                print("❌ Conflict: A grant already exists that blocks this request.")
-                print("   Run 'revoke_delegated_perms' first to remove blocking grants,")
-                print("   then try granting again.")
-            else:
-                raise
+        resource.grant_delegated_permissions(test_client_id, scope).execute_query()
+        print(f"✅ Permission '{scope}' granted.")
     else:
         print("Skipped.")

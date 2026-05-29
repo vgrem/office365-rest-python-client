@@ -99,7 +99,7 @@ class InformationProtection(Entity):
             qry = CreateEntityQuery(self.threat_assessment_requests, return_type, return_type)
             self.context.add_query(qry).before_execute(_construct_request)
 
-        message.ensure_properties(["id", "toRecipients"], _create_and_add_query)
+        message.ensure_properties(["id", "toRecipients"]).after_execute(lambda _: _create_and_add_query())
         return return_type
 
     @property

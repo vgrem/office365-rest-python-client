@@ -56,6 +56,7 @@ class TestCommunicationSite(SPTestCase):
 
     def test7_register_hub_site(self):
         assert self.target_site is not None
+        assert self.target_site.url is not None
         tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
         props = tenant.register_hub_site(self.target_site.url).execute_query()
         self.assertIsNotNone(props.site_id)
@@ -64,6 +65,7 @@ class TestCommunicationSite(SPTestCase):
 
     def test8_unregister_hub_site(self):
         assert self.target_site is not None
+        assert self.target_site.url is not None
         client_admin = ClientContext(test_admin_site_url).with_credentials(test_user_credentials)
         tenant = Tenant(client_admin)
         tenant.unregister_hub_site(self.target_site.url).execute_query()

@@ -38,7 +38,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
                 if field.internal_name is not None:
                     _add(field.internal_name)
 
-            field.ensure_property("InternalName", _field_loaded)
+            field.ensure_property("InternalName").after_execute(lambda _: _field_loaded())
         else:
             _add(field)
         return return_type

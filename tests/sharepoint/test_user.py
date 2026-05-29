@@ -19,11 +19,13 @@ class TestSharePointUser(SPTestCase):
 
     def test2_ensure_user(self):
         assert self.target_user is not None
+        assert self.target_user.login_name is not None
         result_user = self.client.web.ensure_user(self.target_user.login_name).execute_query()
         self.assertIsNotNone(result_user.user_id)
 
     def test3_get_user(self):
         assert self.target_user is not None
+        assert self.target_user.login_name is not None
         target_user = self.client.web.site_users.get_by_login_name(self.target_user.login_name).get().execute_query()
         self.assertIsNotNone(target_user.id)
 
@@ -34,6 +36,7 @@ class TestSharePointUser(SPTestCase):
 
     def test5_get_user_permissions(self):
         assert self.target_user is not None
+        assert self.target_user.login_name is not None
         perms_result = self.client.web.get_user_effective_permissions(self.target_user.login_name)
         self.client.execute_query()
         self.assertIsInstance(perms_result.value, BasePermissions)

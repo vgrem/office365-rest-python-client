@@ -85,7 +85,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             def _ct_loaded():
                 _create(parent_content_type.string_id)
 
-            parent_content_type.ensure_property("StringId", _ct_loaded)
+            parent_content_type.ensure_property("StringId").after_execute(lambda _: _ct_loaded())
         else:
             _create(parent_content_type)
         return return_type

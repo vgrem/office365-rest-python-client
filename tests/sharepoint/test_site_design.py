@@ -32,6 +32,8 @@ class TestSiteDesign(SPTestCase):
 
     def test_3_delete(self):
         assert self.site_design_metadata is not None
+        assert self.site_design_metadata.Id is not None
+        assert self.site_design_count is not None
         SiteScriptUtility.delete_site_design(self.client, self.site_design_metadata.Id).execute_query()
         result = SiteScriptUtility.get_site_designs(self.client).execute_query()
         self.assertEqual(self.site_design_count - 1, len(result.value))

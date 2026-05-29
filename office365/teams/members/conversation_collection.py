@@ -39,7 +39,7 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
             def _set_user_id():
                 return_type.set_property("userId", user.id)
 
-            user.ensure_property("id", _set_user_id)
+            user.ensure_property("id").after_execute(lambda _: _set_user_id())
         else:
             return_type.set_property("userId", user)
         return return_type

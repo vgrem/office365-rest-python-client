@@ -73,8 +73,7 @@ class Site(BaseItem):
         if isinstance(list_or_id, List):
             list_or_id.ensure_property(
                 "id",
-                lambda: _get_applicable_content_types_for_list(list_or_id.id),
-            )
+            ).after_execute(lambda _: _get_applicable_content_types_for_list(list_or_id.id))
         else:
             _get_applicable_content_types_for_list(list_or_id)
 

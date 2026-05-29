@@ -33,12 +33,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
             self.context.add_query(qry)
 
         if isinstance(plan, PlannerPlan):
-
-            def _parent_loaded():
-                assert plan.id is not None
-                _add(plan.id)
-
-            plan.ensure_property("id", _parent_loaded)
+            plan.ensure_property("id").after_execute(lambda _: _add(plan.id) if plan.id is not None else None)
         else:
             _add(plan)
 
