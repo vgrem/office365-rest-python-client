@@ -22,7 +22,7 @@ class TestField(SPTestCase):
         )
         self.assertIsNotNone(field.internal_name)
         self.assertEqual(field.internal_name, self.target_field_name)
-        self.assertIsInstance(field, FieldText)
+        assert isinstance(field, FieldText)
         self.assertIsNotNone(field.max_length)
 
     def test_3_get_field_by_title(self):

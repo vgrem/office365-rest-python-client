@@ -19,10 +19,12 @@ class TestSharePointDocumentSet(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        assert cls.target_lib is not None
         cls.target_lib.delete_object().execute_query()
 
     def test1_create_document_set(self):
         doc_set_title = create_unique_name("DocSet N")
+        assert self.target_lib is not None
         doc_set = DocumentSet.create(self.client, self.target_lib.root_folder, doc_set_title).execute_query()
         self.assertEqual(doc_set.name, doc_set_title)
         self.assertIsNotNone(doc_set.resource_path)

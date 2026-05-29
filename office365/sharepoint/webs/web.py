@@ -1079,7 +1079,7 @@ class Web(SecurableObject):
         :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
         """
         if query is None:
-            query = ChangeQuery(Web=True, FetchLimit=100)
+            query = ChangeQuery(Web=True, FetchLimit="100")
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
         qry = ServiceOperationQuery(self, "getChanges", None, payload, None, return_type)

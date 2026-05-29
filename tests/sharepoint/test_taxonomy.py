@@ -24,14 +24,14 @@ class TestSPTaxonomy(SPTestCase):
         term_group = self.client.taxonomy.term_store.term_groups.get_by_name("Geography").get().execute_query()
         self.assertIsNotNone(term_group.resource_path)
         self.assertIsInstance(term_group, TermGroup)
-        type(self).target_term_group = term_group
+        TestSPTaxonomy.target_term_group = term_group
 
     def test3_get_term_sets(self):
         assert self.target_term_group is not None
         term_sets = self.target_term_group.term_sets.get().execute_query()
         self.assertGreater(len(term_sets), 0)
         self.assertIsInstance(term_sets[0], TermSet)
-        type(self).target_term_set = term_sets[0]
+        TestSPTaxonomy.target_term_set = term_sets[0]
 
     def test4_get_terms(self):
         assert self.target_term_set is not None
@@ -52,13 +52,13 @@ class TestSPTaxonomy(SPTestCase):
         )
         self.assertIsNotNone(tax_field.resource_path)
         # self.assertTrue(tax_field.properties.get('IsTermSetValid'))
-        type(self).target_field = tax_field
+        TestSPTaxonomy.target_field = tax_field
 
     def test7_get_tax_field(self):
         assert self.target_field is not None
         existing_field = self.target_field.get().execute_query()
         self.assertTrue(existing_field.type_as_string, "TaxonomyFieldType")
-        self.assertIsInstance(existing_field, TaxonomyField)
+        assert isinstance(existing_field, TaxonomyField)
         self.assertIsNotNone(existing_field.text_field_id)
         self.assertIsNotNone(existing_field.lookup_list)
         self.assertIsNotNone(existing_field.lookup_web_id)

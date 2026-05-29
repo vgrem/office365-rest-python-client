@@ -30,7 +30,7 @@ class ChangeQuery(ClientValue):
     DeleteObject: bool = True
     RoleAssignmentAdd: bool = True
     RoleAssignmentDelete: bool = True
-    FetchLimit: Optional[int] = None
+    FetchLimit: Optional[str] = None
     AppConsentPrincipal: Optional[bool] = None
     Field: Optional[bool] = None
     GroupMembershipAdd: Optional[bool] = None

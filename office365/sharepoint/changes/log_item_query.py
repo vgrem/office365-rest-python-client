@@ -26,7 +26,7 @@ class ChangeLogItemQuery(ClientValue):
     QueryOptions: Optional[str] = None
     ChangeToken: Optional[str] = None
     Contains: Optional[str] = None
-    RowLimit: Optional[int] = None
+    RowLimit: Optional[str] = None
     ViewFields: Optional[str] = None
     ViewName: Optional[str] = None
 

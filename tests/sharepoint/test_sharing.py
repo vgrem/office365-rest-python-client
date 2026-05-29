@@ -29,7 +29,6 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointSharing(SPTestCase):
-    target_user: User | None = None
     target_file_url = urljoin(test_site_url, "/SitePages/Home.aspx")
 
     @classmethod
@@ -39,7 +38,7 @@ class TestSharePointSharing(SPTestCase):
         )
         client.web.lists.ensure_site_pages_library().execute_query()
         current_user = client.web.current_user.get().execute_query()
-        cls.target_user = current_user
+        cls.target_user: User = current_user
         cls.client = client
 
     def test1_get_role_def(self):
@@ -47,7 +46,7 @@ class TestSharePointSharing(SPTestCase):
         self.assertTrue(role_def.name, "Full Control")
 
     def test2_get_object_sharing_settings(self):
-        result = Web.get_object_sharing_settings(self.client, self.target_file_url, 0, True).execute_query()
+        result = Web.get_object_sharing_settings(self.client, self.target_file_url, None, True).execute_query()
         self.assertIsNotNone(result.web_url)
 
     def test3_get_file_sharing_info(self):

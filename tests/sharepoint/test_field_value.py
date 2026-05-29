@@ -6,13 +6,13 @@ from office365.sharepoint.fields.multi_lookup_value import FieldMultiLookupValue
 from office365.sharepoint.fields.multi_user_value import FieldMultiUserValue
 from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.list import List
 
 from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestFieldValue(SPTestCase):
-    target_list: list | None = None
     target_item: ListItem | None = None
     target_field: FieldMultiChoice | None = None
 
@@ -27,8 +27,8 @@ class TestFieldValue(SPTestCase):
         cls.user_field_name = "PrimaryApprover"
         cls.user_multi_field_name = "SecondaryApprovers"
         cls.lookup_field_name = "RelatedDocuments"
-        list_title = create_unique_name("Tasks N")
-        cls.target_list = cls.client.web.lists.add_tasks(list_title).execute_query()
+        list_title: str = create_unique_name("Tasks N")
+        cls.target_list: List = cls.client.web.lists.add_tasks(list_title).execute_query()
         cls.lookup_list = cls.client.web.default_document_library().get().execute_query()
 
     @classmethod
@@ -59,6 +59,7 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(result.type_as_string, "LookupMulti")
 
     def test4_set_field_multi_lookup_value(self):
+        assert self.target_item is not None and self.target_item.id is not None
         updated = self.target_item.set_multi_lookup_field_value(
             self.multi_lookup_field_name, [self.target_item.id]
         ).execute_query()
@@ -75,6 +76,7 @@ class TestFieldValue(SPTestCase):
         current_user = self.client.web.current_user
         value = FieldMultiUserValue()
         value.add(FieldUserValue.from_user(current_user))
+        assert self.target_item is not None
         self.target_item.set_property(self.user_multi_field_name, value).update().execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.user_multi_field_name))
 
@@ -87,6 +89,7 @@ class TestFieldValue(SPTestCase):
         type(self).target_field = result
 
     def test8_set_field_multi_choice_value(self):
+        assert self.target_item is not None
         self.target_item.set_choice_field_value(self.multi_choice_field_name, ["In Progress"]).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.multi_choice_field_name))
 
@@ -99,6 +102,7 @@ class TestFieldValue(SPTestCase):
 
     def test_10_set_field_choice_value(self):
         choice_value = "In Progress"
+        assert self.target_item is not None
         self.target_item.set_choice_field_value(self.choice_field_name, choice_value).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.choice_field_name))
 
@@ -112,6 +116,7 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(result.type_as_string, "URL")
 
     def test_13_set_url_field_value(self):
+        assert self.target_item is not None
         self.target_item.set_url_field_value(
             self.url_field_name,
             "https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-server/ms472498(v=office.15)",
@@ -124,6 +129,7 @@ class TestFieldValue(SPTestCase):
         self.assertEqual(geo_field.type_as_string, "Geolocation")
 
     def test_15_set_geo_field_value(self):
+        assert self.target_item is not None
         self.target_item.set_geo_field_value(self.geo_field_name, 59.940117, 29.8145056).execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.geo_field_name))
 
@@ -135,6 +141,7 @@ class TestFieldValue(SPTestCase):
     def test_17_set_user_field_value(self):
         current_user = self.client.web.current_user
         user_value = FieldUserValue.from_user(current_user)
+        assert self.target_item is not None
         self.target_item.set_property(self.user_field_name, user_value).update().execute_query()
         self.assertIsNotNone(self.target_item.properties.get(self.user_field_name))
 
@@ -149,6 +156,7 @@ class TestFieldValue(SPTestCase):
     def test_19_set_lookup_field_value(self):
         lookup_items = self.client.web.default_document_library().get_items().execute_query()
         if len(lookup_items) > 0:
+            assert self.target_item is not None
             self.target_item.set_lookup_field_value(
                 self.lookup_field_name, lookup_items[0].properties["Id"]
             ).execute_query()

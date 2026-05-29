@@ -61,7 +61,7 @@ class TestSearch(SPTestCase):
         result = self.client.search.post_query(
             query_text="guide.docx",
             enable_sorting=True,
-            sort_list=[Sort("LastModifiedTime", 1)],
+            sort_list=[Sort(Property="LastModifiedTime", Direction=1)],
         ).execute_query()
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 

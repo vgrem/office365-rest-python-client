@@ -27,6 +27,7 @@ class TestCompliance(SPTestCase):
 
     def test_3_get_list_compliance_tag(self):
         assert self.list_item is not None
+        assert self.target_list is not None
         result = self.target_list.get_compliance_tag().execute_query()
         self.assertIsNotNone(result.value)
 

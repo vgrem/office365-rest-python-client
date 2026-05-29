@@ -14,7 +14,7 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestDirectorySession(SPTestCase):
-    client: ClientContext | None = None
+    client: ClientContext | None = None  # type: ignore[assignment]
 
     @classmethod
     def setUpClass(cls):
@@ -22,17 +22,20 @@ class TestDirectorySession(SPTestCase):
         client = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
-        cls.client = client
+        cls.client = client  # type: ignore[assignment]
 
     def test_1_init_session(self):
+        assert self.client is not None
         session = self.client.directory_session.get().execute_query()
         self.assertIsInstance(session, DirectorySession)
 
     def test_2_get_me(self):
+        assert self.client is not None
         me = self.client.directory_session.me.get().execute_query()
         self.assertIsNotNone(me.resource_path)
 
     def test_3_get_my_groups(self):
+        assert self.client is not None
         result = self.client.directory_session.me.get_my_groups().execute_query()
         self.assertIsNotNone(result)
         # self.assertGreater(len(result.value), 0)
@@ -42,6 +45,7 @@ class TestDirectorySession(SPTestCase):
     #    self.assertIsNotNone(result.value)
 
     def test_5_check_site_availability(self):
+        assert self.client is not None
         result = self.client.directory_provider.check_site_availability(test_site_url).execute_query()
         self.assertIsNotNone(result.value)
 

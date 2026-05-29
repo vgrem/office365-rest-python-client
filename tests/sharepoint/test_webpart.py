@@ -14,7 +14,7 @@ class TestWebPart(SPTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = ClientContext(test_site_url).with_credentials(test_client_credentials)
+        cls.client = ClientContext(test_site_url).with_credentials(test_client_credentials)  # type: ignore[assignment]
         page_url = "/SitePages/Home.aspx"
         cls.file = cls.client.web.get_file_by_server_relative_url(page_url)
         cls.file.checkout().execute_query()

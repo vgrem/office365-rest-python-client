@@ -20,12 +20,12 @@ class TestSiteScript(SPTestCase):
 
         result = SiteScriptUtility.create_site_script(self.client, "Contoso theme script", "", script).execute_query()
         self.assertIsNotNone(result.value)
-        type(self).site_script_meta = result.value
+        TestSiteScript.site_script_meta = result.value
 
     def test_2_list_site_scripts(self):
         result = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertIsNotNone(result.value)
-        type(self).site_script_count = len(result.value)
+        TestSiteScript.site_script_count = len(result.value)
 
     def test_3_delete_site_script(self):
         assert self.site_script_meta is not None
