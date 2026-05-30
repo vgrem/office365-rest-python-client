@@ -344,7 +344,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             for k, v in col[0].properties.items():
                 return_type.set_property(k, v, False)
 
-        self.get().filter(expression).top(2).after_execute(_after_loaded)
+        self.get().filter(expression).after_execute(_after_loaded)
         return return_type
 
     @property
