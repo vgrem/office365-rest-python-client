@@ -18,7 +18,7 @@ from tests import test_client_id
 T = TypeVar("T", bound=Callable[..., Any])
 
 
-def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
+def requires_application(*app_roles: str) -> Callable[[T], T]:
     """Skip test unless the app has the required application permissions."""
 
     def decorator(test_method: T) -> T:

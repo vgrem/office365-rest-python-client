@@ -8,7 +8,7 @@ from tests import (
     test_team_site_url,
     test_user_principal_name_alt,
 )
-from tests.decorators import requires_app_permission, requires_delegated
+from tests.decorators import requires_application, requires_delegated
 from tests.graph_case import GraphApplicationTestCase
 
 
@@ -28,7 +28,7 @@ class TestPermissions(GraphApplicationTestCase):
         item_to_delete = cls.target_drive_item.get().execute_query()
         item_to_delete.delete_object().execute_query()
 
-    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
+    @requires_application("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test1_create_anonymous_link(self):
         """Create an anonymous sharing link"""
         assert TestPermissions.target_drive_item is not None
@@ -36,7 +36,7 @@ class TestPermissions(GraphApplicationTestCase):
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "read")
 
-    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
+    @requires_application("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test2_create_company_link(self):
         """Create an organization sharing link"""
         assert TestPermissions.target_drive_item is not None
@@ -44,7 +44,7 @@ class TestPermissions(GraphApplicationTestCase):
         self.assertIsNotNone(permission.id)
         self.assertIsNotNone(permission.roles[0], "write")
 
-    @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_application("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test4_driveitem_list_permissions(self):
         """List permissions for a drive item"""
         assert TestPermissions.target_drive_item is not None
@@ -52,7 +52,7 @@ class TestPermissions(GraphApplicationTestCase):
         self.assertIsNotNone(permissions.resource_path)
         self.assertGreater(len(permissions), 0)
 
-    @requires_app_permission("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
+    @requires_application("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test5_driveitem_get_permission(self):
         """Get a specific permission for a drive item"""
         assert TestPermissions.target_drive_item is not None
@@ -76,7 +76,7 @@ class TestPermissions(GraphApplicationTestCase):
         # perm_to_update.roles = ["read"]
         # perm_to_update.update().execute_query()
 
-    @requires_app_permission("Files.ReadWrite.All", "Sites.ReadWrite.All")
+    @requires_application("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test7_driveitem_delete_permission(self):
         """Delete a drive item permission"""
         perm_to_delete = TestPermissions.target_permission
