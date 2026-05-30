@@ -173,7 +173,8 @@ class TypeBuilder(ast.NodeTransformer):
     def _build_value_annotation(prop: PropertyBuilder) -> ast.AnnAssign:
         """Build a class-level type annotation for a ClientValue property.
 
-        Example: is_discoverability_enabled: bool | None = None
+        Uses the original OData property name (e.g. taskScope) rather than
+        the snake_case Python name, matching the JSON serialization contract.
         """
         prop_type = prop.client_type_name
         if prop_type in TemplateContext.OPTIONAL_TYPES:
@@ -188,7 +189,7 @@ class TypeBuilder(ast.NodeTransformer):
         default = prop.build_default_value()
 
         return ast.AnnAssign(
-            target=ast.Name(id=prop.name, ctx=ast.Store()),
+            target=ast.Name(id=prop.schema.Name, ctx=ast.Store()),
             annotation=annotation,
             value=default,
             simple=1,
