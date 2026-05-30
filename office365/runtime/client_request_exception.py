@@ -1,6 +1,8 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
 
-from requests import RequestException
+from typing import Optional
+
+from requests import RequestException, Response
 
 
 class ClientRequestException(RequestException):
@@ -8,36 +10,55 @@ class ClientRequestException(RequestException):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._error_info = self._get_error_info()
-        self.args = (self.code, self.message) + args
+        self._error: dict = {}
 
-    def _get_error_info(self) -> Dict[str, Any]:
-        """Extract and parse error info from response."""
-        response = getattr(self, "response", None)
-        if response is None:
-            return {}
+    @classmethod
+    def from_response(cls, response: Response) -> ClientRequestException:
+        """Factory: parse error response, dispatch to the right exception type.
 
-        content_type = response.headers.get("Content-Type", "").split(";")[0].lower()
-        if content_type == "application/json" and response.content:
-            try:
-                payload = response.json()
-                return payload.get("error", {})
-            except ValueError:
-                pass
-        return {}
+        Inspects the error payload once and returns a specific subclass
+        (e.g. DuplicatedObjectException), so callers never deal with
+        HTTP status codes or error JSON.
+        """
+        try:
+            error = response.json().get("error", {})
+        except Exception:
+            error = {}
+
+        details = error.get("details", [])
+        if any(d.get("code") == "ConflictingObjects" for d in details):
+            exc: ClientRequestException = DuplicatedObjectException(response=response)
+        else:
+            exc = cls(response=response)
+
+        exc._error = error
+        if error:
+            exc.args = (exc.code or "", exc.message or "")
+        else:
+            http_error_msg = f"{response.status_code} {response.reason} for url: {response.url}"
+            exc.args = (str(response.status_code), http_error_msg)
+        return exc
 
     @property
     def code(self) -> Optional[str]:
-        return self._error_info.get("code")
-
-    @property
-    def message_lang(self) -> Optional[str]:
-        msg = self._error_info.get("message")
-        return msg.get("lang") if isinstance(msg, dict) else None
+        return self._error.get("code")
 
     @property
     def message(self) -> str:
-        msg = self._error_info.get("message")
+        msg = self._error.get("message")
         if isinstance(msg, dict):
             return str(msg.get("value", ""))
-        return str(msg or self.args[0] if self.args else "")
+        return str(msg or "")
+
+    @property
+    def message_lang(self) -> Optional[str]:
+        msg = self._error.get("message")
+        return msg.get("lang") if isinstance(msg, dict) else None
+
+
+class DuplicatedObjectException(ClientRequestException):
+    """Raised when creating an object that already exists (HTTP 400 + ConflictingObjects)."""
+
+
+class ObjectNotFoundException(ClientRequestException):
+    """Raised when a requested object is not found (HTTP 404 or ResourceNotFound code)."""

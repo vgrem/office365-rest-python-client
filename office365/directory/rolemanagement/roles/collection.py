@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing_extensions import Self
 
 from office365.delta_collection import DeltaCollection
@@ -32,11 +34,28 @@ class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):
         """
 
         def _assign(templates: DirectoryRoleTemplateCollection) -> None:
-            template: DirectoryRoleTemplate | None = next(
-                (t for t in templates if t.display_name == role_name), None
-            )
+            template: DirectoryRoleTemplate | None = next((t for t in templates if t.display_name == role_name), None)
             assert template is not None and template.id is not None
             self.add(roleTemplateId=template.id)
 
         self.context.directory_role_templates.get().after_execute(_assign)
+        return self
+
+    def revoke(self, role_name: str) -> Self:
+        """Deactivate a directory role by removing all members.
+
+        Directory roles are system-defined and cannot be deleted.
+        This removes all members, effectively deactivating the role.
+
+        :param str role_name: The display name (e.g. 'Security Administrator')
+        """
+
+        def _get_members(role: DirectoryRole) -> None:
+            def _remove_members(members):
+                for member in members:
+                    role.members.remove(member)
+
+            role.members.get().after_execute(_remove_members)
+
+        self.get_by_name(role_name).after_execute(_get_members)
         return self

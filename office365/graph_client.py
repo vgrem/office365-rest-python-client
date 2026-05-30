@@ -340,6 +340,8 @@ class GraphClient(ClientRuntimeContext):
     @property
     def directory_role_templates(self) -> DirectoryRoleTemplateCollection:
         """Represents a directory role templates in the directory"""
+        from office365.directory.rolemanagement.templates.collection import DirectoryRoleTemplateCollection
+
         return DirectoryRoleTemplateCollection(self, ResourcePath("directoryRoleTemplates"))
 
     @property

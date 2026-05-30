@@ -89,6 +89,8 @@ class ClientRequest(ABC):
             response = self.execute_request_direct(request)
             self.process_response(response, query)
             self.afterExecute(response)
+        except ClientRequestException:
+            raise
         except HTTPError as e:
             raise ClientRequestException(*e.args, response=e.response) from e
 
@@ -144,9 +146,17 @@ class ClientRequest(ABC):
         self.afterExecute += _process_response
         return self
 
+    @staticmethod
+    def _raise_for_status(response: Response) -> None:
+        """Check HTTP status and dispatch to the right exception type via the factory."""
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise ClientRequestException.from_response(response) from None
+
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
         self.beforeExecute(request)
         response = self._transport.execute(request)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response
