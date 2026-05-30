@@ -44,5 +44,8 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         return return_type
 
     def get_by(self, container_type_id: str) -> FileStorageContainer:
-        """"""
+        """Retrieve a container by its container type ID.
+
+        :param str container_type_id: The identifier of the container type.
+        """
         return super().single(f"containerTypeId eq '{container_type_id}'")
