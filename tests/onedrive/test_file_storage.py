@@ -32,7 +32,7 @@ class TestFileStorage(GraphDelegatedTestCase):
             self.skipTest("No container type — grant FileStorageContainerType.Manage.All")
         result = self.client.storage.file_storage.containers.add(
             "My Application Storage Container", uuid.UUID(self.container_type_id)
-        ).execute_query()
+        ).activate().execute_query()
         assert result.resource_path is not None
         TestFileStorage.target_container = result
 
@@ -56,5 +56,7 @@ class TestFileStorage(GraphDelegatedTestCase):
         """List all file storage containers"""
         if self.container_type_id is None:
             self.skipTest("No container type — grant FileStorageContainerType.Manage.All")
-        result = self.client.storage.file_storage.containers.get_by(self.container_type_id).execute_query()
+        result = self.client.storage.file_storage.containers.get_by_container_type_id(
+            self.container_type_id
+        ).execute_query()
         self.assertIsNotNone(result.resource_path)

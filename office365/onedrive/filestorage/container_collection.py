@@ -43,7 +43,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by(self, container_type_id: str) -> FileStorageContainer:
+    def get_by_container_type_id(self, container_type_id: str) -> FileStorageContainer:
         """Retrieve a container by its container type ID.
 
         :param str container_type_id: The identifier of the container type.
