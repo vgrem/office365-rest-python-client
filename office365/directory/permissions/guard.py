@@ -24,7 +24,7 @@ from functools import lru_cache
 
 from office365.directory.applications.roles.collection import AppRoleCollection
 from office365.directory.permissions.resource_name import ResourceName
-from office365.directory.rolemanagement.role import DirectoryRole
+from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
 from office365.runtime.types.collections import StringCollection
@@ -44,10 +44,7 @@ def _cached_app_permissions(
     client: GraphClient, client_id: str, resource: str = ResourceName.Graph
 ) -> AppRoleCollection:
     """Get and cache application permissions for a client on a given resource."""
-    resource_name = resource.value if isinstance(resource, ResourceName) else resource
-    sp = client.service_principals.get_by_name(resource_name)
-    result = sp.get_application_permissions(client_id).execute_query()
-    return result.value  # type: ignore[return-value]
+    return client.get_application_permissions(client_id).execute_query().value
 
 
 @lru_cache(maxsize=None)
@@ -55,10 +52,7 @@ def _cached_delegated_permissions(
     client: GraphClient, client_id: str, resource: str = ResourceName.Graph
 ) -> StringCollection:
     """Get and cache delegated permissions for a client on a given resource."""
-    resource_name = resource.value if isinstance(resource, ResourceName) else resource
-    sp = client.service_principals.get_by_name(resource_name)
-    result = sp.get_delegated_permissions(client_id).execute_query()
-    return result.value  # type: ignore[return-value]
+    return client.get_delegated_permissions(client_id).execute_query().value
 
 
 @lru_cache(maxsize=1)
