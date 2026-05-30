@@ -20,7 +20,7 @@ class TestManagedDevices(GraphDelegatedTestCase):
         "DeviceManagementConfiguration.Read.All",
         "Device.Read.All",
         "Directory.Read.All",
-        bypass_roles=["Global Administrator"],
+        bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test2_get_my(self):
         """Test retrieving managed devices for the current user."""
