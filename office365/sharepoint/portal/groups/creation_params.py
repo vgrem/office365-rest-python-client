@@ -13,7 +13,7 @@ class GroupCreationParams(ClientValue):
 
     Classification: str = ""
     Description: str = ""
-    CreationOptions: StringCollection = field(default_factory=lambda: StringCollection(["SPSiteLanguage:1033"]))
+    CreationOptions: StringCollection = field(default_factory=lambda: StringCollection("SPSiteLanguage:1033"))
     Owners: StringCollection = field(default_factory=StringCollection)
     PreferredDataLocation: Optional[str] = None
 

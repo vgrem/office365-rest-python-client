@@ -32,5 +32,5 @@ class ContactCollection(DeltaCollection[Contact]):
         if email_address:
             kwargs["emailAddresses"] = ClientValueCollection(EmailAddress, [_create_email_address(email_address)])
         if business_phone:
-            kwargs["businessPhones"] = StringCollection([business_phone])
+            kwargs["businessPhones"] = StringCollection(business_phone)
         return super().add(**kwargs)

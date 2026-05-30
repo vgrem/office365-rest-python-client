@@ -49,7 +49,7 @@ class GroupCollection(CountCollection[Group]):
             description=description,
             mailEnabled=True,
             securityEnabled=False,
-            groupTypes=StringCollection(["Unified"]),
+            groupTypes=StringCollection("Unified"),
             owners=owners,
             members=members,
         )
@@ -67,7 +67,7 @@ class GroupCollection(CountCollection[Group]):
             description=description,
             mailEnabled=False,
             securityEnabled=True,
-            groupTypes=StringCollection([]),
+            groupTypes=StringCollection(),
         )
         return self.add(params)
 
