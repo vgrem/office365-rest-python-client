@@ -2,4 +2,6 @@ from office365.runtime.client_value import ClientValue
 
 
 class UserPrint(ClientValue):
-    pass
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserPrint"

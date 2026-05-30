@@ -11,7 +11,9 @@ class ModifiedProperty(ClientValue):
     NewValue: str | None = None
     OldValue: str | None = None
     displayName: str | None = None
+    newValue: str | None = None
+    oldValue: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.TenantAdmin.ModifiedProperty"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from office365.directory.groups.grouptype import GroupType
 from office365.runtime.client_value import ClientValue
@@ -13,13 +13,11 @@ class TargetResource(ClientValue):
     """Represents target resource types associated with audit activity."""
 
     displayName: str | None = None
-    ModifiedProperties: ClientValueCollection[ModifiedProperty] = field(
-        default_factory=lambda: ClientValueCollection(ModifiedProperty)
-    )
     userPrincipalName: str | None = None
     groupType: GroupType = GroupType.none
     id: str | None = None
     type: str | None = None
+    modifiedProperties: ClientValueCollection[ModifiedProperty] = ClientValueCollection(ModifiedProperty)
 
     @property
     def entity_type_name(self):

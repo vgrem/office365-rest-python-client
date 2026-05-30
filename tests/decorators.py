@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from functools import wraps
+from functools import lru_cache, wraps
 from typing import Any, Callable, TypeVar, cast
 from unittest import TestCase
-
-from functools import lru_cache
 
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
@@ -79,9 +77,7 @@ def requires_delegated(
             has_scope = any(has_delegated_permission(client, s, test_client_id) for s in scopes)
             has_require = not require_roles or any(has_role(client, r) for r in require_roles)
             has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
-            has_license = not require_licenses or any(
-                lic in _cached_licenses(client) for lic in require_licenses
-            )
+            has_license = not require_licenses or any(lic in _cached_licenses(client) for lic in require_licenses)
 
             if has_bypass or (has_scope and has_require and has_license):
                 return test_method(self, *args, **kwargs)

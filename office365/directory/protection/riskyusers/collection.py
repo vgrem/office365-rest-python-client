@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.protection.riskyusers.risky_user import RiskyUser
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -10,13 +12,13 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RiskyUser, resource_path)
 
-    def confirm_compromised(self, user_ids=None):
+    def confirm_compromised(self, user_ids: list[str] | None =None):
         """Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level
         to high.
 
         :param list[str] user_ids: Specify the risky user IDs to dismiss in the request body.
         """
-        payload = {"userIds": StringCollection(user_ids or [])}
+        payload = {"userIds": StringCollection(user_ids)}
         qry = ServiceOperationQuery(self, "confirmCompromised", None, payload)
         self.context.add_query(qry)
         return self

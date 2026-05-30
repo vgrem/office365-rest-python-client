@@ -49,7 +49,7 @@ class GroupCollection(CountCollection[Group]):
             description=description,
             mailEnabled=True,
             securityEnabled=False,
-            groupTypes=StringCollection("Unified"),
+            groupTypes=StringCollection(["Unified"]),
             owners=owners,
             members=members,
         )

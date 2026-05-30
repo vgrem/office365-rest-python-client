@@ -14,6 +14,7 @@ from office365.directory.security.labels.retention.duration_in_days import (
 )
 from office365.directory.security.labels.retention.label import RetentionLabel
 from office365.directory.security.labels.retention.trigger import RetentionTrigger
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
