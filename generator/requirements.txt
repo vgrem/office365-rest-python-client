@@ -1,1 +1,2 @@
 astunparse==1.6.3
+pyyaml>=6.0
