@@ -1,4 +1,5 @@
 from office365.delta_collection import DeltaCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.contacts.contact import Contact
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -9,6 +10,11 @@ class ContactCollection(DeltaCollection[Contact]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Contact, resource_path)
 
+    @require_permission(
+        delegated=["Contacts.ReadWrite"],
+        application=["Contacts.ReadWrite"],
+        notes="Create a contact",
+    )
     def add(self, given_name, surname, email_address=None, business_phone=None, **kwargs):
         """
         Add a contact to the root Contacts folder or to the contacts endpoint of another contact folder.

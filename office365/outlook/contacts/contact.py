@@ -2,6 +2,8 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -21,6 +23,11 @@ from office365.runtime.types.collections import StringCollection
 class Contact(OutlookItem):
     """User's contact."""
 
+    @require_permission(
+        delegated=["Contacts.ReadWrite"],
+        application=["Contacts.ReadWrite"],
+        notes="Permanently delete a contact",
+    )
     def permanent_delete(self) -> Self:
         """Permanently delete a contact and place it in the purges folder in the dumpster in the user's mailbox.
         Email clients such as outlook or outlook on the web can't access permanently deleted items. Unless there's
