@@ -53,7 +53,7 @@ def requires_delegated(
     Args:
         *scopes: Delegated or application permission names — ANY match passes.
         bypass_roles: Directory role display names — ANY match bypasses all checks.
-        require_roles: Directory role display names — ALL must match (AND with scopes).
+        require_roles: Directory role display names — ANY must match (OR with scopes).
     """
 
     def decorator(test_method: T) -> T:

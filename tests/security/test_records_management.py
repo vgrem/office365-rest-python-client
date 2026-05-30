@@ -25,7 +25,7 @@ class TestRecordsManagement(GraphDelegatedTestCase):
     @requires_delegated(
         "RecordsManagement.Read.All",
         "RecordsManagement.ReadWrite.All",
-        require_roles=["Security Administrator", "Security Reader"],
+        require_roles=["Records Management", "Compliance Administrator", "Compliance Data Administrator", "Security Administrator"],
         bypass_roles=["Global Administrator"],
     )
     def test2_list_retention_event_types(self):
@@ -35,7 +35,7 @@ class TestRecordsManagement(GraphDelegatedTestCase):
 
     @requires_delegated(
         "RecordsManagement.ReadWrite.All",
-        require_roles=["Security Administrator", "Security Reader"],
+        require_roles=["Records Management", "Compliance Administrator", "Compliance Data Administrator", "Security Administrator"],
         bypass_roles=["Global Administrator"],
     )
     def test3_create_retention_label(self):
@@ -54,7 +54,7 @@ class TestRecordsManagement(GraphDelegatedTestCase):
     @requires_delegated(
         "RecordsManagement.Read.All",
         "RecordsManagement.ReadWrite.All",
-        require_roles=["Security Administrator", "Security Reader"],
+        require_roles=["Records Management", "Compliance Administrator", "Compliance Data Administrator", "Security Administrator"],
         bypass_roles=["Global Administrator"],
     )
     def test4_list_retention_labels(self):

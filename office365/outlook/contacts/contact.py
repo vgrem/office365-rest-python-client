@@ -2,13 +2,12 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.email_address import EmailAddress

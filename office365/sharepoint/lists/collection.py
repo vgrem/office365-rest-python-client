@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
@@ -132,7 +133,7 @@ class ListCollection(EntityCollection[List]):
         Returns:
             List: The newly created list
         """
-        return_type = List(self.context)
+        return_type = List(self.context, EntityPath(None, self.resource_path))
         self.add_child(return_type)
         qry = CreateEntityQuery(self, list_creation_information, return_type)
         self.context.add_query(qry)
