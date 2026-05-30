@@ -67,7 +67,10 @@ class ODataType:
             else:
                 return f"ClientValueCollection[{item_client_name}]"
         else:
-            return name.split(".")[-1]
+            cls_name = name.split(".")[-1]
+            if cls_name and cls_name[0].islower():
+                cls_name = cls_name[0].upper() + cls_name[1:]
+            return cls_name
 
     @property
     def item_client_type(self) -> Optional[ODataType]:
