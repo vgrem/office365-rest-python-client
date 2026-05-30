@@ -48,11 +48,20 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
         if any(name.startswith(prefix) for prefix in prefix_ignored):
             continue
 
+        type_schema = model.types[name]
+
+        include_base_types = options.get("includebasetypes", "")
+        if include_base_types:
+            allowed = set(t.strip() for t in include_base_types.split(","))
+            if type_schema.BaseTypeFullName not in allowed:
+                processed_types.add(name)
+                print(f"  Skipping {name} (BaseType={type_schema.BaseTypeFullName})")
+                continue
+
         processed_count += 1
         print(f"[{processed_count}/{total_types}] Processing: {name}")
 
         try:
-            type_schema = model.types[name]
             builder = TypeBuilder(type_schema, options, docs_service)
             builder.build()
             if builder.status in {"created", "updated"}:
