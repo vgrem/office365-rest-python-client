@@ -45,6 +45,15 @@ class PropertyBuilder:
         """Build default value"""
         if self._client_type.is_primitive_type:
             return ast.Constant(value=None)
+        elif self._client_type.is_collection:
+            # Collection types: ClientValueCollection[Type] → ClientValueCollection(Type)
+            base_name = self.client_type_name.split("[")[0]
+            item_name = self.client_item_type_name
+            return ast.Call(
+                func=ast.Name(id=base_name, ctx=ast.Load()),
+                args=[ast.Name(id=item_name, ctx=ast.Load())],
+                keywords=[],
+            )
         else:
             return ast.Call(
                 func=ast.Name(id=self.client_type_name, ctx=ast.Load()),

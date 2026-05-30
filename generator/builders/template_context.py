@@ -143,6 +143,8 @@ class TemplateContext:
                 )
             else:
                 default_value = f"{prop_type_name}(self.context, ResourcePath('{prop_name}', self.resource_path))"
+        elif builder.is_collection_type:
+            default_value = f"{prop_type_name}({builder.client_item_type_name})"
 
         property_code = f'''
 @property
