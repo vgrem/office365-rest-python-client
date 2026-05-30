@@ -7,11 +7,3 @@ class DirectoryRoleTemplateCollection(EntityCollection[DirectoryRoleTemplate]):
 
     def __init__(self, context, resource_path=None):
         super().__init__(context, DirectoryRoleTemplate, resource_path)
-
-    def get_by_name(self, name: str) -> DirectoryRoleTemplate:
-        """Retrieve a directory role template by its display name.
-
-        :param str name: The display name (e.g. 'Security Administrator')
-        :return: The matching DirectoryRoleTemplate
-        """
-        return self.single(f"displayName eq '{name}'")

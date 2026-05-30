@@ -29,13 +29,13 @@ if not has_role(privileged_client, "Global Administrator", "Privileged Role Admi
 role_name = input("Role to assign (e.g. 'Security Administrator'): ")
 
 try:
-    role = privileged_client.directory_roles.get_by_name(role_name).get().execute_query()
+    role = privileged_client.directory_roles.get_by_name(role_name).execute_query()
     print(f"✅ Found activated role '{role_name}'")
 except NotFoundException:
     # Role not activated — look up its template ID
-    try:
-        template = privileged_client.directory_role_templates.get_by_name(role_name).get().execute_query()
-    except NotFoundException:
+    templates = privileged_client.directory_role_templates.get().execute_query()
+    template = next((t for t in templates if t.display_name == role_name), None)
+    if template is None:
         print(f"❌ Unknown role '{role_name}'.")
         sys.exit(1)
     print(f"   Activating '{role_name}'...")
