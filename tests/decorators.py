@@ -9,7 +9,6 @@ from unittest import TestCase
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
     _cached_delegated_permissions,
-    has_app_permission,
     has_delegated_permission,
     has_role,
 )
@@ -63,9 +62,10 @@ def requires_delegated(
             client = getattr(self, "client", None)
             if not client:
                 self.skipTest("No client available")
+            assert client is not None
 
             has_scope = any(
-                has_delegated_permission(client, s, test_client_id) or has_app_permission(client, s, test_client_id)
+                has_delegated_permission(client, s, test_client_id)
                 for s in scopes
             )
             has_require = not require_roles or any(has_role(client, r) for r in require_roles)
