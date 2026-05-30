@@ -3,6 +3,7 @@ import inspect
 import os
 import re
 from _ast import Module
+from enum import Enum
 from os.path import abspath
 from typing import Dict, List, Optional
 
@@ -163,14 +164,13 @@ class TypeBuilder(ast.NodeTransformer):
         }
 
         for prop in self._properties:
-            if prop.name in existing_anns:
+            if prop.schema.Name in existing_anns:
                 continue
             ann = self._build_value_annotation(prop)
             class_node.body.insert(len(class_node.body) - 1, ann)
-            self._changes.append(f"property annotation: {prop.name}")
+            self._changes.append(f"property annotation: {prop.schema.Name}")
 
-    @staticmethod
-    def _build_value_annotation(prop: PropertyBuilder) -> ast.AnnAssign:
+    def _build_value_annotation(self, prop: PropertyBuilder) -> ast.AnnAssign:
         """Build a class-level type annotation for a ClientValue property.
 
         Uses the original OData property name (e.g. taskScope) rather than
@@ -187,6 +187,19 @@ class TypeBuilder(ast.NodeTransformer):
             annotation = ast.Name(id=prop_type, ctx=ast.Load())
 
         default = prop.build_default_value()
+
+        # Resolve enum types to use first member as default instead of EnumType()
+        if self._options and not prop.is_collection_type:
+            modules = tuple(self._options.get("modules", "").split(","))
+            resolved = prop._client_type.resolve_client_type(modules)
+            if resolved is not None and inspect.isclass(resolved) and issubclass(resolved, Enum):
+                members = list(resolved)
+                if members:
+                    default = ast.Attribute(
+                        value=ast.Name(id=prop_type, ctx=ast.Load()),
+                        attr=members[0].name,
+                        ctx=ast.Load(),
+                    )
 
         return ast.AnnAssign(
             target=ast.Name(id=prop.schema.Name, ctx=ast.Store()),
