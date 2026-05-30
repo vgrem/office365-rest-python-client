@@ -11,7 +11,10 @@ class TestDevices(GraphDelegatedTestCase):
     device: Optional[Device] = None
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All", bypass_roles=["Intune Administrator", "Global Administrator"]
+        "Device.Read.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
+        bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test3_list_devices(self):
         """Test listing all devices."""
@@ -44,7 +47,10 @@ class TestDevices(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All", bypass_roles=["Intune Administrator", "Global Administrator"]
+        "Device.Read.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
+        bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test7_list_registered_owners(self):
         """Test listing registered owners of a device."""

@@ -21,6 +21,7 @@ class AuthenticationMethodModes(Enum):
     federatedSingleFactor = "16384"
     federatedMultiFactor = "32768"
     unknownFutureValue = "65536"
+    qrCodePin = "131072"
 
     @property
     def entity_type_name(self):

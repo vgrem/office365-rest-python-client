@@ -15,6 +15,7 @@ class BaseAuthenticationMethod(Enum):
     x509Certificate = "11"
     federation = "12"
     unknownFutureValue = "13"
+    qrCodePin = "14"
 
     @property
     def entity_type_name(self):

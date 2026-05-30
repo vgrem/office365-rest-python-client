@@ -23,7 +23,8 @@ class TestAdmin(GraphDelegatedTestCase):
         settings.update().execute_query()
 
     @requires_delegated(
-        "ServiceMessage.Read.All", "ServiceHealth.Read.All",
+        "ServiceMessage.Read.All",
+        "ServiceHealth.Read.All",
         bypass_roles=["Service Support Administrator", "Global Administrator", "Global Reader"],
     )
     def test3_list_issues(self):

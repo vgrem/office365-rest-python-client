@@ -43,7 +43,9 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "User.Read", "User.Read.All", "User.ReadWrite.All",
+        "User.Read",
+        "User.Read.All",
+        "User.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test4_get_user_settings(self):

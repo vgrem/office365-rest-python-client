@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 from office365.delta_collection import DeltaCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -21,6 +22,11 @@ class MessageCollection(DeltaCollection["Message"]):
 
         super().__init__(context, Message, resource_path)
 
+    @require_permission(
+        delegated=["Mail.ReadWrite"],
+        application=["Mail.ReadWrite"],
+        notes="Create a draft message",
+    )
     def add(
         self,
         subject: Optional[str] = None,
@@ -46,6 +52,11 @@ class MessageCollection(DeltaCollection["Message"]):
 
         return super().add(**kwargs)
 
+    @require_permission(
+        delegated=["Mail.Read", "Mail.ReadWrite"],
+        application=["Mail.Read", "Mail.ReadWrite"],
+        notes="Search messages",
+    )
     def search(self, query_text: str) -> MessageCollection:
         """
         search messages based on a value in specific message properties.
