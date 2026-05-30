@@ -1,4 +1,4 @@
-from office365.directory.rolemanagement.role_permission import RolePermission
+from office365.directory.rolemanagement.roles.permission import RolePermission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.audit.event_collection import AuditEventCollection

@@ -64,10 +64,7 @@ def requires_delegated(
                 self.skipTest("No client available")
             assert client is not None
 
-            has_scope = any(
-                has_delegated_permission(client, s, test_client_id)
-                for s in scopes
-            )
+            has_scope = any(has_delegated_permission(client, s, test_client_id) for s in scopes)
             has_require = not require_roles or any(has_role(client, r) for r in require_roles)
             has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
 

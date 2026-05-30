@@ -36,7 +36,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
         result = self.client.teams.get_all().execute_query()
         self.assertGreater(len(result), 0)
 
-    @requires_delegated("Team.ReadBasic.All", "Team.Read.All", bypass_roles=["Global Administrator", "Teams Administrator"])
+    @requires_delegated(
+        "Team.ReadBasic.All", "Team.Read.All", bypass_roles=["Global Administrator", "Teams Administrator"]
+    )
     def test4_list_joined_teams(self):
         """Test listing joined teams"""
         result = self.client.me.joined_teams.get().execute_query()

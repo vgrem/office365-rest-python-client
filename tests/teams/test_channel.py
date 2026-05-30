@@ -89,7 +89,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertEqual(existing_channel.id, channel.id)
 
     @requires_delegated(
-        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All", bypass_roles=["Global Administrator", "Teams Administrator"]
+        "ChannelMember.Read.All",
+        "ChannelMember.ReadWrite.All",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test6_list_allowed_members(self):
         """Test listing allowed members of a channel"""

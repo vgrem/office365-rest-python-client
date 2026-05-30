@@ -25,7 +25,9 @@ class TestMessageRules(GraphDelegatedTestCase):
         TestMessageRules.target_message_rule = result
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"]
+        "MailboxSettings.Read",
+        "MailboxSettings.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test2_list_rules(self):
         message_rules = self.client.me.mail_folders["inbox"].message_rules.get().execute_query()
@@ -39,7 +41,9 @@ class TestMessageRules(GraphDelegatedTestCase):
         rule.update().execute_query()
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"]
+        "MailboxSettings.Read",
+        "MailboxSettings.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test4_get_rule(self):
         assert TestMessageRules.target_message_rule is not None

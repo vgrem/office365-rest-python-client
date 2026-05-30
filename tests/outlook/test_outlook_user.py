@@ -44,7 +44,9 @@ class TestOutlookUser(GraphDelegatedTestCase):
         ).execute_query()
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"]
+        "MailboxSettings.Read",
+        "MailboxSettings.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test6_get_mailbox_settings(self):
         result = self.client.me.select(["MailboxSettings"]).get().execute_query()

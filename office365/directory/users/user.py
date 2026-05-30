@@ -29,7 +29,7 @@ from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.profile_photo import ProfilePhoto
-from office365.directory.rolemanagement.role import DirectoryRole
+from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.directory.users.activities.collection import UserActivityCollection
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.settings import UserSettings

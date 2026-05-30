@@ -139,13 +139,13 @@ class ServicePrincipal(DirectoryObject):
             ).after_execute(lambda grants: _handle_grant(sp.id, grants))
 
         def _handle_grant(client_sp_id, grants):
-            found = next((g for g in grants if g.resource_id == self.id), None)
-            if found is not None:
-                scopes = set(found.scope.split(" ")) if found.scope else set()
+            existing_grant = next((g for g in grants if g.resource_id == self.id), None)
+            if existing_grant is not None:
+                scopes = set(existing_grant.scope.split(" ")) if existing_grant.scope else set()
                 if scope_val not in scopes:
                     scopes.add(scope_val)
-                    found.set_property("scope", " ".join(sorted(scopes)))
-                    found.update()
+                    existing_grant.set_property("scope", " ".join(sorted(scopes)))
+                    existing_grant.update()
             else:
                 self.context.oauth2_permission_grants.add(
                     clientId=client_sp_id,
@@ -234,7 +234,7 @@ class ServicePrincipal(DirectoryObject):
                 if scope in g.scope.split():
                     g.delete_object()
 
-        def _client_resolved(sp):
+        def _client_resolved(sp: ServicePrincipal):
             self.context.oauth2_permission_grants.get().filter(f"clientId eq '{sp.id}'").after_execute(_revoke)
 
         self.context.service_principals.get_by_app_id(client_id).get().after_execute(_client_resolved)

@@ -203,7 +203,7 @@ class Utility(Entity):
         payload = {
             "error": error,
         }
-        return_type = ClientResult(context)
+        return_type = ClientResult(context, int())
         qry = ServiceOperationQuery(utility, "LogCustomAppError", None, payload, None, return_type)
         qry.static = True
         context.add_query(qry)

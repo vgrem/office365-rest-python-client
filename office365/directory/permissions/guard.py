@@ -59,7 +59,7 @@ def _cached_delegated_permissions(
 def _cached_directory_roles(client: GraphClient) -> EntityCollection[DirectoryRole]:
     """Get and cache the signed-in user's directory roles."""
     result = client.me.get_directory_roles().execute_query()
-    return result  # type: ignore[return-value]
+    return result
 
 
 def has_delegated_permission(
