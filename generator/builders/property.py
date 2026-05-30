@@ -59,9 +59,23 @@ class PropertyBuilder:
             else:
                 item_name = self.client_item_type_name
                 return ast.Call(
-                    func=ast.Name(id=base_name, ctx=ast.Load()),
-                    args=[ast.Name(id=item_name, ctx=ast.Load())],
-                    keywords=[],
+                    func=ast.Name(id="field", ctx=ast.Load()),
+                    args=[],
+                    keywords=[
+                        ast.keyword(
+                            arg="default_factory",
+                            value=ast.Lambda(
+                                args=ast.arguments(
+                                    posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]
+                                ),
+                                body=ast.Call(
+                                    func=ast.Name(id=base_name, ctx=ast.Load()),
+                                    args=[ast.Name(id=item_name, ctx=ast.Load())],
+                                    keywords=[],
+                                ),
+                            ),
+                        )
+                    ],
                 )
         elif self._client_type.is_primitive_type:
             return ast.Constant(value=None)
