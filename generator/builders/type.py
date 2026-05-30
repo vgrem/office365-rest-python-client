@@ -142,12 +142,15 @@ class TypeBuilder(ast.NodeTransformer):
         assert self._template is not None
         existing_members = self._template.get_existing_members(class_node)
 
-        # Add missing members
+        insert_pos = self._last_stmt_index(class_node.body, (ast.Assign,))
+
         for member_builder in self._members:
             if member_builder.name not in existing_members:
                 assert self._template is not None
                 member_nodes = member_builder.build(self._template)
-                class_node.body.extend(member_nodes)
+                for node in member_nodes:
+                    class_node.body.insert(insert_pos, node)
+                    insert_pos += 1
                 self._changes.append(f"member: {member_builder.name}")
                 existing_members.add(member_builder.name)
 
@@ -163,16 +166,22 @@ class TypeBuilder(ast.NodeTransformer):
             for n in class_node.body
         }
 
+        insert_pos = self._last_stmt_index(class_node.body, (ast.AnnAssign,))
+        if insert_pos == 0:
+            insert_pos = len(class_node.body) - 1
+
         for prop in self._properties:
             if prop.schema.Name in existing_anns:
                 continue
             if prop.docstring:
                 class_node.body.insert(
-                    len(class_node.body) - 1,
+                    insert_pos,
                     ast.Expr(value=ast.Constant(value=prop.docstring)),
                 )
+                insert_pos += 1
             ann = self._build_value_annotation(prop)
-            class_node.body.insert(len(class_node.body) - 1, ann)
+            class_node.body.insert(insert_pos, ann)
+            insert_pos += 1
             self._changes.append(f"property annotation: {prop.schema.Name}")
 
     def _build_value_annotation(self, prop: PropertyBuilder) -> ast.AnnAssign:
@@ -227,13 +236,22 @@ class TypeBuilder(ast.NodeTransformer):
 
     def _build_object_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
+        insert_pos = len(class_node.body)
+        for i, node in enumerate(class_node.body):
+            if isinstance(node, ast.FunctionDef) and any(
+                isinstance(d, ast.Name) and d.id == "property"
+                for d in node.decorator_list
+            ):
+                insert_pos = i + 1
+
         for prop in self._properties:
             if prop.status == "detached":
                 assert self._template is not None
                 property_methods = prop.build(self._template)
 
                 for method in property_methods:
-                    class_node.body.append(method)
+                    class_node.body.insert(insert_pos, method)
+                    insert_pos += 1
 
     def _build_post(self, class_node: ast.ClassDef):
         """Remove pass statements if there are other statements in the class body"""
@@ -272,6 +290,15 @@ class TypeBuilder(ast.NodeTransformer):
             entity_type_name_method = self._template.build_type_name_property()
             class_node.body.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
+
+    @staticmethod
+    def _last_stmt_index(nodes: list, types: tuple) -> int:
+        """Return index after the last node matching one of the given types."""
+        pos = 0
+        for i, node in enumerate(nodes):
+            if isinstance(node, types):
+                pos = i + 1
+        return pos
 
     @staticmethod
     def _to_snake_case(name: str) -> str:

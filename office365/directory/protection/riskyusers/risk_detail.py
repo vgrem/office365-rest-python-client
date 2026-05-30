@@ -22,6 +22,7 @@ class RiskDetail(Enum):
     userChangedPasswordOnPremises = "15"
     adminDismissedRiskForSignIn = "16"
     adminConfirmedAccountSafe = "17"
+    microsoftRevokedSessions = "18"
 
     @property
     def entity_type_name(self):
