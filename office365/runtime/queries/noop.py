@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
 
 
-class PendingQuery(ClientQuery[Any]):
+class NoOpQuery(ClientQuery[Any]):
     """Placeholder query for ensure_property when property is already cached.
     Uses binding_type to hit the entity's own API URL, refreshing data from server.
     """

@@ -189,17 +189,16 @@ class List(SecurableObject):
         from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
         return_type = ClientResult(self.context, ComplianceTag())
-        list_folder = self.root_folder
 
         def _get_compliance_tag():
-            assert list_folder.server_relative_url is not None
+            assert self.root_folder.server_relative_url is not None
             SPPolicyStoreProxy.get_list_compliance_tag(
                 self.context,
-                list_folder.server_relative_url,
+                self.root_folder.server_relative_url,
                 return_type=return_type,
             )
 
-        list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _get_compliance_tag())
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _get_compliance_tag())
         return return_type
 
     def set_compliance_tag(
@@ -210,22 +209,21 @@ class List(SecurableObject):
         sync_to_items: Optional[bool] = None,
     ):
         """Apply a retention label ("compliance tag") to a list."""
-        list_folder = self.root_folder
 
         def _set_compliance_tag():
             from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
-            assert list_folder.server_relative_url is not None
+            assert self.root_folder.server_relative_url is not None
             SPPolicyStoreProxy.set_list_compliance_tag(
                 self.context,
-                list_folder.server_relative_url,
+                self.root_folder.server_relative_url,
                 compliance_tag_value,
-                block_delete,  # type: ignore[arg-type]
-                block_edit,  # type: ignore[arg-type]
-                sync_to_items,  # type: ignore[arg-type]
+                block_delete,
+                block_edit,
+                sync_to_items,
             )
 
-        list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _set_compliance_tag())
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _set_compliance_tag())
         return self
 
     def get_metadata_navigation_settings(

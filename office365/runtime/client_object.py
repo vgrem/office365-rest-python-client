@@ -282,9 +282,9 @@ class ClientObject:
 
             qry = ReadEntityQuery[ClientObject](self, names_to_include)
         else:
-            from office365.runtime.queries.pending import PendingQuery
+            from office365.runtime.queries.noop import NoOpQuery
 
-            qry = PendingQuery(self.context, self)
+            qry = NoOpQuery(self.context, self)
         self.context.add_query(qry)
         return self
 
