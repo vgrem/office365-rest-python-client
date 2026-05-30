@@ -3,9 +3,10 @@ Check if a delegated permission (OAuth scope) is granted to your app.
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
+
 import sys
 
-from office365.directory.permissions.guard import has_delegated_permission, has_role
+from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
@@ -18,7 +19,7 @@ if not has_role(client, "Global Administrator", "Privileged Role Administrator")
 
 scope = input("Permission scope: ")
 
-if has_delegated_permission(client, scope, test_client_id):
+if client.has_delegated_permission(scope, test_client_id):
     print(f"✅ Permission '{scope}' is granted.")
 else:
     print(f"❌ Permission '{scope}' is not granted.")

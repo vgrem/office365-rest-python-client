@@ -580,6 +580,16 @@ class GraphClient(ClientRuntimeContext):
 
         return _check(self, scope, app_id)
 
+    def has_app_permission(self, scope: str, app_id: str) -> bool:
+        """Check if an app has an application permission on Microsoft Graph.
+
+        :param str scope: Permission scope name (e.g. 'Mail.Read')
+        :param str app_id: Application (client) ID of the app to check
+        """
+        from office365.directory.permissions.guard import has_app_permission as _check
+
+        return _check(self, scope, app_id)
+
     def grant_delegated_permissions(self, app_id: str, scope: AppRole | str) -> Self:
         """Grants a delegated permission on Microsoft Graph (AllPrincipals).
 
