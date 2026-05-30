@@ -1,5 +1,5 @@
 from office365.delta_collection import DeltaCollection
-from office365.directory.rolemanagement.role import DirectoryRole
+from office365.directory.rolemanagement.roles.role import DirectoryRole
 
 
 class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):

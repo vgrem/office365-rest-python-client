@@ -40,7 +40,7 @@ from office365.directory.policies.root import PolicyRoot
 from office365.directory.protection.information import InformationProtection
 from office365.directory.protection.root import IdentityProtectionRoot
 from office365.directory.rolemanagement.management import RoleManagement
-from office365.directory.rolemanagement.role_collection import DirectoryRoleCollection
+from office365.directory.rolemanagement.roles.collection import DirectoryRoleCollection
 from office365.directory.security.security import Security
 from office365.directory.serviceprincipals.collection import ServicePrincipalCollection
 from office365.directory.tenantinformation.relationship import TenantRelationship
@@ -80,6 +80,7 @@ from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
     from office365.directory.groups.setting import GroupSetting
+    from office365.directory.rolemanagement.templates.collection import DirectoryRoleTemplateCollection
 
 
 class GraphClient(ClientRuntimeContext):
@@ -337,11 +338,9 @@ class GraphClient(ClientRuntimeContext):
         return DirectoryRoleCollection(self, ResourcePath("directoryRoles"))
 
     @property
-    def directory_role_templates(self):
+    def directory_role_templates(self) -> DirectoryRoleTemplateCollection:
         """Represents a directory role templates in the directory"""
-        from office365.directory.rolemanagement.template import DirectoryRoleTemplate
-
-        return EntityCollection(self, DirectoryRoleTemplate, ResourcePath("directoryRoleTemplates"))
+        return DirectoryRoleTemplateCollection(self, ResourcePath("directoryRoleTemplates"))
 
     @property
     def identity_providers(self) -> EntityCollection[IdentityProvider]:

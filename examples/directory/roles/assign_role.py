@@ -19,9 +19,7 @@ from office365.graph_client import GraphClient
 from office365.runtime.types.exceptions import NotFoundException
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
-privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(
-    test_client_id, test_admin_principal_name
-)
+privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
 if not has_role(privileged_client, "Global Administrator", "Privileged Role Administrator"):
     print("❌ Need Global Administrator or Privileged Role Administrator to assign roles.")
@@ -34,13 +32,14 @@ try:
     role = privileged_client.directory_roles.get_by_name(role_name).get().execute_query()
     print(f"✅ Found activated role '{role_name}'")
 except NotFoundException:
-    # Role not activated — look up its template ID from directory_role_templates
-    templates = privileged_client.directory_role_templates.get().execute_query()
-    template = next((t for t in templates if t.display_name == role_name), None)
-    if template is None:
+    # Role not activated — look up its template ID
+    try:
+        template = privileged_client.directory_role_templates.get_by_name(role_name).get().execute_query()
+    except NotFoundException:
         print(f"❌ Unknown role '{role_name}'.")
         sys.exit(1)
     print(f"   Activating '{role_name}'...")
+    assert template.id is not None
     role = privileged_client.directory_roles.add(roleTemplateId=template.id).execute_query()
     print("   ✅ Activated.")
 
