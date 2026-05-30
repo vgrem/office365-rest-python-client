@@ -11,7 +11,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Contacts.ReadWrite",
-        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test1_create_contact(self):
         result = self.client.me.contacts.add(
@@ -26,7 +26,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
     @requires_delegated(
         "Contacts.Read",
         "Contacts.ReadWrite",
-        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test2_list_contacts(self):
         result = self.client.me.contacts.get().execute_query()
@@ -34,7 +34,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Contacts.ReadWrite",
-        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test3_update_contact(self):
         contact = TestOutlookContacts.target_contact
@@ -44,7 +44,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Contacts.ReadWrite",
-        or_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
+        bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test4_delete_contact(self):
         contact = TestOutlookContacts.target_contact

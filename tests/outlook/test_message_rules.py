@@ -13,7 +13,7 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestMessageRules(GraphDelegatedTestCase):
     target_message_rule: Optional[MessageRule] = None
 
-    @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test1_create_rule(self):
         actions = MessageRuleActions(
             forwardTo=ClientValueCollection(Recipient, [Recipient.from_email("AlexW@contoso.com")]),
@@ -25,13 +25,13 @@ class TestMessageRules(GraphDelegatedTestCase):
         TestMessageRules.target_message_rule = result
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
+        "MailboxSettings.Read", "MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test2_list_rules(self):
         message_rules = self.client.me.mail_folders["inbox"].message_rules.get().execute_query()
         self.assertIsNotNone(message_rules.resource_path)
 
-    @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test3_update_rule(self):
         assert TestMessageRules.target_message_rule is not None
         rule = TestMessageRules.target_message_rule
@@ -39,14 +39,14 @@ class TestMessageRules(GraphDelegatedTestCase):
         rule.update().execute_query()
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"]
+        "MailboxSettings.Read", "MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test4_get_rule(self):
         assert TestMessageRules.target_message_rule is not None
         result = TestMessageRules.target_message_rule.get().execute_query()
         self.assertEqual(result.actions.markImportance, "high")
 
-    @requires_delegated("MailboxSettings.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("MailboxSettings.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test5_delete_rule(self):
         assert TestMessageRules.target_message_rule is not None
         rule = TestMessageRules.target_message_rule

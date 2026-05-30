@@ -3,13 +3,13 @@ from tests.graph_case import GraphApplicationTestCase
 
 
 class TestOrganization(GraphApplicationTestCase):
-    @requires_delegated("Organization.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("Organization.Read.All", bypass_roles=["Global Administrator"])
     def test1_list(self):
         """List organization"""
         org = self.client.organization.get().execute_query()
         self.assertIsNotNone(org.resource_path)
 
-    @requires_delegated("Organization.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("Organization.Read.All", bypass_roles=["Global Administrator"])
     def test2_list_contacts(self):
         """List organization contacts"""
         result = self.client.contacts.get().top(10).execute_query()

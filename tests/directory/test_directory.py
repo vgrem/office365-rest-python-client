@@ -36,7 +36,7 @@ class TestDirectory(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     # Privileged Role Administrator is required
-    # @requires_delegated("AdministrativeUnit.ReadWrite.All", or_roles=["Global Administrator"])
+    # @requires_delegated("AdministrativeUnit.ReadWrite.All", bypass_roles=["Global Administrator"])
     # def test7_create_administrative_unit(self):
     #    name = "Seattle District Technical Schools"
     #    result = self.client.directory.administrative_units.add(
@@ -50,7 +50,7 @@ class TestDirectory(GraphDelegatedTestCase):
         "AdministrativeUnit.ReadWrite.All",
         "Directory.Read.All",
         "Directory.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test8_list_administrative_units(self):
         """List administrative units"""

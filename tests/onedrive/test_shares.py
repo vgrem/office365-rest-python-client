@@ -24,7 +24,7 @@ class TestShares(GraphDelegatedTestCase):
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_get_file_by_abs_url(self):
         """Get a file by its absolute URL"""

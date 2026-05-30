@@ -13,7 +13,7 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestOutlookMessages(GraphDelegatedTestCase):
     target_message: Optional[Message] = None
 
-    @requires_delegated("Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test2_create_draft_message(self):
         draft_message = self.client.me.messages.add(
             subject="Meet for lunch?", body="The new cafeteria is open."
@@ -29,7 +29,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
     #    self.__class__.target_message.forward([test_user_principal_name_alt]).execute_query()
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.ReadWrite", "Mail.Read", or_roles=["Exchange Administrator", "Global Administrator"]
+        "Mail.ReadBasic", "Mail.ReadWrite", "Mail.Read", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test5_list_my_messages(self):
         """Test listing my messages."""
@@ -37,14 +37,14 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         self.assertLessEqual(1, len(result))
         self.assertIsNotNone(result[0].resource_path)
 
-    @requires_delegated("Mail.Read", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.Read", "Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test6_search_messages(self):
         """Test searching messages."""
         result = self.client.me.messages.search("Meet for lunch").execute_query()
         self.assertLessEqual(1, len(result))
         self.assertIsNotNone(result[0].resource_path)
 
-    @requires_delegated("Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test7_update_message(self):
         """Test updating a draft message."""
         assert TestOutlookMessages.target_message is not None
@@ -52,14 +52,14 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         message.body = "The new cafeteria is close."
         message.update().execute_query()
 
-    @requires_delegated("Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test8_delete_message(self):
         """Test deleting a draft message."""
         assert TestOutlookMessages.target_message is not None
         message = TestOutlookMessages.target_message
         message.delete_object().execute_query()
 
-    @requires_delegated("Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test9_create_draft_message_with_attachments(self):
         content = base64.b64encode(io.BytesIO(b"This is some file content").read()).decode()
 
@@ -75,7 +75,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         assert len(attachments) == expected_count
         draft.delete_object().execute_query()
 
-    @requires_delegated("Mail.Send", "Mail.ReadWrite", or_roles=["Exchange Administrator", "Global Administrator"])
+    @requires_delegated("Mail.Send", "Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
     def test10_send_message(self):
         message = self.client.me.messages.add(subject="Meet for lunch?", body="The new cafeteria is open.")
         message.to_recipients.add(Recipient.from_email(test_user_principal_name))

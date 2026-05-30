@@ -13,7 +13,7 @@ class TestSection(GraphDelegatedTestCase):
     target_section: Optional[OnenoteSection] = None
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"]
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"]
     )
     def test1_list_sections(self):
         """List all OneNote sections."""

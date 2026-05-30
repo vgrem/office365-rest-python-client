@@ -19,7 +19,7 @@ class TestColumn(GraphDelegatedTestCase):
         "Sites.Manage.All",
         "Sites.FullControl.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_list_list_columns(self):
         """List all columns in the document library"""
@@ -29,7 +29,7 @@ class TestColumn(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Manage.All",
         "Sites.FullControl.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_create_text_column_for_list(self):
         """Create a text column for the document library"""
@@ -41,7 +41,7 @@ class TestColumn(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Manage.All",
         "Sites.FullControl.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_create_lookup_column_for_list(self):
         """Create a lookup column for the document library"""
@@ -53,7 +53,7 @@ class TestColumn(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Manage.All",
         "Sites.FullControl.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_delete_list_columns(self):
         """Delete previously created list columns"""

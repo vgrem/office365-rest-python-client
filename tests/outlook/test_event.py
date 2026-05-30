@@ -12,7 +12,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
     target_event: Optional[Event] = None
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", or_roles=["Exchange Administrator", "Global Administrator"]
+        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test2_create_event(self):
         when = datetime.now() + timedelta(days=1)
@@ -31,14 +31,14 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         "Calendars.Read",
         "Calendars.ReadWrite",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test3_list_my_events(self):
         result = self.client.me.events.get().execute_query()
         self.assertGreaterEqual(len(result), 1)
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", or_roles=["Exchange Administrator", "Global Administrator"]
+        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test4_update_event(self):
         assert TestOutlookEvent.target_event is not None
@@ -51,7 +51,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
     #    event.cancel().execute_query()
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", or_roles=["Exchange Administrator", "Global Administrator"]
+        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", bypass_roles=["Exchange Administrator", "Global Administrator"]
     )
     def test6_delete_event(self):
         assert TestOutlookEvent.target_event is not None

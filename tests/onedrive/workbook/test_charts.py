@@ -27,14 +27,14 @@ class TestExcelCharts(GraphDelegatedTestCase):
         assert cls.excel_file is not None
         cls.excel_file.delete_object().execute_query_retry()
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_list_charts(self):
         """List all charts in the worksheet"""
         assert TestExcelCharts.worksheet is not None
         result = TestExcelCharts.worksheet.charts.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test2_get_chart_by_name(self):
         """Get a chart by name"""
         assert TestExcelCharts.worksheet is not None
@@ -42,7 +42,7 @@ class TestExcelCharts(GraphDelegatedTestCase):
         assert result.resource_path is not None
         TestExcelCharts.chart = result
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test3_get_image(self):
         """Get the chart image"""
         assert TestExcelCharts.chart is not None

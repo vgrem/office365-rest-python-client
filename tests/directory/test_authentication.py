@@ -3,7 +3,7 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestAuthentication(GraphDelegatedTestCase):
-    @requires_delegated("UserAuthenticationMethod.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("UserAuthenticationMethod.Read.All", bypass_roles=["Global Administrator"])
     def test1_list_methods(self):
         """List authentication methods for the current user"""
         result = self.client.me.authentication.methods.get().execute_query()

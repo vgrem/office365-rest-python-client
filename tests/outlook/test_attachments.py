@@ -29,7 +29,7 @@ class TestAttachments(GraphDelegatedTestCase):
         "Files.ReadWrite",
         "Files.ReadWrite.All",
         "Sites.ReadWrite.All",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test1_create_upload_session(self):
         """Test creating an upload session for a message attachment."""

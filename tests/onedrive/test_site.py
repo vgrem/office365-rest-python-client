@@ -25,7 +25,7 @@ class TestSite(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_get_root_site(self):
         """Get the root site"""
@@ -35,7 +35,7 @@ class TestSite(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_get_site_by_path(self):
         """Get a site by its server-relative path"""
@@ -45,7 +45,7 @@ class TestSite(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_get_site_by_url(self):
         """Get a site by its absolute URL"""
@@ -59,7 +59,7 @@ class TestSite(GraphDelegatedTestCase):
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_get_activities_by_interval(self):
         """Get activities for the site by time interval"""
@@ -67,7 +67,7 @@ class TestSite(GraphDelegatedTestCase):
         col = self.test_site.get_activities_by_interval().execute_query()
         self.assertIsNotNone(col)
 
-    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test5_follow(self):
         """Follow the test site"""
         assert self.test_site is not None
@@ -76,7 +76,7 @@ class TestSite(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_list_followed_sites(self):
         """List all followed sites"""
@@ -84,7 +84,7 @@ class TestSite(GraphDelegatedTestCase):
         self.followed_sites_count = len(result)
         self.assertGreaterEqual(len(result), 1, "No followed sites were returned")
 
-    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test7_unfollow(self):
         """Unfollow the test site"""
         assert self.test_site is not None
@@ -95,7 +95,7 @@ class TestSite(GraphDelegatedTestCase):
         "Sites.FullControl.All",
         "Sites.Manage.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test9_get_operations(self):
         """Get site operations"""
@@ -106,7 +106,7 @@ class TestSite(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_10_get_analytics(self):
         """Get analytics for the test site"""

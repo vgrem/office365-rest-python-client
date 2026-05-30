@@ -13,7 +13,7 @@ class TestTeamChats(GraphDelegatedTestCase):
 
     target_chat: Optional[Chat] = None
 
-    @requires_delegated("Chat.ReadWrite", "Chat.Read", or_roles=["Global Administrator", "Teams Administrator"])
+    @requires_delegated("Chat.ReadWrite", "Chat.Read", bypass_roles=["Global Administrator", "Teams Administrator"])
     def test1_create(self):
         """Test creating a chat"""
         owner = self.client.me.get().execute_query()
@@ -25,14 +25,14 @@ class TestTeamChats(GraphDelegatedTestCase):
         self.assertIsNotNone(new_chat.resource_path)
         TestTeamChats.target_chat = new_chat
 
-    @requires_delegated("Chat.Read", "Chat.ReadWrite", or_roles=["Global Administrator", "Teams Administrator"])
+    @requires_delegated("Chat.Read", "Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
     def test2_list_user_chats(self):
         """Test listing user chats"""
         result = self.client.me.chats.get().top(10).execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertGreaterEqual(len(result), 0)
 
-    @requires_delegated("Chat.ReadWrite", "Chat.Read", or_roles=["Global Administrator", "Teams Administrator"])
+    @requires_delegated("Chat.ReadWrite", "Chat.Read", bypass_roles=["Global Administrator", "Teams Administrator"])
     def test3_delete(self):
         """Test deleting a chat"""
         assert TestTeamChats.target_chat is not None

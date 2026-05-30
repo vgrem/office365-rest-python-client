@@ -26,7 +26,7 @@ class TestWebPart(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_list_web_parts(self):
         """List web parts on the target page"""

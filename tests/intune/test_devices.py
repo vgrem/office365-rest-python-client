@@ -11,7 +11,7 @@ class TestDevices(GraphDelegatedTestCase):
     device: Optional[Device] = None
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All", or_roles=["Global Administrator"]
+        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All", bypass_roles=["Global Administrator"]
     )
     def test3_list_devices(self):
         """Test listing all devices."""
@@ -22,21 +22,21 @@ class TestDevices(GraphDelegatedTestCase):
         "DeviceManagementConfiguration.Read.All",
         "Device.Read.All",
         "Directory.Read.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test4_get_delta(self):
         """Test getting device delta."""
         result = self.client.devices.delta.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Directory.AccessAsUser.All", or_roles=["Global Administrator"])
+    @requires_delegated("Directory.AccessAsUser.All", bypass_roles=["Global Administrator"])
     def test5_create_device(self):
         """Test creating a new device."""
         result = self.client.devices.add("Test device", "linux", "1").execute_query()
         self.assertIsNotNone(result.resource_path)
         TestDevices.device = result
 
-    @requires_delegated("Directory.AccessAsUser.All", or_roles=["Global Administrator"])
+    @requires_delegated("Directory.AccessAsUser.All", bypass_roles=["Global Administrator"])
     def test6_add_registered_owner(self):
         """Test adding a registered owner to a device."""
         assert TestDevices.device is not None
@@ -44,7 +44,7 @@ class TestDevices(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Device.Read.AllDirectory.Read.All", "Directory.ReadWrite.All", or_roles=["Global Administrator"]
+        "Device.Read.AllDirectory.Read.All", "Directory.ReadWrite.All", bypass_roles=["Global Administrator"]
     )
     def test7_list_registered_owners(self):
         """Test listing registered owners of a device."""
@@ -52,7 +52,7 @@ class TestDevices(GraphDelegatedTestCase):
         result = TestDevices.device.registered_owners.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Directory.AccessAsUser.All", or_roles=["Global Administrator"])
+    @requires_delegated("Directory.AccessAsUser.All", bypass_roles=["Global Administrator"])
     def test8_delete_device(self):
         """Test deleting a device."""
         assert TestDevices.device is not None

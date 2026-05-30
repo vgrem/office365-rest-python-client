@@ -12,7 +12,7 @@ class TestDrive(GraphDelegatedTestCase):
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_list_drives(self):
         """List all drives"""
@@ -28,7 +28,7 @@ class TestDrive(GraphDelegatedTestCase):
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_list_drives_alt(self):
         """List drives using direct request"""
@@ -45,7 +45,7 @@ class TestDrive(GraphDelegatedTestCase):
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_get_drive_root(self):
         """Get the root of the current drive"""
@@ -59,7 +59,7 @@ class TestDrive(GraphDelegatedTestCase):
         "Files.ReadWrite.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test5_get_recent(self):
         """Get recently used items"""

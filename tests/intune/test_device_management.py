@@ -6,7 +6,7 @@ class TestDeviceManagement(GraphDelegatedTestCase):
     @requires_delegated(
         "DeviceManagementServiceConfig.Read.All",
         "DeviceManagementServiceConfig.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test1_get(self):
         """Test retrieving device management settings."""

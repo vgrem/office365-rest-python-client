@@ -9,13 +9,13 @@ class TestIdentity(GraphApplicationTestCase):
         result = self.client.identity.identity_providers.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("IdentityUserFlow.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("IdentityUserFlow.Read.All", bypass_roles=["Global Administrator"])
     def test2_list_user_flows(self):
         """List B2X user flows"""
         result = self.client.identity.b2x_user_flows.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("IdentityProvider.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("IdentityProvider.Read.All", bypass_roles=["Global Administrator"])
     def test3_available_provider_types(self):
         """List available identity provider types"""
         result = self.client.identity.identity_providers.available_provider_types().execute_query()

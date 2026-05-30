@@ -12,12 +12,12 @@ class TestPage(GraphDelegatedTestCase):
 
     target_page: Optional[OnenotePage] = None
 
-    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
     def test1_create_page(self):
         """Create a new OneNote page."""
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"]
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"]
     )
     def test2_list_pages(self):
         """List OneNote pages from the first section."""

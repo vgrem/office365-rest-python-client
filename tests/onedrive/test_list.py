@@ -26,7 +26,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_create_list(self):
         """Create a list"""
@@ -36,7 +36,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_get_list(self):
         """Get a list by name"""
@@ -46,7 +46,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_get_list_items(self):
         """Get items from the target list"""
@@ -57,7 +57,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_get_list_columns(self):
         """Get columns from the target list"""
@@ -68,7 +68,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test5_create_list_column(self):
         """Create a text column in the target list"""
@@ -81,7 +81,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_delete_list_column(self):
         """Delete a column from the target list"""
@@ -92,7 +92,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test7_delete_list(self):
         """Delete the target list"""
@@ -102,7 +102,7 @@ class TestList(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test8_get_pages_list(self):
         """Get the Site Pages list"""

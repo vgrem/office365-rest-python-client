@@ -25,7 +25,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_create_site_page(self):
         """Create a site page"""
@@ -36,7 +36,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_get_site_page(self):
         """Get a site page by ID"""
@@ -48,7 +48,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_get_item_by_name(self):
         """Get a page list item by name"""
@@ -59,7 +59,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_checkin_site_page(self):
         """Check in a site page"""
@@ -71,7 +71,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test5_get_site_page_pub_state(self):
         """Get the publishing state of a site page"""
@@ -88,7 +88,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test7_list_site_pages(self):
         """List all site pages"""
@@ -112,7 +112,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_11_delete_site_page(self):
         """Delete a site page"""
@@ -123,7 +123,7 @@ class TestSitePage(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_12_get_site_page_list(self):
         """Get the Site Pages list"""

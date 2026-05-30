@@ -18,7 +18,7 @@ class TestCalendar(GraphDelegatedTestCase):
     @requires_delegated(
         "Calendars.Read.Shared",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test1_find_my_meeting_times(self):
         result = self.client.me.find_meeting_times().execute_query()
@@ -29,7 +29,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.Read",
         "Calendars.ReadWrite",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test2_get_my_schedule(self):
         end_time = datetime.now()
@@ -46,7 +46,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadWrite",
         "Calendars.Read",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test3_list_my_cal_groups(self):
         cal_groups = self.client.me.calendar_groups.get().execute_query()
@@ -57,7 +57,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadWrite",
         "Calendars.Read",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test4_list_my_cal_permissions(self):
         result = self.client.me.calendar.calendar_permissions.get().execute_query()
@@ -67,7 +67,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadBasic",
         "Calendars.Read",
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test5_list_my_cal_view(self):
         end_time = datetime.now()
@@ -78,7 +78,7 @@ class TestCalendar(GraphDelegatedTestCase):
     @requires_delegated(
         "Calendars.Read",
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test6_get_my_reminder_view(self):
         end_time = datetime.now()
@@ -90,7 +90,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadBasic",
         "Calendars.Read",
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test7_list_my_events(self):
         result = self.client.me.calendar.events.get().execute_query()
@@ -100,7 +100,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadBasic",
         "Calendars.Read",
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test8_list_my_calendars(self):
         result = self.client.me.calendars.get().execute_query()
@@ -108,7 +108,7 @@ class TestCalendar(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test9_create_cal(self):
         result = self.client.me.calendars.add(name=self.cal_name).execute_query()
@@ -117,7 +117,7 @@ class TestCalendar(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_10_update_cal(self):
         cal = TestCalendar.target_cal
@@ -129,7 +129,7 @@ class TestCalendar(GraphDelegatedTestCase):
         "Calendars.ReadBasic",
         "Calendars.Read",
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_11_get_cal(self):
         cal = TestCalendar.target_cal
@@ -140,7 +140,7 @@ class TestCalendar(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Calendars.ReadWrite",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_12_delete_cal(self):
         cal = TestCalendar.target_cal
@@ -150,7 +150,7 @@ class TestCalendar(GraphDelegatedTestCase):
     @requires_delegated(
         "Calendars.ReadWrite",
         "Calendars.ReadWrite.Shared",
-        or_roles=["Exchange Administrator", "Global Administrator"],
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_13_allowed_calendar_sharing_roles(self):
         result = self.client.me.calendar.allowed_calendar_sharing_roles(test_user_principal_name).execute_query()

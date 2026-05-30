@@ -25,7 +25,7 @@ class TestExcelFunctions(GraphDelegatedTestCase):
         assert cls.target_item is not None
         cls.target_item.delete_object().execute_query_retry()
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_get_abs(self):
         """Test the ABS workbook function"""
         assert TestExcelFunctions.target_item is not None

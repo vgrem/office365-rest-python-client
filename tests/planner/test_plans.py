@@ -24,7 +24,7 @@ class TestPlanner(GraphDelegatedTestCase):
     @requires_delegated(
         "Group.ReadWrite.All",
         "Tasks.ReadWrite",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test1_create_plan(self):
         """Create a planner plan for a group."""
@@ -37,7 +37,7 @@ class TestPlanner(GraphDelegatedTestCase):
     @requires_delegated(
         "Tasks.Read",
         "Tasks.ReadWrite",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test2_get_plan_details(self):
         """Get the details of a planner plan."""
@@ -49,7 +49,7 @@ class TestPlanner(GraphDelegatedTestCase):
     @requires_delegated(
         "Tasks.Read",
         "Tasks.ReadWrite",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test3_list_my_plans(self):
         """List planner plans for the current user."""
@@ -59,7 +59,7 @@ class TestPlanner(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Tasks.ReadWrite",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test4_create_task(self):
         """Create a planner task within the plan."""
@@ -71,7 +71,7 @@ class TestPlanner(GraphDelegatedTestCase):
     @requires_delegated(
         "Tasks.Read",
         "Tasks.ReadWrite",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test5_list_tasks(self):
         """List all tasks in the planner plan."""
@@ -83,7 +83,7 @@ class TestPlanner(GraphDelegatedTestCase):
     @requires_delegated(
         "Group.ReadWrite.All",
         "Tasks.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test6_delete_plan(self):
         """Delete the planner plan and clean up."""

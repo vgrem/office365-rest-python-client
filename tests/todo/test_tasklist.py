@@ -11,27 +11,27 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestTaskList(GraphDelegatedTestCase):
     task_list: Optional[TodoTaskList] = None
 
-    @requires_delegated("Tasks.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
     def test1_create_task_list(self):
         """Creates a task list"""
         name = create_unique_name("TaskList")
         task_list = self.client.me.todo.lists.add(name).execute_query()
         TestTaskList.task_list = task_list
 
-    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", bypass_roles=["Global Administrator"])
     def test2_get_task_lists(self):
         """Gets all task lists"""
         task_lists = self.client.me.todo.lists.get().execute_query()
         self.assertIsNotNone(task_lists.resource_path)
 
-    @requires_delegated("Tasks.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
     def test3_create_task(self):
         """Creates a task in the task list"""
         assert TestTaskList.task_list is not None, "Task list must be created"
         task = TestTaskList.task_list.tasks.add(title="A new task").execute_query()
         self.assertIsNotNone(task.resource_path)
 
-    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", bypass_roles=["Global Administrator"])
     def test4_list_tasks(self):
         """Lists all tasks in the task list"""
         assert TestTaskList.task_list is not None, "Task list must be created"
@@ -39,7 +39,7 @@ class TestTaskList(GraphDelegatedTestCase):
         self.assertIsNotNone(tasks.resource_path)
         self.assertGreater(len(tasks), 0)
 
-    @requires_delegated("Tasks.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
     def test5_delete_task_list(self):
         """Deletes the task list"""
         assert TestTaskList.task_list is not None, "Task list must be created"

@@ -12,7 +12,7 @@ class TestIntuneReports(GraphDelegatedTestCase):
     def tearDownClass(cls):
         """Tear down the test class."""
 
-    @requires_delegated("DeviceManagementConfiguration.Read.All", or_roles=["Global Administrator"])
+    @requires_delegated("DeviceManagementConfiguration.Read.All", bypass_roles=["Global Administrator"])
     def test1_device_configuration_user_activity(self):
         """Test retrieving device configuration user activity report."""
         result = self.client.reports.device_configuration_user_activity().execute_query()

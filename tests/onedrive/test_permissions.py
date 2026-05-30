@@ -68,7 +68,7 @@ class TestPermissions(GraphApplicationTestCase):
     @requires_delegated(
         "Files.ReadWrite.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_driveitem_update_permission(self):
         """Update a drive item permission"""
@@ -88,7 +88,7 @@ class TestPermissions(GraphApplicationTestCase):
         "Files.Read.All",
         "Files.ReadWrite",
         "Files.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test8_driveitem_grant_access(self):
         """Grant access to a drive item by URL"""
@@ -100,7 +100,7 @@ class TestPermissions(GraphApplicationTestCase):
         )
         self.assertIsNotNone(permissions.resource_path)
 
-    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test9_create_site_permission(self):
         """Create a permission on the root site"""
         app = self.client.applications.get_by_app_id(test_client_credentials.client_id)
@@ -111,14 +111,14 @@ class TestPermissions(GraphApplicationTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_10_list_site_permissions(self):
         """List all permissions on the root site"""
         site_permissions = self.client.sites.root.permissions.get().execute_query()
         self.assertIsNotNone(site_permissions.resource_path)
 
-    @requires_delegated("Sites.ReadWrite.All", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test_11_delete_site_permission(self):
         """Delete a site permission"""
         assert self.target_permission is not None

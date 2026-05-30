@@ -26,7 +26,7 @@ class TestExcelRanges(GraphDelegatedTestCase):
         assert cls.excel_file is not None
         cls.excel_file.delete_object().execute_query_retry()
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_name_create(self):
         """Create a named item in the workbook"""
         assert TestExcelRanges.excel_file is not None
@@ -36,14 +36,14 @@ class TestExcelRanges(GraphDelegatedTestCase):
         assert result.resource_path is not None
         TestExcelRanges.named_item = result
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test2_names_get(self):
         """Get a named item"""
         assert TestExcelRanges.named_item is not None
         result = TestExcelRanges.named_item.get().execute_query_retry(2)
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test3_list_range(self):
         """Get the range of a named item"""
         assert TestExcelRanges.named_item is not None
@@ -51,7 +51,7 @@ class TestExcelRanges(GraphDelegatedTestCase):
         assert result.address is not None
         TestExcelRanges.range = result
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test4_last_row(self):
         """Get the last row of a range"""
         assert TestExcelRanges.range is not None
@@ -62,14 +62,14 @@ class TestExcelRanges(GraphDelegatedTestCase):
     #    result = self.__class__.range.insert("Right").execute_query()
     #    self.assertIsNotNone(result.address)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test6_used_range(self):
         """Get the used range of a range"""
         assert TestExcelRanges.range is not None
         result = TestExcelRanges.range.used_range().execute_query()
         self.assertIsNotNone(result.address)
 
-    @requires_delegated("Files.ReadWrite", or_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test7_clear_range(self):
         """Clear a range"""
         assert TestExcelRanges.range is not None

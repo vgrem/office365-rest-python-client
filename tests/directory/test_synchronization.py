@@ -24,7 +24,7 @@ class TestSynchronization(GraphDelegatedTestCase):
     @requires_delegated(
         "Synchronization.Read.All",
         "Synchronization.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test1_list_synchronization_jobs(self):
         """List synchronization jobs"""

@@ -44,17 +44,17 @@ def requires_app_permission(*app_roles: str) -> Callable[[T], T]:
 
 def requires_delegated(
     *scopes: str,
-    or_roles: list[str] | None = None,
-    and_roles: list[str] | None = None,
+    bypass_roles: list[str] | None = None,
+    require_roles: list[str] | None = None,
 ) -> Callable[[T], T]:
     """Skip test unless token has one of the scopes (delegated or app)
-    AND the user has all required and_roles,
-    OR the user has one of the or_roles (fallback).
+    AND the user has all required require_roles,
+    OR the user has one of the bypass_roles (bypass).
 
     Args:
         *scopes: Delegated or application permission names — ANY match passes.
-        or_roles: Directory role display names — ANY match passes (fallback).
-        and_roles: Directory role display names — ALL must match (AND with scopes).
+        bypass_roles: Directory role display names — ANY match bypasses all checks.
+        require_roles: Directory role display names — ALL must match (AND with scopes).
     """
 
     def decorator(test_method: T) -> T:
@@ -68,19 +68,19 @@ def requires_delegated(
                 has_delegated_permission(client, s, test_client_id) or has_app_permission(client, s, test_client_id)
                 for s in scopes
             )
-            has_and_role = not and_roles or any(has_role(client, r) for r in and_roles)
-            has_or_role = any(has_role(client, r) for r in (or_roles or []))
+            has_require = not require_roles or any(has_role(client, r) for r in require_roles)
+            has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
 
-            if (has_scope and has_and_role) or has_or_role:
+            if has_bypass or (has_scope and has_require):
                 return test_method(self, *args, **kwargs)
 
             reasons = []
             if scopes:
                 reasons.append(f"one of scopes: {', '.join(scopes)}")
-            if and_roles:
-                reasons.append(f"all of roles: {', '.join(and_roles)}")
-            if or_roles:
-                reasons.append(f"one of roles: {', '.join(or_roles)}")
+            if require_roles:
+                reasons.append(f"all of roles: {', '.join(require_roles)}")
+            if bypass_roles:
+                reasons.append(f"one of bypass roles: {', '.join(bypass_roles)}")
             self.skipTest(f"Insufficient permissions — required: {' and '.join(reasons)}")
 
         return cast(T, wrapper)

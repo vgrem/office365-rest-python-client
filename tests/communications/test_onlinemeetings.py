@@ -10,14 +10,14 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestOnlineMeetings(GraphDelegatedTestCase):
     target_meeting: Optional[OnlineMeeting] = None
 
-    @requires_delegated("OnlineMeetings.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("OnlineMeetings.ReadWrite", bypass_roles=["Global Administrator"])
     def test1_create_meeting(self):
         """Creates an online meeting"""
         result = self.client.me.online_meetings.create(subject="User Token Meeting").execute_query()
         self.assertIsNotNone(result.resource_path)
         TestOnlineMeetings.target_meeting = result
 
-    @requires_delegated("OnlineMeetings.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("OnlineMeetings.ReadWrite", bypass_roles=["Global Administrator"])
     def test2_get_meeting(self):
         """Gets an online meeting by ID"""
         assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
@@ -32,7 +32,7 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
     #    )
     #    self.assertIsNotNone(result.value)
 
-    @requires_delegated("OnlineMeetings.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("OnlineMeetings.ReadWrite", bypass_roles=["Global Administrator"])
     def test4_update_meeting(self):
         """Updates an online meeting"""
         assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
@@ -43,7 +43,7 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
         update_meeting.end_datetime = now + timedelta(hours=1)
         update_meeting.update().execute_query()
 
-    @requires_delegated("OnlineMeetings.ReadWrite", or_roles=["Global Administrator"])
+    @requires_delegated("OnlineMeetings.ReadWrite", bypass_roles=["Global Administrator"])
     def test5_delete_meeting(self):
         """Deletes an online meeting"""
         assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"

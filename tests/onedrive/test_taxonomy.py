@@ -26,7 +26,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test1_list_groups(self):
         """List term store groups"""
@@ -39,7 +39,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test2_create_group(self):
         """Create a term store group"""
@@ -52,7 +52,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test3_get_group_by_name(self):
         """Get a term store group by name"""
@@ -67,7 +67,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_create_set(self):
         """Create a term store set"""
@@ -80,7 +80,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test5_list_sets(self):
         """List term store sets"""
@@ -92,7 +92,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test6_create_term(self):
         """Create a term in a term store set"""
@@ -105,7 +105,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test7_list_terms(self):
         """List terms in a term store set"""
@@ -117,7 +117,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test8_delete_term(self):
         """Delete a term"""
@@ -127,7 +127,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test9_delete_set(self):
         """Delete a term store set"""
@@ -137,7 +137,7 @@ class TestTermStore(GraphDelegatedTestCase):
     @requires_delegated(
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        or_roles=["Global Administrator", "SharePoint Administrator"],
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_10_delete_group(self):
         """Delete a term store group"""

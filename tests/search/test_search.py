@@ -10,7 +10,7 @@ class TestSearchOneDrive(GraphDelegatedTestCase):
     @requires_delegated(
         "Files.Read.All",
         "Sites.Read.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test1_search_files(self):
         """Search for files by name."""
@@ -19,7 +19,7 @@ class TestSearchOneDrive(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Mail.Read",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test2_search_messages(self):
         """Search for messages by keyword."""
@@ -28,7 +28,7 @@ class TestSearchOneDrive(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Sites.Read.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test3_search_list_items(self):
         """Search for list items by keyword."""
@@ -37,7 +37,7 @@ class TestSearchOneDrive(GraphDelegatedTestCase):
 
     @requires_delegated(
         "People.Read",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test4_search_people_by_name(self):
         """Search for people by name."""
@@ -46,7 +46,7 @@ class TestSearchOneDrive(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Sites.Read.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test5_search_sites(self):
         """Search for sites by keyword."""

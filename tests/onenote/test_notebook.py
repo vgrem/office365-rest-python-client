@@ -15,7 +15,7 @@ class TestNotebook(GraphDelegatedTestCase):
     target_notebook: Optional[Notebook] = None
     target_section: Optional[OnenoteSection] = None
 
-    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
     def test1_create_notebook(self):
         """Create a new OneNote notebook."""
         notebook_name = create_unique_name("My Private notebook")
@@ -23,7 +23,7 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         TestNotebook.target_notebook = result
 
-    @requires_delegated("Notes.Create", or_roles=["Global Administrator"])
+    @requires_delegated("Notes.Create", bypass_roles=["Global Administrator"])
     def test2_list_notebooks(self):
         """List all OneNote notebooks."""
         result = self.client.me.onenote.notebooks.get().execute_query()
@@ -35,14 +35,14 @@ class TestNotebook(GraphDelegatedTestCase):
         "Notes.Read.All",
         "Notes.ReadWrite",
         "Notes.ReadWrite.All",
-        or_roles=["Global Administrator"],
+        bypass_roles=["Global Administrator"],
     )
     def test3_get_recent_notebooks(self):
         """Get recent OneNote notebooks."""
         result = self.client.me.onenote.notebooks.get_recent_notebooks().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", or_roles=["Global Administrator"])
+    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
     def test4_create_section(self):
         """Create a section within the notebook."""
         notebook = TestNotebook.target_notebook
