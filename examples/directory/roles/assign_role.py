@@ -16,6 +16,7 @@ import sys
 
 from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
+from office365.runtime.types.exceptions import NotFoundException
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
 # Common role template IDs (well-known, never change across tenants)
@@ -40,18 +41,7 @@ if not has_role(privileged_client, "Global Administrator", "Privileged Role Admi
     print("❌ Need Global Administrator or Privileged Role Administrator to assign roles.")
     sys.exit(1)
 
-# 1. List activated roles
-print("Activated directory roles:")
-roles = privileged_client.directory_roles.get().execute_query()
-activated_names = {r.display_name for r in roles}
-if not activated_names:
-    print("  (none)")
-else:
-    for r in roles:
-        print(f"  ✅ {r.display_name}")
-
-# 2. Pick a role by name
-print()
+# 1. Pick a role
 role_name = input("Role to assign (e.g. 'Security Administrator'): ")
 
 template_id = ROLE_TEMPLATES.get(role_name)
@@ -59,18 +49,19 @@ if template_id is None:
     print(f"❌ Unknown role '{role_name}'. Add its template ID to ROLE_TEMPLATES.")
     sys.exit(1)
 
-if role_name in activated_names:
-    role = next(r for r in roles if r.display_name == role_name)
-else:
+try:
+    role = privileged_client.directory_roles.get_by_name(role_name).get().execute_query()
+    print(f"✅ Found activated role '{role_name}'")
+except NotFoundException:
     print(f"   Activating '{role_name}'...")
     role = privileged_client.directory_roles.add(roleTemplateId=template_id).execute_query()
     print("   ✅ Activated.")
 
-# 3. Target user
+# 2. Target user
 user_upn = input("Target user UPN (e.g. 'user@contoso.com'): ")
 user = privileged_client.users.get_by_principal_name(user_upn).get().execute_query()
 assert user.id is not None
 
-# 4. Assign
+# 3. Assign
 role.members.add(user).execute_query()
 print(f"✅ Role '{role.display_name}' assigned to {user_upn}")
