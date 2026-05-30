@@ -79,8 +79,12 @@ from office365.teams.viva.employee_experience import EmployeeExperience
 from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
+    from office365.directory.applications.roles.collection import AppRoleCollection
+    from office365.directory.applications.roles.role import AppRole
     from office365.directory.groups.setting import GroupSetting
     from office365.directory.rolemanagement.templates.collection import DirectoryRoleTemplateCollection
+    from office365.runtime.client_result import ClientResult
+    from office365.runtime.types.collections import StringCollection
 
 
 class GraphClient(ClientRuntimeContext):
@@ -565,3 +569,65 @@ class GraphClient(ClientRuntimeContext):
     def tenant_name(self) -> Optional[str]:
         """Tenant id or domain name"""
         return self._tenant
+
+    def grant_delegated_permissions(self, app_id: str, scope: AppRole | str) -> Self:
+        """Grants a delegated permission on Microsoft Graph (AllPrincipals).
+
+        :param str app_id: Application (client) ID of the client app
+        :param AppRole or str scope: Permission scope to grant
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        self.service_principals.get_by_name(ResourceName.Graph).grant_delegated_permissions(app_id, scope)
+        return self
+
+    def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
+        """Gets delegated permissions granted on Microsoft Graph.
+
+        :param str app_id: Application (client) ID of the client app
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        return self.service_principals.get_by_name(ResourceName.Graph).get_delegated_permissions(app_id)
+
+    def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
+        """Grants an application permission on Microsoft Graph.
+
+        :param str app_id: Application (client) ID of the client app
+        :param AppRole or str app_role: App role to grant
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        self.service_principals.get_by_name(ResourceName.Graph).grant_application_permissions(app_id, app_role)
+        return self
+
+    def get_application_permissions(self, app_id: str) -> ClientResult[AppRoleCollection]:
+        """Gets application permissions granted on Microsoft Graph.
+
+        :param str app_id: Application (client) ID of the client app
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        return self.service_principals.get_by_name(ResourceName.Graph).get_application_permissions(app_id)
+
+    def revoke_delegated_permissions(self, client_id: str, scope: str) -> Self:
+        """Revokes a delegated permission on Microsoft Graph.
+
+        :param str client_id: Application (client) ID of the client app
+        :param str scope: Permission scope to revoke
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        self.service_principals.get_by_name(ResourceName.Graph).revoke_delegated_permissions(client_id, scope)
+        return self
+
+    def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
+        """Revokes an application permission on Microsoft Graph.
+
+        :param str app_id: Application (client) ID of the client app
+        :param AppRole or str app_role: App role to revoke
+        """
+        from office365.directory.permissions.resource_name import ResourceName
+
+        self.service_principals.get_by_name(ResourceName.Graph).revoke_application_permissions(app_id, app_role)
+        return self
