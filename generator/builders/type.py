@@ -166,6 +166,11 @@ class TypeBuilder(ast.NodeTransformer):
         for prop in self._properties:
             if prop.schema.Name in existing_anns:
                 continue
+            if prop.docstring:
+                class_node.body.insert(
+                    len(class_node.body) - 1,
+                    ast.Expr(value=ast.Constant(value=prop.docstring)),
+                )
             ann = self._build_value_annotation(prop)
             class_node.body.insert(len(class_node.body) - 1, ann)
             self._changes.append(f"property annotation: {prop.schema.Name}")
