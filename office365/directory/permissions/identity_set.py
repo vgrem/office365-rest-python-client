@@ -23,3 +23,7 @@ class IdentitySet(ClientValue):
 
     def __repr__(self):
         return repr({n: v.to_json() for n, v in self if v.to_json()})
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.search.IdentitySet"

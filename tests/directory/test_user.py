@@ -17,7 +17,8 @@ class TestGraphUser(GraphDelegatedTestCase):
     test_extension: Optional[OpenTypeExtension] = None
 
     @requires_delegated(
-        "User.ReadWrite.All", "Directory.ReadWrite.All",
+        "User.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
     def test1_create_user(self):
@@ -30,7 +31,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         TestGraphUser.test_user = new_user
 
     @requires_delegated(
-        "User.Read.All", "Directory.Read.All",
+        "User.Read.All",
+        "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test2_list_users(self):
@@ -40,7 +42,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "User.Read.All", "Directory.Read.All",
+        "User.Read.All",
+        "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test3_get_users_count(self):
@@ -49,7 +52,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "User.Read.All", "Directory.Read.All",
+        "User.Read.All",
+        "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test4_get_user_licences(self):
@@ -59,7 +63,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertIsInstance(user.assigned_licenses, ClientValueCollection)
 
     @requires_delegated(
-        "Organization.Read.All", "Directory.Read.All",
+        "Organization.Read.All",
+        "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test5_list_subscribed_skus(self):
@@ -81,7 +86,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "User.ReadWrite.All", "Directory.ReadWrite.All",
+        "User.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
     def test8_update_user(self):
@@ -96,7 +102,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertEqual(1, len(result))
 
     @requires_delegated(
-        "User.ReadWrite.All", "Directory.ReadWrite.All",
+        "User.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
     def test_10_delete_user(self):
@@ -108,7 +115,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         TestGraphUser.test_user = None
 
     @requires_delegated(
-        "User.Read.All", "Directory.Read.All",
+        "User.Read.All",
+        "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test_11_get_user_changes(self):
@@ -117,7 +125,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         self.assertGreater(len(changed_users), 0)
 
     @requires_delegated(
-        "GroupMember.Read.All", "Directory.Read.All",
+        "GroupMember.Read.All",
+        "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test_12_get_my_member_groups(self):

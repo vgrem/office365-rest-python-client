@@ -20,7 +20,7 @@ class PickerEntityInformationRequest(ClientValue):
     EmailAddress: Optional[str] = None
     GroupId: Optional[str] = None
     Key: Optional[str] = None
-    PrincipalType: PrincipalType = PrincipalType.None_
+    PrincipalType: PrincipalType = PrincipalType.Unknown
 
     @property
     def entity_type_name(self):

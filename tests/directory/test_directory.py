@@ -47,7 +47,9 @@ class TestDirectory(GraphDelegatedTestCase):
         self.assertIsInstance(result.value, ClientValueCollection)
 
     @requires_delegated(
-        "RoleManagement.Read.Directory", "RoleManagement.Read.All", "Directory.Read.All",
+        "RoleManagement.Read.Directory",
+        "RoleManagement.Read.All",
+        "Directory.Read.All",
         bypass_roles=["Privileged Role Administrator", "Global Administrator", "Global Reader"],
     )
     def test6_list_directory_roles(self):
@@ -56,8 +58,10 @@ class TestDirectory(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "AdministrativeUnit.Read.All", "AdministrativeUnit.ReadWrite.All",
-        "Directory.Read.All", "Directory.ReadWrite.All",
+        "AdministrativeUnit.Read.All",
+        "AdministrativeUnit.ReadWrite.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test8_list_administrative_units(self):

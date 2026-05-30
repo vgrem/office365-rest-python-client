@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import StringCollection
 
 
 @dataclass
 class Configuration(ClientValue):
-    """
-    Specifies additional application IDs that are allowed to manage the externalConnection and
-    to index content in a externalConnection.
-    """
+    authorizedAppIds: StringCollection = field(default_factory=StringCollection)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.externalConnectors.Configuration"

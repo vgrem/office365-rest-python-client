@@ -13,8 +13,14 @@ class TestApplication(GraphDelegatedTestCase):
     target_password: Optional[PasswordCredential] = None
 
     @requires_delegated(
-        "Application.Read.All", "Directory.Read.All",
-        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+        "Application.Read.All",
+        "Directory.Read.All",
+        bypass_roles=[
+            "Application Administrator",
+            "Cloud Application Administrator",
+            "Global Administrator",
+            "Global Reader",
+        ],
     )
     def test1_list_apps(self):
         """List applications"""
@@ -22,8 +28,14 @@ class TestApplication(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Application.Read.All", "Directory.Read.All",
-        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+        "Application.Read.All",
+        "Directory.Read.All",
+        bypass_roles=[
+            "Application Administrator",
+            "Cloud Application Administrator",
+            "Global Administrator",
+            "Global Reader",
+        ],
     )
     def test2_list_templates(self):
         """List application templates"""
@@ -31,7 +43,8 @@ class TestApplication(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test3_create_app(self):
@@ -42,8 +55,14 @@ class TestApplication(GraphDelegatedTestCase):
         TestApplication.target_app = new_app
 
     @requires_delegated(
-        "Application.Read.All", "Directory.Read.All",
-        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+        "Application.Read.All",
+        "Directory.Read.All",
+        bypass_roles=[
+            "Application Administrator",
+            "Cloud Application Administrator",
+            "Global Administrator",
+            "Global Reader",
+        ],
     )
     def test4_get_apps_count(self):
         """Get applications count"""
@@ -51,7 +70,8 @@ class TestApplication(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test5_add_password(self):
@@ -62,7 +82,8 @@ class TestApplication(GraphDelegatedTestCase):
         TestApplication.target_password = result.value
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test6_remove_password(self):
@@ -73,7 +94,8 @@ class TestApplication(GraphDelegatedTestCase):
         TestApplication.target_app.remove_password(TestApplication.target_password.keyId).execute_query()
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test7_delete_app(self):

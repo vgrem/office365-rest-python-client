@@ -105,7 +105,7 @@ class Team(Entity):
     @property
     def visibility(self) -> Optional[TeamVisibilityType]:
         """The visibility of the group and team. Defaults to Public."""
-        return self.properties.get("visibility", TeamVisibilityType.none_)
+        return self.properties.get("visibility", TeamVisibilityType.unknown)
 
     @property
     def web_url(self) -> Optional[str]:

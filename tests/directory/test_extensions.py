@@ -24,7 +24,8 @@ class TestExtensions(GraphDelegatedTestCase):
             cls.target_app.delete_object(True).execute_query()
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test1_create_extension(self):
@@ -44,7 +45,8 @@ class TestExtensions(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        "Application.ReadWrite.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test3_delete_extension(self):

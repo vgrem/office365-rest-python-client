@@ -82,7 +82,10 @@ class TemplateContext:
                     imports.append(
                         ast.ImportFrom(
                             module="dataclasses",
-                            names=[ast.alias(name="dataclass", asname=None)],
+                            names=[
+                                ast.alias(name="dataclass", asname=None),
+                                ast.alias(name="field", asname=None),
+                            ],
                             level=0,
                         )
                     )

@@ -20,7 +20,8 @@ class TestSynchronization(GraphDelegatedTestCase):
         pass
 
     @requires_delegated(
-        "Synchronization.Read.All", "Synchronization.ReadWrite.All",
+        "Synchronization.Read.All",
+        "Synchronization.ReadWrite.All",
         bypass_roles=["Hybrid Identity Administrator", "Global Administrator"],
     )
     def test1_list_synchronization_jobs(self):

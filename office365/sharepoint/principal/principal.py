@@ -47,7 +47,7 @@ class Principal(Entity):
     @property
     def principal_type(self) -> Optional[PrincipalType]:
         """Gets the type of the principal."""
-        return self.properties.get("PrincipalType", PrincipalType.None_)
+        return self.properties.get("PrincipalType", PrincipalType.Unknown)
 
     @property
     def principal_type_name(self) -> str:
