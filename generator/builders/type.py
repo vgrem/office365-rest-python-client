@@ -186,20 +186,32 @@ class TypeBuilder(ast.NodeTransformer):
         else:
             annotation = ast.Name(id=prop_type, ctx=ast.Load())
 
-        default = prop.build_default_value()
+        if prop.is_object_type:
+            # Navigation properties on ClientValue can't be instantiated
+            # without context — use None as safe default
+            default = ast.Constant(value=None)
+            if "Optional" not in str(annotation) and prop_type not in TemplateContext.OPTIONAL_TYPES:
+                # Make annotation Optional so None is valid
+                annotation = ast.BinOp(
+                    left=ast.Name(id=prop_type, ctx=ast.Load()),
+                    op=ast.BitOr(),
+                    right=ast.Constant(value=None),
+                )
+        else:
+            default = prop.build_default_value()
 
-        # Resolve enum types to use first member as default instead of EnumType()
-        if self._options and not prop.is_collection_type:
-            modules = tuple(self._options.get("modules", "").split(","))
-            resolved = prop._client_type.resolve_client_type(modules)
-            if resolved is not None and inspect.isclass(resolved) and issubclass(resolved, Enum):
-                members = list(resolved)
-                if members:
-                    default = ast.Attribute(
-                        value=ast.Name(id=prop_type, ctx=ast.Load()),
-                        attr=members[0].name,
-                        ctx=ast.Load(),
-                    )
+            # Resolve enum types to use first member as default instead of EnumType()
+            if self._options and not prop.is_collection_type:
+                modules = tuple(self._options.get("modules", "").split(","))
+                resolved = prop._client_type.resolve_client_type(modules)
+                if resolved is not None and inspect.isclass(resolved) and issubclass(resolved, Enum):
+                    members = list(resolved)
+                    if members:
+                        default = ast.Attribute(
+                            value=ast.Name(id=prop_type, ctx=ast.Load()),
+                            attr=members[0].name,
+                            ctx=ast.Load(),
+                        )
 
         return ast.AnnAssign(
             target=ast.Name(id=prop.schema.Name, ctx=ast.Store()),
