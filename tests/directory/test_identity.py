@@ -1,4 +1,4 @@
-from tests.decorators import requires_app_permission, requires_delegated
+from tests.decorators import requires_app_permission
 from tests.graph_case import GraphApplicationTestCase
 
 
@@ -9,21 +9,18 @@ class TestIdentity(GraphApplicationTestCase):
         result = self.client.identity.identity_providers.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("IdentityUserFlow.Read.All", bypass_roles=["Global Administrator"])
+    @requires_app_permission("IdentityUserFlow.Read.All")
     def test2_list_user_flows(self):
         """List B2X user flows"""
         result = self.client.identity.b2x_user_flows.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("IdentityProvider.Read.All", bypass_roles=["Global Administrator"])
+    @requires_app_permission("IdentityProvider.Read.All")
     def test3_available_provider_types(self):
         """List available identity provider types"""
         result = self.client.identity.identity_providers.available_provider_types().execute_query()
         self.assertIsNotNone(result.value)
 
-    # @requires_directory_role(
-    #    "Global Reader", "Security Operator", "Security Reader", "Security Administrator"
-    # )
     @requires_app_permission("IdentityRiskyUser.Read.All")
     def test4_list_risky_users(self):
         """List risky users"""
