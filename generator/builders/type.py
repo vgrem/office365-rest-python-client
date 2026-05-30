@@ -1,6 +1,7 @@
 import ast
 import inspect
 import os
+import re
 from _ast import Module
 from os.path import abspath
 from typing import Dict, List, Optional
@@ -153,60 +154,45 @@ class TypeBuilder(ast.NodeTransformer):
         if not self._properties:
             return
 
-        init_method = None
+        # Remove any existing __init__ (dataclass generates it)
+        class_node.body = [n for n in class_node.body if not (isinstance(n, ast.FunctionDef) and n.name == "__init__")]
 
-        for _, node in enumerate(class_node.body):
-            if isinstance(node, ast.FunctionDef) and node.name == "__init__":
-                init_method = node
-                break
+        existing_anns = {
+            n.target.id if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name) else None
+            for n in class_node.body
+        }
 
-        if init_method is None:
-            init_method = self._build_init_method()
-            class_node.body.insert(0, init_method)
+        for prop in self._properties:
+            if prop.name in existing_anns:
+                continue
+            ann = self._build_value_annotation(prop)
+            class_node.body.insert(len(class_node.body) - 1, ann)
+            self._changes.append(f"property annotation: {prop.name}")
+
+    @staticmethod
+    def _build_value_annotation(prop: PropertyBuilder) -> ast.AnnAssign:
+        """Build a class-level type annotation for a ClientValue property.
+
+        Example: is_discoverability_enabled: bool | None = None
+        """
+        prop_type = prop.client_type_name
+        if prop_type in TemplateContext.OPTIONAL_TYPES:
+            annotation = ast.BinOp(
+                left=ast.Name(id=prop_type, ctx=ast.Load()),
+                op=ast.BitOr(),
+                right=ast.Constant(value=None),
+            )
         else:
-            self._update_init_method(init_method)
+            annotation = ast.Name(id=prop_type, ctx=ast.Load())
 
-    def _build_init_method(self) -> ast.FunctionDef:
-        args = [ast.arg(arg="self", annotation=None)]
-        defaults = []
+        default = prop.build_default_value()
 
-        for prop in self._properties:
-            args.append(prop.build_param())
-            defaults.append(prop.build_default_value())
-
-        function_args = ast.arguments(
-            posonlyargs=[],
-            args=args,
-            vararg=None,
-            kwonlyargs=[],
-            kw_defaults=[],
-            kwarg=None,
-            defaults=defaults,
+        return ast.AnnAssign(
+            target=ast.Name(id=prop.name, ctx=ast.Store()),
+            annotation=annotation,
+            value=default,
+            simple=1,
         )
-
-        body = []
-        for prop in self._properties:
-            body.append(prop.build_assign())
-            self._changes.append(f"__init__ param: {prop.name}")
-
-        init_method = ast.FunctionDef(
-            name="__init__",
-            args=function_args,
-            body=body,
-            decorator_list=[],
-            returns=None,
-        )
-        return init_method
-
-    def _update_init_method(self, init_method: ast.FunctionDef):
-        existing_params = {arg.arg for arg in init_method.args.args if arg.arg != "self"}
-
-        for prop in self._properties:
-            if prop.name not in existing_params and prop.status == "detached":
-                init_method.args.args.append(prop.build_param())
-                init_method.args.defaults.append(prop.build_default_value())
-                init_method.body.append(prop.build_assign())
-                self._changes.append(f"__init__ param: {prop.name}")
 
     def _build_object_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
@@ -256,6 +242,12 @@ class TypeBuilder(ast.NodeTransformer):
             class_node.body.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
 
+    @staticmethod
+    def _to_snake_case(name: str) -> str:
+        """Convert PascalCase or UpperCamelCase to snake_case."""
+        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
     def _resolve_type(self) -> Dict[str, str]:
         type_info: Dict[str, str] = {}
 
@@ -266,7 +258,9 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["file"] = inspect.getsourcefile(cls) or ""
         else:
             type_info["state"] = "detached"
-            type_info["file"] = abspath(os.path.join(self._options["outputpath"], self.client_type_name.lower() + ".py"))
+            type_info["file"] = abspath(
+                os.path.join(self._options["outputpath"], self._to_snake_case(self.client_type_name) + ".py")
+            )
         return type_info
 
     def _ensure_type_info(self):

@@ -24,6 +24,9 @@ class TemplateContext:
         "StringCollection": "office365.runtime.types.collections",
         "GuidCollection": "office365.runtime.types.collections",
         "Optional": "typing",
+        "ResourcePath": "office365.runtime.paths.resource_path",
+        "EntityCollection": "office365.entity_collection",
+        "ClientValueCollection": "office365.runtime.client_value_collection",
     }
 
     OPTIONAL_TYPES = {"str", "int", "bool", "float", "UUID", "bytes"}
@@ -59,18 +62,42 @@ class TemplateContext:
             if prop_type in self.OPTIONAL_TYPES:
                 self._ensure_type_dependency("Optional")
 
+            # Navigation properties need ResourcePath + EntityCollection
+            if prop.is_object_type:
+                self._ensure_type_dependency("ResourcePath")
+                if prop.is_collection_type:
+                    if "ClientValueCollection" in prop_type or "ClientValue" in prop_type:
+                        self._ensure_type_dependency("ClientValueCollection")
+                    else:
+                        self._ensure_type_dependency("EntityCollection")
+
+            # ComplexType with annotations needs dataclass
+            if builder._schema.BaseTypeFullName == "ComplexType" and prop_type not in self.OPTIONAL_TYPES:
+                self._required_imports.add("dataclass")
+
         # Build import statements
         for type_name in self._required_imports:
-            module = self.TYPE_DEPENDENCIES[type_name]
-            if module not in added_modules:
-                imports.append(
-                    ast.ImportFrom(
-                        module=module,
-                        names=[ast.alias(name=type_name, asname=None)],
-                        level=0,
+            if type_name == "dataclass":
+                if "dataclass" not in added_modules:
+                    imports.append(
+                        ast.ImportFrom(
+                            module="dataclasses",
+                            names=[ast.alias(name="dataclass", asname=None)],
+                            level=0,
+                        )
                     )
-                )
-                added_modules.add(module)
+                    added_modules.add("dataclass")
+            else:
+                module = self.TYPE_DEPENDENCIES[type_name]
+                if module not in added_modules:
+                    imports.append(
+                        ast.ImportFrom(
+                            module=module,
+                            names=[ast.alias(name=type_name, asname=None)],
+                            level=0,
+                        )
+                    )
+                    added_modules.add(module)
 
         return imports
 

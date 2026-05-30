@@ -18307,6 +18307,106 @@ within the time frame of their original request."/>
             <Member Name="none" Value="6"/>
             <Member Name="unknownFutureValue" Value="7"/>
          </EnumType>
+         <EnumType Name="applicationDataType" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="codingFiles" Value="1"/>
+            <Member Name="creditCards" Value="2"/>
+            <Member Name="databaseFiles" Value="4"/>
+            <Member Name="documents" Value="8"/>
+            <Member Name="mediaFiles" Value="16"/>
+            <Member Name="unknownFutureValue" Value="32"/>
+         </EnumType>
+         <EnumType Name="csaStarLevel">
+            <Member Name="none" Value="0"/>
+            <Member Name="attestation" Value="1"/>
+            <Member Name="certification" Value="2"/>
+            <Member Name="continuousMonitoring" Value="3"/>
+            <Member Name="cStarAssessment" Value="4"/>
+            <Member Name="selfAssessment" Value="5"/>
+            <Member Name="notSupported" Value="6"/>
+            <Member Name="unknownFutureValue" Value="7"/>
+         </EnumType>
+         <EnumType Name="dataProtection" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="impactAssessments" Value="1"/>
+            <Member Name="officers" Value="2"/>
+            <Member Name="secureCrossBorderDataTransfer" Value="4"/>
+            <Member Name="unknownFutureValue" Value="8"/>
+         </EnumType>
+         <EnumType Name="dataRetentionLevel">
+            <Member Name="none" Value="0"/>
+            <Member Name="dataRetained" Value="1"/>
+            <Member Name="deletedImmediately" Value="2"/>
+            <Member Name="deletedWithin1Month" Value="3"/>
+            <Member Name="deletedWithin2Weeks" Value="4"/>
+            <Member Name="deletedWithin3Months" Value="5"/>
+            <Member Name="deletedWithinMoreThan3Months" Value="6"/>
+            <Member Name="unknownFutureValue" Value="7"/>
+         </EnumType>
+         <EnumType Name="fedRampLevel">
+            <Member Name="none" Value="0"/>
+            <Member Name="high" Value="1"/>
+            <Member Name="liSaas" Value="2"/>
+            <Member Name="low" Value="3"/>
+            <Member Name="moderate" Value="4"/>
+            <Member Name="notSupported" Value="5"/>
+            <Member Name="unknownFutureValue" Value="6"/>
+         </EnumType>
+         <EnumType Name="holdType">
+            <Member Name="none" Value="0"/>
+            <Member Name="private" Value="1"/>
+            <Member Name="public" Value="2"/>
+            <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
+         <EnumType Name="passwordPolicy" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="changePasswordPeriod" Value="1"/>
+            <Member Name="charactersCombination" Value="2"/>
+            <Member Name="passwordHistoryAndReuse" Value="4"/>
+            <Member Name="passwordLengthLimit" Value="8"/>
+            <Member Name="personalInformationUse" Value="16"/>
+            <Member Name="unknownFutureValue" Value="32"/>
+         </EnumType>
+         <EnumType Name="pciVersion">
+            <Member Name="none" Value="0"/>
+            <Member Name="v3_2_1" Value="1"/>
+            <Member Name="v4" Value="2"/>
+            <Member Name="notSupported" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="restEncryptionType">
+            <Member Name="none" Value="0"/>
+            <Member Name="aes" Value="1"/>
+            <Member Name="bitlocker" Value="2"/>
+            <Member Name="blowfish" Value="3"/>
+            <Member Name="des" Value="4"/>
+            <Member Name="rc4" Value="5"/>
+            <Member Name="rsa" Value="6"/>
+            <Member Name="notSupported" Value="7"/>
+            <Member Name="unknownFutureValue" Value="8"/>
+         </EnumType>
+         <EnumType Name="sslVersion">
+            <Member Name="none" Value="0"/>
+            <Member Name="ssl3_0" Value="1"/>
+            <Member Name="tls1_0" Value="2"/>
+            <Member Name="tls1_1" Value="3"/>
+            <Member Name="tls1_2" Value="4"/>
+            <Member Name="tls1_3" Value="5"/>
+            <Member Name="notSupported" Value="6"/>
+            <Member Name="unknownFutureValue" Value="7"/>
+         </EnumType>
+         <EnumType Name="userOwnership" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="lawfulBasisForProcessing" Value="1"/>
+            <Member Name="rightToAccess" Value="2"/>
+            <Member Name="rightToBeInformed" Value="4"/>
+            <Member Name="rightToDataPortability" Value="8"/>
+            <Member Name="rightToObject" Value="16"/>
+            <Member Name="rightToRectification" Value="32"/>
+            <Member Name="rightToRestrictionOfProcessing" Value="64"/>
+            <Member Name="rightsRelatedToAutomatedDecisionMaking" Value="128"/>
+            <Member Name="unknownFutureValue" Value="256"/>
+         </EnumType>
          <EnumType Name="advancedConfigState">
             <Member Name="default" Value="0"/>
             <Member Name="enabled" Value="1"/>
@@ -24243,8 +24343,8 @@ within the time frame of their original request."/>
             <Member Name="running" Value="1"/>
             <Member Name="succeeded" Value="2"/>
             <Member Name="failed" Value="3"/>
-            <Member Name="unknownFutureValue" Value="4"/>
-            <Member Name="partiallySuccessful" Value="5"/>
+            <Member Name="partiallySuccessful" Value="4"/>
+            <Member Name="unknownFutureValue" Value="5"/>
          </EnumType>
          <EntityType Name="entity" Abstract="true">
             <Key>
@@ -25818,6 +25918,118 @@ within the time frame of their original request."/>
             <NavigationProperty Name="invitedUser" Type="graph.user"/>
             <NavigationProperty Name="invitedUserSponsors" Type="Collection(graph.directoryObject)"/>
          </EntityType>
+         <ComplexType Name="applicationLocation">
+            <Property Name="dataCenter" Type="Edm.String"/>
+            <Property Name="headquarters" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactorCertificateInfo">
+            <Property Name="hasBadCommonName" Type="Edm.Boolean"/>
+            <Property Name="hasInsecureSignature" Type="Edm.Boolean"/>
+            <Property Name="hasNoChainOfTrust" Type="Edm.Boolean"/>
+            <Property Name="isDenylisted" Type="Edm.Boolean"/>
+            <Property Name="isHostnameMismatch" Type="Edm.Boolean"/>
+            <Property Name="isNotAfter" Type="Edm.Boolean"/>
+            <Property Name="isNotBefore" Type="Edm.Boolean"/>
+            <Property Name="isRevoked" Type="Edm.Boolean"/>
+            <Property Name="isSelfSigned" Type="Edm.Boolean"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactorGeneralInfo">
+            <Property Name="consumerPopularity" Type="Edm.Int32"/>
+            <Property Name="domainRegistrationDate" Type="Edm.Date"/>
+            <Property Name="founded" Type="Edm.Int32"/>
+            <Property Name="hasDisasterRecoveryPlan" Type="Edm.Boolean"/>
+            <Property Name="hold" Type="graph.holdType" Nullable="false"/>
+            <Property Name="hostingCompanyName" Type="Edm.String"/>
+            <Property Name="location" Type="graph.applicationLocation"/>
+            <Property Name="privacyPolicy" Type="Edm.String"/>
+            <Property Name="processedDataTypes" Type="graph.applicationDataType" Nullable="false"/>
+            <Property Name="termsOfService" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactorLegalInfo">
+            <Property Name="dataRetention" Type="graph.dataRetentionLevel" Nullable="false"/>
+            <Property Name="gdpr" Type="graph.applicationRiskFactorLegalInfoGdpr" Nullable="false"/>
+            <Property Name="hasDataOwnership" Type="Edm.Boolean"/>
+            <Property Name="hasDmca" Type="Edm.Boolean"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactorLegalInfoGdpr">
+            <Property Name="dataProtection" Type="graph.dataProtection" Nullable="false"/>
+            <Property Name="hasRightToErasure" Type="Edm.Boolean"/>
+            <Property Name="isReportingDataBreaches" Type="Edm.Boolean"/>
+            <Property Name="statementUrl" Type="Edm.String"/>
+            <Property Name="userOwnership" Type="graph.userOwnership" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactors">
+            <Property Name="compliance" Type="graph.applicationSecurityCompliance"/>
+            <Property Name="general" Type="graph.applicationRiskFactorGeneralInfo"/>
+            <Property Name="legal" Type="graph.applicationRiskFactorLegalInfo"/>
+            <Property Name="security" Type="graph.applicationRiskFactorSecurityInfo"/>
+         </ComplexType>
+         <ComplexType Name="applicationSecurityCompliance">
+            <Property Name="cobit" Type="Edm.Boolean"/>
+            <Property Name="coppa" Type="Edm.Boolean"/>
+            <Property Name="csaStar" Type="graph.csaStarLevel"/>
+            <Property Name="fedRamp" Type="graph.fedRampLevel"/>
+            <Property Name="ferpa" Type="Edm.Boolean"/>
+            <Property Name="ffiec" Type="Edm.Boolean"/>
+            <Property Name="finra" Type="Edm.Boolean"/>
+            <Property Name="fisma" Type="Edm.Boolean"/>
+            <Property Name="gaap" Type="Edm.Boolean"/>
+            <Property Name="gapp" Type="Edm.Boolean"/>
+            <Property Name="glba" Type="Edm.Boolean"/>
+            <Property Name="hipaa" Type="Edm.Boolean"/>
+            <Property Name="hitrust" Type="Edm.Boolean"/>
+            <Property Name="isae3402" Type="Edm.Boolean"/>
+            <Property Name="iso27001" Type="Edm.Boolean"/>
+            <Property Name="iso27002" Type="Edm.Boolean"/>
+            <Property Name="iso27017" Type="Edm.Boolean"/>
+            <Property Name="iso27018" Type="Edm.Boolean"/>
+            <Property Name="itar" Type="Edm.Boolean"/>
+            <Property Name="jerichoForumCommandments" Type="Edm.Boolean"/>
+            <Property Name="pci" Type="graph.pciVersion"/>
+            <Property Name="privacyShield" Type="Edm.Boolean"/>
+            <Property Name="safeHarbor" Type="Edm.Boolean"/>
+            <Property Name="soc1" Type="Edm.Boolean"/>
+            <Property Name="soc2" Type="Edm.Boolean"/>
+            <Property Name="soc3" Type="Edm.Boolean"/>
+            <Property Name="sox" Type="Edm.Boolean"/>
+            <Property Name="sp800_53" Type="Edm.Boolean"/>
+            <Property Name="ssae16" Type="Edm.Boolean"/>
+            <Property Name="ustr" Type="Edm.Boolean"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskFactorSecurityInfo">
+            <Property Name="certificate" Type="graph.applicationRiskFactorCertificateInfo" Nullable="false"/>
+            <Property Name="domainToCheck" Type="Edm.String"/>
+            <Property Name="hasAdminAuditTrail" Type="Edm.Boolean"/>
+            <Property Name="hasAnonymousUsage" Type="Edm.Boolean"/>
+            <Property Name="hasDataAuditTrail" Type="Edm.Boolean"/>
+            <Property Name="hasDataClassification" Type="Edm.Boolean"/>
+            <Property Name="hasDataEncrypted" Type="Edm.Boolean"/>
+            <Property Name="hasEnforceTransportEnc" Type="Edm.Boolean"/>
+            <Property Name="hasIpRestriction" Type="Edm.Boolean"/>
+            <Property Name="hasMFA" Type="Edm.Boolean"/>
+            <Property Name="hasPenTest" Type="Edm.Boolean"/>
+            <Property Name="hasRememberPassword" Type="Edm.Boolean"/>
+            <Property Name="hasSamlSupport" Type="Edm.Boolean"/>
+            <Property Name="hasUserAuditLogs" Type="Edm.Boolean"/>
+            <Property Name="hasUserDataUpload" Type="Edm.Boolean"/>
+            <Property Name="hasUserRolesSupport" Type="Edm.Boolean"/>
+            <Property Name="hasValidCertName" Type="Edm.Boolean"/>
+            <Property Name="httpsSecurityHeaders" Type="Collection(Edm.String)" Nullable="false"/>
+            <Property Name="isCertTrusted" Type="Edm.Boolean"/>
+            <Property Name="isDrownVulnerable" Type="Edm.Boolean"/>
+            <Property Name="isHeartbleedProof" Type="Edm.Boolean"/>
+            <Property Name="lastBreachDate" Type="Edm.Date"/>
+            <Property Name="latestValidSSL" Type="graph.sslVersion" Nullable="false"/>
+            <Property Name="passwordPolicy" Type="graph.passwordPolicy" Nullable="false"/>
+            <Property Name="restEncryptionType" Type="graph.restEncryptionType" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="applicationRiskScore">
+            <Property Name="compliance" Type="Edm.Single"/>
+            <Property Name="legal" Type="Edm.Single"/>
+            <Property Name="provider" Type="Edm.Single"/>
+            <Property Name="security" Type="Edm.Single"/>
+            <Property Name="total" Type="Edm.Single"/>
+         </ComplexType>
          <ComplexType Name="applicationServicePrincipal">
             <NavigationProperty Name="application" Type="graph.application"/>
             <NavigationProperty Name="servicePrincipal" Type="graph.servicePrincipal"/>
@@ -25894,11 +26106,17 @@ within the time frame of their original request."/>
          </EntityType>
          <EntityType Name="applicationTemplate" BaseType="graph.entity">
             <Property Name="categories" Type="Collection(Edm.String)"/>
+            <Property Name="deprecationDate" Type="Edm.Date"/>
             <Property Name="description" Type="Edm.String"/>
             <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="endpoints" Type="Collection(Edm.String)"/>
             <Property Name="homePageUrl" Type="Edm.String"/>
+            <Property Name="isEntraIntegrated" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="lastModifiedDateTime" Type="Edm.DateTimeOffset"/>
             <Property Name="logoUrl" Type="Edm.String"/>
             <Property Name="publisher" Type="Edm.String"/>
+            <Property Name="riskFactors" Type="graph.applicationRiskFactors"/>
+            <Property Name="riskScore" Type="graph.applicationRiskScore"/>
             <Property Name="supportedProvisioningTypes" Type="Collection(Edm.String)"/>
             <Property Name="supportedSingleSignOnModes" Type="Collection(Edm.String)"/>
          </EntityType>
@@ -32571,6 +32789,20 @@ within the time frame of their original request."/>
             <Property Name="subjectLifecycle" Type="graph.accessPackageSubjectLifecycle" Nullable="false"/>
             <Property Name="subjectType" Type="graph.accessPackageSubjectType"/>
             <NavigationProperty Name="connectedOrganization" Type="graph.connectedOrganization"/>
+            <Annotation Term="Org.OData.Core.V1.AlternateKeys">
+               <Collection>
+                  <Record Type="Org.OData.Core.V1.AlternateKey">
+                     <PropertyValue Property="Key">
+                        <Collection>
+                           <Record Type="Org.OData.Core.V1.PropertyRef">
+                              <PropertyValue Property="Alias" String="objectId"/>
+                              <PropertyValue Property="Name" PropertyPath="objectId"/>
+                           </Record>
+                        </Collection>
+                     </PropertyValue>
+                  </Record>
+               </Collection>
+            </Annotation>
          </EntityType>
          <EntityType Name="customExtensionStageSetting" BaseType="graph.entity">
             <Property Name="stage" Type="graph.accessPackageCustomExtensionStage" Nullable="false"/>
@@ -38682,6 +38914,7 @@ within the time frame of their original request."/>
             <Property Name="status" Type="graph.snapshotJobStatus" Nullable="false"/>
             <Property Name="tenantId" Type="Edm.String" Nullable="false"/>
          </EntityType>
+         <Term Name="licenseRequired" Type="Edm.String" AppliesTo="microsoft.graph.applicationTemplate)"/>
          <Term Name="legacyName" Type="Edm.String" AppliesTo="microsoft.graph.identitySet"/>
          <Term Name="downloadUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem"/>
          <Term Name="sourceUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem"/>
@@ -43294,6 +43527,18 @@ within the time frame of their original request."/>
             <Parameter Name="recipients" Type="Collection(graph.driveRecipient)"/>
             <ReturnType Type="Collection(graph.permission)"/>
          </Action>
+         <Function Name="recent" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.drive"/>
+            <ReturnType Type="Collection(graph.driveItem)"/>
+         </Function>
+         <Function Name="recent" IsBound="true" EntitySetPath="activities">
+            <Parameter Name="activities" Type="Collection(graph.userActivity)"/>
+            <ReturnType Type="Collection(graph.userActivity)"/>
+         </Function>
+         <Function Name="sharedWithMe" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.drive"/>
+            <ReturnType Type="Collection(graph.driveItem)"/>
+         </Function>
          <Action Name="restoreVersion" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.driveItemVersion"/>
          </Action>
@@ -43309,18 +43554,6 @@ within the time frame of their original request."/>
             <Parameter Name="bindingParameter" Type="graph.site"/>
             <Parameter Name="path" Type="Edm.String" Unicode="false"/>
             <ReturnType Type="graph.site"/>
-         </Function>
-         <Function Name="recent" IsBound="true">
-            <Parameter Name="bindingParameter" Type="graph.drive"/>
-            <ReturnType Type="Collection(graph.driveItem)"/>
-         </Function>
-         <Function Name="recent" IsBound="true" EntitySetPath="activities">
-            <Parameter Name="activities" Type="Collection(graph.userActivity)"/>
-            <ReturnType Type="Collection(graph.userActivity)"/>
-         </Function>
-         <Function Name="sharedWithMe" IsBound="true">
-            <Parameter Name="bindingParameter" Type="graph.drive"/>
-            <ReturnType Type="Collection(graph.driveItem)"/>
          </Function>
          <Action Name="addGroup" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.groupLifecyclePolicy"/>
@@ -46587,6 +46820,7 @@ within the time frame of their original request."/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="domainName" Type="Edm.String"/>
             <Property Name="resourceAccessEvents" Type="Collection(microsoft.graph.security.resourceAccessEvent)"/>
+            <Property Name="tenantId" Type="Edm.String"/>
             <Property Name="userPrincipalName" Type="Edm.String"/>
             <Property Name="userSid" Type="Edm.String"/>
          </ComplexType>
