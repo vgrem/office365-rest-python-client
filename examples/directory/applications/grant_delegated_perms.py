@@ -16,7 +16,6 @@ https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 import sys
 
 from office365.directory.permissions.guard import has_delegated_permission, has_role
-from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
@@ -32,10 +31,5 @@ if has_delegated_permission(client, scope, test_client_id):
     print(f"✅ Permission '{scope}' is already granted.")
 else:
     print(f"❌ Permission '{scope}' is not granted.")
-    answer = "y"  # input("Grant it now via admin consent? (y/N): ")
-    if answer.lower() == "y":
-        resource = client.service_principals.get_by_name(ResourceName.Graph)
-        resource.grant_delegated_permissions(test_client_id, scope).execute_query()
-        print(f"✅ Permission '{scope}' granted.")
-    else:
-        print("Skipped.")
+    client.grant_delegated_permissions(test_client_id, scope).execute_query()
+    print(f"✅ Permission '{scope}' granted.")

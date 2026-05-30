@@ -8,7 +8,6 @@ permission again with ``grant_delegated_perms.py``.
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
-from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
@@ -16,6 +15,5 @@ scope = input("Permission scope: ")
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
-resource = client.service_principals.get_by_name(ResourceName.Graph)
-resource.revoke_delegated_permissions(test_client_id, scope).execute_query()
+client.revoke_delegated_permissions(test_client_id, scope).execute_query()
 print(f"Requested revocation for scope '{scope}'.")
