@@ -40,7 +40,7 @@ from office365.directory.policies.root import PolicyRoot
 from office365.directory.protection.information import InformationProtection
 from office365.directory.protection.root import IdentityProtectionRoot
 from office365.directory.rolemanagement.management import RoleManagement
-from office365.directory.rolemanagement.role import DirectoryRole
+from office365.directory.rolemanagement.role_collection import DirectoryRoleCollection
 from office365.directory.security.security import Security
 from office365.directory.serviceprincipals.collection import ServicePrincipalCollection
 from office365.directory.tenantinformation.relationship import TenantRelationship
@@ -332,9 +332,9 @@ class GraphClient(ClientRuntimeContext):
         return self._directory
 
     @property
-    def directory_roles(self) -> DeltaCollection[DirectoryRole]:
+    def directory_roles(self) -> DirectoryRoleCollection:
         """Represents a directory roles in the directory"""
-        return DeltaCollection(self, DirectoryRole, ResourcePath("directoryRoles"))
+        return DirectoryRoleCollection(self, ResourcePath("directoryRoles"))
 
     @property
     def directory_role_templates(self):

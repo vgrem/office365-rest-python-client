@@ -23,7 +23,8 @@ class TestRecordsManagement(GraphDelegatedTestCase):
     retention_label: Optional[RetentionLabel] = None
 
     @requires_delegated(
-        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All",
+        "RecordsManagement.Read.All",
+        "RecordsManagement.ReadWrite.All",
         and_roles=["Security Administrator", "Security Reader"],
         or_roles=["Global Administrator"],
     )
@@ -51,7 +52,8 @@ class TestRecordsManagement(GraphDelegatedTestCase):
         TestRecordsManagement.retention_label = result
 
     @requires_delegated(
-        "RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All",
+        "RecordsManagement.Read.All",
+        "RecordsManagement.ReadWrite.All",
         and_roles=["Security Administrator", "Security Reader"],
         or_roles=["Global Administrator"],
     )
