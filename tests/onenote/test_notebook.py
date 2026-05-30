@@ -23,18 +23,18 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         TestNotebook.target_notebook = result
 
-    @requires_delegated("Notes.Create", bypass_roles=["Global Administrator"])
+    @requires_delegated(
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Create",
+        bypass_roles=["Global Administrator"],
+    )
     def test2_list_notebooks(self):
         """List all OneNote notebooks."""
         result = self.client.me.onenote.notebooks.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Notes.Create",
-        "Notes.Read",
-        "Notes.Read.All",
-        "Notes.ReadWrite",
-        "Notes.ReadWrite.All",
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test3_get_recent_notebooks(self):
