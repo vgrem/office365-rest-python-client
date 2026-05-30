@@ -239,8 +239,7 @@ class TypeBuilder(ast.NodeTransformer):
         insert_pos = len(class_node.body)
         for i, node in enumerate(class_node.body):
             if isinstance(node, ast.FunctionDef) and any(
-                isinstance(d, ast.Name) and d.id == "property"
-                for d in node.decorator_list
+                isinstance(d, ast.Name) and d.id == "property" for d in node.decorator_list
             ):
                 insert_pos = i + 1
 

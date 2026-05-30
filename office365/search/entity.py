@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from office365.directory.permissions.require_permission import PermissionRequirement, require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
@@ -23,6 +24,27 @@ class SearchEntity(Entity):
     in Graph, but serves as an anchor to the query action.
     """
 
+    @require_permission(
+        delegated=[
+            "Mail.Read",
+            "Calendars.Read",
+            "Files.Read.All",
+            "Sites.Read.All",
+            "People.Read",
+            "ExternalItem.Read.All",
+            "Chat.Read",
+        ],
+        application=[
+            "Mail.Read",
+            "Calendars.Read",
+            "Files.Read.All",
+            "Sites.Read.All",
+            "People.Read",
+            "ExternalItem.Read.All",
+            "Chat.Read.All",
+        ],
+        notes="Permissions depend on the entity types being queried",
+    )
     def query(
         self,
         query_string: str,
@@ -63,7 +85,7 @@ class SearchEntity(Entity):
         def _process_response(
             result: ClientResult[ClientValueCollection[SearchResponse]],
         ) -> None:
-            result_items = result.value  # type: ignore[attr-defined]
+            result_items = result.value
             for item in result_items:
                 for hcs in item.hitsContainers:  # type: ignore[attr-defined]
                     [_patch_hit(hit) for hit in hcs.hits]
@@ -74,6 +96,7 @@ class SearchEntity(Entity):
         self.context.add_query(qry).after_execute(_process_response)
         return return_type
 
+    @require_permission(delegated=["Mail.Read"], application=["Mail.Read"])
     def query_messages(
         self,
         query_string: str,
@@ -95,12 +118,17 @@ class SearchEntity(Entity):
             enable_top_results=enable_top_results,
         )
 
+    @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def query_events(self, query_string: str) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook calendar events. Alias to query method
         :param str query_string: Contains the query terms.
         """
         return self.query(query_string, entity_types=[EntityType.event])
 
+    @require_permission(
+        delegated=["Files.Read.All", "Files.ReadWrite.All"],
+        application=["Files.Read.All", "Files.ReadWrite.All"],
+    )
     def query_drive_items(
         self, query_string: str, page_from: Optional[int] = None, size: Optional[int] = None
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
@@ -116,6 +144,10 @@ class SearchEntity(Entity):
             size=size,
         )
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def query_list_items(
         self,
         query_string: str,
@@ -138,6 +170,7 @@ class SearchEntity(Entity):
             region=region,
         )
 
+    @require_permission(delegated=["People.Read"], application=["People.Read"])
     def query_peoples(
         self,
         query_string: str,
@@ -160,6 +193,10 @@ class SearchEntity(Entity):
             region=region,
         )
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def query_sites(
         self,
         query_string: str,
@@ -182,6 +219,10 @@ class SearchEntity(Entity):
             region=region,
         )
 
+    @require_permission(
+        delegated=["Chat.Read", "Chat.ReadWrite"],
+        application=["Chat.Read.All", "Chat.ReadWrite.All"],
+    )
     def query_chat_messages(
         self,
         query_string: str,
@@ -205,6 +246,10 @@ class SearchEntity(Entity):
         )
 
     @property
+    @require_permission(
+        delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+        application=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+    )
     def acronyms(self) -> EntityCollection[Acronym]:
         """Administrative answer in Microsoft Search results to define common acronyms in an organization."""
         return self.properties.get(
@@ -217,6 +262,10 @@ class SearchEntity(Entity):
         )
 
     @property
+    @require_permission(
+        delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+        application=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+    )
     def bookmarks(self) -> EntityCollection[Bookmark]:
         """Administrative answer in Microsoft Search results for common search queries in an organization."""
         return self.properties.get(
@@ -229,6 +278,10 @@ class SearchEntity(Entity):
         )
 
     @property
+    @require_permission(
+        delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+        application=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
+    )
     def qnas(self) -> EntityCollection[Qna]:
         """Administrative answer in Microsoft Search results that provide answers for specific search keywords in
         an organization."""
