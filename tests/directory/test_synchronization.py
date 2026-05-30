@@ -10,8 +10,6 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestSynchronization(GraphDelegatedTestCase):
     target_sp: Optional[ServicePrincipal] = None
 
-    # "salesforce"
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -22,9 +20,8 @@ class TestSynchronization(GraphDelegatedTestCase):
         pass
 
     @requires_delegated(
-        "Synchronization.Read.All",
-        "Synchronization.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Synchronization.Read.All", "Synchronization.ReadWrite.All",
+        bypass_roles=["Hybrid Identity Administrator", "Global Administrator"],
     )
     def test1_list_synchronization_jobs(self):
         """List synchronization jobs"""

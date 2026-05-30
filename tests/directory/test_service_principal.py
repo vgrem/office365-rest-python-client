@@ -25,9 +25,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             cls.target_app.delete_object(True).execute_query()
 
     @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test1_create_service_principal(self):
         """Create a service principal"""
@@ -38,24 +37,27 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         TestServicePrincipal.target_object = service_principal
 
     @requires_delegated(
-        "Application.Read.All",
-        "Application.ReadWrite.All",
-        "Directory.Read.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Application.Read.All", "Application.ReadWrite.All", "Directory.Read.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
     )
     def test2_list_service_principals(self):
         """List service principals"""
         result = self.client.service_principals.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Directory.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated(
+        "Directory.Read.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+    )
     def test3_get_service_principals_count(self):
         """Get service principals count"""
         result = self.client.service_principals.count().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated("Application.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated(
+        "Application.Read.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+    )
     def test4_get_by_app_id(self):
         """Get service principal by app ID"""
         assert TestServicePrincipal.target_app is not None
@@ -66,9 +68,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         self.assertIsNotNone(principal.resource_path)
 
     @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test5_add_password(self):
         """Add password to the service principal"""
@@ -78,9 +79,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         TestServicePrincipal.password_creds = result.value
 
     @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test6_remove_password(self):
         """Remove password from the service principal"""
@@ -90,16 +90,18 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         TestServicePrincipal.target_object.remove_password(TestServicePrincipal.password_creds.keyId).execute_query()
 
     @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Global Administrator"],
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test7_delete_service_principal(self):
         """Delete the service principal"""
         assert TestServicePrincipal.target_object is not None
         TestServicePrincipal.target_object.delete_object().execute_query()
 
-    @requires_delegated("Directory.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated(
+        "Directory.Read.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator", "Global Reader"],
+    )
     def test8_list_deleted(self):
         """List deleted service principals"""
         result = self.client.directory.deleted_service_principals.get().execute_query()

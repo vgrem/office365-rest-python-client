@@ -4,6 +4,7 @@ from office365.directory.applications.application import Application
 from office365.directory.extensions.extension_property import ExtensionProperty
 
 from tests import create_unique_name
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -22,6 +23,10 @@ class TestExtensions(GraphDelegatedTestCase):
         if cls.target_app is not None:
             cls.target_app.delete_object(True).execute_query()
 
+    @requires_delegated(
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
+    )
     def test1_create_extension(self):
         """Create an extension property on the application"""
         assert TestExtensions.target_app is not None
@@ -29,11 +34,19 @@ class TestExtensions(GraphDelegatedTestCase):
         self.assertIsNotNone(new_extension.resource_path)
         TestExtensions.target_extension = new_extension
 
+    @requires_delegated(
+        "Directory.Read.All",
+        bypass_roles=["Global Reader", "Global Administrator"],
+    )
     def test2_list_extensions(self):
         """List available extension properties"""
         result = self.client.directory_objects.get_available_extension_properties(False).execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_delegated(
+        "Application.ReadWrite.All", "Directory.ReadWrite.All",
+        bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
+    )
     def test3_delete_extension(self):
         """Delete the extension property"""
         assert TestExtensions.target_extension is not None
