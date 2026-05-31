@@ -1,42 +1,23 @@
 from __future__ import annotations
 
 import ast
-import inspect
 import os
 from os.path import abspath
-from typing import TYPE_CHECKING, Set, cast
+from typing import cast
 
 from office365.runtime.odata.type_information import TypeInformation
 
+from generator.builders.dependency_builder import DependencyBuilder
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
-
-if TYPE_CHECKING:
-    from generator.builders.type import TypeBuilder
 
 
 class TemplateContext:
     """Template context"""
 
-    TYPE_DEPENDENCIES = {
-        "UUID": "uuid",
-        "datetime": "datetime",
-        "date": "datetime",
-        "time": "datetime",
-        "StringCollection": "office365.runtime.types.collections",
-        "GuidCollection": "office365.runtime.types.collections",
-        "Optional": "typing",
-        "ResourcePath": "office365.runtime.paths.resource_path",
-        "EntityCollection": "office365.entity_collection",
-        "ClientValueCollection": "office365.runtime.client_value_collection",
-    }
-
-    OPTIONAL_TYPES = {"str", "int", "bool", "float", "UUID", "bytes", "date", "time"}
-
     def __init__(self, template_path: str, schema: TypeInformation) -> None:
         self._template_path = template_path
         self._schema = schema
-        self._required_imports: Set[str] = set()
 
     def load(self) -> ast.Module:
         file_mapping = {
@@ -48,90 +29,9 @@ class TemplateContext:
         with open(template_file, encoding="utf-8") as f:
             return ast.parse(f.read())
 
-    def build_imports(self, builder: TypeBuilder):
-        """Add import statements for dependent types."""
-        imports = []
-        added_modules = set()
-
-        for prop in builder.properties:
-            prop_type = prop.client_type_name
-
-            # Track basic type dependencies
-            if prop_type in self.TYPE_DEPENDENCIES:
-                self._ensure_type_dependency(prop_type)
-
-            # Track Optional dependency if needed
-            if prop_type in self.OPTIONAL_TYPES:
-                self._ensure_type_dependency("Optional")
-
-            # Navigation properties need ResourcePath + EntityCollection
-            if prop.is_object_type:
-                self._ensure_type_dependency("ResourcePath")
-                if prop.is_collection_type:
-                    if "ClientValueCollection" in prop_type or "ClientValue" in prop_type:
-                        self._ensure_type_dependency("ClientValueCollection")
-                    else:
-                        self._ensure_type_dependency("EntityCollection")
-
-            # ComplexType with annotations needs dataclass
-            if builder._schema.BaseTypeFullName == "ComplexType" and prop_type not in self.OPTIONAL_TYPES:
-                self._required_imports.add("dataclass")
-
-        # Build import statements
-        for type_name in self._required_imports:
-            if type_name == "dataclass":
-                if "dataclass" not in added_modules:
-                    imports.append(
-                        ast.ImportFrom(
-                            module="dataclasses",
-                            names=[
-                                ast.alias(name="dataclass", asname=None),
-                                ast.alias(name="field", asname=None),
-                            ],
-                            level=0,
-                        )
-                    )
-                    added_modules.add("dataclass")
-            else:
-                module = self.TYPE_DEPENDENCIES[type_name]
-                if module not in added_modules:
-                    imports.append(
-                        ast.ImportFrom(
-                            module=module,
-                            names=[ast.alias(name=type_name, asname=None)],
-                            level=0,
-                        )
-                    )
-                    added_modules.add(module)
-
-        self._build_custom_type_imports(builder, imports, added_modules)
-
-        return imports
-
-    def _build_custom_type_imports(self, builder: TypeBuilder, imports: list, added_modules: set) -> None:
-        """Add imports for custom types not in TYPE_DEPENDENCIES."""
-        modules_str = (builder._options or {}).get("modules", "")
-        if not modules_str:
-            return
-        modules = tuple(modules_str.split(","))
-        for prop in builder.properties:
-            prop_type = prop.client_type_name
-            if prop_type in self.TYPE_DEPENDENCIES or prop_type in self.OPTIONAL_TYPES:
-                continue
-            if prop.is_object_type:
-                continue
-            cls = prop._client_type.resolve_client_type(modules)
-            if cls is not None:
-                mod = inspect.getmodule(cls)
-                if mod is not None and mod.__name__ not in added_modules:
-                    imports.append(
-                        ast.ImportFrom(
-                            module=mod.__name__,
-                            names=[ast.alias(name=prop_type, asname=None)],
-                            level=0,
-                        )
-                    )
-                    added_modules.add(mod.__name__)
+    def build_dependencies(self, deps: DependencyBuilder) -> list[ast.ImportFrom]:
+        """Generate sorted, deduplicated import statements for all properties."""
+        return deps.build()
 
     def build_member(self, builder: MemberBuilder):
         return ast.Assign(
@@ -159,7 +59,7 @@ class TemplateContext:
         method_name = builder.name
         prop_name = builder.schema.Name
         prop_type_name = builder.client_type_name
-        if prop_type_name in self.OPTIONAL_TYPES:
+        if prop_type_name in DependencyBuilder.OPTIONAL_TYPES:
             type_annotation = f"Optional[{prop_type_name}]"
         else:
             type_annotation = prop_type_name
@@ -204,6 +104,7 @@ def {method_name}(self) -> {type_annotation}:
             body=[ast.Return(value=ast.Constant(value=self._schema.FullName))],
             decorator_list=[ast.Name(id="property", ctx=ast.Load())],
             returns=ast.Name(id="str", ctx=ast.Load()),
+            type_params=[],
         )
 
         return node
