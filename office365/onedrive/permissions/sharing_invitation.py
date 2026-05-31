@@ -14,3 +14,7 @@ class SharingInvitation(ClientValue):
     invitedBy: IdentitySet | None = field(default_factory=IdentitySet)
     redeemedBy: str | None = None
     signInRequired: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SharingInvitation"

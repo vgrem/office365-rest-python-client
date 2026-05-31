@@ -17,3 +17,7 @@ class Thumbnail(ClientValue):
     sourceItemId: str | None = None
     url: str | None = None
     width: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Thumbnail"

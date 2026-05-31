@@ -90,7 +90,7 @@ class DirectoryObject(Entity):
     @property
     def deleted_date_time(self) -> datetime:
         """Gets the deletedDateTime property"""
-        return self.properties.get("deletedDateTime", None)
+        return self.properties.get("deletedDateTime", datetime.min)
 
     @property
     def entity_type_name(self) -> str:

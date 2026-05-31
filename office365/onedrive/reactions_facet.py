@@ -6,10 +6,11 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class MetaDataKeyValuePair(ClientValue):
-    key: str | None = None
-    value: dict | None = None
+class ReactionsFacet(ClientValue):
+    commentCount: int | None = None
+    likeCount: int | None = None
+    shareCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.MetaDataKeyValuePair"
+        return "microsoft.graph.ReactionsFacet"

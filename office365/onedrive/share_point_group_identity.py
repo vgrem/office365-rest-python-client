@@ -6,10 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class MetaDataKeyValuePair(ClientValue):
-    key: str | None = None
-    value: dict | None = None
+class SharePointGroupIdentity(ClientValue):
+    principalId: str | None = None
+    title: str | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.MetaDataKeyValuePair"
+        return "microsoft.graph.SharePointGroupIdentity"

@@ -10,3 +10,7 @@ class RecycleBinSettings(ClientValue):
     """Represents settings for the recycleBin resource type."""
 
     retentionPeriodOverrideDays: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RecycleBinSettings"

@@ -12,3 +12,9 @@ class TextColumn(ClientValue):
     maxLength: int | None = None
     allowMultipleLines: bool | None = None
     textType: str | None = None
+    appendChangesToExistingText: bool | None = None
+    linesForEditing: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TextColumn"

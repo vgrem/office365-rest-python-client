@@ -6,10 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class MetaDataKeyValuePair(ClientValue):
-    key: str | None = None
-    value: dict | None = None
+class RenameAction(ClientValue):
+    newName: str | None = None
+    oldName: str | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.MetaDataKeyValuePair"
+        return "microsoft.graph.RenameAction"

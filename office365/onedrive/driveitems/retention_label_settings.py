@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from office365.directory.security.labels.retention.behaviorduringretentionperiod import (
-    BehaviorDuringRetentionPeriod,
-)
+from office365.directory.security.labels.retention.behaviorduringretentionperiod import BehaviorDuringRetentionPeriod
 from office365.runtime.client_value import ClientValue
 
 
@@ -20,3 +18,7 @@ class RetentionLabelSettings(ClientValue):
     isLabelUpdateAllowed: bool | None = None
     isMetadataUpdateAllowed: bool | None = None
     isRecordLocked: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RetentionLabelSettings"

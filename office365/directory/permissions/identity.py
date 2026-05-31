@@ -17,5 +17,5 @@ class Identity(ClientValue):
         return repr(self.to_json())
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.Identity"

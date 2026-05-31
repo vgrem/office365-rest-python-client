@@ -14,3 +14,7 @@ class SharePointIdentity(Identity):
     loginName: Optional[str] = None
     displayName: Optional[str] = None
     id: Optional[str] = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SharePointIdentity"

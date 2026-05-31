@@ -8,7 +8,7 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class IncompleteData(ClientValue):
-    missingDataBeforeDateTime: datetime = None
+    missingDataBeforeDateTime: datetime | None = None
     wasThrottled: bool | None = None
 
     @property
