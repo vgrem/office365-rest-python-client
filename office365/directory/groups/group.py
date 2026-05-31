@@ -4,6 +4,8 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
@@ -40,6 +42,7 @@ class Group(DirectoryObject):
     def __repr__(self):
         return self.display_name or self.id or self.entity_type_name
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def renew(self) -> Self:
         """
         Renews a group's expiration. When a group is renewed, the group expiration is extended by the number
@@ -49,12 +52,14 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def add_favorite(self) -> Self:
         """Add the group to the list of the current user's favorite groups. Supported for Microsoft 365 groups only."""
         qry = ServiceOperationQuery(self, "addFavorite")
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.Read.All", "Group.ReadWrite.All"], application=["Group.Read.All", "Group.ReadWrite.All"])
     def check_granted_permissions_for_app(
         self,
     ) -> EntityCollection[ResourceSpecificPermissionGrant]:
@@ -64,6 +69,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def remove_favorite(self) -> Self:
         """
         Remove the group from the list of the current user's favorite groups. Supported for Microsoft 365 groups only.
@@ -72,6 +78,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reset_unseen_count(self) -> Self:
         """
         Reset the unseenCount of all the posts that the current user has not seen since their last visit.
@@ -81,6 +88,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def subscribe_by_mail(self) -> Self:
         """Calling this method will enable the current user to receive email notifications for this group,
         about new posts, events, and files in that group. Supported for Microsoft 365 groups only.
@@ -89,6 +97,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def unsubscribe_by_mail(self) -> Self:
         """Calling this method will prevent the current user from receiving email notifications for this group
         about new posts, events, and files in that group. Supported for Microsoft 365 groups only.
@@ -97,6 +106,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"])
     def add_team(self) -> Team:
         """Create a new team under a group."""
         qry = ServiceOperationQuery(self, "team", None, self.team, None, self.team)
@@ -109,6 +119,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry).before_execute(_construct_request, once=False)
         return self.team
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the group from directory

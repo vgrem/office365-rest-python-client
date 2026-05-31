@@ -1,5 +1,3 @@
-
-from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
 
 

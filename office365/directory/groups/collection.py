@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from office365.count_collection import CountCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.groups.group import Group
 from office365.directory.groups.profile import GroupProfile
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -13,6 +14,7 @@ class GroupCollection(CountCollection[Group]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Group, resource_path)
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def add(self, group_properties: GroupProfile) -> Group:
         """
         Create a Group resource.
@@ -28,6 +30,7 @@ class GroupCollection(CountCollection[Group]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def create_m365(
         self,
         name: str,
@@ -55,6 +58,7 @@ class GroupCollection(CountCollection[Group]):
         )
         return self.add(params)
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def create_security(self, name: str, description: str | None = None) -> Group:
         """
         Creates a Security group
@@ -71,6 +75,7 @@ class GroupCollection(CountCollection[Group]):
         )
         return self.add(params)
 
+    @require_permission(delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"])
     def create_with_team(self, group_name: str) -> Group:
         """
         Provision a new group along with a team.
