@@ -2,6 +2,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.post import Post
@@ -14,6 +15,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class ConversationThread(Entity):
     """A conversationThread is a collection of posts."""
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reply(self, post: Post) -> Self:
         """Reply to a thread in a group conversation and add a new post to it. You can specify the parent conversation
         in the request, or, you can specify just the thread without the parent conversation.

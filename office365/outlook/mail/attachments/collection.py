@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 import requests
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.attachments.attachment import Attachment
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
@@ -26,6 +27,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
     def __init__(self, context: GraphClient, resource_path: Optional[ResourcePath] = None) -> None:
         super().__init__(context, Attachment, resource_path)
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def add_file(
         self,
         name: str,
@@ -105,6 +107,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self.context.add_query(qry).after_execute(_start_upload, execute_first=True)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"], notes="Create an upload session for attaching a large file")
     def create_upload_session(self, attachment_item: AttachmentItem) -> ClientResult[UploadSession]:
         """
         Create an upload session that allows an app to iteratively upload ranges of a file,

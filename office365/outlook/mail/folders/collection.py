@@ -1,4 +1,5 @@
 from office365.delta_collection import DeltaCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.mail.folders.folder import MailFolder
 
 
@@ -8,6 +9,7 @@ class MailFolderCollection(DeltaCollection[MailFolder]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, MailFolder, resource_path)
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def add(self, display_name: str, is_hidden: bool = False) -> MailFolder:
         """
         Use this API to create a new mail folder in the root folder of the user's mailbox.

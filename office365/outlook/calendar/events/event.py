@@ -1,12 +1,11 @@
 from typing import Optional
 
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone

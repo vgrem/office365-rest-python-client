@@ -4,6 +4,8 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -23,6 +25,7 @@ class MailFolder(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination_id: str) -> MailFolder:
         """
         Copy a mailfolder and its contents to another mailfolder.
@@ -66,6 +69,7 @@ class MailFolder(Entity):
         self.messages.get_all(page_loaded=_mark_all_items_as_unread)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def permanent_delete(self) -> Self:
         """Permanently delete a mail folder and remove its items from the user's mailbox."""
         qry = ServiceOperationQuery(self, "permanentDelete")

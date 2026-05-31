@@ -7,6 +7,8 @@ from typing import IO, Any, AnyStr, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -45,6 +47,7 @@ class Message(OutlookItem):
         self.set_property("singleValueExtendedProperties", prop_value)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_forward(
         self,
         to_recipients: Optional[List[Recipient]] = None,
@@ -77,6 +80,7 @@ class Message(OutlookItem):
         self.get_content().after_execute(_save_content)
         return self
 
+    @require_permission(delegated=["Mail.Read"], application=["Mail.Read"])
     def get_content(self) -> ClientResult[bytes]:
         """Get MIME content of a message"""
         return_type = ClientResult(self.context, bytes())
@@ -121,6 +125,7 @@ class Message(OutlookItem):
             self.attachments.add_file(os.path.basename(file_object.name), content.decode("utf-8"))
         return self
 
+    @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def send(self) -> Self:
         """
         Send a message in the draft folder. The draft message can be a new message draft, reply draft, reply-all draft,
@@ -130,6 +135,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def reply(self, comment: Optional[str] = None) -> Message:
         """Reply to the sender of a message by specifying a comment and using the Reply method. The message is then
         saved in the Sent Items folder.
@@ -142,12 +148,14 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return message
 
+    @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def reply_all(self) -> Self:
         """Reply to all recipients of a message. The message is then saved in the Sent Items folder."""
         qry = ServiceOperationQuery(self, "replyAll")
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_reply(self, comment=None) -> Message:
         """
         Create a draft to reply to the sender of a message in either JSON or MIME format.
@@ -160,6 +168,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_reply_all(self) -> Self:
         """
         Create a draft to reply to the sender and all the recipients of the specified message.
@@ -170,6 +179,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination: Union[str, MailFolder]) -> Self:
         """
         Copy a message to another folder within the specified user's mailbox.
@@ -196,6 +206,7 @@ class Message(OutlookItem):
             _copy(destination)
         return self
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def move(self, destination: Union[str, MailFolder]) -> Self:
         """
         Move a message to another folder within the specified user's mailbox.
@@ -222,6 +233,7 @@ class Message(OutlookItem):
             _move(destination)
         return self
 
+    @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def forward(self, to_recipients: List[str], comment: str = "") -> Self:
         """
         Forward a message. The message is saved in the Sent Items folder.

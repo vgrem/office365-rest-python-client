@@ -3,6 +3,7 @@ from typing import IO, AnyStr, Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
@@ -23,6 +24,7 @@ class Attachment(Entity):
         self.get_content().after_execute(_save_content)
         return self
 
+    @require_permission(delegated=["Mail.Read"], application=["Mail.Read"])
     def get_content(self) -> ClientResult[bytes]:
         """Gets the raw contents of a file or item attachment"""
         return_type = ClientResult(self.context, bytes())

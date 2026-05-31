@@ -1,5 +1,6 @@
 from typing import Any
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
@@ -11,6 +12,7 @@ class MessageRuleCollection(EntityCollection[MessageRule]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, MessageRule, resource_path)
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def add(self, display_name: str, sequence: int, actions: MessageRuleActions, **kwargs: Any) -> MessageRule:
         """
         Create a messageRule object by specifying a set of conditions and actions.

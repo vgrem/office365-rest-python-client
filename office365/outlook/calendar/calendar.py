@@ -2,8 +2,6 @@ from typing import Any, Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.communications.onlinemeetings.provider_type import (
     OnlineMeetingProviderType,
 )
@@ -11,6 +9,7 @@ from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
 )
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
@@ -37,7 +36,9 @@ class Calendar(Entity):
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
-    @require_permission(delegated=["Calendars.Read.Shared", "Calendars.ReadWrite.Shared"], notes="No application permission")
+    @require_permission(
+        delegated=["Calendars.Read.Shared", "Calendars.ReadWrite.Shared"], notes="No application permission"
+    )
     def allowed_calendar_sharing_roles(self, user) -> ClientResult[StringCollection]:
         """
         :param str user: User identifier or principal name
