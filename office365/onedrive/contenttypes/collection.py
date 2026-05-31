@@ -83,7 +83,9 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"])
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def get_compatible_hub_content_types(self) -> ContentTypeCollection:
         """
         Get a list of compatible content types from the content type hub that can be added to a target site or a list.

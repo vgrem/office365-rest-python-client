@@ -27,7 +27,9 @@ class ContentType(BaseItem):
     def __repr__(self):
         return self.name or self.entity_type_name
 
-    @require_permission(delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"])
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def is_published(self) -> ClientResult[bool]:
         """Check the publishing status of a contentType in a content type hub site."""
         return_type = ClientResult(self.context, bool())

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -11,6 +12,7 @@ class WorkbookWorksheetCollection(EntityCollection[WorkbookWorksheet]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, WorkbookWorksheet, resource_path)
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def add(self, name: str | None = None) -> WorkbookWorksheet:
         """
         Adds a new worksheet to the workbook. The worksheet will be added at the end of existing worksheets.

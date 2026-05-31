@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.charts.chart import WorkbookChart
@@ -27,6 +28,7 @@ class WorkbookWorksheet(Entity):
     def __str__(self):
         return self.name or self.entity_type_name
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def cell(self, row: int, column: int) -> WorkbookRange:
         """Gets the range object containing the single cell based on row and column numbers.
         The cell can be outside the bounds of its parent range, so long as it's stays within the worksheet grid.
@@ -39,6 +41,7 @@ class WorkbookWorksheet(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def range(self, address=None):
         """Gets the range object specified by the address or name."""
         return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
@@ -47,6 +50,7 @@ class WorkbookWorksheet(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def used_range(self, values_only: bool = False) -> WorkbookRange:
         """Return the used range of the given range object.
 
