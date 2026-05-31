@@ -14,6 +14,50 @@ from generator.documentation.graphdocsservice import GraphOpenService
 from generator.documentation.sharepointdocsservice import SharePointService
 
 
+def _should_skip(
+    name: str, type_schema, processed_types: set, exact_ignored: list, prefix_ignored: list, options: dict
+) -> tuple[bool, bool]:
+    """Check skip conditions. Returns (should_skip, raised_error)."""
+    if name in processed_types:
+        return True, False
+
+    pending_skip_type = options.get("include_base_types", "")
+    if pending_skip_type:
+        allowed = set(t.strip() for t in pending_skip_type.split(","))
+        if type_schema.BaseTypeFullName not in allowed:
+            processed_types.add(name)
+            print(f"  Skipping {name} (BaseType={type_schema.BaseTypeFullName})")
+            return True, False
+
+    if name in exact_ignored:
+        return True, False
+
+    if any(name.startswith(p) for p in prefix_ignored):
+        return True, False
+
+    return False, False
+
+
+def _process_type(
+    name: str, type_schema, checkpoint_file: str, options: dict, docs_service, processed_types: set
+) -> None:
+    """Build, save and checkpoint a single type."""
+    try:
+        builder = TypeBuilder(type_schema, options, docs_service)
+        builder.build()
+        if builder.status in {"created", "updated"}:
+            builder.save()
+
+        processed_types.add(name)
+        with open(checkpoint_file, "w", encoding="utf-8") as f:
+            json.dump(list(processed_types), f)
+
+    except Exception as e:
+        print(f"Failed on {name}: {e}")
+        print(f"Checkpoint saved. Resume will skip {len(processed_types)} processed types")
+        raise
+
+
 def generate_files(model: ODataModel, options: dict, docs_service: Optional[BaseDocumentationService] = None) -> None:
     metadata_path = options["metadata_path"]
     checkpoint_file = f".checkpoints/{os.path.basename(metadata_path)}.json"
@@ -30,8 +74,6 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
     ignored_types = [t.strip() for t in ignored_types_raw.replace("\n", ",").split(",") if t.strip()]
     exact_ignored = []
     prefix_ignored = []
-    total_types = len(model.types)
-    processed_count = len(processed_types)
 
     for ignored_type in ignored_types:
         if ignored_type.endswith(".*"):
@@ -43,6 +85,9 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
     started = not start_at
     if start_at and not any(n.startswith(start_at) for n in model.types):
         print(f"  Warning: start_at '{start_at}' does not match any types, proceeding from beginning")
+
+    total_types = len(model.types)
+    processed_count = len(processed_types)
 
     for name in model.types:
         if name in processed_types:
@@ -56,39 +101,14 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
                 processed_types.add(name)
                 continue
 
-        if name in exact_ignored:
-            continue
-
-        if any(name.startswith(prefix) for prefix in prefix_ignored):
-            continue
-
         type_schema = model.types[name]
-
-        include_base_types = options.get("include_base_types", "")
-        if include_base_types:
-            allowed = set(t.strip() for t in include_base_types.split(","))
-            if type_schema.BaseTypeFullName not in allowed:
-                processed_types.add(name)
-                print(f"  Skipping {name} (BaseType={type_schema.BaseTypeFullName})")
-                continue
+        skip, _ = _should_skip(name, type_schema, processed_types, exact_ignored, prefix_ignored, options)
+        if skip:
+            continue
 
         processed_count += 1
         print(f"[{processed_count}/{total_types}] Processing: {name}")
-
-        try:
-            builder = TypeBuilder(type_schema, options, docs_service)
-            builder.build()
-            if builder.status in {"created", "updated"}:
-                builder.save()
-
-            processed_types.add(name)
-            with open(checkpoint_file, "w", encoding="utf-8") as f:
-                json.dump(list(processed_types), f)
-
-        except Exception as e:
-            print(f"Failed on {name}: {e}")
-            print(f"Checkpoint saved. Resume will skip {len(processed_types)} processed types")
-            raise
+        _process_type(name, type_schema, checkpoint_file, options, docs_service, processed_types)
 
     if checkpoint_file and os.path.exists(checkpoint_file):
         os.remove(checkpoint_file)
