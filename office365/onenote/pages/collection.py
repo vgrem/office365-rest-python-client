@@ -28,7 +28,9 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, OnenotePage, resource_path)
 
-    @require_permission(delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"]
+    )
     def add(self, presentation_file: IO, attachment_files: Dict[str, BinaryIO] | None = None) -> OnenotePage:
         """
         Create a new OneNote page.

@@ -13,7 +13,9 @@ class NotebookCollection(EntityCollection[Notebook]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Notebook, resource_path)
 
-    @require_permission(delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"]
+    )
     def add(self, display_name: str) -> Notebook:
         """
         Create a new OneNote notebook.
@@ -23,7 +25,10 @@ class NotebookCollection(EntityCollection[Notebook]):
         """
         return super().add(displayName=display_name)
 
-    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.Read.All", "Notes.ReadWrite.All"],
+    )
     def get_notebook_from_web_url(self, web_url: str) -> ClientResult[CopyNotebookModel]:
         """
         Retrieve the properties and relationships of a notebook object by using its URL path.
@@ -38,7 +43,10 @@ class NotebookCollection(EntityCollection[Notebook]):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.Read.All", "Notes.ReadWrite.All"],
+    )
     def get_recent_notebooks(
         self, include_personal_notebooks: bool = True
     ) -> ClientResult[ClientValueCollection[RecentNotebook]]:

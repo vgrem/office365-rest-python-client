@@ -9,7 +9,10 @@ from office365.runtime.queries.function import FunctionQuery
 class OnenoteResource(OnenoteEntityBaseModel):
     """An image or other file resource on a OneNote page."""
 
-    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.Read.All", "Notes.ReadWrite.All"],
+    )
     def get_content(self) -> ClientResult[bytes]:
         """Retrieve the binary data of a file or image resource object."""
         return_type = ClientResult(self.context)

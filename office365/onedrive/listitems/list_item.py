@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
@@ -26,6 +27,10 @@ class ListItem(BaseItem):
     """Represents an item in a SharePoint list. Column values in the list are available through the fieldValueSet
     dictionary."""
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def get_activities_by_interval(
         self,
         start_dt: datetime | None = None,

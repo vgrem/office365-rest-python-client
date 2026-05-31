@@ -14,7 +14,10 @@ from office365.runtime.types.collections import StringCollection
 class OnenotePage(OnenoteEntitySchemaObjectModel):
     """A page in a OneNote notebook."""
 
-    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
+    @require_permission(
+        delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.Read.All", "Notes.ReadWrite.All"],
+    )
     def get_content(self) -> ClientResult[bytes]:
         """Download the page's HTML content."""
         return_type = ClientResult(self.context)
