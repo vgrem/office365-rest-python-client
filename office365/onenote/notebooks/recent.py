@@ -20,3 +20,7 @@ class RecentNotebook(ClientValue):
     lastAccessedTime: str | None = None
     links: RecentNotebookLinks = field(default_factory=RecentNotebookLinks)
     sourceService: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RecentNotebook"

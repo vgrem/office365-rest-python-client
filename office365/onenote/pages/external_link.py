@@ -16,3 +16,7 @@ class ExternalLink(ClientValue):
 
     def __repr__(self):
         return self.href or ""
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ExternalLink"

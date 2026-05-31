@@ -3,7 +3,6 @@ from typing import Optional, cast
 from typing_extensions import Self
 
 from office365.directory.permissions.require_permission import require_permission
-from office365.runtime.types.odata_property import odata
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.sitepages.base import BaseSitePage
@@ -13,6 +12,7 @@ from office365.onedrive.sitepages.webparts.web_part import WebPart
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class SitePage(BaseSitePage):
@@ -138,5 +138,3 @@ class SitePage(BaseSitePage):
             "webParts",
             EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
         )
-
-

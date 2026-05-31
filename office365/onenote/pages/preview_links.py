@@ -9,3 +9,7 @@ class OnenotePagePreviewLinks(ClientValue):
     """"""
 
     previewImageUrl: ExternalLink = field(default_factory=ExternalLink)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OnenotePagePreviewLinks"

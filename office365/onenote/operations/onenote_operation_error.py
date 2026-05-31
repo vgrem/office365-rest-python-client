@@ -15,3 +15,7 @@ class OnenoteOperationError(ClientValue):
 
     message: str | None = None
     code: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OnenoteOperationError"

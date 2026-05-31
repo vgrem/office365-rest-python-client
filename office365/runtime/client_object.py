@@ -286,7 +286,10 @@ class ClientObject:
         elif isinstance(typed_value, datetime.datetime):
             self._properties[name] = parse_datetime(value)
         elif isinstance(typed_value, Enum):
-            self._properties[name] = parse_enum(type(typed_value), value)
+            if value is None:
+                self._properties[name] = typed_value
+            else:
+                self._properties[name] = parse_enum(type(typed_value), value)
         else:
             self._properties[name] = value
         return self

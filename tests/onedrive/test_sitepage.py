@@ -95,7 +95,7 @@ class TestSitePage(GraphDelegatedTestCase):
         result = self.test_site.pages.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    #def test8_get_site_page_by_name(self):
+    # def test8_get_site_page_by_name(self):
     #    result = self.test_site.pages.get_by_name(self.page_name).execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
