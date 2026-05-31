@@ -343,6 +343,8 @@ class TypeBuilder(ast.NodeTransformer):
         Routing entries are stored as "routing_" prefixed options (from [routing] section).
         Longest prefix match wins, remainder is lowercased.
         """
+        if self._options is None:
+            return ""
         entries = [(k[len("routing_"):], v.strip()) for k, v in self._options.items() if k.startswith("routing_")]
 
         if not entries:
