@@ -3,8 +3,8 @@ from typing import Optional
 from office365.directory.invitations.message_info import InvitedUserMessageInfo
 from office365.directory.users.user import User
 from office365.entity import Entity
-from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Invitation(Entity):
