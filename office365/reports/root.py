@@ -2,6 +2,7 @@ from datetime import date
 from typing import Optional, Union
 
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.partners.partners import Partners
 from office365.reports.internal.queries.create_report_query import create_report_query
@@ -15,6 +16,7 @@ from office365.runtime.queries.function import FunctionQuery
 class ReportRoot(Entity):
     """Represents a container for Azure Active Directory (Azure AD) reporting resources."""
 
+    @require_permission(delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"])
     def device_configuration_device_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration device activity report
@@ -24,6 +26,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"])
     def device_configuration_user_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration user activity report
@@ -33,6 +36,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"])
     def managed_device_enrollment_failure_details(self) -> ClientResult[Report]:
         """ """
         return_type = ClientResult(self.context, Report())
@@ -49,6 +53,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_email_activity_counts(self, period: str) -> ClientResult[bytes]:
         """
         Enables you to understand the trends of email activity (like how many were sent, read, and received)
@@ -142,6 +147,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_m365_app_user_counts(self, period: Optional[str] = None) -> ClientResult[bytes]:
         """
         Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel,
@@ -161,6 +167,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_activation_counts(self):
         """Get the count of Microsoft 365 activations on desktops and devices."""
         qry = create_report_query(self, "getOffice365ActivationCounts")
@@ -174,6 +181,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_file_counts(self, period: str) -> ClientResult[Report]:
         """
         Get the number of unique, licensed users that performed file interactions against any OneDrive account.
@@ -275,6 +283,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_pages(self, period: str):
         """
         Get the number of unique pages visited by users.
@@ -349,6 +358,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_team_counts(self, period: str) -> ClientResult[bytes]:
         """
         Get the number of teams of a particular type in an instance of Microsoft Teams.
@@ -362,6 +372,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_user_activity_counts(self, period: str) -> ClientResult[bytes]:
         """
         Get the number of Microsoft Teams activities by activity type.
