@@ -1,6 +1,6 @@
 from typing_extensions import Self
 
-from office365.directory.authentication.configuration_base import (
+from office365.directory.authentication.configuration.base import (
     ApiAuthenticationConfigurationBase,
 )
 from office365.entity import Entity

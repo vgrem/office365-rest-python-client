@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from office365.directory.authentication.configuration_base import ApiAuthenticationConfigurationBase
+from office365.directory.authentication.configuration.base import ApiAuthenticationConfigurationBase
 from office365.directory.certificates.pkcs12_information import Pkcs12CertificateInformation
 from office365.runtime.client_value_collection import ClientValueCollection
 

@@ -1,6 +1,7 @@
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.directory.insights.usage_details import UsageDetails
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -12,11 +13,13 @@ class UsedInsight(Entity):
       SharePoint
     """
 
+    @odata(name="lastUsed")
     @property
     def last_used(self) -> UsageDetails:
         """Information about when the item was last viewed or modified by the user."""
         return self.properties.get("lastUsed", UsageDetails())
 
+    @odata(name="resourceReference")
     @property
     def resource_reference(self) -> ResourceReference:
         """Reference properties of the used document, such as the url and type of the document. Read-only"""
@@ -31,11 +34,4 @@ class UsedInsight(Entity):
             Entity(self.context, ResourcePath("resource", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "lastUsed": self.last_used,
-                "resourceReference": self.resource_reference,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
