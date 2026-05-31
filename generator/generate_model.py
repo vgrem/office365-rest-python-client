@@ -27,7 +27,10 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
         processed_types = set()
 
     ignored_types_raw = options.get("filters_ignored_types", "")
-    ignored_types = [t.strip() for t in ignored_types_raw.split(",") if t.strip()]
+    ignored_types = [
+        t.strip() for t in ignored_types_raw.replace("\n", ",").split(",")
+        if t.strip()
+    ]
     exact_ignored = []
     prefix_ignored = []
     total_types = len(model.types)
