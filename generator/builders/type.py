@@ -340,29 +340,10 @@ class TypeBuilder(ast.NodeTransformer):
     def _route_to_namespace(self, namespace: str) -> str:
         """Map OData namespace to Python module path using routing table.
 
-        Supports two formats:
-        1. New: individual options with "routing_" prefix (from [routing_*] sections)
-        2. Legacy: single "routing" option with "->" lines
-
+        Routing entries are stored as "routing_" prefixed options (from [routing] section).
         Longest prefix match wins, remainder is lowercased.
         """
-        entries = []
-
-        for k, v in self._options.items():
-            if k.startswith("routing_"):
-                prefix = k[len("routing_") :]
-                entries.append((prefix, v.strip()))
-
-        if not entries:
-            routing_str = self._options.get("routing", "")
-            if routing_str:
-                for line in routing_str.split("\n"):
-                    line = line.strip()
-                    if "->" not in line:
-                        continue
-                    parts = [p.strip() for p in line.split("->")]
-                    if len(parts) == 2:
-                        entries.append((parts[0], parts[1]))
+        entries = [(k[len("routing_"):], v.strip()) for k, v in self._options.items() if k.startswith("routing_")]
 
         if not entries:
             return ""
