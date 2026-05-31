@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.runtime.utilities import parse_enum
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.type import FieldType
@@ -80,7 +81,7 @@ class Field(Entity):
         """
         Disables the index for a field
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bool](self.context)
         qry = ServiceOperationQuery(self, "disableIndex", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -125,6 +126,7 @@ class Field(Entity):
     def default_formula(self) -> Optional[str]:
         return self.properties.get("DefaultFormula", None)
 
+    @odata(name="DescriptionResource")
     @property
     def description_resource(self) -> UserResource:
         """Gets the resource object corresponding to the Description property for a field"""
@@ -276,6 +278,7 @@ class Field(Entity):
         """
         return self.properties.get("TypeDisplayName", None)
 
+    @odata(name="TitleResource")
     @property
     def title_resource(self):
         """Gets the resource object corresponding to the Title property for a field"""
@@ -290,15 +293,6 @@ class Field(Entity):
         Gets a value that specifies the description for the type of the field.
         """
         return self.properties.get("TypeShortDescription", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "DescriptionResource": self.description_resource,
-                "TitleResource": self.title_resource,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

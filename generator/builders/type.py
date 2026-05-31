@@ -274,8 +274,11 @@ class TypeBuilder(ast.NodeTransformer):
             doc = self._docstring.replace("\\n", "\n")
             new_stmt = ast.Expr(value=ast.Constant(value=doc))
             first = class_node.body[0] if class_node.body else None
-            if (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
-                    and isinstance(first.value.value, str)):
+            if (
+                isinstance(first, ast.Expr)
+                and isinstance(first.value, ast.Constant)
+                and isinstance(first.value.value, str)
+            ):
                 class_node.body[0] = new_stmt
             else:
                 class_node.body.insert(0, new_stmt)
