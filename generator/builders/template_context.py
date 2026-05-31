@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import datetime
 import inspect
 import os
 from enum import Enum
@@ -89,6 +90,8 @@ class TemplateContext:
                     members = list(resolved)
                     if members:
                         default_value = f"{prop_type_name}.{members[0].name}"
+                elif resolved is datetime:
+                    default_value = "datetime.min"
                 elif not builder._client_type.is_primitive_type:
                     default_value = f"{prop_type_name}()"
 
