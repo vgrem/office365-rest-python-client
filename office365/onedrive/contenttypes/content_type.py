@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.columns.column_link import ColumnLink
@@ -26,6 +27,7 @@ class ContentType(BaseItem):
     def __repr__(self):
         return self.name or self.entity_type_name
 
+    @require_permission(delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"])
     def is_published(self) -> ClientResult[bool]:
         """Check the publishing status of a contentType in a content type hub site."""
         return_type = ClientResult(self.context, bool())
@@ -33,6 +35,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def associate_with_hub_sites(self, hub_site_urls: List[str], propagate_to_existing_lists: bool = False) -> Self:
         """
         Associate a published content type present in a content type hub with a list of hub sites.
@@ -51,6 +54,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def publish(self) -> Self:
         """
         Publishes a contentType present in the content type hub site.
@@ -59,6 +63,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def unpublish(self) -> Self:
         """Unpublish a contentType from a content type hub site."""
         qry = ServiceOperationQuery(self, "unpublish")

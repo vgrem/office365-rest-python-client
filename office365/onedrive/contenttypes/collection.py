@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Union
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.contenttypes.content_type import ContentType
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -15,6 +16,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def __init__(self, context, resource_path):
         super().__init__(context, ContentType, resource_path)
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def add(
         self,
         name: str,
@@ -50,6 +52,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
         return return_type
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def add_copy(self, content_type: str) -> ContentType:
         """
         Add a copy of a content type from a site to a list.
@@ -63,6 +66,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def add_copy_from_content_type_hub(self, content_type_id: str) -> ContentType:
         """
         his method is part of the content type publishing changes to optimize the syncing of published content types
@@ -79,6 +83,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"])
     def get_compatible_hub_content_types(self) -> ContentTypeCollection:
         """
         Get a list of compatible content types from the content type hub that can be added to a target site or a list.
