@@ -9,6 +9,7 @@ from office365.onedrive.lists.info import ListInfo
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.subscriptions.subscription import Subscription
 
 
@@ -49,6 +50,7 @@ class List(BaseItem):
             ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
         )
 
+    @odata(name="contentTypes")
     @property
     def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
@@ -88,9 +90,3 @@ class List(BaseItem):
                 ResourcePath("subscriptions", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"contentTypes": self.content_types}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
