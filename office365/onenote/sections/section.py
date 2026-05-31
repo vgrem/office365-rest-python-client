@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.operations.onenote import OnenoteOperation
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 class OnenoteSection(OnenoteEntityHierarchyModel):
     """A section in a OneNote notebook. Sections can contain pages."""
 
+    @require_permission(delegated=["Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"])
     def copy_to_section_group(
         self,
         group_id: str,

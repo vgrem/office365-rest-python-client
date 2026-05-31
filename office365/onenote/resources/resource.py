@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.onenote.entity_base_model import OnenoteEntityBaseModel
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
@@ -8,6 +9,7 @@ from office365.runtime.queries.function import FunctionQuery
 class OnenoteResource(OnenoteEntityBaseModel):
     """An image or other file resource on a OneNote page."""
 
+    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
     def get_content(self) -> ClientResult[bytes]:
         """Retrieve the binary data of a file or image resource object."""
         return_type = ClientResult(self.context)

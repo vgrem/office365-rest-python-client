@@ -3,6 +3,7 @@ from __future__ import annotations
 from email.message import Message
 from typing import IO, BinaryIO, Dict
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onenote.pages.page import OnenotePage
 from office365.runtime.http.http_method import HttpMethod
@@ -27,6 +28,7 @@ class OnenotePageCollection(EntityCollection[OnenotePage]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, OnenotePage, resource_path)
 
+    @require_permission(delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"])
     def add(self, presentation_file: IO, attachment_files: Dict[str, BinaryIO] | None = None) -> OnenotePage:
         """
         Create a new OneNote page.

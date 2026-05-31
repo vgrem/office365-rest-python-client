@@ -33,7 +33,6 @@ class ApplicationRiskFactorSecurityInfo(ClientValue):
     isCertTrusted: bool | None = None
     isDrownVulnerable: bool | None = None
     isHeartbleedProof: bool | None = None
-    lastBreachDate: Date = field(default_factory=Date)
     latestValidSSL: SslVersion = SslVersion.none
     passwordPolicy: PasswordPolicy = PasswordPolicy.none
     restEncryptionType: RestEncryptionType = RestEncryptionType.none

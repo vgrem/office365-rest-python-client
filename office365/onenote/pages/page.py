@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.onenote.entity_schema_object_model import OnenoteEntitySchemaObjectModel
 from office365.onenote.notebooks.notebook import Notebook
 from office365.onenote.pages.links import PageLinks
@@ -13,6 +14,7 @@ from office365.runtime.types.collections import StringCollection
 class OnenotePage(OnenoteEntitySchemaObjectModel):
     """A page in a OneNote notebook."""
 
+    @require_permission(delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.Read.All", "Notes.ReadWrite.All"])
     def get_content(self) -> ClientResult[bytes]:
         """Download the page's HTML content."""
         return_type = ClientResult(self.context)
