@@ -269,10 +269,16 @@ class TypeBuilder(ast.NodeTransformer):
                     insert_pos += 1
 
     def _build_post(self, class_node: ast.ClassDef):
-        """Remove pass, insert type-level description, ensure entity_type_name."""
+        """Remove pass, insert/replace type-level description, ensure entity_type_name."""
         if self._docstring:
             doc = self._docstring.replace("\\n", "\n")
-            class_node.body.insert(0, ast.Expr(value=ast.Constant(value=doc)))
+            new_stmt = ast.Expr(value=ast.Constant(value=doc))
+            first = class_node.body[0] if class_node.body else None
+            if (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+                    and isinstance(first.value.value, str)):
+                class_node.body[0] = new_stmt
+            else:
+                class_node.body.insert(0, new_stmt)
 
         if len(self._properties) == 0 and len(self._members) == 0:
             return
