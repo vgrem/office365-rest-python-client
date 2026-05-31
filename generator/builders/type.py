@@ -315,10 +315,50 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["file"] = inspect.getsourcefile(cls) or ""
         else:
             type_info["state"] = "detached"
-            type_info["file"] = abspath(
-                os.path.join(self._options["outputpath"], self._to_snake_case(self.client_type_name) + ".py")
-            )
+            namespace = ".".join(self._schema.FullName.split(".")[:-1])
+            module_path = self._route_to_namespace(namespace)
+            if module_path:
+                if module_path.startswith("office365."):
+                    relative_path = module_path[len("office365."):]
+                else:
+                    relative_path = module_path
+                type_info["file"] = abspath(
+                    os.path.join(self._options["outputpath"], relative_path.replace(".", "/"),
+                                 self._to_snake_case(self.client_type_name) + ".py")
+                )
+            else:
+                type_info["file"] = abspath(
+                    os.path.join(self._options["outputpath"], self._to_snake_case(self.client_type_name) + ".py")
+                )
         return type_info
+
+    def _route_to_namespace(self, namespace: str) -> str:
+        """Map OData namespace to Python module path using routing table.
+        
+        Longest prefix match wins, remainder is lowercased.
+        """
+        routing_str = self._options.get("routing", "")
+        if not routing_str:
+            return ""
+
+        entries = []
+        for line in routing_str.split("\n"):
+            line = line.strip()
+            if "->" not in line:
+                continue
+            parts = [p.strip() for p in line.split("->")]
+            if len(parts) == 2:
+                entries.append(parts)
+
+        entries.sort(key=lambda x: len(x[0]), reverse=True)
+
+        for prefix, module in entries:
+            if namespace == prefix or namespace.startswith(prefix + "."):
+                remainder = namespace[len(prefix):].lstrip(".")
+                if remainder:
+                    return f"{module}.{remainder.lower()}"
+                return module
+        return ""
 
     def _ensure_type_info(self):
         if self._type_info is None:
