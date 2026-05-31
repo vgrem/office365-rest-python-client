@@ -21,3 +21,7 @@ class TeamMessagingSettings(ClientValue):
     allowOwnerDeleteMessages: bool = True
     allowTeamMentions: bool = True
     allowChannelMentions: bool = True
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamMessagingSettings"

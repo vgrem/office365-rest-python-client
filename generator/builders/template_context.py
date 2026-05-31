@@ -89,5 +89,3 @@ def {method_name}(self) -> {type_annotation}:
 
         parsed = ast.parse(property_code.strip())
         return cast(ast.FunctionDef, parsed.body[0])
-
-

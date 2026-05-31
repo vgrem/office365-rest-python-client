@@ -269,7 +269,11 @@ class TypeBuilder(ast.NodeTransformer):
                     insert_pos += 1
 
     def _build_post(self, class_node: ast.ClassDef):
-        """Remove pass statements if there are other statements in the class body"""
+        """Remove pass, insert type-level description, ensure entity_type_name."""
+        if self._docstring:
+            doc = self._docstring.replace("\\n", "\n")
+            class_node.body.insert(0, ast.Expr(value=ast.Constant(value=doc)))
+
         if len(self._properties) == 0 and len(self._members) == 0:
             return
 

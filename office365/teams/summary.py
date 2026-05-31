@@ -17,3 +17,7 @@ class TeamSummary(ClientValue):
     guestsCount: int | None = None
     membersCount: int | None = None
     ownersCount: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamSummary"

@@ -15,3 +15,8 @@ class TeamMemberSettings(ClientValue):
     allowAddRemoveApps: bool = True
     allowCreateUpdateRemoveTabs: bool = True
     allowCreateUpdateRemoveConnectors: bool = True
+    allowCreatePrivateChannels: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamMemberSettings"

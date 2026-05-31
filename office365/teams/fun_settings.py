@@ -19,3 +19,7 @@ class TeamFunSettings(ClientValue):
     allowGiphy: bool | None = None
     allowStickersAndMemes: bool | None = None
     giphyContentRating: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamFunSettings"

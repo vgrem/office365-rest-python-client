@@ -15,3 +15,7 @@ class TeamGuestSettings(ClientValue):
 
     allowCreateUpdateChannels: bool = True
     allowDeleteChannels: bool = True
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamGuestSettings"
