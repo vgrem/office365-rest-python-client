@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 from office365.directory.authentication.configuration_base import ApiAuthenticationConfigurationBase
 from office365.directory.certificates.pkcs12_information import Pkcs12CertificateInformation
 from office365.runtime.client_value_collection import ClientValueCollection
-from dataclasses import dataclass, field
+
 
 @dataclass
 class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
@@ -12,8 +14,11 @@ class ClientCertificateAuthentication(ApiAuthenticationConfigurationBase):
     a Pkcs12-based client certificate authentication.
     This is used to retrieve the public properties of uploaded certificates.
     """
-    certificateList: ClientValueCollection[Pkcs12CertificateInformation] = field(default_factory=lambda: ClientValueCollection(Pkcs12CertificateInformation))
+
+    certificateList: ClientValueCollection[Pkcs12CertificateInformation] = field(
+        default_factory=lambda: ClientValueCollection(Pkcs12CertificateInformation)
+    )
 
     @property
     def entity_type_name(self) -> str:
-        return 'microsoft.graph.ClientCertificateAuthentication'
+        return "microsoft.graph.ClientCertificateAuthentication"

@@ -1,10 +1,13 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 from office365.directory.applications.riskfactors.general_info import ApplicationRiskFactorGeneralInfo
 from office365.directory.applications.riskfactors.legal_info import ApplicationRiskFactorLegalInfo
+from office365.directory.applications.riskfactors.security_info import ApplicationRiskFactorSecurityInfo
 from office365.directory.applications.security_compliance import ApplicationSecurityCompliance
 from office365.runtime.client_value import ClientValue
-from dataclasses import dataclass, field
+
 
 @dataclass
 class ApplicationRiskFactors(ClientValue):
@@ -15,4 +18,4 @@ class ApplicationRiskFactors(ClientValue):
 
     @property
     def entity_type_name(self) -> str:
-        return 'microsoft.graph.ApplicationRiskFactors'
+        return "microsoft.graph.ApplicationRiskFactors"

@@ -1,15 +1,15 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+from datetime import date
+
 from office365.directory.applications.password_policy import PasswordPolicy
 from office365.directory.applications.rest_encryption_type import RestEncryptionType
 from office365.directory.applications.riskfactors.certificate_info import ApplicationRiskFactorCertificateInfo
 from office365.directory.applications.ssl_version import SslVersion
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from datetime import date
-from office365.runtime.types.collections import StringCollection
-from typing import Optional
-from dataclasses import dataclass, field
+
 
 @dataclass
 class ApplicationRiskFactorSecurityInfo(ClientValue):
@@ -41,4 +41,4 @@ class ApplicationRiskFactorSecurityInfo(ClientValue):
 
     @property
     def entity_type_name(self) -> str:
-        return 'microsoft.graph.ApplicationRiskFactorSecurityInfo'
+        return "microsoft.graph.ApplicationRiskFactorSecurityInfo"

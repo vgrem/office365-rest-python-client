@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
-from typing import Optional
+
 
 @dataclass
 class Pkcs12CertificateInformation(ClientValue):
@@ -15,6 +17,7 @@ class Pkcs12CertificateInformation(ClientValue):
         This value is a NumericDate as defined in RFC 7519 (A JSON numeric value representing the number
         of seconds from 1970-01-01T00:00:00Z UTC until the specified UTC date/time, ignoring leap seconds.)
     """
+
     thumbprint: str | None = None
     isActive: bool | None = None
     notAfter: int | None = None
@@ -22,4 +25,4 @@ class Pkcs12CertificateInformation(ClientValue):
 
     @property
     def entity_type_name(self) -> str:
-        return 'microsoft.graph.Pkcs12CertificateInformation'
+        return "microsoft.graph.Pkcs12CertificateInformation"

@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 import pytz
+
 from office365.runtime.client_value import ClientValue
-from typing import Optional
+
 
 @dataclass
 class DateTimeTimeZone(ClientValue):
@@ -13,6 +16,7 @@ class DateTimeTimeZone(ClientValue):
             for example, 2017-08-29T04:00:00.0000000).
         timeZone (str | None): Represents a time zone, for example, "Pacific Standard Time".
     """
+
     dateTime: str | None = None
     timeZone: str | None = None
 
@@ -26,8 +30,8 @@ class DateTimeTimeZone(ClientValue):
         :type dt: datetime.datetime
         """
         local_dt = dt.replace(tzinfo=pytz.utc)
-        return DateTimeTimeZone(dateTime=local_dt.isoformat(), timeZone=local_dt.strftime('%Z'))
+        return DateTimeTimeZone(dateTime=local_dt.isoformat(), timeZone=local_dt.strftime("%Z"))
 
     @property
     def entity_type_name(self) -> str:
-        return 'microsoft.graph.DateTimeTimeZone'
+        return "microsoft.graph.DateTimeTimeZone"

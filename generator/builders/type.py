@@ -108,7 +108,9 @@ class TypeBuilder(ast.NodeTransformer):
 
     def build(self) -> Self:
         assert self._options is not None
-        self._template = TemplateContext(self._options.get("template_path", self._options.get("templatepath", "")), self._schema)
+        self._template = TemplateContext(
+            self._options.get("template_path", self._options.get("templatepath", "")), self._schema
+        )
 
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
@@ -174,9 +176,10 @@ class TypeBuilder(ast.NodeTransformer):
             if prop.schema.Name in existing_anns:
                 continue
             if prop.docstring:
+                doc = prop.docstring.replace("\\n", "\n")
                 class_node.body.insert(
-                    insert_pos,
-                    ast.Expr(value=ast.Constant(value=prop.docstring)),
+                    len(class_node.body) - 1,
+                    ast.Expr(value=ast.Constant(value=doc)),
                 )
                 insert_pos += 1
             ann = self._build_value_annotation(prop)
@@ -320,12 +323,13 @@ class TypeBuilder(ast.NodeTransformer):
             output_base = self._options.get("output_path", self._options.get("outputpath", ""))
             if module_path:
                 if module_path.startswith("office365."):
-                    relative_path = module_path[len("office365."):]
+                    relative_path = module_path[len("office365.") :]
                 else:
                     relative_path = module_path
                 type_info["file"] = abspath(
-                    os.path.join(output_base, relative_path.replace(".", "/"),
-                                 self._to_snake_case(self.client_type_name) + ".py")
+                    os.path.join(
+                        output_base, relative_path.replace(".", "/"), self._to_snake_case(self.client_type_name) + ".py"
+                    )
                 )
             else:
                 type_info["file"] = abspath(
@@ -346,7 +350,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         for k, v in self._options.items():
             if k.startswith("routing_"):
-                prefix = k[len("routing_"):]
+                prefix = k[len("routing_") :]
                 entries.append((prefix, v.strip()))
 
         if not entries:
@@ -369,7 +373,7 @@ class TypeBuilder(ast.NodeTransformer):
         for prefix, module in entries:
             prefix_lower = prefix.lower()
             if namespace_lower == prefix_lower or namespace_lower.startswith(prefix_lower + "."):
-                remainder = namespace[len(prefix):].lstrip(".")
+                remainder = namespace[len(prefix) :].lstrip(".")
                 if remainder:
                     return f"{module}.{remainder.lower()}"
                 return module
