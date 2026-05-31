@@ -1,5 +1,6 @@
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ProtectionPolicyBase(Entity):
@@ -10,15 +11,8 @@ class ProtectionPolicyBase(Entity):
     for a single Microsoft 365 service.
     """
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """Identity of the user, device, or application which created the item."""
         return self.properties.get("createdBy", IdentitySet())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdBy": self.created_by,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

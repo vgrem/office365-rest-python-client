@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import inspect
 import os
 from os.path import abspath
 from typing import TYPE_CHECKING, Set, cast
@@ -103,7 +104,34 @@ class TemplateContext:
                     )
                     added_modules.add(module)
 
+        self._build_custom_type_imports(builder, imports, added_modules)
+
         return imports
+
+    def _build_custom_type_imports(self, builder: TypeBuilder, imports: list, added_modules: set) -> None:
+        """Add imports for custom types not in TYPE_DEPENDENCIES."""
+        modules_str = (builder._options or {}).get("modules", "")
+        if not modules_str:
+            return
+        modules = tuple(modules_str.split(","))
+        for prop in builder.properties:
+            prop_type = prop.client_type_name
+            if prop_type in self.TYPE_DEPENDENCIES or prop_type in self.OPTIONAL_TYPES:
+                continue
+            if prop.is_object_type:
+                continue
+            cls = prop._client_type.resolve_client_type(modules)
+            if cls is not None:
+                mod = inspect.getmodule(cls)
+                if mod is not None and mod.__name__ not in added_modules:
+                    imports.append(
+                        ast.ImportFrom(
+                            module=mod.__name__,
+                            names=[ast.alias(name=prop_type, asname=None)],
+                            level=0,
+                        )
+                    )
+                    added_modules.add(mod.__name__)
 
     def build_member(self, builder: MemberBuilder):
         return ast.Assign(

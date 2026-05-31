@@ -1,5 +1,6 @@
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -11,6 +12,7 @@ class MultiGeoApiVersions(Entity):
             resource_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions")
         super().__init__(context, resource_path)
 
+    @odata(name="SupportedVersions")
     @property
     def supported_versions(self) -> StringCollection:
         return self.properties.get("SupportedVersions", StringCollection())
@@ -18,9 +20,3 @@ class MultiGeoApiVersions(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoApiVersions"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"SupportedVersions": self.supported_versions}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

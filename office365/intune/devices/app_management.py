@@ -2,11 +2,13 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.app.registration import ManagedAppRegistration
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class DeviceAppManagement(Entity):
     """Singleton entity that acts as a container for all device and app management functionality."""
 
+    @odata(name="managedAppRegistrations")
     @property
     def managed_app_registrations(self):
         """"""
@@ -18,11 +20,3 @@ class DeviceAppManagement(Entity):
                 ResourcePath("managedAppRegistrations", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "managedAppRegistrations": self.managed_app_registrations,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

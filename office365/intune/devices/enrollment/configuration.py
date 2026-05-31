@@ -21,6 +21,3 @@ class DeviceEnrollmentConfiguration(Entity):
     def display_name(self) -> Optional[str]:
         """The display name of the device enrollment configuration"""
         return self.properties.get("displayName", None)
-
-    def get_property(self, name, default_value=None):
-        return super().get_property(name, default_value)

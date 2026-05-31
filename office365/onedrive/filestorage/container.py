@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class FileStorageContainer(Entity):
@@ -25,6 +26,7 @@ class FileStorageContainer(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> Optional[datetime]:
         """Date and time of the fileStorageContainer creation. Read-only."""
@@ -33,11 +35,3 @@ class FileStorageContainer(Entity):
     @property
     def entity_type_name(self) -> str:
         return "graph.fileStorageContainer"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdDateTime": self.created_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

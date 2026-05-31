@@ -1,6 +1,7 @@
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class ItemActivity(Entity):
@@ -14,6 +15,7 @@ class ItemActivity(Entity):
         """Identity of who performed the action."""
         return self.properties.get("actor", IdentitySet())
 
+    @odata(name="driveItem")
     @property
     def drive_item(self):
         """Exposes the driveItem that was the target of this activity."""
@@ -23,11 +25,3 @@ class ItemActivity(Entity):
             "driveItem",
             DriveItem(self.context, ResourcePath("driveItem", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "driveItem": self.drive_item,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
