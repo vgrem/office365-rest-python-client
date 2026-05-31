@@ -10,3 +10,12 @@ class PolicyBase(DirectoryObject):
     def display_name(self) -> Optional[str]:
         """Display name for this policy"""
         return self.properties.get("displayName", None)
+
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PolicyBase"

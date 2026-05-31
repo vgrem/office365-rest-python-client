@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import LifecycleWorkflowProcessingStatus
+from office365.directory.identitygovernance.task import Task
+from office365.directory.users.user import User
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -10,12 +12,12 @@ class TaskProcessingResult(Entity):
     @property
     def completed_date_time(self) -> datetime:
         """Gets the completedDateTime property"""
-        return self.properties.get("completedDateTime", None)
+        return self.properties.get("completedDateTime", datetime.min)
 
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
-        return self.properties.get("createdDateTime", None)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @property
     def failure_reason(self) -> Optional[str]:
@@ -35,7 +37,7 @@ class TaskProcessingResult(Entity):
     @property
     def started_date_time(self) -> datetime:
         """Gets the startedDateTime property"""
-        return self.properties.get("startedDateTime", None)
+        return self.properties.get("startedDateTime", datetime.min)
 
     @property
     def subject(self) -> User:

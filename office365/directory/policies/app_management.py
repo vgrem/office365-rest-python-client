@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.policies.base import PolicyBase
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,6 +18,14 @@ class AppManagementPolicy(PolicyBase):
     def applies_to(self) -> DirectoryObjectCollection:
         """Collection of applications and service principals to which the policy is applied."""
         return self.properties.get(
-            "appliesTo",
-            DirectoryObjectCollection(self.context, ResourcePath("appliesTo", self.resource_path)),
+            "appliesTo", DirectoryObjectCollection(self.context, ResourcePath("appliesTo", self.resource_path))
         )
+
+    @property
+    def is_enabled(self) -> Optional[bool]:
+        """Gets the isEnabled property"""
+        return self.properties.get("isEnabled", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AppManagementPolicy"

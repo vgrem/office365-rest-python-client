@@ -86,3 +86,12 @@ class DirectoryObject(Entity):
     def deleted_datetime(self) -> datetime | None:
         """Date and time when this object was deleted. Always null when the object hasn't been deleted."""
         return self.properties.get("deletedDateTime", None)
+
+    @property
+    def deleted_date_time(self) -> datetime:
+        """Gets the deletedDateTime property"""
+        return self.properties.get("deletedDateTime", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DirectoryObject"

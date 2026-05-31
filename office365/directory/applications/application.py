@@ -1,33 +1,42 @@
 from __future__ import annotations
 
 import base64
-import datetime
+from datetime import datetime, timedelta
 from typing import Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
 from office365.directory.applications.api import ApiApplication
+from office365.directory.applications.nativeauthenticationapisenabled import NativeAuthenticationApisEnabled
 from office365.directory.applications.optional_claims import OptionalClaims
+from office365.directory.applications.parentalcontrolsettings import ParentalControlSettings
 from office365.directory.applications.public_client import PublicClientApplication
-from office365.directory.applications.required_resource_access import (
-    RequiredResourceAccess,
-)
+from office365.directory.applications.requestsignatureverification import RequestSignatureVerification
+from office365.directory.applications.required_resource_access import RequiredResourceAccess
 from office365.directory.applications.roles.role import AppRole
 from office365.directory.applications.spa import SpaApplication
+from office365.directory.applications.verifiedpublisher import VerifiedPublisher
+from office365.directory.applications.web import WebApplication
+from office365.directory.authentication.behaviors import AuthenticationBehaviors
 from office365.directory.certificates.certification import Certification
 from office365.directory.extensions.extension_property import ExtensionProperty
 from office365.directory.key_credential import KeyCredential
+from office365.directory.objects.addin import AddIn
 from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.informationalurl import InformationalUrl
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
+from office365.directory.serviceprincipals.lockconfiguration import ServicePrincipalLockConfiguration
+from office365.directory.synchronization.synchronization import Synchronization
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
 
 
@@ -55,8 +64,8 @@ class Application(DirectoryObject):
         self,
         cert_data: bytes,
         display_name: str,
-        start_datetime: datetime.datetime | None = None,
-        end_datetime: datetime.datetime | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
     ) -> Self:
         """Adds a certificate to an application.
 
@@ -66,10 +75,9 @@ class Application(DirectoryObject):
         :param datetime.datetime end_datetime: The date and time at which the credential expires. Default: now + 180days
         """
         if start_datetime is None:
-            start_datetime = datetime.datetime.now()
+            start_datetime = datetime.now()
         if end_datetime is None:
-            end_datetime = start_datetime + datetime.timedelta(days=180)
-
+            end_datetime = start_datetime + timedelta(days=180)
         params = KeyCredential(
             usage="Verify",
             type="AsymmetricX509Cert",
@@ -117,8 +125,7 @@ class Application(DirectoryObject):
         """
         super().delete_object()
         deleted_app = DirectoryObject(
-            self.context,
-            EntityPath(self.id, self.context.directory.deleted_applications.resource_path),
+            self.context, EntityPath(self.id, self.context.directory.deleted_applications.resource_path)
         )
         self.context.directory.deleted_applications.add_child(deleted_app)
         if permanent_delete:
@@ -132,12 +139,7 @@ class Application(DirectoryObject):
         :param str verified_publisher_id: The Microsoft Partner Network ID (MPNID) of the verified publisher
         to be set on the application, from the publisher's Partner Center account.
         """
-        qry = ServiceOperationQuery(
-            self,
-            "setVerifiedPublisher",
-            None,
-            {"verifiedPublisherId": verified_publisher_id},
-        )
+        qry = ServiceOperationQuery(self, "setVerifiedPublisher", None, {"verifiedPublisherId": verified_publisher_id})
         self.context.add_query(qry)
         return self
 
@@ -150,10 +152,7 @@ class Application(DirectoryObject):
         return self
 
     def add_key(
-        self,
-        key_credential: KeyCredential,
-        password_credential: PasswordCredential,
-        proof: str,
+        self, key_credential: KeyCredential, password_credential: PasswordCredential, proof: str
     ) -> ClientResult[KeyCredential]:
         """
         Add a key credential to an application. This method, along with removeKey can be used by an application
@@ -168,11 +167,7 @@ class Application(DirectoryObject):
              Set it to null otherwise.
         :param str proof: A self-signed JWT token used as a proof of possession of the existing keys
         """
-        payload = {
-            "keyCredential": key_credential,
-            "passwordCredential": password_credential,
-            "proof": proof,
-        }
+        payload = {"keyCredential": key_credential, "passwordCredential": password_credential, "proof": proof}
         return_type = ClientResult(self.context, KeyCredential())
         qry = ServiceOperationQuery(self, "addKey", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -227,7 +222,7 @@ class Application(DirectoryObject):
     @property
     def created_datetime(self):
         """The date and time the application was registered."""
-        return self.properties.get("createdDateTime", datetime.datetime.min)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @property
     def default_redirect_uri(self) -> Optional[str]:
@@ -294,16 +289,14 @@ class Application(DirectoryObject):
     def created_on_behalf_of(self) -> DirectoryObject:
         """"""
         return self.properties.get(
-            "createdOnBehalfOf",
-            DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path)),
+            "createdOnBehalfOf", DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path))
         )
 
     @property
     def owners(self) -> DirectoryObjectCollection:
         """Directory objects that are owners of the application."""
         return self.properties.get(
-            "owners",
-            DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
+            "owners", DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path))
         )
 
     @property
@@ -311,11 +304,7 @@ class Application(DirectoryObject):
         """List extension properties on an application object."""
         return self.properties.get(
             "extensionProperties",
-            EntityCollection(
-                self.context,
-                ExtensionProperty,
-                ResourcePath("extensionProperties", self.resource_path),
-            ),
+            EntityCollection(self.context, ExtensionProperty, ResourcePath("extensionProperties", self.resource_path)),
         )
 
     @property
@@ -332,10 +321,155 @@ class Application(DirectoryObject):
         return self.properties.get(
             "tokenIssuancePolicies",
             EntityCollection(
-                self.context,
-                TokenIssuancePolicy,
-                ResourcePath("tokenIssuancePolicies", self.resource_path),
+                self.context, TokenIssuancePolicy, ResourcePath("tokenIssuancePolicies", self.resource_path)
             ),
+        )
+
+    @property
+    def add_ins(self) -> ClientValueCollection[AddIn]:
+        """Gets the addIns property"""
+        return self.properties.get("addIns", ClientValueCollection[AddIn](AddIn))
+
+    @property
+    def authentication_behaviors(self) -> AuthenticationBehaviors:
+        """Gets the authenticationBehaviors property"""
+        return self.properties.get("authenticationBehaviors", AuthenticationBehaviors())
+
+    @property
+    def created_by_app_id(self) -> Optional[str]:
+        """Gets the createdByAppId property"""
+        return self.properties.get("createdByAppId", None)
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
+    @property
+    def disabled_by_microsoft_status(self) -> Optional[str]:
+        """Gets the disabledByMicrosoftStatus property"""
+        return self.properties.get("disabledByMicrosoftStatus", None)
+
+    @property
+    def group_membership_claims(self) -> Optional[str]:
+        """Gets the groupMembershipClaims property"""
+        return self.properties.get("groupMembershipClaims", None)
+
+    @property
+    def info(self) -> InformationalUrl:
+        """Gets the info property"""
+        return self.properties.get("info", InformationalUrl())
+
+    @property
+    def is_device_only_auth_supported(self) -> Optional[bool]:
+        """Gets the isDeviceOnlyAuthSupported property"""
+        return self.properties.get("isDeviceOnlyAuthSupported", None)
+
+    @property
+    def is_disabled(self) -> Optional[bool]:
+        """Gets the isDisabled property"""
+        return self.properties.get("isDisabled", None)
+
+    @property
+    def is_fallback_public_client(self) -> Optional[bool]:
+        """Gets the isFallbackPublicClient property"""
+        return self.properties.get("isFallbackPublicClient", None)
+
+    @property
+    def logo(self) -> bytes | None:
+        """Gets the logo property"""
+        return self.properties.get("logo", None)
+
+    @property
+    def manager_applications(self) -> GuidCollection:
+        """Gets the managerApplications property"""
+        return self.properties.get("managerApplications", GuidCollection(None))
+
+    @property
+    def native_authentication_apis_enabled(self) -> NativeAuthenticationApisEnabled:
+        """Gets the nativeAuthenticationApisEnabled property"""
+        return self.properties.get("nativeAuthenticationApisEnabled", NativeAuthenticationApisEnabled.none)
+
+    @property
+    def notes(self) -> Optional[str]:
+        """Gets the notes property"""
+        return self.properties.get("notes", None)
+
+    @property
+    def oauth2_require_post_response(self) -> Optional[bool]:
+        """Gets the oauth2RequirePostResponse property"""
+        return self.properties.get("oauth2RequirePostResponse", None)
+
+    @property
+    def parental_control_settings(self) -> ParentalControlSettings:
+        """Gets the parentalControlSettings property"""
+        return self.properties.get("parentalControlSettings", ParentalControlSettings())
+
+    @property
+    def publisher_domain(self) -> Optional[str]:
+        """Gets the publisherDomain property"""
+        return self.properties.get("publisherDomain", None)
+
+    @property
+    def request_signature_verification(self) -> RequestSignatureVerification:
+        """Gets the requestSignatureVerification property"""
+        return self.properties.get("requestSignatureVerification", RequestSignatureVerification())
+
+    @property
+    def saml_metadata_url(self) -> Optional[str]:
+        """Gets the samlMetadataUrl property"""
+        return self.properties.get("samlMetadataUrl", None)
+
+    @property
+    def service_management_reference(self) -> Optional[str]:
+        """Gets the serviceManagementReference property"""
+        return self.properties.get("serviceManagementReference", None)
+
+    @property
+    def service_principal_lock_configuration(self) -> ServicePrincipalLockConfiguration:
+        """Gets the servicePrincipalLockConfiguration property"""
+        return self.properties.get("servicePrincipalLockConfiguration", ServicePrincipalLockConfiguration())
+
+    @property
+    def sign_in_audience(self) -> Optional[str]:
+        """Gets the signInAudience property"""
+        return self.properties.get("signInAudience", None)
+
+    @property
+    def tags(self) -> StringCollection:
+        """Gets the tags property"""
+        return self.properties.get("tags", StringCollection(None))
+
+    @property
+    def token_encryption_key_id(self) -> Optional[UUID]:
+        """Gets the tokenEncryptionKeyId property"""
+        return self.properties.get("tokenEncryptionKeyId", None)
+
+    @property
+    def unique_name(self) -> Optional[str]:
+        """Gets the uniqueName property"""
+        return self.properties.get("uniqueName", None)
+
+    @property
+    def verified_publisher(self) -> VerifiedPublisher:
+        """Gets the verifiedPublisher property"""
+        return self.properties.get("verifiedPublisher", VerifiedPublisher())
+
+    @property
+    def web(self) -> WebApplication:
+        """Gets the web property"""
+        return self.properties.get("web", WebApplication())
+
+    @property
+    def synchronization(self) -> Synchronization:
+        """Gets the synchronization property"""
+        return self.properties.get(
+            "synchronization", Synchronization(self.context, ResourcePath("synchronization", self.resource_path))
         )
 
     def get_property(self, name, default_value=None):
@@ -354,3 +488,7 @@ class Application(DirectoryObject):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Application"

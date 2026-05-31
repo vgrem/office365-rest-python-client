@@ -3,6 +3,7 @@ from typing import Optional
 from office365.directory.invitations.message_info import InvitedUserMessageInfo
 from office365.directory.users.user import User
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -37,11 +38,13 @@ class Invitation(Entity):
         """The email address of the user being invited."""
         return self.properties.get("invitedUserEmailAddress", None)
 
+    @odata(name="invitedUserMessageInfo")
     @property
     def invited_user_message_info(self) -> InvitedUserMessageInfo:
         """"""
         return self.properties.get("invitedUserMessageInfo", InvitedUserMessageInfo())
 
+    @odata(name="invitedUser")
     @property
     def invited_user(self) -> User:
         """The user created as part of the invitation creation."""
@@ -50,11 +53,4 @@ class Invitation(Entity):
             User(self.context, ResourcePath("invitedUser", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "invitedUserMessageInfo": self.invited_user_message_info,
-                "invitedUser": self.invited_user,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
