@@ -108,7 +108,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     def build(self) -> Self:
         assert self._options is not None
-        self._template = TemplateContext(self._options.get("templatepath", ""), self._schema)
+        self._template = TemplateContext(self._options.get("template_path", self._options.get("templatepath", "")), self._schema)
 
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
@@ -317,43 +317,58 @@ class TypeBuilder(ast.NodeTransformer):
             type_info["state"] = "detached"
             namespace = ".".join(self._schema.FullName.split(".")[:-1])
             module_path = self._route_to_namespace(namespace)
+            output_base = self._options.get("output_path", self._options.get("outputpath", ""))
             if module_path:
                 if module_path.startswith("office365."):
                     relative_path = module_path[len("office365."):]
                 else:
                     relative_path = module_path
                 type_info["file"] = abspath(
-                    os.path.join(self._options["outputpath"], relative_path.replace(".", "/"),
+                    os.path.join(output_base, relative_path.replace(".", "/"),
                                  self._to_snake_case(self.client_type_name) + ".py")
                 )
             else:
                 type_info["file"] = abspath(
-                    os.path.join(self._options["outputpath"], self._to_snake_case(self.client_type_name) + ".py")
+                    os.path.join(output_base, self._to_snake_case(self.client_type_name) + ".py")
                 )
         return type_info
 
     def _route_to_namespace(self, namespace: str) -> str:
         """Map OData namespace to Python module path using routing table.
-        
+
+        Supports two formats:
+        1. New: individual options with "routing_" prefix (from [routing_*] sections)
+        2. Legacy: single "routing" option with "->" lines
+
         Longest prefix match wins, remainder is lowercased.
         """
-        routing_str = self._options.get("routing", "")
-        if not routing_str:
-            return ""
-
         entries = []
-        for line in routing_str.split("\n"):
-            line = line.strip()
-            if "->" not in line:
-                continue
-            parts = [p.strip() for p in line.split("->")]
-            if len(parts) == 2:
-                entries.append(parts)
+
+        for k, v in self._options.items():
+            if k.startswith("routing_"):
+                prefix = k[len("routing_"):]
+                entries.append((prefix, v.strip()))
+
+        if not entries:
+            routing_str = self._options.get("routing", "")
+            if routing_str:
+                for line in routing_str.split("\n"):
+                    line = line.strip()
+                    if "->" not in line:
+                        continue
+                    parts = [p.strip() for p in line.split("->")]
+                    if len(parts) == 2:
+                        entries.append((parts[0], parts[1]))
+
+        if not entries:
+            return ""
 
         entries.sort(key=lambda x: len(x[0]), reverse=True)
 
+        namespace_lower = namespace.lower()
         for prefix, module in entries:
-            if namespace == prefix or namespace.startswith(prefix + "."):
+            prefix_lower = prefix.lower()
+            if namespace_lower == prefix_lower or namespace_lower.startswith(prefix_lower + "."):
                 remainder = namespace[len(prefix):].lstrip(".")
                 if remainder:
                     return f"{module}.{remainder.lower()}"

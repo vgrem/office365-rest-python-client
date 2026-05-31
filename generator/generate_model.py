@@ -2,7 +2,7 @@ import json
 import os
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
 
 from office365.runtime.odata.model import ODataModel
 from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
@@ -13,9 +13,29 @@ from generator.documentation.baseservice import BaseDocumentationService
 from generator.documentation.graphdocsservice import GraphOpenService
 from generator.documentation.sharepointdocsservice import SharePointService
 
+KEY_ALIASES: Dict[str, str] = {
+    "metadatapath": "metadata_path",
+    "outputpath": "output_path",
+    "templatepath": "template_path",
+    "ignoredproperties": "ignored_properties",
+    "includebasetypes": "include_base_types",
+}
+
+
+def _normalize_options(options: dict) -> dict:
+    """Normalize config keys to modern names while accepting legacy keys."""
+    normalized = {}
+    for k, v in options.items():
+        k_lower = k.lower()
+        target = KEY_ALIASES.get(k_lower, k_lower)
+        if target not in normalized:
+            normalized[target] = v
+    return normalized
+
 
 def generate_files(model: ODataModel, options: dict, docs_service: Optional[BaseDocumentationService] = None) -> None:
-    metadata_path = options["metadatapath"]
+    options = _normalize_options(options)
+    metadata_path = options["metadata_path"]
     checkpoint_file = f".checkpoints/{os.path.basename(metadata_path)}.json"
     os.makedirs(".checkpoints", exist_ok=True)
 
@@ -50,7 +70,7 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
 
         type_schema = model.types[name]
 
-        include_base_types = options.get("includebasetypes", "")
+        include_base_types = options.get("include_base_types", options.get("includebasetypes", ""))
         if include_base_types:
             allowed = set(t.strip() for t in include_base_types.split(","))
             if type_schema.BaseTypeFullName not in allowed:
@@ -80,23 +100,37 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
         os.remove(checkpoint_file)
 
 
+def _load_options(cp: ConfigParser, section: str) -> dict:
+    """Load options for a section, including routing and key normalization."""
+    options = dict(cp.items(section))
+    if cp.has_section("routing"):
+        for k, v in cp.items("routing"):
+            options[f"routing_{k}"] = v
+    return _normalize_options(options)
+
+
 def generate_sharepoint_model(cp: ConfigParser) -> None:
     reader = ODataV3Reader(cp.get("sharepoint", "metadataPath"))
     # reader.format_file()
     model = reader.generate_model()
     docs_service = SharePointService()
-    generate_files(model, dict(cp.items("sharepoint")), docs_service)
+    options = _load_options(cp, "sharepoint")
+    generate_files(model, options, docs_service)
 
 
 def generate_graph_model(cp: ConfigParser) -> None:
-    reader = ODataV4Reader(cp.get("microsoftgraph", "metadataPath"))
+    reader = ODataV4Reader(cp.get("graph", "metadataPath"))
     model = reader.generate_model()
     docs_service = GraphOpenService()
-    generate_files(model, dict(cp.items("microsoftgraph")), docs_service)
+    options = _load_options(cp, "graph")
+    generate_files(model, options, docs_service)
 
 
 if __name__ == "__main__":
-    settings = ConfigParser()
-    settings.read(Path(__file__).parent / "settings.cfg")
-    generate_graph_model(settings)
-    # generate_sharepoint_model(settings)
+    graph_cfg = ConfigParser()
+    graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
+    generate_graph_model(graph_cfg)
+
+    # sharepoint_cfg = ConfigParser()
+    # sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
+    # generate_sharepoint_model(sharepoint_cfg)

@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
-
+from typing import Optional
 
 @dataclass
 class DeviceManagementSettings(ClientValue):
@@ -16,7 +14,10 @@ class DeviceManagementSettings(ClientValue):
     :param bool secure_by_default: Device should be noncompliant when there is no compliance policy targeted when
         this is true
     """
-
     deviceComplianceCheckinThresholdDays: int | None = None
     isScheduledActionEnabled: bool | None = None
     secureByDefault: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return 'microsoft.graph.DeviceManagementSettings'

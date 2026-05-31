@@ -1,20 +1,11 @@
-from office365.directory.authentication.configuration_base import (
-    ApiAuthenticationConfigurationBase,
-)
-
+from office365.directory.authentication.configuration_base import ApiAuthenticationConfigurationBase
+from typing import Optional
 
 class BasicAuthentication(ApiAuthenticationConfigurationBase):
-    """
-    Represents configuration for using HTTP Basic authentication, which entails a username and password, in an API call.
-     The username and password is sent as the Authorization header as Basic {value} where value is
-     base 64 encoded version of username:password.
-    """
+    password: str | None = None
+    username: str | None = None
+    '\n    Represents configuration for using HTTP Basic authentication, which entails a username and password, in an API call.\n     The username and password is sent as the Authorization header as Basic {value} where value is\n     base 64 encoded version of username:password.\n    '
 
-    def __init__(self, username=None, password=None):
-        """
-        :param str username: The username.
-        :param str password: The password. It is not returned in the responses.
-        """
-        super().__init__()
-        self.username = username
-        self.password = password
+    @property
+    def entity_type_name(self) -> str:
+        return 'microsoft.graph.BasicAuthentication'
