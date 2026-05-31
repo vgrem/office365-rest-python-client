@@ -3,6 +3,7 @@ from typing import Optional, cast
 from typing_extensions import Self
 
 from office365.directory.permissions.require_permission import require_permission
+from office365.runtime.types.odata_property import odata
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.sitepages.base import BaseSitePage
@@ -114,11 +115,13 @@ class SitePage(BaseSitePage):
         """Indicates the promotion kind of the sitePage."""
         return self.properties.get("thumbnailWebUrl", None)
 
+    @odata(name="titleArea")
     @property
     def title_area(self) -> TitleArea:
         """Title area on the SharePoint page."""
         return self.properties.get("titleArea", TitleArea())
 
+    @odata(name="canvasLayout")
     @property
     def canvas_layout(self) -> CanvasLayout:
         """The default termStore under this site."""
@@ -127,6 +130,7 @@ class SitePage(BaseSitePage):
             CanvasLayout(self.context, ResourcePath("canvasLayout", self.resource_path)),
         )
 
+    @odata(name="webParts")
     @property
     def web_parts(self) -> EntityCollection[WebPart]:
         """Collection of webparts on the SharePoint page."""
@@ -135,12 +139,4 @@ class SitePage(BaseSitePage):
             EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "canvasLayout": self.canvas_layout,
-                "titleArea": self.title_area,
-                "webParts": self.web_parts,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
