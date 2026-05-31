@@ -1,37 +1,29 @@
 from __future__ import annotations
 
 import ast
-import os
-from os.path import abspath
 from typing import cast
 
 from office365.runtime.odata.type_information import TypeInformation
 
-from generator.builders.dependency_builder import DependencyBuilder
+from generator.builders.collector import TypeReferenceCollector
+from generator.builders.loader import TemplateLoader
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
 
 
 class TemplateContext:
-    """Template context"""
+    """Template context — orchestrates template loading and property building."""
 
     def __init__(self, template_path: str, schema: TypeInformation) -> None:
-        self._template_path = template_path
+        self._loader = TemplateLoader(template_path, schema)
         self._schema = schema
 
     def load(self) -> ast.Module:
-        file_mapping = {
-            "ComplexType": "complex_type.py",
-            "EntityType": "entity_type.py",
-            "EnumType": "enum_type.py",
-        }
-        template_file = abspath(os.path.join(self._template_path, file_mapping[self._schema.BaseTypeFullName]))
-        with open(template_file, encoding="utf-8") as f:
-            return ast.parse(f.read())
+        return self._loader.load()
 
-    def build_dependencies(self, deps: DependencyBuilder) -> list[ast.ImportFrom]:
-        """Generate sorted, deduplicated import statements for all properties."""
-        return deps.build()
+    def build_references(self, collector: TypeReferenceCollector) -> list[ast.ImportFrom]:
+        """Generate import statements from a TypeReferenceCollector."""
+        return collector.build()
 
     def build_member(self, builder: MemberBuilder):
         return ast.Assign(
@@ -59,7 +51,7 @@ class TemplateContext:
         method_name = builder.name
         prop_name = builder.schema.Name
         prop_type_name = builder.client_type_name
-        if prop_type_name in DependencyBuilder.OPTIONAL_TYPES:
+        if prop_type_name in TypeReferenceCollector.OPTIONAL_TYPES:
             type_annotation = f"Optional[{prop_type_name}]"
         else:
             type_annotation = prop_type_name

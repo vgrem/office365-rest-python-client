@@ -8,15 +8,15 @@ if TYPE_CHECKING:
     from generator.builders.property import PropertyBuilder
 
 
-class DependencyBuilder:
-    """Tracks Python type dependencies and generates import statements.
+class TypeReferenceCollector:
+    """Collects Python type references required by a generated OData type.
 
-    Resolves which modules a generated type depends on — both built-in
-    Graph types (StringCollection, EntityCollection, etc.) and custom
-    application types resolved at generation time.
+    For each property on the type, resolves the OData type name to the
+    corresponding Python module path so the generator can emit the correct
+    ``import`` statements.
     """
 
-    TYPE_DEP: ClassVar[dict[str, str]] = {
+    KNOWN: ClassVar[dict[str, str]] = {
         "UUID": "uuid",
         "datetime": "datetime",
         "date": "datetime",
@@ -37,17 +37,17 @@ class DependencyBuilder:
         self._needs_dataclass = False
 
     def add(self, type_name: str) -> None:
-        """Track a built-in type dependency."""
-        module = self.TYPE_DEP.get(type_name)
+        """Track a known type reference."""
+        module = self.KNOWN.get(type_name)
         if module:
             self._entries[type_name] = module
         if type_name not in self.OPTIONAL_TYPES:
             self._needs_dataclass = True
 
     def add_custom(self, prop: PropertyBuilder) -> None:
-        """Resolve a custom (non-builtin) type and track its module."""
+        """Resolve a custom (non-builtin) type reference."""
         prop_type = prop.client_type_name
-        if prop_type in self.TYPE_DEP or prop_type in self.OPTIONAL_TYPES:
+        if prop_type in self.KNOWN or prop_type in self.OPTIONAL_TYPES:
             return
         if prop.is_object_type:
             self._needs_dataclass = True
@@ -59,14 +59,14 @@ class DependencyBuilder:
                 self._entries[prop_type] = mod.__name__
 
     def add_object_type(self, prop: PropertyBuilder) -> None:
-        """Track imports needed for navigation properties."""
-        self._entries["ResourcePath"] = self.TYPE_DEP["ResourcePath"]
+        """Track type references for navigation properties."""
+        self._entries["ResourcePath"] = self.KNOWN["ResourcePath"]
         prop_type = prop.client_type_name
         if prop.is_collection_type:
             if "ClientValueCollection" in prop_type or "ClientValue" in prop_type:
-                self._entries["ClientValueCollection"] = self.TYPE_DEP["ClientValueCollection"]
+                self._entries["ClientValueCollection"] = self.KNOWN["ClientValueCollection"]
             else:
-                self._entries["EntityCollection"] = self.TYPE_DEP["EntityCollection"]
+                self._entries["EntityCollection"] = self.KNOWN["EntityCollection"]
 
     def build(self) -> list[ast.ImportFrom]:
         """Generate sorted, deduplicated import statements."""

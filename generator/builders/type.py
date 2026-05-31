@@ -11,7 +11,7 @@ from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
 from typing_extensions import Self
 
-from generator.builders.dependency_builder import DependencyBuilder
+from generator.builders.collector import TypeReferenceCollector
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
 from generator.builders.template_context import TemplateContext
@@ -128,21 +128,22 @@ class TypeBuilder(ast.NodeTransformer):
         return self
 
     def _build_imports(self, module: ast.Module):
-        """Build missing imports using DependencyBuilder."""
+        """Build missing imports using TypeReferenceCollector."""
+        assert self._template is not None
         assert self._options is not None
         modules = tuple(self._options.get("modules", "").split(","))
-        deps = DependencyBuilder(modules)
+        collector = TypeReferenceCollector(modules)
 
         for prop in self._properties:
             prop_type = prop.client_type_name
-            if prop_type in DependencyBuilder.OPTIONAL_TYPES:
-                deps.add("Optional")
-            deps.add(prop_type)
-            deps.add_custom(prop)
+            if prop_type in TypeReferenceCollector.OPTIONAL_TYPES:
+                collector.add("Optional")
+            collector.add(prop_type)
+            collector.add_custom(prop)
             if prop.is_object_type:
-                deps.add_object_type(prop)
+                collector.add_object_type(prop)
 
-        imports = self._template.build_dependencies(deps)
+        imports = self._template.build_references(collector)
         existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
         insert_index = len(existing_imports)
         for imp in imports:
@@ -206,7 +207,7 @@ class TypeBuilder(ast.NodeTransformer):
         the snake_case Python name, matching the JSON serialization contract.
         """
         prop_type = prop.client_type_name
-        if prop_type in DependencyBuilder.OPTIONAL_TYPES:
+        if prop_type in TypeReferenceCollector.OPTIONAL_TYPES:
             annotation = ast.BinOp(
                 left=ast.Name(id=prop_type, ctx=ast.Load()),
                 op=ast.BitOr(),
@@ -219,7 +220,7 @@ class TypeBuilder(ast.NodeTransformer):
             # Navigation properties on ClientValue can't be instantiated
             # without context — use None as safe default
             default = ast.Constant(value=None)
-            if "Optional" not in str(annotation) and prop_type not in DependencyBuilder.OPTIONAL_TYPES:
+            if "Optional" not in str(annotation) and prop_type not in TypeReferenceCollector.OPTIONAL_TYPES:
                 # Make annotation Optional so None is valid
                 annotation = ast.BinOp(
                     left=ast.Name(id=prop_type, ctx=ast.Load()),
