@@ -16,7 +16,9 @@ from office365.runtime.queries.function import FunctionQuery
 class ReportRoot(Entity):
     """Represents a container for Azure Active Directory (Azure AD) reporting resources."""
 
-    @require_permission(delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"])
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"]
+    )
     def device_configuration_device_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration device activity report
@@ -26,7 +28,9 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"])
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"]
+    )
     def device_configuration_user_activity(self) -> ClientResult[Report]:
         """
         Metadata for the device configuration user activity report
@@ -36,7 +40,9 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"])
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"]
+    )
     def managed_device_enrollment_failure_details(self) -> ClientResult[Report]:
         """ """
         return_type = ClientResult(self.context, Report())

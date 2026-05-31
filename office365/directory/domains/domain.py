@@ -1,4 +1,5 @@
 from office365.directory.domains.dns_record import DomainDnsRecord
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.domains.state import DomainState
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.entity import Entity
@@ -18,6 +19,7 @@ class Domain(Entity):
     authentication, etc.
     """
 
+    @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def verify(self) -> "Domain":
         """Validates the ownership of the domain."""
         return_type = Domain(self.context)
