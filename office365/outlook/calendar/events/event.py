@@ -1,5 +1,7 @@
 from typing import Optional
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -22,6 +24,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Event(OutlookItem):
     """An event in a user calendar, or the default calendar of a Microsoft 365 group."""
 
+    @require_permission(delegated=["Calendars.ReadWrite"])
     def accept(self, send_response, comment=None):
         """
         Accept the specified event in a user calendar.
@@ -34,6 +37,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"])
     def cancel(self, comment=None):
         """
         This action allows the organizer of a meeting to send a cancellation message and cancel the event.
@@ -50,6 +54,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"])
     def decline(self, proposed_new_time=None, send_response=True, comment=None):
         """
         Decline invitation to the specified event in a user calendar.
@@ -73,12 +78,14 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"])
     def dismiss_reminder(self):
         """Dismiss a reminder that has been triggered for an event in a user calendar."""
         qry = ServiceOperationQuery(self, "dismissReminder")
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def permanent_delete(self):
         """
         Permanently delete an event and place it in the purges folder in the dumpster in the user's mailbox.

@@ -1,5 +1,6 @@
 from typing import Union
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.permissions.permission import CalendarPermission
@@ -10,6 +11,7 @@ class CalendarPermissionCollection(EntityCollection[CalendarPermission]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, CalendarPermission, resource_path)
 
+    @require_permission(delegated=["Calendars.ReadWrite"])
     def add(self, email_address: Union[str, EmailAddress], role: CalendarRoleType) -> CalendarPermission:
         """
         Create a calendarPermission resource to specify the identity and role of the user with whom the specified

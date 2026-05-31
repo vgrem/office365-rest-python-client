@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, List, Optional
 
 from office365.delta_collection import DeltaCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.email_address import EmailAddress
@@ -16,6 +17,7 @@ class EventCollection(DeltaCollection[Event]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Event, resource_path)
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def add(
         self,
         subject: Optional[str] = None,
