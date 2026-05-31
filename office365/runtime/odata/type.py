@@ -23,6 +23,8 @@ _PRIMITIVE_TYPES = {
     "Edm.DateTimeOffset": datetime.datetime,
     "Edm.DateTime": datetime.datetime,
     "Edm.Duration": datetime.timedelta,
+    "Edm.Date": datetime.date,
+    "Edm.TimeOfDay": datetime.time,
     "Collection(SP.KeyValue)": dict,
     "Collection(Edm.Guid)": GuidCollection,
     "Collection(Edm.String)": StringCollection,

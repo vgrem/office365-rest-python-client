@@ -107,7 +107,11 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self.context.add_query(qry).after_execute(_start_upload, execute_first=True)
         return self
 
-    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"], notes="Create an upload session for attaching a large file")
+    @require_permission(
+        delegated=["Mail.ReadWrite"],
+        application=["Mail.ReadWrite"],
+        notes="Create an upload session for attaching a large file",
+    )
     def create_upload_session(self, attachment_item: AttachmentItem) -> ClientResult[UploadSession]:
         """
         Create an upload session that allows an app to iteratively upload ranges of a file,

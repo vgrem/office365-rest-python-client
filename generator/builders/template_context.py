@@ -21,6 +21,7 @@ class TemplateContext:
         "UUID": "uuid",
         "datetime": "datetime",
         "date": "datetime",
+        "time": "datetime",
         "StringCollection": "office365.runtime.types.collections",
         "GuidCollection": "office365.runtime.types.collections",
         "Optional": "typing",
@@ -29,7 +30,7 @@ class TemplateContext:
         "ClientValueCollection": "office365.runtime.client_value_collection",
     }
 
-    OPTIONAL_TYPES = {"str", "int", "bool", "float", "UUID", "bytes"}
+    OPTIONAL_TYPES = {"str", "int", "bool", "float", "UUID", "bytes", "date", "time"}
 
     def __init__(self, template_path: str, schema: TypeInformation) -> None:
         self._template_path = template_path

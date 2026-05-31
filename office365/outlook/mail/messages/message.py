@@ -7,13 +7,12 @@ from typing import IO, Any, AnyStr, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
