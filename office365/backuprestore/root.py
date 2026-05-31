@@ -1,4 +1,5 @@
 from office365.backuprestore.service_status import ServiceStatus
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.protection.policy.one_drive_for_business import (
     OneDriveForBusinessProtectionPolicy,
 )
@@ -12,6 +13,10 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class BackupRestoreRoot(Entity):
     """Represents the Microsoft 365 Backup Storage service in a tenant."""
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"],
+        application=["BackupRestore-Control.ReadWrite.All"],
+    )
     def enable(self, app_owner_tenant_id: str) -> ClientResult[ServiceStatus]:
         """Enable the Microsoft 365 Backup Storage service for a tenant."""
         return_type = ClientResult(self.context, ServiceStatus())
