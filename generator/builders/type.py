@@ -345,7 +345,7 @@ class TypeBuilder(ast.NodeTransformer):
         """
         if self._options is None:
             return ""
-        entries = [(k[len("routing_"):], v.strip()) for k, v in self._options.items() if k.startswith("routing_")]
+        entries = [(k[len("routing_") :], v.strip()) for k, v in self._options.items() if k.startswith("routing_")]
 
         if not entries:
             return ""

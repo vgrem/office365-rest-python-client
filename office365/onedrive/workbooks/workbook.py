@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.applications.application import WorkbookApplication
@@ -24,12 +25,14 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 class Workbook(Entity):
     """The top-level object that contains related workbook objects such as worksheets, tables, and ranges."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def session_info_resource(self) -> ClientResult[WorkbookSessionInfo]:
         return_type = ClientResult(self.context, WorkbookSessionInfo())
         qry = FunctionQuery(self, "sessionInfoResource", None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def create_session(self, persist_changes: bool | None = None) -> ClientResult[WorkbookSessionInfo]:
         """
         Create a new workbook session.
@@ -51,6 +54,7 @@ class Workbook(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def refresh_session(self, session_id: str) -> Self:
         """Use this API to refresh an existing workbook session.
         :param str session_id: Identifier of the workbook session
@@ -63,6 +67,7 @@ class Workbook(Entity):
         self.context.add_query(qry).before_execute(_construct_request)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def close_session(self, session_id: str) -> Self:
         """Use this API to close an existing workbook session.
         :param str session_id: Identifier of the workbook session
