@@ -3,8 +3,8 @@ from typing import Optional
 
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.entity import Entity
-from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Trending(Entity):
@@ -32,5 +32,3 @@ class Trending(Entity):
             "resource",
             Entity(self.context, ResourcePath("resource", self.resource_path)),
         )
-
-

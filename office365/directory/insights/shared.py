@@ -1,9 +1,9 @@
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.directory.insights.sharing_detail import SharingDetail
 from office365.entity import Entity
-from office365.runtime.types.odata_property import odata
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SharedInsight(Entity):
@@ -41,5 +41,3 @@ class SharedInsight(Entity):
     def sharing_history(self) -> ClientValueCollection[SharingDetail]:
         """Details about the sharing history. Read-only"""
         return self.properties.get("sharingHistory", ClientValueCollection(SharingDetail))
-
-
