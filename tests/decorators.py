@@ -8,7 +8,6 @@ from unittest import TestCase
 
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
-    _cached_delegated_permissions,
     has_delegated_permission,
     has_role,
 )
@@ -92,28 +91,6 @@ def requires_delegated(
             if bypass_roles:
                 reasons.append(f"one of bypass roles: {', '.join(bypass_roles)}")
             self.skipTest(f"Insufficient — required: {' and '.join(reasons)}")
-
-        return cast(T, wrapper)
-
-    return decorator
-
-
-def requires_delegated_permission(*scopes: str) -> Callable[[T], T]:
-    """Skip test unless the app has the required delegated permissions."""
-
-    def decorator(test_method: T) -> T:
-        @wraps(test_method)
-        def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
-            client = getattr(self, "client", None)
-            if not client:
-                self.skipTest("No client available for permission check")
-
-            granted = _cached_delegated_permissions(client, test_client_id)
-
-            if not any(scope in granted for scope in scopes):
-                self.skipTest(f"Required delegated permission '{', '.join(scopes)}' not granted")
-
-            return test_method(self, *args, **kwargs)
 
         return cast(T, wrapper)
 

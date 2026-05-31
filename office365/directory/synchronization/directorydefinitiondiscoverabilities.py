@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class DirectoryDefinitionDiscoverabilities(Enum):
-    None_ = "0"
+    Unknown = "0"
     AttributeNames = "1"
     AttributeDataTypes = "2"
     AttributeReadOnly = "4"

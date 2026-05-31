@@ -27,7 +27,7 @@ class ClientValue:
                 for key, p_v in v.items():
                     prop_val.set_property(key, p_v, persist_changes)
             setattr(self, k, prop_val)
-        elif isinstance(prop_val, Enum):
+        elif isinstance(prop_val, Enum) and v is not None:
             setattr(self, k, parse_enum(type(prop_val), v))
         else:
             setattr(self, k, v)

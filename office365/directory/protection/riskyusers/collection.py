@@ -12,7 +12,7 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RiskyUser, resource_path)
 
-    def confirm_compromised(self, user_ids: list[str] | None =None):
+    def confirm_compromised(self, user_ids: list[str] | None = None):
         """Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level
         to high.
 

@@ -4,7 +4,7 @@ from enum import Enum
 class PrincipalSource(Enum):
     """Specifies the source of a principal."""
 
-    None_ = 0
+    Unknown = 0
     """Do not specify a principal source."""
 
     UserInfoList = 1

@@ -10,7 +10,7 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class CustomTaskExtensionCallbackData(ClientValue):
-    operationStatus: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.none_
+    operationStatus: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.unknown
 
     @property
     def entity_type_name(self):

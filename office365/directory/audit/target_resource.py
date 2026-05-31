@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from office365.directory.groups.grouptype import GroupType
 from office365.runtime.client_value import ClientValue
@@ -17,7 +17,9 @@ class TargetResource(ClientValue):
     groupType: GroupType = GroupType.none
     id: str | None = None
     type: str | None = None
-    modifiedProperties: ClientValueCollection[ModifiedProperty] = ClientValueCollection(ModifiedProperty)
+    modifiedProperties: ClientValueCollection[ModifiedProperty] = field(
+        default_factory=lambda: ClientValueCollection(ModifiedProperty)
+    )
 
     @property
     def entity_type_name(self):

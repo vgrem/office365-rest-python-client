@@ -65,9 +65,7 @@ class PropertyBuilder:
                         ast.keyword(
                             arg="default_factory",
                             value=ast.Lambda(
-                                args=ast.arguments(
-                                    posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]
-                                ),
+                                args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
                                 body=ast.Call(
                                     func=ast.Name(id=base_name, ctx=ast.Load()),
                                     args=[ast.Name(id=item_name, ctx=ast.Load())],
@@ -81,9 +79,14 @@ class PropertyBuilder:
             return ast.Constant(value=None)
         else:
             return ast.Call(
-                func=ast.Name(id=self.client_type_name, ctx=ast.Load()),
+                func=ast.Name(id="field", ctx=ast.Load()),
                 args=[],
-                keywords=[],
+                keywords=[
+                    ast.keyword(
+                        arg="default_factory",
+                        value=ast.Name(id=self.client_type_name, ctx=ast.Load()),
+                    )
+                ],
             )
 
     def build_assign(self) -> Assign:

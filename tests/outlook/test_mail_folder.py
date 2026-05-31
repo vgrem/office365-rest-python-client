@@ -30,7 +30,7 @@ class TestGraphMail(GraphDelegatedTestCase):
         folder.update().execute_query()
         self.assertIsNotNone(folder.resource_path)
 
-    # @requires_delegated_permission("Mail.ReadWrite")
+    # @requires_delegated("Mail.ReadWrite")
     # def test4_delete_mail_folder(self):
     #    folder = self.__class__.target_mail_folder
     #    folder.delete_object().execute_query()
