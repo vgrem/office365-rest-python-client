@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
@@ -70,7 +70,6 @@ from office365.outlook.mail.tips.tips import MailTips
 from office365.outlook.person import Person
 from office365.outlook.user import OutlookUser
 from office365.planner.user import PlannerUser
-from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
@@ -82,6 +81,7 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.teams.chats.collection import ChatCollection
 from office365.teams.collection import TeamCollection
 from office365.teams.teamwork.shiftmanagement.user_solution_root import UserSolutionRoot
@@ -1133,8 +1133,8 @@ class User(DirectoryObject):
         """
         return self.properties.get("passwordPolicies", None)
 
+    @odata(name="passwordProfile", persist=True)
     @property
-    @persist_property("passwordProfile")
     def password_profile(self) -> PasswordProfile:
         """
         Specifies the password profile for the user. The profile contains the user's password.
@@ -1205,37 +1205,6 @@ class User(DirectoryObject):
         legal requirement to check for availability of services in countries. Examples include: US, JP, and GB.
         """
         return self.properties.get("usageLocation", None)
-
-    def get_property(self, name: str, default_value: Any = None):
-        if default_value is None:
-            property_mapping = {
-                "appRoleAssignments": self.app_role_assignments,
-                "businessPhones": self.business_phones,
-                "calendarGroups": self.calendar_groups,
-                "contactFolders": self.contact_folders,
-                "createdObjects": self.created_objects,
-                "employeeExperience": self.employee_experience,
-                "followedSites": self.followed_sites,
-                "lastPasswordChangeDateTime": self.last_password_change_datetime,
-                "licenseDetails": self.license_details,
-                "managedDevices": self.managed_devices,
-                "memberOf": self.member_of,
-                "transitiveMemberOf": self.transitive_member_of,
-                "joinedTeams": self.joined_teams,
-                "assignedLicenses": self.assigned_licenses,
-                "mailFolders": self.mail_folders,
-                "mailboxSettings": self.mailbox_settings,
-                "directReports": self.direct_reports,
-                "onlineMeetings": self.online_meetings,
-                "oauth2PermissionGrants": self.oauth2_permission_grants,
-                "ownedDevices": self.owned_devices,
-                "ownedObjects": self.owned_objects,
-                "passwordProfile": self.password_profile,
-                "registeredDevices": self.registered_devices,
-                "signInActivity": self.sign_in_activity,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

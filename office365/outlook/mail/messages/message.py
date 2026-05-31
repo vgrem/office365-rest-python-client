@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import uuid
 from datetime import datetime
-from typing import IO, Any, AnyStr, Callable, List, Optional, Tuple, Union
+from typing import IO, AnyStr, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
@@ -22,12 +22,12 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
 from office365.outlook.mail.recipient import Recipient
-from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Message(OutlookItem):
@@ -257,8 +257,8 @@ class Message(OutlookItem):
         """
         return self.properties.get("hasAttachments", None)
 
+    @odata(name="attachments", persist=True)
     @property
-    @persist_property()
     def attachments(self) -> AttachmentCollection:
         """The fileAttachment and itemAttachment attachments for the message."""
         return self.properties.setdefault(
@@ -320,6 +320,7 @@ class Message(OutlookItem):
         """
         return self.properties.get("flag", FollowupFlag())
 
+    @odata(name="from")
     @property
     def sent_from(self) -> Recipient:
         """
@@ -342,6 +343,7 @@ class Message(OutlookItem):
         """
         return self.properties.get("inferenceClassification", None)
 
+    @odata(name="internetMessageHeaders")
     @property
     def internet_message_headers(self) -> ClientValueCollection[InternetMessageHeader]:
         """
@@ -382,11 +384,13 @@ class Message(OutlookItem):
         """
         return self.properties.get("isReadReceiptRequested", None)
 
+    @odata(name="receivedDateTime")
     @property
     def received_datetime(self) -> datetime:
         """The date and time the message was received."""
         return self.properties.get("receivedDateTime", datetime.min)
 
+    @odata(name="sentDateTime")
     @property
     def sent_datetime(self) -> datetime:
         """The date and time the message was sent."""
@@ -402,26 +406,26 @@ class Message(OutlookItem):
         """Sets the subject of the message."""
         self.set_property("subject", value)
 
+    @odata(name="toRecipients", persist=True)
     @property
-    @persist_property("toRecipients")
     def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the message."""
         return self.properties.setdefault("toRecipients", ClientValueCollection(Recipient))
 
+    @odata(name="bccRecipients", persist=True)
     @property
-    @persist_property("bccRecipients")
     def bcc_recipients(self) -> ClientValueCollection[Recipient]:
         """The BCC: recipients for the message."""
         return self.properties.setdefault("bccRecipients", ClientValueCollection(Recipient))
 
+    @odata(name="ccRecipients", persist=True)
     @property
-    @persist_property("ccRecipients")
     def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The CC: recipients for the message."""
         return self.properties.setdefault("ccRecipients", ClientValueCollection(Recipient))
 
+    @odata(name="replyTo", persist=True)
     @property
-    @persist_property("replyTo")
     def reply_to(self) -> ClientValueCollection[Recipient]:
         """The replyTo: recipients for the reply to the message."""
         return self.properties.setdefault("replyTo", ClientValueCollection(Recipient))
@@ -455,6 +459,7 @@ class Message(OutlookItem):
         """
         return self.properties.get("webLink", None)
 
+    @odata(name="multiValueExtendedProperties")
     @property
     def multi_value_extended_properties(
         self,
@@ -469,6 +474,7 @@ class Message(OutlookItem):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties")
     @property
     def single_value_extended_properties(
         self,
@@ -482,20 +488,3 @@ class Message(OutlookItem):
                 ResourcePath("singleValueExtendedProperties", self.resource_path),
             ),
         )
-
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_type_mapping = {
-                "toRecipients": self.to_recipients,
-                "bccRecipients": self.bcc_recipients,
-                "ccRecipients": self.cc_recipients,
-                "from": self.sent_from,
-                "internetMessageHeaders": self.internet_message_headers,
-                "multiValueExtendedProperties": self.multi_value_extended_properties,
-                "receivedDateTime": self.received_datetime,
-                "sentDateTime": self.sent_datetime,
-                "singleValueExtendedProperties": self.single_value_extended_properties,
-            }
-            default_value = property_type_mapping.get(name, None)
-
-        return super().get_property(name, default_value)

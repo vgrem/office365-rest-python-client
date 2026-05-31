@@ -1263,7 +1263,7 @@ class Web(SecurableObject):
         self,
         value: str,
         display_format: DateTimeFieldFormatType = DateTimeFieldFormatType.DateTime,
-        calendar_type: CalendarType = CalendarType.None_,
+        calendar_type: CalendarType = CalendarType.Unknown,
     ) -> ClientResult[str]:
         """
         Returns parsed DateTime value.

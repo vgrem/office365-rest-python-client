@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
@@ -412,6 +413,7 @@ class Folder(Entity):
         self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return return_type
 
+    @odata(name="StorageMetrics")
     @property
     def storage_metrics(self) -> StorageMetrics:
         """Specifies the storage-related metrics for list folders in the site"""
@@ -419,6 +421,7 @@ class Folder(Entity):
             "StorageMetrics", StorageMetrics(self.context, ResourcePath("StorageMetrics", self.resource_path))
         )
 
+    @odata(name="ListItemAllFields")
     @property
     def list_item_all_fields(self) -> ListItem:
         """Specifies the list item fields values for the list item corresponding to the folder."""
@@ -444,6 +447,7 @@ class Folder(Entity):
             "Folders", FolderCollection(self.context, ResourcePath("Folders", self.resource_path), self)
         )
 
+    @odata(name="ParentFolder")
     @property
     def parent_folder(self) -> Folder:
         """Specifies the list folder."""
@@ -481,21 +485,25 @@ class Folder(Entity):
         """Specifies the server-relative URL for the list folder Welcome page."""
         return self.properties.get("WelcomePage", None)
 
+    @odata(name="UniqueContentTypeOrder")
     @property
     def unique_content_type_order(self) -> ContentTypeId:
         """Specifies the content type order for the list folder."""
         return self.properties.get("UniqueContentTypeOrder", ContentTypeId())
 
+    @odata(name="ContentTypeOrder")
     @property
     def content_type_order(self) -> ContentTypeId:
         """Specifies the content type order for the list folder."""
         return self.properties.get("ContentTypeOrder", ContentTypeId())
 
+    @odata(name="TimeLastModified")
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Gets the last time this folder or a direct child was modified in UTC."""
         return self.properties.get("TimeLastModified", datetime.min)
 
+    @odata(name="TimeCreated")
     @property
     def time_created(self) -> Optional[datetime]:
         """Gets when the folder was created in UTC."""
@@ -506,6 +514,7 @@ class Folder(Entity):
         """Gets the server-relative URL of the list folder."""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the list folder."""
@@ -514,21 +523,6 @@ class Folder(Entity):
     @property
     def property_ref_name(self) -> Optional[str]:  # type: ignore[override]
         return None
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "ContentTypeOrder": self.content_type_order,
-                "UniqueContentTypeOrder": self.unique_content_type_order,
-                "ListItemAllFields": self.list_item_all_fields,
-                "ParentFolder": self.parent_folder,
-                "ServerRelativePath": self.server_relative_path,
-                "StorageMetrics": self.storage_metrics,
-                "TimeCreated": self.time_created,
-                "TimeLastModified": self.time_last_modified,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

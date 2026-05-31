@@ -11,6 +11,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.log_item_query import ChangeLogItemQuery
 from office365.sharepoint.changes.query import ChangeQuery
@@ -916,6 +917,7 @@ class List(SecurableObject):
         """Specifies the location of the default display form for the list."""
         return self.properties.get("DefaultDisplayFormUrl", None)
 
+    @odata(name="DefaultViewPath")
     @property
     def default_view_path(self) -> SPResPath:
         """Specifies the server-relative URL of the default view for the list."""
@@ -936,6 +938,7 @@ class List(SecurableObject):
         """
         return self.properties.get("CrawlNonDefaultViews", None)
 
+    @odata(name="CreatablesInfo")
     @property
     def creatables_info(self) -> CreatablesInfo:
         """
@@ -952,11 +955,13 @@ class List(SecurableObject):
             CreatablesInfo(self.context, ResourcePath("CreatablesInfo", self.resource_path)),
         )
 
+    @odata(name="CurrentChangeToken")
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the current change token that is used in the change log for the list."""
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
+    @odata(name="DataSource")
     @property
     def data_source(self) -> ListDataSource:
         """
@@ -996,6 +1001,7 @@ class List(SecurableObject):
         """Specifies the URL of the document template assigned to the list."""
         return self.properties.get("DocumentTemplateUrl", None)
 
+    @odata(name="EffectiveBasePermissions")
     @property
     def effective_base_permissions(self):
         """
@@ -1005,6 +1011,7 @@ class List(SecurableObject):
 
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
+    @odata(name="EffectiveBasePermissionsForUI")
     @property
     def effective_base_permissions_for_ui(self):
         """
@@ -1156,6 +1163,7 @@ class List(SecurableObject):
             ViewCollection(self.context, ResourcePath("views", self.resource_path), self),
         )
 
+    @odata(name="DefaultView")
     @property
     def default_view(self) -> View:
         """Gets or sets a value that specifies whether the list view is the default list view."""
@@ -1164,6 +1172,7 @@ class List(SecurableObject):
             View(self.context, ResourcePath("DefaultView", self.resource_path), self),
         )
 
+    @odata(name="ContentTypes")
     @property
     def content_types(self) -> ContentTypeCollection:
         """Gets the content types that are associated with the list."""
@@ -1217,6 +1226,7 @@ class List(SecurableObject):
             VersionPolicyManager(self.context, ResourcePath("VersionPolicies", self.resource_path)),
         )
 
+    @odata(name="CustomActionElements")
     @property
     def custom_action_elements(self) -> CustomActionElementCollection:
         return self.properties.get("CustomActionElements", CustomActionElementCollection())
@@ -1239,6 +1249,7 @@ class List(SecurableObject):
             Web(self.context, ResourcePath("parentWeb", self.resource_path)),
         )
 
+    @odata(name="EventReceivers")
     @property
     def event_receivers(self) -> EventReceiverDefinitionCollection:
         """Get Event receivers"""
@@ -1401,6 +1412,7 @@ class List(SecurableObject):
         """Sets the description for the list."""
         self.set_property("Description", val)
 
+    @odata(name="DescriptionResource")
     @property
     def description_resource(self) -> UserResource:
         """Represents the description of this list."""
@@ -1439,33 +1451,6 @@ class List(SecurableObject):
     def validation_formula(self) -> Optional[str]:
         """Specifies the data validation criteria for a list item."""
         return self.properties.get("ValidationFormula", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "CreatablesInfo": self.creatables_info,
-                "CurrentChangeToken": self.current_change_token,
-                "ContentTypes": self.content_types,
-                "CustomActionElements": self.custom_action_elements,
-                "DataSource": self.data_source,
-                "DescriptionResource": self.description_resource,
-                "DefaultView": self.default_view,
-                "DefaultViewPath": self.default_view_path,
-                "EffectiveBasePermissions": self.effective_base_permissions,
-                "EffectiveBasePermissionsForUI": self.effective_base_permissions_for_ui,
-                "EventReceivers": self.event_receivers,
-                "LastItemDeletedDate": self.last_item_deleted_date,
-                "LastItemModifiedDate": self.last_item_modified_date,
-                "LastItemUserModifiedDate": self.last_item_user_modified_date,
-                "ParentWeb": self.parent_web,
-                "ParentWebPath": self.parent_web_path,
-                "RootFolder": self.root_folder,
-                "TitleResource": self.title_resource,
-                "UserCustomActions": self.user_custom_actions,
-                "VersionPolicies": self.version_policies,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

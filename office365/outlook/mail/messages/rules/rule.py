@@ -3,7 +3,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.predicates import MessageRulePredicates
-from office365.runtime.client_object_meta import persist_property
+from office365.runtime.types.odata_property import odata
 
 
 class MessageRule(Entity):
@@ -12,8 +12,8 @@ class MessageRule(Entity):
     In Outlook, you can set up rules for incoming messages in the Inbox to carry out specific internal
     upon certain conditions."""
 
+    @odata(name="actions", persist=True)
     @property
-    @persist_property()
     def actions(self) -> MessageRuleActions:
         """Actions to be taken on a message when the corresponding conditions are fulfilled."""
         return self.properties.get("actions", MessageRuleActions())

@@ -22,13 +22,13 @@ from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.entity_collection import EntityCollection
-from office365.runtime.client_object_meta import persist_property
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Application(DirectoryObject):
@@ -241,8 +241,8 @@ class Application(DirectoryObject):
         authorization codes and access tokens."""
         return self.properties.get("spa", SpaApplication())
 
+    @odata(name="keyCredentials", persist=True)
     @property
-    @persist_property("keyCredentials")
     def key_credentials(self) -> ClientValueCollection[KeyCredential]:
         """The collection of key credentials associated with the application. Not nullable."""
         return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))

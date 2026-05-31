@@ -22,6 +22,7 @@ from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import _ODATA_MARKER
 from office365.runtime.utilities import parse_datetime, parse_enum
 
 if TYPE_CHECKING:
@@ -33,6 +34,22 @@ ClientObjectT = TypeVar("ClientObjectT", bound="ClientObject")
 
 class ClientObject:
     """Base client object which defines named properties and relationships of an entity."""
+
+    _odata_meta: dict[str, str] = {}
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        meta: dict[str, str] = {}
+        persist: list[str] = []
+        for attr_name, attr in cls.__dict__.items():
+            target = attr.fget if isinstance(attr, property) else attr
+            m = getattr(target, _ODATA_MARKER, None)
+            if m is not None:
+                meta[m.name] = attr_name
+                if m.persist:
+                    persist.append(m.name)
+        cls._odata_meta = meta
+        cls._odata_persist = persist
 
     def __init__(
         self,
@@ -49,7 +66,7 @@ class ClientObject:
             parent_collection: The collection that contains this object
         """
         self._properties: dict[str, Any] = {}
-        self._properties_to_persist: list[str] = []
+        self._changes: set[str] = set(getattr(type(self), "_odata_persist", []))
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context
@@ -92,8 +109,8 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self._properties = {k: v for k, v in self._properties.items() if k not in self._properties_to_persist}
-        self._properties_to_persist = []
+        self._properties = {k: v for k, v in self._properties.items() if k not in self._changes}
+        self._changes.clear()
         self._query_options = QueryOptions()
         return self
 
@@ -222,6 +239,10 @@ class ClientObject:
         """
         Gets the value of a property.
 
+        Resolves JSON keys to Python properties via ``@odata`` declaration on the
+        property method. Falls back to attribute name normalization for backwards
+        compatibility.
+
         Args:
             name: The property name
             default_value: Default value if property doesn't exist
@@ -230,6 +251,9 @@ class ClientObject:
             The property value or default value
         """
         if default_value is None:
+            odata_meta = type(self)._odata_meta
+            if name in odata_meta:
+                return getattr(self, odata_meta[name])
             normalized_name = name[0].lower() + name[1:]
             default_value = getattr(self, normalized_name, None)
         return self._properties.get(name, default_value)
@@ -247,7 +271,7 @@ class ClientObject:
             The current instance for method chaining
         """
         if persist_changes:
-            self._properties_to_persist.append(name)
+            self._changes.add(name)
 
         typed_value = self.get_property(name)
         if isinstance(typed_value, (ClientObject, ClientValue)):
@@ -359,7 +383,7 @@ class ClientObject:
 
     @property
     def persistable_properties(self):
-        return {k: self.get_property(k) for k in self._properties_to_persist if k in self._properties}
+        return {k: self.get_property(k) for k in self._changes if k in self._properties}
 
     @property
     def parent_collection(self) -> Optional[ClientObjectCollection]:
@@ -382,13 +406,11 @@ class ClientObject:
             Dictionary representing the serialized object
         """
         if json_format is None:
-            ser_prop_names = [n for n in self._properties.keys()]
             include_control_info = False
+            json = {k: self.get_property(k) for k in self._properties}
         else:
-            ser_prop_names = [n for n in self._properties_to_persist]
             include_control_info = self.entity_type_name is not None and json_format.include_control_information
-
-        json = {k: self.get_property(k) for k in self._properties if k in ser_prop_names}
+            json = {k: self.get_property(k) for k in self._changes if k in self._properties}
         for k, v in json.items():
             if isinstance(v, (ClientObject, ClientValue)):
                 json[k] = v.to_json(json_format)

@@ -9,6 +9,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.channels.channel import Channel
 from office365.teams.channels.collection import ChannelCollection
@@ -119,6 +120,7 @@ class Team(Entity):
         """Timestamp at which the team was created."""
         return self.properties.get("createdDateTime", None)
 
+    @odata(name="allChannels")
     @property
     def all_channels(self) -> ChannelCollection:
         """
@@ -129,6 +131,7 @@ class Team(Entity):
             ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path)),
         )
 
+    @odata(name="incomingChannels")
     @property
     def incoming_channels(self) -> ChannelCollection:
         """List of channels shared with the team."""
@@ -152,6 +155,7 @@ class Team(Entity):
 
         return self.properties.get("group", Group(self.context, ResourcePath("group", self.resource_path)))
 
+    @odata(name="primaryChannel")
     @property
     def primary_channel(self) -> Channel:
         """The general channel for the team."""
@@ -168,6 +172,7 @@ class Team(Entity):
             Schedule(self.context, ResourcePath("schedule", self.resource_path)),
         )
 
+    @odata(name="installedApps")
     @property
     def installed_apps(self) -> EntityCollection[TeamsAppInstallation]:
         """The apps installed in this team."""
@@ -192,6 +197,7 @@ class Team(Entity):
             ),
         )
 
+    @odata(name="permissionGrants")
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """
@@ -290,18 +296,6 @@ class Team(Entity):
         qry = ServiceOperationQuery(self, "sendActivityNotification", None, payload)
         self.context.add_query(qry)
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "allChannels": self.all_channels,
-                "incomingChannels": self.incoming_channels,
-                "installedApps": self.installed_apps,
-                "permissionGrants": self.permission_grants,
-                "primaryChannel": self.primary_channel,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
