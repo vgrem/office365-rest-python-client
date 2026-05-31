@@ -4,8 +4,6 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
@@ -18,6 +16,7 @@ from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity_collection import EntityCollection
 from office365.onedrive.drives.drive import Drive
@@ -59,7 +58,9 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    @require_permission(delegated=["Group.Read.All", "Group.ReadWrite.All"], application=["Group.Read.All", "Group.ReadWrite.All"])
+    @require_permission(
+        delegated=["Group.Read.All", "Group.ReadWrite.All"], application=["Group.Read.All", "Group.ReadWrite.All"]
+    )
     def check_granted_permissions_for_app(
         self,
     ) -> EntityCollection[ResourceSpecificPermissionGrant]:
@@ -106,7 +107,9 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    @require_permission(delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"])
+    @require_permission(
+        delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"]
+    )
     def add_team(self) -> Team:
         """Create a new team under a group."""
         qry = ServiceOperationQuery(self, "team", None, self.team, None, self.team)

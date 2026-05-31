@@ -1,4 +1,5 @@
 from office365.count_collection import CountCollection
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.runtime.paths.resource_path import ResourcePath
@@ -18,6 +19,7 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
+    @require_permission(delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"], application=["User.ReadWrite.All", "Directory.ReadWrite.All"])
     def add(self, user_properties: UserProfile) -> User:
         """Create a new user.
 

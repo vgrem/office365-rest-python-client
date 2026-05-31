@@ -9,6 +9,8 @@ from typing_extensions import Self
 from office365.communications.onlinemeetings.collection import OnlineMeetingCollection
 from office365.communications.presences.presence import Presence
 from office365.delta_collection import DeltaCollection
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
@@ -148,6 +150,7 @@ class User(DirectoryObject):
         self.update().before_execute(_construct_request)
         return self
 
+    @require_permission(delegated=["User.ReadWrite", "User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def add_extension(self, name: str) -> OpenTypeExtension:
         """
         Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
@@ -163,6 +166,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def assign_license(
         self,
         add_licenses: list[str] | list[AssignedLicense],
@@ -191,6 +195,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def assign_manager(self, user: str | User | OrgContact) -> DirectoryObject:
         """
         Assign a user's manager.
@@ -230,6 +235,7 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_execute(_construct_request)
         return self
 
+    @require_permission(delegated=["User.ReadWrite"], application=["User.ReadWrite.All"])
     def change_password(self, current_password: str, new_password: str) -> Self:
         """
         Enable the user to update their password. Any user can update their password without belonging
@@ -319,6 +325,7 @@ class User(DirectoryObject):
 
         return return_type
 
+    @require_permission(delegated=["Mail.Read", "Mail.ReadWrite"], application=["Mail.Read", "Mail.ReadWrite"])
     def get_mail_tips(
         self, email_addresses: list[str], mail_tips_options: str | None = None
     ) -> ClientResult[ClientValueCollection[MailTips]]:
@@ -353,6 +360,7 @@ class User(DirectoryObject):
         self.ensure_property("mySite").after_execute(lambda _: _loaded())
         return return_type
 
+    @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def send_mail(
         self,
         subject: str,
@@ -531,6 +539,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the user from directory
@@ -545,6 +554,7 @@ class User(DirectoryObject):
             deleted_user.delete_object()
         return self
 
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def revoke_signin_sessions(self) -> ClientResult[bool]:
         """
         Invalidates all the refresh tokens issued to applications for a user

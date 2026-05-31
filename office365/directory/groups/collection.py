@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from office365.count_collection import CountCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.groups.group import Group
 from office365.directory.groups.profile import GroupProfile
+from office365.directory.permissions.require_permission import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -75,7 +75,9 @@ class GroupCollection(CountCollection[Group]):
         )
         return self.add(params)
 
-    @require_permission(delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"])
+    @require_permission(
+        delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"]
+    )
     def create_with_team(self, group_name: str) -> Group:
         """
         Provision a new group along with a team.
