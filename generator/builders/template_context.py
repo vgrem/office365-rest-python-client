@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import ast
+import inspect
 import os
+from enum import Enum
 from os.path import abspath
-from typing import cast
+from typing import Optional, cast
 
 from office365.runtime.odata.type_information import TypeInformation
 
@@ -21,9 +23,10 @@ class TemplateContext:
         "EnumType": "enum_type.py",
     }
 
-    def __init__(self, template_path: str, schema: TypeInformation) -> None:
+    def __init__(self, template_path: str, schema: TypeInformation, modules: Optional[tuple[str, ...]] = None) -> None:
         self._template_path = template_path
         self._schema = schema
+        self._modules = modules or ()
 
     def load(self) -> ast.Module:
         file_name = self._FILE_MAP[self._schema.BaseTypeFullName]
@@ -79,6 +82,15 @@ class TemplateContext:
                 default_value = f"{prop_type_name}(self.context, ResourcePath('{prop_name}', self.resource_path))"
         elif builder.is_collection_type:
             default_value = f"{prop_type_name}({builder.client_item_type_name})"
+        elif self._modules:
+            resolved = builder._client_type.resolve_client_type(self._modules)
+            if resolved is not None and inspect.isclass(resolved):
+                if issubclass(resolved, Enum):
+                    members = list(resolved)
+                    if members:
+                        default_value = f"{prop_type_name}.{members[0].name}"
+                elif not builder._client_type.is_primitive_type:
+                    default_value = f"{prop_type_name}()"
 
         property_code = f'''
 @property

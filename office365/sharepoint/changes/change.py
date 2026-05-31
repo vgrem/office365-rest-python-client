@@ -42,5 +42,3 @@ class Change(Entity):
         Gets a value that specifies the time that the object was modified.
         """
         return self.properties.get("Time", datetime.min)
-
-

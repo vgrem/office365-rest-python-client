@@ -110,7 +110,9 @@ class TypeBuilder(ast.NodeTransformer):
     def build(self) -> Self:
         assert self._options is not None
         self._template = TemplateContext(
-            self._options.get("template_path", self._options.get("templatepath", "")), self._schema
+            self._options.get("template_path", self._options.get("templatepath", "")),
+            self._schema,
+            modules=tuple(self._options.get("modules", "").split(",")),
         )
 
         if self.state == "attached":
