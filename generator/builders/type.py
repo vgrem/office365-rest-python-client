@@ -284,6 +284,26 @@ class TypeBuilder(ast.NodeTransformer):
         with open(self.file, "w", encoding="utf-8") as f:
             f.write(code)
 
+    @staticmethod
+    def _build_type_name_property(full_name: str) -> ast.FunctionDef:
+        """Build the entity_type_name @property method."""
+        return ast.FunctionDef(
+            name="entity_type_name",
+            args=ast.arguments(
+                posonlyargs=[],
+                args=[ast.arg(arg="self")],
+                vararg=None,
+                kwonlyargs=[],
+                kw_defaults=[],
+                kwarg=None,
+                defaults=[],
+            ),
+            body=[ast.Return(value=ast.Constant(value=full_name))],
+            decorator_list=[ast.Name(id="property", ctx=ast.Load())],
+            returns=ast.Name(id="str", ctx=ast.Load()),
+            type_params=[],
+        )
+
     def _ensure_entity_type_name(self, class_node: ast.ClassDef):
         """Ensure the class has an entity_type_name property that returns the correct type name"""
 
@@ -300,8 +320,7 @@ class TypeBuilder(ast.NodeTransformer):
             return
 
         if not self._entity_type_name_exists:
-            assert self._template is not None
-            entity_type_name_method = self._template.build_type_name_property()
+            entity_type_name_method = self._build_type_name_property(self._schema.FullName)
             class_node.body.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
 

@@ -1,8 +1,11 @@
+from __future__ import annotations
+from dataclasses import dataclass
 from office365.runtime.client_value import ClientValue
 from dataclasses import dataclass, field
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
+@dataclass
 class UserPrint(ClientValue):
     recentPrinterShares: EntityCollection[PrinterShare] | None = None
 

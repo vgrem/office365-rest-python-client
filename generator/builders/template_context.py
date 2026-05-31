@@ -88,28 +88,4 @@ def {method_name}(self) -> {type_annotation}:
         parsed = ast.parse(property_code.strip())
         return cast(ast.FunctionDef, parsed.body[0])
 
-    def build_type_name_property(self):
-        """Ensure the class has an entity_type_name property that returns the correct type name"""
-        node = ast.FunctionDef(
-            name="entity_type_name",
-            args=ast.arguments(
-                posonlyargs=[],
-                args=[ast.arg(arg="self")],
-                vararg=None,
-                kwonlyargs=[],
-                kw_defaults=[],
-                kwarg=None,
-                defaults=[],
-            ),
-            body=[ast.Return(value=ast.Constant(value=self._schema.FullName))],
-            decorator_list=[ast.Name(id="property", ctx=ast.Load())],
-            returns=ast.Name(id="str", ctx=ast.Load()),
-            type_params=[],
-        )
 
-        return node
-
-    def _ensure_type_dependency(self, type_name: str) -> None:
-        """Track that a type dependency is needed"""
-        if type_name in self.TYPE_DEPENDENCIES:
-            self._required_imports.add(type_name)
