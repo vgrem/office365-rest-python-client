@@ -43,6 +43,7 @@ class SearchEntity(Entity):
             "ExternalItem.Read.All",
             "Chat.Read.All",
         ],
+        licenses=["SPE_E5"],
         notes="Permissions depend on the entity types being queried",
     )
     def query(

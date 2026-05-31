@@ -16,6 +16,7 @@ class PermissionRequirement:
     delegated: list[str] = field(default_factory=list)
     application: list[str] = field(default_factory=list)
     directory_roles: list[str] = field(default_factory=list)
+    licenses: list[str] = field(default_factory=list)
     notes: str = ""
 
 
@@ -23,6 +24,7 @@ def require_permission(
     delegated: list[str] | None = None,
     application: list[str] | None = None,
     directory_roles: list[str] | None = None,
+    licenses: list[str] | None = None,
     notes: str = "",
 ):
     """Annotate a method with the permissions it requires.
@@ -45,6 +47,7 @@ def require_permission(
         delegated=delegated or [],
         application=application or [],
         directory_roles=directory_roles or [],
+        licenses=licenses or [],
         notes=notes,
     )
 
@@ -58,6 +61,8 @@ def require_permission(
             lines.append(f"      Application: {', '.join(req.application)}")
         if req.directory_roles:
             lines.append(f"      Directory roles: {', '.join(req.directory_roles)}")
+        if req.licenses:
+            lines.append(f"      Licenses: {', '.join(req.licenses)}")
         if req.notes:
             lines.append(f"      Notes: {req.notes}")
 
