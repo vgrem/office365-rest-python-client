@@ -39,9 +39,22 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
         else:
             exact_ignored.append(ignored_type)
 
+    start_at = options.get("start_at", "")
+    started = not start_at
+    if start_at and not any(n.startswith(start_at) for n in model.types):
+        print(f"  Warning: start_at '{start_at}' does not match any types, proceeding from beginning")
+
     for name in model.types:
         if name in processed_types:
             continue
+
+        if not started:
+            if name.startswith(start_at):
+                started = True
+            else:
+                print(f"  Skipping {name} (start_at={start_at})")
+                processed_types.add(name)
+                continue
 
         if name in exact_ignored:
             continue

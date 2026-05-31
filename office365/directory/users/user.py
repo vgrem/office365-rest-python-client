@@ -9,8 +9,6 @@ from typing_extensions import Self
 from office365.communications.onlinemeetings.collection import OnlineMeetingCollection
 from office365.communications.presences.presence import Presence
 from office365.delta_collection import DeltaCollection
-from office365.directory.permissions.require_permission import require_permission
-
 from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
@@ -30,6 +28,7 @@ from office365.directory.licenses.details import LicenseDetails
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
+from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
 from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.directory.users.activities.collection import UserActivityCollection

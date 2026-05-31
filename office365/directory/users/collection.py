@@ -19,7 +19,10 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
-    @require_permission(delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"], application=["User.ReadWrite.All", "Directory.ReadWrite.All"])
+    @require_permission(
+        delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["User.ReadWrite.All", "Directory.ReadWrite.All"],
+    )
     def add(self, user_properties: UserProfile) -> User:
         """Create a new user.
 
