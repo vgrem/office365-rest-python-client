@@ -18,3 +18,7 @@ class ItemReference(ClientValue):
     siteId: str | None = None
     sharepointIds: SharePointIds | None = field(default_factory=SharePointIds)
     shareId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ItemReference"

@@ -13,3 +13,7 @@ class Album(ClientValue):
     """
 
     coverImageItemId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Album"

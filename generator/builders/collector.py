@@ -29,7 +29,7 @@ class TypeReferenceCollector:
         "ClientValueCollection": "office365.runtime.client_value_collection",
     }
 
-    OPTIONAL_TYPES: ClassVar[set[str]] = {"str", "int", "bool", "float", "UUID", "bytes", "date", "time"}
+    OPTIONAL_TYPES: ClassVar[set[str]] = {"str", "int", "bool", "float", "UUID", "bytes", "date", "time", "dict"}
 
     def __init__(self, modules: tuple[str, ...]) -> None:
         self._modules = modules

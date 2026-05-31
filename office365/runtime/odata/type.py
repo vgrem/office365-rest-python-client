@@ -25,6 +25,7 @@ _PRIMITIVE_TYPES = {
     "Edm.Duration": datetime.timedelta,
     "Edm.Date": datetime.date,
     "Edm.TimeOfDay": datetime.time,
+    "Edm.Json": dict,
     "Collection(SP.KeyValue)": dict,
     "Collection(Edm.Guid)": GuidCollection,
     "Collection(Edm.String)": StringCollection,

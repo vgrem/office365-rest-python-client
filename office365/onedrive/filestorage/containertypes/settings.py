@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+from office365.admin.sharepoint.sharingcapabilities import SharingCapabilities
 from office365.runtime.client_value import ClientValue
 
 
@@ -38,3 +39,8 @@ class FileStorageContainerTypeSettings(ClientValue):
     isSharingRestricted: Optional[bool] = None
     consumingTenantOverridables: Optional[str] = None
     urlTemplate: Optional[str] = None
+    sharingCapability: SharingCapabilities = SharingCapabilities.disabled
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FileStorageContainerTypeSettings"

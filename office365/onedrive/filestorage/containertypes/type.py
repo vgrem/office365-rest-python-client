@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 
 if TYPE_CHECKING:
-    from office365.onedrive.filestorage.container_type_settings import (
+    from office365.onedrive.filestorage.containertypes.settings import (
         FileStorageContainerTypeSettings,
     )
 

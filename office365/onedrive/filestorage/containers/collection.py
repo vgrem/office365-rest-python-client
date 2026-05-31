@@ -4,7 +4,7 @@ import uuid
 
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
-from office365.onedrive.filestorage.container import FileStorageContainer
+from office365.onedrive.filestorage.containers.container import FileStorageContainer
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 

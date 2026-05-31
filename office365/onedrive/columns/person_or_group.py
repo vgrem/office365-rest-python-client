@@ -13,3 +13,7 @@ class PersonOrGroupColumn(ClientValue):
     allowMultipleSelection: bool | None = None
     chooseFromType: str | None = None
     displayAs: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PersonOrGroupColumn"

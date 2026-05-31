@@ -14,3 +14,7 @@ class ColumnValidation(ClientValue):
     formula: str | None = None
     descriptions: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(DisplayNameLocalization))
     defaultLanguage: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ColumnValidation"

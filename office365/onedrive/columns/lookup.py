@@ -17,3 +17,7 @@ class LookupColumn(ClientValue):
     allowMultipleValues: bool | None = None
     allowUnlimitedLength: bool | None = None
     primaryLookupColumnId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.LookupColumn"

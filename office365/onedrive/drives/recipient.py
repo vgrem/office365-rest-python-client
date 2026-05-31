@@ -23,3 +23,7 @@ class DriveRecipient(ClientValue):
         :type value: str
         """
         return DriveRecipient(email=value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DriveRecipient"

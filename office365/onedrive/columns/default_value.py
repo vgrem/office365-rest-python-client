@@ -12,3 +12,7 @@ class DefaultColumnValue(ClientValue):
 
     formula: str | None = None
     value: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DefaultColumnValue"

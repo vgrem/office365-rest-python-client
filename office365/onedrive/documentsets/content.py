@@ -13,3 +13,7 @@ class DocumentSetContent(ClientValue):
     contentType: ContentTypeInfo | None = None
     fileName: str | None = None
     folderName: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DocumentSetContent"

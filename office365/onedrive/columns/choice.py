@@ -16,3 +16,7 @@ class ChoiceColumn(ClientValue):
     allowTextEntry: bool | None = True
     choices: StringCollection = field(default_factory=StringCollection)
     displayAs: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ChoiceColumn"

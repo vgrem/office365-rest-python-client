@@ -10,3 +10,7 @@ class PendingContentUpdate(ClientValue):
     """Indicates that an operation that might affect the binary content of the driveItem is pending completion."""
 
     queuedDateTime: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PendingContentUpdate"

@@ -23,3 +23,7 @@ class ItemPreviewInfo(ClientValue):
     getUrl: str | None = None
     postParameters: str | None = None
     postUrl: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ItemPreviewInfo"

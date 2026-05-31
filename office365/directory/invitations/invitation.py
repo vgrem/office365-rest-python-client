@@ -52,5 +52,3 @@ class Invitation(Entity):
             "invitedUser",
             User(self.context, ResourcePath("invitedUser", self.resource_path)),
         )
-
-

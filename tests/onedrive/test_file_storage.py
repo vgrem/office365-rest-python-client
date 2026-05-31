@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import Optional
 
-from office365.onedrive.filestorage.container import FileStorageContainer
+from office365.onedrive.filestorage.containers.container import FileStorageContainer
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 

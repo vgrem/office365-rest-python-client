@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from office365.onedrive.driveitems.source import DriveItemSource
 from office365.onedrive.files.system_info import FileSystemInfo
+from office365.onedrive.media_source import MediaSource
 from office365.runtime.client_value import ClientValue
 
 
@@ -14,8 +16,15 @@ class DriveItemUploadableProperties(ClientValue):
     name: str | None = None
     description: str | None = None
     _fileSize: int | None = None
+    driveItemSource: DriveItemSource = field(default_factory=DriveItemSource)
+    fileSize: int | None = None
+    mediaSource: MediaSource = field(default_factory=MediaSource)
 
     @property
     def file_size(self):
         """Provides an expected file size to perform a quota check prior to upload. Only on OneDrive Personal."""
         return self._fileSize
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DriveItemUploadableProperties"

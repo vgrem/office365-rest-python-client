@@ -14,3 +14,7 @@ class DocumentSetVersionItem(ClientValue):
     itemId: str | None = None
     title: str | None = None
     versionId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DocumentSetVersionItem"

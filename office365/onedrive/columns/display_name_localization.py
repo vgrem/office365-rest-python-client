@@ -11,3 +11,7 @@ class DisplayNameLocalization(ClientValue):
 
     displayName: str | None = None
     languageTag: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DisplayNameLocalization"

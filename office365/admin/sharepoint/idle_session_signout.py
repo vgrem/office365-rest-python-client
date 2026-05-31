@@ -12,3 +12,7 @@ class IdleSessionSignOut(ClientValue):
     isEnabled: bool | None = None
     signOutAfterInSeconds: int | None = None
     warnAfterInSeconds: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.IdleSessionSignOut"

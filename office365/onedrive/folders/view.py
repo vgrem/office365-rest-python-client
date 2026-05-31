@@ -12,3 +12,7 @@ class FolderView(ClientValue):
     sortBy: str | None = None
     sortOrder: str | None = None
     viewType: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FolderView"

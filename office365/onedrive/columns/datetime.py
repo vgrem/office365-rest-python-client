@@ -11,3 +11,7 @@ class DateTimeColumn(ClientValue):
 
     displayAs: str | None = None
     format: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DateTimeColumn"

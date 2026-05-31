@@ -11,3 +11,7 @@ class ContentTypeOrder(ClientValue):
 
     default: bool | None = None
     position: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ContentTypeOrder"

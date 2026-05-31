@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
-from office365.onedrive.filestorage.container_type import (
+from office365.onedrive.filestorage.containertypes.type import (
     FileStorageContainerType,
 )
 from office365.runtime.queries.create_entity import CreateEntityQuery

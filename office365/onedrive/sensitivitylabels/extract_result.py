@@ -12,3 +12,7 @@ class ExtractSensitivityLabelsResult(ClientValue):
     """Represents the response format for the extractSensitivityLabels API."""
 
     labels: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(SensitivityLabelAssignment))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ExtractSensitivityLabelsResult"

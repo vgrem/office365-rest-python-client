@@ -1,8 +1,8 @@
 from office365.entity import Entity
-from office365.onedrive.filestorage.container_collection import (
+from office365.onedrive.filestorage.containers.collection import (
     FileStorageContainerCollection,
 )
-from office365.onedrive.filestorage.container_type_collection import (
+from office365.onedrive.filestorage.containertypes.collection import (
     FileStorageContainerTypeCollection,
 )
 from office365.runtime.paths.resource_path import ResourcePath
