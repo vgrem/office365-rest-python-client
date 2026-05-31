@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import ast
+import os
+from os.path import abspath
 from typing import cast
 
 from office365.runtime.odata.type_information import TypeInformation
 
 from generator.builders.collector import TypeReferenceCollector
-from generator.builders.loader import TemplateLoader
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
 
@@ -14,12 +15,21 @@ from generator.builders.property import PropertyBuilder
 class TemplateContext:
     """Template context — orchestrates template loading and property building."""
 
+    _FILE_MAP: dict[str, str] = {
+        "ComplexType": "complex_type.py",
+        "EntityType": "entity_type.py",
+        "EnumType": "enum_type.py",
+    }
+
     def __init__(self, template_path: str, schema: TypeInformation) -> None:
-        self._loader = TemplateLoader(template_path, schema)
+        self._template_path = template_path
         self._schema = schema
 
     def load(self) -> ast.Module:
-        return self._loader.load()
+        file_name = self._FILE_MAP[self._schema.BaseTypeFullName]
+        path = abspath(os.path.join(self._template_path, file_name))
+        with open(path, encoding="utf-8") as f:
+            return ast.parse(f.read())
 
     def build_references(self, collector: TypeReferenceCollector) -> list[ast.ImportFrom]:
         """Generate import statements from a TypeReferenceCollector."""
