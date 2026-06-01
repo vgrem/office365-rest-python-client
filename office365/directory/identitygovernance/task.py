@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.identitygovernance.lifecycletaskcategory import LifecycleTaskCategory
-from office365.directory.identitygovernance.task_processing_result import TaskProcessingResult
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.key_value_pair import KeyValuePair
+
+if TYPE_CHECKING:
+    from office365.directory.identitygovernance.task_processing_result import TaskProcessingResult
 
 
 class Task(Entity):

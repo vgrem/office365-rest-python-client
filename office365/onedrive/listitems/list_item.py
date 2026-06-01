@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
+from office365.runtime.types.odata_property import odata
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
 from office365.onedrive.base_item import BaseItem
@@ -69,6 +70,7 @@ class ListItem(BaseItem):
             ),
         )
 
+    @odata(name="driveItem")
     @property
     def drive_item(self) -> DriveItem:
         """For document libraries, the driveItem relationship exposes the listItem as a driveItem."""
@@ -79,6 +81,7 @@ class ListItem(BaseItem):
             DriveItem(self.context, ResourcePath("driveItem", self.resource_path)),
         )
 
+    @odata(name="contentType")
     @property
     def content_type(self) -> ContentTypeInfo:
         """The content type of this list item"""
@@ -92,6 +95,7 @@ class ListItem(BaseItem):
             ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path)),
         )
 
+    @odata(name="documentSetVersions")
     @property
     def document_set_versions(self) -> EntityCollection[DocumentSetVersion]:
         """Version information for a document set version created by a user."""
@@ -104,12 +108,4 @@ class ListItem(BaseItem):
             ),
         )
 
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "contentType": self.content_type,
-                "documentSetVersions": self.document_set_versions,
-                "driveItem": self.drive_item,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+

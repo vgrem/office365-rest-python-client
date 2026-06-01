@@ -3,9 +3,6 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
-from office365.runtime.types.odata_property import odata
-
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -21,6 +18,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Contact(OutlookItem):
@@ -275,8 +273,6 @@ class Contact(OutlookItem):
     def yomi_surname(self) -> Optional[str]:
         """Gets the yomiSurname property"""
         return self.properties.get("yomiSurname", None)
-
-
 
     @property
     def entity_type_name(self) -> str:
