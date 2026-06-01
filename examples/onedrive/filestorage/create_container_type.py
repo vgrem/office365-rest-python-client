@@ -27,6 +27,10 @@ if create_trial:
     ).execute_query()
     print(f"Created: {ct.name} (ID: {ct.id}, expires: {ct.expiration_datetime})")
 
+    # Grant FileStorageContainer.Selected so the app can create containers
+    grant = ct.grant_permissions(test_client_id).execute_query()
+    print(f"Granted: {grant.roles} to {ct.name}")
+
 
 # List all container types
 types = client.storage.file_storage.container_types.get().execute_query()

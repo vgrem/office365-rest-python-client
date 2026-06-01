@@ -48,7 +48,8 @@ class Entity(ClientObject):
         Returns:
             self: Supports method chaining
         """
-        return cast(Self, self.context.execute_batch(items_per_batch, success_callback))  # type: ignore[arg-type]
+        self.context.execute_batch(items_per_batch, success_callback)
+        return self
 
     def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
         """
