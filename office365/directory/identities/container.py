@@ -2,7 +2,6 @@ from office365.directory.authentication.conditions.event_listener import (
     AuthenticationEventListener,
 )
 from office365.directory.identities.api_connector import IdentityApiConnector
-from office365.runtime.types.odata_property import odata
 from office365.directory.identities.conditional_access_root import ConditionalAccessRoot
 from office365.directory.identities.providers.base_collection import (
     IdentityProviderBaseCollection,
@@ -12,6 +11,7 @@ from office365.directory.identities.userflows.b2x.user_flow import B2XIdentityUs
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class IdentityContainer(Entity):
@@ -91,5 +91,3 @@ class IdentityContainer(Entity):
                 ResourcePath("userFlowAttributes", self.resource_path),
             ),
         )
-
-

@@ -1,5 +1,6 @@
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -10,6 +11,7 @@ class Authentication(Entity):
     for users.
     """
 
+    @odata(name="emailMethods")
     @property
     def email_methods(self):
         """The email address registered to a user for authentication."""
@@ -26,6 +28,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="fido2Methods")
     @property
     def fido2_methods(self):
         """Represents the FIDO2 security keys registered to a user for authentication."""
@@ -42,6 +45,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="microsoftAuthenticatorMethods")
     @property
     def microsoft_authenticator_methods(self):
         from office365.directory.authentication.methods.microsoft_authenticator import (
@@ -57,6 +61,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="phoneMethods")
     @property
     def phone_methods(self):
         """The phone numbers registered to a user for authentication."""
@@ -73,6 +78,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="passwordMethods")
     @property
     def password_methods(self):
         """Represents the password that's registered to a user for authentication. For security, the password itself
@@ -103,14 +109,4 @@ class Authentication(Entity):
             ),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "emailMethods": self.email_methods,
-                "fido2Methods": self.fido2_methods,
-                "microsoftAuthenticatorMethods": self.microsoft_authenticator_methods,
-                "passwordMethods": self.password_methods,
-                "phoneMethods": self.phone_methods,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
