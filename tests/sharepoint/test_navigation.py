@@ -13,6 +13,11 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestNavigation(SPTestCase):
     target_node: NavigationNode | None = None
 
+    def test_1_list_navigation_nodes(self):
+        """List all navigation nodes in the Quick Launch."""
+        result = self.client.web.navigation.quick_launch.get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+
     def test_2_is_global_nav_enabled(self):
         result = self.client.navigation_service.global_nav_enabled().execute_query()
         self.assertIsNotNone(result.value)
@@ -45,8 +50,12 @@ class TestNavigation(SPTestCase):
 
     def test_7_delete_navigation_node(self):
         assert self.target_node is not None
+        node_id = self.target_node.properties.get("Id")
         self.target_node.delete_object().execute_query()
+        # Verify deletion by confirming no node with that ID exists
+        result = self.client.web.navigation.quick_launch.get().execute_query()
+        self.assertFalse(any(n.properties.get("Id") == node_id for n in result))
 
-    def test8_get_publishing_navigation_provider_type(self):
+    def test_8_get_publishing_navigation_provider_type(self):
         result = self.client.navigation_service.get_publishing_navigation_provider_type().execute_query()
         self.assertIsInstance(result.value, PublishingNavigationProviderType)
