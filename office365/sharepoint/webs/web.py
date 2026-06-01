@@ -14,6 +14,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.activities.entity import SPActivityEntity
 from office365.sharepoint.activities.logger import ActivityLogger
 from office365.sharepoint.alerts.collection import AlertCollection
@@ -1822,6 +1823,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="ActivityLogger")
     @property
     def activity_logger(self) -> ActivityLogger:
         """"""
@@ -1871,6 +1873,7 @@ class Web(SecurableObject):
     def custom_site_actions_disabled(self) -> Optional[bool]:
         return self.properties.get("CustomSiteActionsDisabled", None)
 
+    @odata(name="DescriptionTranslations")
     @property
     def description_translations(self):
         """"""
@@ -1904,11 +1907,13 @@ class Web(SecurableObject):
         """Specifies the language code identifier (LCID) for the language that is used on the site"""
         return self.properties.get("Language", None)
 
+    @odata(name="LastItemModifiedDate")
     @property
     def last_item_modified_date(self) -> Optional[datetime]:
         """Specifies when an item was last modified in the site"""
         return self.properties.get("LastItemModifiedDate", datetime.min)
 
+    @odata(name="AccessRequestsList")
     @property
     def access_requests_list(self) -> List:
         """"""
@@ -1943,6 +1948,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("AllowRevertFromTemplateForCurrentUser", None)
 
+    @odata(name="EffectiveBasePermissions")
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """Specifies the effective permissions that are assigned to the current user"""
@@ -1977,6 +1983,7 @@ class Web(SecurableObject):
             FolderCollection(self.context, ResourcePath("folders", self.resource_path), self),
         )
 
+    @odata(name="HostedApps")
     @property
     def hosted_apps(self) -> HostedAppsManager:
         """"""
@@ -1994,6 +2001,7 @@ class Web(SecurableObject):
             ListCollection(self.context, ResourcePath("lists", self.resource_path)),
         )
 
+    @odata(name="OneDriveSharedItems")
     @property
     def onedrive_shared_items(self) -> EntityCollection[SharedDocumentInfo]:
         """"""
@@ -2006,6 +2014,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="SiteUsers")
     @property
     def site_users(self) -> UserCollection:
         """Specifies the collection of users in the site collection that contains the site"""
@@ -2014,6 +2023,7 @@ class Web(SecurableObject):
             UserCollection(self.context, ResourcePath("siteUsers", self.resource_path)),
         )
 
+    @odata(name="SiteGroups")
     @property
     def site_groups(self) -> GroupCollection:
         """Gets the collection of groups for the site collection."""
@@ -2022,6 +2032,7 @@ class Web(SecurableObject):
             GroupCollection(self.context, ResourcePath("siteGroups", self.resource_path)),
         )
 
+    @odata(name="CurrentUser")
     @property
     def current_user(self) -> User:
         """Gets the current user."""
@@ -2030,6 +2041,7 @@ class Web(SecurableObject):
             User(self.context, ResourcePath("CurrentUser", self.resource_path)),
         )
 
+    @odata(name="ParentWeb")
     @property
     def parent_web(self) -> Web:
         """Gets the parent website of the specified website."""
@@ -2038,6 +2050,7 @@ class Web(SecurableObject):
             Web(self.context, ResourcePath("ParentWeb", self.resource_path)),
         )
 
+    @odata(name="AssociatedVisitorGroup")
     @property
     def associated_visitor_group(self) -> Group:
         """Gets or sets the associated visitor group of the Web site."""
@@ -2046,6 +2059,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedVisitorGroup", self.resource_path)),
         )
 
+    @odata(name="AssociatedOwnerGroup")
     @property
     def associated_owner_group(self) -> Group:
         """Gets or sets the associated owner group of the Web site."""
@@ -2054,6 +2068,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedOwnerGroup", self.resource_path)),
         )
 
+    @odata(name="AssociatedMemberGroup")
     @property
     def associated_member_group(self) -> Group:
         """Gets or sets the group of users who have been given contribute permissions to the Web site."""
@@ -2078,6 +2093,7 @@ class Web(SecurableObject):
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path), self),
         )
 
+    @odata(name="ContentTypes")
     @property
     def content_types(self) -> ContentTypeCollection:
         """Gets the collection of content types for the Web site."""
@@ -2095,6 +2111,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("Configuration", None)
 
+    @odata(name="DataLeakagePreventionStatusInfo")
     @property
     def data_leakage_prevention_status_info(self) -> SPDataLeakagePreventionStatusInfo:
         return self.properties.get(
@@ -2105,6 +2122,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="DescriptionResource")
     @property
     def description_resource(self) -> UserResource:
         """A UserResource object that represents the description of this web."""
@@ -2113,6 +2131,7 @@ class Web(SecurableObject):
             UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
+    @odata(name="RoleDefinitions")
     @property
     def role_definitions(self) -> RoleDefinitionCollection:
         """Gets the collection of role definitions for the Web site."""
@@ -2121,6 +2140,7 @@ class Web(SecurableObject):
             RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitions", self.resource_path)),
         )
 
+    @odata(name="EventReceivers")
     @property
     def event_receivers(self) -> EventReceiverDefinitionCollection:
         """Specifies the collection of event receiver definitions that are currently available on the Web site"""
@@ -2129,6 +2149,7 @@ class Web(SecurableObject):
             EventReceiverDefinitionCollection(self.context, ResourcePath("EventReceivers", self.resource_path), self),
         )
 
+    @odata(name="ClientWebParts")
     @property
     def client_web_parts(self) -> ClientWebPartCollection:
         """
@@ -2148,6 +2169,7 @@ class Web(SecurableObject):
             FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self),
         )
 
+    @odata(name="TenantAppCatalog")
     @property
     def tenant_app_catalog(self) -> TenantCorporateCatalogAccessor:
         """Returns the tenant app catalog for the given tenant if it exists."""
@@ -2156,6 +2178,7 @@ class Web(SecurableObject):
             TenantCorporateCatalogAccessor(self.context, ResourcePath("TenantAppCatalog", self.resource_path)),
         )
 
+    @odata(name="SiteCollectionAppCatalog")
     @property
     def site_collection_app_catalog(self) -> SiteCollectionCorporateCatalogAccessor:
         """Returns the site collection app catalog for the given web if it exists."""
@@ -2167,6 +2190,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="WebInfos")
     @property
     def web_infos(self) -> WebInformationCollection:
         """Specifies the collection of all child sites for the site"""
@@ -2175,6 +2199,7 @@ class Web(SecurableObject):
             WebInformationCollection(self.context, ResourcePath("WebInfos", self.resource_path)),
         )
 
+    @odata(name="ThemeInfo")
     @property
     def theme_info(self) -> ThemeInfo:
         """Specifies the site theme associated with the site"""
@@ -2208,6 +2233,7 @@ class Web(SecurableObject):
         """Gets a value that specifies Site logo url."""
         return self.properties.get("SiteLogoUrl", None)
 
+    @odata(name="ListTemplates")
     @property
     def list_templates(self) -> ListTemplateCollection:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
@@ -2229,6 +2255,7 @@ class Web(SecurableObject):
         """
         self.set_property("IsMultilingual", val)
 
+    @odata(name="MultilingualSettings")
     @property
     def multilingual_settings(self) -> MultilingualSettings:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
@@ -2243,6 +2270,7 @@ class Web(SecurableObject):
         """Gets the name of the site definition or site template that was used to create the site."""
         return self.properties.get("WebTemplate", None)
 
+    @odata(name="RegionalSettings")
     @property
     def regional_settings(self) -> RegionalSettings:
         """Gets the regional settings that are currently implemented on the website."""
@@ -2251,6 +2279,7 @@ class Web(SecurableObject):
             RegionalSettings(self.context, ResourcePath("RegionalSettings", self.resource_path)),
         )
 
+    @odata(name="RecycleBin")
     @property
     def recycle_bin(self) -> RecycleBinItemCollection:
         """Specifies the collection of Recycle Bin items of the Recycle Bin of the site"""
@@ -2306,6 +2335,7 @@ class Web(SecurableObject):
             Navigation(self.context, ResourcePath("Navigation", self.resource_path)),
         )
 
+    @odata(name="PushNotificationSubscribers")
     @property
     def push_notification_subscribers(self) -> PushNotificationSubscriberCollection:
         """Specifies the collection of push notification subscribers for the site"""
@@ -2317,6 +2347,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="RootFolder")
     @property
     def root_folder(self) -> Folder:
         """Get a root folder"""
@@ -2333,6 +2364,7 @@ class Web(SecurableObject):
             AlertCollection(self.context, ResourcePath("Alerts", self.resource_path)),
         )
 
+    @odata(name="AvailableFields")
     @property
     def available_fields(self) -> FieldCollection:
         """
@@ -2344,6 +2376,7 @@ class Web(SecurableObject):
             FieldCollection(self.context, ResourcePath("AvailableFields", self.resource_path)),
         )
 
+    @odata(name="AvailableContentTypes")
     @property
     def available_content_types(self) -> ContentTypeCollection:
         """
@@ -2355,6 +2388,7 @@ class Web(SecurableObject):
             ContentTypeCollection(self.context, ResourcePath("AvailableContentTypes", self.resource_path)),
         )
 
+    @odata(name="SiteUserInfoList")
     @property
     def site_user_info_list(self) -> List:
         """
@@ -2375,6 +2409,7 @@ class Web(SecurableObject):
         """Specifies the URL of the Welcome page for the site"""
         return self.properties.get("WelcomePage", None)
 
+    @odata(name="SupportedUILanguageIds")
     @property
     def supported_ui_language_ids(self) -> ClientValueCollection[int]:
         """Specifies the language code identifiers (LCIDs) of the languages that are enabled for the site."""
@@ -2385,6 +2420,7 @@ class Web(SecurableObject):
         """Gets or sets the user interface (UI) version of the Web site."""
         return self.properties.get("UIVersion", None)
 
+    @odata(name="UserCustomActions")
     @property
     def user_custom_actions(self) -> UserCustomActionCollection:
         """Specifies the collection of user custom actions for the site"""
@@ -2403,6 +2439,7 @@ class Web(SecurableObject):
         """Specifies whether the [RSS2.0] feeds are enabled on the site"""
         return self.properties.get("SyndicationEnabled", None)
 
+    @odata(name="TitleResource")
     @property
     def title_resource(self) -> UserResource:
         """A UserResource object that represents the title of this web."""
@@ -2420,49 +2457,6 @@ class Web(SecurableObject):
     def taxonomy_list(self) -> List:
         """A special list that stores the mapping between taxonomy term IDs and their corresponding values"""
         return self.lists.get_by_title("TaxonomyHiddenList")
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "AccessRequestsList": self.access_requests_list,
-                "ActivityLogger": self.activity_logger,
-                "AvailableFields": self.available_fields,
-                "AvailableContentTypes": self.available_content_types,
-                "AssociatedOwnerGroup": self.associated_owner_group,
-                "AssociatedMemberGroup": self.associated_member_group,
-                "AssociatedVisitorGroup": self.associated_visitor_group,
-                "ContentTypes": self.content_types,
-                "ClientWebParts": self.client_web_parts,
-                "CurrentUser": self.current_user,
-                "DataLeakagePreventionStatusInfo": self.data_leakage_prevention_status_info,
-                "DescriptionResource": self.description_resource,
-                "DescriptionTranslations": self.description_translations,
-                "EffectiveBasePermissions": self.effective_base_permissions,
-                "EventReceivers": self.event_receivers,
-                "HostedApps": self.hosted_apps,
-                "LastItemModifiedDate": self.last_item_modified_date,
-                "ListTemplates": self.list_templates,
-                "MultilingualSettings": self.multilingual_settings,
-                "OneDriveSharedItems": self.onedrive_shared_items,
-                "ParentWeb": self.parent_web,
-                "PushNotificationSubscribers": self.push_notification_subscribers,
-                "RootFolder": self.root_folder,
-                "RegionalSettings": self.regional_settings,
-                "RoleDefinitions": self.role_definitions,
-                "RecycleBin": self.recycle_bin,
-                "SiteCollectionAppCatalog": self.site_collection_app_catalog,
-                "SiteGroups": self.site_groups,
-                "SiteUsers": self.site_users,
-                "SiteUserInfoList": self.site_user_info_list,
-                "SupportedUILanguageIds": self.supported_ui_language_ids,
-                "TenantAppCatalog": self.tenant_app_catalog,
-                "TitleResource": self.title_resource,
-                "UserCustomActions": self.user_custom_actions,
-                "WebInfos": self.web_infos,
-                "ThemeInfo": self.theme_info,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

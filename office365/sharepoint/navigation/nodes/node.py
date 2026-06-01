@@ -79,5 +79,3 @@ class NavigationNode(Entity):
             "TitleResource",
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
-
-

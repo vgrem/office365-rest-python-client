@@ -36,5 +36,3 @@ class Navigation(Entity):
             "TopNavigationBar",
             NavigationNodeCollection(self.context, ResourcePath("TopNavigationBar", self.resource_path)),
         )
-
-

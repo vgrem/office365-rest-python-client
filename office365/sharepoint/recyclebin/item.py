@@ -130,5 +130,3 @@ class RecycleBinItem(Entity):
     def deleted_date(self) -> datetime:
         """Gets a value that specifies when the Recycle Bin item was moved to the Recycle Bin."""
         return self.properties.get("DeletedDate", datetime.min)
-
-
