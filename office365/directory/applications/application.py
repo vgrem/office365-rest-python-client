@@ -7,6 +7,8 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.directory.permissions.require_permission import require_permission
+
 from office365.directory.applications.api import ApiApplication
 from office365.directory.applications.nativeauthenticationapisenabled import NativeAuthenticationApisEnabled
 from office365.directory.applications.optional_claims import OptionalClaims
@@ -60,6 +62,7 @@ class Application(DirectoryObject):
         else:
             return self.entity_type_name
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_certificate(
         self,
         cert_data: bytes,
@@ -97,6 +100,7 @@ class Application(DirectoryObject):
         """
         raise NotImplementedError("remove_certificate")
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_password(self, display_name: str) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
@@ -108,6 +112,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return result
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def remove_password(self, key_id: str) -> Self:
         """Remove a password from an application.
 
@@ -117,6 +122,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
         """
         :param permanent_delete: Permanently deletes the application from directory
@@ -132,6 +138,7 @@ class Application(DirectoryObject):
             deleted_app.delete_object()
         return self
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def set_verified_publisher(self, verified_publisher_id: str) -> Self:
         """Set the verifiedPublisher on an application.
         For more information, including prerequisites to setting a verified publisher, see Publisher verification.
@@ -143,6 +150,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def unset_verified_publisher(self) -> Self:
         """Unset the verifiedPublisher previously set on an application, removing all verified publisher properties.
         For more information, see Publisher verification.
@@ -151,6 +159,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_key(
         self, key_credential: KeyCredential, password_credential: PasswordCredential, proof: str
     ) -> ClientResult[KeyCredential]:
@@ -173,6 +182,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def remove_key(self, key_id: str, proof: str) -> Self:
         """
         Remove a key credential from an application.
@@ -480,8 +490,6 @@ class Application(DirectoryObject):
         return self.properties.get(
             "synchronization", Synchronization(self.context, ResourcePath("synchronization", self.resource_path))
         )
-
-
 
     @property
     def entity_type_name(self) -> str:
