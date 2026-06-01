@@ -1,4 +1,10 @@
+from datetime import datetime
+from typing import Optional
+
+from office365.directory.security.object_definition import ObjectDefinition
+from office365.directory.synchronization.directorydefinitiondiscoverabilities import DirectoryDefinitionDiscoverabilities
 from office365.entity import Entity
+from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class DirectoryDefinition(Entity):
@@ -10,3 +16,37 @@ class DirectoryDefinition(Entity):
 
     Directory definitions are updated as part of the synchronization schema.
     """
+
+    @property
+    def discoverabilities(self) -> DirectoryDefinitionDiscoverabilities:
+        """Gets the discoverabilities property"""
+        return self.properties.get("discoverabilities", DirectoryDefinitionDiscoverabilities.Unknown)
+
+    @property
+    def discovery_date_time(self) -> datetime:
+        """Gets the discoveryDateTime property"""
+        return self.properties.get("discoveryDateTime", datetime.min)
+
+    @property
+    def name(self) -> Optional[str]:
+        """Gets the name property"""
+        return self.properties.get("name", None)
+
+    @property
+    def objects(self) -> ClientValueCollection[ObjectDefinition]:
+        """Gets the objects property"""
+        return self.properties.get("objects", ClientValueCollection[ObjectDefinition](ObjectDefinition))
+
+    @property
+    def read_only(self) -> Optional[bool]:
+        """Gets the readOnly property"""
+        return self.properties.get("readOnly", None)
+
+    @property
+    def version(self) -> Optional[str]:
+        """Gets the version property"""
+        return self.properties.get("version", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DirectoryDefinition"

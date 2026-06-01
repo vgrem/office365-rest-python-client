@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from office365.directory.permissions.identity import Identity
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.onedrive.permissions.sharepoint_identity import SharePointIdentity
-from office365.onedrive.share_point_group_identity import SharePointGroupIdentity
+from office365.onedrive.sharepoint.group_identity import SharePointGroupIdentity
 
 
 @dataclass

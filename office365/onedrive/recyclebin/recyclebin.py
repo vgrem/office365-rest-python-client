@@ -13,16 +13,14 @@ class RecycleBin(BaseItem):
     def items(self) -> EntityCollection[RecycleBinItem]:
         """List of the recycleBinItems deleted by a user."""
         return self.properties.setdefault(
-            "items",
-            EntityCollection(
-                self.context,
-                RecycleBinItem,
-                ResourcePath("items", self.resource_path),
-                self,
-            ),
+            "items", EntityCollection(self.context, RecycleBinItem, ResourcePath("items", self.resource_path), self)
         )
 
     @property
     def settings(self) -> RecycleBinSettings:
         """Settings for the recycleBin"""
         return self.properties.get("settings", RecycleBinSettings())
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RecycleBin"

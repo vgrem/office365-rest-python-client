@@ -12,7 +12,7 @@ from office365.onedrive.driveitems.system_facet import SystemFacet
 from office365.onedrive.drives.quota import Quota
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.lists.list import List
-from office365.onedrive.sharepoint_ids import SharePointIds
+from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery

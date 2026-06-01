@@ -27,3 +27,22 @@ class ChangeTrackedEntity(Entity):
     def last_modified_by(self) -> IdentitySet:
         """Identity of the person who last modified the entity."""
         return self.properties.get("lastModifiedBy", IdentitySet())
+
+    @property
+    def created_by(self) -> IdentitySet:
+        """Gets the createdBy property"""
+        return self.properties.get("createdBy", IdentitySet())
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def last_modified_date_time(self) -> datetime:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ChangeTrackedEntity"

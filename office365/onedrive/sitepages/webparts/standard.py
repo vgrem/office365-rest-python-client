@@ -22,3 +22,7 @@ class StandardWebPart(WebPart):
     def web_part_type(self) -> Optional[str]:
         """A Guid that indicates the webPart type."""
         return self.properties.get("webPartType", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.StandardWebPart"

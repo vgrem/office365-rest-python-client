@@ -23,6 +23,9 @@ class ListItemVersion(BaseItemVersion):
     def fields(self) -> EntityCollection[FieldValueSet]:
         """A collection of the fields and values for this version of the list item."""
         return self.properties.get(
-            "fields",
-            EntityCollection(self.context, FieldValueSet, ResourcePath("fields", self.resource_path)),
+            "fields", EntityCollection(self.context, FieldValueSet, ResourcePath("fields", self.resource_path))
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ListItemVersion"

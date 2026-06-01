@@ -21,3 +21,7 @@ class UserInsightsSettings(Entity):
         """True if the user's itemInsights and meeting hours insights are enabled; false if the user's itemInsights
         and meeting hours insights are disabled. The default value is true. Optional."""
         return self.properties.get("isEnabled", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserInsightsSettings"

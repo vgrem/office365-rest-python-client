@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING
 
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
-from office365.runtime.types.odata_property import odata
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
 from office365.onedrive.base_item import BaseItem
@@ -19,6 +16,7 @@ from office365.onedrive.internal.queries.get_activities_by_interval import (
 from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.list_item import ListItemVersion
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.driveitems.driveItem import DriveItem
@@ -107,5 +105,3 @@ class ListItem(BaseItem):
                 ResourcePath("documentSetVersions", self.resource_path),
             ),
         )
-
-

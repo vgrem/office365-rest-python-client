@@ -5,6 +5,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_action_stat import ItemActionStat
 from office365.onedrive.analytics.item_activity import ItemActivity
+from office365.onedrive.incomplete_data import IncompleteData
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -56,19 +57,30 @@ class ItemActivityStat(Entity):
     def activities(self) -> EntityCollection[ItemActivity]:
         """Exposes the itemActivities represented in this itemActivityStat resource."""
         return self.properties.get(
-            "activities",
-            EntityCollection(
-                self.context,
-                ItemActivity,
-                ResourcePath("activities", self.resource_path),
-            ),
+            "activities", EntityCollection(self.context, ItemActivity, ResourcePath("activities", self.resource_path))
         )
+
+    @property
+    def end_date_time(self) -> datetime:
+        """Gets the endDateTime property"""
+        return self.properties.get("endDateTime", datetime.min)
+
+    @property
+    def incomplete_data(self) -> IncompleteData:
+        """Gets the incompleteData property"""
+        return self.properties.get("incompleteData", IncompleteData())
+
+    @property
+    def start_date_time(self) -> datetime:
+        """Gets the startDateTime property"""
+        return self.properties.get("startDateTime", datetime.min)
 
     def get_property(self, name, default_value=None):
         if default_value is None:
-            property_mapping = {
-                "endDateTime": self.end_datetime,
-                "startDateTime": self.start_datetime,
-            }
+            property_mapping = {"endDateTime": self.end_datetime, "startDateTime": self.start_datetime}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ItemActivityStat"

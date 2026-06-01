@@ -25,3 +25,12 @@ class RecycleBinItem(BaseItem):
     def size(self) -> Optional[int]:
         """Size of the item in bytes."""
         return self.properties.get("size", None)
+
+    @property
+    def deleted_date_time(self) -> datetime:
+        """Gets the deletedDateTime property"""
+        return self.properties.get("deletedDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RecycleBinItem"

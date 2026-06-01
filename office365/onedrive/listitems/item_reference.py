@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from office365.onedrive.sharepoint_ids import SharePointIds
+from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.client_value import ClientValue
 
 

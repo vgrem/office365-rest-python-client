@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.lists.list import List
+from office365.onedrive.reactions_facet import ReactionsFacet
 from office365.onedrive.sitepages.base import BaseSitePage
 from office365.onedrive.sitepages.canvas_layout import CanvasLayout
 from office365.onedrive.sitepages.title_area import TitleArea
@@ -25,11 +26,7 @@ class SitePage(BaseSitePage):
         notes="Get web parts on a page by position",
     )
     def get_web_parts_by_position(
-        self,
-        web_part_index=None,
-        horizontal_section_id=None,
-        is_in_vertical_section=None,
-        column_id=None,
+        self, web_part_index=None, horizontal_section_id=None, is_in_vertical_section=None, column_id=None
     ):
         """
         Get a collection of webPart by providing webPartPosition information.
@@ -53,9 +50,7 @@ class SitePage(BaseSitePage):
         return return_type
 
     @require_permission(
-        delegated=["Sites.ReadWrite.All"],
-        application=["Sites.ReadWrite.All"],
-        notes="Check in and publish a sitePage",
+        delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"], notes="Check in and publish a sitePage"
     )
     def checkin(self, message: str) -> Self:
         """
@@ -126,8 +121,7 @@ class SitePage(BaseSitePage):
     def canvas_layout(self) -> CanvasLayout:
         """The default termStore under this site."""
         return self.properties.get(
-            "canvasLayout",
-            CanvasLayout(self.context, ResourcePath("canvasLayout", self.resource_path)),
+            "canvasLayout", CanvasLayout(self.context, ResourcePath("canvasLayout", self.resource_path))
         )
 
     @odata(name="webParts")
@@ -135,6 +129,14 @@ class SitePage(BaseSitePage):
     def web_parts(self) -> EntityCollection[WebPart]:
         """Collection of webparts on the SharePoint page."""
         return self.properties.get(
-            "webParts",
-            EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
+            "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         )
+
+    @property
+    def reactions(self) -> ReactionsFacet:
+        """Gets the reactions property"""
+        return self.properties.get("reactions", ReactionsFacet())
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SitePage"

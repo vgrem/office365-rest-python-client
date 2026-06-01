@@ -12,3 +12,7 @@ class ShiftPreferences(ChangeTrackedEntity):
         Availability of the user to be scheduled for work and its recurrence pattern.
         """
         return self.properties.get("availability", ClientValueCollection(ShiftAvailability))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ShiftPreferences"

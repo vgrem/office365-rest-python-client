@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.sitepages.webparts.web_part import WebPart
@@ -13,6 +15,21 @@ class HorizontalSectionColumn(Entity):
     def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this section."""
         return self.properties.get(
-            "webParts",
-            EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path)),
+            "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         )
+
+    @property
+    def width(self) -> Optional[int]:
+        """Gets the width property"""
+        return self.properties.get("width", None)
+
+    @property
+    def webparts(self) -> EntityCollection[WebPart]:
+        """Gets the webparts property"""
+        return self.properties.get(
+            "webparts", EntityCollection[WebPart](self.context, WebPart, ResourcePath("webparts", self.resource_path))
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.HorizontalSectionColumn"

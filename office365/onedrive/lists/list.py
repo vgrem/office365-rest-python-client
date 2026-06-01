@@ -7,7 +7,7 @@ from office365.onedrive.contenttypes.collection import ContentTypeCollection
 from office365.onedrive.listitems.collection import ListItemCollection
 from office365.onedrive.lists.info import ListInfo
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
-from office365.onedrive.sharepoint_ids import SharePointIds
+from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.subscriptions.subscription import Subscription

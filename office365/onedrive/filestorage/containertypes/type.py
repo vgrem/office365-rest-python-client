@@ -14,9 +14,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 
 if TYPE_CHECKING:
-    from office365.onedrive.filestorage.containertypes.settings import (
-        FileStorageContainerTypeSettings,
-    )
+    from office365.onedrive.filestorage.containertypes.settings import FileStorageContainerTypeSettings
 
 
 class FileStorageContainerType(Entity):
@@ -61,3 +59,17 @@ class FileStorageContainerType(Entity):
     def settings(self) -> Optional[FileStorageContainerTypeSettings]:
         """Configuration settings for this container type. Optional."""
         return self.properties.get("settings", None)
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def expiration_date_time(self) -> datetime:
+        """Gets the expirationDateTime property"""
+        return self.properties.get("expirationDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FileStorageContainerType"

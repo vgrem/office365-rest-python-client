@@ -23,17 +23,13 @@ class SharedDriveItem(BaseItem):
     def items(self) -> EntityCollection[DriveItem]:
         """All driveItems contained in the sharing root. This collection cannot be enumerated."""
         return self.properties.get(
-            "items",
-            EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path)),
+            "items", EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path))
         )
 
     @property
     def list_item(self) -> ListItem:
         """Used to access the underlying listItem"""
-        return self.properties.get(
-            "listItem",
-            ListItem(self.context, ResourcePath("listItem", self.resource_path)),
-        )
+        return self.properties.get("listItem", ListItem(self.context, ResourcePath("listItem", self.resource_path)))
 
     @property
     def list(self) -> List:
@@ -43,10 +39,7 @@ class SharedDriveItem(BaseItem):
     @property
     def drive_item(self) -> DriveItem:
         """Used to access the underlying driveItem"""
-        return self.properties.get(
-            "driveItem",
-            DriveItem(self.context, ResourcePath("driveItem", self.resource_path)),
-        )
+        return self.properties.get("driveItem", DriveItem(self.context, ResourcePath("driveItem", self.resource_path)))
 
     @property
     def owner(self) -> IdentitySet:
@@ -59,8 +52,7 @@ class SharedDriveItem(BaseItem):
         Deprecated -- use driveItem instead.
         """
         return self.properties.get(
-            "root",
-            DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path)),
+            "root", DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path))
         )
 
     @property
@@ -72,15 +64,20 @@ class SharedDriveItem(BaseItem):
     def permission(self) -> Permission:
         """Used to access the permission representing the underlying sharing link"""
         return self.properties.get(
-            "permission",
-            Permission(self.context, ResourcePath("permission", self.resource_path)),
+            "permission", Permission(self.context, ResourcePath("permission", self.resource_path))
         )
+
+    @property
+    def list_(self) -> List:
+        """Gets the list property"""
+        return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
     def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
-            property_mapping = {
-                "driveItem": self.drive_item,
-                "listItem": self.list_item,
-            }
+            property_mapping = {"driveItem": self.drive_item, "listItem": self.list_item}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SharedDriveItem"

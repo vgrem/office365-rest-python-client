@@ -18,7 +18,7 @@ from office365.onedrive.lists.list import List
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.root import Root
-from office365.onedrive.sharepoint_ids import SharePointIds
+from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.onedrive.sitepages.collection import SitePageCollection
 from office365.onedrive.sites.collection import SiteCollection
 from office365.onedrive.termstore.store import Store
