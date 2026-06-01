@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -68,6 +69,7 @@ class RecycleBinItem(Entity):
         """
         return self.properties.get("DirName", None)
 
+    @odata(name="DirNamePath")
     @property
     def dir_name_path(self) -> Optional[SPResPath]:
         """Returns the site relative path of the list or folder that originally contained the Recycle Bin item."""
@@ -93,6 +95,7 @@ class RecycleBinItem(Entity):
         """Specifies the leaf name of the Recycle Bin item."""
         return self.properties.get("LeafName", None)
 
+    @odata(name="LeafNamePath")
     @property
     def leaf_name_path(self) -> Optional[SPResPath]:
         """Returns the leaf name path of the Recycle Bin item."""
@@ -113,6 +116,7 @@ class RecycleBinItem(Entity):
         """Gets a value that specifies the user who created the Recycle Bin item."""
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
+    @odata(name="DeletedBy")
     @property
     def deleted_by(self) -> User:
         """Gets a value that specifies the user who deleted the Recycle Bin item."""
@@ -121,18 +125,10 @@ class RecycleBinItem(Entity):
             User(self.context, ResourcePath("DeletedBy", self.resource_path)),
         )
 
+    @odata(name="DeletedDate")
     @property
     def deleted_date(self) -> datetime:
         """Gets a value that specifies when the Recycle Bin item was moved to the Recycle Bin."""
         return self.properties.get("DeletedDate", datetime.min)
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "DeletedBy": self.deleted_by,
-                "DeletedDate": self.deleted_date,
-                "DirNamePath": self.dir_name_path,
-                "LeafNamePath": self.leaf_name_path,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
