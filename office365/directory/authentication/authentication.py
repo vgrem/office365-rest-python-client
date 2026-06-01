@@ -1,8 +1,8 @@
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.entity import Entity
-from office365.runtime.types.odata_property import odata
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Authentication(Entity):
@@ -108,5 +108,3 @@ class Authentication(Entity):
                 ResourcePath("methods", self.resource_path),
             ),
         )
-
-

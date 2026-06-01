@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.directory.applications.roles.assignment_collection import AppRoleAssignmentCollection
 from office365.directory.extensions.extension import Extension
+from office365.runtime.types.odata_property import odata
 from office365.directory.groups.assigned_label import AssignedLabel
 from office365.directory.groups.lifecycle_policy import GroupLifecyclePolicy
 from office365.directory.groups.on_premises_sync_behavior import OnPremisesSyncBehavior
@@ -139,6 +140,7 @@ class Group(DirectoryObject):
             deleted_group.delete_object()
         return self
 
+    @odata(name="assignedLabels")
     @property
     def assigned_labels(self) -> ClientValueCollection[AssignedLabel]:
         """The list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group."""
@@ -162,6 +164,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("displayName", None)
 
+    @odata(name="groupTypes")
     @property
     def group_types(self) -> StringCollection:
         """
@@ -202,6 +205,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("isAssignableToRole", None)
 
+    @odata(name="licenseProcessingState")
     @property
     def license_processing_state(self) -> LicenseProcessingState:
         """Indicates status of the group license assignment to all members of the group. Default value is false.
@@ -243,6 +247,7 @@ class Group(DirectoryObject):
             EntityCollection(self.context, Conversation, ResourcePath("conversations", self.resource_path)),
         )
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """Timestamp of when the group was created."""
@@ -264,6 +269,7 @@ class Group(DirectoryObject):
             "members", DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path))
         )
 
+    @odata(name="rejectedSenders")
     @property
     def rejected_senders(self) -> DirectoryObjectCollection:
         """
@@ -274,6 +280,7 @@ class Group(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("rejectedSenders", self.resource_path)),
         )
 
+    @odata(name="transitiveMembers")
     @property
     def transitive_members(self) -> DirectoryObjectCollection:
         """
@@ -285,6 +292,7 @@ class Group(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMembers", self.resource_path)),
         )
 
+    @odata(name="transitiveMemberOf")
     @property
     def transitive_member_of(self) -> DirectoryObjectCollection:
         """
@@ -334,6 +342,7 @@ class Group(DirectoryObject):
         """Get an event collection or an event."""
         return self.properties.get("events", EventCollection(self.context, ResourcePath("events", self.resource_path)))
 
+    @odata(name="appRoleAssignments")
     @property
     def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
@@ -352,6 +361,7 @@ class Group(DirectoryObject):
         """The plannerGroup resource provide access to Planner resources for a group."""
         return self.properties.get("planner", PlannerGroup(self.context, ResourcePath("planner", self.resource_path)))
 
+    @odata(name="permissionGrants")
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """List permissions that have been granted to apps to access the group."""
@@ -370,6 +380,7 @@ class Group(DirectoryObject):
         """The team associated with this group."""
         return self.properties.setdefault("team", Team(self.context, ResourcePath(self.id, ResourcePath("teams"))))
 
+    @odata(name="assignedLicenses")
     @property
     def assigned_licenses(self) -> ClientValueCollection[AssignedLicense]:
         """
@@ -637,22 +648,7 @@ class Group(DirectoryObject):
             EntityCollection[ProfilePhoto](self.context, ProfilePhoto, ResourcePath("photos", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "assignedLabels": self.assigned_labels,
-                "appRoleAssignments": self.app_role_assignments,
-                "assignedLicenses": self.assigned_licenses,
-                "createdDateTime": self.created_datetime,
-                "groupTypes": self.group_types,
-                "licenseProcessingState": self.license_processing_state,
-                "permissionGrants": self.permission_grants,
-                "rejectedSenders": self.rejected_senders,
-                "transitiveMembers": self.transitive_members,
-                "transitiveMemberOf": self.transitive_member_of,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
 
     @property
     def entity_type_name(self) -> str:
