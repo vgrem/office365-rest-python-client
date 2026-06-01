@@ -2,6 +2,7 @@ from office365.directory.authentication.conditions.event_listener import (
     AuthenticationEventListener,
 )
 from office365.directory.identities.api_connector import IdentityApiConnector
+from office365.runtime.types.odata_property import odata
 from office365.directory.identities.conditional_access_root import ConditionalAccessRoot
 from office365.directory.identities.providers.base_collection import (
     IdentityProviderBaseCollection,
@@ -19,6 +20,7 @@ class IdentityContainer(Entity):
     both Azure Active Directory (Azure AD) and Azure AD B2C tenants.
     """
 
+    @odata(name="apiConnectors")
     @property
     def api_connectors(self) -> EntityCollection[IdentityApiConnector]:
         """Represents entry point for API connectors."""
@@ -31,6 +33,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="authenticationEventListeners")
     @property
     def authentication_event_listeners(
         self,
@@ -45,6 +48,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="conditionalAccess")
     @property
     def conditional_access(self) -> ConditionalAccessRoot:
         """The entry point for the Conditional Access (CA) object model."""
@@ -53,6 +57,7 @@ class IdentityContainer(Entity):
             ConditionalAccessRoot(self.context, ResourcePath("conditionalAccess", self.resource_path)),
         )
 
+    @odata(name="identityProviders")
     @property
     def identity_providers(self) -> IdentityProviderBaseCollection:
         """Represents entry point for identity provider base."""
@@ -61,6 +66,7 @@ class IdentityContainer(Entity):
             IdentityProviderBaseCollection(self.context, ResourcePath("identityProviders", self.resource_path)),
         )
 
+    @odata(name="b2xUserFlows")
     @property
     def b2x_user_flows(self) -> EntityCollection[B2XIdentityUserFlow]:
         """Represents entry point for B2X/self-service sign-up identity userflows."""
@@ -73,6 +79,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="userFlowAttributes")
     @property
     def user_flow_attributes(self) -> EntityCollection[IdentityUserFlowAttribute]:
         """Represents entry point for identity userflow attributes."""
@@ -85,15 +92,4 @@ class IdentityContainer(Entity):
             ),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "apiConnectors": self.api_connectors,
-                "authenticationEventListeners": self.authentication_event_listeners,
-                "b2xUserFlows": self.b2x_user_flows,
-                "conditionalAccess": self.conditional_access,
-                "identityProviders": self.identity_providers,
-                "userFlowAttributes": self.user_flow_attributes,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
