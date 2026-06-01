@@ -130,7 +130,7 @@ class Folder(Entity):
             destination_url = "/".join([x or "" for x in [destination_folder.server_relative_url, self.name]])
             qry = ServiceOperationQuery(self, "MoveTo", {"newUrl": destination_url})
 
-            def _update_folder(return_type):
+            def _update_folder(_):
                 self.set_property("ServerRelativeUrl", destination_url)
 
             self.context.add_query(qry).after_execute(_update_folder)

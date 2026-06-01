@@ -23,6 +23,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.files.move_operations import MoveOperations
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
@@ -743,6 +744,7 @@ class File(AbstractFile):
         """Specifies the user who added the file."""
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
+    @odata(name="CheckedOutByUser")
     @property
     def checked_out_by_user(self) -> User:
         """Gets an object that represents the user who has checked out the file."""
@@ -755,11 +757,13 @@ class File(AbstractFile):
     def check_out_type(self) -> Optional[int]:
         return self.properties.get("CheckOutType", None)
 
+    @odata(name="ExpirationDate")
     @property
     def expiration_date(self) -> Optional[datetime]:
         """Specifies the date and time when the file expires."""
         return self.properties.get("ExpirationDate", datetime.min)
 
+    @odata(name="VersionEvents")
     @property
     def version_events(self) -> EntityCollection[FileVersionEvent]:
         """Gets the history of events on this version object."""
@@ -772,6 +776,7 @@ class File(AbstractFile):
             ),
         )
 
+    @odata(name="EffectiveInformationRightsManagementSettings")
     @property
     def effective_information_rights_management_settings(
         self,
@@ -789,6 +794,7 @@ class File(AbstractFile):
             EffectiveInformationRightsManagementSettings(self.context, path),
         )
 
+    @odata(name="InformationRightsManagementSettings")
     @property
     def information_rights_management_settings(
         self,
@@ -810,6 +816,7 @@ class File(AbstractFile):
             ListItem(self.context, ResourcePath("listItemAllFields", self.resource_path)),
         )
 
+    @odata(name="VersionExpirationReport")
     @property
     def version_expiration_report(self) -> FileVersionCollection:
         """"""
@@ -829,6 +836,7 @@ class File(AbstractFile):
             FileVersionCollection(self.context, ResourcePath("versions", self.resource_path)),
         )
 
+    @odata(name="ModifiedBy")
     @property
     def modified_by(self) -> User:
         """Gets a value that returns the user who last modified the file."""
@@ -837,6 +845,7 @@ class File(AbstractFile):
             User(self.context, ResourcePath("ModifiedBy", self.resource_path)),
         )
 
+    @odata(name="LockedByUser")
     @property
     def locked_by_user(self) -> User:
         """Gets a value that returns the user that owns the current lock on the file."""
@@ -850,6 +859,7 @@ class File(AbstractFile):
         """Gets the relative URL of the file based on the URL for the server."""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the list folder."""
@@ -904,11 +914,13 @@ class File(AbstractFile):
         """Gets the GUID for the site containing the file."""
         return self.properties.get("WebId", None)
 
+    @odata(name="TimeCreated")
     @property
     def time_created(self) -> Optional[datetime]:
         """Gets a value that specifies when the file was created."""
         return self.properties.get("TimeCreated", datetime.min)
 
+    @odata(name="TimeLastModified")
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Specifies when the file was last modified."""
@@ -959,24 +971,6 @@ class File(AbstractFile):
             return cast(Folder, parent)
 
         raise TypeError(f"Expected parent to be Folder but got {type(parent).__name__}")
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "CheckedOutByUser": self.checked_out_by_user,
-                "VersionEvents": self.version_events,
-                "EffectiveInformationRightsManagementSettings": self.effective_information_rights_management_settings,
-                "ExpirationDate": self.expiration_date,
-                "InformationRightsManagementSettings": self.information_rights_management_settings,
-                "LockedByUser": self.locked_by_user,
-                "ModifiedBy": self.modified_by,
-                "ServerRelativePath": self.server_relative_path,
-                "TimeCreated": self.time_created,
-                "TimeLastModified": self.time_last_modified,
-                "VersionExpirationReport": self.version_expiration_report,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
