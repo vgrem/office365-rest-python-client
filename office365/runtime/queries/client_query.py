@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+
+from typing_extensions import Self
 
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
@@ -59,6 +61,18 @@ class ClientQuery(Generic[ReturnT]):
         """
         self.context.execute_query()
         return self.return_type
+
+    def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
+        """
+        Attach an event handler which is triggered before query is submitted to server
+        """
+
+        self.context.pending_request().before_execute(
+            action,
+            once=once,
+            condition=lambda: self.context.current_query is not None and self.context.current_query.id == self.id,
+        )
+        return self
 
     @property
     def url(self) -> str:
