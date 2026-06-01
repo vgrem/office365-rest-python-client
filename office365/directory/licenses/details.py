@@ -36,3 +36,7 @@ class LicenseDetails(Entity):
             property_mapping = {"servicePlans": self.service_plans}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.LicenseDetails"

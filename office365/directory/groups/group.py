@@ -6,7 +6,6 @@ from typing_extensions import Self
 
 from office365.directory.applications.roles.assignment_collection import AppRoleAssignmentCollection
 from office365.directory.extensions.extension import Extension
-from office365.runtime.types.odata_property import odata
 from office365.directory.groups.assigned_label import AssignedLabel
 from office365.directory.groups.lifecycle_policy import GroupLifecyclePolicy
 from office365.directory.groups.on_premises_sync_behavior import OnPremisesSyncBehavior
@@ -36,6 +35,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.teams.team import Team
 
 
@@ -434,6 +434,7 @@ class Group(DirectoryObject):
         """Gets the onPremisesNetBiosName property"""
         return self.properties.get("onPremisesNetBiosName", None)
 
+    @odata(name="onPremisesProvisioningErrors")
     @property
     def on_premises_provisioning_errors(self) -> ClientValueCollection[OnPremisesProvisioningError]:
         """Gets the onPremisesProvisioningErrors property"""
@@ -647,8 +648,6 @@ class Group(DirectoryObject):
             "photos",
             EntityCollection[ProfilePhoto](self.context, ProfilePhoto, ResourcePath("photos", self.resource_path)),
         )
-
-
 
     @property
     def entity_type_name(self) -> str:

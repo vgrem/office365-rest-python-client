@@ -25,9 +25,7 @@ class OutlookUser(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def supported_time_zones(
-        self,
-    ) -> ClientResult[ClientValueCollection[TimeZoneInformation]]:
+    def supported_time_zones(self) -> ClientResult[ClientValueCollection[TimeZoneInformation]]:
         """
         Get the list of time zones that are supported for the user, as configured on the user's mailbox server.
         You can explicitly specify to have time zones returned in the Windows time zone format or
@@ -46,11 +44,7 @@ class OutlookUser(Entity):
         """A list of categories defined for the user."""
         return self.properties.get(
             "masterCategories",
-            EntityCollection(
-                self.context,
-                OutlookCategory,
-                ResourcePath("masterCategories", self.resource_path),
-            ),
+            EntityCollection(self.context, OutlookCategory, ResourcePath("masterCategories", self.resource_path)),
         )
 
     def get_property(self, name: str, default_value: Any = None):
@@ -58,3 +52,7 @@ class OutlookUser(Entity):
             property_mapping = {"masterCategories": self.master_categories}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OutlookUser"

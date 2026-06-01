@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -16,8 +18,7 @@ class ContactFolder(Entity):
         from office365.outlook.contacts.contact import Contact
 
         return self.properties.get(
-            "contacts",
-            EntityCollection(self.context, Contact, ResourcePath("contacts", self.resource_path)),
+            "contacts", EntityCollection(self.context, Contact, ResourcePath("contacts", self.resource_path))
         )
 
     @property
@@ -25,17 +26,11 @@ class ContactFolder(Entity):
         """The collection of child folders in the folder. Navigation property. Read-only. Nullable."""
         return self.properties.get(
             "childFolders",
-            EntityCollection(
-                self.context,
-                ContactFolder,
-                ResourcePath("childFolders", self.resource_path),
-            ),
+            EntityCollection(self.context, ContactFolder, ResourcePath("childFolders", self.resource_path)),
         )
 
     @property
-    def multi_value_extended_properties(
-        self,
-    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
+    def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the Contact folder."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -47,9 +42,7 @@ class ContactFolder(Entity):
         )
 
     @property
-    def single_value_extended_properties(
-        self,
-    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the Contact folder."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -60,6 +53,16 @@ class ContactFolder(Entity):
             ),
         )
 
+    @property
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def parent_folder_id(self) -> Optional[str]:
+        """Gets the parentFolderId property"""
+        return self.properties.get("parentFolderId", None)
+
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
@@ -69,3 +72,7 @@ class ContactFolder(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ContactFolder"

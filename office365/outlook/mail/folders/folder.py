@@ -112,37 +112,25 @@ class MailFolder(Entity):
     def child_folders(self) -> EntityCollection[MailFolder]:
         """The collection of child folders in the mailFolder."""
         return self.properties.get(
-            "childFolders",
-            EntityCollection(
-                self.context,
-                MailFolder,
-                ResourcePath("childFolders", self.resource_path),
-            ),
+            "childFolders", EntityCollection(self.context, MailFolder, ResourcePath("childFolders", self.resource_path))
         )
 
     @property
     def message_rules(self) -> MessageRuleCollection:
         """"""
         return self.properties.get(
-            "messageRules",
-            MessageRuleCollection(
-                self.context,
-                ResourcePath("messageRules", self.resource_path),
-            ),
+            "messageRules", MessageRuleCollection(self.context, ResourcePath("messageRules", self.resource_path))
         )
 
     @property
     def messages(self) -> MessageCollection:
         """The collection of messages in the mailFolder."""
         return self.properties.get(
-            "messages",
-            MessageCollection(self.context, ResourcePath("messages", self.resource_path)),
+            "messages", MessageCollection(self.context, ResourcePath("messages", self.resource_path))
         )
 
     @property
-    def multi_value_extended_properties(
-        self,
-    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
+    def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the MailFolder."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -154,9 +142,7 @@ class MailFolder(Entity):
         )
 
     @property
-    def single_value_extended_properties(
-        self,
-    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the MailFolder."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -177,3 +163,7 @@ class MailFolder(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.MailFolder"

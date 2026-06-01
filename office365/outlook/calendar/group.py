@@ -25,6 +25,14 @@ class CalendarGroup(Entity):
     def calendars(self) -> EntityCollection[Calendar]:
         """The calendars in the calendar group. Navigation property. Read-only. Nullable."""
         return self.properties.get(
-            "calendars",
-            EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path)),
+            "calendars", EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path))
         )
+
+    @property
+    def change_key(self) -> Optional[str]:
+        """Gets the changeKey property"""
+        return self.properties.get("changeKey", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.CalendarGroup"

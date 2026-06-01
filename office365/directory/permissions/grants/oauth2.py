@@ -58,3 +58,7 @@ class OAuth2PermissionGrant(Entity):
         oauth2PermissionScopes property of the resource service principal. Must not exceed 3850 characters in length.
         """
         return self.properties.get("scope", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OAuth2PermissionGrant"

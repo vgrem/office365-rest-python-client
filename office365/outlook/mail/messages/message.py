@@ -37,12 +37,7 @@ class Message(OutlookItem):
         """Create a single-value extended property for a message"""
         prop_id = str(uuid.uuid4())
         prop_type = "String"
-        prop_value = [
-            {
-                "id": f"{prop_type} {{{prop_id}}} Name {name}",
-                "value": value,
-            }
-        ]
+        prop_value = [{"id": f"{prop_type} {{{prop_id}}} Name {name}", "value": value}]
         self.set_property("singleValueExtendedProperties", prop_value)
         return self
 
@@ -97,7 +92,7 @@ class Message(OutlookItem):
         :param str or None content_type: The content type of the attachment.
         :param str or None base64_content: The contents of the file in the form of a base64 string.
         """
-        if not content and not base64_content:
+        if not content and (not base64_content):
             raise TypeError("Either content or base64_content is required")
         self.attachments.add_file(name, content, content_type, base64_content)
         return self
@@ -262,16 +257,14 @@ class Message(OutlookItem):
     def attachments(self) -> AttachmentCollection:
         """The fileAttachment and itemAttachment attachments for the message."""
         return self.properties.setdefault(
-            "attachments",
-            AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path)),
+            "attachments", AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path))
         )
 
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the message. Nullable."""
         return self.properties.get(
-            "extensions",
-            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
+            "extensions", EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path))
         )
 
     @property
@@ -282,7 +275,7 @@ class Message(OutlookItem):
     @body.setter
     def body(self, value: Union[str, ItemBody, Tuple]) -> None:
         """Sets the body of the message. It can be in HTML or text format."""
-        content_type = "Text"  # Default content type
+        content_type = "Text"
         TUPLE_SIZE = 2
         if isinstance(value, tuple):
             if len(value) != TUPLE_SIZE:
@@ -461,9 +454,7 @@ class Message(OutlookItem):
 
     @odata(name="multiValueExtendedProperties")
     @property
-    def multi_value_extended_properties(
-        self,
-    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
+    def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the event."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -476,9 +467,7 @@ class Message(OutlookItem):
 
     @odata(name="singleValueExtendedProperties")
     @property
-    def single_value_extended_properties(
-        self,
-    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the message"""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -488,3 +477,27 @@ class Message(OutlookItem):
                 ResourcePath("singleValueExtendedProperties", self.resource_path),
             ),
         )
+
+    @property
+    def from_(self) -> Recipient:
+        """Gets the from property"""
+        return self.properties.get("from", Recipient())
+
+    @property
+    def received_date_time(self) -> datetime:
+        """Gets the receivedDateTime property"""
+        return self.properties.get("receivedDateTime", datetime.min)
+
+    @property
+    def sent_date_time(self) -> datetime:
+        """Gets the sentDateTime property"""
+        return self.properties.get("sentDateTime", datetime.min)
+
+    @property
+    def unique_body(self) -> ItemBody:
+        """Gets the uniqueBody property"""
+        return self.properties.get("uniqueBody", ItemBody())
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Message"
