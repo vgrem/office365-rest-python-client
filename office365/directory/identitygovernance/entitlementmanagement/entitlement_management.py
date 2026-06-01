@@ -1,6 +1,8 @@
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import AccessPackageCatalog
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_request import (
     AccessPackageResourceRequest,
 )
+from office365.directory.identitygovernance.privilegedaccess.approval import Approval
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -17,8 +19,30 @@ class EntitlementManagement(Entity):
         return self.properties.get(
             "resourceRequests",
             EntityCollection(
-                self.context,
-                AccessPackageResourceRequest,
-                ResourcePath("resourceRequests", self.resource_path),
+                self.context, AccessPackageResourceRequest, ResourcePath("resourceRequests", self.resource_path)
             ),
         )
+
+    @property
+    def access_package_assignment_approvals(self) -> EntityCollection[Approval]:
+        """Gets the accessPackageAssignmentApprovals property"""
+        return self.properties.get(
+            "accessPackageAssignmentApprovals",
+            EntityCollection[Approval](
+                self.context, Approval, ResourcePath("accessPackageAssignmentApprovals", self.resource_path)
+            ),
+        )
+
+    @property
+    def catalogs(self) -> EntityCollection[AccessPackageCatalog]:
+        """Gets the catalogs property"""
+        return self.properties.get(
+            "catalogs",
+            EntityCollection[AccessPackageCatalog](
+                self.context, AccessPackageCatalog, ResourcePath("catalogs", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.EntitlementManagement"

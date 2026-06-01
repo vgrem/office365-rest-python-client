@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
@@ -23,9 +23,9 @@ class Conversation(Entity):
         return self.properties.get("hasAttachments", None)
 
     @property
-    def last_delivered_datetime(self) -> Optional[datetime.datetime]:
+    def last_delivered_datetime(self) -> Optional[datetime]:
         """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
-        return self.properties.get("lastDeliveredDateTime", datetime.datetime.min)
+        return self.properties.get("lastDeliveredDateTime", datetime.min)
 
     @property
     def preview(self) -> Optional[str]:
@@ -52,16 +52,20 @@ class Conversation(Entity):
     def threads(self) -> EntityCollection[ConversationThread]:
         """A collection of all the conversation threads in the conversation."""
         return self.properties.get(
-            "threads",
-            EntityCollection(
-                self.context,
-                ConversationThread,
-                ResourcePath("threads", self.resource_path),
-            ),
+            "threads", EntityCollection(self.context, ConversationThread, ResourcePath("threads", self.resource_path))
         )
+
+    @property
+    def last_delivered_date_time(self) -> datetime:
+        """Gets the lastDeliveredDateTime property"""
+        return self.properties.get("lastDeliveredDateTime", datetime.min)
 
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {"lastDeliveredDateTime": self.last_delivered_datetime}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Conversation"

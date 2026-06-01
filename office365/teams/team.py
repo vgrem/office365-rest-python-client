@@ -1,10 +1,10 @@
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.grants.resource_specific import (
-    ResourceSpecificPermissionGrant,
-)
+from office365.directory.permissions.grants.resource_specific import ResourceSpecificPermissionGrant
+from office365.directory.profile_photo import ProfilePhoto
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -15,15 +15,15 @@ from office365.teams.channels.channel import Channel
 from office365.teams.channels.collection import ChannelCollection
 from office365.teams.fun_settings import TeamFunSettings
 from office365.teams.guest_settings import TeamGuestSettings
+from office365.teams.members.conversation import ConversationMember
 from office365.teams.members.settings import TeamMemberSettings
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.operations.async_operation import TeamsAsyncOperation
 from office365.teams.schedule.schedule import Schedule
+from office365.teams.specialization import TeamSpecialization
 from office365.teams.summary import TeamSummary
 from office365.teams.teamwork.activity_topic import TeamworkActivityTopic
-from office365.teams.teamwork.notification_recipient import (
-    TeamworkNotificationRecipient,
-)
+from office365.teams.teamwork.notification_recipient import TeamworkNotificationRecipient
 from office365.teams.teamwork.tags.tag import TeamworkTag
 from office365.teams.template import TeamsTemplate
 from office365.teams.visibility_type import TeamVisibilityType
@@ -127,8 +127,7 @@ class Team(Entity):
         List of channels either hosted in or shared with the team (incoming channels).
         """
         return self.properties.get(
-            "allChannels",
-            ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path)),
+            "allChannels", ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path))
         )
 
     @odata(name="incomingChannels")
@@ -136,16 +135,14 @@ class Team(Entity):
     def incoming_channels(self) -> ChannelCollection:
         """List of channels shared with the team."""
         return self.properties.get(
-            "incomingChannels",
-            ChannelCollection(self.context, ResourcePath("incomingChannels", self.resource_path)),
+            "incomingChannels", ChannelCollection(self.context, ResourcePath("incomingChannels", self.resource_path))
         )
 
     @property
     def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""
         return self.properties.get(
-            "channels",
-            ChannelCollection(self.context, ResourcePath("channels", self.resource_path)),
+            "channels", ChannelCollection(self.context, ResourcePath("channels", self.resource_path))
         )
 
     @property
@@ -160,17 +157,13 @@ class Team(Entity):
     def primary_channel(self) -> Channel:
         """The general channel for the team."""
         return self.properties.get(
-            "primaryChannel",
-            Channel(self.context, ResourcePath("primaryChannel", self.resource_path)),
+            "primaryChannel", Channel(self.context, ResourcePath("primaryChannel", self.resource_path))
         )
 
     @property
     def schedule(self) -> Schedule:
         """The schedule of shifts for this team."""
-        return self.properties.get(
-            "schedule",
-            Schedule(self.context, ResourcePath("schedule", self.resource_path)),
-        )
+        return self.properties.get("schedule", Schedule(self.context, ResourcePath("schedule", self.resource_path)))
 
     @odata(name="installedApps")
     @property
@@ -178,11 +171,7 @@ class Team(Entity):
         """The apps installed in this team."""
         return self.properties.get(
             "installedApps",
-            EntityCollection(
-                self.context,
-                TeamsAppInstallation,
-                ResourcePath("installedApps", self.resource_path),
-            ),
+            EntityCollection(self.context, TeamsAppInstallation, ResourcePath("installedApps", self.resource_path)),
         )
 
     @property
@@ -190,11 +179,7 @@ class Team(Entity):
         """The async operations that ran or are running on this team."""
         return self.properties.setdefault(
             "operations",
-            EntityCollection(
-                self.context,
-                TeamsAsyncOperation,
-                ResourcePath("operations", self.resource_path),
-            ),
+            EntityCollection(self.context, TeamsAsyncOperation, ResourcePath("operations", self.resource_path)),
         )
 
     @odata(name="permissionGrants")
@@ -205,11 +190,7 @@ class Team(Entity):
         """
         return self.properties.setdefault(
             "permissionGrants",
-            EntityCollection(
-                self.context,
-                ResourceSpecificPermissionGrant,
-                ResourcePath("permissionGrants"),
-            ),
+            EntityCollection(self.context, ResourceSpecificPermissionGrant, ResourcePath("permissionGrants")),
         )
 
     @property
@@ -226,17 +207,48 @@ class Team(Entity):
     def tags(self) -> EntityCollection[TeamworkTag]:
         """The tags associated with the team."""
         return self.properties.get(
-            "tags",
-            EntityCollection(self.context, TeamworkTag, ResourcePath("tags", self.resource_path)),
+            "tags", EntityCollection(self.context, TeamworkTag, ResourcePath("tags", self.resource_path))
         )
 
     @property
     def template(self) -> TeamsTemplate:
         """The template this team was created from"""
+        return self.properties.get("template", TeamsTemplate(self.context, ResourcePath("template", self.resource_path)))
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def first_channel_name(self) -> Optional[str]:
+        """Gets the firstChannelName property"""
+        return self.properties.get("firstChannelName", None)
+
+    @property
+    def internal_id(self) -> Optional[str]:
+        """Gets the internalId property"""
+        return self.properties.get("internalId", None)
+
+    @property
+    def specialization(self) -> TeamSpecialization:
+        """Gets the specialization property"""
+        return self.properties.get("specialization", TeamSpecialization.none)
+
+    @property
+    def members(self) -> EntityCollection[ConversationMember]:
+        """Gets the members property"""
         return self.properties.get(
-            "template",
-            TeamsTemplate(self.context, ResourcePath("template", self.resource_path)),
+            "members",
+            EntityCollection[ConversationMember](
+                self.context, ConversationMember, ResourcePath("members", self.resource_path)
+            ),
         )
+
+    @property
+    def photo(self) -> ProfilePhoto:
+        """Gets the photo property"""
+        return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
     def archive(self) -> Self:
         """Archive the specified team. When a team is archived, users can no longer send or like messages on any
@@ -299,7 +311,10 @@ class Team(Entity):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        # fallback: determine whether resource path is resolved
         if name == "id" and self._resource_path.segment == "team":
             self._resource_path = ResourcePath(value, ResourcePath("teams"))
         return self
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Team"

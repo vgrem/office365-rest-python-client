@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from typing_extensions import Self
 
@@ -17,6 +17,7 @@ from office365.onedrive.lists.collection import ListCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.permissions.collection import PermissionCollection
+from office365.onedrive.root import Root
 from office365.onedrive.sharepoint_ids import SharePointIds
 from office365.onedrive.sitepages.collection import SitePageCollection
 from office365.onedrive.sites.collection import SiteCollection
@@ -71,19 +72,15 @@ class Site(BaseItem):
             self.context.add_query(qry)
 
         if isinstance(list_or_id, List):
-            list_or_id.ensure_property(
-                "id",
-            ).after_execute(lambda _: _get_applicable_content_types_for_list(list_or_id.id))
+            list_or_id.ensure_property("id").after_execute(
+                lambda _: _get_applicable_content_types_for_list(list_or_id.id)
+            )
         else:
             _get_applicable_content_types_for_list(list_or_id)
-
         return return_type
 
     def get_activities_by_interval(
-        self,
-        start_dt: datetime | None = None,
-        end_dt: datetime | None = None,
-        interval: str | None = None,
+        self, start_dt: datetime | None = None, end_dt: datetime | None = None, interval: str | None = None
     ) -> EntityCollection[ItemActivityStat]:
         """
         Get a collection of itemActivityStats resources for the activities that took place on this resource
@@ -117,16 +114,14 @@ class Site(BaseItem):
     def items(self) -> EntityCollection[ListItem]:
         """Used to address any item contained in this site. This collection cannot be enumerated."""
         return self.properties.get(
-            "items",
-            EntityCollection(self.context, ListItem, ResourcePath("items", self.resource_path)),
+            "items", EntityCollection(self.context, ListItem, ResourcePath("items", self.resource_path))
         )
 
     @property
     def columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
         return self.properties.get(
-            "columns",
-            ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
+            "columns", ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self)
         )
 
     @property
@@ -141,36 +136,27 @@ class Site(BaseItem):
     def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
         return self.properties.get(
-            "contentTypes",
-            ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path)),
+            "contentTypes", ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path))
         )
 
     @property
     def lists(self) -> ListCollection:
         """The collection of lists under this site."""
-        return self.properties.get(
-            "lists",
-            ListCollection(self.context, ResourcePath("lists", self.resource_path)),
-        )
+        return self.properties.get("lists", ListCollection(self.context, ResourcePath("lists", self.resource_path)))
 
     @property
     def operations(self) -> EntityCollection[RichLongRunningOperation]:
         """The collection of long-running operations on the site."""
         return self.properties.get(
             "operations",
-            EntityCollection(
-                self.context,
-                RichLongRunningOperation,
-                ResourcePath("operations", self.resource_path),
-            ),
+            EntityCollection(self.context, RichLongRunningOperation, ResourcePath("operations", self.resource_path)),
         )
 
     @property
     def permissions(self) -> PermissionCollection:
         """The permissions associated with the site."""
         return self.properties.get(
-            "permissions",
-            PermissionCollection(self.context, ResourcePath("permissions", self.resource_path)),
+            "permissions", PermissionCollection(self.context, ResourcePath("permissions", self.resource_path))
         )
 
     @property
@@ -182,40 +168,33 @@ class Site(BaseItem):
     def drives(self) -> EntityCollection[Drive]:
         """The collection of drives under this site."""
         return self.properties.get(
-            "drives",
-            EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path), self),
+            "drives", EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path), self)
         )
 
     @property
     def sites(self) -> EntityCollection[Site]:
         """The collection of sites under this site."""
         return self.properties.get(
-            "sites",
-            EntityCollection(self.context, Site, ResourcePath("sites", self.resource_path)),
+            "sites", EntityCollection(self.context, Site, ResourcePath("sites", self.resource_path))
         )
 
     @property
     def analytics(self) -> ItemAnalytics:
         """Analytics about the view activities that took place on this site."""
         return self.properties.get(
-            "analytics",
-            ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path)),
+            "analytics", ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path))
         )
 
     @property
     def onenote(self) -> Onenote:
         """Represents the Onenote services available to a site."""
-        return self.properties.get(
-            "onenote",
-            Onenote(self.context, ResourcePath("onenote", self.resource_path)),
-        )
+        return self.properties.get("onenote", Onenote(self.context, ResourcePath("onenote", self.resource_path)))
 
     @property
     def pages(self) -> SitePageCollection:
         """The collection of site pages under this site."""
         return self.properties.get(
-            "pages",
-            SitePageCollection(self.context, ResourcePath("pages", self.resource_path), self.pages_list),
+            "pages", SitePageCollection(self.context, ResourcePath("pages", self.resource_path), self.pages_list)
         )
 
     @property
@@ -226,18 +205,29 @@ class Site(BaseItem):
     @property
     def term_store(self) -> Store:
         """The default termStore under this site."""
-        return self.properties.get(
-            "termStore",
-            Store(self.context, ResourcePath("termStore", self.resource_path)),
-        )
+        return self.properties.get("termStore", Store(self.context, ResourcePath("termStore", self.resource_path)))
 
     @property
     def term_stores(self) -> EntityCollection[Store]:
         """The collection of termStores under this site."""
         return self.properties.get(
-            "termStores",
-            EntityCollection(self.context, Store, ResourcePath("termStores", self.resource_path)),
+            "termStores", EntityCollection(self.context, Store, ResourcePath("termStores", self.resource_path))
         )
+
+    @property
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def is_personal_site(self) -> Optional[bool]:
+        """Gets the isPersonalSite property"""
+        return self.properties.get("isPersonalSite", None)
+
+    @property
+    def root(self) -> Root:
+        """Gets the root property"""
+        return self.properties.get("root", Root())
 
     def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
@@ -250,3 +240,7 @@ class Site(BaseItem):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Site"

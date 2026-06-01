@@ -33,3 +33,7 @@ class ResourceSpecificPermissionGrant(DirectoryObject):
     def resource_app_id(self) -> Optional[str]:
         """ID of the Azure AD app that is hosting the resource. Read-only."""
         return self.properties.get("resourceAppId", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ResourceSpecificPermissionGrant"

@@ -9,39 +9,45 @@ from typing_extensions import Self
 from office365.communications.onlinemeetings.collection import OnlineMeetingCollection
 from office365.communications.presences.presence import Presence
 from office365.delta_collection import DeltaCollection
-from office365.directory.applications.roles.assignment_collection import (
-    AppRoleAssignmentCollection,
-)
+from office365.directory.applications.roles.assignment_collection import AppRoleAssignmentCollection
 from office365.directory.audit.signins.activity import SignInActivity
 from office365.directory.authentication.authentication import Authentication
 from office365.directory.extensions.extension import Extension
 from office365.directory.extensions.open_type import OpenTypeExtension
+from office365.directory.groups.on_premises_sync_behavior import OnPremisesSyncBehavior
 from office365.directory.identities.object_identity import ObjectIdentity
-from office365.directory.identitygovernance.termsofuse.agreement_acceptance import (
-    AgreementAcceptance,
-)
+from office365.directory.identitygovernance.termsofuse.agreement_acceptance import AgreementAcceptance
 from office365.directory.insights.office_graph import OfficeGraphInsights
 from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.directory.licenses.assigned_plan import AssignedPlan
 from office365.directory.licenses.assignment_state import LicenseAssignmentState
 from office365.directory.licenses.details import LicenseDetails
 from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.customsecurityattributevalue import CustomSecurityAttributeValue
 from office365.directory.objects.object import DirectoryObject
+from office365.directory.objects.onpremisesprovisioningerror import OnPremisesProvisioningError
+from office365.directory.objects.serviceprovisioningerror import ServiceProvisioningError
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
+from office365.directory.permissions.grants.resource_specific import ResourceSpecificPermissionGrant
 from office365.directory.permissions.require_permission import require_permission
+from office365.directory.permissions.scoped_role_membership import ScopedRoleMembership
 from office365.directory.profile_photo import ProfilePhoto
 from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.directory.users.activities.collection import UserActivityCollection
+from office365.directory.users.authorizationinfo import AuthorizationInfo
+from office365.directory.users.employeeorgdata import EmployeeOrgData
+from office365.directory.users.onpremisesextensionattributes import OnPremisesExtensionAttributes
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.settings import UserSettings
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.data import DeviceAndAppManagementData
-from office365.intune.devices.management.managed.app.diagnostic_status import (
-    ManagedAppDiagnosticStatus,
-)
+from office365.intune.devices.management.managed.app.diagnostic_status import ManagedAppDiagnosticStatus
+from office365.intune.devices.management.managed.app.registration import ManagedAppRegistration
 from office365.intune.devices.management.managed.managed import ManagedDevice
 from office365.intune.organizations.contact import OrgContact
 from office365.intune.policies.managed_app import ManagedAppPolicy
+from office365.intune.print.user_print import UserPrint
+from office365.intune.provisioned_plan import ProvisionedPlan
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.sites.site import Site
 from office365.onenote.onenote import Onenote
@@ -52,9 +58,7 @@ from office365.outlook.calendar.events.event import Event
 from office365.outlook.calendar.events.reminder import Reminder
 from office365.outlook.calendar.group import CalendarGroup
 from office365.outlook.calendar.location_constraint import LocationConstraint
-from office365.outlook.calendar.meetingtimes.suggestions_result import (
-    MeetingTimeSuggestionsResult,
-)
+from office365.outlook.calendar.meetingtimes.suggestions_result import MeetingTimeSuggestionsResult
 from office365.outlook.calendar.meetingtimes.time_constraint import TimeConstraint
 from office365.outlook.contacts.collection import ContactCollection
 from office365.outlook.contacts.folder import ContactFolder
@@ -108,9 +112,7 @@ class User(DirectoryObject):
         Enable, configure, automatic replies (notify people automatically upon receipt of their email)
 
         """
-        from office365.outlook.mail.automaticreplies.setting import (
-            AutomaticRepliesSetting,
-        )
+        from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
 
         setting = AutomaticRepliesSetting(
             status=status,
@@ -133,13 +135,9 @@ class User(DirectoryObject):
         Disable automatic replies (notify people automatically upon receipt of their email)
         :param bool clear_all: If true, clear all automatic replies settings
         """
-        from office365.outlook.mail.automaticreplies.setting import (
-            AutomaticRepliesSetting,
-        )
+        from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
 
-        setting = AutomaticRepliesSetting(
-            status="disabled",
-        )
+        setting = AutomaticRepliesSetting(status="disabled")
 
         def _construct_request(request):
             payload = {"automaticRepliesSetting": setting.to_json()}
@@ -167,9 +165,7 @@ class User(DirectoryObject):
 
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def assign_license(
-        self,
-        add_licenses: list[str] | list[AssignedLicense],
-        remove_licenses: list[str] | None = None,
+        self, add_licenses: list[str] | list[AssignedLicense], remove_licenses: list[str] | None = None
     ) -> Self:
         """
         Add or remove licenses on the user.
@@ -184,7 +180,7 @@ class User(DirectoryObject):
             "addLicenses": ClientValueCollection(
                 AssignedLicense,
                 [
-                    (AssignedLicense(skuId=sku_id) if not isinstance(sku_id, AssignedLicense) else sku_id)
+                    AssignedLicense(skuId=sku_id) if not isinstance(sku_id, AssignedLicense) else sku_id
                     for sku_id in add_licenses
                 ],
             ),
@@ -216,10 +212,8 @@ class User(DirectoryObject):
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
             self.context.add_query(qry).before_execute(_construct_request)
 
-        if isinstance(user, User):
+        if isinstance(user, (User, OrgContact)):
             user.ensure_property("id").after_execute(lambda _: _assign_manager(user.id))
-        elif hasattr(user, "id"):
-            _assign_manager(user.id)  # type: ignore[reportAttributeAccessIssue]
         else:
             _assign_manager(str(user))
         return self.manager
@@ -244,10 +238,7 @@ class User(DirectoryObject):
         :param str new_password: Your new password.
         """
         qry = ServiceOperationQuery(
-            self,
-            "changePassword",
-            None,
-            {"currentPassword": current_password, "newPassword": new_password},
+            self, "changePassword", None, {"currentPassword": current_password, "newPassword": new_password}
         )
         self.context.add_query(qry)
         return self
@@ -258,13 +249,7 @@ class User(DirectoryObject):
         def _follow_site(site_id: str | None) -> None:
             if site_id is None:
                 return
-            payload = {
-                "value": [
-                    {
-                        "id": site_id,
-                    }
-                ]
-            }
+            payload = {"value": [{"id": site_id}]}
             query = ServiceOperationQuery(self.followed_sites, "add", None, payload)
             self.context.add_query(query)
 
@@ -280,13 +265,7 @@ class User(DirectoryObject):
         def _unfollow_site(site_id: str | None) -> None:
             if site_id is None:
                 return
-            payload = {
-                "value": [
-                    {
-                        "id": site_id,
-                    }
-                ]
-            }
+            payload = {"value": [{"id": site_id}]}
             query = ServiceOperationQuery(self.followed_sites, "remove", None, payload)
             self.context.add_query(query)
 
@@ -294,7 +273,6 @@ class User(DirectoryObject):
             site.ensure_property("id").after_execute(lambda _: _unfollow_site(site.id))
         else:
             _unfollow_site(str(site))
-
         return self
 
     def get_directory_roles(self) -> EntityCollection[DirectoryRole]:
@@ -321,7 +299,6 @@ class User(DirectoryObject):
             self.member_of.get().after_execute(_memberships_loaded)
 
         self.context.directory_roles.get().after_execute(_directory_roles_loaded)
-
         return return_type
 
     @require_permission(delegated=["Mail.Read", "Mail.ReadWrite"], application=["Mail.Read", "Mail.ReadWrite"])
@@ -336,16 +313,8 @@ class User(DirectoryObject):
             and totalMemberCount.
         """
         return_type = ClientResult(self.context, ClientValueCollection(MailTips))
-        payload = {
-            "EmailAddresses": StringCollection(email_addresses),
-            "MailTipsOptions": mail_tips_options,
-        }
-        qry = ServiceOperationQuery(
-            self,
-            "getMailTips",
-            None,
-            payload,
-        )
+        payload = {"EmailAddresses": StringCollection(email_addresses), "MailTipsOptions": mail_tips_options}
+        qry = ServiceOperationQuery(self, "getMailTips", None, payload)
         self.context.add_query(qry)
         return return_type
 
@@ -393,7 +362,6 @@ class User(DirectoryObject):
             [return_type.cc_recipients.add(Recipient.from_email(email)) for email in cc_recipients]
         if reply_to is not None:
             [return_type.reply_to.add(Recipient.from_email(email)) for email in reply_to]
-
         payload = {"message": return_type, "saveToSentItems": save_to_sent_items}
         qry = ServiceOperationQuery(self, "sendmail", None, payload)
         self.context.add_query(qry)
@@ -414,9 +382,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
-    def export_device_and_app_management_data(
-        self,
-    ) -> ClientResult[ClientValueCollection[DeviceAndAppManagementData]]:
+    def export_device_and_app_management_data(self) -> ClientResult[ClientValueCollection[DeviceAndAppManagementData]]:
         """"""
         return_type = ClientResult(self.context, ClientValueCollection(DeviceAndAppManagementData))
         qry = FunctionQuery(self, "exportDeviceAndAppManagementData", None, return_type)
@@ -514,17 +480,12 @@ class User(DirectoryObject):
             The value is represented in ISO 8601 format, for example, "2015-11-08T19:00:00.0000000".
         """
         return_type = ClientResult(self.context, ClientValueCollection(Reminder))
-        params = {
-            "startDateTime": start_dt.isoformat(),
-            "endDateTime": end_dt.isoformat(),
-        }
+        params = {"startDateTime": start_dt.isoformat(), "endDateTime": end_dt.isoformat()}
         qry = FunctionQuery(self, "reminderView", params, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_managed_app_diagnostic_statuses(
-        self,
-    ) -> ClientResult[ClientValueCollection[ManagedAppDiagnosticStatus]]:
+    def get_managed_app_diagnostic_statuses(self) -> ClientResult[ClientValueCollection[ManagedAppDiagnosticStatus]]:
         """Gets diagnostics validation status for a given user."""
         return_type = ClientResult(self.context, ClientValueCollection(ManagedAppDiagnosticStatus))
         qry = FunctionQuery(self, "getManagedAppDiagnosticStatuses", None, return_type)
@@ -641,8 +602,7 @@ class User(DirectoryObject):
     def created_objects(self) -> DirectoryObjectCollection:
         """Directory objects created by this user."""
         return self.properties.get(
-            "createdObjects",
-            DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path)),
+            "createdObjects", DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path))
         )
 
     @property
@@ -676,10 +636,7 @@ class User(DirectoryObject):
     @property
     def chats(self) -> ChatCollection:
         """The user's chats."""
-        return self.properties.get(
-            "chats",
-            ChatCollection(self.context, ResourcePath("chats", self.resource_path)),
-        )
+        return self.properties.get("chats", ChatCollection(self.context, ResourcePath("chats", self.resource_path)))
 
     @property
     def display_name(self) -> Optional[str]:
@@ -726,8 +683,7 @@ class User(DirectoryObject):
         The authentication methods that are supported for the user.
         """
         return self.properties.get(
-            "authentication",
-            Authentication(self.context, ResourcePath("authentication", self.resource_path)),
+            "authentication", Authentication(self.context, ResourcePath("authentication", self.resource_path))
         )
 
     @property
@@ -746,9 +702,7 @@ class User(DirectoryObject):
         return self.properties.get("creationType", None)
 
     @property
-    def license_assignment_states(
-        self,
-    ) -> ClientValueCollection[LicenseAssignmentState]:
+    def license_assignment_states(self) -> ClientValueCollection[LicenseAssignmentState]:
         """
         State of license assignments for this user. Also indicates licenses that are directly-assigned and those
         that the user has inherited through group memberships.
@@ -788,8 +742,7 @@ class User(DirectoryObject):
     def activities(self) -> UserActivityCollection:
         """The user's activities across devices."""
         return self.properties.get(
-            "activities",
-            UserActivityCollection(self.context, ResourcePath("activities", self.resource_path)),
+            "activities", UserActivityCollection(self.context, ResourcePath("activities", self.resource_path))
         )
 
     @property
@@ -801,41 +754,32 @@ class User(DirectoryObject):
     def followed_sites(self) -> EntityCollection[Site]:
         """ """
         return self.properties.get(
-            "followedSites",
-            EntityCollection(self.context, Site, ResourcePath("followedSites", self.resource_path)),
+            "followedSites", EntityCollection(self.context, Site, ResourcePath("followedSites", self.resource_path))
         )
 
     @property
     def insights(self) -> OfficeGraphInsights:
         """Insights are relationships calculated using advanced analytics and machine learning techniques."""
         return self.properties.get(
-            "insights",
-            OfficeGraphInsights(self.context, ResourcePath("insights", self.resource_path)),
+            "insights", OfficeGraphInsights(self.context, ResourcePath("insights", self.resource_path))
         )
 
     @property
     def photo(self):
         """The user's profile photo. Read-only."""
-        return self.properties.get(
-            "photo",
-            ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)),
-        )
+        return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
     @property
     def photos(self):
         """The collection of the user's profile photos in different sizes"""
         return self.properties.get(
-            "photos",
-            EntityCollection(self.context, ProfilePhoto, ResourcePath("photos", self.resource_path)),
+            "photos", EntityCollection(self.context, ProfilePhoto, ResourcePath("photos", self.resource_path))
         )
 
     @property
     def manager(self):
         """The user or contact that is this user's manager"""
-        return self.properties.get(
-            "manager",
-            DirectoryObject(self.context, ResourcePath("manager", self.resource_path)),
-        )
+        return self.properties.get("manager", DirectoryObject(self.context, ResourcePath("manager", self.resource_path)))
 
     @property
     def preferred_language(self) -> Optional[str]:
@@ -856,17 +800,13 @@ class User(DirectoryObject):
     @property
     def calendar(self) -> Calendar:
         """The user's primary calendar. Read-only."""
-        return self.properties.get(
-            "calendar",
-            Calendar(self.context, ResourcePath("calendar", self.resource_path)),
-        )
+        return self.properties.get("calendar", Calendar(self.context, ResourcePath("calendar", self.resource_path)))
 
     @property
     def calendars(self) -> EntityCollection[Calendar]:
         """The user's calendar groups. Read-only. Nullable."""
         return self.properties.get(
-            "calendars",
-            EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path)),
+            "calendars", EntityCollection(self.context, Calendar, ResourcePath("calendars", self.resource_path))
         )
 
     @property
@@ -874,11 +814,7 @@ class User(DirectoryObject):
         """The user's calendar groups. Read-only. Nullable."""
         return self.properties.get(
             "calendarGroups",
-            EntityCollection(
-                self.context,
-                CalendarGroup,
-                ResourcePath("calendarGroups", self.resource_path),
-            ),
+            EntityCollection(self.context, CalendarGroup, ResourcePath("calendarGroups", self.resource_path)),
         )
 
     @property
@@ -886,22 +822,14 @@ class User(DirectoryObject):
         """Retrieve the properties and relationships of a Drive resource."""
         return self.properties.get(
             "licenseDetails",
-            EntityCollection(
-                self.context,
-                LicenseDetails,
-                ResourcePath("licenseDetails", self.resource_path),
-            ),
+            EntityCollection(self.context, LicenseDetails, ResourcePath("licenseDetails", self.resource_path)),
         )
 
     @property
     def drive(self) -> Drive:
         """Retrieve the properties and relationships of a Drive resource."""
         return self.properties.get(
-            "drive",
-            Drive(
-                self.context,
-                EntityPath("drive", self.resource_path, ResourcePath("drives")),
-            ),
+            "drive", Drive(self.context, EntityPath("drive", self.resource_path, ResourcePath("drives")))
         )
 
     @property
@@ -909,8 +837,7 @@ class User(DirectoryObject):
         """Get a contact collection from the default Contacts folder of the signed-in user (.../me/contacts),
         or from the specified contact folder."""
         return self.properties.get(
-            "contacts",
-            ContactCollection(self.context, ResourcePath("contacts", self.resource_path)),
+            "contacts", ContactCollection(self.context, ResourcePath("contacts", self.resource_path))
         )
 
     @property
@@ -918,35 +845,28 @@ class User(DirectoryObject):
         """Get the contact folder collection in the default Contacts folder of the signed-in user."""
         return self.properties.get(
             "contactFolders",
-            DeltaCollection(
-                self.context,
-                ContactFolder,
-                ResourcePath("contactFolders", self.resource_path),
-            ),
+            DeltaCollection(self.context, ContactFolder, ResourcePath("contactFolders", self.resource_path)),
         )
 
     @property
     def events(self) -> DeltaCollection[Event]:
         """Get an event collection or an event."""
         return self.properties.get(
-            "events",
-            DeltaCollection(self.context, Event, ResourcePath("events", self.resource_path)),
+            "events", DeltaCollection(self.context, Event, ResourcePath("events", self.resource_path))
         )
 
     @property
     def messages(self) -> MessageCollection:
         """Get an event collection or an event."""
         return self.properties.get(
-            "messages",
-            MessageCollection(self.context, ResourcePath("messages", self.resource_path)),
+            "messages", MessageCollection(self.context, ResourcePath("messages", self.resource_path))
         )
 
     @property
     def joined_teams(self) -> TeamCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
         return self.properties.get(
-            "joinedTeams",
-            TeamCollection(self.context, ResourcePath("joinedTeams", self.resource_path)),
+            "joinedTeams", TeamCollection(self.context, ResourcePath("joinedTeams", self.resource_path))
         )
 
     @property
@@ -954,19 +874,14 @@ class User(DirectoryObject):
         """Devices that are managed or pre-enrolled through Intune"""
         return self.properties.get(
             "managedDevices",
-            EntityCollection(
-                self.context,
-                ManagedDevice,
-                ResourcePath("managedDevices", self.resource_path),
-            ),
+            EntityCollection(self.context, ManagedDevice, ResourcePath("managedDevices", self.resource_path)),
         )
 
     @property
     def member_of(self) -> DirectoryObjectCollection:
         """Get groups and directory roles that the user is a direct member of."""
         return self.properties.get(
-            "memberOf",
-            DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path)),
+            "memberOf", DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path))
         )
 
     @property
@@ -975,9 +890,7 @@ class User(DirectoryObject):
         return self.properties.get(
             "oauth2PermissionGrants",
             DeltaCollection(
-                self.context,
-                OAuth2PermissionGrant,
-                ResourcePath("oauth2PermissionGrants", self.resource_path),
+                self.context, OAuth2PermissionGrant, ResourcePath("oauth2PermissionGrants", self.resource_path)
             ),
         )
 
@@ -1004,16 +917,14 @@ class User(DirectoryObject):
         Supports $expand and $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1).
         """
         return self.properties.get(
-            "ownedDevices",
-            DirectoryObjectCollection(self.context, ResourcePath("ownedDevices", self.resource_path)),
+            "ownedDevices", DirectoryObjectCollection(self.context, ResourcePath("ownedDevices", self.resource_path))
         )
 
     @property
     def owned_objects(self) -> DirectoryObjectCollection:
         """Directory objects that are owned by the user. Read-only. Nullable. Supports $expand."""
         return self.properties.get(
-            "ownedObjects",
-            DirectoryObjectCollection(self.context, ResourcePath("ownedObjects", self.resource_path)),
+            "ownedObjects", DirectoryObjectCollection(self.context, ResourcePath("ownedObjects", self.resource_path))
         )
 
     @property
@@ -1041,49 +952,35 @@ class User(DirectoryObject):
     def mail_folders(self) -> MailFolderCollection:
         """Get the mail folder collection under the root folder of the signed-in user."""
         return self.properties.get(
-            "mailFolders",
-            MailFolderCollection(self.context, ResourcePath("mailFolders", self.resource_path)),
+            "mailFolders", MailFolderCollection(self.context, ResourcePath("mailFolders", self.resource_path))
         )
 
     @property
     def outlook(self) -> OutlookUser:
         """Represents the Outlook services available to a user."""
-        return self.properties.get(
-            "outlook",
-            OutlookUser(self.context, ResourcePath("outlook", self.resource_path)),
-        )
+        return self.properties.get("outlook", OutlookUser(self.context, ResourcePath("outlook", self.resource_path)))
 
     @property
     def people(self) -> EntityCollection[Person]:
         """People that are relevant to the user. Read-only. Nullable."""
         return self.properties.get(
-            "people",
-            EntityCollection(self.context, Person, ResourcePath("people", self.resource_path)),
+            "people", EntityCollection(self.context, Person, ResourcePath("people", self.resource_path))
         )
 
     @property
     def onenote(self) -> Onenote:
         """Represents the Onenote services available to a user."""
-        return self.properties.get(
-            "onenote",
-            Onenote(self.context, ResourcePath("onenote", self.resource_path)),
-        )
+        return self.properties.get("onenote", Onenote(self.context, ResourcePath("onenote", self.resource_path)))
 
     @property
     def settings(self) -> UserSettings:
         """Represents the user and organization settings object."""
-        return self.properties.get(
-            "settings",
-            UserSettings(self.context, ResourcePath("settings", self.resource_path)),
-        )
+        return self.properties.get("settings", UserSettings(self.context, ResourcePath("settings", self.resource_path)))
 
     @property
     def planner(self) -> PlannerUser:
         """The plannerUser resource provide access to Planner resources for a user."""
-        return self.properties.get(
-            "planner",
-            PlannerUser(self.context, ResourcePath("planner", self.resource_path)),
-        )
+        return self.properties.get("planner", PlannerUser(self.context, ResourcePath("planner", self.resource_path)))
 
     @property
     def agreement_acceptances(self) -> EntityCollection[AgreementAcceptance]:
@@ -1093,9 +990,7 @@ class User(DirectoryObject):
         return self.properties.get(
             "agreementAcceptances",
             EntityCollection(
-                self.context,
-                AgreementAcceptance,
-                ResourcePath("agreementAcceptances", self.resource_path),
+                self.context, AgreementAcceptance, ResourcePath("agreementAcceptances", self.resource_path)
             ),
         )
 
@@ -1103,24 +998,21 @@ class User(DirectoryObject):
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the user. Nullable."""
         return self.properties.get(
-            "extensions",
-            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
+            "extensions", EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path))
         )
 
     @property
     def direct_reports(self) -> DirectoryObjectCollection:
         """Get a user's direct reports"""
         return self.properties.get(
-            "directReports",
-            DirectoryObjectCollection(self.context, ResourcePath("directReports", self.resource_path)),
+            "directReports", DirectoryObjectCollection(self.context, ResourcePath("directReports", self.resource_path))
         )
 
     @property
     def online_meetings(self) -> OnlineMeetingCollection:
         """Get a user's online meetings."""
         return self.properties.get(
-            "onlineMeetings",
-            OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path)),
+            "onlineMeetings", OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path))
         )
 
     @property
@@ -1146,10 +1038,7 @@ class User(DirectoryObject):
     @property
     def presence(self) -> Presence:
         """Get a user's presence information."""
-        return self.properties.get(
-            "presence",
-            Presence(self.context, ResourcePath("presence", self.resource_path)),
-        )
+        return self.properties.get("presence", Presence(self.context, ResourcePath("presence", self.resource_path)))
 
     @property
     def registered_devices(self) -> DirectoryObjectCollection:
@@ -1172,17 +1061,13 @@ class User(DirectoryObject):
     @property
     def teamwork(self) -> UserTeamwork:
         """A container for the range of Microsoft Teams functionalities that are available per user in the tenant."""
-        return self.properties.get(
-            "teamwork",
-            UserTeamwork(self.context, ResourcePath("teamwork", self.resource_path)),
-        )
+        return self.properties.get("teamwork", UserTeamwork(self.context, ResourcePath("teamwork", self.resource_path)))
 
     @property
     def solutions(self) -> UserSolutionRoot:
         """The identifier that relates the user to the working time schedule triggers. Read-Only. Nullable."""
         return self.properties.get(
-            "solutions",
-            UserSolutionRoot(self.context, ResourcePath("solutions", self.resource_path)),
+            "solutions", UserSolutionRoot(self.context, ResourcePath("solutions", self.resource_path))
         )
 
     @property
@@ -1206,11 +1091,337 @@ class User(DirectoryObject):
         """
         return self.properties.get("usageLocation", None)
 
+    @property
+    def authorization_info(self) -> AuthorizationInfo:
+        """Gets the authorizationInfo property"""
+        return self.properties.get("authorizationInfo", AuthorizationInfo())
+
+    @property
+    def city(self) -> Optional[str]:
+        """Gets the city property"""
+        return self.properties.get("city", None)
+
+    @property
+    def company_name(self) -> Optional[str]:
+        """Gets the companyName property"""
+        return self.properties.get("companyName", None)
+
+    @property
+    def consent_provided_for_minor(self) -> Optional[str]:
+        """Gets the consentProvidedForMinor property"""
+        return self.properties.get("consentProvidedForMinor", None)
+
+    @property
+    def country(self) -> Optional[str]:
+        """Gets the country property"""
+        return self.properties.get("country", None)
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def custom_security_attributes(self) -> CustomSecurityAttributeValue:
+        """Gets the customSecurityAttributes property"""
+        return self.properties.get("customSecurityAttributes", CustomSecurityAttributeValue())
+
+    @property
+    def department(self) -> Optional[str]:
+        """Gets the department property"""
+        return self.properties.get("department", None)
+
+    @property
+    def employee_hire_date(self) -> datetime:
+        """Gets the employeeHireDate property"""
+        return self.properties.get("employeeHireDate", datetime.min)
+
+    @property
+    def employee_id(self) -> Optional[str]:
+        """Gets the employeeId property"""
+        return self.properties.get("employeeId", None)
+
+    @property
+    def employee_leave_date_time(self) -> datetime:
+        """Gets the employeeLeaveDateTime property"""
+        return self.properties.get("employeeLeaveDateTime", datetime.min)
+
+    @property
+    def employee_org_data(self) -> EmployeeOrgData:
+        """Gets the employeeOrgData property"""
+        return self.properties.get("employeeOrgData", EmployeeOrgData())
+
+    @property
+    def employee_type(self) -> Optional[str]:
+        """Gets the employeeType property"""
+        return self.properties.get("employeeType", None)
+
+    @property
+    def external_user_state(self) -> Optional[str]:
+        """Gets the externalUserState property"""
+        return self.properties.get("externalUserState", None)
+
+    @property
+    def external_user_state_change_date_time(self) -> datetime:
+        """Gets the externalUserStateChangeDateTime property"""
+        return self.properties.get("externalUserStateChangeDateTime", datetime.min)
+
+    @property
+    def fax_number(self) -> Optional[str]:
+        """Gets the faxNumber property"""
+        return self.properties.get("faxNumber", None)
+
+    @property
+    def identity_parent_id(self) -> Optional[str]:
+        """Gets the identityParentId property"""
+        return self.properties.get("identityParentId", None)
+
+    @property
+    def im_addresses(self) -> StringCollection:
+        """Gets the imAddresses property"""
+        return self.properties.get("imAddresses", StringCollection(None))
+
+    @property
+    def is_management_restricted(self) -> Optional[bool]:
+        """Gets the isManagementRestricted property"""
+        return self.properties.get("isManagementRestricted", None)
+
+    @property
+    def is_resource_account(self) -> Optional[bool]:
+        """Gets the isResourceAccount property"""
+        return self.properties.get("isResourceAccount", None)
+
+    @property
+    def job_title(self) -> Optional[str]:
+        """Gets the jobTitle property"""
+        return self.properties.get("jobTitle", None)
+
+    @property
+    def last_password_change_date_time(self) -> datetime:
+        """Gets the lastPasswordChangeDateTime property"""
+        return self.properties.get("lastPasswordChangeDateTime", datetime.min)
+
+    @property
+    def legal_age_group_classification(self) -> Optional[str]:
+        """Gets the legalAgeGroupClassification property"""
+        return self.properties.get("legalAgeGroupClassification", None)
+
+    @property
+    def mail_nickname(self) -> Optional[str]:
+        """Gets the mailNickname property"""
+        return self.properties.get("mailNickname", None)
+
+    @property
+    def mobile_phone(self) -> Optional[str]:
+        """Gets the mobilePhone property"""
+        return self.properties.get("mobilePhone", None)
+
+    @property
+    def on_premises_extension_attributes(self) -> OnPremisesExtensionAttributes:
+        """Gets the onPremisesExtensionAttributes property"""
+        return self.properties.get("onPremisesExtensionAttributes", OnPremisesExtensionAttributes())
+
+    @property
+    def on_premises_immutable_id(self) -> Optional[str]:
+        """Gets the onPremisesImmutableId property"""
+        return self.properties.get("onPremisesImmutableId", None)
+
+    @property
+    def on_premises_last_sync_date_time(self) -> datetime:
+        """Gets the onPremisesLastSyncDateTime property"""
+        return self.properties.get("onPremisesLastSyncDateTime", datetime.min)
+
+    @property
+    def on_premises_provisioning_errors(self) -> ClientValueCollection[OnPremisesProvisioningError]:
+        """Gets the onPremisesProvisioningErrors property"""
+        return self.properties.get(
+            "onPremisesProvisioningErrors",
+            ClientValueCollection[OnPremisesProvisioningError](OnPremisesProvisioningError),
+        )
+
+    @property
+    def on_premises_sam_account_name(self) -> Optional[str]:
+        """Gets the onPremisesSamAccountName property"""
+        return self.properties.get("onPremisesSamAccountName", None)
+
+    @property
+    def on_premises_security_identifier(self) -> Optional[str]:
+        """Gets the onPremisesSecurityIdentifier property"""
+        return self.properties.get("onPremisesSecurityIdentifier", None)
+
+    @property
+    def on_premises_sync_enabled(self) -> Optional[bool]:
+        """Gets the onPremisesSyncEnabled property"""
+        return self.properties.get("onPremisesSyncEnabled", None)
+
+    @property
+    def on_premises_user_principal_name(self) -> Optional[str]:
+        """Gets the onPremisesUserPrincipalName property"""
+        return self.properties.get("onPremisesUserPrincipalName", None)
+
+    @property
+    def postal_code(self) -> Optional[str]:
+        """Gets the postalCode property"""
+        return self.properties.get("postalCode", None)
+
+    @property
+    def preferred_data_location(self) -> Optional[str]:
+        """Gets the preferredDataLocation property"""
+        return self.properties.get("preferredDataLocation", None)
+
+    @property
+    def provisioned_plans(self) -> ClientValueCollection[ProvisionedPlan]:
+        """Gets the provisionedPlans property"""
+        return self.properties.get("provisionedPlans", ClientValueCollection[ProvisionedPlan](ProvisionedPlan))
+
+    @property
+    def service_provisioning_errors(self) -> ClientValueCollection[ServiceProvisioningError]:
+        """Gets the serviceProvisioningErrors property"""
+        return self.properties.get(
+            "serviceProvisioningErrors", ClientValueCollection[ServiceProvisioningError](ServiceProvisioningError)
+        )
+
+    @property
+    def show_in_address_list(self) -> Optional[bool]:
+        """Gets the showInAddressList property"""
+        return self.properties.get("showInAddressList", None)
+
+    @property
+    def sign_in_sessions_valid_from_date_time(self) -> datetime:
+        """Gets the signInSessionsValidFromDateTime property"""
+        return self.properties.get("signInSessionsValidFromDateTime", datetime.min)
+
+    @property
+    def state(self) -> Optional[str]:
+        """Gets the state property"""
+        return self.properties.get("state", None)
+
+    @property
+    def surname(self) -> Optional[str]:
+        """Gets the surname property"""
+        return self.properties.get("surname", None)
+
+    @property
+    def user_type(self) -> Optional[str]:
+        """Gets the userType property"""
+        return self.properties.get("userType", None)
+
+    @property
+    def print_(self) -> UserPrint:
+        """Gets the print property"""
+        return self.properties.get("print", UserPrint())
+
+    @property
+    def about_me(self) -> Optional[str]:
+        """Gets the aboutMe property"""
+        return self.properties.get("aboutMe", None)
+
+    @property
+    def birthday(self) -> datetime:
+        """Gets the birthday property"""
+        return self.properties.get("birthday", datetime.min)
+
+    @property
+    def hire_date(self) -> datetime:
+        """Gets the hireDate property"""
+        return self.properties.get("hireDate", datetime.min)
+
+    @property
+    def past_projects(self) -> StringCollection:
+        """Gets the pastProjects property"""
+        return self.properties.get("pastProjects", StringCollection(None))
+
+    @property
+    def preferred_name(self) -> Optional[str]:
+        """Gets the preferredName property"""
+        return self.properties.get("preferredName", None)
+
+    @property
+    def responsibilities(self) -> StringCollection:
+        """Gets the responsibilities property"""
+        return self.properties.get("responsibilities", StringCollection(None))
+
+    @property
+    def schools(self) -> StringCollection:
+        """Gets the schools property"""
+        return self.properties.get("schools", StringCollection(None))
+
+    @property
+    def skills(self) -> StringCollection:
+        """Gets the skills property"""
+        return self.properties.get("skills", StringCollection(None))
+
+    @property
+    def on_premises_sync_behavior(self) -> OnPremisesSyncBehavior:
+        """Gets the onPremisesSyncBehavior property"""
+        return self.properties.get(
+            "onPremisesSyncBehavior",
+            OnPremisesSyncBehavior(self.context, ResourcePath("onPremisesSyncBehavior", self.resource_path)),
+        )
+
+    @property
+    def scoped_role_member_of(self) -> EntityCollection[ScopedRoleMembership]:
+        """Gets the scopedRoleMemberOf property"""
+        return self.properties.get(
+            "scopedRoleMemberOf",
+            EntityCollection[ScopedRoleMembership](
+                self.context, ScopedRoleMembership, ResourcePath("scopedRoleMemberOf", self.resource_path)
+            ),
+        )
+
+    @property
+    def sponsors(self) -> EntityCollection[DirectoryObject]:
+        """Gets the sponsors property"""
+        return self.properties.get(
+            "sponsors",
+            EntityCollection[DirectoryObject](
+                self.context, DirectoryObject, ResourcePath("sponsors", self.resource_path)
+            ),
+        )
+
+    @property
+    def calendar_view(self) -> EntityCollection[Event]:
+        """Gets the calendarView property"""
+        return self.properties.get(
+            "calendarView",
+            EntityCollection[Event](self.context, Event, ResourcePath("calendarView", self.resource_path)),
+        )
+
+    @property
+    def drives(self) -> EntityCollection[Drive]:
+        """Gets the drives property"""
+        return self.properties.get(
+            "drives", EntityCollection[Drive](self.context, Drive, ResourcePath("drives", self.resource_path))
+        )
+
+    @property
+    def managed_app_registrations(self) -> EntityCollection[ManagedAppRegistration]:
+        """Gets the managedAppRegistrations property"""
+        return self.properties.get(
+            "managedAppRegistrations",
+            EntityCollection[ManagedAppRegistration](
+                self.context, ManagedAppRegistration, ResourcePath("managedAppRegistrations", self.resource_path)
+            ),
+        )
+
+    @property
+    def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
+        """Gets the permissionGrants property"""
+        return self.properties.get(
+            "permissionGrants",
+            EntityCollection[ResourceSpecificPermissionGrant](
+                self.context, ResourceSpecificPermissionGrant, ResourcePath("permissionGrants", self.resource_path)
+            ),
+        )
+
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        # fallback: create a new resource path
         if self._resource_path is None:
             if name in {"id", "userPrincipalName"}:
                 assert self.parent_collection is not None
                 self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
         return self
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.User"

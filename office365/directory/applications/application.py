@@ -201,6 +201,7 @@ class Application(DirectoryObject):
         """Unique identifier of the applicationTemplate"""
         return self.properties.get("applicationTemplateId", None)
 
+    @odata(name="appRoles")
     @property
     def app_roles(self) -> ClientValueCollection[AppRole]:
         """
@@ -219,6 +220,7 @@ class Application(DirectoryObject):
         """Specifies the certification status of the application."""
         return self.properties.get("certification", Certification())
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self):
         """The date and time the application was registered."""
@@ -259,6 +261,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("identifierUris", StringCollection())
 
+    @odata(name="optionalClaims")
     @property
     def optional_claims(self) -> OptionalClaims:
         """Application developers can configure optional claims in their Microsoft Entra applications to specify
@@ -266,11 +269,13 @@ class Application(DirectoryObject):
         """
         return self.properties.get("optionalClaims", OptionalClaims())
 
+    @odata(name="passwordCredentials")
     @property
     def password_credentials(self) -> ClientValueCollection[PasswordCredential]:
         """The collection of password credentials associated with the application"""
         return self.properties.get("passwordCredentials", ClientValueCollection(PasswordCredential))
 
+    @odata(name="publicClient")
     @property
     def public_client(self) -> PublicClientApplication:
         """Specifies settings for installed clients such as desktop or mobile devices."""
@@ -285,6 +290,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("signInAudience", None)
 
+    @odata(name="createdOnBehalfOf")
     @property
     def created_on_behalf_of(self) -> DirectoryObject:
         """"""
@@ -299,6 +305,7 @@ class Application(DirectoryObject):
             "owners", DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path))
         )
 
+    @odata(name="extensionProperties")
     @property
     def extension_properties(self) -> EntityCollection[ExtensionProperty]:
         """List extension properties on an application object."""
@@ -307,6 +314,7 @@ class Application(DirectoryObject):
             EntityCollection(self.context, ExtensionProperty, ResourcePath("extensionProperties", self.resource_path)),
         )
 
+    @odata(name="requiredResourceAccess")
     @property
     def required_resource_access(self) -> ClientValueCollection[RequiredResourceAccess]:
         """Specifies the resources that the application needs to access. This property also specifies the set
@@ -315,6 +323,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("requiredResourceAccess", ClientValueCollection(RequiredResourceAccess))
 
+    @odata(name="tokenIssuancePolicies")
     @property
     def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:
         """Get all tokenIssuancePolicies assigned to this object."""
@@ -472,22 +481,7 @@ class Application(DirectoryObject):
             "synchronization", Synchronization(self.context, ResourcePath("synchronization", self.resource_path))
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "appRoles": self.app_roles,
-                "createdDateTime": self.created_datetime,
-                "createdOnBehalfOf": self.created_on_behalf_of,
-                "extensionProperties": self.extension_properties,
-                "keyCredentials": self.key_credentials,
-                "optionalClaims": self.optional_claims,
-                "passwordCredentials": self.password_credentials,
-                "publicClient": self.public_client,
-                "requiredResourceAccess": self.required_resource_access,
-                "tokenIssuancePolicies": self.token_issuance_policies,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
 
     @property
     def entity_type_name(self) -> str:

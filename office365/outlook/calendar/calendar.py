@@ -2,9 +2,7 @@ from typing import Any, Optional
 
 from typing_extensions import Self
 
-from office365.communications.onlinemeetings.provider_type import (
-    OnlineMeetingProviderType,
-)
+from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -15,9 +13,7 @@ from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.collection import EventCollection
-from office365.outlook.calendar.permissions.collection import (
-    CalendarPermissionCollection,
-)
+from office365.outlook.calendar.permissions.collection import CalendarPermissionCollection
 from office365.outlook.calendar.schedule.information import ScheduleInformation
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -173,17 +169,13 @@ class Calendar(Entity):
     @property
     def events(self) -> EventCollection:
         """The events in the calendar. Navigation property. Read-only."""
-        return self.properties.get(
-            "events",
-            EventCollection(self.context, ResourcePath("events", self.resource_path)),
-        )
+        return self.properties.get("events", EventCollection(self.context, ResourcePath("events", self.resource_path)))
 
     @property
     def calendar_view(self) -> EventCollection:
         """The calendar view for the calendar. Navigation property. Read-only."""
         return self.properties.get(
-            "calendarView",
-            EventCollection(self.context, ResourcePath("calendarView", self.resource_path)),
+            "calendarView", EventCollection(self.context, ResourcePath("calendarView", self.resource_path))
         )
 
     @property
@@ -195,9 +187,7 @@ class Calendar(Entity):
         )
 
     @property
-    def multi_value_extended_properties(
-        self,
-    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
+    def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the Calendar."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -209,9 +199,7 @@ class Calendar(Entity):
         )
 
     @property
-    def single_value_extended_properties(
-        self,
-    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the calendar. Read-only. Nullable."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -221,6 +209,11 @@ class Calendar(Entity):
                 ResourcePath("singleValueExtendedProperties", self.resource_path),
             ),
         )
+
+    @property
+    def hex_color(self) -> Optional[str]:
+        """Gets the hexColor property"""
+        return self.properties.get("hexColor", None)
 
     def get_property(self, name: str, default_value: Any = None) -> Self:
         if default_value is None:
@@ -233,3 +226,7 @@ class Calendar(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Calendar"

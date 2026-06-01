@@ -125,8 +125,7 @@ class Drive(BaseItem):
     def root(self) -> DriveItem:
         """The root folder of the drive."""
         return self.properties.get(
-            "root",
-            DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path)),
+            "root", DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path))
         )
 
     @property
@@ -138,16 +137,14 @@ class Drive(BaseItem):
     def bundles(self) -> EntityCollection[DriveItem]:
         """Bundle metadata, if the item is a bundle."""
         return self.properties.get(
-            "bundles",
-            EntityCollection(self.context, DriveItem, ResourcePath("bundles", self.resource_path)),
+            "bundles", EntityCollection(self.context, DriveItem, ResourcePath("bundles", self.resource_path))
         )
 
     @property
     def items(self) -> EntityCollection[DriveItem]:
         """All items contained in the drive."""
         return self.properties.get(
-            "items",
-            EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path)),
+            "items", EntityCollection(self.context, DriveItem, ResourcePath("items", self.resource_path))
         )
 
     @property
@@ -166,8 +163,7 @@ class Drive(BaseItem):
     def following(self) -> EntityCollection[DriveItem]:
         """The list of items the user is following. Only in OneDrive for Business."""
         return self.properties.get(
-            "following",
-            EntityCollection(self.context, DriveItem, ResourcePath("following", self.resource_path)),
+            "following", EntityCollection(self.context, DriveItem, ResourcePath("following", self.resource_path))
         )
 
     @property
@@ -191,6 +187,14 @@ class Drive(BaseItem):
     def special(self) -> EntityCollection[DriveItem]:
         """Collection of special folders available in OneDrive. Read-only. Nullable."""
         return self.properties.get(
-            "special",
-            EntityCollection(self.context, DriveItem, ResourcePath("special", self.resource_path)),
+            "special", EntityCollection(self.context, DriveItem, ResourcePath("special", self.resource_path))
         )
+
+    @property
+    def list_(self) -> List:
+        """Gets the list property"""
+        return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Drive"

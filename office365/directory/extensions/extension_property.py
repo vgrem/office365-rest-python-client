@@ -1,4 +1,3 @@
-# coding=utf-8
 from typing import Optional
 
 from office365.directory.objects.object import DirectoryObject
@@ -47,3 +46,17 @@ class ExtensionProperty(DirectoryObject):
         Application
         """
         return self.properties.get("targetObjects", StringCollection())
+
+    @property
+    def is_multi_valued(self) -> Optional[bool]:
+        """Gets the isMultiValued property"""
+        return self.properties.get("isMultiValued", None)
+
+    @property
+    def is_synced_from_on_premises(self) -> Optional[bool]:
+        """Gets the isSyncedFromOnPremises property"""
+        return self.properties.get("isSyncedFromOnPremises", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ExtensionProperty"

@@ -32,8 +32,7 @@ class BaseItem(Entity):
         from office365.directory.users.user import User
 
         return self.properties.get(
-            "createdByUser",
-            User(self.context, ResourcePath("createdByUser", self.resource_path)),
+            "createdByUser", User(self.context, ResourcePath("createdByUser", self.resource_path))
         )
 
     @property
@@ -47,8 +46,7 @@ class BaseItem(Entity):
         from office365.directory.users.user import User
 
         return self.properties.get(
-            "lastModifiedByUser",
-            User(self.context, ResourcePath("lastModifiedByUser", self.resource_path)),
+            "lastModifiedByUser", User(self.context, ResourcePath("lastModifiedByUser", self.resource_path))
         )
 
     @property
@@ -90,6 +88,21 @@ class BaseItem(Entity):
         """Parent information, if the item has a parent."""
         return self.properties.setdefault("parentReference", ItemReference())
 
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def e_tag(self) -> Optional[str]:
+        """Gets the eTag property"""
+        return self.properties.get("eTag", None)
+
+    @property
+    def last_modified_date_time(self) -> datetime:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
     def get_property(self, name, default_value=None):
         if default_value is None:
             property_mapping = {
@@ -103,3 +116,7 @@ class BaseItem(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.BaseItem"

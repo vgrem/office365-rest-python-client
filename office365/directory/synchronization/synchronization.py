@@ -21,12 +21,7 @@ class Synchronization(Entity):
         and pushing them to another directory.
         """
         return self.properties.get(
-            "jobs",
-            EntityCollection(
-                self.context,
-                SynchronizationJob,
-                ResourcePath("jobs", self.resource_path),
-            ),
+            "jobs", EntityCollection(self.context, SynchronizationJob, ResourcePath("jobs", self.resource_path))
         )
 
     @property
@@ -37,9 +32,9 @@ class Synchronization(Entity):
         """
         return self.properties.get(
             "templates",
-            EntityCollection(
-                self.context,
-                SynchronizationTemplate,
-                ResourcePath("templates", self.resource_path),
-            ),
+            EntityCollection(self.context, SynchronizationTemplate, ResourcePath("templates", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Synchronization"

@@ -18,12 +18,12 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.files.move_operations import MoveOperations
-from office365.runtime.types.odata_property import odata
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder

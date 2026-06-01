@@ -20,8 +20,7 @@ class Onenote(Entity):
     def notebooks(self) -> NotebookCollection:
         """Retrieve a list of notebook objects."""
         return self.properties.get(
-            "notebooks",
-            NotebookCollection(self.context, ResourcePath("notebooks", self.resource_path)),
+            "notebooks", NotebookCollection(self.context, ResourcePath("notebooks", self.resource_path))
         )
 
     @property
@@ -29,43 +28,28 @@ class Onenote(Entity):
         """Retrieve a list of OneNote operations."""
         return self.properties.get(
             "operations",
-            EntityCollection(
-                self.context,
-                OnenoteOperation,
-                ResourcePath("operations", self.resource_path),
-            ),
+            EntityCollection(self.context, OnenoteOperation, ResourcePath("operations", self.resource_path)),
         )
 
     @property
     def pages(self) -> OnenotePageCollection:
         """Retrieve a list of page objects."""
         return self.properties.get(
-            "pages",
-            OnenotePageCollection(self.context, ResourcePath("pages", self.resource_path)),
+            "pages", OnenotePageCollection(self.context, ResourcePath("pages", self.resource_path))
         )
 
     @property
     def resources(self) -> EntityCollection[OnenoteResource]:
         """Retrieve a list of Resources objects from the specified notebook."""
         return self.properties.get(
-            "resources",
-            EntityCollection(
-                self.context,
-                OnenoteResource,
-                ResourcePath("resources", self.resource_path),
-            ),
+            "resources", EntityCollection(self.context, OnenoteResource, ResourcePath("resources", self.resource_path))
         )
 
     @property
     def sections(self) -> EntityCollection[OnenoteSection]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
-            "sections",
-            EntityCollection(
-                self.context,
-                OnenoteSection,
-                ResourcePath("sections", self.resource_path),
-            ),
+            "sections", EntityCollection(self.context, OnenoteSection, ResourcePath("sections", self.resource_path))
         )
 
     @property
@@ -73,11 +57,7 @@ class Onenote(Entity):
         """Retrieve a list of onenoteSection objects from the specified notebook."""
         return self.properties.get(
             "sectionGroups",
-            EntityCollection(
-                self.context,
-                SectionGroup,
-                ResourcePath("sectionGroups", self.resource_path),
-            ),
+            EntityCollection(self.context, SectionGroup, ResourcePath("sectionGroups", self.resource_path)),
         )
 
     def get_property(self, name: str, default_value: Any = None) -> Self:
@@ -85,3 +65,7 @@ class Onenote(Entity):
             property_mapping = {"sectionGroups": self.section_groups}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Onenote"

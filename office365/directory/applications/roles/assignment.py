@@ -57,3 +57,12 @@ class AppRoleAssignment(DirectoryObject):
         """The unique identifier (id) for the resource service principal for which the assignment is made.
         Required on create."""
         return self.properties.get("resourceId", None)
+
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AppRoleAssignment"

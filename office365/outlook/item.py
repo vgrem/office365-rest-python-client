@@ -37,6 +37,16 @@ class OutlookItem(Entity):
         """
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @property
+    def created_date_time(self) -> datetime:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def last_modified_date_time(self) -> datetime:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
     def get_property(self, name, default_value=None) -> Self:
         if default_value is None:
             property_mapping = {
@@ -45,3 +55,7 @@ class OutlookItem(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OutlookItem"

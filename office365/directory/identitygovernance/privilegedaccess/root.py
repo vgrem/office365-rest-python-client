@@ -1,6 +1,4 @@
-from office365.directory.identitygovernance.privilegedaccess.group import (
-    PrivilegedAccessGroup,
-)
+from office365.directory.identitygovernance.privilegedaccess.group import PrivilegedAccessGroup
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -12,6 +10,9 @@ class PrivilegedAccessRoot(Entity):
     def group(self):
         """A list of pending user consent requests."""
         return self.properties.get(
-            "group",
-            PrivilegedAccessGroup(self.context, ResourcePath("group", self.resource_path)),
+            "group", PrivilegedAccessGroup(self.context, ResourcePath("group", self.resource_path))
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PrivilegedAccessRoot"

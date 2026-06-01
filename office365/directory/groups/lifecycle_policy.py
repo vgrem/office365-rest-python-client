@@ -60,3 +60,7 @@ class GroupLifecyclePolicy(Entity):
     def managed_group_types(self) -> Optional[str]:
         """The group type for which the expiration policy applies. Possible values are All, Selected or None."""
         return self.properties.get("managedGroupTypes", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.GroupLifecyclePolicy"

@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
+from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -9,15 +11,21 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.outlook.calendar.events.sensitivity import Sensitivity
+from office365.outlook.calendar.meetingtimes.freebusystatus import FreeBusyStatus
 from office365.outlook.calendar.response_status import ResponseStatus
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
 from office365.outlook.mail.body_type import BodyType
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.location import Location
+from office365.outlook.mail.messages.eventtype import EventType
+from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
+from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 
 
 class Event(OutlookItem):
@@ -68,11 +76,7 @@ class Event(OutlookItem):
         :param bool send_response: true if a response is to be sent to the organizer; otherwise, false.
         :param str comment: Text included in the response.
         """
-        payload = {
-            "ProposedNewTime": proposed_new_time,
-            "SendResponse": send_response,
-            "Comment": comment,
-        }
+        payload = {"ProposedNewTime": proposed_new_time, "SendResponse": send_response, "Comment": comment}
         qry = ServiceOperationQuery(self, "decline", None, payload)
         self.context.add_query(qry)
         return self
@@ -208,9 +212,7 @@ class Event(OutlookItem):
         self.set_property("end", DateTimeTimeZone.parse(value))
 
     @property
-    def single_value_extended_properties(
-        self,
-    ) -> EntityCollection[SingleValueLegacyExtendedProperty]:
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the event."""
         return self.properties.get(
             "singleValueExtendedProperties",
@@ -222,9 +224,7 @@ class Event(OutlookItem):
         )
 
     @property
-    def multi_value_extended_properties(
-        self,
-    ) -> EntityCollection[MultiValueLegacyExtendedProperty]:
+    def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the event."""
         return self.properties.get(
             "multiValueExtendedProperties",
@@ -320,10 +320,7 @@ class Event(OutlookItem):
         """The calendar that contains the event. Navigation property. Read-only."""
         from office365.outlook.calendar.calendar import Calendar
 
-        return self.properties.get(
-            "calendar",
-            Calendar(self.context, ResourcePath("calendar", self.resource_path)),
-        )
+        return self.properties.get("calendar", Calendar(self.context, ResourcePath("calendar", self.resource_path)))
 
     @property
     def attendees(self):
@@ -334,16 +331,14 @@ class Event(OutlookItem):
     def attachments(self):
         """The collection of fileAttachment and itemAttachment attachments for the event."""
         return self.properties.get(
-            "attachments",
-            AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path)),
+            "attachments", AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path))
         )
 
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the event. Nullable."""
         return self.properties.get(
-            "extensions",
-            EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
+            "extensions", EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path))
         )
 
     @property
@@ -354,9 +349,73 @@ class Event(OutlookItem):
         from office365.outlook.calendar.events.collection import EventCollection
 
         return self.properties.get(
-            "instances",
-            EventCollection(self.context, ResourcePath("instances", self.resource_path)),
+            "instances", EventCollection(self.context, ResourcePath("instances", self.resource_path))
         )
+
+    @property
+    def cancelled_occurrences(self) -> StringCollection:
+        """Gets the cancelledOccurrences property"""
+        return self.properties.get("cancelledOccurrences", StringCollection(None))
+
+    @property
+    def i_cal_u_id(self) -> Optional[str]:
+        """Gets the iCalUId property"""
+        return self.properties.get("iCalUId", None)
+
+    @property
+    def locations(self) -> ClientValueCollection[Location]:
+        """Gets the locations property"""
+        return self.properties.get("locations", ClientValueCollection[Location](Location))
+
+    @property
+    def online_meeting_provider(self) -> OnlineMeetingProviderType:
+        """Gets the onlineMeetingProvider property"""
+        return self.properties.get("onlineMeetingProvider", OnlineMeetingProviderType.unknown)
+
+    @property
+    def online_meeting_url(self) -> Optional[str]:
+        """Gets the onlineMeetingUrl property"""
+        return self.properties.get("onlineMeetingUrl", None)
+
+    @property
+    def organizer(self) -> Recipient:
+        """Gets the organizer property"""
+        return self.properties.get("organizer", Recipient())
+
+    @property
+    def original_end_time_zone(self) -> Optional[str]:
+        """Gets the originalEndTimeZone property"""
+        return self.properties.get("originalEndTimeZone", None)
+
+    @property
+    def original_start(self) -> datetime:
+        """Gets the originalStart property"""
+        return self.properties.get("originalStart", datetime.min)
+
+    @property
+    def original_start_time_zone(self) -> Optional[str]:
+        """Gets the originalStartTimeZone property"""
+        return self.properties.get("originalStartTimeZone", None)
+
+    @property
+    def recurrence(self) -> PatternedRecurrence:
+        """Gets the recurrence property"""
+        return self.properties.get("recurrence", PatternedRecurrence())
+
+    @property
+    def sensitivity(self) -> Sensitivity:
+        """Gets the sensitivity property"""
+        return self.properties.get("sensitivity", Sensitivity.normal)
+
+    @property
+    def show_as(self) -> FreeBusyStatus:
+        """Gets the showAs property"""
+        return self.properties.get("showAs", FreeBusyStatus.unknown)
+
+    @property
+    def type_(self) -> EventType:
+        """Gets the type property"""
+        return self.properties.get("type", EventType.singleInstance)
 
     def get_property(self, name, default_value=None):
         if default_value is None:
@@ -366,3 +425,7 @@ class Event(OutlookItem):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Event"

@@ -1,7 +1,5 @@
 from office365.directory.identitygovernance.termsofuse.agreement import Agreement
-from office365.directory.identitygovernance.termsofuse.agreement_acceptance import (
-    AgreementAcceptance,
-)
+from office365.directory.identitygovernance.termsofuse.agreement_acceptance import AgreementAcceptance
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,8 +14,7 @@ class TermsOfUseContainer(Entity):
         """Represents a tenant's customizable terms of use agreement that's created and managed with
         Azure Active Directory (Azure AD)."""
         return self.properties.get(
-            "agreements",
-            EntityCollection(self.context, Agreement, ResourcePath("agreements", self.resource_path)),
+            "agreements", EntityCollection(self.context, Agreement, ResourcePath("agreements", self.resource_path))
         )
 
     @property
@@ -28,8 +25,10 @@ class TermsOfUseContainer(Entity):
         return self.properties.get(
             "agreementAcceptances",
             EntityCollection(
-                self.context,
-                AgreementAcceptance,
-                ResourcePath("agreementAcceptances", self.resource_path),
+                self.context, AgreementAcceptance, ResourcePath("agreementAcceptances", self.resource_path)
             ),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TermsOfUseContainer"

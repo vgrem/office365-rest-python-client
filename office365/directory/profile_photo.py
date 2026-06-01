@@ -21,3 +21,7 @@ class ProfilePhoto(Entity):
     def width(self) -> Optional[int]:
         """The width of the photo."""
         return self.properties.get("width", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ProfilePhoto"

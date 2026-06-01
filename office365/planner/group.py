@@ -16,6 +16,9 @@ class PlannerGroup(Entity):
         from office365.planner.plans.collection import PlannerPlanCollection
 
         return self.properties.get(
-            "plans",
-            PlannerPlanCollection(self.context, ResourcePath("plans", self.resource_path)),
+            "plans", PlannerPlanCollection(self.context, ResourcePath("plans", self.resource_path))
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PlannerGroup"
