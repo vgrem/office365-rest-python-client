@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.translation.user_resource import UserResource
 
@@ -70,6 +71,7 @@ class NavigationNode(Entity):
     def is_external(self) -> bool | None:
         return self.properties.get("isExternal", None)
 
+    @odata(name="TitleResource")
     @property
     def title_resource(self) -> UserResource:
         """Represents the title of this node."""
@@ -78,8 +80,4 @@ class NavigationNode(Entity):
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"TitleResource": self.title_resource}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+

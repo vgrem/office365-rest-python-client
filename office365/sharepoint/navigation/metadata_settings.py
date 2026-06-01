@@ -21,7 +21,7 @@ class MetadataNavigationSettings(Entity):
         context: ClientContext,
         url: str,
         return_type: ClientResult[ConfiguredMetadataNavigationItemCollection] | None = None,
-    ):
+    ) -> ClientResult[ConfiguredMetadataNavigationItemCollection]:
         """
         Retrieves the configured metadata navigation settings for the list with the specified url.
 
