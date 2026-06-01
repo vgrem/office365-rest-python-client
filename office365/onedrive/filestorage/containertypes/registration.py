@@ -14,6 +14,7 @@ from office365.onedrive.filestorage.containertypes.billing_status import FileSto
 from office365.onedrive.filestorage.containertypes.registration_settings import (
     FileStorageContainerTypeRegistrationSettings,
 )
+from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -69,6 +70,24 @@ class FileStorageContainerTypeRegistration(Entity):
                 ResourcePath("applicationPermissionGrants", self.resource_path),
             ),
         )
+
+    def grant_permissions(
+        self,
+        app_id: str,
+        roles: list[str] | None = None,
+    ) -> FileStorageContainerTypeAppPermissionGrant:
+        """Grant application permissions on this container type.
+
+        :param str app_id: Application (client) ID to grant permissions to.
+        :param list[str] roles: Permission roles. Defaults to
+            ``["FileStorageContainer.Selected"]``.
+        """
+        grant = FileStorageContainerTypeAppPermissionGrant(self.context)
+        grant.set_property("appId", app_id)
+        grant.set_property("roles", roles or ["FileStorageContainer.Selected"])
+        qry = CreateEntityQuery(self.application_permission_grants, grant, grant)
+        self.context.add_query(qry)
+        return grant
 
     @property
     def entity_type_name(self) -> str:

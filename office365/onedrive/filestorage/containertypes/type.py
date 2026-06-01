@@ -12,8 +12,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
+    from office365.onedrive.filestorage.containertypes.registration import FileStorageContainerTypeRegistration
     from office365.onedrive.filestorage.containertypes.settings import FileStorageContainerTypeSettings
 
 
@@ -69,6 +71,18 @@ class FileStorageContainerType(Entity):
     def expiration_date_time(self) -> datetime:
         """Gets the expirationDateTime property"""
         return self.properties.get("expirationDateTime", datetime.min)
+
+    @property
+    def registration(self) -> FileStorageContainerTypeRegistration:
+        """The registration (billing and permission grants) for this container type."""
+        from office365.onedrive.filestorage.containertypes.registration import (
+            FileStorageContainerTypeRegistration,
+        )
+
+        return self.properties.get(
+            "registration",
+            FileStorageContainerTypeRegistration(self.context, ResourcePath("registration", self.resource_path)),
+        )
 
     @property
     def entity_type_name(self) -> str:

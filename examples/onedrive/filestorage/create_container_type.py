@@ -36,11 +36,15 @@ except ClientRequestException as e:
             None,
         )
         if ct is None:
-            print("No existing trial container type found for this app.")
+            print("No existing container type found for this app.")
             raise
         print(f"Using existing: {ct.name} (ID: {ct.id})")
     else:
         raise
+
+# Grant FileStorageContainer.Selected so the app can create containers
+grant = ct.registration.grant_permissions(test_client_id).execute_query()
+print(f"Granted: {grant.roles} to {ct.name}")
 
 
 # List all container types
