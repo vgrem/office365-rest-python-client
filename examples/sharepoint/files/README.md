@@ -13,6 +13,37 @@ document libraries.
 
 ---
 
+## How files are stored
+
+```mermaid
+graph TD
+    subgraph Site
+        Library["Document Library e.g. Shared Documents"]
+    end
+
+    subgraph Library
+        Folder["Folder"]
+        File["File"]
+        Folder --> File
+    end
+
+    subgraph "List Item"
+        Item["List Item"]
+        Attach["Attachment"]
+        Item --> Attach
+    end
+
+    Library --> Folder
+    Library --> File
+```
+
+Files live inside **document libraries**. They can be organized in **folders**.
+Separately, **list items** can have **attachments** — see
+[`listitems/attachments/`](../listitems/attachments/) for attachment
+operations.
+
+---
+
 ## Getting started
 
 ```python
@@ -34,7 +65,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 
 ---
 
-## 📤 Upload
+## Upload
 
 | What | File | Notes |
 |------|------|-------|
@@ -45,7 +76,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Upload JSON** | [`upload_json.py`](./upload_json.py) | Upload a JSON data file |
 | **Replace content** | [`replace.py`](./replace.py) | Replace file content via binary stream |
 
-## 📥 Download
+## Download
 
 | What | File | Notes |
 |------|------|-------|
@@ -58,7 +89,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Download versions** | [`download_versions.py`](./download_versions.py) | Download specific file versions |
 | **Get content** | [`get_content.py`](./get_content.py) | Download as bytes in memory |
 
-## 📋 Copy & Move
+## Copy & Move
 
 | What | File | Notes |
 |------|------|-------|
@@ -67,13 +98,13 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Copy by path** | [`copy_using_path.py`](./copy_using_path.py) | Copy using server-relative paths |
 | **Move file** | [`move_file.py`](./move_file.py) | Move to another folder |
 
-## 🗑️ Delete
+## Delete
 
 | What | File | Notes |
 |------|------|-------|
 | **Delete / recycle** | [`delete.py`](./delete.py) | Permanent delete or recycle |
 
-## 🔍 Metadata & Browse
+## Metadata & Browse
 
 | What | File | Notes |
 |------|------|-------|
@@ -85,7 +116,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Get recent files** | [`get_recent_files.py`](./get_recent_files.py) | Recently modified files |
 | **Get download link** | [`get_download_link.py`](./get_download_link.py) | Pre-authorized download URL |
 
-## 📝 Check Out & Approvals
+## Check Out & Approvals
 
 | What | File | Notes |
 |------|------|-------|
@@ -95,7 +126,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Publish / unpublish** | [`publish_unpublish.py`](./publish_unpublish.py) | Submit for content approval |
 | **Approve / deny** | [`approve_deny.py`](./approve_deny.py) | Approve or reject a submitted file |
 
-## 🔗 Sharing
+## Sharing
 
 | What | File | Notes |
 |------|------|-------|
@@ -105,7 +136,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Get sharing info** | [`get_sharing_info.py`](./get_sharing_info.py) | Get sharing metadata |
 | **Get by sharing link** | [`get_by_sharing_link.py`](./get_by_sharing_link.py) | Resolve file from a sharing link |
 
-## 📄 Create Documents
+## Create Documents
 
 | What | File | Notes |
 |------|------|-------|
@@ -114,7 +145,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Create wiki page** | [`create_wiki.py`](./create_wiki.py) | Create a wiki page |
 | **Rename** | [`rename_page.py`](./rename_page.py) | Rename a file |
 
-## 🔐 Permissions
+## Permissions
 
 | What | File | Notes |
 |------|------|-------|
@@ -123,7 +154,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Check permission** | [`permissions/check.py`](./permissions/check.py) | Does user have specific access? |
 | **Assign permission** | [`permissions/assign.py`](./permissions/assign.py) | Grant permissions via role assignment |
 
-## 📋 Versions
+## Versions
 
 | What | File | Notes |
 |------|------|-------|
@@ -131,8 +162,21 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
 | **Restore version** | [`versions/restore_version.py`](./versions/restore_version.py) | Restore a previous version |
 
+## Attachments
+
+| What | File | Notes |
+|------|------|-------|
+| **Upload attachment** | [`../listitems/attachments/upload.py`](../listitems/attachments/upload.py) | Attach a file to a list item |
+| **Download attachment** | [`../listitems/attachments/download.py`](../listitems/attachments/download.py) | Download from a list item |
+| **List attachments** | [`../listitems/attachments/list.py`](../listitems/attachments/list.py) | Enumerate attachments on an item |
+| **Delete attachment** | [`../listitems/attachments/delete.py`](../listitems/attachments/delete.py) | Remove an attachment |
+
+> **Note:** Attachments are files attached to **list items**, not documents in a library.
+> See [`listitems/attachments/`](../listitems/attachments/) for all attachment operations.
+
 ---
 
 ## API reference
 
 - [SharePoint files REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
+- [Working with files and folders REST](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-folders-and-files-with-rest)
