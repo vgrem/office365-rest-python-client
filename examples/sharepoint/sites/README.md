@@ -38,11 +38,18 @@ Modern Team Site         Modern Comm Site          Classic Site
 
 ## Examples
 
+### Create
+
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | Create a modern Team site | [`create_team.py`](./create_team.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **2** | Create a modern Communication site | [`create_comm.py`](./create_comm.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **3** | Create a classic site | [`create_classic.py`](./create_classic.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **1** | Create a modern Team site | [`modern/create_team.py`](./modern/create_team.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **2** | Create a modern Communication site | [`modern/create_comm.py`](./modern/create_comm.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **3** | Create a classic site | [`classic/create_classic.py`](./classic/create_classic.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+
+### Read & Manage
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
 | **4** | Get site properties | [`get_basic_props.py`](./get_basic_props.py) | Read access | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 | **5** | Get site admins | [`get_admins.py`](./get_admins.py) | Read access | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 | **6** | Get personal site (OneDrive) | [`get_my_site.py`](./get_my_site.py) | User context | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
