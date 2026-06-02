@@ -3,6 +3,7 @@ List the directory roles for the user.
 
 https://learn.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0
 """
+import sys
 
 from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
@@ -13,7 +14,7 @@ privileged_client = GraphClient(tenant=test_tenant).with_token_interactive(test_
 if not has_role(privileged_client, "Global Reader", "Global Administrator", "Privileged Role Administrator"):
     print("❌ Caller needs Global Reader, Global Administrator, or Privileged Role Administrator role.")
     print("   These are required to read directory roles for other users.")
-    exit(1)
+    sys.exit(1)
 
 principal_name = input("User name: ")
 
