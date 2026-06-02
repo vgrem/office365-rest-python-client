@@ -51,6 +51,25 @@ from office365.sharepoint.client_context import ClientContext
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
     "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+# List existing site scripts
+from office365.sharepoint.sitescripts.utility import SiteScriptUtility
+
+result = SiteScriptUtility.get_site_scripts(ctx).execute_query()
+for s in result.value:
+    print(f"  {s.Title}  (ID: {s.Id})")
+
+# Create a script that applies a custom theme
+site_script = {
+    "$schema": "schema.json",
+    "actions": [{"verb": "applyTheme", "themeName": "Contoso Theme"}],
+    "bindata": {},
+    "version": 1,
+}
+created = SiteScriptUtility.create_site_script(
+    ctx, "Theme Script", "Applies Contoso theme", site_script
+).execute_query()
+print(f"Created: {created.value.Title} (ID: {created.value.Id})")
 ```
 
 ---
