@@ -19,18 +19,18 @@ remove fields, reorder fields, and associate with lists.
 ```mermaid
 graph TD
     subgraph Site
-        CT[Content Type]
-        CT --> FL[Field Links<br/>(ordered display)]
-        FL --> F1[Field: Title]
-        FL --> F2[Field: Editor]
-        FL --> F3[Field: CustomColumn]
+        CT["Content Type"]
+        CT --> FL["Field Links (ordered)"]
+        FL --> F1["Field: Title"]
+        FL --> F2["Field: Editor"]
+        FL --> F3["Field: CustomColumn"]
     end
 
     subgraph List
-        L[Document Library]
-        L -->|has| CTs[Content Types]
-        CTs --> D[Default CT]
-        CTs --> O[Other CTs]
+        L["Document Library"]
+        L -->|has| CTs["Content Types"]
+        CTs --> D["Default CT"]
+        CTs --> O["Other CTs"]
     end
 
     CT -.->|add to| L
@@ -39,24 +39,6 @@ graph TD
 A **content type** lives at the site level and defines a reusable
 set of columns (fields) with their display order (field links).
 It can then be associated with one or more lists.
-
----
-
-## Lifecycle
-
-```mermaid
-flowchart LR
-    Create --> AddField[Add field]
-    Create --> AddToList[Add to list]
-    AddToList --> SetDefault[Set as default]
-    Create -.-> Update
-    Create -.-> Delete
-    AddToList -.-> AddAval[Add available CT]
-    subgraph Manage Fields
-        AddField --> RemoveField[Remove field]
-        AddField --> Reorder[Reorder fields]
-    end
-```
 
 ---
 
