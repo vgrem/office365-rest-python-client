@@ -7,7 +7,6 @@ on behalf of a signed-in user.
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph?tabs=http&pivots=grant-delegated-permissions
 """
 
-
 from office365.graph_client import GraphClient
 from tests import test_admin_principal_name, test_client_id, test_tenant
 
