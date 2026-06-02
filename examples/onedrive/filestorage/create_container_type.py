@@ -12,25 +12,19 @@ https://learn.microsoft.com/en-us/graph/api/filestorage-post-containertypes?view
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests import test_admin_principal_name, test_client_id, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
 
 # Get or create a trial container type
 types = client.storage.file_storage.container_types.get().execute_query()
-ct = next(
-    (t for t in types if t.owning_app_id == test_client_id and t.billing_classification == "trial"),
-    None,
-)
-if ct is None:
+if len(types) == 0:
     ct = client.storage.file_storage.container_types.add(
-        "My Trial App", test_client_id, billing_classification="trial",
+        "My Trial App",
+        test_client_id,
+        billing_classification="trial",
     ).execute_query()
     print(f"Created: {ct.name} (ID: {ct.id})")
 else:
+    ct = types[0]
     print(f"Using existing: {ct.name} (ID: {ct.id})")
-
-# List all container types
-print("\nContainer types:")
-for t in client.storage.file_storage.container_types.get().execute_query():
-    print(f"  {t.name}  ({t.billing_classification})")

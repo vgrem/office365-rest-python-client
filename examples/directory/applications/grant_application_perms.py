@@ -27,9 +27,5 @@ if privileged_client.has_app_permission(scope, test_client_id):
     print(f"Permission '{scope}' is already granted.")
 else:
     print(f"Permission '{scope}' is not granted.")
-    answer = input("Grant it now via admin consent? (y/N): ")
-    if answer.lower() == "y":
-        privileged_client.grant_application_permissions(test_client_id, scope).execute_query()
-        print(f"Permission '{scope}' granted.")
-    else:
-        print("Skipped.")
+    privileged_client.grant_application_permissions(test_client_id, scope).execute_query()
+    print(f"Permission '{scope}' granted.")

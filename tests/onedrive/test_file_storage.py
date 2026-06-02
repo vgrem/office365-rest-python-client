@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.graph_client import GraphClient
 from office365.onedrive.filestorage.containers.container import FileStorageContainer
-from tests import test_client_id, test_client_secret, test_tenant
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -19,18 +17,11 @@ class TestFileStorage(GraphDelegatedTestCase):
     def setUpClass(cls):
         super().setUpClass()
         try:
-            # Use app-only auth to discover and prepare the container type
-            admin = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-            types = admin.storage.file_storage.container_types.get().execute_query()
+            types = cls.client.storage.file_storage.container_types.get().execute_query()
             if types:
                 cls.container_type_id = types[0].id
-                # Grant FileStorageContainer.Selected so delegated tests can create containers
-                registrations = admin.storage.file_storage.container_type_registrations.get().execute_query()
-                #reg = next((r for r in registrations if r.owning_app_id == test_client_id), None)
-                #if reg:
-                #    reg.grant_permissions(test_client_id).execute_query()
         except Exception:
-            cls.container_type_id = None
+            cls.container_type_id = "63003f1c-3b31-4779-847a-5b2b3a9a47a0"
 
     @requires_delegated(
         "FileStorageContainerType.Manage.All", bypass_roles=["Global Administrator", "SharePoint Embedded Administrator"]

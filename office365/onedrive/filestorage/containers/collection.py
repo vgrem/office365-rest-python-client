@@ -44,4 +44,4 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
 
         :param str container_type_id: The identifier of the container type.
         """
-        return super().single(f"containerTypeId eq '{container_type_id}'")
+        return super().single(f"containerTypeId eq {container_type_id}")

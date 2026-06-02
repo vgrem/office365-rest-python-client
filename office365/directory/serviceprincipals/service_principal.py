@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, cast
+from typing import Optional
 
 from typing_extensions import Self
 
@@ -169,7 +169,7 @@ class ServicePrincipal(DirectoryObject):
             assigned_role_ids = [a.app_role_id for a in self.app_role_assigned_to if a.principal_id == client_sp_id]
             for role in self.app_roles:
                 if role.id in assigned_role_ids:
-                    cast(AppRoleCollection, return_type.value).add(role)
+                    return_type.value.add(role)
 
         def _resolve_app():
             self.context.service_principals.get_by_app_id(app_id).get().after_execute(
