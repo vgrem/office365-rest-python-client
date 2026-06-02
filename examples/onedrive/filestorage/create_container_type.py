@@ -56,11 +56,4 @@ except ClientRequestException as e:
 types = client.storage.file_storage.container_types.get().execute_query()
 print("\nRegistered container types:")
 for t in types:
-    print(f"  {t.id}  {t.name}  ({t.billing_classification})")
-
-# Allow the user to delete a container type
-container_id = input("\nContainer type ID to delete (or leave empty to skip): ").strip()
-if container_id:
-    ct_to_delete = client.storage.file_storage.container_types[container_id].get().execute_query()
-    ct_to_delete.delete_object().execute_query()
-    print(f"Deleted: {ct_to_delete.name} (ID: {ct_to_delete.id})")
+    print(f"  {t.name}  ({t.billing_classification})")
