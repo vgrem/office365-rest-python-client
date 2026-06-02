@@ -1,7 +1,12 @@
 # Teams (SharePoint)
 
-List Microsoft Teams that the current user is a direct member of.
-These examples use the **SharePoint REST API** (not the Microsoft Graph).
+List Microsoft Teams and channels that the current user has access to.
+These examples use the **SharePoint REST API**.
+
+> **Note:** The SharePoint REST API provides limited team operations.
+> For full Teams management (create channels, send messages, install apps,
+> manage members), use the
+> [Microsoft Graph Teams API](https://learn.microsoft.com/en-us/graph/api/resources/teams-api-overview?view=graph-rest-1.0).
 
 ---
 
@@ -17,7 +22,10 @@ These examples use the **SharePoint REST API** (not the Microsoft Graph).
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | Get my joined teams | [`list_my.py`](./list_my.py) | User context (delegated) | [Team operations REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations) |
+| **1** | Get my joined teams | [`list_my.py`](./list_my.py) | User context (delegated) | [Team operations REST](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations) |
+| **2** | Get recent and joined teams | [`get_recent_and_joined_teams.py`](./get_recent_and_joined_teams.py) | User context (delegated) | [Team operations REST](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations) |
+| **3** | Get team channels | [`get_team_channels.py`](./get_team_channels.py) | User context (delegated) | [Team operations REST](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations) |
+| **4** | Ensure team for group | [`ensure_team_for_group.py`](./ensure_team_for_group.py) | User context (delegated) | [Team operations REST](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations) |
 
 ---
 
@@ -42,3 +50,4 @@ for team in data["value"]:
 ## API reference
 
 - [SharePoint team operations REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/team-operations)
+- [Microsoft Graph Teams API](https://learn.microsoft.com/en-us/graph/api/resources/teams-api-overview?view=graph-rest-1.0) (full coverage)
