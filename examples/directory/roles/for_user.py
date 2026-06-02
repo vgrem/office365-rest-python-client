@@ -3,6 +3,7 @@ List the directory roles for the user.
 
 https://learn.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0
 """
+
 import sys
 
 from office365.directory.permissions.guard import has_role

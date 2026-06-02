@@ -13,6 +13,7 @@ Requires an administrative role that can grant delegated permissions
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
 """
 
+
 import sys
 
 from office365.directory.permissions.guard import has_role
