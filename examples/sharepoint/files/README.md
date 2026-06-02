@@ -1,16 +1,38 @@
 # Working with Files
 
-## Getting started
+Upload, download, copy, move, delete, share, and manage files in SharePoint
+document libraries.
 
-All examples use the same pattern:
+---
+
+## Prerequisites
+
+| Requirement | Description | Reference |
+|---|---|---|
+| **Site Owner** or **Member** role on the library | Required to upload, update, and delete files. Read access for download. | [SharePoint permissions](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+
+---
+
+## Getting started
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
-    "contoso.onmicrosoft.com", "your_client_id", "your_client_secret"
+    "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+# Upload a small file
+with open("./report.docx", "rb") as f:
+    uploaded = ctx.web.default_document_library().root_folder.upload_file("report.docx", f.read()).execute_query()
+print(f"Uploaded: {uploaded.serverRelativeUrl}")
+
+# Download it back
+downloaded = uploaded.get_content().execute_query()
+print(f"Downloaded: {len(downloaded.content)} bytes")
 ```
+
+---
 
 ## 📤 Upload
 
@@ -68,6 +90,8 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 | What | File | Notes |
 |------|------|-------|
 | **Check out / check in** | [`checkout_checkin.py`](./checkout_checkin.py) | Lock, edit, and release a file |
+| **Get checked-out files** | [`get_checked_out.py`](./get_checked_out.py) | List all checked-out files in a library |
+| **Get checkout type** | [`get_checkout_type.py`](./get_checkout_type.py) | Check if a file is checked out and by whom |
 | **Publish / unpublish** | [`publish_unpublish.py`](./publish_unpublish.py) | Submit for content approval |
 | **Approve / deny** | [`approve_deny.py`](./approve_deny.py) | Approve or reject a submitted file |
 
@@ -105,4 +129,10 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 |------|------|-------|
 | **List versions** | [`versions/list.py`](./versions/list.py) | All versions of a file |
 | **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
-| **Restore version** | [`restore_version.py`](./restore_version.py) | Restore a previous version |
+| **Restore version** | [`versions/restore_version.py`](./versions/restore_version.py) | Restore a previous version |
+
+---
+
+## API reference
+
+- [SharePoint files REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
