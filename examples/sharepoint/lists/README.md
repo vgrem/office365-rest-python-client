@@ -1,25 +1,56 @@
-# Working with Lists in SharePoint
+# Working with Lists
 
 A **list** is a container for rows of data — like a database table.
 A **document library** is a special kind of list that also stores files.
-Every list has a **title** and a **unique ID** (GUID).
-
-This page groups examples by **what you want to do** — not by API endpoint.
+Every list has a title and a unique ID (GUID).
 
 ---
 
-## ✏️ Create & Manage
+## Prerequisites
+
+| Requirement | Description | Reference |
+|---|---|---|
+| **Site Owner** or **Member** role | Required to create, update, and delete lists. Read access for browsing. | [SharePoint permissions](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+
+---
+
+## How lists work
+
+```mermaid
+graph TD
+    Site["SharePoint Site"]
+    Site --> List["List"]
+    Site --> Lib["Document Library"]
+    List --> Fields["Fields (Columns)"]
+    List --> Items["List Items"]
+    Lib --> Files["Files"]
+    Lib --> Fields
+```
+
+---
+
+## Getting started
 
 ```python
-# Create a list
-target_list = ctx.web.lists.add("My List", description="").execute_query()
+from office365.sharepoint.client_context import ClientContext
 
-# Delete a list
-target_list.delete_object().execute_query()
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
+    "contoso.onmicrosoft.com", "client_id", "client_secret"
+)
 
-# Save as template
-target_list.save_as_template("MyTemplate.stp", "My Template", "").execute_query()
+# Read all lists on the site
+all_lists = ctx.web.lists.get().execute_query()
+for l in all_lists:
+    print(f"  {l.title}  (ID: {l.id})")
+
+# Get a specific list by title
+target = ctx.web.lists.get_by_title("Documents").get().execute_query()
+print(f"Items: {target.item_count}, Fields: {len(target.fields)}")
 ```
+
+---
+
+## Create & Manage
 
 | What | File | Notes |
 |------|------|-------|
@@ -29,19 +60,7 @@ target_list.save_as_template("MyTemplate.stp", "My Template", "").execute_query(
 | **Clear all items** | [`clear.py`](./clear.py) | Removes every item |
 | **Show / hide columns** | [`show_hide_columns.py`](./show_hide_columns.py) | Toggle column visibility in views |
 
-## 🔍 Read & Browse
-
-```python
-# Read list properties
-props = target_list.get().execute_query()
-print(props.title, props.id)
-
-# Read all items
-items = target_list.items.get().execute_query()
-
-# Read with paging
-page = target_list.get_items_by_caml_query(caml_query).execute_query()
-```
+## Read & Browse
 
 | What | File | Notes |
 |------|------|-------|
@@ -54,27 +73,14 @@ page = target_list.get_items_by_caml_query(caml_query).execute_query()
 | **Get data as stream** | [`get_data_as_stream.py`](./get_data_as_stream.py) | Low-level data access |
 | **Export list metadata** | [`export_list.py`](./export_list.py) | List definition as XML |
 
-## 📥 Import
-
-```python
-# Import from CSV
-ctx.web.lists.import_list(Path(csv_path), target_list.title, True).execute_query()
-```
+## Import
 
 | What | File | Notes |
 |------|------|-------|
 | **Import from CSV** | [`import_list.py`](./import_list.py) | Creates items from a `.csv` file |
-| **Import from library** | [`import_lib.py`](./import_lib.py) | Import files into a library |
+| **Import into library** | [`import_lib.py`](./import_lib.py) | Import files into a library |
 
-## 🔍 Filter & Query
-
-```python
-# Filter with OData
-items = target_list.items.filter("Title eq 'Task1'").get().execute_query()
-
-# Filter with CAML
-items = target_list.get_items_by_caml_query(caml_xml).execute_query()
-```
+## Filter & Query
 
 | What | File | Notes |
 |------|------|-------|
@@ -82,29 +88,14 @@ items = target_list.get_items_by_caml_query(caml_xml).execute_query()
 | **Filter with CAML** | [`read_items_with_caml_query.py`](./read_items_with_caml_query.py) | XML-based query language |
 | **Filter list collection** | [`filter.py`](./filter.py) | Filter which lists are returned |
 
-## 🛠️ Advanced
+## Advanced
 
-| File | What it does |
-|------|-------------|
-| [`assessment/broken_tax_field_value.py`](./assessment/broken_tax_field_value.py) | Diagnose and fix broken taxonomy field values |
+| What | File | Notes |
+|------|------|-------|
+| **Diagnose broken taxonomy** | [`assessment/broken_tax_field_value.py`](./assessment/broken_tax_field_value.py) | Fix broken taxonomy field values |
 
 ---
 
-## Getting started
-
-```python
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
-)
-
-# Get a reference to a list by title, then work with it
-target_list = ctx.web.lists.get_by_title("Documents")
-props = target_list.get().execute_query()
-print(props.title)
-```
-
-## Official docs
+## API reference
 
 - [Working with lists — SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest#retrieving-lists-and-list-properties-with-rest)
