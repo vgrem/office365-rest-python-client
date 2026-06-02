@@ -1,50 +1,79 @@
-# Sharing in SharePoint
+# Sharing
 
-SharePoint supports several sharing models — anonymous links, company-wide
-links, specific people, and external (guest) users. Every sharing operation
-creates a **sharing link** that encodes the access level and audience.
-
-This page groups examples by **what you want to do** — not by API endpoint.
+Share files, folders, and sites with specific people, the whole organization,
+or anonymous users via sharing links.
 
 ---
 
-## 🔗 Create Sharing Links
+## Prerequisites
+
+| Requirement | Description | Reference |
+|---|---|---|
+| **Contribute** or higher on the item being shared | Required to create sharing links. Site Owner to change site-level sharing policy. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+
+---
+
+## How sharing works
+
+Every sharing operation creates a **sharing link** that encodes the access
+level and audience. SharePoint supports these link types:
+
+| Link kind | Access level | Scope |
+|---|---|---|
+| **Anonymous view** | Anyone with the link can view | External (no sign-in) |
+| **Anonymous edit** | Anyone with the link can edit | External (no sign-in) |
+| **Organization view** | Everyone in your org can view | Internal |
+| **Organization edit** | Everyone in your org can edit | Internal |
+| **Specific people** | Only named users can access | Internal or external |
+| **Direct** | Canonical URL (no sharing link) | Inherits permissions |
+
+Sharing is also controlled at the **site level** — admins can restrict or
+disable external sharing entirely.
+
+---
+
+## Examples
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **1** | Get site sharing capability | [`get_site_sharing.py`](./get_site_sharing.py) | Site Owner | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **2** | Set site sharing capability | [`set_site_sharing.py`](./set_site_sharing.py) | Site Owner | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **3** | Share a file with specific people | [`share_file.py`](./share_file.py) | Contribute on file | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **4** | Share a file (org-wide link) | [`share_file_organizational.py`](./share_file_organizational.py) | Contribute on file | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **5** | Share a file with password | [`share_file_with_password.py`](./share_file_with_password.py) | Contribute on file | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **6** | Share a folder with specific people | [`share_folder.py`](./share_folder.py) | Contribute on folder | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **7** | Share a folder (org-wide link) | [`share_folder_organizational.py`](./share_folder_organizational.py) | Contribute on folder | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **8** | Share a folder (anonymous link) | [`share_folder_anonymous.py`](./share_folder_anonymous.py) | Contribute on folder | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **9** | Share a site | [`share_web.py`](./share_web.py) | Site Owner | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **10** | Create anonymous link | [`create_anonymous_link.py`](./create_anonymous_link.py) | Contribute on file | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **11** | Update sharing link (expiration) | [`update_sharing_link.py`](./update_sharing_link.py) | Contribute on item | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **12** | Remove sharing link | [`remove_sharing_link.py`](./remove_sharing_link.py) | Contribute on item | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **13** | Get file sharing info | [`get_file_sharing_info.py`](./get_file_sharing_info.py) | Read access | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+| **14** | Get folder sharing info | [`get_folder_sharing_info.py`](./get_folder_sharing_info.py) | Read access | [Sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api) |
+
+---
+
+## Quick start
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
+    "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
 
-# Share a file with specific people (sends email)
-ctx.web.get_file_by_server_relative_url("/sites/team/Shared Docs/report.docx")\
-   .share("user@contoso.com", read_only=True).execute_query()
+# Share a file with specific people
+file = ctx.web.get_file_by_server_relative_url("/sites/team/Shared Documents/report.docx")
+file.share("user@contoso.com", read_only=True).execute_query()
 
-# Create an anonymous "Anyone" link
-link = ctx.web.get_file_by_server_relative_url("/sites/team/Shared Docs/report.docx")\
-   .create_anonymous_link().execute_query()
+# Create an anonymous view link
+from office365.sharepoint.sharing.links.kind import SharingLinkKind
+link = file.share_link(SharingLinkKind.AnonymousView).execute_query()
+print(f"Link: {link.value}")
 ```
-
-| What | File | Notes |
-|------|------|-------|
-| **Share a file** | [`share_file.py`](./share_file.py) | With specific people |
-| **Share a file (org-wide)** | [`share_file_organizational.py`](./share_file_organizational.py) | Company-wide link |
-| **Share a file with password** | [`share_file_with_password.py`](./share_file_with_password.py) | Password-protected link |
-| **Share a folder** | [`share_folder.py`](./share_folder.py) | With specific people |
-| **Share a folder (org-wide)** | [`share_folder_organizational.py`](./share_folder_organizational.py) | Company-wide link |
-| **Share a folder (anonymous)** | [`share_folder_anonymous.py`](./share_folder_anonymous.py) | Anonymous "Anyone" link |
-| **Share a web / site** | [`share_web.py`](./share_web.py) | Grant access to a site |
-| **Create anonymous link** | [`create_anonymous_link.py`](./create_anonymous_link.py) | "Anyone with the link" |
-| **Update sharing link** | [`update_sharing_link.py`](./update_sharing_link.py) | Change expiration date |
-| **Remove sharing link** | [`remove_sharing_link.py`](./remove_sharing_link.py) | Delete an existing link |
-| **Get file sharing info** | [`get_file_sharing_info.py`](./get_file_sharing_info.py) | Links, users, permissions |
-| **Get folder sharing info** | [`get_folder_sharing_info.py`](./get_folder_sharing_info.py) | Links, permissions, audience |
-| **Get site sharing** | [`get_site_sharing.py`](./get_site_sharing.py) | Current sharing capability |
-| **Set site sharing** | [`set_site_sharing.py`](./set_site_sharing.py) | Change sharing capability |
 
 ---
 
-## Official docs
+## API reference
 
 - [SharePoint sharing REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api)
