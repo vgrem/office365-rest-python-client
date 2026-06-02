@@ -1,31 +1,54 @@
-# Working with Features in SharePoint
+# Features
 
-A **feature** is a set of SharePoint functionality that can be activated
-or deactivated at the **site** or **web** level. Features are identified
-by a GUID (feature ID) and have a display name and scope.
+> **⚠️ Classic — custom features are no longer deployed via the Feature Framework.**
+> Built-in site/web features are still present and can be activated via REST,
+> but custom features are now deployed through SPFx.
+> [SPFx overview](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/sharepoint-framework-overview)
+
+Activate, deactivate, and list features on a SharePoint site or web.
+Features are identified by a GUID and define bundled functionality.
 
 ---
 
-## ⚙️ Activate & Ensure
+## Prerequisites
+
+| Requirement | Description | Reference |
+|---|---|---|
+| **Site Owner** role | Required to activate or deactivate features at the site level. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+
+---
+
+## Examples
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **1** | List — enumerate activated features on a site | [`list_features.py`](./list_features.py) | Read access | [List features](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features) |
+| **2** | Activate — activate a feature by ID | [`activate_site.py`](./activate_site.py) | Site Owner | [Activate](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features) |
+| **3** | Ensure activated — activate only if not already active | [`ensure_activated.py`](./ensure_activated.py) | Site Owner | [Activate](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features) |
+| **4** | Deactivate — remove an activated feature | [`deactivate_feature.py`](./deactivate_feature.py) | Site Owner | [Deactivate](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features) |
+
+---
+
+## Quick start
 
 ```python
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.features.definitions.scope import FeatureDefinitionScope
+from office365.sharepoint.features.known_list import KnownFeaturesList
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
+    "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
 
-# Activate a site feature
-ctx.web.activate_feature("00bfea71-1c5e-4a24-b310-ba51c3eb7a57").execute_query()
+# Activate a feature
+f = ctx.site.features.add(
+    KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm
+).execute_query()
+print(f"Activated: {f.display_name}")
 ```
-
-| What | File | Notes |
-|------|------|-------|
-| **Activate a site feature** | [`activate_site.py`](./activate_site.py) | Activate by feature ID |
-| **Ensure feature is activated** | [`ensure_activated.py`](./ensure_activated.py) | Activate only if not already active |
 
 ---
 
-## Official docs
+## API reference
 
-- [SharePoint features REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
+- [SharePoint features REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features)
