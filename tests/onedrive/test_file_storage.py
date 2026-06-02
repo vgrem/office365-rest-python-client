@@ -26,9 +26,9 @@ class TestFileStorage(GraphDelegatedTestCase):
                 cls.container_type_id = types[0].id
                 # Grant FileStorageContainer.Selected so delegated tests can create containers
                 registrations = admin.storage.file_storage.container_type_registrations.get().execute_query()
-                reg = next((r for r in registrations if r.owning_app_id == test_client_id), None)
-                if reg:
-                    reg.grant_permissions(test_client_id).execute_query()
+                #reg = next((r for r in registrations if r.owning_app_id == test_client_id), None)
+                #if reg:
+                #    reg.grant_permissions(test_client_id).execute_query()
         except Exception:
             cls.container_type_id = None
 
