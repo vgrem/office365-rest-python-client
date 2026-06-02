@@ -1,6 +1,6 @@
-from office365.directory.synchronization.attribute_mapping_function_schema import (
-    AttributeMappingFunctionSchema,
-)
+from typing import Optional
+
+from office365.directory.synchronization.attribute_mapping_function_schema import AttributeMappingFunctionSchema
 from office365.directory.synchronization.directory_definition import DirectoryDefinition
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -29,9 +29,14 @@ class SynchronizationSchema(Entity):
         """Contains the collection of directories and all of their objects."""
         return self.properties.get(
             "directories",
-            EntityCollection(
-                self.context,
-                DirectoryDefinition,
-                ResourcePath("directories", self.resource_path),
-            ),
+            EntityCollection(self.context, DirectoryDefinition, ResourcePath("directories", self.resource_path)),
         )
+
+    @property
+    def version(self) -> Optional[str]:
+        """Gets the version property"""
+        return self.properties.get("version", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SynchronizationSchema"

@@ -1,16 +1,21 @@
+from typing import Optional
+
+from office365.communications.callrecords.modality import Modality
+from office365.communications.calls.direction import CallDirection
 from office365.communications.calls.incoming_context import IncomingContext
+from office365.communications.calls.invitation_participant_info import InvitationParticipantInfo
+from office365.communications.calls.options import CallOptions
 from office365.communications.calls.participant import Participant
+from office365.communications.calls.participant_info import ParticipantInfo
 from office365.communications.calls.route import CallRoute
-from office365.communications.operations.cancel_media_processing import (
-    CancelMediaProcessingOperation,
-)
+from office365.communications.calls.state import CallState
+from office365.communications.meetings.info import MeetingInfo
+from office365.communications.onlinemeetings.collection import ChatInfo
+from office365.communications.operations.cancel_media_processing import CancelMediaProcessingOperation
 from office365.communications.operations.comms import CommsOperation
-from office365.communications.operations.unmute_participant import (
-    UnmuteParticipantOperation,
-)
-from office365.communications.operations.update_recording_status import (
-    UpdateRecordingStatusOperation,
-)
+from office365.communications.operations.unmute_participant import UnmuteParticipantOperation
+from office365.communications.operations.update_recording_status import UpdateRecordingStatusOperation
+from office365.communications.result_info import ResultInfo
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -38,9 +43,7 @@ class Call(Entity):
         :param str client_context: The client context.
         """
         return_type = CancelMediaProcessingOperation(self.context)
-        payload = {
-            "clientContext": client_context,
-        }
+        payload = {"clientContext": client_context}
         qry = ServiceOperationQuery(self, "cancelMediaProcessing", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -122,12 +125,7 @@ class Call(Entity):
         Participant collection
         """
         return self.properties.get(
-            "participants",
-            EntityCollection(
-                self.context,
-                Participant,
-                ResourcePath("participants", self.resource_path),
-            ),
+            "participants", EntityCollection(self.context, Participant, ResourcePath("participants", self.resource_path))
         )
 
     @property
@@ -136,10 +134,76 @@ class Call(Entity):
         CommsOperation collection
         """
         return self.properties.get(
-            "operations",
-            EntityCollection(
-                self.context,
-                CommsOperation,
-                ResourcePath("operations", self.resource_path),
-            ),
+            "operations", EntityCollection(self.context, CommsOperation, ResourcePath("operations", self.resource_path))
         )
+
+    @property
+    def call_chain_id(self) -> Optional[str]:
+        """Gets the callChainId property"""
+        return self.properties.get("callChainId", None)
+
+    @property
+    def call_options(self) -> CallOptions:
+        """Gets the callOptions property"""
+        return self.properties.get("callOptions", CallOptions())
+
+    @property
+    def chat_info(self) -> ChatInfo:
+        """Gets the chatInfo property"""
+        return self.properties.get("chatInfo", ChatInfo())
+
+    @property
+    def direction(self) -> CallDirection:
+        """Gets the direction property"""
+        return self.properties.get("direction", CallDirection.incoming)
+
+    @property
+    def meeting_info(self) -> MeetingInfo:
+        """Gets the meetingInfo property"""
+        return self.properties.get("meetingInfo", MeetingInfo())
+
+    @property
+    def my_participant_id(self) -> Optional[str]:
+        """Gets the myParticipantId property"""
+        return self.properties.get("myParticipantId", None)
+
+    @property
+    def requested_modalities(self) -> ClientValueCollection[Modality]:
+        """Gets the requestedModalities property"""
+        return self.properties.get("requestedModalities", ClientValueCollection[Modality](Modality))
+
+    @property
+    def result_info(self) -> ResultInfo:
+        """Gets the resultInfo property"""
+        return self.properties.get("resultInfo", ResultInfo())
+
+    @property
+    def source(self) -> ParticipantInfo:
+        """Gets the source property"""
+        return self.properties.get("source", ParticipantInfo())
+
+    @property
+    def state(self) -> CallState:
+        """Gets the state property"""
+        return self.properties.get("state", CallState.incoming)
+
+    @property
+    def subject(self) -> Optional[str]:
+        """Gets the subject property"""
+        return self.properties.get("subject", None)
+
+    @property
+    def targets(self) -> ClientValueCollection[InvitationParticipantInfo]:
+        """Gets the targets property"""
+        return self.properties.get(
+            "targets", ClientValueCollection[InvitationParticipantInfo](InvitationParticipantInfo)
+        )
+
+    @property
+    def tenant_id(self) -> Optional[str]:
+        """Gets the tenantId property"""
+        return self.properties.get("tenantId", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Call"

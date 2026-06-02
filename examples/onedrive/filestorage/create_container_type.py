@@ -11,11 +11,18 @@ The owning app ID must belong to the same tenant.
 https://learn.microsoft.com/en-us/graph/api/filestorage-post-containertypes?view=graph-rest-beta
 """
 
+import sys
+
+from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from tests import test_client_id, test_password, test_tenant, test_username
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+# client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
+if not has_role(client, "Global Administrator", "SharePoint Embedded Administrator"):
+    print("❌ Need Global Administrator or SharePoint Embedded Administrator.")
+    sys.exit(1)
 
 
 # Create a trial container type (free, expires in 30 days).
@@ -42,10 +49,8 @@ except ClientRequestException as e:
     else:
         raise
 
-# Grant FileStorageContainer.Selected so the app can create containers
-grant = ct.registration.grant_permissions(test_client_id).execute_query()
-print(f"Granted: {grant.roles} to {ct.name}")
 
+registrations = client.storage.file_storage.container_type_registrations.get().execute_query()
 
 # List all container types
 types = client.storage.file_storage.container_types.get().execute_query()

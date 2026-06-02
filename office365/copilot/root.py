@@ -1,4 +1,3 @@
-
 from office365.copilot.admin import CopilotAdmin
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.entity import Entity

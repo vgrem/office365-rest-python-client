@@ -1,8 +1,13 @@
+from typing import Optional
+
+from office365.directory.synchronization.bulk_upload import BulkUpload
 from office365.directory.synchronization.schema import SynchronizationSchema
 from office365.directory.synchronization.status import SynchronizationStatus
 from office365.entity import Entity
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.key_value_pair import KeyValuePair
 
 
 class SynchronizationJob(Entity):
@@ -42,6 +47,26 @@ class SynchronizationJob(Entity):
     def schema(self):
         """The synchronization schema configured for the job."""
         return self.properties.get(
-            "schema",
-            SynchronizationSchema(self.context, ResourcePath("schema", self.resource_path)),
+            "schema", SynchronizationSchema(self.context, ResourcePath("schema", self.resource_path))
         )
+
+    @property
+    def synchronization_job_settings(self) -> ClientValueCollection[KeyValuePair]:
+        """Gets the synchronizationJobSettings property"""
+        return self.properties.get("synchronizationJobSettings", ClientValueCollection[KeyValuePair](KeyValuePair))
+
+    @property
+    def template_id(self) -> Optional[str]:
+        """Gets the templateId property"""
+        return self.properties.get("templateId", None)
+
+    @property
+    def bulk_upload(self) -> BulkUpload:
+        """Gets the bulkUpload property"""
+        return self.properties.get(
+            "bulkUpload", BulkUpload(self.context, ResourcePath("bulkUpload", self.resource_path))
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SynchronizationJob"

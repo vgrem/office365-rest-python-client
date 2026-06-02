@@ -27,43 +27,35 @@ class CloudCommunications(Entity):
     @property
     def calls(self) -> CallCollection:
         """ " """
-        return self.properties.get(
-            "calls",
-            CallCollection(self.context, ResourcePath("calls", self.resource_path)),
-        )
+        return self.properties.get("calls", CallCollection(self.context, ResourcePath("calls", self.resource_path)))
 
     @property
     def call_records(self) -> CallRecordCollection:
         """ " """
         return self.properties.get(
-            "callRecords",
-            CallRecordCollection(
-                self.context,
-                ResourcePath("callRecords", self.resource_path),
-            ),
+            "callRecords", CallRecordCollection(self.context, ResourcePath("callRecords", self.resource_path))
         )
 
     @property
     def online_meetings(self) -> OnlineMeetingCollection:
         """ " """
         return self.properties.get(
-            "onlineMeetings",
-            OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path)),
+            "onlineMeetings", OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path))
         )
 
     @property
     def presences(self) -> EntityCollection[Presence]:
         """ " """
         return self.properties.get(
-            "presences",
-            EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path)),
+            "presences", EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path))
         )
 
     def get_property(self, name, default_value=None):
         if default_value is None:
-            property_mapping = {
-                "callRecords": self.call_records,
-                "onlineMeetings": self.online_meetings,
-            }
+            property_mapping = {"callRecords": self.call_records, "onlineMeetings": self.online_meetings}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.CloudCommunications"

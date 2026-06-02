@@ -144,7 +144,6 @@ class GraphClient(ClientRuntimeContext):
         Returns:
             self: Supports method chaining
         """
-        self._client_id = client_id
         self.pending_request().with_client_secret(client_id, client_secret)
         return self
 

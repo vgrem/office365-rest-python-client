@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uuid
 from typing import Optional
 
 from office365.onedrive.filestorage.containers.container import FileStorageContainer
@@ -24,14 +23,12 @@ class TestFileStorage(GraphDelegatedTestCase):
             cls.container_type_id = None
 
     @requires_delegated(
-        "FileStorageContainer.Selected", bypass_roles=["Global Administrator", "SharePoint Embedded Administrator"]
+        "FileStorageContainerType.Manage.All", bypass_roles=["Global Administrator", "SharePoint Embedded Administrator"]
     )
     def test1_create_file_storage_container(self):
         """Create a file storage container"""
-        if self.container_type_id is None:
-            self.skipTest("No container type — grant FileStorageContainerType.Manage.All")
         result = self.client.storage.file_storage.containers.add(
-            "My Application Storage Container", uuid.UUID(self.container_type_id)
+            "My Application Storage Container", self.container_type_id
         ).execute_query()
         assert result.resource_path is not None
         TestFileStorage.target_container = result
@@ -39,23 +36,9 @@ class TestFileStorage(GraphDelegatedTestCase):
     @requires_delegated(
         "FileStorageContainer.Selected", bypass_roles=["Global Administrator", "SharePoint Embedded Administrator"]
     )
-    def test2_create_container(self):
-        """Create a file storage container with display name"""
-        if self.container_type_id is None:
-            self.skipTest("No container type — grant FileStorageContainerType.Manage.All")
-        result = self.client.storage.file_storage.containers.add(
-            display_name="My Application Storage Container",
-            container_type_id=uuid.UUID(self.container_type_id),
-        ).execute_query()
-        self.assertIsNotNone(result.resource_path)
-
-    @requires_delegated(
-        "FileStorageContainer.Selected", bypass_roles=["Global Administrator", "SharePoint Embedded Administrator"]
-    )
     def test3_list_containers(self):
         """List all file storage containers"""
-        if self.container_type_id is None:
-            self.skipTest("No container type — grant FileStorageContainerType.Manage.All")
+        assert self.container_type_id is not None
         result = self.client.storage.file_storage.containers.get_by_container_type_id(
             self.container_type_id
         ).execute_query()

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import uuid
-
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.filestorage.containers.container import FileStorageContainer
@@ -18,7 +16,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         delegated=["FileStorageContainer.Selected"],
         notes="Create a container. Requires SharePoint Embedded Administrator role.",
     )
-    def add(self, display_name: str, container_type_id: uuid.UUID | None = None) -> FileStorageContainer:
+    def add(self, display_name: str, container_type_id: str | None = None) -> FileStorageContainer:
         """
         Create a new fileStorageContainer object.
 
@@ -31,13 +29,11 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         :param str display_name: The display name of the container.
         :param str container_type_id: The identifier of the container type.
         """
-        if container_type_id is None:
-            container_type_id = uuid.uuid4()
         return_type = FileStorageContainer(self.context)
         self.add_child(return_type)
         payload = {
             "displayName": display_name,
-            "containerTypeId": str(container_type_id),
+            "containerTypeId": container_type_id,
         }
         qry = CreateEntityQuery(self, payload, return_type)
         self.context.add_query(qry)
