@@ -6,54 +6,59 @@ prints clear output.
 
 ---
 
-## 📁 Category guides
+## Directories
 
-| Directory | README | Covers |
-|-----------|--------|--------|
-| [`app-catalog/`](./app-catalog/) | [README](./app-catalog/README.md) | SPFx app lifecycle — upload, deploy, install, uninstall |
-| [`files/`](./files/) | [README](./files/README.md) | Upload, download, copy, move, check out/in, publish, approve, share, versions, permissions |
-| [`listitems/`](./listitems/) | [README](./listitems/README.md) | CRUD, bulk operations, attachments, filters, field values |
-| [`lists/`](./lists/) | [README](./lists/README.md) | Create, read, import, export, filter, paging |
-| [`folders/`](./folders/) | [README](./folders/README.md) | Create, delete, copy, move, share, list |
-| [`sites/`](./sites/) | [README](./sites/README.md) | Create (team, comm, classic), get, update, add/remove admins, delete |
-| [`webs/`](./webs/) | [README](./webs/README.md) | Properties, lists, roles, changes, activities |
-| [`tenant/`](./tenant/) | [README](./tenant/README.md) | Site collections, admin, licensing |
-| [`fields/`](./fields/) | [README](./fields/README.md) | CRUD for all field types — text, number, date, choice, lookup, user, taxonomy, calculated |
-| [`sharing/`](./sharing/) | [README](./sharing/README.md) | Share files/folders, create anonymous links |
-| [`search/`](./search/) | [README](./search/README.md) | Query sites, content, sorting |
-| [`sitedesigns/`](./sitedesigns/) | [README](./sitedesigns/README.md) | Site designs, site scripts, provisioning automation |
-| [`taxonomy/`](./taxonomy/) | [README](./taxonomy/README.md) | Term sets, term groups, managed metadata |
-| [`users/`](./users/) | [README](./users/README.md) | Current user, site users, permissions |
-| [`permissions/`](./permissions/) | [README](./permissions/README.md) | Grant, revoke, check, break/reset inheritance, role definitions |
-| [`pages/`](./pages/) | [README](./pages/README.md) | CRUD, publish, promote to news |
-| [`views/`](./views/) | [README](./views/README.md) | Create and manage list views |
-| [`contenttypes/`](./contenttypes/) | [README](./contenttypes/README.md) | Create and manage content types |
-| [`features/`](./features/) | [README](./features/README.md) | Activate and deactivate site features |
-| [`userprofile/`](./userprofile/) | [README](./userprofile/README.md) | Profile properties, followers, trending tags, OneDrive |
-| [`navigation/`](./navigation/) | [README](./navigation/README.md) | Top nav, Quick Launch, add, update, delete nodes |
-| [`audit/`](./audit/) | [README](./audit/README.md) | Site audit settings, sign-in logs, directory audits |
-| [`hubsites/`](./hubsites/) | [README](./hubsites/README.md) | Hub sites — register, associate, home site |
-| [`auth/`](./auth/) | [README](./auth/README.md) | Modern MSAL auth + legacy (SAML, NTLM) |
-
-### Smaller categories
-
-[`customactions/`](./customactions/) · [`eventreceivers/`](./eventreceivers/) ·
-[`groups/`](./groups/) ·
-[`migration/`](./migration/) ·
-[`webhooks/`](./webhooks/) · [`teams/`](./teams/)
+| Directory | Covers |
+|---|---|
+| [`app-catalog/`](./app-catalog/) | SPFx app lifecycle |
+| [`audit/`](./audit/) | Audit settings, sign-in logs |
+| [`auth/`](./auth/) | Modern MSAL auth, legacy ACS/SAML, on-prem NTLM |
+| [`contenttypes/`](./contenttypes/) | Content types, field links, hierarchy |
+| [`customactions/`](./customactions/) | Custom action bindings (legacy) |
+| [`eventreceivers/`](./eventreceivers/) | Remote event receivers (legacy) |
+| [`features/`](./features/) | Site features activation |
+| [`fields/`](./fields/) | Site/list column CRUD (all types) |
+| [`files/`](./files/) | Upload, download, copy, move, check out, share, versions, permissions |
+| [`folders/`](./folders/) | Create, copy, move, share, delete folders |
+| [`groups/`](./groups/) | SharePoint groups management |
+| [`hubsites/`](./hubsites/) | Hub site registration, association |
+| [`listitems/`](./listitems/) | Item CRUD, bulk operations, filters, attachments |
+| [`lists/`](./lists/) | List CRUD, import/export, paging |
+| [`migration/`](./migration/) | Migration assessment scanner |
+| [`navigation/`](./navigation/) | Top nav, Quick Launch |
+| [`pages/`](./pages/) | Modern site pages CRUD, news |
+| [`permissions/`](./permissions/) | Grant, revoke, break inheritance |
+| [`search/`](./search/) | KQL queries, filters, refinement |
+| [`sharing/`](./sharing/) | Sharing links, anonymous access |
+| [`sitedesigns/`](./sitedesigns/) | Site designs and site scripts |
+| [`sites/`](./sites/) | Create (modern/classic), manage admins |
+| [`sitescripts/`](./sitescripts/) | Site script JSON actions |
+| [`taxonomy/`](./taxonomy/) | Term store, term sets, managed metadata |
+| [`teams/`](./teams/) | Teams via SharePoint API (limited) |
+| [`tenant/`](./tenant/) | Tenant admin, site collections, licensing |
+| [`userprofile/`](./userprofile/) | Profile properties, followers |
+| [`users/`](./users/) | Current user, site users, search |
+| [`views/`](./views/) | List views, default and custom |
+| [`webhooks/`](./webhooks/) | List/webhook subscriptions |
+| [`webs/`](./webs/) | Web properties, subsites, changes |
 
 ---
 
-## Getting started
+## Quick start
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_credentials(
-    "your_client_id", "your_client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
+    "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+web = ctx.web.get().execute_query()
+print(f"Connected to: {web.title}  ({web.url})")
 ```
 
-## Official docs
+---
+
+## API reference
 
 - [SharePoint REST API overview](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)
