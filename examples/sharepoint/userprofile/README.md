@@ -1,6 +1,6 @@
 # User Profiles
 
-Interact with SharePoint user profiles via the **User Profile Service** —
+Interact with SharePoint user profiles via the **User Profile Service**:
 view profile properties, manage followers, explore social features, and
 access OneDrive URLs.
 
