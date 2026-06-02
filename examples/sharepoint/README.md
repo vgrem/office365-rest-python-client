@@ -11,6 +11,7 @@ prints clear output.
 | Directory | Covers |
 |---|---|
 | [`app-catalog/`](./app-catalog/) | SPFx app lifecycle |
+| [`alerts/`](./alerts/) | Email notifications on list/item changes |
 | [`audit/`](./audit/) | Audit settings, sign-in logs |
 | [`auth/`](./auth/) | Modern MSAL auth, legacy ACS/SAML, on-prem NTLM |
 | [`contenttypes/`](./contenttypes/) | Content types, field links, hierarchy |
@@ -27,7 +28,9 @@ prints clear output.
 | [`migration/`](./migration/) | Migration assessment scanner |
 | [`navigation/`](./navigation/) | Top nav, Quick Launch |
 | [`pages/`](./pages/) | Modern site pages CRUD, news |
+| [`propertybag/`](./propertybag/) | Custom key-value pairs on webs |
 | [`permissions/`](./permissions/) | Grant, revoke, break inheritance |
+| [`recyclebin/`](./recyclebin/) | Restore deleted items |
 | [`search/`](./search/) | KQL queries, filters, refinement |
 | [`sharing/`](./sharing/) | Sharing links, anonymous access |
 | [`sitedesigns/`](./sitedesigns/) | Site designs and site scripts |

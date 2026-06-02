@@ -52,6 +52,7 @@ A `Tenant` object is the entry point for all tenant-level operations.
 | **13** | Check user license assignments | [`check_licenses.py`](./check_licenses.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | **14** | Export all tenant settings to file | [`export_tenant_settings.py`](./export_tenant_settings.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | **15** | Print tenant settings | [`print_tenant_settings.py`](./print_tenant_settings.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **16** | Add a tenant theme | [`add_tenant_theme.py`](./add_tenant_theme.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ---
 

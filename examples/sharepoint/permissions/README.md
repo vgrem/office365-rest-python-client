@@ -62,15 +62,16 @@ at any level and assign **unique permissions**.
 | **3** | Get effective permissions on folder | [`get_for_folder.py`](./get_for_folder.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
 | **4** | Get effective permissions on file | [`get_for_file.py`](./get_for_file.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
 | **5** | List role definitions | [`get_role_definitions.py`](./get_role_definitions.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **6** | Grant to site | [`grant_to_web.py`](./grant_to_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **7** | Revoke from site | [`revoke_from_web.py`](./revoke_from_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **8** | Grant to list | [`grant_to_list.py`](./grant_to_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **9** | Revoke from list | [`revoke_from_list.py`](./revoke_from_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **10** | Grant to folder | [`grant_to_folder.py`](./grant_to_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **11** | Revoke from folder | [`revoke_from_folder.py`](./revoke_from_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **12** | Break inheritance on list | [`break_inheritance.py`](./break_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **13** | Break inheritance on folder | [`break_inheritance_folder.py`](./break_inheritance_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **14** | Reset inheritance on list | [`reset_inheritance.py`](./reset_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Create role definition | [`create_role_definition.py`](./create_role_definition.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Grant to site | [`grant_to_web.py`](./grant_to_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Revoke from site | [`revoke_from_web.py`](./revoke_from_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Grant to list | [`grant_to_list.py`](./grant_to_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Revoke from list | [`revoke_from_list.py`](./revoke_from_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Grant to folder | [`grant_to_folder.py`](./grant_to_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Revoke from folder | [`revoke_from_folder.py`](./revoke_from_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Break inheritance on list | [`break_inheritance.py`](./break_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Break inheritance on folder | [`break_inheritance_folder.py`](./break_inheritance_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| **15** | Reset inheritance on list | [`reset_inheritance.py`](./reset_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
 
 ---
 
