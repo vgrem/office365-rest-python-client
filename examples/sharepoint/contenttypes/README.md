@@ -67,10 +67,21 @@ It can then be associated with one or more lists.
 
 ```python
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.contenttypes.creation_information import ContentTypeCreationInformation
 
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
     "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+# List all content types
+cts = ctx.web.content_types.get().execute_query()
+for ct in cts:
+    print(f"  {ct.name}  (ID: {ct.id})")
+
+# Create a new content type
+info = ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")
+ct = ctx.web.content_types.add(info).execute_query()
+print(f"Created: {ct.name}")
 ```
 
 ---

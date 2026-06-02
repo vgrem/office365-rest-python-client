@@ -43,6 +43,11 @@ from office365.sharepoint.client_context import ClientContext
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
     "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+# List all custom actions on the site
+actions = ctx.web.user_custom_actions.get().execute_query()
+for a in actions:
+    print(f"  {a.properties.get('Title', '')}  (ID: {a.properties.get('Id', '')})")
 ```
 
 ---
