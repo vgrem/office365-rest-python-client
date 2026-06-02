@@ -11,9 +11,7 @@ from tests import test_client_credentials, test_site_url
 ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
 
 # Activate a feature first, then deactivate it
-f = ctx.site.features.add(
-    KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm
-).execute_query()
+f = ctx.site.features.add(KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm).execute_query()
 print(f"Activated: {f.display_name}")
 
 # Deactivate (remove) the feature
