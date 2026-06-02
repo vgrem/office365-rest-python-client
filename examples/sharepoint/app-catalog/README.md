@@ -52,6 +52,11 @@ from office365.sharepoint.client_context import ClientContext
 ctx = ClientContext("https://contoso.sharepoint.com/sites/appcatalog").with_client_secret(
     "contoso.onmicrosoft.com", "client_id", "client_secret"
 )
+
+# List apps in the app catalog
+apps = ctx.web.app_catalog.get().execute_query()
+for app in apps:
+    print(f"  {app.title}  (ID: {app.id})")
 ```
 
 ---
