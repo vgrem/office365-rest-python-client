@@ -46,6 +46,7 @@ It can then be associated with one or more lists.
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
+| **—** | **Basic usage — create, add field, add to list** | [`basic_usage.py`](./basic_usage.py) | Site Owner | [Full workflow](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | **1** | List — enumerate all content types on a site | [`list_all.py`](./list_all.py) | Read access | [Content type collection](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | **2** | Create — add a new content type to a site | [`create.py`](./create.py) | Site Owner | [Create](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | **3** | Create from parent — inherit from an existing content type | [`create_from_parent.py`](./create_from_parent.py) | Site Owner | [Create with parent](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
