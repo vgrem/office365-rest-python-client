@@ -1,6 +1,6 @@
 # Users
 
-Manage users in SharePoint — who has access to a site, current user info,
+Manage users in SharePoint: who has access to a site, current user info,
 tenant-wide search, and OneDrive details.
 
 ---
