@@ -14,6 +14,34 @@ remove fields, reorder fields, and associate with lists.
 
 ---
 
+## How content types work
+
+```mermaid
+graph TD
+    subgraph Site
+        CT[Content Type]
+        CT --> FL[Field Links<br/>(ordered display)]
+        FL --> F1[Field: Title]
+        FL --> F2[Field: Editor]
+        FL --> F3[Field: CustomColumn]
+    end
+
+    subgraph List
+        L[Document Library]
+        L -->|has| CTs[Content Types]
+        CTs --> D[Default CT]
+        CTs --> O[Other CTs]
+    end
+
+    CT -.->|add to| L
+```
+
+A **content type** lives at the site level and defines a reusable
+set of columns (fields) with their display order (field links).
+It can then be associated with one or more lists.
+
+---
+
 ## Lifecycle
 
 ```mermaid
