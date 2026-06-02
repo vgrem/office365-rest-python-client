@@ -24,7 +24,7 @@ flowchart TD
 
 ---
 
-## Modern (Azure AD — recommended for SharePoint Online)
+## Modern (Azure AD, recommended for SharePoint Online)
 
 | Flow | Method | File | Notes |
 |---|---|---|---|
@@ -35,13 +35,13 @@ flowchart TD
 | **Cookies** | `with_cookies(...)` | [`modern/with_cookies.py`](./modern/with_cookies.py) | Reuse browser session |
 | **Capture cookies** | Playwright script | [`capture_cookies_with_playwright.py`](./capture_cookies_with_playwright.py) | Automated cookie capture |
 
-## Legacy — retired for SharePoint Online (on-prem only)
+## Legacy, retired for SharePoint Online (on-prem only)
 
 > **Important:** These flows have been **retired** for SharePoint Online.
 > They remain available for **SharePoint Server (on-prem)** environments.
 >
-> - **ACS App-Only** — [Retired April 2, 2026](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/add-ins-and-azure-acs-retirements-faq)
-> - **SAML / WS-Trust (SharePointOnlineCredentials)** — [Deprecated for SPO](https://learn.microsoft.com/en-us/answers/questions/5629577/basic-authentication-for-sharepoint-online-is-depr)
+> - **ACS App-Only**, [Retired April 2, 2026](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/add-ins-and-azure-acs-retirements-faq)
+> - **SAML / WS-Trust (SharePointOnlineCredentials)**, [Deprecated for SPO](https://learn.microsoft.com/en-us/answers/questions/5629577/basic-authentication-for-sharepoint-online-is-depr)
 
 | Flow | File | Status | Scope |
 |---|---|---|---|

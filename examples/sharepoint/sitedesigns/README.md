@@ -41,14 +41,14 @@ packaging metadata.
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | List — enumerate all site designs | [`list_designs.py`](./list_designs.py) | Read access | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **2** | Get — get metadata for a specific design | [`get_design.py`](./get_design.py) | Read access | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **3** | Create — create site script and bundle into a design | [`create_design.py`](./create_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **4** | Update — change title, description, or linked scripts | [`update_design.py`](./update_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **5** | Delete — remove a site design | [`delete_design.py`](./delete_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **6** | Design from web — export a live site into a script and design | [`design_from_web.py`](./design_from_web.py) | Read access on source site | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **7** | Apply — apply a design asynchronously to a site | [`apply_design.py`](./apply_design.py) | Site Owner on target | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
-| **8** | Grant rights — grant or revoke access to a design | [`grant_rights.py`](./grant_rights.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **1** | List: enumerate all site designs | [`list_designs.py`](./list_designs.py) | Read access | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **2** | Get: get metadata for a specific design | [`get_design.py`](./get_design.py) | Read access | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **3** | Create: create site script and bundle into a design | [`create_design.py`](./create_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **4** | Update: change title, description, or linked scripts | [`update_design.py`](./update_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **5** | Delete: remove a site design | [`delete_design.py`](./delete_design.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **6** | Design from web: export a live site into a script and design | [`design_from_web.py`](./design_from_web.py) | Read access on source site | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **7** | Apply: apply a design asynchronously to a site | [`apply_design.py`](./apply_design.py) | Site Owner on target | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
+| **8** | Grant rights: grant or revoke access to a design | [`grant_rights.py`](./grant_rights.py) | Site Owner | [Site design REST API](https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-rest-api) |
 
 ---
 
