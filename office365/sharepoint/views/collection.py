@@ -94,12 +94,12 @@ class ViewCollection(EntityCollection[View]):
             The new ``View`` (not yet executed).
         """
         info = ViewCreationInformation(
-            title=title,
-            viewFields=fields,
-            rowLimit=row_limit,
-            viewTypeKind=view_type,
-            paged=paged,
-            personalView=personal_view,
+            Title=title,
+            ViewFields=fields,
+            RowLimit=row_limit,
+            ViewTypeKind=view_type,
+            Paged=paged,
+            PersonalView=personal_view,
             **kwargs,
         )
         return self.add(info)
