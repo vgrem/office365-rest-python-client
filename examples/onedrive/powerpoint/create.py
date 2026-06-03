@@ -2,6 +2,8 @@
 Creates a PowerPoint file in OneDrive
 
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Files.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

@@ -3,6 +3,8 @@ Create a Text column in a list
 
 https://learn.microsoft.com/en-us/graph/api/list-post-columns?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Sites.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

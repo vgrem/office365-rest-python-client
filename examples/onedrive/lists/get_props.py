@@ -3,6 +3,8 @@ Get metadata for a list
 
 https://learn.microsoft.com/en-us/graph/api/list-get?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Sites.Read.All``.
 """
 
 from office365.graph_client import GraphClient

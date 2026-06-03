@@ -3,6 +3,8 @@ Get a collection of sites.
 
 https://learn.microsoft.com/en-us/onedrive/developer/rest-api/api/site_list_subsites?view=odsp-graph-online
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Sites.Read.All``.
 """
 
 from office365.graph_client import GraphClient
