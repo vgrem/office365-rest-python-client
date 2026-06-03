@@ -85,6 +85,28 @@ your preferred flow.
 | **26** | Rename a mail folder | [`folders/rename.py`](./folders/rename.py) | `Mail.ReadWrite` | [update folder](https://learn.microsoft.com/en-us/graph/api/mailfolder-update) |
 | **27** | Delete a mail folder and its contents | [`folders/delete.py`](./folders/delete.py) | `Mail.ReadWrite` | [delete folder](https://learn.microsoft.com/en-us/graph/api/mailfolder-delete) |
 
+## Examples — Inbox Rules
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **28** | Create an inbox rule (move from sender to folder) | [`rules/create.py`](./rules/create.py) | `Mail.ReadWrite` | [create rule](https://learn.microsoft.com/en-us/graph/api/mailfolder-post-messagerules) |
+| **29** | List all inbox rules | [`rules/list.py`](./rules/list.py) | `Mail.ReadWrite` | [list rules](https://learn.microsoft.com/en-us/graph/api/mailfolder-list-messagerules) |
+| **30** | Delete an inbox rule by name | [`rules/delete.py`](./rules/delete.py) | `Mail.ReadWrite` | [delete rule](https://learn.microsoft.com/en-us/graph/api/messagerule-delete) |
+
+## Examples — Categories
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **31** | List all master categories | [`categories/list.py`](./categories/list.py) | `Mail.ReadWrite` | [list categories](https://learn.microsoft.com/en-us/graph/api/outlookuser-list-mastercategories) |
+| **32** | Create a new master category | [`categories/create.py`](./categories/create.py) | `Mail.ReadWrite` | [create category](https://learn.microsoft.com/en-us/graph/api/outlookuser-post-mastercategories) |
+| **33** | Assign a category to a message | [`categories/assign.py`](./categories/assign.py) | `Mail.ReadWrite` | [assign category](https://learn.microsoft.com/en-us/graph/api/message-update) |
+
+## Examples — Mailbox Settings
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **34** | Get and enable automatic replies (OOF) | [`automatic_replies.py`](./automatic_replies.py) | `Mail.ReadWrite` | [mailbox settings](https://learn.microsoft.com/en-us/graph/api/user-update-mailboxsettings) |
+
 ---
 
 ## Quick start

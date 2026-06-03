@@ -21,9 +21,9 @@ Admin consent is required for tenant-wide permissions.
 
 | Directory | Covers |
 |---|---|
-| [`messages/`](./messages/) | Send, draft, list, search, move, reply, mark as read, download attachments, subscriptions |
-| [`events/`](./events/) | Create, list, delete calendar events |
-| [`calendars/`](./calendars/) | List calendars, find meeting times, get schedule, share calendar |
+| [`messages/`](./messages/) | Send, draft, list, search, move, reply, forward, folders, inbox rules, categories, automatic replies, subscriptions |
+| [`events/`](./events/) | Create, list, update, delete, accept, decline, recurring, cancel calendar events |
+| [`calendars/`](./calendars/) | List, create, delete calendars, find meeting times, get schedule, share, calendar view |
 
 ---
 
