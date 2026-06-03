@@ -211,5 +211,3 @@ class View(Entity):
     def visualization_info(self) -> Visualization:
         """Specifies how the view is layed out."""
         return self.properties.get("VisualizationInfo", Visualization())
-
-

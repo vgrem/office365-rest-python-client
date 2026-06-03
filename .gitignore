@@ -8,3 +8,4 @@ TOOLS.md
 USER.md
 MEMORY.md
 memory/
+__pycache__/
