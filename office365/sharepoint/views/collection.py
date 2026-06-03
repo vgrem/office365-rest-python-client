@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional, cast
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.views.create_information import ViewCreationInformation
 from office365.sharepoint.views.view import View
@@ -70,7 +71,7 @@ class ViewCollection(EntityCollection[View]):
         title: str,
         fields: list[str] | None = None,
         row_limit: int | None = None,
-        view_type: str | None = None,
+        view_type: int | None = None,
         paged: bool | None = None,
         personal_view: bool | None = None,
         **kwargs: Any,
@@ -95,7 +96,7 @@ class ViewCollection(EntityCollection[View]):
         """
         info = ViewCreationInformation(
             Title=title,
-            ViewFields=fields,
+            ViewFields=StringCollection(fields),
             RowLimit=row_limit,
             ViewTypeKind=view_type,
             Paged=paged,

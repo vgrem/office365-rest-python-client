@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.caml.query import CamlQuery
@@ -146,6 +146,7 @@ class View(Entity):
         """Specifies the column and row formatting for the list view."""
         return self.properties.get("Formats", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets whether the list view is hidden."""
@@ -167,6 +168,7 @@ class View(Entity):
         """Sets whether the list view is the default list view."""
         self.set_property("DefaultView", value)
 
+    @odata(name="DefaultViewForContentType")
     @property
     def default_view_for_content_type(self) -> Optional[bool]:
         """Specifies whether the list view is the default list view for the content type specified by ContentTypeId."""
@@ -211,3 +213,63 @@ class View(Entity):
     def visualization_info(self) -> Visualization:
         """Specifies how the view is layed out."""
         return self.properties.get("VisualizationInfo", Visualization())
+
+    @odata(name="Id")
+    @property
+    def id(self) -> Optional[str]:
+        """Gets the view identifier."""
+        return self.properties.get("Id", None)
+
+    @odata(name="Title")
+    @property
+    def title(self) -> Optional[str]:
+        """Gets the view title."""
+        return self.properties.get("Title", None)
+
+    @title.setter
+    def title(self, value: str) -> None:
+        """Sets the view title."""
+        self.set_property("Title", value)
+
+    @odata(name="ServerRelativeUrl")
+    @property
+    def server_relative_url(self) -> Optional[str]:
+        """Gets the server-relative URL of the view."""
+        return self.properties.get("ServerRelativeUrl", None)
+
+    @odata(name="ViewType")
+    @property
+    def view_type(self) -> Optional[str]:
+        """Gets the type of the view (HTML, Grid, Calendar, etc.)."""
+        return self.properties.get("ViewType", None)
+
+    @odata(name="RowLimit")
+    @property
+    def row_limit(self) -> Optional[int]:
+        """Gets the maximum number of items per page."""
+        return self.properties.get("RowLimit", None)
+
+    @row_limit.setter
+    def row_limit(self, value: int) -> None:
+        """Sets the maximum number of items per page."""
+        self.set_property("RowLimit", value)
+
+    @odata(name="Paged")
+    @property
+    def paged(self) -> Optional[bool]:
+        """Gets whether the view supports paging."""
+        return self.properties.get("Paged", None)
+
+    @odata(name="PersonalView")
+    @property
+    def personal_view(self) -> Optional[bool]:
+        """Gets whether this is a personal (user-specific) view."""
+        return self.properties.get("PersonalView", None)
+
+    @odata(name="OrderedView")
+    @property
+    def ordered_view(self) -> Optional[bool]:
+        """Gets whether the view is ordered."""
+        return self.properties.get("OrderedView", None)
+
+
