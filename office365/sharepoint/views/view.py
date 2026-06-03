@@ -214,13 +214,11 @@ class View(Entity):
         """Specifies how the view is layed out."""
         return self.properties.get("VisualizationInfo", Visualization())
 
-    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets the view identifier."""
         return self.properties.get("Id", None)
 
-    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the view title."""
@@ -271,5 +269,3 @@ class View(Entity):
     def ordered_view(self) -> Optional[bool]:
         """Gets whether the view is ordered."""
         return self.properties.get("OrderedView", None)
-
-

@@ -17,9 +17,12 @@ class EntityPath(ResourcePath):
     @property
     def collection(self):
         from office365.onedrive.internal.paths.children import ChildrenPath
+        from office365.teams.internal.paths.joined_teams import JoinedTeamsPath
 
         if self._collection is None:
             if isinstance(self.parent, ChildrenPath):
+                self._collection = self.parent.collection
+            elif isinstance(self.parent, JoinedTeamsPath):
                 self._collection = self.parent.collection
             else:
                 self._collection = self.parent

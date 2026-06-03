@@ -88,6 +88,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.teams.chats.collection import ChatCollection
 from office365.teams.collection import TeamCollection
+from office365.teams.internal.paths.joined_teams import JoinedTeamsPath
 from office365.teams.teamwork.shiftmanagement.user_solution_root import UserSolutionRoot
 from office365.teams.teamwork.user import UserTeamwork
 from office365.teams.viva.employee_experience_user import EmployeeExperienceUser
@@ -524,7 +525,7 @@ class User(DirectoryObject):
         applications on the device by requiring the user to sign in again to all applications that they have previously
         consented to, independent of device.
         """
-        result = ClientResult(self.context)
+        result = ClientResult[bool](self.context)
         qry = ServiceOperationQuery(self, "revokeSignInSessions", None, None, None, result)
         self.context.add_query(qry)
         return result
@@ -865,9 +866,7 @@ class User(DirectoryObject):
     @property
     def joined_teams(self) -> TeamCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
-        return self.properties.get(
-            "joinedTeams", TeamCollection(self.context, ResourcePath("joinedTeams", self.resource_path))
-        )
+        return self.properties.get("joinedTeams", TeamCollection(self.context, JoinedTeamsPath(self.resource_path)))
 
     @property
     def managed_devices(self) -> EntityCollection[ManagedDevice]:

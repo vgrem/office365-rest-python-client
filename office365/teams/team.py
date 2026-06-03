@@ -15,7 +15,7 @@ from office365.teams.channels.channel import Channel
 from office365.teams.channels.collection import ChannelCollection
 from office365.teams.fun_settings import TeamFunSettings
 from office365.teams.guest_settings import TeamGuestSettings
-from office365.teams.members.conversation import ConversationMember
+from office365.teams.members.conversation_collection import ConversationMemberCollection
 from office365.teams.members.settings import TeamMemberSettings
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.operations.async_operation import TeamsAsyncOperation
@@ -236,13 +236,11 @@ class Team(Entity):
         return self.properties.get("specialization", TeamSpecialization.none)
 
     @property
-    def members(self) -> EntityCollection[ConversationMember]:
+    def members(self) -> ConversationMemberCollection:
         """Gets the members property"""
         return self.properties.get(
             "members",
-            EntityCollection[ConversationMember](
-                self.context, ConversationMember, ResourcePath("members", self.resource_path)
-            ),
+            ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
     @property
@@ -311,8 +309,9 @@ class Team(Entity):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        if name == "id" and self._resource_path.segment == "team":
-            self._resource_path = ResourcePath(value, ResourcePath("teams"))
+        if name == "id":
+            if self._resource_path.segment == "team":
+                self._resource_path = ResourcePath(value, ResourcePath("teams"))
         return self
 
     @property

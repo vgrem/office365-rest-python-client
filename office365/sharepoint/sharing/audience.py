@@ -8,6 +8,6 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class Audience(ClientValue):
-    email: str | None = None
-    id: UUID | None = None
-    title: str | None = None
+    Email: str | None = None
+    Id: UUID | None = None
+    Title: str | None = None

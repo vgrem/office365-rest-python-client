@@ -22,4 +22,4 @@ team = teams[0]
 members = team.members.get().execute_query()
 print(f"Members of '{team.display_name}':")
 for m in members:
-    print(f"  {m.display_name:30s}  {m.email if m.email else ''}")
+    print(f"  {m.display_name:30s}")

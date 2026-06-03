@@ -78,9 +78,7 @@ class ViewCollection(EntityCollection[View]):
     ) -> View:
         """Create a new list view with primitive parameters.
 
-        Sugar over ``add(ViewCreationInformation(...))`` that accepts
-        common view properties directly. The returned view is not yet
-        executed — call ``.execute_query()`` to persist.
+        Creates a new list view
 
         Args:
             title: The display name of the view.
