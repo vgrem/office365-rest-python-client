@@ -17,9 +17,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # Resolve user by email to get their ID
 user = client.users.get_by_principal_name(test_user_principal_name).get().execute_query()

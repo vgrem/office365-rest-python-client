@@ -10,9 +10,7 @@ https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-r
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 alerts = client.security.alerts_v2.top(20).get().execute_query()
 for alert in alerts:

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional, cast
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
@@ -50,7 +51,7 @@ class View(Entity):
 
     def render_as_html(self) -> ClientResult[str]:
         """Returns the list view as HTML."""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
         qry = ServiceOperationQuery(self, "RenderAsHtml", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -115,6 +116,7 @@ class View(Entity):
         """Specifies the JavaScript files used for the view."""
         return self.properties.get("JSLink", None)
 
+    @odata(name="ContentTypeId")
     @property
     def content_type_id(self) -> Optional[ContentTypeId]:
         """Gets the identifier of the content type with which the view is associated."""
@@ -154,6 +156,7 @@ class View(Entity):
         """Sets whether the list view is hidden."""
         self.set_property("Hidden", value)
 
+    @odata(name="DefaultView")
     @property
     def default_view(self) -> Optional[bool]:
         """Gets whether the list view is the default list view."""
@@ -169,6 +172,7 @@ class View(Entity):
         """Specifies whether the list view is the default list view for the content type specified by ContentTypeId."""
         return self.properties.get("DefaultViewForContentType", None)
 
+    @odata(name="ViewFields")
     @property
     def view_fields(self) -> ViewFieldCollection:
         """Gets a value that specifies the collection of fields in the list view."""
@@ -191,6 +195,7 @@ class View(Entity):
         """Specifies whether the list view is read-only."""
         return self.properties.get("ReadOnlyView", None)
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the View."""
@@ -201,19 +206,10 @@ class View(Entity):
         """Specifies the joins that are used in the list view"""
         return self.properties.get("ViewJoins", None)
 
+    @odata(name="VisualizationInfo")
     @property
     def visualization_info(self) -> Visualization:
         """Specifies how the view is layed out."""
         return self.properties.get("VisualizationInfo", Visualization())
 
-    def get_property(self, name: str, default_value: Any = None) -> Self:  # type: ignore[override]
-        property_mapping = {
-            "ContentTypeId": self.content_type_id,
-            "ViewFields": self.view_fields,
-            "DefaultView": self.default_view,
-            "ServerRelativePath": self.server_relative_path,
-            "VisualizationInfo": self.visualization_info,
-        }
-        if name in property_mapping:
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+

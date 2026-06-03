@@ -20,16 +20,12 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 teams = client.me.joined_teams.get().execute_query()
 if len(teams) == 0:
     sys.exit("No teams found")
 
 team = teams[0]
-member = team.members.add(
-    test_user_principal_name_alt, owner=False
-).execute_query()
+member = team.members.add(test_user_principal_name_alt, owner=False).execute_query()
 print(f"Member '{member.display_name}' added to '{team.display_name}'")

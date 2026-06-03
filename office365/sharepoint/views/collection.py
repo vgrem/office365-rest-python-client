@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List
 
 
-class ViewCollection(EntityCollection):
+class ViewCollection(EntityCollection[View]):
     """Represents a collection of View resources."""
 
     def __init__(

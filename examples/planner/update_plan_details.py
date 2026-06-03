@@ -14,9 +14,7 @@ import sys
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 group = client.groups.get_by_name("My Sample Team").get().execute_query()
 plans = group.planner.plans.get().execute_query()
@@ -25,9 +23,12 @@ if len(plans) == 0:
 
 plan = plans[0]
 details = plan.details.get().execute_query()
-details.set_property("categoryDescriptions", {
-    "category1": "Urgent",
-    "category2": "Client work",
-    "category3": "Internal",
-}).update().execute_query()
+details.set_property(
+    "categoryDescriptions",
+    {
+        "category1": "Urgent",
+        "category2": "Client work",
+        "category3": "Internal",
+    },
+).update().execute_query()
 print("Plan details updated — categories set: Urgent, Client work, Internal")

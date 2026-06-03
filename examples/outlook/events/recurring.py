@@ -12,13 +12,11 @@ https://learn.microsoft.com/en-us/graph/api/resources/recurrencepattern
 from datetime import datetime, timedelta
 
 from office365.graph_client import GraphClient
-from office365.outlook.calendar.recurrence.range_type import RecurrenceRangeType
 from office365.outlook.calendar.recurrence.pattern_type import RecurrencePatternType
+from office365.outlook.calendar.recurrence.range_type import RecurrenceRangeType
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 when = datetime.utcnow() + timedelta(days=1)
 

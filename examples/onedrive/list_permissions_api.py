@@ -18,7 +18,6 @@ Usage:
 Requires delegated permission ``Sites.Read.All``.
 """
 
-
 from office365.directory.permissions.checker import verify_permissions
 from office365.graph_client import GraphClient
 from office365.onedrive.drives.collection import DriveCollection

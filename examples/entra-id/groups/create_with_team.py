@@ -20,9 +20,9 @@ from tests import (
 
 def print_failure(retry_number, ex):
     """
-    Print progress status
+        Print progress status
 
-Requires delegated permission ``Group.ReadWrite.All``.
+    Requires delegated permission ``Group.ReadWrite.All``.
     """
     print(f"{retry_number}: Team creation still in progress, waiting...")
 

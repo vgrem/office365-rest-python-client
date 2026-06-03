@@ -6,7 +6,6 @@ https://learn.microsoft.com/en-us/graph/api/resources/drive
 Requires delegated permission ``Files.ReadWrite.All``.
 """
 
-
 import os
 from os.path import isfile, join
 

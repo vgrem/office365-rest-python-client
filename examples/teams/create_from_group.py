@@ -23,12 +23,8 @@ def print_failure(retry_number, ex):
     print(f"  Attempt {retry_number}: Team provisioning still in progress...")
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 group_name = create_unique_name("Flight")
 group = client.groups.create_m365(group_name)
-team = group.add_team().execute_query_retry(
-    max_retry=10, failure_callback=print_failure
-)
+team = group.add_team().execute_query_retry(max_retry=10, failure_callback=print_failure)
 print(f"Team created: {team.display_name}  ({team.web_url})")

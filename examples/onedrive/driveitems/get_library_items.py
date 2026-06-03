@@ -7,7 +7,6 @@ https://learn.microsoft.com/en-us/graph/api/resources/drive
 Requires delegated permission ``Sites.Read.All``.
 """
 
-
 from office365.graph_client import GraphClient
 from tests import (
     test_client_id,

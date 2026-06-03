@@ -11,9 +11,7 @@ import sys
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 rules = client.me.mail_folders["Inbox"].message_rules.get().execute_query()
 target = next((r for r in rules if r.display_name == "Move from Fanny"), None)
