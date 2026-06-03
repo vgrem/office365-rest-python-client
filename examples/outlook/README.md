@@ -6,7 +6,7 @@ Examples for working with Outlook mail, calendar, and events via Microsoft Graph
 
 ## Prerequisites
 
-| What you need | Why | Grant it |
+| Requirement | Description | Reference |
 |---|---|---|
 | `Mail.ReadWrite` (delegated) | Read, send, and manage messages | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 | `Mail.Send` (delegated) | Send mail on behalf of the signed-in user | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |

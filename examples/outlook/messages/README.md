@@ -7,11 +7,11 @@ searching, moving, replying, managing attachments, and more.
 
 ## Prerequisites
 
-| Permission | Why | Grant it |
+| Requirement | Description | Reference |
 |---|---|---|
-| `Mail.ReadWrite` | Read, update, delete messages; list attachments | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
-| `Mail.Send` | Send messages on behalf of the user | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
-| `Mail.ReadWrite.Shared` | Access messages in shared mailboxes or other users' folders | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Mail.ReadWrite` (delegated) | Read, update, delete messages; list attachments | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Mail.Send` (delegated) | Send messages on behalf of the user | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Mail.ReadWrite.Shared` (delegated) | Access messages in shared mailboxes or other users' folders | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 
 ---
 

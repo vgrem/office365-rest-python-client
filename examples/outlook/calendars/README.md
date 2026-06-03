@@ -8,11 +8,11 @@ availability schedules.
 
 ## Prerequisites
 
-| Permission | Why | Grant it |
+| Requirement | Description | Reference |
 |---|---|---|
-| `Calendars.ReadWrite` | List calendars, create/update calendar permissions, find meeting times | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
-| `Calendars.Read` | Read calendar list | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
-| `User.Read.All` or `Directory.Read.All` | Get schedule info for other users | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
+| `Calendars.ReadWrite` (delegated) | List calendars, create/update calendar permissions, find meeting times | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `Calendars.Read` (delegated) | Read calendar list | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `User.Read.All` or `Directory.Read.All` (delegated) | Get schedule info for other users | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
 
 ---
 

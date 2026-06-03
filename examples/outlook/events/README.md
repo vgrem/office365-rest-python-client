@@ -6,10 +6,10 @@ Examples for working with Outlook calendar events via Microsoft Graph.
 
 ## Prerequisites
 
-| Permission | Why | Grant it |
+| Requirement | Description | Reference |
 |---|---|---|
-| `Calendars.ReadWrite` | Create, read, update, and delete events | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
-| `Calendars.Read` | Read events without write access | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `Calendars.ReadWrite` (delegated) | Create, read, update, and delete events | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `Calendars.Read` (delegated) | Read events without write access | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
 
 ---
 
