@@ -1,0 +1,69 @@
+# Events — Create, Read, and Delete Calendar Events
+
+Examples for working with Outlook calendar events via Microsoft Graph.
+
+---
+
+## Prerequisites
+
+| Permission | Why | Grant it |
+|---|---|---|
+| `Calendars.ReadWrite` | Create, read, update, and delete events | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `Calendars.Read` | Read events without write access | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+
+---
+
+## How events work
+
+```mermaid
+flowchart LR
+    A[List events] --> B[Create event]
+    B --> C[Update event]
+    B --> D[Delete event]
+```
+
+Events live on a **calendar** (default or specific). Each event has a subject,
+start/end time, body, attendees, location, and more.
+
+---
+
+## Examples
+
+| Step | What it does | File | Permissions | API docs |
+|---|---|---|---|---|
+| **1** | Create an event in the default calendar | [`create.py`](./create.py) | `Calendars.ReadWrite` | [create event](https://learn.microsoft.com/en-us/graph/api/user-post-events) |
+| **2** | List upcoming events | [`list.py`](./list.py) | `Calendars.Read` | [list events](https://learn.microsoft.com/en-us/graph/api/user-list-events) |
+| **3** | Delete an event by ID | [`delete.py`](./delete.py) | `Calendars.ReadWrite` | [delete event](https://learn.microsoft.com/en-us/graph/api/event-delete) |
+
+---
+
+## Quick start
+
+```python
+from datetime import datetime, timedelta
+from office365.graph_client import GraphClient
+
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_username_and_password(
+    "client_id", "user@contoso.com", "password"
+)
+
+when = datetime.utcnow() + timedelta(days=1)
+new_event = client.me.calendar.events.add(
+    subject="Team Lunch",
+    body="Let's grab lunch together.",
+    start=when,
+    end=when + timedelta(hours=1),
+    attendees=["colleague@contoso.com"],
+).execute_query()
+print(f"Created event: {new_event.subject}")
+```
+
+---
+
+## Official docs
+
+- [Outlook events API overview](https://learn.microsoft.com/en-us/graph/api/resources/event)
+- [List events](https://learn.microsoft.com/en-us/graph/api/user-list-events)
+- [Create event](https://learn.microsoft.com/en-us/graph/api/user-post-events)
+- [Delete event](https://learn.microsoft.com/en-us/graph/api/event-delete)
+- [Microsoft Graph Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions)
