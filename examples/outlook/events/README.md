@@ -33,7 +33,12 @@ start/end time, body, attendees, location, and more.
 |---|---|---|---|---|
 | **1** | Create an event in the default calendar | [`create.py`](./create.py) | `Calendars.ReadWrite` | [create event](https://learn.microsoft.com/en-us/graph/api/user-post-events) |
 | **2** | List upcoming events | [`list.py`](./list.py) | `Calendars.Read` | [list events](https://learn.microsoft.com/en-us/graph/api/user-list-events) |
-| **3** | Delete an event by ID | [`delete.py`](./delete.py) | `Calendars.ReadWrite` | [delete event](https://learn.microsoft.com/en-us/graph/api/event-delete) |
+| **3** | Update an event (reschedule, change subject) | [`update.py`](./update.py) | `Calendars.ReadWrite` | [update event](https://learn.microsoft.com/en-us/graph/api/event-update) |
+| **4** | Accept a meeting event | [`accept.py`](./accept.py) | `Calendars.ReadWrite` | [accept event](https://learn.microsoft.com/en-us/graph/api/event-accept) |
+| **5** | Decline a meeting event | [`decline.py`](./decline.py) | `Calendars.ReadWrite` | [decline event](https://learn.microsoft.com/en-us/graph/api/event-decline) |
+| **6** | Tentatively accept a meeting event | [`tentatively_accept.py`](./tentatively_accept.py) | `Calendars.ReadWrite` | [tentatively accept](https://learn.microsoft.com/en-us/graph/api/event-tentativelyaccept) |
+| **7** | Create a recurring event (weekly, 4 occurrences) | [`recurring.py`](./recurring.py) | `Calendars.ReadWrite` | [recurring event](https://learn.microsoft.com/en-us/graph/api/user-post-events) |
+| **8** | Cancel a meeting and notify attendees | [`cancel.py`](./cancel.py) | `Calendars.ReadWrite` | [cancel event](https://learn.microsoft.com/en-us/graph/api/event-cancel) |
 
 ---
 

@@ -39,6 +39,9 @@ write, delegate).
 | **2** | Find suggested meeting times based on availability | [`find_meeting_times.py`](./find_meeting_times.py) | `Calendars.ReadWrite`, `User.Read.All` | [find meeting times](https://learn.microsoft.com/en-us/graph/api/user-findmeetingtimes) |
 | **3** | Get the free/busy schedule for a user | [`get_schedule.py`](./get_schedule.py) | `Calendars.ReadWrite`, `User.Read.All` | [get schedule](https://learn.microsoft.com/en-us/graph/api/calendar-getschedule) |
 | **4** | Share a calendar with another user | [`share_with.py`](./share_with.py) | `Calendars.ReadWrite` | [create calendarPermission](https://learn.microsoft.com/en-us/graph/api/calendar-post-calendarpermissions) |
+| **5** | Create a new calendar | [`create.py`](./create.py) | `Calendars.ReadWrite` | [create calendar](https://learn.microsoft.com/en-us/graph/api/user-post-calendars) |
+| **6** | Delete a calendar (not the default) | [`delete.py`](./delete.py) | `Calendars.ReadWrite` | [delete calendar](https://learn.microsoft.com/en-us/graph/api/calendar-delete) |
+| **7** | Get calendar view for a date range | [`view.py`](./view.py) | `Calendars.Read` | [calendar view](https://learn.microsoft.com/en-us/graph/api/calendar-list-calendarview) |
 
 ---
 

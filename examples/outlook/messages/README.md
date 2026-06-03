@@ -61,6 +61,7 @@ your preferred flow.
 |---|---|---|---|---|
 | **14** | Move a message to another folder | [`move.py`](./move.py) | `Mail.ReadWrite` | [move message](https://learn.microsoft.com/en-us/graph/api/message-move) |
 | **15** | Reply to the sender of a message | [`reply.py`](./reply.py) | `Mail.Send` | [reply](https://learn.microsoft.com/en-us/graph/api/message-reply) |
+| **16** | Forward a message to additional recipients | [`forward.py`](./forward.py) | `Mail.ReadWrite`, `Mail.Send` | [forward](https://learn.microsoft.com/en-us/graph/api/message-forward) |
 | **16** | Update message properties | [`update.py`](./update.py) | `Mail.ReadWrite` | [update message](https://learn.microsoft.com/en-us/graph/api/message-update) |
 | **17** | Mark a single message as read | [`mark_as_read.py`](./mark_as_read.py) | `Mail.ReadWrite` | [update message](https://learn.microsoft.com/en-us/graph/api/message-update) |
 | **18** | Mark all messages in a folder as read | [`mark_all_as_read.py`](./mark_all_as_read.py) | `Mail.ReadWrite` | [update message](https://learn.microsoft.com/en-us/graph/api/message-update) |
@@ -74,6 +75,15 @@ your preferred flow.
 | **21** | Custom search with filters and sort | [`search/search_custom.py`](./search/search_custom.py) | `Mail.ReadWrite` | [search messages](https://learn.microsoft.com/en-us/graph/search-concept-messages) |
 | **22** | Create a subscription (change notification on new mail) | [`create_subscription.py`](./create_subscription.py) | `Mail.ReadWrite` | [create subscription](https://learn.microsoft.com/en-us/graph/api/subscription-post-subscriptions) |
 | **23** | Create a custom extended property on a message | [`create_property.py`](./create_property.py) | `Mail.ReadWrite` | [extended property](https://learn.microsoft.com/en-us/graph/api/singlevaluelegacyextendedproperty-post-singlevalueextendedproperties) |
+
+## Examples — Mail Folders
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **24** | Create a new mail folder under the Inbox | [`folders/create.py`](./folders/create.py) | `Mail.ReadWrite` | [create folder](https://learn.microsoft.com/en-us/graph/api/user-post-mailfolders) |
+| **25** | List all mail folders with item counts | [`folders/list.py`](./folders/list.py) | `Mail.ReadWrite` | [list folders](https://learn.microsoft.com/en-us/graph/api/user-list-mailfolders) |
+| **26** | Rename a mail folder | [`folders/rename.py`](./folders/rename.py) | `Mail.ReadWrite` | [update folder](https://learn.microsoft.com/en-us/graph/api/mailfolder-update) |
+| **27** | Delete a mail folder and its contents | [`folders/delete.py`](./folders/delete.py) | `Mail.ReadWrite` | [delete folder](https://learn.microsoft.com/en-us/graph/api/mailfolder-delete) |
 
 ---
 
