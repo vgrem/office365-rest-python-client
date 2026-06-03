@@ -45,26 +45,6 @@ class AccessPackageAssignmentPolicy(Entity):
         return self.properties.get("specificAllowedTargets", ClientValueCollection[SubjectSet](SubjectSet))
 
     @property
-    def access_package(self) -> AccessPackage:
-        """Gets the accessPackage property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import AccessPackage
-
-        return self.properties.get(
-            "accessPackage", AccessPackage(self.context, ResourcePath("accessPackage", self.resource_path))
-        )
-
-    @property
-    def catalog(self) -> AccessPackageCatalog:
-        """Gets the catalog property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import (
-            AccessPackageCatalog,
-        )
-
-        return self.properties.get(
-            "catalog", AccessPackageCatalog(self.context, ResourcePath("catalog", self.resource_path))
-        )
-
-    @property
     def custom_extension_stage_settings(self) -> EntityCollection[CustomExtensionStageSetting]:
         """Gets the customExtensionStageSettings property"""
         return self.properties.get(

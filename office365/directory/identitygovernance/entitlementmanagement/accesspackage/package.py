@@ -46,31 +46,6 @@ class AccessPackage(Entity):
         )
 
     @property
-    def assignment_policies(self) -> EntityCollection[AccessPackageAssignmentPolicy]:
-        """Gets the assignmentPolicies property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_policy import (
-            AccessPackageAssignmentPolicy,
-        )
-
-        return self.properties.get(
-            "assignmentPolicies",
-            EntityCollection[AccessPackageAssignmentPolicy](
-                self.context, AccessPackageAssignmentPolicy, ResourcePath("assignmentPolicies", self.resource_path)
-            ),
-        )
-
-    @property
-    def catalog(self) -> AccessPackageCatalog:
-        """Gets the catalog property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import (
-            AccessPackageCatalog,
-        )
-
-        return self.properties.get(
-            "catalog", AccessPackageCatalog(self.context, ResourcePath("catalog", self.resource_path))
-        )
-
-    @property
     def incompatible_access_packages(self) -> EntityCollection[AccessPackage]:
         """Gets the incompatibleAccessPackages property"""
         return self.properties.get(

@@ -59,18 +59,6 @@ class AccessPackageCatalog(Entity):
         return self.properties.get("state", AccessPackageCatalogState.unpublished)
 
     @property
-    def access_packages(self) -> EntityCollection[AccessPackage]:
-        """Gets the accessPackages property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import AccessPackage
-
-        return self.properties.get(
-            "accessPackages",
-            EntityCollection[AccessPackage](
-                self.context, AccessPackage, ResourcePath("accessPackages", self.resource_path)
-            ),
-        )
-
-    @property
     def custom_workflow_extensions(self) -> EntityCollection[CustomCalloutExtension]:
         """Gets the customWorkflowExtensions property"""
         return self.properties.get(
