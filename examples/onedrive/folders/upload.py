@@ -2,7 +2,10 @@
 Demonstrates how to upload a folder into OneDrive drive
 
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Files.ReadWrite.All``.
 """
+
 
 from office365.graph_client import GraphClient
 from office365.onedrive.driveitems.driveItem import DriveItem

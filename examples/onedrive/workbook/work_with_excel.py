@@ -3,6 +3,8 @@ Demonstrates how to work with the Excel API
 
 https://learn.microsoft.com/en-us/graph/api/resources/excel?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Files.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

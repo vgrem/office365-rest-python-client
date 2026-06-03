@@ -3,7 +3,10 @@ List followed items
 
 https://learn.microsoft.com/en-us/graph/api/drive-list-following?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Files.Read.All``.
 """
+
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username

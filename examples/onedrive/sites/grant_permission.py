@@ -3,6 +3,8 @@ Grants permissions on a site.
 
 https://learn.microsoft.com/en-us/graph/api/site-post-permissions?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Sites.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

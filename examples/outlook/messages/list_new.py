@@ -1,7 +1,12 @@
 """
-Get a set of messages that have been added in a specified folder.
+List new/changed messages since the last sync using delta query.
 
-The example is adapted from https://learn.microsoft.com/en-us/graph/api/message-delta?view=graph-rest-1.0
+Delta queries track incremental changes without re-fetching the
+entire mailbox each time.
+
+Requires delegated permission ``Mail.ReadWrite``.
+
+https://learn.microsoft.com/en-us/graph/api/message-delta?view=graph-rest-1.0
 """
 
 from office365.delta_collection import ChangeType

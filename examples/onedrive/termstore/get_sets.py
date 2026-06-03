@@ -2,6 +2,8 @@
 Get term sets in a Group
 
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``TermStore.Read.All``.
 """
 
 from office365.graph_client import GraphClient

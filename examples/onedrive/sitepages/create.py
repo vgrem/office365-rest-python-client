@@ -3,6 +3,8 @@ Create a new sitePage in the site pages list in a site.
 
 https://learn.microsoft.com/en-us/graph/api/sitepage-create?view=graph-rest-beta
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Sites.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

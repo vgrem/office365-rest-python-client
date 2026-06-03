@@ -14,7 +14,10 @@ Usage:
     client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
     report = verify_permissions(client, DriveCollection.get)
     print(report)
+
+Requires delegated permission ``Sites.Read.All``.
 """
+
 
 from office365.directory.permissions.checker import verify_permissions
 from office365.graph_client import GraphClient

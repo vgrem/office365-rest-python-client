@@ -1,5 +1,7 @@
 """
-Mark message as read example
+Mark a single message as read by updating its ``isRead`` property.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/message-update?view=graph-rest-1.0
 """

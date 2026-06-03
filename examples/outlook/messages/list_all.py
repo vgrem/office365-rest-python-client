@@ -1,5 +1,7 @@
 """
-Get the messages in the signed-in user's mailbox
+List the first 10 messages in the signed-in user's mailbox.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0
 """

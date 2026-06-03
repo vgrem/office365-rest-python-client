@@ -3,7 +3,10 @@ Gets folders from a drive
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-list-children?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+Requires delegated permission ``Files.Read.All``.
 """
+
 
 from office365.graph_client import GraphClient
 from tests import (

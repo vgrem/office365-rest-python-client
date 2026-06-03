@@ -1,7 +1,10 @@
 """
-Create a single-value extended property for a message
+Create a custom extended property on an existing message.
 
-Demonstrates how to create one single-value extended property for the specified existing message.
+Extended properties store custom key-value metadata outside the
+standard message schema.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/singlevaluelegacyextendedproperty-post-singlevalueextendedproperties?view=graph-rest-1.0
 """

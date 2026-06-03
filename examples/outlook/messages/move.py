@@ -1,6 +1,9 @@
 """
-Move a message to another folder within the specified user's mailbox.
-This creates a new copy of the message in the destination folder and removes the original message.
+Move a draft message to another folder.
+
+Creates a copy in the destination folder and removes the original.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/message-move?view=graph-rest-1.0
 """

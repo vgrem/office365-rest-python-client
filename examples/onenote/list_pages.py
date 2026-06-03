@@ -1,8 +1,9 @@
 """
-Retrieve a list of page objects
+List pages in a specific section ("Quick Notes").
 
-https://learn.microsoft.com/en-us/graph/api/resources/onenote
-https://learn.microsoft.com/en-us/graph/api/onenote-list-pages?view=graph-rest-1.0
+Requires delegated permission ``Notes.Read`` or ``Notes.ReadWrite``.
+
+https://learn.microsoft.com/en-us/graph/api/onenote-list-pages
 """
 
 from office365.graph_client import GraphClient

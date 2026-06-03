@@ -1,7 +1,8 @@
 """
-Create OneNote pages
+Create a OneNote page with embedded image and file attachments.
 
-https://learn.microsoft.com/en-us/graph/api/resources/onenote
+Requires delegated permission ``Notes.ReadWrite``.
+
 https://learn.microsoft.com/en-us/graph/onenote-create-page
 """
 

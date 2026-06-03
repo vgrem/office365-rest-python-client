@@ -1,5 +1,7 @@
 """
-Get all the user's calendars
+List the first 10 calendars for the signed-in user.
+
+Requires delegated permission ``Calendars.Read``.
 
 https://learn.microsoft.com/en-us/graph/api/user-list-calendars?view=graph-rest-1.0
 """

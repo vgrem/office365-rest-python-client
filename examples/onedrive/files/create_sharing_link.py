@@ -7,13 +7,7 @@ All existing permissions are removed when sharing for the first time if retainIn
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-createlink?view=graph-rest-1.0
 https://learn.microsoft.com/en-us/graph/api/resources/drive
+
+
+Requires delegated permission ``Files.ReadWrite.All``.
 """
-
-from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
-
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-file_path = "Financial Sample.xlsx"
-drive_item = client.me.drive.root.get_by_path(file_path)
-permission = drive_item.create_link("view", "anonymous", password="ThisIsMyPrivatePassword").execute_query()
-print(permission.link)

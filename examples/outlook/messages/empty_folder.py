@@ -1,5 +1,9 @@
 """
-Empties the mail folder (deletes all messages)
+Delete all messages in a mail folder.
+
+Messages are permanently removed from the folder.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/resources/message
 """

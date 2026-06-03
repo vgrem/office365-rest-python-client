@@ -1,5 +1,10 @@
 """
-Search messages in a user's mailbox
+Search messages with custom filters (from, subject, date range).
+
+Combines Microsoft Search query syntax with ``filter()``,
+``order_by()``, and ``select()`` for targeted results.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/search-concept-messages
 """

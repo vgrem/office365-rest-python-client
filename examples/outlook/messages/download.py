@@ -1,8 +1,11 @@
 """
-Downloads MIME representation of a message
+Download the MIME (.eml) representation of a message.
+
+Saves the message as an ``.eml`` file openable in any email client.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/outlook-get-mime-message
-Requires Mail.ReadWrite permission
 """
 
 import os

@@ -1,7 +1,10 @@
 """
-Send a new message in a channel.
+Send a new message to the primary (General) channel of the first
+joined team.
 
-https://learn.microsoft.com/en-us/graph/api/chatmessage-post?view=graph-rest-1.0&tabs=http
+Requires delegated permission ``ChannelMessage.Send``.
+
+https://learn.microsoft.com/en-us/graph/api/chatmessage-post
 """
 
 import sys

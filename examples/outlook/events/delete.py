@@ -1,5 +1,7 @@
 """
-Delete an event from the user's default calendar
+Delete an event from the user's default calendar by ID.
+
+Requires delegated permission ``Calendars.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/resources/event
 """

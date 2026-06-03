@@ -1,8 +1,9 @@
 """
-Demonstrates how to create a new OneNote notebook
+Create a new OneNote notebook.
 
-https://learn.microsoft.com/en-us/graph/api/resources/onenote
-https://learn.microsoft.com/en-us/graph/api/onenote-post-notebooks?view=graph-rest-1.0
+Requires delegated permission ``Notes.ReadWrite``.
+
+https://learn.microsoft.com/en-us/graph/api/onenote-post-notebooks
 """
 
 from office365.graph_client import GraphClient

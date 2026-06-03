@@ -1,7 +1,10 @@
 """
-List all teams in an organization (tenant)
+List all teams in the tenant (first 10).
 
-https://learn.microsoft.com/en-us/graph/teams-list-all-teams?context=graph%2Fapi%2F1.0&view=graph-rest-1.0
+Requires delegated permission ``Team.ReadBasic.All`` or
+``TeamSettings.Read.All``.
+
+https://learn.microsoft.com/en-us/graph/teams-list-all-teams
 """
 
 from office365.graph_client import GraphClient

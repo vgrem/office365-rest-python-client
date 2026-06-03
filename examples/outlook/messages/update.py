@@ -1,5 +1,7 @@
 """
-Update the properties of a message object
+Update the subject of the most recent message in the Inbox.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/message-update?view=graph-rest-1.0
 """

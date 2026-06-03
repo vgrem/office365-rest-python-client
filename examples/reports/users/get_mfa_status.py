@@ -1,8 +1,11 @@
 """
-Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object.
-This method doesn't work for disabled users.
+List MFA registration status and authentication methods for all users.
 
-https://learn.microsoft.com/en-us/graph/api/resources/report
+Does not include disabled users.
+
+Requires delegated permission ``AuditLog.Read.All`` or
+``Reports.Read.All``.
+
 https://learn.microsoft.com/en-us/graph/api/authenticationmethods-list-userregistrationdetails?view=graph-rest-1.0
 """
 

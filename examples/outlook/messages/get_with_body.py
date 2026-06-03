@@ -1,7 +1,9 @@
 """
-Retrieve the properties of a message.
+Retrieve message properties including the full body content.
 
-Requires Mail.Read permission at least
+Uses ``select()`` to request both ``subject`` and ``body`` fields.
+
+Requires delegated permission ``Mail.Read`` or ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/message-get?view=graph-rest-1.0
 """
