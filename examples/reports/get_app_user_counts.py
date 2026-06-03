@@ -1,8 +1,11 @@
 """
-Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel, PowerPoint,
-OneNote, and Teams) in your organization.
+Get the trend of active users per Microsoft 365 app (Outlook, Word, Excel,
+PowerPoint, OneNote, Teams) over the specified period.
 
-https://learn.microsoft.com/en-us/graph/api/resources/report
+Period: D7, D30, D90, or D180.
+
+Requires delegated permission ``Reports.Read.All``.
+
 https://learn.microsoft.com/en-us/graph/api/reportroot-getm365appusercounts?view=graph-rest-1.0
 """
 
