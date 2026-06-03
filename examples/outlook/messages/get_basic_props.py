@@ -1,5 +1,10 @@
 """
-Read messages (basic properties) in a user mailbox
+Read basic message properties (id, subject) from another user's mailbox.
+
+Uses app-only auth via ``with_client_secret()`` and ``select()`` to
+limit returned fields.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/resources/message
 """

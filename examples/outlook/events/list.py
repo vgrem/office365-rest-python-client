@@ -1,5 +1,7 @@
 """
-Retrieve a list of events in the user's default calendar.
+List upcoming events from the user's default calendar.
+
+Requires delegated permission ``Calendars.Read``.
 
 https://learn.microsoft.com/en-us/graph/api/calendar-list-events?view=graph-rest-1.0
 """

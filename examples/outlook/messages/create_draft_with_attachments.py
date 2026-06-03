@@ -1,5 +1,7 @@
 """
-Create a draft message with a file attachment
+Create a draft message and attach a file (base64-encoded PDF).
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/resources/message
 """

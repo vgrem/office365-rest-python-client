@@ -1,7 +1,10 @@
 """
-Create calendar permission
+Share the user's default calendar with another user.
 
-Demonstrates how to share my calendar with another user
+Grants read-level access (``CalendarRoleType.read``) to the specified
+email address.
+
+Requires delegated permission ``Calendars.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/calendar-post-calendarpermissions?view=graph-rest-1.0
 """

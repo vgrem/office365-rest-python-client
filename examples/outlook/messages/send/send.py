@@ -1,5 +1,7 @@
 """
-Send the message specified in the request body using either JSON or MIME format.
+Send a plain-text email message.
+
+Requires delegated permission ``Mail.Send``.
 
 https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0
 """

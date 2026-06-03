@@ -1,5 +1,9 @@
 """
-Create a draft of a new message
+Create a draft (unsent) message in another user's mailbox.
+
+Uses app-only auth via ``with_client_secret()``.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/user-post-messages?view=graph-rest-1.0
 """

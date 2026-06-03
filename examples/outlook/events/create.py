@@ -1,5 +1,9 @@
 """
-Create an event in the current user's default calendar
+Create an event in the current user's default calendar.
+
+Sets subject, body, start/end time, and an attendee.
+
+Requires delegated permission ``Calendars.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/user-post-events?view=graph-rest-1.0
 """

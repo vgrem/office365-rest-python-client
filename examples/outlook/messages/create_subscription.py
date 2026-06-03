@@ -1,5 +1,10 @@
 """
-Demonstrates how to send a change notification when the user receives a new mail.
+Create a change notification (webhook) subscription for new mail.
+
+Microsoft Graph POSTs to the ``notification_url`` when new messages
+arrive in the Inbox.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/subscription-post-subscriptions?view=graph-rest-1.0
 """

@@ -1,5 +1,9 @@
 """
-Search messages in a user's mailbox
+Search messages using the Microsoft Search API.
+
+Returns matching messages with web links to each result.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/search-concept-messages
 """

@@ -1,5 +1,9 @@
 """
-Reply to the sender of a message using either JSON or MIME format.
+Reply to the sender of the most recent message.
+
+Adds a comment and sends the reply.
+
+Requires delegated permission ``Mail.Send``.
 
 https://learn.microsoft.com/en-us/graph/api/message-reply?view=graph-rest-1.0
 """

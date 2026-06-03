@@ -1,8 +1,12 @@
 """
-Get free/busy schedule of Outlook calendar users and resources
+Get the free/busy schedule for a user or resource.
+
+Returns availability data for the specified time range.
+
+Requires delegated permissions ``Calendars.ReadWrite`` and
+``User.Read.All`` or ``Directory.Read.All``.
 
 https://learn.microsoft.com/en-us/graph/outlook-get-free-busy-schedule
-
 
 The following example gets the availability information for user for the specified date, time, and time zone.
 """

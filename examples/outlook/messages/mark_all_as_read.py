@@ -1,5 +1,9 @@
 """
-Mark all items (messages) in a folder as read/unread
+Mark all messages in the Inbox as read.
+
+Updates the ``isRead`` flag on every message in the folder.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/resources/message
 """

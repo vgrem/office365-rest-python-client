@@ -1,5 +1,10 @@
 """
-Demonstrates how to download message attachments
+Download all attachments from messages that have them.
+
+Filters for ``hasAttachments eq true``, expands the attachments
+collection, and saves each one to a temporary directory.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0
 """

@@ -1,5 +1,7 @@
 """
-List attachments
+List all attachments on the most recent message.
+
+Requires delegated permission ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/message-list-attachments?view=graph-rest-1.0
 """

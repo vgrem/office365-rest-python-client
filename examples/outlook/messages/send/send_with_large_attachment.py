@@ -1,5 +1,9 @@
 """
-Send a message with a large attachment using an upload session
+Send a message with a large file attachment via a resumable upload session.
+
+Required for files > 3 MB. A progress callback reports upload progress.
+
+Requires delegated permissions ``Mail.Send`` and ``Mail.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/attachment-createuploadsession?view=graph-rest-1.0
 """

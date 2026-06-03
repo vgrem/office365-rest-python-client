@@ -1,5 +1,10 @@
 """
-Find possible meeting times on the Outlook calendar
+Find suggested meeting times based on user availability.
+
+Returns time suggestions where attendees are free.
+
+Requires delegated permissions ``Calendars.ReadWrite`` and
+``User.Read.All`` or ``Directory.Read.All``.
 
 https://learn.microsoft.com/en-us/graph/findmeetingtimes-example
 """

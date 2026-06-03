@@ -1,5 +1,10 @@
 """
-Create a message with a file attachment and send the message
+Send a message with a small inline file attachment.
+
+For larger files (> 3 MB) use ``send_with_large_attachment.py``
+and a resumable upload session instead.
+
+Requires delegated permission ``Mail.Send``.
 
 https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0
 """
