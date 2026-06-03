@@ -15,6 +15,8 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
+from office365.runtime.types.odata_property import odata
+
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.audio import Audio
 from office365.onedrive.driveitems.conflict_behavior import ConflictBehavior
@@ -856,6 +858,7 @@ class DriveItem(BaseItem):
         """Location metadata, if the item has location data"""
         return self.properties.get("location", GeoCoordinates())
 
+    @odata(name="fileSystemInfo")
     @property
     def file_system_info(self) -> FileSystemInfo:
         """File system information on client."""
@@ -959,11 +962,13 @@ class DriveItem(BaseItem):
         """
         return self.properties.get("publication", PublicationFacet())
 
+    @odata(name="remoteItem")
     @property
     def remote_item(self) -> RemoteItem:
         """Remote item data, if the item is shared from a drive other than the one being accessed. Read-only."""
         return self.properties.get("remoteItem", RemoteItem())
 
+    @odata(name="specialFolder")
     @property
     def special_folder(self) -> SpecialFolder:
         """If the current item is also available as a special folder, this facet is returned. Read-only."""
@@ -1035,12 +1040,4 @@ class DriveItem(BaseItem):
     def property_ref_name(self) -> str:
         return "id"
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "fileSystemInfo": self.file_system_info,
-                "remoteItem": self.remote_item,
-                "specialFolder": self.special_folder,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
