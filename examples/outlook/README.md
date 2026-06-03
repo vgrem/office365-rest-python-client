@@ -1,41 +1,62 @@
-# Microsoft Graph Outlook Examples
+# Outlook — Mail, Calendar & Events
 
-Examples for working with Outlook mail, calendar, and events via the Graph API.
-
-## Mail
-- **Send email**: [`messages/send/send.py`](./messages/send/send.py)
-- **Send HTML email**: [`messages/send/send_html.py`](./messages/send/send_html.py)
-- **Send with attachment**: [`messages/send/send_with_attachment.py`](./messages/send/send_with_attachment.py)
-- **Send with large attachment**: [`messages/send/send_with_large_attachment.py`](./messages/send/send_with_large_attachment.py)
-- **Create draft**: [`messages/create_draft.py`](./messages/create_draft.py)
-- **Create draft with attachments**: [`messages/create_draft_with_attachments.py`](./messages/create_draft_with_attachments.py)
-- **List messages**: [`messages/list_all.py`](./messages/list_all.py)
-- **List new messages**: [`messages/list_new.py`](./messages/list_new.py)
-- **Move messages**: [`messages/move.py`](./messages/move.py)
-- **Reply to messages**: [`messages/reply.py`](./messages/reply.py)
-- **Update messages**: [`messages/update.py`](./messages/update.py)
-- **Empty folder**: [`messages/empty_folder.py`](./messages/empty_folder.py)
-- **Mark all as read**: [`messages/mark_all_as_read.py`](./messages/mark_all_as_read.py)
-- **Mark as read**: [`messages/mark_as_read.py`](./messages/mark_as_read.py)
-- **Download attachments**: [`messages/download.py`](./messages/download.py)
-- **Download with attachments**: [`messages/download_with_attachments.py`](./messages/download_with_attachments.py)
-- **Search messages**: [`messages/search/search.py`](./messages/search/search.py)
-- **Custom search**: [`messages/search/search_custom.py`](./messages/search/search_custom.py)
-- **Create extended property**: [`messages/create_property.py`](./messages/create_property.py)
-- **Create subscription**: [`messages/create_subscription.py`](./messages/create_subscription.py)
-- **Get basic properties**: [`messages/get_basic_props.py`](./messages/get_basic_props.py)
-- **Get message body**: [`messages/get_with_body.py`](./messages/get_with_body.py)
-- **List attachments**: [`messages/list_attachments.py`](./messages/list_attachments.py)
-
-## Calendar & Events
-- **Create event**: [`events/create.py`](./events/create.py)
-- **List events**: [`events/list.py`](./events/list.py)
-- **Delete event**: [`events/delete.py`](./events/delete.py)
-- **Find meeting times**: [`calendars/find_meeting_times.py`](./calendars/find_meeting_times.py)
-- **Get schedule**: [`calendars/get_schedule.py`](./calendars/get_schedule.py)
-- **List calendars**: [`calendars/list_my.py`](./calendars/list_my.py)
-- **Share calendar**: [`calendars/share_with.py`](./calendars/share_with.py)
+Examples for working with Outlook mail, calendar, and events via Microsoft Graph.
 
 ---
 
-See https://learn.microsoft.com/en-us/graph/api/resources/message for Outlook API documentation.
+## Prerequisites
+
+| What you need | Why | Grant it |
+|---|---|---|
+| `Mail.ReadWrite` (delegated) | Read, send, and manage messages | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Mail.Send` (delegated) | Send mail on behalf of the signed-in user | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Calendars.ReadWrite` (delegated) | Create, read, update, delete events and calendars | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
+| `User.Read` (delegated) | Access the signed-in user's profile and mailbox | Included by default |
+
+Admin consent is required for tenant-wide permissions.
+
+---
+
+## Directories
+
+| Directory | Covers |
+|---|---|
+| [`messages/`](./messages/) | Send, draft, list, search, move, reply, mark as read, download attachments, subscriptions |
+| [`events/`](./events/) | Create, list, delete calendar events |
+| [`calendars/`](./calendars/) | List calendars, find meeting times, get schedule, share calendar |
+
+---
+
+## Quick start
+
+```python
+from office365.graph_client import GraphClient
+
+# Option A: Client secret (app-only) — for background services
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
+    "client_id", "client_secret"
+)
+
+# Option B: Interactive browser login — for desktop apps
+# client = GraphClient(tenant="contoso.onmicrosoft.com").with_token_interactive(
+#     "client_id"
+# )
+
+# Fetch the user and send a test message
+client.me.send_mail(
+    subject="Hello from the library",
+    body="This email was sent using MS Graph.",
+    to_recipients=["user@contoso.com"],
+).execute_query()
+```
+
+All examples use `GraphClient` with `with_username_and_password()` (MSAL ROPC) by default.
+You can replace with any supported auth flow — see [`examples/auth/`](/examples/auth) for all options.
+
+---
+
+## Official docs
+
+- [Outlook mail API overview](https://learn.microsoft.com/en-us/graph/api/resources/message)
+- [Outlook calendar API overview](https://learn.microsoft.com/en-us/graph/api/resources/event)
+- [Microsoft Graph permissions reference](https://learn.microsoft.com/en-us/graph/permissions-reference)
