@@ -29,7 +29,7 @@ start/end time, body, attendees, location, and more.
 
 ## Examples
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **1** | Create an event in the default calendar | [`create.py`](./create.py) | `Calendars.ReadWrite` | [create event](https://learn.microsoft.com/en-us/graph/api/user-post-events) |
 | **2** | List upcoming events | [`list.py`](./list.py) | `Calendars.Read` | [list events](https://learn.microsoft.com/en-us/graph/api/user-list-events) |

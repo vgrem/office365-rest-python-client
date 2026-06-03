@@ -34,18 +34,18 @@ your preferred flow.
 
 ## Examples — Send & Draft
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **1** | Send a plain-text message | [`send/send.py`](./send/send.py) | `Mail.Send` | [sendMail](https://learn.microsoft.com/en-us/graph/api/user-sendmail) |
 | **2** | Send an HTML-formatted message | [`send/send_html.py`](./send/send_html.py) | `Mail.Send` | [sendMail](https://learn.microsoft.com/en-us/graph/api/user-sendmail) |
 | **3** | Send a message with a file attachment | [`send/send_with_attachment.py`](./send/send_with_attachment.py) | `Mail.Send` | [sendMail + attachment](https://learn.microsoft.com/en-us/graph/api/user-sendmail) |
 | **4** | Send with large attachment (upload session) | [`send/send_with_large_attachment.py`](./send/send_with_large_attachment.py) | `Mail.Send`, `Mail.ReadWrite` | [upload session](https://learn.microsoft.com/en-us/graph/api/attachment-createuploadsession) |
-| **5** | Create a draft message (without sending) | [`create_draft.py`](./create_draft.py) | `Mail.ReadWrite` | [create draft](https://learn.microsoft.com/en-us/graph/api/user-post-messages) |
+| **5** | Create a draft message | [`create_draft.py`](./create_draft.py) | `Mail.ReadWrite` | [create draft](https://learn.microsoft.com/en-us/graph/api/user-post-messages) |
 | **6** | Create a draft with attachments | [`create_draft_with_attachments.py`](./create_draft_with_attachments.py) | `Mail.ReadWrite` | [create draft + attachment](https://learn.microsoft.com/en-us/graph/api/user-post-messages) |
 
 ## Examples — Read & List
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **7** | List all messages in the mailbox | [`list_all.py`](./list_all.py) | `Mail.ReadWrite` | [list messages](https://learn.microsoft.com/en-us/graph/api/user-list-messages) |
 | **8** | List new/unread messages (delta query) | [`list_new.py`](./list_new.py) | `Mail.ReadWrite` | [message delta](https://learn.microsoft.com/en-us/graph/api/message-delta) |
@@ -57,7 +57,7 @@ your preferred flow.
 
 ## Examples — Manage
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **14** | Move a message to another folder | [`move.py`](./move.py) | `Mail.ReadWrite` | [move message](https://learn.microsoft.com/en-us/graph/api/message-move) |
 | **15** | Reply to the sender of a message | [`reply.py`](./reply.py) | `Mail.Send` | [reply](https://learn.microsoft.com/en-us/graph/api/message-reply) |
@@ -68,7 +68,7 @@ your preferred flow.
 
 ## Examples — Search & Subscriptions
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **20** | Search messages using Microsoft Search | [`search/search.py`](./search/search.py) | `Mail.ReadWrite` | [search messages](https://learn.microsoft.com/en-us/graph/search-concept-messages) |
 | **21** | Custom search with filters and sort | [`search/search_custom.py`](./search/search_custom.py) | `Mail.ReadWrite` | [search messages](https://learn.microsoft.com/en-us/graph/search-concept-messages) |

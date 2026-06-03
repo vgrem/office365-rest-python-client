@@ -33,7 +33,7 @@ write, delegate).
 
 ## Examples
 
-| Step | What it does | File | Permissions | API docs |
+| Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **1** | List all calendars for the signed-in user | [`list_my.py`](./list_my.py) | `Calendars.Read` | [list calendars](https://learn.microsoft.com/en-us/graph/api/user-list-calendars) |
 | **2** | Find suggested meeting times based on availability | [`find_meeting_times.py`](./find_meeting_times.py) | `Calendars.ReadWrite`, `User.Read.All` | [find meeting times](https://learn.microsoft.com/en-us/graph/api/user-findmeetingtimes) |
