@@ -48,36 +48,42 @@ A **team** is backed by a Microsoft 365 group. Teams have **channels**
 | **3** | List all teams in the tenant | [`list_all.py`](./list_all.py) | `Team.ReadBasic.All` | [list all teams](https://learn.microsoft.com/en-us/graph/teams-list-all-teams) |
 | **4** | List teams the signed-in user is a member of | [`list_my_teams.py`](./list_my_teams.py) | `Team.ReadBasic.All` | [joined teams](https://learn.microsoft.com/en-us/graph/api/user-list-joinedteams) |
 | **5** | Archive a team (make read-only) | [`archive.py`](./archive.py) | `TeamSettings.ReadWrite.All` | [archive team](https://learn.microsoft.com/en-us/graph/api/team-archive) |
+| **6** | Unarchive a team (restore write access) | [`unarchive.py`](./unarchive.py) | `TeamSettings.ReadWrite.All` | [unarchive team](https://learn.microsoft.com/en-us/graph/api/team-unarchive) |
+| **7** | Delete a team permanently | [`delete_team.py`](./delete_team.py) | `Group.ReadWrite.All` | [delete team](https://learn.microsoft.com/en-us/graph/api/team-delete) |
+| **8** | Update team settings (messaging, member, guest) | [`update_settings.py`](./update_settings.py) | `TeamSettings.ReadWrite.All` | [update team](https://learn.microsoft.com/en-us/graph/api/team-update) |
 
 ### Channels
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **6** | Create a new public channel | [`channels/create.py`](./channels/create.py) | `Channel.Create` | [create channel](https://learn.microsoft.com/en-us/graph/api/channel-post) |
-| **7** | List all channels in a team | [`channels/list.py`](./channels/list.py) | `Channel.ReadBasic.All` | [list channels](https://learn.microsoft.com/en-us/graph/api/channel-list) |
-| **8** | Delete a non-default channel | [`channels/delete.py`](./channels/delete.py) | `Channel.Delete.All` | [delete channel](https://learn.microsoft.com/en-us/graph/api/channel-delete) |
+| **9** | Create a new public channel | [`channels/create.py`](./channels/create.py) | `Channel.Create` | [create channel](https://learn.microsoft.com/en-us/graph/api/channel-post) |
+| **10** | List all channels in a team | [`channels/list.py`](./channels/list.py) | `Channel.ReadBasic.All` | [list channels](https://learn.microsoft.com/en-us/graph/api/channel-list) |
+| **11** | List tabs in the General channel | [`channels/list_tabs.py`](./channels/list_tabs.py) | `TeamsTab.Read.All` | [list tabs](https://learn.microsoft.com/en-us/graph/api/channel-list-tabs) |
+| **12** | Delete a non-default channel | [`channels/delete.py`](./channels/delete.py) | `Channel.Delete.All` | [delete channel](https://learn.microsoft.com/en-us/graph/api/channel-delete) |
 
 ### Messages
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **9** | Send a message to the primary (General) channel | [`send_message.py`](./send_message.py) | `ChannelMessage.Send` | [send message](https://learn.microsoft.com/en-us/graph/api/chatmessage-post) |
-| **10** | List messages in the primary channel | [`list_channel_messages.py`](./list_channel_messages.py) | `ChannelMessage.Read.All` | [list messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages) |
-| **11** | Check user access to a shared channel | [`does_user_have_access.py`](./does_user_have_access.py) | `ChannelMember.Read.All` | [check access](https://learn.microsoft.com/en-us/graph/api/channel-doesuserhaveaccess) |
+| **13** | Send a message to the primary (General) channel | [`send_message.py`](./send_message.py) | `ChannelMessage.Send` | [send message](https://learn.microsoft.com/en-us/graph/api/chatmessage-post) |
+| **14** | Reply to an existing message thread | [`reply_message.py`](./reply_message.py) | `ChannelMessage.Send` | [reply](https://learn.microsoft.com/en-us/graph/api/chatmessage-post) |
+| **15** | List messages in the primary channel | [`list_channel_messages.py`](./list_channel_messages.py) | `ChannelMessage.Read.All` | [list messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages) |
+| **16** | Check user access to a shared channel | [`does_user_have_access.py`](./does_user_have_access.py) | `ChannelMember.Read.All` | [check access](https://learn.microsoft.com/en-us/graph/api/channel-doesuserhaveaccess) |
 
 ### Members
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **12** | List all members of a team | [`members/list.py`](./members/list.py) | `TeamMember.Read.All` | [list members](https://learn.microsoft.com/en-us/graph/api/team-list-members) |
-| **13** | Add a member to a team by email | [`members/add.py`](./members/add.py) | `TeamMember.ReadWrite.All` | [add member](https://learn.microsoft.com/en-us/graph/api/team-post-members) |
+| **17** | List all members of a team | [`members/list.py`](./members/list.py) | `TeamMember.Read.All` | [list members](https://learn.microsoft.com/en-us/graph/api/team-list-members) |
+| **18** | Add a member to a team by email | [`members/add.py`](./members/add.py) | `TeamMember.ReadWrite.All` | [add member](https://learn.microsoft.com/en-us/graph/api/team-post-members) |
+| **19** | Remove a member from a team | [`members/remove.py`](./members/remove.py) | `TeamMember.ReadWrite.All` | [remove member](https://learn.microsoft.com/en-us/graph/api/team-delete-members) |
 
 ### Apps
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **14** | List apps installed in a team | [`apps/list.py`](./apps/list.py) | `TeamsAppInstallation.Read.All` | [list apps](https://learn.microsoft.com/en-us/graph/api/team-list-installedapps) |
-| **15** | Install an app from the catalog into a team | [`apps/install.py`](./apps/install.py) | `TeamsAppInstallation.ReadWriteForTeam.All` | [install app](https://learn.microsoft.com/en-us/graph/api/team-post-installedapps) |
+| **20** | List apps installed in a team | [`apps/list.py`](./apps/list.py) | `TeamsAppInstallation.Read.All` | [list apps](https://learn.microsoft.com/en-us/graph/api/team-list-installedapps) |
+| **21** | Install an app from the catalog into a team | [`apps/install.py`](./apps/install.py) | `TeamsAppInstallation.ReadWriteForTeam.All` | [install app](https://learn.microsoft.com/en-us/graph/api/team-post-installedapps) |
 
 ---
 
