@@ -126,6 +126,11 @@ class Field(Entity):
     def default_formula(self) -> Optional[str]:
         return self.properties.get("DefaultFormula", None)
 
+    @odata(name="FieldTypeKind")
+    @property
+    def field_type_kind(self) -> FieldType:
+        return self.properties.get("FieldTypeKind", FieldType.Unknown)
+
     @odata(name="DescriptionResource")
     @property
     def description_resource(self) -> UserResource:

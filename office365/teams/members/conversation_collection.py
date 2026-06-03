@@ -32,6 +32,8 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         :param list[str] roles: The roles for that user.
         :param datetime.datetime visible_history_start_datetime:
         """
+        from office365.directory.users.user import User
+
         return_type = super().add(roles=roles)
 
         if isinstance(user, User):

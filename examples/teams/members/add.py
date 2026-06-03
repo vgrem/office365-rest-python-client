@@ -27,5 +27,5 @@ if len(teams) == 0:
     sys.exit("No teams found")
 
 team = teams[0]
-member = team.members.add(test_user_principal_name_alt, owner=False).execute_query()
+member = team.members.add(user=test_user_principal_name_alt, roles=["owner"]).execute_query()
 print(f"Member '{member.display_name}' added to '{team.display_name}'")

@@ -13,26 +13,22 @@ class IdentityProtectionRoot(Entity):
         """Risk detection in Azure AD Identity Protection and the associated information about the detection."""
         return self.properties.get(
             "riskDetections",
-            EntityCollection(
-                self.context,
-                RiskDetection,
-                ResourcePath("riskDetections", self.resource_path),
-            ),
+            EntityCollection(self.context, RiskDetection, ResourcePath("riskDetections", self.resource_path)),
         )
 
     @property
     def risky_users(self) -> RiskyUserCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
         return self.properties.get(
-            "riskyUsers",
-            RiskyUserCollection(self.context, ResourcePath("riskyUsers", self.resource_path)),
+            "riskyUsers", RiskyUserCollection(self.context, ResourcePath("riskyUsers", self.resource_path))
         )
 
     def get_property(self, name, default_value=None):
         if default_value is None:
-            property_mapping = {
-                "riskDetections": self.risk_detections,
-                "riskyUsers": self.risky_users,
-            }
+            property_mapping = {"riskDetections": self.risk_detections, "riskyUsers": self.risky_users}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.IdentityProtectionRoot"

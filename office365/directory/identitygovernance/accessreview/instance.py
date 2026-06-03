@@ -1,7 +1,14 @@
-from office365.directory.identitygovernance.accessreview.stages import (
-    AccessReviewStageCollection,
+from datetime import datetime
+from typing import Optional
+
+from office365.directory.identitygovernance.accessreview.access_review_instance_decision_item import (
+    AccessReviewInstanceDecisionItem,
 )
+from office365.directory.identitygovernance.accessreview.access_review_reviewer import AccessReviewReviewer
+from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
+from office365.directory.identitygovernance.accessreview.stages import AccessReviewStageCollection
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -21,6 +28,49 @@ class AccessReviewInstance(Entity):
         """If the instance has multiple stages, this returns the collection of stages.
         A new stage will only be created when the previous stage ends"""
         return self.properties.get(
-            "stages",
-            AccessReviewStageCollection(self.context, ResourcePath("stages", self.resource_path)),
+            "stages", AccessReviewStageCollection(self.context, ResourcePath("stages", self.resource_path))
         )
+
+    @property
+    def end_date_time(self) -> datetime:
+        """Gets the endDateTime property"""
+        return self.properties.get("endDateTime", datetime.min)
+
+    @property
+    def scope(self) -> AccessReviewScope:
+        """Gets the scope property"""
+        return self.properties.get("scope", AccessReviewScope())
+
+    @property
+    def start_date_time(self) -> datetime:
+        """Gets the startDateTime property"""
+        return self.properties.get("startDateTime", datetime.min)
+
+    @property
+    def status(self) -> Optional[str]:
+        """Gets the status property"""
+        return self.properties.get("status", None)
+
+    @property
+    def contacted_reviewers(self) -> EntityCollection[AccessReviewReviewer]:
+        """Gets the contactedReviewers property"""
+        return self.properties.get(
+            "contactedReviewers",
+            EntityCollection[AccessReviewReviewer](
+                self.context, AccessReviewReviewer, ResourcePath("contactedReviewers", self.resource_path)
+            ),
+        )
+
+    @property
+    def decisions(self) -> EntityCollection[AccessReviewInstanceDecisionItem]:
+        """Gets the decisions property"""
+        return self.properties.get(
+            "decisions",
+            EntityCollection[AccessReviewInstanceDecisionItem](
+                self.context, AccessReviewInstanceDecisionItem, ResourcePath("decisions", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AccessReviewInstance"

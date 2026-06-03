@@ -1,8 +1,4 @@
-from typing import Any, Optional
-
-from office365.runtime.types.odata_property import odata
-
-from typing_extensions import Self
+from typing import Optional
 
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.columns.boolean import BooleanColumn
@@ -25,6 +21,7 @@ from office365.onedrive.columns.thumbnail import ThumbnailColumn
 from office365.onedrive.columns.validation import ColumnValidation
 from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class ColumnDefinition(BaseItem):
@@ -195,5 +192,3 @@ class ColumnDefinition(BaseItem):
     def type(self) -> Optional[str]:
         """For site columns, the type of column."""
         return self.properties.get("type", None)
-
-

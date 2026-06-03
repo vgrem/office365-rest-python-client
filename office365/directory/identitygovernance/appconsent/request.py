@@ -1,11 +1,7 @@
 from typing import Optional
 
-from office365.directory.identitygovernance.appconsent.request_scope import (
-    AppConsentRequestScope,
-)
-from office365.directory.identitygovernance.userconsent.request_collection import (
-    UserConsentRequestCollection,
-)
+from office365.directory.identitygovernance.appconsent.request_scope import AppConsentRequestScope
+from office365.directory.identitygovernance.userconsent.request_collection import UserConsentRequestCollection
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -52,9 +48,10 @@ class AppConsentRequest(Entity):
 
     def get_property(self, name, default_value=None):
         if default_value is None:
-            property_mapping = {
-                "pendingScopes": self.pending_scopes,
-                "userConsentRequests": self.user_consent_requests,
-            }
+            property_mapping = {"pendingScopes": self.pending_scopes, "userConsentRequests": self.user_consent_requests}
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AppConsentRequest"

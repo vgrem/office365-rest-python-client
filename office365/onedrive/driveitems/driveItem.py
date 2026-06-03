@@ -15,8 +15,6 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
-from office365.runtime.types.odata_property import odata
-
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.audio import Audio
 from office365.onedrive.driveitems.conflict_behavior import ConflictBehavior
@@ -63,6 +61,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.types.odata_property import odata
 from office365.subscriptions.collection import SubscriptionCollection
 
 
@@ -1039,5 +1038,3 @@ class DriveItem(BaseItem):
     @property
     def property_ref_name(self) -> str:
         return "id"
-
-

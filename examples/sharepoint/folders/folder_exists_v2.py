@@ -16,6 +16,7 @@ try:
     ctx.web.get_folder_by_server_relative_url(folder_path).get().execute_query()
     print("Folder '{0}' is found".format(folder_path))
 except ClientRequestException as e:
+    assert e.response is not None
     if e.response.status_code == HTTPStatus.NOT_FOUND:
         print("Folder '{0}' not found".format(folder_path))
     else:

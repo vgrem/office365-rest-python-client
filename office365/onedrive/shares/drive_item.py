@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-from typing import Any
-
-from typing_extensions import Self
-
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
-from office365.runtime.types.odata_property import odata
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.listitems.list_item import ListItem
@@ -15,6 +10,7 @@ from office365.onedrive.lists.list import List
 from office365.onedrive.permissions.permission import Permission
 from office365.onedrive.sites.site import Site
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SharedDriveItem(BaseItem):
@@ -74,8 +70,6 @@ class SharedDriveItem(BaseItem):
     def list_(self) -> List:
         """Gets the list property"""
         return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
-
-
 
     @property
     def entity_type_name(self) -> str:

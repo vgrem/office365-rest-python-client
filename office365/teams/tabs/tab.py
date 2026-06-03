@@ -1,5 +1,6 @@
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.apps.app import TeamsApp
 from office365.teams.tabs.configuration import TeamsTabConfiguration
 
@@ -9,6 +10,7 @@ class TeamsTab(Entity):
     A teamsTab is a tab that's pinned (attached) to a channel within a team.
     """
 
+    @odata(name="teamsApp")
     @property
     def teams_app(self) -> TeamsApp:
         """The application that is linked to the tab. This cannot be changed after tab creation."""
@@ -23,11 +25,3 @@ class TeamsTab(Entity):
         Container for custom settings applied to a tab. The tab is considered configured only once this property is set.
         """
         return self.properties.get("configuration", TeamsTabConfiguration())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "teamsApp": self.teams_app,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
