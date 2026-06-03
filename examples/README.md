@@ -13,6 +13,7 @@ library across Microsoft 365 and Entra ID services.
 | [`defender/`](./defender/) | **Microsoft 365 Defender** | Advanced hunting, incidents, alerts, secure score |
 | [`entra-id/`](./entra-id/) | **Microsoft Entra ID** | Users, groups, applications, roles, policies, identity providers |
 | [`insights/`](./insights/) | Graph Insights API | Shared documents, trending content |
+| [`intune/`](./intune/) | **Microsoft Intune** | Managed devices, compliance, config profiles, remote actions, organization |
 | [`onedrive/`](./onedrive/) | **Microsoft OneDrive** | Files, folders, drives, sharing, search, versions, thumbnails |
 | [`onenote/`](./onenote/) | **Microsoft OneNote** | Notebooks, sections, section groups, pages, content |
 | [`outlook/`](./outlook/) | **Outlook / Exchange Online** | Mail (send, draft, folders, rules, search), events, calendars |
