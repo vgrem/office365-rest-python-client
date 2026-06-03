@@ -1,5 +1,7 @@
 from typing import Any, Optional
 
+from office365.runtime.types.odata_property import odata
+
 from typing_extensions import Self
 
 from office365.onedrive.base_item import BaseItem
@@ -55,6 +57,7 @@ class ColumnDefinition(BaseItem):
         """Specifies whether the column values can used for sorting and searching."""
         return self.properties.get("indexed", None)
 
+    @odata(name="contentApprovalStatus")
     @property
     def content_approval_status(self) -> ContentApprovalStatusColumn:
         """This column stores content approval status."""
@@ -95,6 +98,7 @@ class ColumnDefinition(BaseItem):
         """This column stores DateTime values."""
         return self.properties.get("dateTime", DateTimeColumn())
 
+    @odata(name="personOrGroup")
     @property
     def person_or_group(self) -> PersonOrGroupColumn:
         """This column stores Person or Group values."""
@@ -120,11 +124,13 @@ class ColumnDefinition(BaseItem):
         """This column's data is looked up from another source in the site."""
         return self.properties.get("lookup", LookupColumn())
 
+    @odata(name="defaultValue")
     @property
     def default_value(self) -> DefaultColumnValue:
         """The default value for this column."""
         return self.properties.get("defaultValue", DefaultColumnValue())
 
+    @odata(name="hyperlinkOrPicture")
     @property
     def hyperlink_or_picture(self) -> HyperlinkOrPictureColumn:
         """This column stores hyperlink or picture values."""
@@ -165,6 +171,7 @@ class ColumnDefinition(BaseItem):
         """This column stores thumbnail values."""
         return self.properties.get("thumbnail", ThumbnailColumn())
 
+    @odata(name="sourceColumn")
     @property
     def source_column(self) -> "ColumnDefinition":
         """The source column for the content type column."""
@@ -173,6 +180,7 @@ class ColumnDefinition(BaseItem):
             ColumnDefinition(self.context, ResourcePath("sourceColumn", self.resource_path)),
         )
 
+    @odata(name="sourceContentType")
     @property
     def source_content_type(self) -> ContentTypeInfo:
         """ContentType from which this column is inherited from. Present only in contentTypes columns response."""
@@ -188,15 +196,4 @@ class ColumnDefinition(BaseItem):
         """For site columns, the type of column."""
         return self.properties.get("type", None)
 
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "contentApprovalStatus": self.content_approval_status,
-                "defaultValue": self.default_value,
-                "hyperlinkOrPicture": self.hyperlink_or_picture,
-                "personOrGroup": self.person_or_group,
-                "sourceColumn": self.source_column,
-                "sourceContentType": self.source_content_type,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
