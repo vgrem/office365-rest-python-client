@@ -5,9 +5,9 @@ from typing import Optional, Union
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.roles.assignments.assignment import RoleAssignment
@@ -128,7 +128,7 @@ class SecurableObject(Entity):
         """
         return_type = ClientResult(self.context, BasePermissions())
 
-        def _create_and_add_query(login_name: str) -> None:
+        def _get_user_effective_permissions(login_name: str) -> None:
             qry = ServiceOperationQuery(
                 self,
                 "GetUserEffectivePermissions",
@@ -142,12 +142,12 @@ class SecurableObject(Entity):
         if isinstance(user, User):
 
             def _user_loaded():
-                if user.login_name is not None:
-                    _create_and_add_query(user.login_name)
+                assert user.login_name is not None
+                _get_user_effective_permissions(user.login_name)
 
             user.ensure_property("LoginName").after_execute(lambda _: _user_loaded())
         else:
-            _create_and_add_query(user)
+            _get_user_effective_permissions(user)
         return return_type
 
     @property
