@@ -1,7 +1,9 @@
 """
-Determine whether a user has access to a shared channel.
+Check whether a user has access to a shared channel.
 
-https://learn.microsoft.com/en-us/graph/api/channel-doesuserhaveaccess?view=graph-rest-1.0
+Requires delegated permission ``ChannelMember.Read.All``.
+
+https://learn.microsoft.com/en-us/graph/api/channel-doesuserhaveaccess
 """
 
 import sys

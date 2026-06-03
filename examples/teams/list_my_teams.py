@@ -1,6 +1,9 @@
 """
-Get the teams in Microsoft Teams that the user is a direct member of.
-https://learn.microsoft.com/en-us/graph/api/user-list-joinedteams?view=graph-rest-1.0&tabs=http
+List the teams the signed-in user is a direct member of.
+
+Requires delegated permission ``Team.ReadBasic.All``.
+
+https://learn.microsoft.com/en-us/graph/api/user-list-joinedteams
 """
 
 from office365.graph_client import GraphClient
