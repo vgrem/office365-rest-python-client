@@ -14,11 +14,11 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
-from office365.sharepoint.directory.users.user import User
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions.base_permissions import BasePermissions
+from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
 from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
 from office365.sharepoint.sharing.object_sharing_information import ObjectSharingInformation
@@ -69,7 +69,7 @@ class Folder(Entity):
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for a folder"""
-        return self.list_item_all_fields.get_user_effective_permissions(user)  # type: ignore[arg-type]
+        return self.list_item_all_fields.get_user_effective_permissions(user)
 
     def get_folders(self, recursive: bool = False) -> FolderCollection:
         """

@@ -5,6 +5,7 @@ from typing import Optional, Union
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.types.odata_property import odata
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
@@ -157,6 +158,7 @@ class SecurableObject(Entity):
         """
         return self.properties.get("HasUniqueRoleAssignments", None)
 
+    @odata(name="FirstUniqueAncestorSecurableObject")
     @property
     def first_unique_ancestor_securable_object(self) -> SecurableObject:
         """Specifies the object where role assignments for this object are defined"""
@@ -168,6 +170,7 @@ class SecurableObject(Entity):
             ),
         )
 
+    @odata(name="RoleAssignments")
     @property
     def role_assignments(self) -> RoleAssignmentCollection:
         """The role assignments for the securable object."""
@@ -176,11 +179,4 @@ class SecurableObject(Entity):
             RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "FirstUniqueAncestorSecurableObject": self.first_unique_ancestor_securable_object,
-                "RoleAssignments": self.role_assignments,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+
