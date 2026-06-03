@@ -1,13 +1,12 @@
 """
-This example specifies a KQL query which does the following:
+Run an advanced hunting KQL query against Microsoft 365 Defender data.
 
-   - Looks into the AlertInfo table in the advanced hunting schema.
-   - Filters on alerts with high severity.
-   - Projects selected columns.
-   - Limits the output to 2 records.
+Queries tables such as AlertInfo, DeviceProcessEvents, EmailEvents,
+IdentityLogonEvents, and more.
 
-https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview
-https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery?view=graph-rest-1.0
+Requires delegated permission ``ThreatHunting.Read.All``.
+
+https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery
 """
 
 from office365.graph_client import GraphClient
