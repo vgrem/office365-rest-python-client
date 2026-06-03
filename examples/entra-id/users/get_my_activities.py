@@ -3,6 +3,8 @@ Get activities for a given user
 https://learn.microsoft.com/en-us/graph/api/projectrome-get-activities?view=graph-rest-1.0
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from office365.graph_client import GraphClient

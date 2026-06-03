@@ -4,6 +4,8 @@ Export personal data
 https://learn.microsoft.com/en-us/graph/api/user-exportpersonaldata?view=graph-rest-1.0
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from office365.graph_client import GraphClient

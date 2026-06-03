@@ -2,6 +2,8 @@
 Print users with expired passwords based on password policy.
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from datetime import datetime

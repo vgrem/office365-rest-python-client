@@ -2,6 +2,8 @@
 Reset user password (requires admin privileges).
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.ReadWrite.All``.
 """
 
 import getpass

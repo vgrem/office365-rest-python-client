@@ -2,6 +2,8 @@
 Check if an application permission (app role) is granted to your app.
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
+
+Requires delegated permission ``AppRoleAssignment.ReadWrite.All``.
 """
 
 import sys

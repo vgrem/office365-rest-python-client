@@ -6,6 +6,8 @@ admin-consented (AllPrincipals) grant. Run this first, then grant the
 permission again with ``grant_delegated_perms.py``.
 
 https://learn.microsoft.com/en-us/graph/permissions-grant-via-msgraph
+
+Requires delegated permission ``AppRoleAssignment.ReadWrite.All``.
 """
 
 import sys

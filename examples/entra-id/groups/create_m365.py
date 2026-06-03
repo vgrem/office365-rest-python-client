@@ -7,6 +7,8 @@ the calling user is automatically added as the owner of the group.
 https://learn.microsoft.com/en-us/graph/api/group-post-groups?view=graph-rest-1.0
 
 https://learn.microsoft.com/en-us/graph/api/resources/group
+
+Requires delegated permission ``Group.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

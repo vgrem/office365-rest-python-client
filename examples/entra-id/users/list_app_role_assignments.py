@@ -2,6 +2,8 @@
 Retrieve all app role assignments granted to the signed-in user.
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from office365.graph_client import GraphClient

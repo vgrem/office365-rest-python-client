@@ -2,6 +2,8 @@
 Demonstrates how to retrieve the total count of users in the tenant.
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from office365.graph_client import GraphClient

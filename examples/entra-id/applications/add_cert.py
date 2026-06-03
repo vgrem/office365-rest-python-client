@@ -5,6 +5,8 @@ To create the self-signed certificate, run the following command at a terminal p
 - openssl req -x509 -newkey rsa:2048 -keyout selfsignkey.pem -out selfsigncert.pem -nodes -days 365
 
 https://learn.microsoft.com/en-us/graph/applications-how-to-add-certificate
+
+Requires delegated permission ``Application.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

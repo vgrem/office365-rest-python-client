@@ -4,6 +4,8 @@ List groups.
 https://learn.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
 
 https://learn.microsoft.com/en-us/graph/api/resources/group
+
+Requires delegated permission ``Group.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

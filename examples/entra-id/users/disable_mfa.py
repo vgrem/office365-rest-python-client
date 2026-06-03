@@ -2,6 +2,8 @@
 Disable Microsoft Authenticator MFA methods for the signed-in user.
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient

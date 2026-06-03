@@ -2,6 +2,8 @@
 Demonstrates how to bulk import users using the Microsoft Graph API.
 
 https://learn.microsoft.com/en-us/graph/api/resources/user
+
+Requires delegated permission ``User.Read.All``.
 """
 
 from faker import Faker

@@ -4,6 +4,8 @@ Create group and team.
 https://learn.microsoft.com/en-us/graph/teams-create-group-and-team
 
 https://learn.microsoft.com/en-us/graph/api/resources/group
+
+Requires delegated permission ``Group.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient
@@ -19,6 +21,8 @@ from tests import (
 def print_failure(retry_number, ex):
     """
     Print progress status
+
+Requires delegated permission ``Group.ReadWrite.All``.
     """
     print(f"{retry_number}: Team creation still in progress, waiting...")
 
