@@ -1,8 +1,9 @@
 """
-Retrieve a list of notebook objects.
+List all OneNote notebooks for the signed-in user.
 
-https://learn.microsoft.com/en-us/graph/api/resources/onenote
-https://learn.microsoft.com/en-us/graph/api/onenote-list-notebooks?view=graph-rest-1.0
+Requires delegated permission ``Notes.Read`` or ``Notes.ReadWrite``.
+
+https://learn.microsoft.com/en-us/graph/api/onenote-list-notebooks
 """
 
 from office365.graph_client import GraphClient
