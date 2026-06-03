@@ -11,7 +11,7 @@ library across Microsoft 365 and Entra ID services.
 |---|---|---|
 | [`auth/`](./auth/) | Graph authentication | Client secret, certificate, interactive, device code, ROPC, GCC High |
 | [`defender/`](./defender/) | **Microsoft 365 Defender** | Advanced hunting, incidents, alerts, secure score |
-| [`entra-id/`](./entra-id/) | **Microsoft Entra ID** | Users, groups, applications, roles, policies, identity providers |
+| [`entraid/`](entraid/) | **Microsoft Entra ID** | Users, groups, applications, roles, policies, identity providers |
 | [`insights/`](./insights/) | Graph Insights API | Shared documents, trending content |
 | [`intune/`](./intune/) | **Microsoft Intune** | Managed devices, compliance, config profiles, remote actions, organization |
 | [`onedrive/`](./onedrive/) | **Microsoft OneDrive** | Files, folders, drives, sharing, search, versions, thumbnails |

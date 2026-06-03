@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -26,10 +26,10 @@ class ViewCollection(EntityCollection[View]):
         super().__init__(context, View, resource_path, parent_list)
 
     def add(self, information: ViewCreationInformation) -> View:
-        """
-        Adds a new list view to the collection.
+        """Add a new list view to the collection.
 
-        :type information: office365.sharepoint.views.create_information.ViewCreationInformation
+        Args:
+            information: The view properties to create.
         """
         return_type = View(self.context, None, self.parent_list)  # type: ignore[arg-type]
         self.add_child(return_type)
@@ -39,11 +39,13 @@ class ViewCollection(EntityCollection[View]):
         return return_type
 
     def get_by_title(self, view_title: str) -> View:
-        """
-        Returns the list view with the specified title. If there is more than one list view with the specified title,
-        the server MUST return one list view as determined by the server.
+        """Get a view by title.
 
-        :param str view_title: The title of the view to return.
+        If multiple views share the same title the server determines
+        which one to return.
+
+        Args:
+            view_title: The title of the view to return.
         """
         return View(
             self.context,
@@ -52,9 +54,10 @@ class ViewCollection(EntityCollection[View]):
         )
 
     def get_by_id(self, view_id: str) -> View:
-        """Gets the list view with the specified ID.
+        """Get a view by its ID.
 
-        :param str view_id: The view identifier of the view to return.
+        Args:
+            view_id: The identifier of the view to return.
         """
         return View(
             self.context,
@@ -62,9 +65,48 @@ class ViewCollection(EntityCollection[View]):
             self._parent,  # type: ignore[arg-type]
         )
 
+    def create(
+        self,
+        title: str,
+        fields: list[str] | None = None,
+        row_limit: int | None = None,
+        view_type: str | None = None,
+        paged: bool | None = None,
+        personal_view: bool | None = None,
+        **kwargs: Any,
+    ) -> View:
+        """Create a new list view with primitive parameters.
+
+        Sugar over ``add(ViewCreationInformation(...))`` that accepts
+        common view properties directly. The returned view is not yet
+        executed — call ``.execute_query()`` to persist.
+
+        Args:
+            title: The display name of the view.
+            fields: Internal names of fields to include in the view.
+            row_limit: Maximum number of items per page.
+            view_type: View kind (``"HTML"``, ``"Grid"``, ``"Calendar"``).
+            paged: Whether the view supports paging.
+            personal_view: If True, creates a personal (user-specific) view.
+            **kwargs: Additional ``ViewCreationInformation`` properties.
+
+        Returns:
+            The new ``View`` (not yet executed).
+        """
+        info = ViewCreationInformation(
+            title=title,
+            viewFields=fields,
+            rowLimit=row_limit,
+            viewTypeKind=view_type,
+            paged=paged,
+            personalView=personal_view,
+            **kwargs,
+        )
+        return self.add(info)
+
     @property
     def parent_list(self) -> List:
-        """Parent List"""
+        """Return the parent list of this view collection."""
         from office365.sharepoint.lists.list import List
 
         return cast(List, self._parent)
