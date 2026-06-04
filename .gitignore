@@ -13,3 +13,31 @@ memory/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# IDEs & editors
+.idea/
+.vscode/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+
+# Environment files
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db
