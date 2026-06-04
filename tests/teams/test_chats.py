@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.outlook.mail.item_body import ItemBody
 from office365.teams.chats.chat import Chat
 from office365.teams.chats.type import ChatType
 
@@ -33,7 +34,23 @@ class TestTeamChats(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(result), 0)
 
     @requires_delegated("Chat.ReadWrite", "Chat.Read", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test3_delete(self):
+    def test3_list_members(self):
+        """List members of the chat."""
+        assert TestTeamChats.target_chat is not None
+        members = TestTeamChats.target_chat.members.get().execute_query()
+        self.assertIsNotNone(members.resource_path)
+
+    @requires_delegated("Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
+    def test4_send_message(self):
+        """Send a message in the chat."""
+        assert TestTeamChats.target_chat is not None
+        msg = TestTeamChats.target_chat.messages.add(
+            body=ItemBody("Hello from office365-rest-python-client!")
+        ).execute_query()
+        self.assertIsNotNone(msg.id)
+
+    @requires_delegated("Chat.Read", "Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
+    def test5_delete(self):
         """Test deleting a chat"""
         assert TestTeamChats.target_chat is not None
         chat = TestTeamChats.target_chat

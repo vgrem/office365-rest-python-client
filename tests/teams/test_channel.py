@@ -89,6 +89,17 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertEqual(existing_channel.id, channel.id)
 
     @requires_delegated(
+        "TeamsTab.Read.All",
+        "TeamsTab.ReadWrite.All",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test5_list_tabs(self):
+        """List tabs in a channel."""
+        assert TestGraphChannel.target_channel is not None
+        tabs = TestGraphChannel.target_channel.tabs.get().execute_query()
+        self.assertIsNotNone(tabs.resource_path)
+
+    @requires_delegated(
         "ChannelMember.Read.All",
         "ChannelMember.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
