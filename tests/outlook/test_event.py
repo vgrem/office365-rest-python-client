@@ -50,9 +50,14 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         event.subject = "Let's go for lunch (updated)"
         event.update().execute_query()
 
-    # def test5_cancel_event(self):
-    #    event = self.__class__.target_event
-    #    event.cancel().execute_query()
+    @requires_delegated(
+        "Calendars.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test5_cancel_event(self):
+        """Cancel the event (organizer only)."""
+        assert TestOutlookEvent.target_event is not None
+        TestOutlookEvent.target_event.cancel(comment="Cancelled: schedule conflict").execute_query()
 
     @requires_delegated(
         "Calendars.ReadWrite",

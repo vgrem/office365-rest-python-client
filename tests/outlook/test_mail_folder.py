@@ -30,13 +30,9 @@ class TestGraphMail(GraphDelegatedTestCase):
         folder.update().execute_query()
         self.assertIsNotNone(folder.resource_path)
 
-    # @requires_delegated("Mail.ReadWrite")
-    # def test4_delete_mail_folder(self):
-    #    folder = self.__class__.target_mail_folder
-    #    folder.delete_object().execute_query()
-
     @requires_delegated("Mail.ReadWrite", bypass_roles=["Exchange Administrator", "Global Administrator"])
-    def test5_permanent_delete_mail_folder(self):
+    def test4_permanent_delete_mail_folder(self):
+        """Permanently deletes the mail folder."""
         assert TestGraphMail.target_mail_folder is not None
         folder = TestGraphMail.target_mail_folder
         folder.permanent_delete().execute_query()
