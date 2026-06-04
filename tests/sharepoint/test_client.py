@@ -52,12 +52,6 @@ class TestSharePointClient(SPTestCase):
         web = ctx.web.get().execute_query()
         self.assertIsNotNone(web.url)
 
-    def test6_connect_with_client_cert(self):
-        pass
-
-    def test7_construct_get_request(self):
-        pass
-
     def test8_execute_multiple_queries_sequentially(self):
         client = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
