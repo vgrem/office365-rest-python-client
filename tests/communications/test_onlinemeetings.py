@@ -32,6 +32,13 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
     #    )
     #    self.assertIsNotNone(result.value)
 
+    @requires_delegated("OnlineMeetings.Read", bypass_roles=["Teams Administrator", "Global Administrator"])
+    def test3_list_recordings(self):
+        """Lists recordings for an online meeting"""
+        assert TestOnlineMeetings.target_meeting is not None, "Meeting must be created"
+        recordings = TestOnlineMeetings.target_meeting.recordings.get().execute_query()
+        self.assertIsNotNone(recordings)
+
     @requires_delegated("OnlineMeetings.ReadWrite", bypass_roles=["Teams Administrator", "Global Administrator"])
     def test4_update_meeting(self):
         """Updates an online meeting"""
