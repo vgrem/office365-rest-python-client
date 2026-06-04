@@ -14,7 +14,7 @@ class MobileApp(Entity):
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
-        return self.properties.get("createdDateTime", None)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @property
     def description(self) -> Optional[str]:

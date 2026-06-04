@@ -23,7 +23,7 @@ class ServicePrincipalRiskDetection(Entity):
     @property
     def activity_date_time(self) -> datetime:
         """Gets the activityDateTime property"""
-        return self.properties.get("activityDateTime", None)
+        return self.properties.get("activityDateTime", datetime.min)
 
     @property
     def additional_info(self) -> Optional[str]:
@@ -43,7 +43,7 @@ class ServicePrincipalRiskDetection(Entity):
     @property
     def detected_date_time(self) -> datetime:
         """Gets the detectedDateTime property"""
-        return self.properties.get("detectedDateTime", None)
+        return self.properties.get("detectedDateTime", datetime.min)
 
     @property
     def detection_timing_type(self) -> RiskDetectionTimingType:
@@ -63,7 +63,7 @@ class ServicePrincipalRiskDetection(Entity):
     @property
     def last_updated_date_time(self) -> datetime:
         """Gets the lastUpdatedDateTime property"""
-        return self.properties.get("lastUpdatedDateTime", None)
+        return self.properties.get("lastUpdatedDateTime", datetime.min)
 
     @property
     def location(self) -> SignInLocation:

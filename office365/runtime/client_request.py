@@ -160,3 +160,17 @@ class ClientRequest(ABC):
         response = self._transport.execute(request)
         self._raise_for_status(response)
         return response
+
+    def execute_request(self, path: str) -> Response:
+        """Executes request directly against the specified path.
+
+        Args:
+            path: The URL path to request
+
+        Returns:
+            Raw response from server
+        """
+        assert self._service_root_url is not None
+        full_url = "".join([self._service_root_url, "/", path])
+        request = RequestOptions(url=full_url)
+        return self.execute_request_direct(request)

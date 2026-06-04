@@ -15,7 +15,7 @@ class MobileAppCategory(Entity):
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
-        return self.properties.get("lastModifiedDateTime", None)
+        return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
     def entity_type_name(self) -> str:

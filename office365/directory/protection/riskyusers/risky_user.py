@@ -47,7 +47,7 @@ class RiskyUser(Entity):
     @property
     def risk_last_updated_date_time(self) -> datetime:
         """Gets the riskLastUpdatedDateTime property"""
-        return self.properties.get("riskLastUpdatedDateTime", None)
+        return self.properties.get("riskLastUpdatedDateTime", datetime.min)
 
     @property
     def risk_level(self) -> RiskLevel:
