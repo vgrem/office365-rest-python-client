@@ -49,7 +49,7 @@ tenant-level policies, and audit logs.
 ## Examples — Users
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Import users from CSV | [`users/import.py`](./users/import.py) | `User.ReadWrite.All` | [create user](https://learn.microsoft.com/en-us/graph/api/user-post-users) |
 | Get total user count | [`users/get_count.py`](./users/get_count.py) | `User.Read.All` | [get user](https://learn.microsoft.com/en-us/graph/api/user-get) |
 | Get disabled user accounts | [`users/get_disabled.py`](./users/get_disabled.py) | `User.Read.All` | [list users](https://learn.microsoft.com/en-us/graph/api/user-list) |
@@ -74,7 +74,7 @@ tenant-level policies, and audit logs.
 ## Examples — Groups
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Create a Microsoft 365 group | [`groups/create_m365.py`](./groups/create_m365.py) | `Group.ReadWrite.All` | [create group](https://learn.microsoft.com/en-us/graph/api/group-post-groups) |
 | Create a security group | [`groups/create_security.py`](./groups/create_security.py) | `Group.ReadWrite.All` | [create group](https://learn.microsoft.com/en-us/graph/api/group-post-groups) |
 | Create a group with a team | [`groups/create_with_team.py`](./groups/create_with_team.py) | `Group.ReadWrite.All` | [create group](https://learn.microsoft.com/en-us/graph/api/group-post-groups) |
@@ -87,7 +87,7 @@ tenant-level policies, and audit logs.
 ## Examples — Applications
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Register a new application | [`applications/create.py`](./applications/create.py) | `Application.ReadWrite.All` | [create app](https://learn.microsoft.com/en-us/graph/api/application-post-applications) |
 | List all applications | [`applications/list.py`](./applications/list.py) | `Application.Read.All` | [list apps](https://learn.microsoft.com/en-us/graph/api/application-list) |
 | Get an application by client ID | [`applications/get_by_app_id.py`](./applications/get_by_app_id.py) | `Application.ReadWrite.All` | [get application](https://learn.microsoft.com/en-us/graph/api/application-get) |
@@ -105,7 +105,7 @@ tenant-level policies, and audit logs.
 ## Examples — Roles & Identity
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | List directory roles | [`roles/list.py`](./roles/list.py) | `RoleManagement.ReadWrite.Directory` | [list roles](https://learn.microsoft.com/en-us/graph/api/directoryrole-list) |
 | Get roles assigned to a user | [`roles/for_user.py`](./roles/for_user.py) | `RoleManagement.ReadWrite.Directory` | [user roles](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | Assign a role to a user | [`roles/assign_role.py`](./roles/assign_role.py) | `RoleManagement.ReadWrite.Directory` | [assign role](https://learn.microsoft.com/en-us/graph/api/directoryrole-post-members) |
@@ -114,7 +114,7 @@ tenant-level policies, and audit logs.
 ## Examples — Policies
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Get authorization policy | [`policies/get_auth_settings.py`](./policies/get_auth_settings.py) | `Policy.Read.All` | [auth policy](https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get) |
 | List Conditional Access policies | [`policies/conditional_access/list.py`](./policies/conditional_access/list.py) | `Policy.Read.All` | [list CA policies](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
 | Get authentication methods policy | [`policies/authentication_methods.py`](./policies/authentication_methods.py) | `Policy.Read.All` | [auth methods](https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get) |
@@ -125,11 +125,11 @@ tenant-level policies, and audit logs.
 ## Examples — Audit Logs
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | List user sign-in logs | [`audit/list_signins.py`](./audit/list_signins.py) | `AuditLog.Read.All` | [list signins](https://learn.microsoft.com/en-us/graph/api/signin-list) |
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | List user sign-in logs | [`audit/list_signins.py`](./audit/list_signins.py) | `AuditLog.Read.All` | [list signins](https://learn.microsoft.com/en-us/graph/api/signin-list) |
 
 ---

@@ -37,7 +37,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Files
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Upload a small file | [`files/upload.py`](./files/upload.py) | `Files.ReadWrite.All` | [upload](https://learn.microsoft.com/en-us/graph/api/driveitem-put-content) |
 | Upload a large file (resumable session) | [`files/upload_large.py`](./files/upload_large.py) | `Files.ReadWrite.All` | [upload session](https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession) |
 | Download a file | [`files/download.py`](./files/download.py) | `Files.Read.All` | [download](https://learn.microsoft.com/en-us/graph/api/driveitem-get-content) |
@@ -58,7 +58,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Folders
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Create a folder | [`folders/create.py`](./folders/create.py) | `Files.ReadWrite.All` | [create folder](https://learn.microsoft.com/en-us/graph/api/driveitem-post-children) |
 | Get folder by path | [`folders/get_by_path.py`](./folders/get_by_path.py) | `Files.Read.All` | [get folder](https://learn.microsoft.com/en-us/graph/api/driveitem-get) |
 | List files in a folder | [`folders/list_files.py`](./folders/list_files.py) | `Files.Read.All` | [list children](https://learn.microsoft.com/en-us/graph/api/driveitem-list-children) |
@@ -73,7 +73,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Drives
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | List drives for the signed-in user | [`drives/list.py`](./drives/list.py) | `Files.Read.All` | [list drives](https://learn.microsoft.com/en-us/graph/api/user-list-drives) |
 | Get drive for a user | [`drives/get_for_user.py`](./drives/get_for_user.py) | `Files.Read.All` | [get drive](https://learn.microsoft.com/en-us/graph/api/drive-get) |
 | Get drive by path | [`drives/get_by_path.py`](./drives/get_by_path.py) | `Files.Read.All` | [get drive](https://learn.microsoft.com/en-us/graph/api/drive-get) |
@@ -85,7 +85,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Sites
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Get all sites in the tenant | [`sites/get_all.py`](./sites/get_all.py) | `Sites.Read.All` | [list sites](https://learn.microsoft.com/en-us/graph/api/site-list) |
 | List subsites | [`sites/list_sites.py`](./sites/list_sites.py) | `Sites.Read.All` | [list subsites](https://learn.microsoft.com/en-us/graph/api/site-list-subsites) |
 | Get site by URL | [`sites/get_by_url.py`](./sites/get_by_url.py) | `Sites.Read.All` | [get site](https://learn.microsoft.com/en-us/graph/api/site-get) |
@@ -99,7 +99,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Lists & Columns
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Create a text list column | [`columns/create_text.py`](./columns/create_text.py) | `Sites.ReadWrite.All` | [create column](https://learn.microsoft.com/en-us/graph/api/columndefinition-post-columns) |
 | Create a lookup column | [`columns/create_lookup.py`](./columns/create_lookup.py) | `Sites.ReadWrite.All` | [create column](https://learn.microsoft.com/en-us/graph/api/columndefinition-post-columns) |
 | List site columns | [`columns/list_site.py`](./columns/list_site.py) | `Sites.Read.All` | [list columns](https://learn.microsoft.com/en-us/graph/api/columndefinition-list) |
@@ -110,14 +110,14 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Site Pages
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Create a site page | [`sitepages/create.py`](./sitepages/create.py) | `Sites.ReadWrite.All` | [create page](https://learn.microsoft.com/en-us/graph/api/sitepage-create) |
 | List site pages | [`sitepages/list.py`](./sitepages/list.py) | `Sites.Read.All` | [list pages](https://learn.microsoft.com/en-us/graph/api/sitepage-list) |
 
 ## Examples — Excel & Office
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Read an Excel range | [`excel/read_range.py`](./excel/read_range.py) | `Files.Read.All` | [read range](https://learn.microsoft.com/en-us/graph/api/range-get) |
 | Read an Excel table | [`excel/read_table.py`](./excel/read_table.py) | `Files.Read.All` | [read table](https://learn.microsoft.com/en-us/graph/api/table-get) |
 | Get a specific cell | [`excel/get_cell.py`](./excel/get_cell.py) | `Files.Read.All` | [get cell](https://learn.microsoft.com/en-us/graph/api/range-get) |
@@ -130,7 +130,7 @@ site pages, lists and columns, Excel workbooks, and term store.
 ## Examples — Term Store & File Storage
 
 | Operation | File | Required role | API reference |
-|---|---|---|---|---|
+|---|---|---|---|
 | Export term store | [`termstore/export_term_store.py`](./termstore/export_term_store.py) | `TermStore.Read.All` | [term store](https://learn.microsoft.com/en-us/graph/api/resources/termstore) |
 | Get term sets | [`termstore/get_sets.py`](./termstore/get_sets.py) | `TermStore.Read.All` | [get sets](https://learn.microsoft.com/en-us/graph/api/termstore-list-sets) |
 | Create a container type (SharePoint Embedded) | [`filestorage/create_container_type.py`](./filestorage/create_container_type.py) | `FileStorageContainerType.Manage.All` | [container type](https://learn.microsoft.com/en-us/graph/api/filestorage-post-containertypes) |
