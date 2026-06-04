@@ -90,7 +90,7 @@ class TemplateContext:
                     members = list(resolved)
                     if members:
                         default_value = f"{prop_type_name}.{members[0].name}"
-                elif resolved is datetime:
+                elif resolved is datetime.datetime:
                     default_value = "datetime.min"
                 elif not builder._client_type.is_primitive_type:
                     default_value = f"{prop_type_name}()"

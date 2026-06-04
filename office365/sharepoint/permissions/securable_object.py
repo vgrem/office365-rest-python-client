@@ -178,5 +178,3 @@ class SecurableObject(Entity):
             "RoleAssignments",
             RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
-
-

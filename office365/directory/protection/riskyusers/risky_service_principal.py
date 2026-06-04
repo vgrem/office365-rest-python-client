@@ -1,38 +1,34 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
 from office365.directory.protection.riskyusers.risk_detail import RiskDetail
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.directory.protection.riskyusers.riskstate import RiskState
+from office365.directory.protection.riskyusers.risky_service_principal_history_item import (
+    RiskyServicePrincipalHistoryItem,
+)
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 
-class RiskyUser(Entity):
-    """
-    Represents Azure AD users who are at risk. Azure AD continually evaluates user risk based on various
-    signals and machine learning. This API provides programmatic access to all at-risk users in your Azure AD.
-    """
+class RiskyServicePrincipal(Entity):
+    @property
+    def app_id(self) -> Optional[str]:
+        """Gets the appId property"""
+        return self.properties.get("appId", None)
 
     @property
-    def history(self):
-        """The activity related to user risk level change"""
-        from office365.directory.protection.riskyusers.history_item import RiskyUserHistoryItem
-
-        return self.properties.get(
-            "history", EntityCollection(self.context, RiskyUserHistoryItem, ResourcePath("history", self.resource_path))
-        )
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
 
     @property
-    def user_principal_name(self) -> Optional[str]:
-        """Risky user principal name."""
-        return self.properties.get("userPrincipalName", None)
-
-    @property
-    def is_deleted(self) -> Optional[bool]:
-        """Gets the isDeleted property"""
-        return self.properties.get("isDeleted", None)
+    def is_enabled(self) -> Optional[bool]:
+        """Gets the isEnabled property"""
+        return self.properties.get("isEnabled", None)
 
     @property
     def is_processing(self) -> Optional[bool]:
@@ -47,7 +43,7 @@ class RiskyUser(Entity):
     @property
     def risk_last_updated_date_time(self) -> datetime:
         """Gets the riskLastUpdatedDateTime property"""
-        return self.properties.get("riskLastUpdatedDateTime", None)
+        return self.properties.get("riskLastUpdatedDateTime", datetime.min)
 
     @property
     def risk_level(self) -> RiskLevel:
@@ -60,10 +56,20 @@ class RiskyUser(Entity):
         return self.properties.get("riskState", RiskState.none)
 
     @property
-    def user_display_name(self) -> Optional[str]:
-        """Gets the userDisplayName property"""
-        return self.properties.get("userDisplayName", None)
+    def service_principal_type(self) -> Optional[str]:
+        """Gets the servicePrincipalType property"""
+        return self.properties.get("servicePrincipalType", None)
+
+    @property
+    def history(self) -> EntityCollection[RiskyServicePrincipalHistoryItem]:
+        """Gets the history property"""
+        return self.properties.get(
+            "history",
+            EntityCollection[RiskyServicePrincipalHistoryItem](
+                self.context, RiskyServicePrincipalHistoryItem, ResourcePath("history", self.resource_path)
+            ),
+        )
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.RiskyUser"
+        return "microsoft.graph.RiskyServicePrincipal"

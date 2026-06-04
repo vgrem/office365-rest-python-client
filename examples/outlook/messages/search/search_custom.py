@@ -16,4 +16,5 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 result = client.search.query_messages("Meet for lunch?", page_from=1, size=10).execute_query()
 for item in result.value:
     for hit in item.hitsContainers[0].hits:
+        assert hit.resource is not None
         print(hit.resource.get_property("webLink"))

@@ -17,3 +17,12 @@ class RiskyUserHistoryItem(RiskyUser):
     def initiated_by(self) -> Optional[str]:
         """The ID of actor that does the operation."""
         return self.properties.get("initiatedBy", None)
+
+    @property
+    def user_id(self) -> Optional[str]:
+        """Gets the userId property"""
+        return self.properties.get("userId", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RiskyUserHistoryItem"
