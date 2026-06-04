@@ -8,4 +8,8 @@ TOOLS.md
 USER.md
 MEMORY.md
 memory/
+
+# Python artifacts
 __pycache__/
+*.py[cod]
+*$py.class
