@@ -102,17 +102,31 @@ tenant-level policies, and audit logs.
 | **40** | Revoke application permissions | [`applications/revoke_application_perms.py`](./applications/revoke_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-approleassignments) |
 | **41** | Revoke delegated permissions | [`applications/revoke_delegated_perms.py`](./applications/revoke_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-delegatedpermissions) |
 
-## Examples — Roles, Policies & Identity
+## Examples — Roles & Identity
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **42** | List directory roles | [`roles/list.py`](./roles/list.py) | `RoleManagement.ReadWrite.Directory` | [list roles](https://learn.microsoft.com/en-us/graph/api/directoryrole-list) |
 | **43** | Get roles assigned to a user | [`roles/for_user.py`](./roles/for_user.py) | `RoleManagement.ReadWrite.Directory` | [user roles](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | **44** | Assign a role to a user | [`roles/assign_role.py`](./roles/assign_role.py) | `RoleManagement.ReadWrite.Directory` | [assign role](https://learn.microsoft.com/en-us/graph/api/directoryrole-post-members) |
-| **45** | Get authentication policy | [`policies/get_auth_settings.py`](./policies/get_auth_settings.py) | `Policy.Read.All` | [auth policy](https://learn.microsoft.com/en-us/graph/api/authenticationpolicy-get) |
-| **46** | List identity providers | [`identity/list_provider.py`](./identity/list_provider.py) | `IdentityProvider.Read.All` | [list providers](https://learn.microsoft.com/en-us/graph/api/identityprovider-list) |
+| **45** | List identity providers | [`identity/list_provider.py`](./identity/list_provider.py) | `IdentityProvider.Read.All` | [list providers](https://learn.microsoft.com/en-us/graph/api/identityprovider-list) |
+
+## Examples — Policies
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **46** | Get authorization policy | [`policies/get_auth_settings.py`](./policies/get_auth_settings.py) | `Policy.Read.All` | [auth policy](https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get) |
+| **47** | List Conditional Access policies | [`policies/conditional_access/list.py`](./policies/conditional_access/list.py) | `Policy.Read.All` | [list CA policies](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
+| **48** | Get authentication methods policy | [`policies/authentication_methods.py`](./policies/authentication_methods.py) | `Policy.Read.All` | [auth methods](https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get) |
+| **49** | Get admin consent request policy | [`policies/admin_consent_request.py`](./policies/admin_consent_request.py) | `Policy.Read.All` | [admin consent](https://learn.microsoft.com/en-us/graph/api/adminconsentrequestpolicy-get) |
+| **50** | Get device registration policy | [`policies/device_registration.py`](./policies/device_registration.py) | `Policy.Read.All` | [device reg](https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get) |
+| **51** | Get cross-tenant access policy | [`policies/cross_tenant_access.py`](./policies/cross_tenant_access.py) | `Policy.Read.All` | [cross-tenant](https://learn.microsoft.com/en-us/graph/api/crosstenantaccesspolicy-get) |
 
 ## Examples — Audit Logs
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **52** | List user sign-in logs | [`audit/list_signins.py`](./audit/list_signins.py) | `AuditLog.Read.All` | [list signins](https://learn.microsoft.com/en-us/graph/api/signin-list) |
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
