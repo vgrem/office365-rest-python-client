@@ -57,3 +57,9 @@ class TestNotebook(GraphDelegatedTestCase):
         result = notebook.sections.add(displayName=name).execute_query()
         self.assertIsNotNone(result.resource_path)
         TestNotebook.target_section = result
+
+    @requires_delegated("Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
+    def test5_delete_notebook(self):
+        """Delete the test notebook (cascades to sections)."""
+        assert TestNotebook.target_notebook is not None, "Notebook must be created"
+        TestNotebook.target_notebook.delete_object().execute_query()
