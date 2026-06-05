@@ -1,75 +1,194 @@
+"""Microsoft To Do — task lists, tasks, checklist items, and linked resources.
+
+Tests cover:
+  - Creating a task list with a unique name
+  - Listing all task lists
+  - Creating a task in a list
+  - Listing tasks in a list
+  - Updating a task (title, status)
+  - Getting a task by ID
+  - Adding a checklist item (subtask)
+  - Listing linked resources on a task
+  - Deleting a task
+  - Deleting a task list
+  - Task and list property assertions
+"""
+
 from __future__ import annotations
 
-from typing import Optional
+from typing import ClassVar, Optional
 
 from office365.todo.tasks.list import TodoTaskList
 from office365.todo.tasks.task import TodoTask
+
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestTaskList(GraphDelegatedTestCase):
-    task_list: Optional[TodoTaskList] = None
-    task: Optional[TodoTask] = None
+    """To Do task list and task lifecycle."""
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test1_create_task_list(self):
-        """Creates a task list"""
-        name = create_unique_name("TaskList")
+    task_list: ClassVar[Optional[TodoTaskList]] = None
+    task: ClassVar[Optional[TodoTask]] = None
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_01_create_task_list(self):
+        """Creating a task list with a unique name should succeed."""
+        name = create_unique_name("SDK Test TaskList")
         task_list = self.client.me.todo.lists.add(name).execute_query()
+        self.assertIsNotNone(task_list.resource_path)
+        self.assertEqual(task_list.get_property("displayName"), name)
         TestTaskList.task_list = task_list
 
-    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test2_get_task_lists(self):
-        """Gets all task lists"""
-        task_lists = self.client.me.todo.lists.get().execute_query()
-        self.assertIsNotNone(task_lists.resource_path)
+    @requires_delegated(
+        "Tasks.Read", "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_02_list_task_lists(self):
+        """Listing all task lists returns a valid collection."""
+        lists = self.client.me.todo.lists.get().execute_query()
+        self.assertIsNotNone(lists.resource_path)
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test3_create_task(self):
-        """Creates a task in the task list"""
-        assert TestTaskList.task_list is not None, "Task list must be created"
-        task = TestTaskList.task_list.tasks.add(title="A new task").execute_query()
+    @requires_delegated(
+        "Tasks.Read", "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_03_task_list_has_expected_properties(self):
+        """A task list exposes displayName and wellknownListName."""
+        tl = TestTaskList.task_list
+        if not tl:
+            self.skipTest("No task list created from previous test")
+
+        self.assertIsNotNone(tl.get_property("displayName"))
+        self.assertIsNotNone(tl.get_property("wellknownListName"))
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_04_create_task(self):
+        """Creating a task in the task list should succeed."""
+        tl = TestTaskList.task_list
+        if not tl:
+            self.skipTest("No task list created from previous test")
+
+        task = tl.tasks.add(title="SDK Test Task").execute_query()
         self.assertIsNotNone(task.resource_path)
+        self.assertEqual(task.get_property("title"), "SDK Test Task")
         TestTaskList.task = task
 
-    @requires_delegated("Tasks.Read", "Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test4_list_tasks(self):
-        """Lists all tasks in the task list"""
-        assert TestTaskList.task_list is not None, "Task list must be created"
-        tasks = TestTaskList.task_list.tasks.get().execute_query()
+    @requires_delegated(
+        "Tasks.Read", "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_05_list_tasks(self):
+        """Listing tasks in the task list returns at least one task."""
+        tl = TestTaskList.task_list
+        if not tl:
+            self.skipTest("No task list created from previous test")
+
+        tasks = tl.tasks.get().execute_query()
         self.assertIsNotNone(tasks.resource_path)
         self.assertGreater(len(tasks), 0)
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test5_update_task(self):
-        """Updates a task (title and mark complete)"""
-        assert TestTaskList.task is not None, "Task must be created"
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_06_update_task_title_and_status(self):
+        """Updating a task's title and marking it complete should persist."""
         task = TestTaskList.task
-        task.title = "Updated task title"
+        if not task:
+            self.skipTest("No task created from previous test")
+
+        task.title = "SDK Updated Task Title"
         task.status = "completed"
         task.update().execute_query()
-        self.assertEqual(task.title, "Updated task title")
+        self.assertEqual(task.get_property("title"), "SDK Updated Task Title")
+        self.assertEqual(task.get_property("status"), "completed")
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test6_add_checklist_item(self):
-        """Adds a checklist item to a task"""
-        assert TestTaskList.task is not None, "Task must be created"
-        item = TestTaskList.task.checklist_items.add(
-            displayName="Subtask item",
-        ).execute_query()
+    @requires_delegated(
+        "Tasks.Read", "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_07_get_task_by_id(self):
+        """Getting a task by ID returns the task with updated properties."""
+        task = TestTaskList.task
+        if not task or not task.id:
+            self.skipTest("No task created from previous test")
+
+        result = self.client.me.todo.lists[TestTaskList.task_list.id].tasks[task.id].get().execute_query()
+        self.assertIsNotNone(result.resource_path)
+        self.assertEqual(result.get_property("title"), "SDK Updated Task Title")
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_08_add_checklist_item(self):
+        """Adding a checklist item (subtask) to a task should succeed."""
+        task = TestTaskList.task
+        if not task:
+            self.skipTest("No task created from previous test")
+
+        item = task.checklist_items.add(displayName="SDK Subtask").execute_query()
         self.assertIsNotNone(item.resource_path)
+        self.assertEqual(item.get_property("displayName"), "SDK Subtask")
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test7_delete_task(self):
-        """Deletes an individual task"""
-        assert TestTaskList.task is not None, "Task must be created"
-        TestTaskList.task.delete_object().execute_query()
+    @requires_delegated(
+        "Tasks.Read", "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_09_linked_resources_accessible(self):
+        """A task should have a linkedResources collection accessible."""
+        task = TestTaskList.task
+        if not task:
+            self.skipTest("No task created from previous test")
 
-    @requires_delegated("Tasks.ReadWrite", bypass_roles=["Global Administrator"])
-    def test8_delete_task_list(self):
-        """Deletes the task list"""
-        assert TestTaskList.task_list is not None, "Task list must be created"
-        list_to_del = TestTaskList.task_list
-        list_to_del.delete_object().execute_query()
+        resources = task.linked_resources.get().execute_query()
+        self.assertIsNotNone(resources)
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_10_delete_task(self):
+        """Deleting an individual task should succeed."""
+        task = TestTaskList.task
+        if not task:
+            self.skipTest("No task created from previous test")
+
+        task.delete_object().execute_query()
+        TestTaskList.task = None
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_11_delete_task_list(self):
+        """Deleting the task list should succeed."""
+        tl = TestTaskList.task_list
+        if not tl:
+            self.skipTest("No task list created from previous test")
+
+        tl.delete_object().execute_query()
+        TestTaskList.task_list = None
+
+    @classmethod
+    def tearDownClass(cls):
+        tl = cls.task_list
+        if tl and tl.resource_path:
+            try:
+                tl.delete_object().execute_query()
+            except Exception:
+                pass
+        task = cls.task
+        if task and task.resource_path:
+            try:
+                task.delete_object().execute_query()
+            except Exception:
+                pass
