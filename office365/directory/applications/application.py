@@ -77,7 +77,7 @@ class Application(DirectoryObject):
         :param datetime.datetime end_datetime: The date and time at which the credential expires. Default: now + 180days
         """
         if start_datetime is None:
-            start_datetime = datetime.now()
+            start_datetime = datetime.utcnow()
         if end_datetime is None:
             end_datetime = start_datetime + timedelta(days=180)
         params = KeyCredential(
