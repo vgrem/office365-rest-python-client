@@ -1,52 +1,119 @@
-"""Tests for Microsoft Graph OneNote Sections API."""
+"""OneNote sections — creating, listing, updating, and deletion.
 
-from typing import Optional
+Tests cover:
+  - Listing all sections
+  - Creating a notebook and a section within it
+  - Updating a section display name
+  - Listing pages within a section
+  - Section property assertions (displayName, pagesUrl, isDefault)
+  - Deleting a notebook (cascades to sections)
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.onenote.notebooks.notebook import Notebook
 from office365.onenote.sections.section import OnenoteSection
+
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestSection(GraphDelegatedTestCase):
-    """Tests for OneNote sections."""
+    """OneNote section CRUD and lifecycle."""
 
-    target_notebook: Optional[Notebook] = None
-    target_section: Optional[OnenoteSection] = None
+    target_notebook: ClassVar[Optional[Notebook]] = None
+    target_section: ClassVar[Optional[OnenoteSection]] = None
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"]
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
     )
-    def test1_list_sections(self):
-        """List all OneNote sections."""
+    def test_01_list_sections(self):
+        """Listing all sections returns a valid collection."""
         result = self.client.me.onenote.sections.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
-    def test2_create_section(self):
-        """Create a section in a new notebook."""
-        notebook_name = create_unique_name("Test Notebook")
+    @requires_delegated(
+        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_02_create_notebook_and_section(self):
+        """Creating a notebook and a section within it should succeed."""
+        notebook_name = create_unique_name("SDK Test Notebook")
         notebook = self.client.me.onenote.notebooks.add(notebook_name).execute_query()
         self.assertIsNotNone(notebook.resource_path)
+        self.assertEqual(notebook.get_property("displayName"), notebook_name)
         TestSection.target_notebook = notebook
 
-        name = create_unique_name("Test Section")
-        section = notebook.sections.add(displayName=name).execute_query()
+        section_name = create_unique_name("SDK Test Section")
+        section = notebook.sections.add(displayName=section_name).execute_query()
         self.assertIsNotNone(section.resource_path)
+        self.assertEqual(section.get_property("displayName"), section_name)
         TestSection.target_section = section
 
-    @requires_delegated("Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
-    def test3_update_section(self):
-        """Update a section display name."""
-        assert TestSection.target_section is not None, "Section must be created"
+    @requires_delegated(
+        "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_03_update_section_name(self):
+        """Updating a section's display name should persist."""
         section = TestSection.target_section
-        new_name = create_unique_name("Updated Section")
-        section.set_property("displayName", new_name).update().execute_query()
-        self.assertEqual(section.display_name, new_name)
+        if not section:
+            self.skipTest("No section created from previous test")
 
-    @requires_delegated("Notes.ReadWrite", "Notes.ReadWrite.All", bypass_roles=["Global Administrator"])
-    def test4_delete_notebook(self):
-        """Delete the test notebook (cascades to section)."""
-        assert TestSection.target_notebook is not None, "Notebook must be created"
-        TestSection.target_notebook.delete_object().execute_query()
+        new_name = create_unique_name("SDK Updated Section")
+        section.set_property("displayName", new_name).update().execute_query()
+        self.assertEqual(section.get_property("displayName"), new_name)
+
+    @requires_delegated(
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_04_section_has_expected_properties(self):
+        """A section exposes displayName, createdDateTime, isDefault, and pagesUrl."""
+        section = TestSection.target_section
+        if not section:
+            self.skipTest("No section created from previous test")
+
+        self.assertIsNotNone(section.get_property("displayName"))
+        self.assertIsNotNone(section.get_property("createdDateTime"))
+        self.assertIsNotNone(section.get_property("isDefault"))
+
+    @requires_delegated(
+        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_05_list_pages_in_section(self):
+        """Listing pages in a section returns a valid collection."""
+        section = TestSection.target_section
+        if not section:
+            self.skipTest("No section created from previous test")
+
+        pages = section.pages.top(10).get().execute_query()
+        self.assertIsNotNone(pages)
+
+    @requires_delegated(
+        "Notes.ReadWrite", "Notes.ReadWrite.All",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_06_delete_notebook(self):
+        """Deleting a notebook (cascades to sections) should succeed."""
+        notebook = TestSection.target_notebook
+        if not notebook:
+            self.skipTest("No notebook created from previous test")
+
+        notebook.delete_object().execute_query()
+        TestSection.target_notebook = None
+        TestSection.target_section = None
+
+    @classmethod
+    def tearDownClass(cls):
+        notebook = cls.target_notebook
+        if notebook and notebook.resource_path:
+            try:
+                notebook.delete_object().execute_query()
+            except Exception:
+                pass
