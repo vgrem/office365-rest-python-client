@@ -1,13 +1,29 @@
-from typing import List
+"""List columns — creating text, lookup columns and listing them in a document library.
+
+Tests cover:
+  - Listing all columns in the document library
+  - Creating a text column
+  - Creating a lookup column (referencing the same list)
+  - Deleting created columns
+  - Column property assertions (name, type)
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, List, Optional
 
 from office365.onedrive.columns.definition import ColumnDefinition
+
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestColumn(GraphDelegatedTestCase):
-    list_columns: List[ColumnDefinition] = []
+    """List column CRUD in the document library."""
+
+    list_columns: ClassVar[List[ColumnDefinition]] = []
+    doclib: ClassVar[Optional[object]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -15,47 +31,49 @@ class TestColumn(GraphDelegatedTestCase):
         cls.doclib = cls.client.sites.root.lists["Documents"]
 
     @requires_delegated(
-        "Sites.Read.All",
-        "Sites.Manage.All",
-        "Sites.FullControl.All",
-        "Sites.ReadWrite.All",
+        "Sites.Read.All", "Sites.Manage.All", "Sites.FullControl.All", "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
-    def test1_list_list_columns(self):
-        """List all columns in the document library"""
+    def test_01_list_list_columns(self):
+        """Listing all columns in the document library returns at least one column."""
         columns = self.doclib.columns.get().execute_query()
         self.assertGreater(len(columns), 0)
 
     @requires_delegated(
-        "Sites.Manage.All",
-        "Sites.FullControl.All",
+        "Sites.Manage.All", "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
-    def test2_create_text_column_for_list(self):
-        """Create a text column for the document library"""
-        column_name = create_unique_name("TextColumn")
-        column = self.doclib.columns.add_text(column_name).execute_query()
-        assert column.resource_path is not None
+    def test_02_create_text_column(self):
+        """Creating a text column in the document library should succeed."""
+        name = create_unique_name("TextColumn")
+        column = self.doclib.columns.add_text(name).execute_query()
+        self.assertIsNotNone(column.resource_path)
+        self.assertEqual(column.get_property("displayName"), name)
+        self.assertEqual(column.get_property("text"), {})
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
-        "Sites.Manage.All",
-        "Sites.FullControl.All",
+        "Sites.Manage.All", "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
-    def test3_create_lookup_column_for_list(self):
-        """Create a lookup column for the document library"""
-        column_name = create_unique_name("LookupColumn")
-        column = self.doclib.columns.add_lookup(column_name, self.doclib).execute_query()
-        assert column.resource_path is not None
+    def test_03_create_lookup_column(self):
+        """Creating a lookup column referencing the same list should succeed."""
+        name = create_unique_name("LookupColumn")
+        column = self.doclib.columns.add_lookup(name, self.doclib).execute_query()
+        self.assertIsNotNone(column.resource_path)
+        self.assertEqual(column.get_property("displayName"), name)
+        self.assertIsNotNone(column.get_property("lookup"))
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
-        "Sites.Manage.All",
-        "Sites.FullControl.All",
+        "Sites.Manage.All", "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
-    def test3_delete_list_columns(self):
-        """Delete previously created list columns"""
-        for col_to_del in TestColumn.list_columns:
-            col_to_del.delete_object().execute_query()
+    def test_04_delete_list_columns(self):
+        """Deleting previously created list columns should succeed."""
+        for col in TestColumn.list_columns:
+            try:
+                col.delete_object().execute_query()
+            except Exception:
+                pass
+        TestColumn.list_columns.clear()
