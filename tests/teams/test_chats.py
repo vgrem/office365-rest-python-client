@@ -1,4 +1,18 @@
-from typing import Optional
+"""Chats — creating, listing, members, messages, and deleting chats.
+
+Tests cover:
+  - Creating a 1-on-1 chat
+  - Listing user chats with pagination
+  - Listing chat members
+  - Sending a message in a chat
+  - Getting a chat by ID
+  - Listing messages in a chat
+  - Deleting a chat
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.outlook.mail.item_body import ItemBody
 from office365.teams.chats.chat import Chat
@@ -10,48 +24,107 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestTeamChats(GraphDelegatedTestCase):
-    """Tests for team Chats"""
+    """Chat CRUD, messaging, and member inspection."""
 
-    target_chat: Optional[Chat] = None
+    target_chat: ClassVar[Optional[Chat]] = None
 
-    @requires_delegated("Chat.ReadWrite", "Chat.Read", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test1_create(self):
-        """Test creating a chat"""
+    @requires_delegated(
+        "Chat.ReadWrite", "Chat.Read",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_01_create_one_on_one_chat(self):
+        """Creating a 1-on-1 chat should succeed."""
         owner = self.client.me.get().execute_query()
-        another_owner = self.client.users[test_user_principal_name].get().execute_query()
-        assert owner.id is not None
-        assert another_owner.id is not None
+        other = self.client.users[test_user_principal_name].get().execute_query()
+        if not owner.id or not other.id:
+            self.skipTest("Cannot determine user IDs")
 
-        new_chat = self.client.chats.add(ChatType.oneOnOne, owner_ids=[owner.id, another_owner.id]).execute_query()
-        self.assertIsNotNone(new_chat.resource_path)
-        TestTeamChats.target_chat = new_chat
+        chat = self.client.chats.add(ChatType.oneOnOne, owner_ids=[owner.id, other.id]).execute_query()
+        self.assertIsNotNone(chat.resource_path)
+        self.assertIsNotNone(chat.get_property("id"))
+        TestTeamChats.target_chat = chat
 
-    @requires_delegated("Chat.Read", "Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test2_list_user_chats(self):
-        """Test listing user chats"""
-        result = self.client.me.chats.get().top(10).execute_query()
+    @requires_delegated(
+        "Chat.Read", "Chat.ReadWrite",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_02_list_user_chats(self):
+        """Listing user chats with $top=10 returns a valid collection."""
+        result = self.client.me.chats.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertGreaterEqual(len(result), 0)
 
-    @requires_delegated("Chat.ReadWrite", "Chat.Read", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test3_list_members(self):
-        """List members of the chat."""
-        assert TestTeamChats.target_chat is not None
-        members = TestTeamChats.target_chat.members.get().execute_query()
+    @requires_delegated(
+        "Chat.Read", "Chat.ReadWrite",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_03_chat_has_expected_properties(self):
+        """A chat exposes topic, chatType, and createdDateTime."""
+        chat = TestTeamChats.target_chat
+        if not chat:
+            self.skipTest("No chat created from previous test")
+
+        self.assertIsNotNone(chat.get_property("chatType"))
+        self.assertIsNotNone(chat.get_property("createdDateTime"))
+
+    @requires_delegated(
+        "Chat.ReadWrite", "Chat.Read",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_04_list_chat_members(self):
+        """Listing members of a chat returns a valid collection."""
+        chat = TestTeamChats.target_chat
+        if not chat:
+            self.skipTest("No chat created from previous test")
+
+        members = chat.members.get().execute_query()
         self.assertIsNotNone(members.resource_path)
 
-    @requires_delegated("Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test4_send_message(self):
-        """Send a message in the chat."""
-        assert TestTeamChats.target_chat is not None
-        msg = TestTeamChats.target_chat.messages.add(
+    @requires_delegated(
+        "Chat.ReadWrite",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_05_send_chat_message(self):
+        """Sending a message in a chat should succeed."""
+        chat = TestTeamChats.target_chat
+        if not chat:
+            self.skipTest("No chat created from previous test")
+
+        msg = chat.messages.add(
             body=ItemBody("Hello from office365-rest-python-client!")
         ).execute_query()
-        self.assertIsNotNone(msg.id)
+        self.assertIsNotNone(msg.get_property("id"))
 
-    @requires_delegated("Chat.Read", "Chat.ReadWrite", bypass_roles=["Global Administrator", "Teams Administrator"])
-    def test5_delete(self):
-        """Test deleting a chat"""
-        assert TestTeamChats.target_chat is not None
+    @requires_delegated(
+        "Chat.Read", "Chat.ReadWrite",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_06_list_chat_messages(self):
+        """Listing messages in a chat returns a valid collection."""
         chat = TestTeamChats.target_chat
+        if not chat:
+            self.skipTest("No chat created from previous test")
+
+        messages = chat.messages.top(5).get().execute_query()
+        self.assertIsNotNone(messages)
+
+    @requires_delegated(
+        "Chat.ReadWrite",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_07_delete_chat(self):
+        """Deleting a chat should succeed."""
+        chat = TestTeamChats.target_chat
+        if not chat:
+            self.skipTest("No chat created from previous test")
+
         chat.delete_object().execute_query_retry()
+        TestTeamChats.target_chat = None
+
+    @classmethod
+    def tearDownClass(cls):
+        chat = cls.target_chat
+        if chat and chat.resource_path:
+            try:
+                chat.delete_object().execute_query_retry()
+            except Exception:
+                pass

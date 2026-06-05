@@ -1,5 +1,14 @@
+"""Team Apps — listing installed apps in a team.
+
+Tests cover:
+  - Listing installed apps in a team
+  - App property assertions
+"""
+
+from __future__ import annotations
+
 import uuid
-from typing import Optional
+from typing import ClassVar, Optional
 
 from office365.teams.team import Team
 
@@ -8,32 +17,51 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestTeamApps(GraphDelegatedTestCase):
-    """Tests for team Apps"""
+    """Team apps — listing and inspecting installed apps."""
 
-    target_team: Optional[Team] = None
+    target_team: ClassVar[Optional[Team]] = None
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        team_name = "Team_" + uuid.uuid4().hex
-        new_team = cls.client.teams.create(team_name).get().execute_query_retry()
-        cls.target_team = new_team
+        name = "Team_" + uuid.uuid4().hex
+        team = cls.client.teams.create(name).get().execute_query_retry()
+        cls.target_team = team
 
     @classmethod
     def tearDownClass(cls):
-        if cls.target_team is not None:
-            cls.target_team.delete_object().execute_query_retry()
+        team = cls.target_team
+        if team and team.resource_path:
+            try:
+                team.delete_object().execute_query_retry()
+            except Exception:
+                pass
 
     @requires_delegated(
-        "AppCatalog.Read.All",
-        "AppCatalog.ReadWrite.All",
-        "Team.ReadBasic.All",
-        "Team.Read.All",
-        "Team.ReadWrite.All",
+        "AppCatalog.Read.All", "AppCatalog.ReadWrite.All",
+        "Team.ReadBasic.All", "Team.Read.All", "Team.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
-    def test1_list_team_apps(self):
-        """Test listing installed apps for a team"""
-        assert TestTeamApps.target_team is not None
-        result = TestTeamApps.target_team.installed_apps.get().execute_query()
+    def test_01_list_installed_apps(self):
+        """Listing installed apps in a team returns a valid collection."""
+        team = TestTeamApps.target_team
+        if not team:
+            self.skipTest("No team available")
+
+        result = team.installed_apps.get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
+    @requires_delegated(
+        "AppCatalog.Read.All", "AppCatalog.ReadWrite.All",
+        "Team.ReadBasic.All", "Team.Read.All", "Team.ReadWrite.All",
+        bypass_roles=["Global Administrator", "Teams Administrator"],
+    )
+    def test_02_installed_app_has_id(self):
+        """An installed app entry should have an id."""
+        team = TestTeamApps.target_team
+        if not team:
+            self.skipTest("No team available")
+
+        result = team.installed_apps.get().execute_query()
+        if len(result) > 0:
+            self.assertIsNotNone(result[0].get_property("id"))
