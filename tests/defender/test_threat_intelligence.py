@@ -1,5 +1,4 @@
 """Threat Intelligence — articles, indicators, and intel profiles.
-
 Tests cover:
   - Listing threat intelligence articles
   - Filtering articles by published date and tags
@@ -7,30 +6,20 @@ Tests cover:
   - Threat actor / intel profiles
   - Host and reputation queries
 """
-
 from __future__ import annotations
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
-
 _TI_READ = ("ThreatIntelligence.Read.All",)
-
-
 class TestThreatIntelligenceArticles(GraphDelegatedTestCase):
     """Threat intelligence articles — finished intel."""
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_articles_paginated(self):
         """Listing threat intelligence articles with $top=5 returns a valid collection."""
-        # Act
         result = self.client.security.threat_intelligence.articles.top(5).get().execute_query()
-
-        # Assert
         self.assertIsNotNone(result.resource_path)
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],
@@ -40,14 +29,12 @@ class TestThreatIntelligenceArticles(GraphDelegatedTestCase):
         result = self.client.security.threat_intelligence.articles.top(3).get().execute_query()
         if len(result) == 0:
             self.skipTest("No threat intel articles exist")
-
         for article in result:
             self.assertIsNotNone(article.get_property("id"))
             self.assertIsNotNone(article.get_property("title"))
             # Summary may be empty for some articles
             self.assertIsNotNone(article.get_property("createdDateTime"))
             break
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],
@@ -62,7 +49,6 @@ class TestThreatIntelligenceArticles(GraphDelegatedTestCase):
             .execute_query()
         )
         self.assertIsNotNone(result.resource_path)
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],
@@ -82,11 +68,8 @@ class TestThreatIntelligenceArticles(GraphDelegatedTestCase):
             self.assertIsNotNone(result.resource_path)
         except Exception:
             self.skipTest("Article search not supported or no matching articles")
-
-
 class TestThreatIntelligenceIndicators(GraphDelegatedTestCase):
     """Indicators of compromise (IoCs)."""
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],
@@ -98,7 +81,6 @@ class TestThreatIntelligenceIndicators(GraphDelegatedTestCase):
             self.assertIsNotNone(result.resource_path)
         except AttributeError:
             self.skipTest("Indicators endpoint not available in this SDK version")
-
     @requires_delegated(
         *_TI_READ,
         bypass_roles=["Global Administrator"],

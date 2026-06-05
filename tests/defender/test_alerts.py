@@ -1,5 +1,4 @@
 """Security Alerts — Microsoft 365 Defender alert management (alerts_v2).
-
 Tests cover:
   - Listing alerts with filters and pagination
   - Inspecting alert metadata (severity, status, category, detectionSource)
@@ -7,54 +6,38 @@ Tests cover:
   - Updating alert status (triaging)
   - Creating alerts via the unified API
 """
-
 from __future__ import annotations
-
 from typing import ClassVar, Optional
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
-
 _ALERT_READ = ("SecurityAlert.Read.All", "SecurityAlert.ReadWrite.All")
 _ALERT_WRITE = ("SecurityAlert.ReadWrite.All",)
-
-
 class TestAlerts(GraphDelegatedTestCase):
     """Microsoft 365 Defender alerts (v2 API)."""
-
     created_alert: ClassVar[Optional[object]] = None
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_alerts_paginated(self):
         """Listing alerts with $top=10 returns a valid collection."""
-        # Act
         result = self.client.security.alerts_v2.top(10).get().execute_query()
-
-        # Assert
         self.assertIsNotNone(result.resource_path)
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_filter_alerts_by_severity(self):
         """Filtering alerts by severity reduces the result set."""
-        # Act
         result = (
             self.client.security.alerts_v2.filter("severity eq 'high'")
             .top(5)
             .get()
             .execute_query()
         )
-
-        # Assert
         self.assertIsNotNone(result.resource_path)
         for alert in result:
             self.assertEqual(alert.get_property("severity"), "high")
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -62,7 +45,6 @@ class TestAlerts(GraphDelegatedTestCase):
     def test_03_filter_alerts_by_status(self):
         """Filtering alerts by status returns only alerts in that state."""
         for status in ("newAlert", "inProgress", "resolved"):
-            # Act
             result = (
                 self.client.security.alerts_v2.filter(f"status eq '{status}'")
                 .top(3)
@@ -73,7 +55,6 @@ class TestAlerts(GraphDelegatedTestCase):
             self.assertIsNotNone(result.resource_path)
             for alert in result:
                 self.assertEqual(alert.get_property("status"), status)
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -83,7 +64,6 @@ class TestAlerts(GraphDelegatedTestCase):
         result = self.client.security.alerts_v2.top(5).get().execute_query()
         if len(result) == 0:
             self.skipTest("No alerts exist to inspect")
-
         seen = 0
         for alert in result:
             self.assertIsNotNone(alert.get_property("id"))
@@ -94,7 +74,6 @@ class TestAlerts(GraphDelegatedTestCase):
             seen += 1
             if seen >= 2:
                 break  # Check 2 alerts, no need to iterate all
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -104,7 +83,6 @@ class TestAlerts(GraphDelegatedTestCase):
         result = self.client.security.alerts_v2.top(5).get().execute_query()
         if len(result) == 0:
             self.skipTest("No alerts exist to inspect")
-
         for alert in result:
             evidence = alert.get_property("evidence")
             if evidence:
@@ -112,7 +90,6 @@ class TestAlerts(GraphDelegatedTestCase):
                 break
         else:
             self.skipTest("No alerts with evidence found")
-
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -122,7 +99,6 @@ class TestAlerts(GraphDelegatedTestCase):
         result = self.client.security.alerts_v2.top(5).get().execute_query()
         if len(result) == 0:
             self.skipTest("No alerts exist to inspect")
-
         for alert in result:
             description = alert.get_property("description")
             if description:
@@ -131,7 +107,6 @@ class TestAlerts(GraphDelegatedTestCase):
                 break
         else:
             self.skipTest("No alerts with descriptions found")
-
     @requires_delegated(
         *_ALERT_WRITE,
         bypass_roles=["Global Administrator"],
@@ -141,7 +116,6 @@ class TestAlerts(GraphDelegatedTestCase):
         result = self.client.security.alerts_v2.top(3).get().execute_query()
         if len(result) == 0:
             self.skipTest("No alerts exist to update")
-
         target = result[0]
         try:
             # Add a comment
@@ -149,7 +123,6 @@ class TestAlerts(GraphDelegatedTestCase):
             comment = AlertComment(comment="SDK test — automated triage comment")
             target.comments.append(comment)
             target.update().execute_query()
-
             # Verify
             updated = self.client.security.alerts_v2[target.id].get().execute_query()
             updated_comments = updated.get_property("comments", [])

@@ -1,5 +1,4 @@
 """Security Incidents — correlated alert collections in Microsoft 365 Defender.
-
 Tests cover:
   - Listing incidents with pagination
   - Filtering by status, severity, and assignedTo
@@ -7,54 +6,38 @@ Tests cover:
   - Expanding related alerts
   - Updating incident status and assignment
 """
-
 from __future__ import annotations
-
 from typing import ClassVar, Optional
-
 from tests.decorators import requires_delegated, requires_application
 from tests.graph_case import GraphDelegatedTestCase
-
 _INCIDENT_READ = ("SecurityIncident.Read.All", "SecurityIncident.ReadWrite.All")
 _INCIDENT_WRITE = ("SecurityIncident.ReadWrite.All",)
-
-
 class TestIncidents(GraphDelegatedTestCase):
     """Microsoft 365 Defender incidents."""
-
     created_simulated_incident: ClassVar[Optional[object]] = None
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_incidents(self):
         """Listing incidents with $top=10 returns a valid collection."""
-        # Act
         result = self.client.security.incidents.top(10).get().execute_query()
-
-        # Assert
         self.assertIsNotNone(result.resource_path)
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_filter_incidents_by_status(self):
         """Filtering incidents by 'activeStatus' returns active incidents."""
-        # Act
         result = (
             self.client.security.incidents.filter("status eq 'active'")
             .top(5)
             .get()
             .execute_query()
         )
-
-        # Assert
         self.assertIsNotNone(result.resource_path)
         for inc in result:
             self.assertEqual(inc.get_property("status"), "active")
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
@@ -64,14 +47,12 @@ class TestIncidents(GraphDelegatedTestCase):
         result = self.client.security.incidents.top(3).get().execute_query()
         if len(result) == 0:
             self.skipTest("No incidents exist to inspect")
-
         for inc in result:
             self.assertIsNotNone(inc.get_property("id"))
             self.assertIsNotNone(inc.get_property("severity"))
             self.assertIsNotNone(inc.get_property("status"))
             self.assertIsNotNone(inc.get_property("createdDateTime"))
             break  # Check one
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
@@ -81,7 +62,6 @@ class TestIncidents(GraphDelegatedTestCase):
         result = self.client.security.incidents.top(3).get().execute_query()
         if len(result) == 0:
             self.skipTest("No incidents exist to inspect")
-
         for inc in result:
             try:
                 alerts = inc.alerts.get().execute_query()
@@ -93,7 +73,6 @@ class TestIncidents(GraphDelegatedTestCase):
                     break
             except Exception:
                 continue
-
     @requires_delegated(
         *_INCIDENT_WRITE,
         bypass_roles=["Global Administrator"],
@@ -103,7 +82,6 @@ class TestIncidents(GraphDelegatedTestCase):
         result = self.client.security.incidents.top(3).get().execute_query()
         if len(result) == 0:
             self.skipTest("No incidents exist to update")
-
         target = result[0]
         original = target.get_property("classification")
         # Set a test comment and don't change the actual classification
@@ -114,7 +92,6 @@ class TestIncidents(GraphDelegatedTestCase):
             target.update().execute_query()
         except Exception as e:
             self.skipTest(f"Cannot update incident: {e}")
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
@@ -124,12 +101,10 @@ class TestIncidents(GraphDelegatedTestCase):
         result = self.client.security.incidents.top(5).get().execute_query()
         if len(result) == 0:
             self.skipTest("No incidents exist to inspect")
-
         for inc in result:
             tags = inc.get_property("tags", [])
             self.assertIsNotNone(tags)
             break
-
     @requires_delegated(
         *_INCIDENT_READ,
         bypass_roles=["Global Administrator"],
