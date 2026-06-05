@@ -31,6 +31,11 @@ class ClientRuntimeContext(ABC):
         self._pending_request: ClientRequest | None = None
 
     @property
+    def service_root_url(self) -> str:
+        """Get the API service root URL"""
+        return self.pending_request().service_root_url
+
+    @property
     def current_query(self) -> ClientQuery | None:
         return self._current_query
 
@@ -73,11 +78,6 @@ class ClientRuntimeContext(ABC):
     @abstractmethod
     def pending_request(self) -> ClientRequest:
         """Gets the pending client request."""
-
-    @property
-    @abstractmethod
-    def service_root_url(self) -> str:
-        """Gets the service root URL."""
 
     def load(self, client_object: ClientObject, properties_to_retrieve: List[str] | None = None) -> Self:
         """Prepares retrieval query for the specified client object.
@@ -151,9 +151,7 @@ class ClientRuntimeContext(ABC):
         Returns:
             Raw response from server
         """
-        full_url = "".join([self.service_root_url, "/", path])
-        request = RequestOptions(url=full_url)
-        return self.pending_request().execute_request_direct(request)
+        return self.pending_request().execute_request(path)
 
     def execute_query(self) -> Self:
         """Executes all pending queries.

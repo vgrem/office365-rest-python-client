@@ -88,8 +88,8 @@ class TestSharePointClient(SPTestCase):
         self.assertEqual(updated_web.properties["Title"], new_web_title)
 
     def test_11_execute_get_and_update_batch_request(self):
-        page_url = "/sites/team/SitePages/Home.aspx"
-        client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+        page_url = "/SitePages/Home.aspx"
+        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields
         new_title = create_unique_name("Page")
         list_item.set_property("Title", new_title).update()

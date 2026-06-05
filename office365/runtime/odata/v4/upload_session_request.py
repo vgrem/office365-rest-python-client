@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from typing import BinaryIO, Callable, Optional
 
@@ -31,6 +33,10 @@ class UploadSessionRequest(ClientRequest):
         self._chunk_size = chunk_size
         self._chunk_uploaded = chunk_uploaded
         self._range_data: Optional[bytes] = None
+
+    @property
+    def service_root_url(self) -> str:
+        return ""
 
     def build_request(self, query: UploadSessionQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
         """Build a request for uploading a single chunk."""

@@ -18,7 +18,6 @@ from office365.runtime.types.event_handler import EventHandler
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
         self._transport = transport or RequestsTransport()
-        self._service_root_url: str | None = None
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
 
@@ -60,6 +59,11 @@ class ClientRequest(ABC):
         )
         return self
 
+    @property
+    @abstractmethod
+    def service_root_url(self) -> str:
+        """Gets the service root URL."""
+
     @abstractmethod
     def build_request(self, query: ClientQuery) -> RequestOptions:
         """Transform query into request options
@@ -77,10 +81,6 @@ class ClientRequest(ABC):
         Args:
             response: Raw HTTP response
             query: Original query that generated this response"""
-
-    def set_service_root(self, url: str) -> None:
-        """Update the service root URL. Subclasses may additionally sync auth state."""
-        self._service_root_url = url
 
     def execute_query(self, query: ClientQuery) -> None:
         """Submits a pending request to the server"""
@@ -170,7 +170,6 @@ class ClientRequest(ABC):
         Returns:
             Raw response from server
         """
-        assert self._service_root_url is not None
-        full_url = "".join([self._service_root_url, "/", path])
+        full_url = "".join([self.service_root_url, "/", path])
         request = RequestOptions(url=full_url)
         return self.execute_request_direct(request)

@@ -31,7 +31,7 @@ class GraphRequest(ODataRequest):
             tenant: Tenant ID or domain name
             environment: Azure environment (default: AzureEnvironment.Global)
         """
-        super().__init__(V4JsonFormat())
+        super().__init__("", V4JsonFormat())
         self._version = version
         self._environment = environment
         self._auth_context = AuthenticationContext(environment=environment, tenant=tenant)

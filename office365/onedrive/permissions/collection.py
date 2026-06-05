@@ -11,10 +11,7 @@ from office365.onedrive.permissions.permission import Permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 if TYPE_CHECKING:
-    from office365.directory.applications.application import Application
-    from office365.directory.groups.group import Group
-    from office365.directory.users.user import User
-    from office365.intune.devices.device import Device
+    pass
 
 
 class PermissionCollection(EntityCollection[Permission]):
@@ -26,36 +23,36 @@ class PermissionCollection(EntityCollection[Permission]):
     def add(
         self,
         roles: list[str],
-        identity: Application | User | Group | Device | str | None = None,
+        identity: Entity | str | None = None,
         identity_type: str | None = None,
     ) -> Permission:
-        """
-        Create a new permission object.
+        """Create a new sharing permission.
 
-        :param list[str] roles: Permission types
-        :param Application or User or Device or User or Group or str identity: Identity object or identifier
-        :param str identity_type: Identity type
+        When ``identity`` is an :class:`Entity` (e.g. a loaded
+        :class:`~office365.directory.serviceprincipals.ServicePrincipal`),
+        its ``id`` and ``displayName`` are used directly and
+        ``identity_type`` is inferred from the type.
+
+        When ``identity`` is a ``str``, it must be the **object ID**
+        of the target principal, and ``identity_type`` must be provided
+        (e.g. ``"application"`` for a service principal).
+
+        Args:
+            roles: Permission roles (e.g. ``"read"``, ``"write"``).
+            identity: The identity entity or its object ID.
+            identity_type: Required when ``identity`` is a string.
+                Ignored when ``identity`` is an Entity.
+
+        Returns:
+            The new :class:`Permission` (not yet executed).
         """
 
         return_type = Permission(self.context)
         self.add_child(return_type)
 
-        known_identities = {
-            "application": self.context.applications,
-            "user": self.context.users,
-            "device": self.context.device_app_management,
-            "group": self.context.groups,
-        }
-
         if isinstance(identity, Entity):
-            identity_type = type(identity).__name__.lower()
-        else:
-            if identity_type is None:
-                raise ValueError("Identity type is a mandatory when identity identifier is specified")
-            known_identity = known_identities.get(identity_type, None)
-            if known_identity is None:
-                raise ValueError("Unknown identity type")
-            identity = known_identity[identity]
+            raw = type(identity).__name__.lower()
+            identity_type = {"serviceprincipal": "application"}.get(raw, raw)
 
         def _add():
             payload = {
@@ -69,7 +66,6 @@ class PermissionCollection(EntityCollection[Permission]):
                     }
                 ],
             }
-
             qry = CreateEntityQuery(self, payload, return_type)
             self.context.add_query(qry)
 

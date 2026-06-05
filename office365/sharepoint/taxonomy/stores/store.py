@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.taxonomy.groups.collection import TermGroupCollection
@@ -61,11 +62,13 @@ class TermStore(TaxonomyItem):
         """Gets or sets the LCID of the default working language."""
         return self.properties.get("defaultLanguageTag", None)
 
+    @odata(name="languageTags")
     @property
     def language_tags(self) -> StringCollection:
         """Gets an integer collection of LCIDs."""
         return self.properties.get("languageTags", StringCollection())
 
+    @odata(name="termGroups")
     @property
     def term_groups(self) -> TermGroupCollection:
         """Gets a collection of the child Group objects"""
@@ -74,11 +77,4 @@ class TermStore(TaxonomyItem):
             TermGroupCollection(self.context, ResourcePath("termGroups", self.resource_path)),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "termGroups": self.term_groups,
-                "languageTags": self.language_tags,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+

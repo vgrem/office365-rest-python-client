@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, List, Optional, Union
 
 from requests import Response
@@ -24,7 +26,7 @@ class SharePointRequest(ODataRequest):
 
 
     Typical usage:
-        >>> request = SharePointRequest()
+        >>> request = SharePointRequest("https://contoso.sharepoint.com")
         >>> response = request.execute_request("web/currentUser")
         >>> json = json.loads(response.content)
         >>> prop_val = json["d"]["UserPrincipalName"]
@@ -46,20 +48,21 @@ class SharePointRequest(ODataRequest):
             allow_ntlm: Whether NTLM authentication is enabled (default: False)
             browser_mode: Enable browser authentication (default: False)
         """
-        super().__init__(JsonLightFormat())
+        super().__init__(base_url, JsonLightFormat())
         self._auth_context = AuthenticationContext(
             url=base_url,
             environment=environment,
             allow_ntlm=allow_ntlm,
             browser_mode=browser_mode,
         )
-        self._ctx_web_info = None
+        self._ctx_web_info: ContextWebInformation | None = None
         self.beforeExecute += self._auth_context.authenticate_request
         self.beforeExecute += self.ensure_form_digest
 
-    def set_service_root(self, url: str) -> None:
-        super().set_service_root(url)
+    def set_base_url(self, url: str) -> Self:
+        self._base_url = url
         self._auth_context.url = url
+        return self
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
         request = super().build_request(query)
@@ -74,7 +77,7 @@ class SharePointRequest(ODataRequest):
 
     def _get_context_web_information(self):
         """Returns a ContextWebInformation object that specifies metadata about the site."""
-        client = ODataRequest(JsonLightFormat())
+        client = ODataRequest(self._base_url, JsonLightFormat())
         client._transport = self._transport
         client.beforeExecute += self._auth_context.authenticate_request
         request = RequestOptions(f"{self.service_root_url}/contextInfo")

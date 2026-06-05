@@ -206,7 +206,7 @@ class GraphClient(ClientRuntimeContext):
             items_per_batch: Maximum items per batch (default: 20)
             success_callback: Optional callback for successful requests
         """
-        batch_request = ODataV4BatchRequest(V4JsonFormat())
+        batch_request = ODataV4BatchRequest("", V4JsonFormat())
         batch_request.beforeExecute += self.pending_request().authenticate_request
         while self.has_pending_request:
             qry = self._get_next_query(items_per_batch)
@@ -222,11 +222,6 @@ class GraphClient(ClientRuntimeContext):
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
         return self._pending_request  # type: ignore[return-value]
-
-    @property
-    def service_root_url(self) -> str:
-        """Get the Graph API service root URL"""
-        return self.pending_request().service_root_url
 
     @property
     def admin(self) -> Admin:

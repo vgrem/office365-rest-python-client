@@ -24,7 +24,7 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 class ODataRequest(ClientRequest):
     """Handles OData protocol specific request/response processing for API calls."""
 
-    def __init__(self, json_format: ODataJsonFormat) -> None:
+    def __init__(self, base_url: str, json_format: ODataJsonFormat) -> None:
         """
         Initialize a new OData request processor.
 
@@ -32,6 +32,7 @@ class ODataRequest(ClientRequest):
             json_format: The JSON format handler for OData serialization/deserialization
         """
         super().__init__()
+        self._base_url = base_url
         self._default_json_format = json_format
         self.beforeExecute += self._ensure_http_headers
 
@@ -195,3 +196,8 @@ class ODataRequest(ClientRequest):
         media_type = self.json_format.media_type
         request.ensure_header("Content-Type", media_type)
         request.ensure_header("Accept", media_type)
+
+    @property
+    def service_root_url(self) -> str:
+        """Get the SharePoint REST API service root URL"""
+        return f"{self._base_url}/_api"

@@ -22,10 +22,6 @@ class ODataBatchV3Request(ODataRequest):
     operations in a single HTTP request and processing the multipart response.
     """
 
-    def __init__(self, json_format, base_url: str):
-        super().__init__(json_format)
-        self.set_service_root(base_url)
-
     def build_request(self, query: BatchQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
         """Construct an OData v3 batch request.
 
@@ -182,4 +178,4 @@ class ODataBatchV3Request(ODataRequest):
     @property
     def service_root_url(self) -> str:
         """Gets the batch request URL."""
-        return f"{self._service_root_url}/$batch"
+        return f"{self._base_url}/$batch"

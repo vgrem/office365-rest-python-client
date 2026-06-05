@@ -908,7 +908,7 @@ class Site(Entity):
     def set_property(self, name, value, persist_changes=True):
         if name == "__siteUrl":
             super().set_property("Url", value, False)
-            self.context.set_url(value)
+            self.context.pending_request().set_base_url(value)
         else:
             super().set_property(name, value, persist_changes)
         return self

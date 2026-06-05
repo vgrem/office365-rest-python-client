@@ -67,10 +67,12 @@ class ClientContext(ClientRuntimeContext):
         :param str base_url: Absolute Web or Site Url
         """
         super().__init__()
-        self._base_url = base_url.rstrip("/")
-        self._environment = environment or AzureEnvironment.Global
-        self._web = None
-        self._site = None
+        self._base_url: str = base_url.rstrip("/")
+        self._environment: AzureEnvironment = environment or AzureEnvironment.Global
+        self._web: Web | None = None
+        self._site: Site | None = None
+        self._allow_ntlm: bool = allow_ntlm
+        self._browser_mode: bool = browser_mode
 
     @staticmethod
     def from_url(full_url: str) -> ClientContext:
@@ -254,7 +256,7 @@ class ClientContext(ClientRuntimeContext):
         :param int items_per_batch: Maximum to be selected for bulk operation
         :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
         """
-        batch_request = ODataBatchV3Request(JsonLightFormat())
+        batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
         batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         while self.has_pending_request:
@@ -293,13 +295,6 @@ class ClientContext(ClientRuntimeContext):
             failure_callback=_try_process_if_failed,
         )
 
-    def set_url(self, url: str) -> Self:
-        """Updates the target URL for this context and its authentication."""
-        self._base_url = url.rstrip("/")
-        if self._pending_request is not None:
-            self._pending_request.set_service_root(self._base_url)
-        return self
-
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
         """
         Creates a clone of ClientContext
@@ -307,7 +302,7 @@ class ClientContext(ClientRuntimeContext):
         :param str url: Site Url
         """
         ctx = copy.deepcopy(self)
-        ctx.set_url(url)
+        ctx.pending_request().set_base_url(url)
         if clear_queries:
             ctx.clear()
         return ctx
@@ -378,7 +373,7 @@ class ClientContext(ClientRuntimeContext):
     def search_user(self, query: str) -> ClientResult[dict[str, str]]:
         """Search/resolve user by email or display name"""
 
-        return_type = ClientResult(self)
+        return_type = ClientResult[dict](self)
 
         def _search_user(result: ClientResult[str]) -> None:
             import json
@@ -845,7 +840,3 @@ class ClientContext(ClientRuntimeContext):
     @property
     def authentication_context(self) -> AuthenticationContext:
         return self.pending_request().authentication_context
-
-    @property
-    def service_root_url(self) -> str:
-        return f"{self.base_url}/_api"
