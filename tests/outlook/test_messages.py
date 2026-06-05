@@ -39,9 +39,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
     )
     def test_01_create_draft_message(self):
         """Creating a draft message without recipients should succeed."""
-        draft = self.client.me.messages.add(
-            subject="Meet for lunch?", body="The new cafeteria is open."
-        ).execute_query()
+        draft = self.client.me.messages.add(subject="Meet for lunch?", body="The new cafeteria is open.").execute_query()
         self.assertIsNotNone(draft.get_property("id"))
         self.assertEqual(draft.get_property("subject"), "Meet for lunch?")
         self.assertEqual(draft.get_property("isDraft"), True)
@@ -74,7 +72,9 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         TestOutlookMessages.target_message = moved
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.Read", "Mail.ReadWrite",
+        "Mail.ReadBasic",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_04_list_messages_paginated(self):
@@ -85,7 +85,8 @@ class TestOutlookMessages(GraphDelegatedTestCase):
             self.assertIsNotNone(result[0].resource_path)
 
     @requires_delegated(
-        "Mail.Read", "Mail.ReadWrite",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_05_search_messages(self):
@@ -143,9 +144,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         content = base64.b64encode(io.BytesIO(b"This is some file content").read()).decode()
 
         draft = (
-            self.client.me.messages.add(
-                subject="Check out this attachment", body="The new cafeteria is open."
-            )
+            self.client.me.messages.add(subject="Check out this attachment", body="The new cafeteria is open.")
             .add_file_attachment("TextAttachment.txt", "Hello World!")
             .add_file_attachment("BinaryAttachment.txt", base64_content=content)
             .execute_query()
@@ -157,30 +156,24 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         draft.delete_object().execute_query()
 
     @requires_delegated(
-        "Mail.Send", "Mail.ReadWrite",
+        "Mail.Send",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_10_send_message(self):
         """Sending a message with two recipients should succeed."""
-        msg = self.client.me.messages.add(
-            subject="SDK Test — Send", body="Testing the send functionality."
-        )
+        msg = self.client.me.messages.add(subject="SDK Test — Send", body="Testing the send functionality.")
         msg.to_recipients.add(Recipient.from_email(test_user_principal_name))
         msg.to_recipients.add(Recipient.from_email(test_user_principal_name_alt))
         msg.body = "Testing the send functionality."
         msg.update().send().execute_query()
 
     @requires_delegated(
-        "Mail.Read", "Mail.ReadWrite",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_11_filter_messages_by_subject(self):
         """Filtering messages by subject returns matching messages."""
-        result = (
-            self.client.me.messages
-            .filter("contains(subject, 'Meet')")
-            .top(5)
-            .get()
-            .execute_query()
-        )
+        result = self.client.me.messages.filter("contains(subject, 'Meet')").top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)

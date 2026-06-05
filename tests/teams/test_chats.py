@@ -29,7 +29,8 @@ class TestTeamChats(GraphDelegatedTestCase):
     target_chat: ClassVar[Optional[Chat]] = None
 
     @requires_delegated(
-        "Chat.ReadWrite", "Chat.Read",
+        "Chat.ReadWrite",
+        "Chat.Read",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_01_create_one_on_one_chat(self):
@@ -45,7 +46,8 @@ class TestTeamChats(GraphDelegatedTestCase):
         TestTeamChats.target_chat = chat
 
     @requires_delegated(
-        "Chat.Read", "Chat.ReadWrite",
+        "Chat.Read",
+        "Chat.ReadWrite",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_02_list_user_chats(self):
@@ -54,7 +56,8 @@ class TestTeamChats(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Chat.Read", "Chat.ReadWrite",
+        "Chat.Read",
+        "Chat.ReadWrite",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_03_chat_has_expected_properties(self):
@@ -67,7 +70,8 @@ class TestTeamChats(GraphDelegatedTestCase):
         self.assertIsNotNone(chat.get_property("createdDateTime"))
 
     @requires_delegated(
-        "Chat.ReadWrite", "Chat.Read",
+        "Chat.ReadWrite",
+        "Chat.Read",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_04_list_chat_members(self):
@@ -89,13 +93,12 @@ class TestTeamChats(GraphDelegatedTestCase):
         if not chat:
             self.skipTest("No chat created from previous test")
 
-        msg = chat.messages.add(
-            body=ItemBody("Hello from office365-rest-python-client!")
-        ).execute_query()
+        msg = chat.messages.add(body=ItemBody("Hello from office365-rest-python-client!")).execute_query()
         self.assertIsNotNone(msg.get_property("id"))
 
     @requires_delegated(
-        "Chat.Read", "Chat.ReadWrite",
+        "Chat.Read",
+        "Chat.ReadWrite",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_06_list_chat_messages(self):

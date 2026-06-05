@@ -16,7 +16,6 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.onedrive.sitepages.site_page import SitePage
-
 from tests import create_unique_name, test_team_site_url
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -34,7 +33,8 @@ class TestSitePage(GraphDelegatedTestCase):
         cls.page_name = create_unique_name("Test Page")
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_create_site_page(self):
@@ -45,7 +45,8 @@ class TestSitePage(GraphDelegatedTestCase):
         TestSitePage.target_page = result
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_02_get_site_page(self):
@@ -58,7 +59,8 @@ class TestSitePage(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_03_checkin_site_page(self):
@@ -71,7 +73,8 @@ class TestSitePage(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_04_get_publishing_state(self):
@@ -84,7 +87,8 @@ class TestSitePage(GraphDelegatedTestCase):
         self.assertIsNotNone(result.get_property("publishingState"))
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_05_list_site_pages(self):
@@ -93,7 +97,8 @@ class TestSitePage(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_06_delete_site_page(self):
@@ -106,7 +111,8 @@ class TestSitePage(GraphDelegatedTestCase):
         TestSitePage.target_page = None
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_07_get_site_pages_list(self):

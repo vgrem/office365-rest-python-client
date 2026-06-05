@@ -16,7 +16,9 @@ class TestPeople(GraphDelegatedTestCase):
     """People API — relevant contacts and users."""
 
     @requires_delegated(
-        "People.Read", "People.Read.All", "User.Read",
+        "People.Read",
+        "People.Read.All",
+        "User.Read",
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_relevant_people(self):
@@ -25,7 +27,9 @@ class TestPeople(GraphDelegatedTestCase):
         self.assertIsNotNone(people.resource_path)
 
     @requires_delegated(
-        "People.Read", "People.Read.All", "User.Read",
+        "People.Read",
+        "People.Read.All",
+        "User.Read",
         bypass_roles=["Global Administrator"],
     )
     def test_02_person_has_display_name(self):
@@ -42,7 +46,9 @@ class TestPeople(GraphDelegatedTestCase):
                 break
 
     @requires_delegated(
-        "People.Read", "People.Read.All", "User.Read",
+        "People.Read",
+        "People.Read.All",
+        "User.Read",
         bypass_roles=["Global Administrator"],
     )
     def test_03_filter_people_by_classification(self):

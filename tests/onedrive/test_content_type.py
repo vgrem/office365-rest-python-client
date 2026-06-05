@@ -17,7 +17,6 @@ import uuid
 from typing import ClassVar, Optional
 
 from office365.onedrive.contenttypes.content_type import ContentType
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -28,7 +27,10 @@ class TestContentType(GraphDelegatedTestCase):
     target_ct: ClassVar[Optional[ContentType]] = None
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.Manage.All", "Sites.FullControl.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_get_compatible_hub_content_types(self):
@@ -37,7 +39,8 @@ class TestContentType(GraphDelegatedTestCase):
         self.assertIsNotNone(cts.resource_path)
 
     @requires_delegated(
-        "Sites.Manage.All", "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_02_create_site_content_type(self):
@@ -74,7 +77,10 @@ class TestContentType(GraphDelegatedTestCase):
         self.assertTrue(result.value)
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.Manage.All", "Sites.FullControl.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_05_list_site_content_types(self):
@@ -97,7 +103,8 @@ class TestContentType(GraphDelegatedTestCase):
         self.assertFalse(result.value)
 
     @requires_delegated(
-        "Sites.Manage.All", "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_07_delete_site_content_type(self):
@@ -110,7 +117,10 @@ class TestContentType(GraphDelegatedTestCase):
         TestContentType.target_ct = None
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.FullControl.All", "Sites.Manage.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_08_get_applicable_content_types_for_list(self):

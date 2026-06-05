@@ -3,21 +3,30 @@ Tests cover listing, creating, and managing subject rights requests under Micros
 Subject rights requests help organizations manage data subject requests (DSRs) under regulations
 like GDPR, CCPA, and others.
 """
+
 from __future__ import annotations
+
 from typing import ClassVar, Optional
-from office365.directory.security.subjectrightsrequests.request import (
-    SubjectRightsRequest,
-)
+
 from office365.directory.security.subjectrightsrequests.identity import (
     SubjectRightsRequestIdentity,
 )
+from office365.directory.security.subjectrightsrequests.request import (
+    SubjectRightsRequest,
+)
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 _SR_PERM_READ = ("SubjectRightsRequest.Read.All", "SubjectRightsRequest.ReadWrite.All")
 _SR_PERM_WRITE = ("SubjectRightsRequest.ReadWrite.All",)
+
+
 class TestSubjectRightsRequests(GraphDelegatedTestCase):
     """Subject Rights Requests (GDPR/CCPA DSR management)."""
+
     created_request: ClassVar[Optional[SubjectRightsRequest]] = None
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
@@ -27,22 +36,19 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
         result = self.client.security.subject_rights_requests.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         # Collection may be empty — that's fine, just verify no error
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_filter_requests_by_type(self):
         """Filtering subject rights requests by type narrows to 'export' or 'delete' types."""
-        result = (
-            self.client.security.subject_rights_requests.filter("type eq 'export'")
-            .top(5)
-            .get()
-            .execute_query()
-        )
+        result = self.client.security.subject_rights_requests.filter("type eq 'export'").top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         for req in result:
             req_type = req.get_property("type")
             self.assertEqual(req_type, "export", f"Expected type 'export', got '{req_type}'")
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
@@ -59,6 +65,7 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
             self.assertIsNotNone(req.get_property("createdDateTime"))
             # dataSubject may be None for pending requests
             break  # Check one for brevity
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
@@ -68,13 +75,17 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
         result = self.client.security.subject_rights_requests.top(3).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertLessEqual(len(result), 3, "Expected at most 3 results with $top=3")
+
+
 class TestSubjectRightsRequestLifecycle(GraphDelegatedTestCase):
     """Create, retrieve, update, and delete a subject rights request.
-    
+
     Note: Creating and deleting subject rights requests requires a licensed tenant.
     These tests are best-effort and will skip gracefully if the operation fails.
     """
+
     created_request: ClassVar[Optional[SubjectRightsRequest]] = None
+
     @requires_delegated(
         *_SR_PERM_WRITE,
         bypass_roles=["Global Administrator"],
@@ -91,15 +102,13 @@ class TestSubjectRightsRequestLifecycle(GraphDelegatedTestCase):
                     email="sdk-test-user@contoso.com",
                 ),
             }
-            result = (
-                self.client.security.subject_rights_requests.add(**request_data)
-                .execute_query()
-            )
+            result = self.client.security.subject_rights_requests.add(**request_data).execute_query()
             self.assertIsNotNone(result.resource_path)
             self.assertEqual(result.get_property("type"), "export")
             TestSubjectRightsRequestLifecycle.created_request = result
         except Exception as e:
             self.skipTest(f"Cannot create subject rights request: {e}")
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
@@ -113,6 +122,7 @@ class TestSubjectRightsRequestLifecycle(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         self.assertEqual(result.get_property("id"), created.id)
         self.assertEqual(result.get_property("type"), created.get_property("type"))
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
@@ -124,6 +134,7 @@ class TestSubjectRightsRequestLifecycle(GraphDelegatedTestCase):
             self.skipTest("No created request available from previous test")
         self.assertEqual(created.get_property("type"), "export")
         self.assertIn(created.get_property("status"), ("active", "closed", "pending"))
+
     @requires_delegated(
         *_SR_PERM_WRITE,
         bypass_roles=["Global Administrator"],
@@ -138,6 +149,7 @@ class TestSubjectRightsRequestLifecycle(GraphDelegatedTestCase):
             TestSubjectRightsRequestLifecycle.created_request = None
         except Exception as e:
             self.skipTest(f"Cannot delete subject rights request (may require manual cleanup): {e}")
+
     @classmethod
     def tearDownClass(cls):
         """Best-effort cleanup of remaining created request."""

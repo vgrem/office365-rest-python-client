@@ -43,7 +43,9 @@ class TestAttachments(GraphDelegatedTestCase):
                 pass
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_01_create_upload_session(self):
@@ -84,7 +86,9 @@ class TestAttachments(GraphDelegatedTestCase):
         if not msg:
             self.skipTest("No target message available")
 
-        import base64, io
+        import base64
+        import io
+
         content = base64.b64encode(io.BytesIO(b"This is binary content").read()).decode()
 
         msg.add_file_attachment("data.bin", base64_content=content).execute_query()
@@ -94,7 +98,9 @@ class TestAttachments(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(matched), 1)
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.Read", "Mail.ReadWrite",
+        "Mail.ReadBasic",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_04_list_attachments(self):
@@ -107,7 +113,9 @@ class TestAttachments(GraphDelegatedTestCase):
         self.assertIsNotNone(attachments)
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.Read", "Mail.ReadWrite",
+        "Mail.ReadBasic",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_05_attachment_has_expected_properties(self):

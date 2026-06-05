@@ -4,12 +4,18 @@ Tests cover:
   - Attack simulation user coverage report
   - Report result structure inspection
 """
+
 from __future__ import annotations
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 _REPORT_READ = ("AttackSimulation.Read.All",)
+
+
 class TestSecurityReports(GraphDelegatedTestCase):
     """Microsoft 365 Defender reports (under client.reports.security)."""
+
     @requires_delegated(
         *_REPORT_READ,
         bypass_roles=["Global Administrator"],
@@ -19,17 +25,16 @@ class TestSecurityReports(GraphDelegatedTestCase):
         result = self.client.reports.security.get_attack_simulation_repeat_offenders().execute_query()
         self.assertIsNotNone(result.value)
         # The result value should be a collection of repeat offenders
+
     @requires_delegated(
         *_REPORT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_get_attack_simulation_user_coverage(self):
         """Getting attack simulation user coverage returns coverage data."""
-        result = (
-            self.client.reports.security.get_attack_simulation_simulation_user_coverage()
-            .execute_query()
-        )
+        result = self.client.reports.security.get_attack_simulation_simulation_user_coverage().execute_query()
         self.assertIsNotNone(result.value)
+
     @requires_delegated(
         *_REPORT_READ,
         bypass_roles=["Global Administrator"],
@@ -44,16 +49,14 @@ class TestSecurityReports(GraphDelegatedTestCase):
             # Each entry should have at least displayName
             self.assertIsNotNone(offender.get_property("displayName"))
             break
+
     @requires_delegated(
         *_REPORT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_04_user_coverage_has_training_info(self):
         """A user coverage entry includes simulation and training counts."""
-        result = (
-            self.client.reports.security.get_attack_simulation_simulation_user_coverage()
-            .execute_query()
-        )
+        result = self.client.reports.security.get_attack_simulation_simulation_user_coverage().execute_query()
         coverage = result.value
         if not coverage:
             self.skipTest("No user coverage data available")

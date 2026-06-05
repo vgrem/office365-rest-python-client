@@ -22,7 +22,8 @@ class TestSearch(GraphDelegatedTestCase):
     """Microsoft Search API — queries across entity types."""
 
     @requires_delegated(
-        "Files.Read.All", "Sites.Read.All",
+        "Files.Read.All",
+        "Sites.Read.All",
         bypass_roles=["SharePoint Administrator", "Global Administrator"],
     )
     def test_01_search_files(self):
@@ -130,7 +131,9 @@ class TestSearch(GraphDelegatedTestCase):
             self.skipTest("Generic query with entity types not supported")
 
     @requires_delegated(
-        "Mail.Read", "Files.Read.All", "Sites.Read.All",
+        "Mail.Read",
+        "Files.Read.All",
+        "Sites.Read.All",
         bypass_roles=["SharePoint Administrator", "Global Administrator"],
     )
     def test_10_search_empty_query(self):

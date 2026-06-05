@@ -17,9 +17,8 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.planner.plans.plan import PlannerPlan
 from office365.directory.groups.group import Group
-
+from office365.planner.plans.plan import PlannerPlan
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -40,7 +39,8 @@ class TestPlanner(GraphDelegatedTestCase):
         cls.target_group = groups[0] if len(groups) > 0 else None
 
     @requires_delegated(
-        "Group.ReadWrite.All", "Tasks.ReadWrite",
+        "Group.ReadWrite.All",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_01_create_plan(self):
@@ -49,15 +49,14 @@ class TestPlanner(GraphDelegatedTestCase):
         if not group:
             self.skipTest("No M365 group available")
 
-        plan = self.client.planner.plans.add(
-            create_unique_name("SDK Test Plan"), group
-        ).execute_query()
+        plan = self.client.planner.plans.add(create_unique_name("SDK Test Plan"), group).execute_query()
         self.assertIsNotNone(plan.get_property("id"))
         self.assertIsNotNone(plan.get_property("title"))
         TestPlanner.target_plan = plan
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_02_get_plan_details(self):
@@ -71,7 +70,8 @@ class TestPlanner(GraphDelegatedTestCase):
         self.assertIsNotNone(details.get_property("categoryDescriptions"))
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_03_list_my_plans(self):
@@ -125,15 +125,14 @@ class TestPlanner(GraphDelegatedTestCase):
         if not bucket:
             self.skipTest("No bucket created from previous test")
 
-        task = self.client.planner.tasks.add(
-            "SDK Task with Bucket", plan, bucket
-        ).execute_query()
+        task = self.client.planner.tasks.add("SDK Task with Bucket", plan, bucket).execute_query()
         self.assertIsNotNone(task.get_property("id"))
         self.assertEqual(task.get_property("bucketId"), bucket.get_property("id"))
         task.delete_object().execute_query()
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_07_list_tasks(self):
@@ -146,7 +145,8 @@ class TestPlanner(GraphDelegatedTestCase):
         self.assertIsNotNone(tasks)
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_08_task_has_expected_properties(self):
@@ -159,7 +159,8 @@ class TestPlanner(GraphDelegatedTestCase):
         self.assertIsNotNone(task.get_property("createdDateTime"))
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_09_get_task_details(self):
@@ -191,7 +192,8 @@ class TestPlanner(GraphDelegatedTestCase):
         self.assertEqual(refetched.get_property("title"), "SDK Test — Updated Task Title")
 
     @requires_delegated(
-        "Group.ReadWrite.All", "Tasks.ReadWrite.All",
+        "Group.ReadWrite.All",
+        "Tasks.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_11_delete_plan(self):

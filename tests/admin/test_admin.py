@@ -11,8 +11,6 @@ Tests cover:
 
 from __future__ import annotations
 
-from typing import ClassVar, Optional
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -51,11 +49,12 @@ class TestSharePointAdminSettings(GraphDelegatedTestCase):
         capability = settings.get_property("sharingCapability")
         if capability:
             known_values = {
-                "disabled", "externalUserSharingOnly",
-                "externalUserAndGuestSharing", "existingExternalUserSharingOnly",
+                "disabled",
+                "externalUserSharingOnly",
+                "externalUserAndGuestSharing",
+                "existingExternalUserSharingOnly",
             }
-            self.assertIn(capability, known_values,
-                          f"Unexpected sharingCapability '{capability}'")
+            self.assertIn(capability, known_values, f"Unexpected sharingCapability '{capability}'")
 
     @requires_delegated(
         "SharePointTenantSettings.Read.All",
@@ -186,8 +185,7 @@ class TestServiceAnnouncement(GraphDelegatedTestCase):
         """Filtering issues by status returns only matching results."""
         for status in ("serviceOperational", "investigating", "restoringService"):
             result = (
-                self.client.admin.service_announcement.issues
-                .filter(f"status eq '{status}'")
+                self.client.admin.service_announcement.issues.filter(f"status eq '{status}'")
                 .top(3)
                 .get()
                 .execute_query()
@@ -212,8 +210,7 @@ class TestServiceAnnouncement(GraphDelegatedTestCase):
             service_status = h.get_property("status")
             if service_status:
                 known = {"serviceOperational", "investigating", "restoringService", "degraded"}
-                self.assertIn(service_status, known,
-                              f"Unexpected health status '{service_status}'")
+                self.assertIn(service_status, known, f"Unexpected health status '{service_status}'")
             break
 
 

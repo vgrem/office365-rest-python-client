@@ -31,9 +31,7 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
     )
     def test_01_create_meeting(self):
         """Creating a simple online meeting without attendees returns a valid meeting."""
-        meeting = self.client.me.online_meetings.create(
-            subject="SDK Test — Automated Meeting"
-        ).execute_query()
+        meeting = self.client.me.online_meetings.create(subject="SDK Test — Automated Meeting").execute_query()
 
         self.assertIsNotNone(meeting.resource_path)
         self.assertIsNotNone(meeting.get_property("id"))

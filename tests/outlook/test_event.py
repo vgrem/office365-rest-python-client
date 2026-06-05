@@ -27,7 +27,8 @@ class TestOutlookEvent(GraphDelegatedTestCase):
     target_event: ClassVar[Optional[Event]] = None
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_01_create_event(self):
@@ -45,7 +46,9 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         TestOutlookEvent.target_event = result
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_02_list_events(self):
@@ -54,7 +57,9 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(result), 1)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_03_event_has_expected_properties(self):
@@ -70,7 +75,8 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         self.assertIsNotNone(event.get_property("organizer"))
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_04_update_event_subject(self):
@@ -86,7 +92,8 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         self.assertEqual(updated.get_property("subject"), "Let's go for lunch (updated)")
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_05_cancel_event(self):
@@ -98,7 +105,8 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         event.cancel(comment="Cancelled: schedule conflict").execute_query()
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_06_delete_event(self):

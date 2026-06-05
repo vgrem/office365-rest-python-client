@@ -28,7 +28,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
     target_team: ClassVar[Optional[Team]] = None
 
     @requires_delegated(
-        "Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "Team.Create",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_01_create_team(self):
@@ -40,7 +42,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
         TestGraphTeam.target_team = result
 
     @requires_delegated(
-        "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All",
+        "Team.ReadBasic.All",
+        "TeamSettings.Read.All",
+        "TeamSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_02_list_all_teams(self):
@@ -49,7 +53,8 @@ class TestGraphTeam(GraphDelegatedTestCase):
         self.assertGreater(len(result), 0)
 
     @requires_delegated(
-        "Team.ReadBasic.All", "Team.Read.All",
+        "Team.ReadBasic.All",
+        "Team.Read.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_03_list_joined_teams(self):
@@ -58,7 +63,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Team.ReadBasic.All", "TeamSettings.Read.All", "TeamSettings.ReadWrite.All",
+        "Team.ReadBasic.All",
+        "TeamSettings.Read.All",
+        "TeamSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_04_get_team_by_id(self):
@@ -80,7 +87,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
             self.assertFalse(existing.get_property("isArchived"))
 
     @requires_delegated(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "TeamSettings.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_05_update_team_settings(self):
@@ -93,7 +102,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
         team.update().execute_query()
 
     @requires_delegated(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "TeamSettings.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_06_archive_team(self):
@@ -105,7 +116,9 @@ class TestGraphTeam(GraphDelegatedTestCase):
         team.archive().execute_query()
 
     @requires_delegated(
-        "TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "TeamSettings.ReadWrite.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_07_unarchive_team(self):

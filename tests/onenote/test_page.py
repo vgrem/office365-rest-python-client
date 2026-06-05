@@ -24,7 +24,9 @@ class TestPage(GraphDelegatedTestCase):
     target_page: ClassVar[Optional[OnenotePage]] = None
 
     @requires_delegated(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Create",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_01_create_page_from_html(self):
@@ -46,7 +48,10 @@ class TestPage(GraphDelegatedTestCase):
         TestPage.target_page = page
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_02_page_has_expected_properties(self):
@@ -61,7 +66,10 @@ class TestPage(GraphDelegatedTestCase):
         self.assertIsNotNone(page.get_property("links"))
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_03_list_pages_from_first_section(self):
@@ -74,7 +82,10 @@ class TestPage(GraphDelegatedTestCase):
         self.assertIsNotNone(pages)
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_04_page_title_includes_html_title(self):

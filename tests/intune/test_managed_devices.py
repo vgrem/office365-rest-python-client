@@ -16,7 +16,9 @@ class TestManagedDevices(GraphDelegatedTestCase):
     """Managed devices — user-level and tenant-level queries."""
 
     @requires_delegated(
-        "DeviceManagementConfiguration.Read.All", "Device.Read.All", "Directory.Read.All",
+        "DeviceManagementConfiguration.Read.All",
+        "Device.Read.All",
+        "Directory.Read.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_01_get_my_managed_devices(self):
@@ -28,7 +30,8 @@ class TestManagedDevices(GraphDelegatedTestCase):
             self.skipTest(f"Cannot list managed devices: {e}")
 
     @requires_delegated(
-        "DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All",
+        "DeviceManagementManagedDevices.Read.All",
+        "DeviceManagementManagedDevices.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_02_list_managed_devices_tenant_wide(self):

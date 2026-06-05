@@ -38,8 +38,11 @@ class TestTeamApps(GraphDelegatedTestCase):
                 pass
 
     @requires_delegated(
-        "AppCatalog.Read.All", "AppCatalog.ReadWrite.All",
-        "Team.ReadBasic.All", "Team.Read.All", "Team.ReadWrite.All",
+        "AppCatalog.Read.All",
+        "AppCatalog.ReadWrite.All",
+        "Team.ReadBasic.All",
+        "Team.Read.All",
+        "Team.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_01_list_installed_apps(self):
@@ -52,8 +55,11 @@ class TestTeamApps(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "AppCatalog.Read.All", "AppCatalog.ReadWrite.All",
-        "Team.ReadBasic.All", "Team.Read.All", "Team.ReadWrite.All",
+        "AppCatalog.Read.All",
+        "AppCatalog.ReadWrite.All",
+        "Team.ReadBasic.All",
+        "Team.Read.All",
+        "Team.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_02_installed_app_has_id(self):

@@ -35,7 +35,9 @@ class TestMailFolders(GraphDelegatedTestCase):
         TestMailFolders.target_folder = result
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.Read", "Mail.ReadWrite",
+        "Mail.ReadBasic",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_02_list_mail_folders(self):
@@ -45,7 +47,9 @@ class TestMailFolders(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(result), 1)
 
     @requires_delegated(
-        "Mail.ReadBasic", "Mail.Read", "Mail.ReadWrite",
+        "Mail.ReadBasic",
+        "Mail.Read",
+        "Mail.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_03_folder_has_expected_properties(self):

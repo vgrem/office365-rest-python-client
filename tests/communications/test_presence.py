@@ -11,10 +11,6 @@ Tests cover:
 
 from __future__ import annotations
 
-from typing import ClassVar, Optional
-
-from office365.communications.presences.presence import Presence
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -68,9 +64,7 @@ class TestPresence(GraphDelegatedTestCase):
     def test_05_set_status_message(self):
         """Setting a status message on the current user should succeed."""
         try:
-            result = self.client.me.presence.set_status_message(
-                message="I'm currently in a meeting"
-            ).execute_query()
+            result = self.client.me.presence.set_status_message(message="I'm currently in a meeting").execute_query()
             self.assertIsNotNone(result.resource_path)
         except Exception as e:
             self.skipTest(f"Cannot set status message: {e}")
@@ -91,13 +85,18 @@ class TestPresence(GraphDelegatedTestCase):
         availability = result.get_property("availability")
         if availability:
             known_values = {
-                "Available", "AvailableIdle", "Away", "BeRightBack", "Busy", "BusyIdle",
-                "DoNotDisturb", "Offline", "OfflineWork", "PresenceUnknown",
+                "Available",
+                "AvailableIdle",
+                "Away",
+                "BeRightBack",
+                "Busy",
+                "BusyIdle",
+                "DoNotDisturb",
+                "Offline",
+                "OfflineWork",
+                "PresenceUnknown",
             }
-            self.assertIn(
-                availability, known_values,
-                f"Unexpected availability '{availability}'"
-            )
+            self.assertIn(availability, known_values, f"Unexpected availability '{availability}'")
 
     @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
     def test_08_presence_activity_is_known_value(self):
@@ -106,12 +105,19 @@ class TestPresence(GraphDelegatedTestCase):
         activity = result.get_property("activity")
         if activity:
             known_activities = {
-                "Available", "Away", "BeRightBack", "Busy", "DoNotDisturb",
-                "InACall", "InAConferenceCall", "InAMeeting", "Offline",
-                "OffWork", "OutOfOffice", "PresenceUnknown", "Presenting",
+                "Available",
+                "Away",
+                "BeRightBack",
+                "Busy",
+                "DoNotDisturb",
+                "InACall",
+                "InAConferenceCall",
+                "InAMeeting",
+                "Offline",
+                "OffWork",
+                "OutOfOffice",
+                "PresenceUnknown",
+                "Presenting",
                 "UrgentInterruptionsOnly",
             }
-            self.assertIn(
-                activity, known_activities,
-                f"Unexpected activity '{activity}'"
-            )
+            self.assertIn(activity, known_activities, f"Unexpected activity '{activity}'")

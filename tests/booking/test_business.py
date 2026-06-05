@@ -25,7 +25,9 @@ class TestBusiness(GraphDelegatedTestCase):
     target_business: ClassVar[Optional[object]] = None
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_booking_businesses(self):
@@ -45,7 +47,9 @@ class TestBusiness(GraphDelegatedTestCase):
         TestBusiness.target_business = result
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_03_get_business_by_id(self):
@@ -59,7 +63,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertEqual(result.get_property("displayName"), "SDK Test Business")
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_04_business_has_expected_properties(self):
@@ -90,7 +96,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertTrue(is_published)
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_06_list_services(self):
@@ -103,7 +111,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertIsNotNone(services)
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_07_list_customers(self):
@@ -116,7 +126,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertIsNotNone(customers)
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_08_list_staff_members(self):
@@ -129,7 +141,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertIsNotNone(staff)
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_09_list_appointments(self):
@@ -142,7 +156,9 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertIsNotNone(appointments)
 
     @requires_delegated(
-        "Bookings.Read.All", "Bookings.Manage.All", "Bookings.ReadWrite.All",
+        "Bookings.Read.All",
+        "Bookings.Manage.All",
+        "Bookings.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_10_list_custom_questions(self):

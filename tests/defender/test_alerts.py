@@ -6,15 +6,23 @@ Tests cover:
   - Updating alert status (triaging)
   - Creating alerts via the unified API
 """
+
 from __future__ import annotations
+
 from typing import ClassVar, Optional
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 _ALERT_READ = ("SecurityAlert.Read.All", "SecurityAlert.ReadWrite.All")
 _ALERT_WRITE = ("SecurityAlert.ReadWrite.All",)
+
+
 class TestAlerts(GraphDelegatedTestCase):
     """Microsoft 365 Defender alerts (v2 API)."""
+
     created_alert: ClassVar[Optional[object]] = None
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -23,21 +31,18 @@ class TestAlerts(GraphDelegatedTestCase):
         """Listing alerts with $top=10 returns a valid collection."""
         result = self.client.security.alerts_v2.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_filter_alerts_by_severity(self):
         """Filtering alerts by severity reduces the result set."""
-        result = (
-            self.client.security.alerts_v2.filter("severity eq 'high'")
-            .top(5)
-            .get()
-            .execute_query()
-        )
+        result = self.client.security.alerts_v2.filter("severity eq 'high'").top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         for alert in result:
             self.assertEqual(alert.get_property("severity"), "high")
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -45,16 +50,12 @@ class TestAlerts(GraphDelegatedTestCase):
     def test_03_filter_alerts_by_status(self):
         """Filtering alerts by status returns only alerts in that state."""
         for status in ("newAlert", "inProgress", "resolved"):
-            result = (
-                self.client.security.alerts_v2.filter(f"status eq '{status}'")
-                .top(3)
-                .get()
-                .execute_query()
-            )
+            result = self.client.security.alerts_v2.filter(f"status eq '{status}'").top(3).get().execute_query()
             # Assert — no crash, valid collection
             self.assertIsNotNone(result.resource_path)
             for alert in result:
                 self.assertEqual(alert.get_property("status"), status)
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -64,16 +65,17 @@ class TestAlerts(GraphDelegatedTestCase):
         result = self.client.security.alerts_v2.top(5).get().execute_query()
         if len(result) == 0:
             self.skipTest("No alerts exist to inspect")
-        seen = 0
+        limit = 2
         for alert in result:
             self.assertIsNotNone(alert.get_property("id"))
             self.assertIsNotNone(alert.get_property("severity"))
             self.assertIsNotNone(alert.get_property("status"))
             self.assertIsNotNone(alert.get_property("category"))
             self.assertIsNotNone(alert.get_property("detectionSource"))
-            seen += 1
-            if seen >= 2:
-                break  # Check 2 alerts, no need to iterate all
+            limit -= 1
+            if limit == 0:
+                break
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -90,6 +92,7 @@ class TestAlerts(GraphDelegatedTestCase):
                 break
         else:
             self.skipTest("No alerts with evidence found")
+
     @requires_delegated(
         *_ALERT_READ,
         bypass_roles=["Global Administrator"],
@@ -107,6 +110,7 @@ class TestAlerts(GraphDelegatedTestCase):
                 break
         else:
             self.skipTest("No alerts with descriptions found")
+
     @requires_delegated(
         *_ALERT_WRITE,
         bypass_roles=["Global Administrator"],
@@ -120,6 +124,7 @@ class TestAlerts(GraphDelegatedTestCase):
         try:
             # Add a comment
             from office365.directory.security.alerts.comment import AlertComment
+
             comment = AlertComment(comment="SDK test — automated triage comment")
             target.comments.append(comment)
             target.update().execute_query()

@@ -7,14 +7,21 @@ Tests cover:
   - Accessing simulation reports (repeat offenders, user coverage)
   - Landing page and payload retrieval
 """
+
 from __future__ import annotations
+
 from typing import ClassVar, Optional
-from tests.decorators import requires_delegated, requires_application
+
+from tests.decorators import requires_application, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 _SIM_READ = ("AttackSimulation.Read.All",)
 _SIM_WRITE = ("AttackSimulation.ReadWrite.All",)
+
+
 class TestAttackSimulationList(GraphDelegatedTestCase):
     """Listing and discovering attack simulation resources."""
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -23,18 +30,16 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         """Listing attack simulations returns a valid collection."""
         result = self.client.security.attack_simulation.simulations.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_02_list_simulation_automations(self):
         """Listing simulation automations returns a valid collection."""
-        result = (
-            self.client.security.attack_simulation.simulation_automations.top(5)
-            .get()
-            .execute_query()
-        )
+        result = self.client.security.attack_simulation.simulation_automations.top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -43,6 +48,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         """Listing attack simulation landing pages returns a valid collection."""
         result = self.client.security.attack_simulation.landing_pages.top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -58,6 +64,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         for sim in result:
             self.assertEqual(sim.get_property("status"), "completed")
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -65,9 +72,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
     def test_05_filter_simulations_by_technique(self):
         """Filtering simulations by attack technique returns matching results."""
         result = (
-            self.client.security.attack_simulation.simulations.filter(
-                "attackTechnique eq 'credentialHarvesting'"
-            )
+            self.client.security.attack_simulation.simulations.filter("attackTechnique eq 'credentialHarvesting'")
             .top(5)
             .get()
             .execute_query()
@@ -76,6 +81,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         for sim in result:
             technique = sim.get_property("attackTechnique")
             self.assertEqual(technique, "credentialHarvesting")
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -91,6 +97,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
             self.assertIsNotNone(sim.get_property("attackTechnique"))
             self.assertIsNotNone(sim.get_property("createdDateTime"))
             break
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -104,6 +111,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
             self.assertIsNotNone(page.get_property("displayName"))
             self.assertIsNotNone(page.get_property("status"))
             break
+
     @requires_delegated(
         *_SIM_READ,
         bypass_roles=["Global Administrator"],
@@ -112,9 +120,13 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         """Listing attack simulation operations returns a valid collection."""
         result = self.client.security.attack_simulation.operations.top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
+
 class TestAttackSimulationCreate(GraphDelegatedTestCase):
     """Creating attack simulations — requires app-level auth or appropriate delegated permissions."""
+
     created_sim: ClassVar[Optional[object]] = None
+
     @requires_application(*_SIM_WRITE)
     def test_01_create_simulation(self):
         """Creating an attack simulation campaign with credentialHarvesting technique."""
@@ -132,6 +144,7 @@ class TestAttackSimulationCreate(GraphDelegatedTestCase):
         self.assertEqual(result.get_property("displayName"), sim_name)
         self.assertEqual(result.get_property("attackTechnique"), "credentialHarvesting")
         TestAttackSimulationCreate.created_sim = result
+
     @requires_application(*_SIM_WRITE)
     def test_02_get_created_simulation(self):
         """Retrieving a simulation by ID returns the expected object."""
@@ -141,6 +154,7 @@ class TestAttackSimulationCreate(GraphDelegatedTestCase):
         result = self.client.security.attack_simulation.simulations[created.id].get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertEqual(result.get_property("id"), created.id)
+
     @classmethod
     def tearDownClass(cls):
         """Best-effort cleanup."""

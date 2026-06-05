@@ -24,17 +24,15 @@ now = datetime.now(timezone.utc)
 soon = now + timedelta(days=30)
 
 for cred in app.key_credentials:
-    start = cred.startDateTime
-    end = cred.endDateTime
+    name = cred.displayName or "<unnamed>"
+    start, end = cred.startDateTime, cred.endDateTime
     if not start or not end:
-        print(f"{cred.displayName or '<unnamed>':<20} {'NO DATES':<16}")
+        print(f"{name:<20} {'NO DATES':<16}")
         continue
-
     if isinstance(start, str):
         start = datetime.fromisoformat(start.replace("Z", "+00:00"))
     if isinstance(end, str):
         end = datetime.fromisoformat(end.replace("Z", "+00:00"))
-
     if end < now:
         status = "EXPIRED"
     elif start > now:
@@ -43,5 +41,5 @@ for cred in app.key_credentials:
         status = "EXPIRING SOON"
     else:
         status = "VALID"
-
-    print(f"{cred.displayName or '<unnamed>':<20} {status:<16} {start.strftime('%Y-%m-%d'):<12} {end.strftime('%Y-%m-%d'):<12} {cred.customKeyIdentifier or '':<30}")
+    tid = cred.customKeyIdentifier or ""
+    print(f"{name:<16} {status:<14} {start.strftime('%Y-%m-%d'):<10} {end.strftime('%Y-%m-%d'):<10} {tid}")

@@ -19,8 +19,12 @@ class TestDrive(GraphDelegatedTestCase):
     """OneDrive drive operations — listing, root, recent, search, shared, changes."""
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_list_drives(self):
@@ -31,8 +35,12 @@ class TestDrive(GraphDelegatedTestCase):
             self.assertIsNotNone(drive.get_property("webUrl"))
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_02_get_drive_root(self):
@@ -41,8 +49,12 @@ class TestDrive(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_03_get_recent_items(self):
@@ -51,8 +63,12 @@ class TestDrive(GraphDelegatedTestCase):
         self.assertIsNotNone(items.resource_path)
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_04_search_drive(self):
@@ -61,8 +77,12 @@ class TestDrive(GraphDelegatedTestCase):
         self.assertIsNotNone(items.resource_path)
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_05_shared_with_me(self):
@@ -71,8 +91,12 @@ class TestDrive(GraphDelegatedTestCase):
         self.assertIsNotNone(col.resource_path)
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_06_list_changes(self):
@@ -81,8 +105,12 @@ class TestDrive(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_07_drive_has_expected_properties(self):

@@ -52,7 +52,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
                 pass
 
     @requires_delegated(
-        "Team.ReadBasic.All", "TeamSettings.Read.All",
+        "Team.ReadBasic.All",
+        "TeamSettings.Read.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_01_get_team_by_id(self):
@@ -65,7 +66,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(result.get_property("id"))
 
     @requires_delegated(
-        "Channel.ReadBasic.All", "ChannelSettings.Read.All", "ChannelSettings.ReadWrite.All",
+        "Channel.ReadBasic.All",
+        "ChannelSettings.Read.All",
+        "ChannelSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_02_list_channels(self):
@@ -78,7 +81,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertGreater(len(channels), 0)
 
     @requires_delegated(
-        "Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "Channel.Create",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_03_create_channel(self):
@@ -94,7 +99,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         TestGraphChannel.target_channel = new_channel
 
     @requires_delegated(
-        "Channel.ReadBasic.All", "ChannelSettings.Read.All", "ChannelSettings.ReadWrite.All",
+        "Channel.ReadBasic.All",
+        "ChannelSettings.Read.All",
+        "ChannelSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_04_get_channel_by_id(self):
@@ -108,7 +115,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertEqual(existing.get_property("id"), channel.id)
 
     @requires_delegated(
-        "TeamsTab.Read.All", "TeamsTab.ReadWrite.All",
+        "TeamsTab.Read.All",
+        "TeamsTab.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_05_list_tabs(self):
@@ -121,7 +129,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(tabs.resource_path)
 
     @requires_delegated(
-        "ChannelMember.Read.All", "ChannelMember.ReadWrite.All",
+        "ChannelMember.Read.All",
+        "ChannelMember.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_06_list_shared_with_teams(self):
@@ -134,7 +143,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Channel.ReadBasic.All", "ChannelSettings.Read.All", "ChannelSettings.ReadWrite.All",
+        "Channel.ReadBasic.All",
+        "ChannelSettings.Read.All",
+        "ChannelSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_07_get_primary_channel(self):
@@ -176,7 +187,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
             self.skipTest("Remove email not available without prior provision")
 
     @requires_delegated(
-        "ChannelMessage.Send", "Group.ReadWrite.All",
+        "ChannelMessage.Send",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_10_send_message(self):
@@ -190,7 +202,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         TestGraphChannel.target_message = message
 
     @requires_delegated(
-        "ChannelMessage.Send", "Group.ReadWrite.All",
+        "ChannelMessage.Send",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_11_reply_to_message(self):
@@ -203,7 +216,9 @@ class TestGraphChannel(GraphDelegatedTestCase):
         self.assertIsNotNone(reply.get_property("id"))
 
     @requires_delegated(
-        "Channel.Delete.All", "Directory.ReadWrite.All", "Group.ReadWrite.All",
+        "Channel.Delete.All",
+        "Directory.ReadWrite.All",
+        "Group.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_12_delete_channel(self):

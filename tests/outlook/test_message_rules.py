@@ -39,16 +39,15 @@ class TestMessageRules(GraphDelegatedTestCase):
             stopProcessingRules=True,
             markImportance=Importance.normal,
         )
-        result = self.client.me.mail_folders["inbox"].message_rules.add(
-            "SDK Test Rule", 2, actions
-        ).execute_query()
+        result = self.client.me.mail_folders["inbox"].message_rules.add("SDK Test Rule", 2, actions).execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertEqual(result.get_property("displayName"), "SDK Test Rule")
         self.assertIsNotNone(result.get_property("priority"))
         TestMessageRules.target_rule = result
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite",
+        "MailboxSettings.Read",
+        "MailboxSettings.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_02_list_rules(self):
@@ -70,7 +69,8 @@ class TestMessageRules(GraphDelegatedTestCase):
         rule.update().execute_query()
 
     @requires_delegated(
-        "MailboxSettings.Read", "MailboxSettings.ReadWrite",
+        "MailboxSettings.Read",
+        "MailboxSettings.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_04_get_rule_by_id(self):

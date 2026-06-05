@@ -14,8 +14,6 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.intune.devices.cloud_pc import CloudPc
-
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -26,7 +24,9 @@ class TestDevices(GraphDelegatedTestCase):
     device: ClassVar[Optional[object]] = None
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All",
+        "Device.Read.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_01_list_devices(self):
@@ -35,7 +35,9 @@ class TestDevices(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "DeviceManagementConfiguration.Read.All", "Device.Read.All", "Directory.Read.All",
+        "DeviceManagementConfiguration.Read.All",
+        "Device.Read.All",
+        "Directory.Read.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_02_get_device_delta(self):
@@ -56,7 +58,9 @@ class TestDevices(GraphDelegatedTestCase):
         TestDevices.device = result
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All",
+        "Device.Read.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_04_device_has_expected_properties(self):
@@ -82,7 +86,9 @@ class TestDevices(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All",
+        "Device.Read.All",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_06_list_registered_owners(self):

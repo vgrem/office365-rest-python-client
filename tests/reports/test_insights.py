@@ -21,7 +21,8 @@ class TestInsights(GraphDelegatedTestCase):
     """Office Graph Insights — trending, shared, and used items."""
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_trending(self):
@@ -35,7 +36,8 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_02_list_shared(self):
@@ -49,7 +51,8 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_03_list_used(self):
@@ -63,7 +66,8 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_04_trending_has_resource_reference(self):
@@ -80,7 +84,8 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_05_trending_has_weight(self):
@@ -97,7 +102,8 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_06_shared_has_resource_reference(self):
@@ -114,7 +120,9 @@ class TestInsights(GraphDelegatedTestCase):
             raise
 
     @requires_delegated(
-        "User.Read", "User.Read.All", "User.ReadWrite.All",
+        "User.Read",
+        "User.Read.All",
+        "User.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test_07_get_user_settings(self):
@@ -123,7 +131,9 @@ class TestInsights(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "User.Read", "User.Read.All", "User.ReadWrite.All",
+        "User.Read",
+        "User.Read.All",
+        "User.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
     def test_08_user_settings_has_is_enabled(self):

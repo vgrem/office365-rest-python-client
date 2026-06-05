@@ -30,7 +30,8 @@ class TestOutlookContacts(GraphDelegatedTestCase):
     def test_01_create_contact(self):
         """Creating a contact with name, email, and phone returns a valid contact."""
         result = self.client.me.contacts.add(
-            "Pavel", "Bansky",
+            "Pavel",
+            "Bansky",
             "pavelb@a830edad9050849NDA1.onmicrosoft.com",
             "+1 732 555 0102",
         ).execute_query()
@@ -39,7 +40,8 @@ class TestOutlookContacts(GraphDelegatedTestCase):
         TestOutlookContacts.target_contact = result
 
     @requires_delegated(
-        "Contacts.Read", "Contacts.ReadWrite",
+        "Contacts.Read",
+        "Contacts.ReadWrite",
         bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test_02_list_contacts(self):
@@ -48,7 +50,8 @@ class TestOutlookContacts(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(result), 1)
 
     @requires_delegated(
-        "Contacts.Read", "Contacts.ReadWrite",
+        "Contacts.Read",
+        "Contacts.ReadWrite",
         bypass_roles=["Global Administrator", "Exchange Administrator", "User Administrator"],
     )
     def test_03_contact_has_expected_properties(self):

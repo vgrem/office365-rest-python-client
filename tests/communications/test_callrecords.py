@@ -92,8 +92,7 @@ class TestCallRecords(GraphApplicationTestCase):
             self.assertIsNotNone(row.get_property("callId"))
             # Most rows have at least one of userId or userDisplayName
             has_user = any(
-                row.get_property(field) is not None
-                for field in ("userId", "userDisplayName", "callStartDateTime")
+                row.get_property(field) is not None for field in ("userId", "userDisplayName", "callStartDateTime")
             )
             self.assertTrue(has_user, "Expected at least one user identifier field")
             break

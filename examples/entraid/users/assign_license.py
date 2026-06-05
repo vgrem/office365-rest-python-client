@@ -11,18 +11,18 @@ https://learn.microsoft.com/en-us/graph/api/resources/user
 Requires delegated permission ``User.ReadWrite.All``.
 """
 
+import sys
+
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # find the first available license SKU (e.g. "Microsoft 365 E5")
 skus = client.subscribed_skus.get().execute_query()
 if not skus:
     print("No license SKUs found.")
-    exit(1)
+    sys.exit(1)
 
 sku = skus[0]
 print(f"Assigning license: {sku.sku_part_number} ({sku.sku_id})")

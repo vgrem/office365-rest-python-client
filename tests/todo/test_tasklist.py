@@ -20,7 +20,6 @@ from typing import ClassVar, Optional
 
 from office365.todo.tasks.list import TodoTaskList
 from office365.todo.tasks.task import TodoTask
-
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -45,7 +44,8 @@ class TestTaskList(GraphDelegatedTestCase):
         TestTaskList.task_list = task_list
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_02_list_task_lists(self):
@@ -54,7 +54,8 @@ class TestTaskList(GraphDelegatedTestCase):
         self.assertIsNotNone(lists.resource_path)
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_03_task_list_has_expected_properties(self):
@@ -82,7 +83,8 @@ class TestTaskList(GraphDelegatedTestCase):
         TestTaskList.task = task
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_05_list_tasks(self):
@@ -112,7 +114,8 @@ class TestTaskList(GraphDelegatedTestCase):
         self.assertEqual(task.get_property("status"), "completed")
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_07_get_task_by_id(self):
@@ -140,7 +143,8 @@ class TestTaskList(GraphDelegatedTestCase):
         self.assertEqual(item.get_property("displayName"), "SDK Subtask")
 
     @requires_delegated(
-        "Tasks.Read", "Tasks.ReadWrite",
+        "Tasks.Read",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_09_linked_resources_accessible(self):

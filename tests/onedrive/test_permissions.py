@@ -17,7 +17,6 @@ from typing import ClassVar, Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.permissions.permission import Permission
-
 from tests import (
     test_client_credentials,
     test_team_site_url,
@@ -119,7 +118,9 @@ class TestSitePermissions(GraphDelegatedTestCase):
         self.assertIsNotNone(new_perm.resource_path)
         TestSitePermissions.target_permission = new_perm
 
-    @requires_delegated("Sites.Read.All", "Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_delegated(
+        "Sites.Read.All", "Sites.ReadWrite.All", bypass_roles=["Global Administrator", "SharePoint Administrator"]
+    )
     def test_02_list_site_permissions(self):
         """Listing all permissions on the root site returns a valid collection."""
         permissions = self.client.sites.root.permissions.get().execute_query()
@@ -140,7 +141,10 @@ class TestDriveItemGrantAccess(GraphDelegatedTestCase):
     """Granting access to a drive item by URL."""
 
     @requires_delegated(
-        "Files.Read", "Files.Read.All", "Files.ReadWrite", "Files.ReadWrite.All",
+        "Files.Read",
+        "Files.Read.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_grant_access_by_url(self):

@@ -27,7 +27,6 @@ from typing import ClassVar, Optional
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
-
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -57,7 +56,9 @@ class TestFile(GraphDelegatedTestCase):
                 pass
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_create_folder(self):
@@ -72,7 +73,9 @@ class TestFile(GraphDelegatedTestCase):
         TestFile.target_folder = folder
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_02_get_folder_permissions(self):
@@ -85,7 +88,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(perms.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_03_upload_file(self):
@@ -103,7 +108,9 @@ class TestFile(GraphDelegatedTestCase):
         TestFile.target_file = file_item
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_04_preview_file(self):
@@ -116,7 +123,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_05_checkout(self):
@@ -130,7 +139,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertEqual(target.get_property("publication")["level"], "checkout")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_06_checkin(self):
@@ -144,7 +155,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertEqual(target.get_property("publication")["level"], "published")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_07_list_versions(self):
@@ -157,7 +170,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertGreaterEqual(len(versions), 1)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_08_resumable_upload(self):
@@ -172,7 +187,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(file_item.get_property("webUrl"))
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_09_download_file(self):
@@ -185,7 +202,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_10_convert_file_to_pdf(self):
@@ -201,7 +220,9 @@ class TestFile(GraphDelegatedTestCase):
             self.skipTest("File conversion not supported for this file type")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_11_copy_file(self):
@@ -215,7 +236,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_12_get_activities_by_interval(self):
@@ -230,7 +253,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_13_get_item_analytics(self):
@@ -243,7 +268,9 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_14_extract_sensitivity_labels(self):
@@ -259,7 +286,9 @@ class TestFile(GraphDelegatedTestCase):
             self.skipTest("Sensitivity labels not configured for this tenant")
 
     @requires_delegated(
-        "Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All",
+        "Files.ReadWrite",
+        "Files.ReadWrite.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_15_delete_files(self):

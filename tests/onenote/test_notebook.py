@@ -29,7 +29,9 @@ class TestNotebook(GraphDelegatedTestCase):
     target_section: ClassVar[Optional[OnenoteSection]] = None
 
     @requires_delegated(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Create",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_01_create_notebook(self):
@@ -42,7 +44,11 @@ class TestNotebook(GraphDelegatedTestCase):
         TestNotebook.target_notebook = result
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All", "Notes.Create",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
+        "Notes.Create",
         bypass_roles=["Global Administrator"],
     )
     def test_02_list_notebooks(self):
@@ -51,7 +57,10 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_03_get_recent_notebooks(self):
@@ -60,7 +69,10 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_04_notebook_has_expected_properties(self):
@@ -74,7 +86,9 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(notebook.get_property("isDefault"))
 
     @requires_delegated(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Create",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_05_create_section_in_notebook(self):
@@ -90,7 +104,10 @@ class TestNotebook(GraphDelegatedTestCase):
         TestNotebook.target_section = result
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_06_list_sections_in_notebook(self):
@@ -103,7 +120,10 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(sections)
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_07_section_has_expected_properties(self):
@@ -117,7 +137,8 @@ class TestNotebook(GraphDelegatedTestCase):
         self.assertIsNotNone(section.get_property("pagesUrl"))
 
     @requires_delegated(
-        "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_08_delete_notebook(self):

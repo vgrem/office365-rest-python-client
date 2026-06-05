@@ -16,7 +16,6 @@ from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
 from office365.outlook.calendar.calendar import Calendar
-from office365.outlook.calendar.email_address import EmailAddress
 
 from tests import create_unique_name, test_user_principal_name
 from tests.decorators import requires_delegated
@@ -31,7 +30,8 @@ class TestCalendar(GraphDelegatedTestCase):
     target_cal: ClassVar[Optional[Calendar]] = None
 
     @requires_delegated(
-        "Calendars.Read.Shared", "Calendars.ReadWrite.Shared",
+        "Calendars.Read.Shared",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_01_find_meeting_times(self):
@@ -41,7 +41,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.get_property("meetingTimeSuggestions"))
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_02_get_schedule(self):
@@ -56,7 +58,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_03_list_calendar_groups(self):
@@ -65,7 +69,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(groups.resource_path)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_04_list_calendar_permissions(self):
@@ -74,7 +80,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_05_get_calendar_view(self):
@@ -85,7 +93,8 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_06_get_reminder_view(self):
@@ -96,7 +105,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_07_list_my_calendars(self):
@@ -105,7 +116,9 @@ class TestCalendar(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_08_list_my_events(self):
@@ -139,7 +152,9 @@ class TestCalendar(GraphDelegatedTestCase):
         TestCalendar.cal_name = updated_name
 
     @requires_delegated(
-        "Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite",
+        "Calendars.ReadBasic",
+        "Calendars.Read",
+        "Calendars.ReadWrite",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_11_get_calendar_by_id(self):
@@ -166,7 +181,8 @@ class TestCalendar(GraphDelegatedTestCase):
         TestCalendar.target_cal = None
 
     @requires_delegated(
-        "Calendars.ReadWrite", "Calendars.ReadWrite.Shared",
+        "Calendars.ReadWrite",
+        "Calendars.ReadWrite.Shared",
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_13_allowed_calendar_sharing_roles(self):

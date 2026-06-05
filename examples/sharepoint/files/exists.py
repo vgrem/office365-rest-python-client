@@ -7,10 +7,12 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/fi
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests import test_cert_path, test_cert_thumbprint, test_client_id, test_site_url, test_tenant
 
-ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-file_url = "Shared Documents/Financial Sample11.xlsx"
+ctx = ClientContext(test_site_url).with_client_certificate(
+    test_tenant, client_id=test_client_id, thumbprint=test_cert_thumbprint, cert_path=test_cert_path
+)
+file_url = "/Shared Documents/Financial Sample11.xlsx"
 result = ctx.web.get_file_by_server_relative_url(file_url).get_exists().execute_query()
 if result.value:
     print(f"File '{file_url}' exists.")

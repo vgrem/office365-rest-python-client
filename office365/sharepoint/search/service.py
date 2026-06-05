@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
@@ -40,7 +42,7 @@ class SearchService(Entity):
         """
         return_type = ClientResult(self.context, str())
 
-        def _export(user_name: str):
+        def _export(user_name: str | None):
             assert user_name is not None
             payload = {"userName": user_name, "startTime": start_time.isoformat()}
             qry = ServiceOperationQuery(self, "export", None, payload, None, return_type)
@@ -149,6 +151,7 @@ class SearchService(Entity):
         select_properties: Optional[List[str]] = None,
         trim_duplicates: Optional[bool] = None,
         row_limit: Optional[int] = None,
+        enable_sorting: Optional[bool] = None,
         **kwargs: Any,
     ) -> ClientResult[SearchResult]:
         """The operation is used to retrieve search results through the use of the HTTP protocol
@@ -167,6 +170,7 @@ class SearchService(Entity):
             SelectProperties=StringCollection(select_properties) if select_properties else StringCollection(),
             TrimDuplicates=trim_duplicates if trim_duplicates is not None else False,
             RowLimit=row_limit,
+            EnableSorting=enable_sorting,
             **kwargs,
         )
         payload = {"request": request}
@@ -201,7 +205,7 @@ class SearchService(Entity):
         """The operation is used to get the URI address of the search center by using the HTTP protocol
         with the GET method. The operation returns the URI of the of the search center.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
         qry = ServiceOperationQuery(self, "searchCenterUrl", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type

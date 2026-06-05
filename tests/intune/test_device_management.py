@@ -21,7 +21,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
     """Intune device management — tenant-wide settings and collections."""
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_01_get_device_management_settings(self):
@@ -30,7 +31,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_02_device_management_has_intune_brand(self):
@@ -40,7 +42,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
         self.assertIsNotNone(brand)
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_03_get_effective_permissions(self):
@@ -52,7 +55,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
             self.skipTest(f"Cannot get effective permissions: {e}")
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_04_list_audit_events(self):
@@ -64,7 +68,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
             self.skipTest(f"Cannot list audit events: {e}")
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_05_list_device_categories(self):
@@ -76,7 +81,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
             self.skipTest("Device categories not available")
 
     @requires_delegated(
-        "DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All",
+        "DeviceManagementManagedDevices.Read.All",
+        "DeviceManagementManagedDevices.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_06_list_managed_devices(self):
@@ -90,7 +96,8 @@ class TestDeviceManagement(GraphDelegatedTestCase):
             self.skipTest(f"Cannot list managed devices: {e}")
 
     @requires_delegated(
-        "DeviceManagementServiceConfig.Read.All", "DeviceManagementServiceConfig.ReadWrite.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementServiceConfig.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_07_list_terms_and_conditions(self):

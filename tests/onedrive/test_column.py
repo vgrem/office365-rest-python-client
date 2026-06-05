@@ -13,7 +13,6 @@ from __future__ import annotations
 from typing import ClassVar, List, Optional
 
 from office365.onedrive.columns.definition import ColumnDefinition
-
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -31,7 +30,10 @@ class TestColumn(GraphDelegatedTestCase):
         cls.doclib = cls.client.sites.root.lists["Documents"]
 
     @requires_delegated(
-        "Sites.Read.All", "Sites.Manage.All", "Sites.FullControl.All", "Sites.ReadWrite.All",
+        "Sites.Read.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
+        "Sites.ReadWrite.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_01_list_list_columns(self):
@@ -40,7 +42,8 @@ class TestColumn(GraphDelegatedTestCase):
         self.assertGreater(len(columns), 0)
 
     @requires_delegated(
-        "Sites.Manage.All", "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_02_create_text_column(self):
@@ -53,7 +56,8 @@ class TestColumn(GraphDelegatedTestCase):
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
-        "Sites.Manage.All", "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_03_create_lookup_column(self):
@@ -66,7 +70,8 @@ class TestColumn(GraphDelegatedTestCase):
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
-        "Sites.Manage.All", "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.FullControl.All",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_04_delete_list_columns(self):

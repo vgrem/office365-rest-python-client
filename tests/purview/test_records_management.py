@@ -7,8 +7,11 @@ Tests cover the full lifecycle of retention labels under Microsoft Purview Recor
   - Negative cases (duplicate names, invalid durations)
   - File plan descriptors (departments, categories, subcategories, etc.)
 """
+
 from __future__ import annotations
+
 from typing import ClassVar, Optional
+
 from office365.directory.security.labels.retention.actionafterretentionperiod import (
     ActionAfterRetentionPeriod,
 )
@@ -24,8 +27,11 @@ from office365.directory.security.labels.retention.duration_in_days import (
 from office365.directory.security.labels.retention.label import RetentionLabel
 from office365.directory.security.labels.retention.trigger import RetentionTrigger
 from office365.directory.security.triggertypes.event_type import RetentionEventType
+from office365.runtime.client_request_exception import ClientRequestException
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 # Common permission set for records management operations
 _RM_READ = ("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
 _RM_WRITE = ("RecordsManagement.ReadWrite.All",)
@@ -40,9 +46,13 @@ _RM_LICENSES = [
     "SPE_E5_COMPLIANCE",
     "SPE_E5_INFORMATION_PROTECTION_COMPLIANCE",
 ]
+
+
 class TestRetentionEventTypes(GraphDelegatedTestCase):
     """Event types are used to trigger retention when an event of that type occurs."""
+
     created_events: ClassVar[list[RetentionEventType]] = []
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -54,6 +64,7 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
         result = self.client.security.trigger_types.retention_event_types.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertIsNotNone(result.context)
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -74,6 +85,7 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
                 break
         else:
             self.skipTest(f"No event type found with displayName '{target_name}'")
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -85,9 +97,13 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
         result = self.client.security.trigger_types.retention_event_types.top(5).get().execute_query()
         # The collection should be valid even if fewer than 5 items exist
         self.assertIsNotNone(result.resource_path)
+
+
 class TestRetentionLabels(GraphDelegatedTestCase):
     """Retention labels — the core of Purview Records Management."""
+
     created_label: ClassVar[Optional[RetentionLabel]] = None
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -100,6 +116,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         # Assert — the collection itself must be valid even if empty
         self.assertIsNotNone(result.resource_path)
         # We don't assert on the number of items; the collection is valid regardless
+
     @requires_delegated(
         *_RM_WRITE,
         require_roles=_RM_ROLES,
@@ -125,6 +142,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
             TestRetentionLabels.created_label = result
         except Exception as e:
             self.skipTest(f"Minimal label creation not allowed by tenant policy: {e}")
+
     @requires_delegated(
         *_RM_WRITE,
         require_roles=_RM_ROLES,
@@ -146,6 +164,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         self.assertEqual(result.get_property("displayName"), label_name)
         self.assertEqual(result.get_property("retentionTrigger"), "dateLabeled")
         TestRetentionLabels.created_label = result
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -161,6 +180,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         self.assertEqual(result.get_property("id"), created.id)
         self.assertEqual(result.get_property("displayName"), created.get_property("displayName"))
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -173,14 +193,11 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         if not created:
             self.skipTest("No created label available from previous test")
         name = created.get_property("displayName")
-        result = (
-            self.client.security.labels.retention_labels.filter(f"displayName eq '{name}'")
-            .get()
-            .execute_query()
-        )
+        result = self.client.security.labels.retention_labels.filter(f"displayName eq '{name}'").get().execute_query()
         self.assertTrue(len(result) >= 1, "Expected at least one matching label")
         matched = any(item.get_property("displayName") == name for item in result)
         self.assertTrue(matched, f"Expected label '{name}' in filtered results")
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -192,6 +209,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         result = self.client.security.labels.retention_labels.top(3).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         # Result may have 0-3 items; the important thing is the query didn't error
+
     @requires_delegated(
         *_RM_READ,
         require_roles=_RM_ROLES,
@@ -204,12 +222,11 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         if not created:
             self.skipTest("No created label available from previous test")
         # Act — force re-fetch to get full property set
-        label = (
-            self.client.security.labels.retention_labels[created.id].get().execute_query()
-        )
+        label = self.client.security.labels.retention_labels[created.id].get().execute_query()
         self.assertIsNotNone(label.get_property("retentionTrigger"))
         self.assertIsNotNone(label.get_property("behaviorDuringRetentionPeriod"))
         self.assertIsNotNone(label.get_property("actionAfterRetentionPeriod"))
+
     @classmethod
     def tearDownClass(cls):
         """Clean up the created retention label if one exists."""
@@ -219,8 +236,11 @@ class TestRetentionLabels(GraphDelegatedTestCase):
                 label.delete_object().execute_query()
             except Exception:
                 pass  # Best-effort cleanup
+
+
 class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
     """Verify expected failures and edge cases for retention labels."""
+
     @requires_delegated(
         *_RM_WRITE,
         require_roles=_RM_ROLES,
@@ -229,7 +249,7 @@ class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
     )
     def test_01_empty_display_name_rejected(self):
         """Creating a label with an empty display name should raise an error."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(ClientRequestException):
             self.client.security.labels.retention_labels.add(
                 "",
                 RetentionTrigger.dateLabeled,
@@ -238,6 +258,7 @@ class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
                 DefaultRecordBehavior.startLocked,
                 ActionAfterRetentionPeriod.delete,
             ).execute_query()
+
     @requires_delegated(
         *_RM_WRITE,
         require_roles=_RM_ROLES,
@@ -258,8 +279,11 @@ class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
             self.fail("Expected an error for zero retention duration")
         except Exception:
             pass  # Expected
+
+
 class TestRetentionLabelFilePlan(GraphDelegatedTestCase):
     """File plan descriptors enrich retention labels with business context."""
+
     @requires_delegated(
         *("RecordsManagement.Read.All",),
         require_roles=_RM_ROLES,
@@ -283,4 +307,3 @@ class TestRetentionLabelFilePlan(GraphDelegatedTestCase):
                 self.assertIsNotNone(col.resource_path, f"{prop_name} should return a valid collection")
             except AttributeError:
                 self.skipTest(f"File plan descriptor '{prop_name}' not available in client yet")
-

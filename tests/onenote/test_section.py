@@ -28,7 +28,10 @@ class TestSection(GraphDelegatedTestCase):
     target_section: ClassVar[Optional[OnenoteSection]] = None
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_sections(self):
@@ -37,7 +40,9 @@ class TestSection(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Create",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_02_create_notebook_and_section(self):
@@ -55,7 +60,8 @@ class TestSection(GraphDelegatedTestCase):
         TestSection.target_section = section
 
     @requires_delegated(
-        "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_03_update_section_name(self):
@@ -69,7 +75,10 @@ class TestSection(GraphDelegatedTestCase):
         self.assertEqual(section.get_property("displayName"), new_name)
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_04_section_has_expected_properties(self):
@@ -83,7 +92,10 @@ class TestSection(GraphDelegatedTestCase):
         self.assertIsNotNone(section.get_property("isDefault"))
 
     @requires_delegated(
-        "Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.Read",
+        "Notes.Read.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_05_list_pages_in_section(self):
@@ -96,7 +108,8 @@ class TestSection(GraphDelegatedTestCase):
         self.assertIsNotNone(pages)
 
     @requires_delegated(
-        "Notes.ReadWrite", "Notes.ReadWrite.All",
+        "Notes.ReadWrite",
+        "Notes.ReadWrite.All",
         bypass_roles=["Global Administrator"],
     )
     def test_06_delete_notebook(self):

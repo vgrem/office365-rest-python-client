@@ -7,15 +7,23 @@ Tests cover the core eDiscovery workflows under Microsoft Purview eDiscovery (Pr
   - Searches and exports
 The eDiscovery API lives under client.security.cases in the Graph SDK.
 """
+
 from __future__ import annotations
+
 from typing import ClassVar, Optional
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
 _EDISCOVERY_READ = ("eDiscovery.Read.All", "eDiscovery.ReadWrite.All")
 _EDISCOVERY_WRITE = ("eDiscovery.ReadWrite.All",)
+
+
 class TestEdiscoveryCases(GraphDelegatedTestCase):
     """eDiscovery cases — the top-level container for a discovery workflow."""
+
     created_case: ClassVar[Optional[object]] = None
+
     @requires_delegated(
         *_EDISCOVERY_READ,
         bypass_roles=["Global Administrator"],
@@ -25,6 +33,7 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
         result = self.client.security.cases.ediscovery_cases.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
         # The collection is valid regardless of count
+
     @requires_delegated(
         *_EDISCOVERY_WRITE,
         bypass_roles=["Global Administrator"],
@@ -43,6 +52,7 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
             TestEdiscoveryCases.created_case = result
         except Exception as e:
             self.skipTest(f"Cannot create eDiscovery case: {e}")
+
     @requires_delegated(
         *_EDISCOVERY_READ,
         bypass_roles=["Global Administrator"],
@@ -55,6 +65,7 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
         result = self.client.security.cases.ediscovery_cases[created.id].get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertEqual(result.get_property("id"), created.id)
+
     @requires_delegated(
         *_EDISCOVERY_READ,
         bypass_roles=["Global Administrator"],
@@ -69,6 +80,7 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
         self.assertIsNotNone(case.get_property("displayName"))
         self.assertIsNotNone(case.get_property("status"))
         self.assertIsNotNone(case.get_property("createdDateTime"))
+
     @requires_delegated(
         *_EDISCOVERY_WRITE,
         bypass_roles=["Global Administrator"],
@@ -83,6 +95,7 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
             TestEdiscoveryCases.created_case = None
         except Exception as e:
             self.skipTest(f"Cannot delete eDiscovery case (may require manual cleanup): {e}")
+
     @classmethod
     def tearDownClass(cls):
         """Best-effort cleanup."""
@@ -92,8 +105,11 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
                 case.delete_object().execute_query()
             except Exception:
                 pass
+
+
 class TestEdiscoveryCustodians(GraphDelegatedTestCase):
     """Custodians — data sources assigned to an eDiscovery case."""
+
     @requires_delegated(
         *_EDISCOVERY_READ,
         bypass_roles=["Global Administrator"],
@@ -113,6 +129,7 @@ class TestEdiscoveryCustodians(GraphDelegatedTestCase):
                     break  # Check at least one case with custodians
             except Exception:
                 continue
+
     @requires_delegated(
         *_EDISCOVERY_READ,
         bypass_roles=["Global Administrator"],
