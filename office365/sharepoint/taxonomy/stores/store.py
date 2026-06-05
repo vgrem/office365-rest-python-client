@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import odata
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.taxonomy.groups.collection import TermGroupCollection
 from office365.sharepoint.taxonomy.item import TaxonomyItem
 from office365.sharepoint.taxonomy.item_collection import TaxonomyItemCollection
@@ -76,5 +76,3 @@ class TermStore(TaxonomyItem):
             "termGroups",
             TermGroupCollection(self.context, ResourcePath("termGroups", self.resource_path)),
         )
-
-

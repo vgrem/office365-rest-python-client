@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppPermissionRequests>
+  <AppPermissionRequest Scope="http://sharepoint/content/tenant" Right="FullControl" />
+  <AppPermissionRequest Scope="http://sharepoint/taxonomy" Right="ReadAndWrite" />
+  <AppPermissionRequest Scope="http://sharepoint/search" Right="QueryAsUserIgnoreAppPrincipal" />
+  <AppPermissionRequest Scope="http://sharepoint/social/tenant" Right="FullControl" />
+</AppPermissionRequests>
