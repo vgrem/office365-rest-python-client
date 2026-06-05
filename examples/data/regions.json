@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Canada",
+    "code": "CA",
+    "districts": [
+      {"name": "Ontario", "cities": ["Toronto", "Ottawa", "Hamilton"]},
+      {"name": "Quebec", "cities": ["Montreal", "Quebec City"]}
+    ]
+  },
+  {
+    "name": "Germany",
+    "code": "DE",
+    "districts": [
+      {"name": "Bavaria", "cities": ["Munich", "Nuremberg"]},
+      {"name": "North Rhine-Westphalia", "cities": ["Cologne", "Dusseldorf", "Bonn"]}
+    ]
+  }
+]

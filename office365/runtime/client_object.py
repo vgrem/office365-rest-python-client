@@ -182,7 +182,15 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.context.after_execute(action, execute_first, include_response)
+
+        def _wrapped(result):
+            action(result if include_response else self)
+
+        self.context.after_execute(_wrapped, execute_first, include_response)
+        return self
+
+    def on_error(self, action: Callable[[ClientRequestException], None], once: bool = True) -> Self:
+        self.context.on_error(action, once)
         return self
 
     def get(self) -> Self:

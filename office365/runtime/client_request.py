@@ -20,6 +20,7 @@ class ClientRequest(ABC):
         self._transport = transport or RequestsTransport()
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
+        self.onError: EventHandler[[ClientRequestException]] = EventHandler()
 
     @property
     def transport(self) -> BaseTransport:
@@ -89,10 +90,28 @@ class ClientRequest(ABC):
             response = self.execute_request_direct(request)
             self.process_response(response, query)
             self.afterExecute(response)
-        except ClientRequestException:
+        except ClientRequestException as e:
+            if self.onError:
+                self.onError(e)
+                return
             raise
         except HTTPError as e:
-            raise ClientRequestException(*e.args, response=e.response) from e
+            raise ClientRequestException.from_response(e.response) from e
+
+    def on_error(
+        self,
+        action: Callable[[ClientRequestException], None],
+        once: bool = True,
+        condition: Optional[Callable[[], bool]] = None,
+    ) -> Self:
+        def _process_error(e: ClientRequestException):
+            if condition is None or condition():
+                if once:
+                    self.onError -= _process_error
+                action(e)
+
+        self.onError += _process_error
+        return self
 
     def before_execute(
         self,

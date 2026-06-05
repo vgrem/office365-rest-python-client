@@ -142,6 +142,18 @@ class ClientRuntimeContext(ABC):
 
         return self
 
+    def on_error(self, action: Callable[[ClientRequestException], None], once: bool = True) -> Self:
+        if len(self._queries) == 0:
+            return self
+        query = self._queries[-1]
+
+        self.pending_request().on_error(
+            action,
+            once=once,
+            condition=lambda: self.current_query is not None and self.current_query.id == query.id,
+        )
+        return self
+
     def execute_request_direct(self, path: str) -> Response:
         """Executes request directly against the specified path.
 

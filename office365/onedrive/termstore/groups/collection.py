@@ -1,8 +1,7 @@
-from typing import cast
-
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.group import Group
+from office365.runtime.client_request_exception import ClientRequestException
 
 
 class GroupCollection(EntityCollection[Group]):
@@ -29,4 +28,21 @@ class GroupCollection(EntityCollection[Group]):
     )
     def get_by_name(self, name: str) -> Group:
         """Returns the group with the specified name."""
-        return cast(Group, self.single(f"displayName eq '{name}'"))
+        return self.single(f"displayName eq '{name}'")
+
+    def get_or_add(self, name: str) -> Group:
+        """Gets existing group by name or creates a new one (idempotent)."""
+        group = self.add(name)
+
+        def _on_name_exists(error: ClientRequestException):
+            if "nameAlreadyExists" not in str(error):
+                raise error
+
+            def _load_existing(existing_group: Group):
+                for k, v in existing_group._properties.items():
+                    group.set_property(k, v)
+
+            self.get_by_name(name).after_execute(_load_existing)
+
+        group.on_error(_on_name_exists)
+        return group

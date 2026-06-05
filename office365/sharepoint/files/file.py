@@ -145,17 +145,17 @@ class File(AbstractFile):
     def get_exists(self) -> ClientResult[bool]:
         result = ClientResult(self.context, bool())
         result.set_property("__value", False)
-        try:
 
-            def _after_exists(_):
-                result.set_property("__value", True)
+        def _after_exists(_):
+            result.set_property("__value", True)
 
-            self.select(["Exists"]).get().after_execute(_after_exists)
-        except ClientRequestException as e:
-            if e.response is not None and e.response.status_code == HTTPStatus.NOT_FOUND:
-                return result
-            else:
-                raise ValueError(e.response.text if e.response is not None else "") from e
+        def _on_not_found(error: ClientRequestException):
+            if error.response.status_code == HTTPStatus.NOT_FOUND:
+                return
+            raise error
+
+        self.select(["Exists"]).get().after_execute(_after_exists).on_error(_on_not_found)
+
         return result
 
     def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:

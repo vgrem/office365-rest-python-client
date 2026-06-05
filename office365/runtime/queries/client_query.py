@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 from typing_extensions import Self
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -68,6 +69,14 @@ class ClientQuery(Generic[ReturnT]):
         """
 
         self.context.pending_request().before_execute(
+            action,
+            once=once,
+            condition=lambda: self.context.current_query is not None and self.context.current_query.id == self.id,
+        )
+        return self
+
+    def on_error(self, action: Callable[[ClientRequestException], None], once: bool = True) -> Self:
+        self.context.pending_request().on_error(
             action,
             once=once,
             condition=lambda: self.context.current_query is not None and self.context.current_query.id == self.id,
