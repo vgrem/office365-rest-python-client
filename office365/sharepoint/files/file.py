@@ -150,6 +150,7 @@ class File(AbstractFile):
             result.set_property("__value", True)
 
         def _on_not_found(error: ClientRequestException):
+            assert error.response is not None
             if error.response.status_code == HTTPStatus.NOT_FOUND:
                 return
             raise error

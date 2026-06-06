@@ -167,7 +167,7 @@ class ClientObject:
 
     def after_execute(
         self,
-        action: Callable[[Any], None],
+        action: Callable[[Any], Any],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:
@@ -191,6 +191,12 @@ class ClientObject:
 
     def on_error(self, action: Callable[[ClientRequestException], None], once: bool = True) -> Self:
         self.context.on_error(action, once)
+        return self
+
+    def copy_from(self, other: ClientObject) -> Self:
+        """Copies all properties from the other object into this one."""
+        for k, v in other._properties.items():
+            self.set_property(k, v)
         return self
 
     def get(self) -> Self:

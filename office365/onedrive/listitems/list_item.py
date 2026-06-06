@@ -105,3 +105,7 @@ class ListItem(BaseItem):
                 ResourcePath("documentSetVersions", self.resource_path),
             ),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.listItem"

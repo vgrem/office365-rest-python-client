@@ -1,6 +1,8 @@
 """
-Import a region hierarchy (countries -> districts -> cities) from a JSON file
-into a Microsoft Graph term store under the root site.
+Import a taxonomy hierarchy from a JSON file into a Microsoft Graph term store.
+
+JSON format mirrors the term store model:
+  [group { name, sets: [ set { name, children: [ term { name, children: [] } ] } ] }]
 
 Requires delegated permission ``TermStore.ReadWrite.All``.
 
@@ -17,17 +19,24 @@ from tests import test_client_id, test_password, test_tenant, test_username
 data_file = (Path(__file__).parent / "../../data/regions.json").resolve()
 
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-
 store = client.sites.root.term_store
-group = store.groups.get_or_add("Regions").execute_query()
-term_set = group.sets.add("Countries").execute_query()
+
+
+def _import_terms(terms, parent, depth=2):
+    for t in terms:
+        node = parent.get_or_add(t["name"]).execute_query()
+        print(f"{'  ' * depth} Term: {t['name']}")
+        for child in t.get("children", []):
+            _import_terms([child], node.children, depth + 1)
+
 
 with open(data_file) as f:
-    for country in json.load(f):
-        term = term_set.children.add(country["name"]).execute_query()
-        for district in country.get("districts", []):
-            child = term.children.add(district["name"]).execute_query()
-            for city in district.get("cities", []):
-                child.children.add(city).execute_query()
+    for group_data in json.load(f):
+        group = store.groups.get_or_add(group_data["name"]).execute_query()
+        print(f"Group: {group_data['name']}")
+        for set_data in group_data.get("sets", []):
+            term_set = group.sets.get_or_add(set_data["name"]).execute_query()
+            print(f"  Set: {set_data['name']}")
+            _import_terms(set_data.get("children", []), term_set.children, 2)
 
-print("Imported countries with regions and cities.")
+print("Done")

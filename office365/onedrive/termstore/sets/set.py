@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.internal.paths.children import ChildrenPath
@@ -25,7 +27,6 @@ class Set(Entity):
             TermCollection(
                 self.context,
                 ChildrenPath(self.resource_path, self.terms.resource_path),
-                self,
             ),
         )
 
@@ -33,6 +34,12 @@ class Set(Entity):
     def localized_names(self) -> ClientValueCollection[LocalizedName]:
         """"""
         return self.properties.get("localizedNames", ClientValueCollection(LocalizedName))
+
+    @property
+    def display_name(self) -> str | None:
+        if len(self.localized_names) > 0:
+            return self.localized_names[0].name
+        return None
 
     @property
     def parent_group(self):
@@ -57,7 +64,7 @@ class Set(Entity):
         """All the terms under the set."""
         return self.properties.get(
             "terms",
-            TermCollection(self.context, ResourcePath("terms", self.resource_path), self),
+            TermCollection(self.context, ResourcePath("terms", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):

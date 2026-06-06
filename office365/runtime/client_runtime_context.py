@@ -108,7 +108,7 @@ class ClientRuntimeContext(ABC):
 
     def after_execute(
         self,
-        action: Callable[[Any], None],
+        action: Callable[[Any], Any],
         execute_first: bool = False,
         include_response: bool = False,
     ) -> Self:
@@ -129,7 +129,7 @@ class ClientRuntimeContext(ABC):
         def _process_response(resp: Response) -> None:
             resp.raise_for_status()
             if callable(action):
-                action(resp if include_response else query.return_type)  # type: ignore[arg-type]
+                action(resp if include_response else query.return_type)
 
         self.pending_request().after_execute(
             _process_response,

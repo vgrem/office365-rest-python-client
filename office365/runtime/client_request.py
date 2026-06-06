@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 import requests
 from requests import HTTPError, Response
@@ -105,7 +105,8 @@ class ClientRequest(ABC):
         condition: Optional[Callable[[], bool]] = None,
     ) -> Self:
         def _process_error(e: ClientRequestException):
-            if condition is None or condition():
+            matches = condition is None or condition()
+            if matches:
                 if once:
                     self.onError -= _process_error
                 action(e)
@@ -141,7 +142,7 @@ class ClientRequest(ABC):
 
     def after_execute(
         self,
-        action: Callable[[Response], None],
+        action: Callable[[Response], Any],
         once: bool = True,
         condition: Optional[Callable[[], bool]] = None,
     ) -> Self:

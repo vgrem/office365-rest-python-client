@@ -1,18 +1,40 @@
 [
   {
-    "name": "Canada",
-    "code": "CA",
-    "districts": [
-      {"name": "Ontario", "cities": ["Toronto", "Ottawa", "Hamilton"]},
-      {"name": "Quebec", "cities": ["Montreal", "Quebec City"]}
-    ]
-  },
-  {
-    "name": "Germany",
-    "code": "DE",
-    "districts": [
-      {"name": "Bavaria", "cities": ["Munich", "Nuremberg"]},
-      {"name": "North Rhine-Westphalia", "cities": ["Cologne", "Dusseldorf", "Bonn"]}
+    "name": "Regions",
+    "sets": [
+      {
+        "name": "Countries",
+        "children": [
+          {
+            "name": "Canada",
+            "children": [
+              {"name": "Ontario", "children": [
+                {"name": "Toronto"},
+                {"name": "Ottawa"},
+                {"name": "Hamilton"}
+              ]},
+              {"name": "Quebec", "children": [
+                {"name": "Montreal"},
+                {"name": "Quebec City"}
+              ]}
+            ]
+          },
+          {
+            "name": "Germany",
+            "children": [
+              {"name": "Bavaria", "children": [
+                {"name": "Munich"},
+                {"name": "Nuremberg"}
+              ]},
+              {"name": "North Rhine-Westphalia", "children": [
+                {"name": "Cologne"},
+                {"name": "Dusseldorf"},
+                {"name": "Bonn"}
+              ]}
+            ]
+          }
+        ]
+      }
     ]
   }
 ]

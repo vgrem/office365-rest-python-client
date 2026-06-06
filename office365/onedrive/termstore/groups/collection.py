@@ -1,7 +1,7 @@
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.group import Group
-from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
 
 
 class GroupCollection(EntityCollection[Group]):
@@ -35,14 +35,9 @@ class GroupCollection(EntityCollection[Group]):
         group = self.add(name)
 
         def _on_name_exists(error: ClientRequestException):
-            if "nameAlreadyExists" not in str(error):
+            if not isinstance(error, DuplicatedObjectException):
                 raise error
-
-            def _load_existing(existing_group: Group):
-                for k, v in existing_group._properties.items():
-                    group.set_property(k, v)
-
-            self.get_by_name(name).after_execute(_load_existing)
+            self.get_by_name(name).after_execute(lambda existing: group.copy_from(existing))
 
         group.on_error(_on_name_exists)
         return group
