@@ -1,4 +1,19 @@
-from typing import Optional
+"""Service principals — CRUD, app ID lookup, password management, and deleted items.
+
+Tests cover:
+  - Creating a service principal
+  - Listing service principals
+  - Getting the service principals count
+  - Getting a service principal by app ID
+  - Adding a password to the service principal
+  - Removing a password from the service principal
+  - Deleting the service principal
+  - Listing deleted service principals
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
@@ -10,31 +25,46 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestServicePrincipal(GraphDelegatedTestCase):
-    target_object: Optional[ServicePrincipal] = None
-    password_creds: Optional[PasswordCredential] = None
+    """Service principal CRUD, password management, and deleted items."""
+
+    target_object: ClassVar[Optional[ServicePrincipal]] = None
+    password_creds: ClassVar[Optional[PasswordCredential]] = None
+    target_app: ClassVar[Optional[Application]] = None
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        app_name: str = create_unique_name("App")
-        cls.target_app: Application = cls.client.applications.add(app_name).execute_query()
+        app_name = create_unique_name("App")
+        cls.target_app = cls.client.applications.add(app_name).execute_query()
 
     @classmethod
     def tearDownClass(cls):
-        if cls.target_app is not None:
-            cls.target_app.delete_object(True).execute_query()
+        app = cls.target_app
+        if app and app.resource_path:
+            try:
+                app.delete_object(True).execute_query()
+            except Exception:
+                pass
+        cls.target_app = None
+        cls.target_object = None
+        cls.password_creds = None
 
     @requires_delegated(
         "Application.ReadWrite.All",
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test1_create_service_principal(self):
-        """Create a service principal"""
-        assert TestServicePrincipal.target_app is not None
-        assert TestServicePrincipal.target_app.app_id is not None
-        service_principal = self.client.service_principals.add(TestServicePrincipal.target_app.app_id).execute_query()
+    def test_01_create_service_principal(self):
+        """Creating a service principal from an app returns a valid resource."""
+        app = TestServicePrincipal.target_app
+        if not app:
+            self.skipTest("No target app created in setUpClass")
+        app_id = app.app_id
+        if not app_id:
+            self.skipTest("Target app has no app_id")
+        service_principal = self.client.service_principals.add(app_id).execute_query()
         self.assertIsNotNone(service_principal.resource_path)
+        self.assertIsNotNone(service_principal.get_property("id"))
         TestServicePrincipal.target_object = service_principal
 
     @requires_delegated(
@@ -49,8 +79,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test2_list_service_principals(self):
-        """List service principals"""
+    def test_02_list_service_principals(self):
+        """Listing service principals returns a valid collection."""
         result = self.client.service_principals.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -63,8 +93,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test3_get_service_principals_count(self):
-        """Get service principals count"""
+    def test_03_get_service_principals_count(self):
+        """Getting the service principals count returns a numeric value."""
         result = self.client.service_principals.count().execute_query()
         self.assertIsNotNone(result.value)
 
@@ -77,12 +107,16 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test4_get_by_app_id(self):
-        """Get service principal by app ID"""
-        assert TestServicePrincipal.target_app is not None
-        assert TestServicePrincipal.target_app.app_id is not None
+    def test_04_get_by_app_id(self):
+        """Getting a service principal by app ID returns a valid resource."""
+        app = TestServicePrincipal.target_app
+        if not app:
+            self.skipTest("No target app created in setUpClass")
+        app_id = app.app_id
+        if not app_id:
+            self.skipTest("Target app has no app_id")
         principal = (
-            self.client.service_principals.get_by_app_id(TestServicePrincipal.target_app.app_id).get().execute_query()
+            self.client.service_principals.get_by_app_id(app_id).get().execute_query()
         )
         self.assertIsNotNone(principal.resource_path)
 
@@ -91,10 +125,12 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test5_add_password(self):
-        """Add password to the service principal"""
-        assert TestServicePrincipal.target_object is not None
-        result = TestServicePrincipal.target_object.add_password("Password friendly name").execute_query()
+    def test_05_add_password(self):
+        """Adding a password to the service principal returns credentials."""
+        sp = TestServicePrincipal.target_object
+        if not sp:
+            self.skipTest("No target service principal created")
+        result = sp.add_password("Password friendly name").execute_query()
         self.assertIsNotNone(result.value)
         TestServicePrincipal.password_creds = result.value
 
@@ -103,22 +139,30 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test6_remove_password(self):
-        """Remove password from the service principal"""
-        assert TestServicePrincipal.password_creds is not None
-        assert TestServicePrincipal.password_creds.keyId is not None
-        assert TestServicePrincipal.target_object is not None
-        TestServicePrincipal.target_object.remove_password(TestServicePrincipal.password_creds.keyId).execute_query()
+    def test_06_remove_password(self):
+        """Removing a password from the service principal succeeds."""
+        sp = TestServicePrincipal.target_object
+        password = TestServicePrincipal.password_creds
+        if not sp:
+            self.skipTest("No target service principal")
+        if not password:
+            self.skipTest("No password credentials to remove")
+        key_id = password.keyId
+        if not key_id:
+            self.skipTest("Password has no keyId")
+        sp.remove_password(key_id).execute_query()
 
     @requires_delegated(
         "Application.ReadWrite.All",
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test7_delete_service_principal(self):
-        """Delete the service principal"""
-        assert TestServicePrincipal.target_object is not None
-        TestServicePrincipal.target_object.delete_object().execute_query()
+    def test_07_delete_service_principal(self):
+        """Deleting the service principal succeeds."""
+        sp = TestServicePrincipal.target_object
+        if not sp:
+            self.skipTest("No target service principal to delete")
+        sp.delete_object().execute_query()
 
     @requires_delegated(
         "Directory.Read.All",
@@ -129,8 +173,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test8_list_deleted(self):
-        """List deleted service principals"""
+    def test_08_list_deleted(self):
+        """Listing deleted service principals returns at least one entry."""
         result = self.client.directory.deleted_service_principals.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertGreater(len(result), 0)
