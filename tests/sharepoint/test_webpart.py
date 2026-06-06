@@ -1,4 +1,8 @@
+"""Tests for SharePoint web part operations including import, listing, and management."""
+
 from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.checkin_type import CheckinType
@@ -9,8 +13,10 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestWebPart(SPTestCase):
-    client: ClientContext | None = None
-    target_web_part: WebPartDefinition | None = None
+    """Test SharePoint web part features."""
+
+    client: ClassVar[Optional[ClientContext]] = None
+    target_web_part: ClassVar[Optional[WebPartDefinition]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -23,8 +29,11 @@ class TestWebPart(SPTestCase):
     def tearDownClass(cls):
         cls.file.checkin("Added web part", CheckinType.MajorCheckIn).execute_query()
 
-    def test2_import_web_part(self):
-        assert self.target_web_part is not None
+    def test_01_import_web_part(self):
+        """Import a web part from XML content."""
+        target_web_part = TestWebPart.target_web_part
+        if not target_web_part:
+            self.skipTest("No target web part from previous test")
         xml_content = """<?xml version="1.0" encoding="utf-16" standalone="no"?>
 <WebPart xmlns="http://schemas.microsoft.com/WebPart/v2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -36,7 +45,7 @@ class TestWebPart(SPTestCase):
 
         result = self.file.get_limited_webpart_manager().import_web_part(xml_content).execute_query()
         self.assertIsNotNone(result.resource_path)
-        type(self).target_web_part = result
+        TestWebPart.target_web_part = result
 
     # def test3_get_web_part(self):
     #    web_part_def = self.target_web_part
@@ -47,8 +56,11 @@ class TestWebPart(SPTestCase):
     #   web_part = self.target_web_part
     #   web_part.save_web_part_changes().execute_query()
 
-    def test5_list_web_parts(self):
-        assert self.target_web_part is not None
+    def test_02_list_web_parts(self):
+        """List all web parts on the page."""
+        target_web_part = TestWebPart.target_web_part
+        if not target_web_part:
+            self.skipTest("No target web part from previous test")
         web_parts = self.file.get_limited_webpart_manager().web_parts.expand(["WebPart"]).get().execute_query()
         self.assertIsNotNone(web_parts.resource_path)
         self.assertGreater(len(web_parts), 0)

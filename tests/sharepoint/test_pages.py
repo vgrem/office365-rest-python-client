@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import ClassVar, Optional
+
 from office365.sharepoint.files.file import File
 from office365.sharepoint.lists.list import List
 
@@ -8,21 +10,26 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestPages(SPTestCase):
-    pages_list: List | None = None
-    target_file: File | None = None
+    """SharePoint pages tests"""
 
-    def test1_ensure_site_pages_library(self):
+    pages_list: ClassVar[Optional[List]] = None
+    target_file: ClassVar[Optional[File]] = None
+
+    def test_01_ensure_site_pages_library(self):
+        """Ensure site pages library exists"""
         pages_list = self.client.web.lists.ensure_site_pages_library().execute_query()
         self.assertIsNotNone(pages_list.resource_path)
-        type(self).pages_list = pages_list
+        TestPages.pages_list = pages_list
 
-    def test2_create_wiki_page(self):
-        assert self.pages_list is not None
+    def test_02_create_wiki_page(self):
+        """Create a wiki page"""
+        self.assertIsNotNone(TestPages.pages_list)
         page_name = create_unique_name("WikiPage") + ".aspx"
-        file = self.pages_list.create_wiki_page(page_name, "Wiki content").execute_query()
+        file = TestPages.pages_list.create_wiki_page(page_name, "Wiki content").execute_query()
         self.assertIsNotNone(file.resource_path)
-        type(self).target_file = file
+        TestPages.target_file = file
 
-    def test3_delete_page(self):
-        assert self.target_file is not None
-        self.target_file.delete_object().execute_query()
+    def test_03_delete_page(self):
+        """Delete a page"""
+        self.assertIsNotNone(TestPages.target_file)
+        TestPages.target_file.delete_object().execute_query()

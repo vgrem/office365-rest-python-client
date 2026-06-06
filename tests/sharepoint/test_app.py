@@ -1,6 +1,9 @@
+"""Tests for SharePoint app catalog operations (tenant app catalog, site collection app catalog)."""
+
 from __future__ import annotations
 
 import os
+from typing import ClassVar, Optional
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.marketplace.app_metadata import CorporateCatalogAppMetadata
@@ -20,8 +23,10 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestApp(SPTestCase):
-    app: CorporateCatalogAppMetadata | None = None
-    site_col_app_catalog: TenantCorporateCatalogAccessor | None = None
+    """Tests for SharePoint app catalog lifecycle operations."""
+
+    app: ClassVar[Optional[CorporateCatalogAppMetadata]] = None
+    site_col_app_catalog: ClassVar[Optional[TenantCorporateCatalogAccessor]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -30,37 +35,43 @@ class TestApp(SPTestCase):
         )
         cls.tenant_app_catalog: TenantCorporateCatalogAccessor = cls.admin_client.web.tenant_app_catalog
 
-    def test1_load_tenant_app_catalog(self):
+    def test_01_load_tenant_app_catalog(self):
+        """Load the tenant app catalog."""
         result = self.tenant_app_catalog.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    def test2_get_corporate_catalog_site(self):
+    def test_02_get_corporate_catalog_site(self):
+        """Get the corporate catalog site URL."""
         site = self.admin_client.tenant.get_corporate_catalog_site().execute_query()
         self.assertIsNotNone(site.resource_path)
 
-    def test3_add_app(self):
+    def test_03_add_app(self):
+        """Add an app package to the tenant app catalog."""
         app_path = f"{os.path.dirname(__file__)}/../data/react-banner.sppkg"
         app_file = self.tenant_app_catalog.app_from_path(app_path, True).execute_query()
         self.assertIsNotNone(app_file.resource_path)
 
-    def test4_list_apps(self):
+    def test_04_list_apps(self):
+        """List available apps in the tenant app catalog."""
         apps = self.tenant_app_catalog.available_apps.get().execute_query()
         self.assertIsNotNone(apps.resource_path)
 
-    def test5_get_app(self):
-        assert self.app is not None
+    def test_05_get_app(self):
+        """Get a specific app from the tenant app catalog."""
+        target = TestApp.app
+        if not target:
+            self.skipTest("No resource from previous test")
         app = self.tenant_app_catalog.available_apps.get_by_title("Starter Kit - Banner").execute_query()
         self.assertIsNotNone(app.resource_path)
-        type(self).app = app
+        TestApp.app = app
 
-    # def test6_remove_app(self):
-    #    self.app.remove().execute_query()
-
-    def test6_list_site_collection_app_catalogs_sites(self):
+    def test_06_list_site_collection_app_catalogs_sites(self):
+        """List site collection app catalog sites."""
         sites = self.tenant_app_catalog.site_collection_app_catalogs_sites.get().execute_query()
         self.assertIsNotNone(sites.resource_path)
 
-    def test7_get_site_collection_app_catalog(self):
+    def test_07_get_site_collection_app_catalog(self):
+        """Get the site collection app catalog for a team site."""
         site_client = ClientContext(test_team_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
@@ -81,7 +92,8 @@ class TestApp(SPTestCase):
     #    result = self.app_catalog.app_requests().execute_query()
     #    self.assertIsNotNone(result.value)
 
-    def test9_get_addin_principals_having_permissions_in_sites(self):
+    def test_08_get_addin_principals_having_permissions_in_sites(self):
+        """Get add-in principals having permissions in specified sites."""
         result = self.admin_client.web.get_addin_principals_having_permissions_in_sites(
             urls=[test_team_site_url]
         ).execute_query()

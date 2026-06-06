@@ -1,3 +1,7 @@
+"""Tests for SharePoint social features including following, feeds, and suggestions."""
+
+from __future__ import annotations
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.social.following.rest_manager import (
     SocialRestFollowingManager,
@@ -15,6 +19,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSocial(SPTestCase):
+    """Test SharePoint social features."""
+
     @classmethod
     def setUpClass(cls):
         super(TestSocial, cls).setUpClass()
@@ -22,30 +28,36 @@ class TestSocial(SPTestCase):
             test_tenant, test_client_id, test_username, test_password
         )
 
-    def test1_is_following_feature_enabled(self):
+    def test_01_is_following_feature_enabled(self):
+        """Check if the following feature is enabled."""
         result = SPSocialSwitch.is_following_feature_enabled(self.my_client).execute_query()
         self.assertIsNotNone(result.value)
 
-    def test3_create_post(self):
+    def test_02_create_post(self):
+        """Placeholder for creating a social post."""
         # post_data = SocialPostCreationData(content_text="Look at this!")
         # manager = SocialFeedManager(self.my_client)
         # result = manager.create_post(None, post_data).execute_query()
         # self.assertIsNotNone(result.value)
         pass
 
-    def test4_delete_post(self):
+    def test_03_delete_post(self):
+        """Placeholder for deleting a social post."""
         pass
 
-    def test5_get_followers(self):
+    def test_04_get_followers(self):
+        """Get followers via SocialRestFollowingManager."""
         manager = SocialRestFollowingManager(self.my_client)
         result = manager.my.followers().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test6_get_followers_alt(self):
+    def test_05_get_followers_alt(self):
+        """Get followers via social following manager."""
         result = self.my_client.social_following_manager.get_followers().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test7_get_suggestions(self):
+    def test_06_get_suggestions(self):
+        """Get suggestions from the social following manager."""
         result = self.my_client.social_following_manager.get_suggestions().execute_query()
         self.assertIsNotNone(result.value)
 

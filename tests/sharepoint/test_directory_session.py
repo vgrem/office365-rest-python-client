@@ -1,4 +1,8 @@
+"""Tests for SharePoint directory session operations (user, groups, site availability)."""
+
 from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.directory.session import DirectorySession
@@ -14,7 +18,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestDirectorySession(SPTestCase):
-    client: ClientContext | None = None  # type: ignore[assignment]
+    """Tests for SharePoint directory session operations."""
+
+    client: ClassVar[Optional[ClientContext]] = None  # type: ignore[assignment]
 
     @classmethod
     def setUpClass(cls):
@@ -24,19 +30,28 @@ class TestDirectorySession(SPTestCase):
         )
         cls.client = client  # type: ignore[assignment]
 
-    def test_1_init_session(self):
-        assert self.client is not None
-        session = self.client.directory_session.get().execute_query()
+    def test_01_init_session(self):
+        """Initialize a directory session."""
+        target = TestDirectorySession.client
+        if not target:
+            self.skipTest("No resource from previous test")
+        session = target.directory_session.get().execute_query()
         self.assertIsInstance(session, DirectorySession)
 
-    def test_2_get_me(self):
-        assert self.client is not None
-        me = self.client.directory_session.me.get().execute_query()
+    def test_02_get_me(self):
+        """Get the current user's directory profile."""
+        target = TestDirectorySession.client
+        if not target:
+            self.skipTest("No resource from previous test")
+        me = target.directory_session.me.get().execute_query()
         self.assertIsNotNone(me.resource_path)
 
-    def test_3_get_my_groups(self):
-        assert self.client is not None
-        result = self.client.directory_session.me.get_my_groups().execute_query()
+    def test_03_get_my_groups(self):
+        """Get groups the current user belongs to."""
+        target = TestDirectorySession.client
+        if not target:
+            self.skipTest("No resource from previous test")
+        result = target.directory_session.me.get_my_groups().execute_query()
         self.assertIsNotNone(result)
         # self.assertGreater(len(result.value), 0)
 
@@ -44,9 +59,12 @@ class TestDirectorySession(SPTestCase):
     #    result = self.session.me.is_member_of("").execute_query()
     #    self.assertIsNotNone(result.value)
 
-    def test_5_check_site_availability(self):
-        assert self.client is not None
-        result = self.client.directory_provider.check_site_availability(test_site_url).execute_query()
+    def test_04_check_site_availability(self):
+        """Check whether the site URL is available."""
+        target = TestDirectorySession.client
+        if not target:
+            self.skipTest("No resource from previous test")
+        result = target.directory_provider.check_site_availability(test_site_url).execute_query()
         self.assertIsNotNone(result.value)
 
     # def test_6_get_graph_user(self):

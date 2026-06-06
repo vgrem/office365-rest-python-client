@@ -1,4 +1,8 @@
+"""Tests for SharePoint tenant reports including sharing insights and admin actions."""
+
 from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
@@ -7,7 +11,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestReports(SPTestCase):
-    tenant: Tenant | None = None
+    """Test SharePoint tenant reports."""
+
+    tenant: ClassVar[Optional[Tenant]] = None
 
     @classmethod
     def setUpClass(cls):
