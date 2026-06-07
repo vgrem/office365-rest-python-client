@@ -1,3 +1,9 @@
+"""Tests for SharePoint Business Data Connectivity (BDC) catalog operations."""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
+
 from office365.sharepoint.client_context import ClientContext
 
 from tests import test_admin_credentials, test_admin_site_url
@@ -5,9 +11,12 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestBdc(SPTestCase):
-    app_site_url: str | None = None
+    """Tests for BDC (Business Data Connectivity) operations."""
 
-    def test1_get_corporate_catalog_url(self):
+    app_site_url: ClassVar[Optional[str]] = None
+
+    def test_01_get_corporate_catalog_url(self):
+        """Get the corporate catalog URL from tenant settings."""
         admin_client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
         return_type = admin_client.tenant_settings.get().execute_query()
         self.assertIsNotNone(return_type.corporate_catalog_url)

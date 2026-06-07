@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
 from office365.outlook.calendar.calendar import Calendar
+from office365.outlook.calendar.role_type import CalendarRoleType
 
 from tests import create_unique_name, test_user_principal_name
 from tests.decorators import requires_delegated
@@ -189,6 +190,18 @@ class TestCalendar(GraphDelegatedTestCase):
         """Querying allowed calendar sharing roles for a user returns roles."""
         result = self.client.me.calendar.allowed_calendar_sharing_roles(test_user_principal_name).execute_query()
         self.assertIsNotNone(result.value)
+
+    @requires_delegated(
+        "Calendars.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_14_share_calendar_with_user(self):
+        """Sharing the default calendar with another user should succeed."""
+        perm = self.client.me.calendar.calendar_permissions.add(
+            "samanthab@contoso.onmicrosoft.com", CalendarRoleType.read
+        ).execute_query()
+        self.assertIsNotNone(perm.get_property("id"))
+        self.assertIsNotNone(perm.get_property("role"))
 
     @classmethod
     def tearDownClass(cls):

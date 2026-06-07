@@ -1,8 +1,15 @@
+"""Tests for SharePoint Viva Engage features including app configuration and dashboard content."""
+
+from __future__ import annotations
+
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestViva(SPTestCase):
-    def test1_get_app_configuration(self):
+    """Test SharePoint Viva features."""
+
+    def test_01_get_app_configuration(self):
+        """Get the app configuration."""
         return_type = self.client.ee.app_configuration.get().execute_query()
         self.assertIsNotNone(return_type.resource_path)
 
@@ -10,11 +17,13 @@ class TestViva(SPTestCase):
     #    return_type = self.client.ee.viva_home().execute_query()
     #    self.assertIsNotNone(return_type.resource_path)
 
-    def test3_get_dashboard_content(self):
+    def test_02_get_dashboard_content(self):
+        """Get dashboard content."""
         return_type = self.client.ee.dashboard_content().execute_query()
         self.assertIsNotNone(return_type.value)
 
-    def test4_get_full_dashboard_content(self):
+    def test_03_get_full_dashboard_content(self):
+        """Get full dashboard content."""
         return_type = self.client.ee.full_dashboard_content().execute_query()
         self.assertIsNotNone(return_type.value)
 

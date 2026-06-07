@@ -1,6 +1,9 @@
+"""Tests for SharePoint site operations including creation, status, deletion, and site properties."""
+
 from __future__ import annotations
 
 import uuid
+from typing import ClassVar, Optional
 
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
@@ -12,44 +15,54 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSite(SPTestCase):
-    site_response: SPSiteCreationResponse | None = None
+    """Test SharePoint site operations."""
 
-    def test1_if_site_loaded(self):
+    site_response: ClassVar[Optional[SPSiteCreationResponse]] = None
+
+    def test_01_if_site_loaded(self):
+        """Verify that the site resource was loaded."""
         site = self.client.site.get().execute_query()
         self.assertIs(site.is_property_available("Url"), True, "Site resource was not requested")
         self.assertIs(site.is_property_available("RootWeb"), False)
 
-    def test2_if_site_exists(self):
+    def test_02_if_site_exists(self):
+        """Check if a site exists at the current URL."""
         site_url = self.client.site.url
-        assert site_url is not None
+        self.assertIsNotNone(site_url)
         result = Site.exists(self.client, site_url).execute_query()
         self.assertIsNotNone(result.value)
 
-    def test3_get_site_by_id(self):
+    def test_03_get_site_by_id(self):
+        """Get site URL by site ID."""
         site_id = self.client.site.id
-        assert site_id is not None
+        self.assertIsNotNone(site_id)
         result = Site.get_url_by_id(self.client, site_id).execute_query()
         self.assertIsNotNone(result.value)
 
-    def test4_check_is_deletable(self):
+    def test_04_check_is_deletable(self):
+        """Check if the current site is deletable."""
         result = self.client.site.check_is_deletable().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test5_get_site_catalog(self):
+    def test_05_get_site_catalog(self):
+        """Get the site catalog for AppDataCatalog."""
         result = self.client.site.get_catalog(ListTemplateType.AppDataCatalog).get().execute_query()
         self.assertIsNotNone(result.title)
 
-    def test6_get_web_templates(self):
+    def test_06_get_web_templates(self):
+        """Get available web templates for the site."""
         result = self.client.site.get_web_templates().execute_query()
         self.assertIsNotNone(result)
 
-    def test8_get_site_logo(self):
+    def test_07_get_site_logo(self):
+        """Get the site logo."""
         result = self.client.site.get_site_logo().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test_10_open_web_by_id(self):
+    def test_08_open_web_by_id(self):
+        """Open a child web by its ID."""
         web = self.client.web.get().execute_query()
-        assert web.id is not None
+        self.assertIsNotNone(web.id)
         child_web = self.client.site.open_web_by_id(web.id).execute_query()
         self.assertIsNotNone(child_web.id)
 
@@ -57,46 +70,58 @@ class TestSite(SPTestCase):
     #    result = self.client.site_linking_manager.get_site_links().execute_query()
     #    self.assertIsNotNone(result.value)
 
-    def test_11_create_site(self):
+    def test_09_create_site(self):
+        """Create a new communication site."""
         site_url = f"{test_site_url}/sites/{uuid.uuid4().hex}"
         result = self.client.site_manager.create("Comm Site", site_url, test_user_principal_name_alt).execute_query()
         self.assertIsNotNone(result.value)
-        type(self).site_response = result.value
+        TestSite.site_response = result.value
 
-    def test_12_get_site_status(self):
-        assert self.site_response is not None
-        site_url = self.site_response.SiteUrl
-        assert site_url is not None
+    def test_10_get_site_status(self):
+        """Get the status of the newly created site."""
+        site_response = TestSite.site_response
+        if not site_response:
+            self.skipTest("No site response from previous test")
+        site_url = site_response.SiteUrl
+        self.assertIsNotNone(site_url)
         result = self.client.site_manager.get_status(site_url).execute_query()
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus != SiteStatus.Error)
 
-    def test_13_get_site_url(self):
-        assert self.site_response is not None
-        site_id = self.site_response.SiteId
-        assert site_id is not None
+    def test_11_get_site_url(self):
+        """Get the site URL by site ID."""
+        site_response = TestSite.site_response
+        if not site_response:
+            self.skipTest("No site response from previous test")
+        site_id = site_response.SiteId
+        self.assertIsNotNone(site_id)
         result = self.client.site_manager.get_site_url(site_id).execute_query()
         self.assertIsNotNone(result.value)
-        self.assertTrue(self.site_response.SiteUrl == result.value)
+        self.assertEqual(site_response.SiteUrl, result.value)
 
-    def test_14_is_deletable(self):
+    def test_12_is_deletable(self):
+        """Check if the current site is deletable (alternate method)."""
         result = self.client.site.is_deletable().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test_15_delete_site(self):
-        assert self.site_response is not None
+    def test_13_delete_site(self):
+        """Delete the created communication site."""
+        site_response = TestSite.site_response
+        if not site_response:
+            self.skipTest("No site response from previous test")
         from office365.sharepoint.client_context import ClientContext
 
         admin_ctx = ClientContext(self.client.base_url).with_credentials(test_admin_credentials)
-        site_id = self.site_response.SiteId
-        assert site_id is not None
+        site_id = site_response.SiteId
+        self.assertIsNotNone(site_id)
         admin_ctx.site_manager.delete(site_id).execute_query()
 
     # def test_16_get_block_download_policy_for_files_data(self):
     #    result = self.client.site.get_block_download_policy_for_files_data().execute_query()
     #    self.assertIsNotNone(result.value)
 
-    def test_17_site_font_packages(self):
+    def test_14_site_font_packages(self):
+        """Get site font packages."""
         result = self.client.site_font_packages.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 

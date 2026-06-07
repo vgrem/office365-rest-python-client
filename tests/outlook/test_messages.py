@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import base64
 import io
+import os
+import tempfile
 from typing import ClassVar, Optional
 
+from office365.delta_collection import ChangeType
 from office365.outlook.mail.messages.message import Message
 from office365.outlook.mail.recipient import Recipient
 
@@ -177,3 +180,43 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         """Filtering messages by subject returns matching messages."""
         result = self.client.me.messages.filter("contains(subject, 'Meet')").top(5).get().execute_query()
         self.assertIsNotNone(result.resource_path)
+
+    @requires_delegated(
+        "Mail.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_12_forward_message(self):
+        """Forwarding a message should succeed."""
+        msg = TestOutlookMessages.target_message
+        if not msg:
+            self.skipTest("No target message available")
+
+        msg.forward(
+            comment="FYI",
+            to_recipients=[test_user_principal_name],
+        ).execute_query()
+
+    @requires_delegated(
+        "Mail.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_13_delta_query_messages(self):
+        """Delta query for newly created messages returns valid data."""
+        messages = self.client.me.mail_folders["Inbox"].messages.delta.change_type(ChangeType.created).get().execute_query()
+        self.assertIsNotNone(messages)
+
+    @requires_delegated(
+        "Mail.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_14_download_mime_message(self):
+        """Downloading the MIME representation of a message should succeed."""
+        msg = TestOutlookMessages.target_message
+        if not msg:
+            self.skipTest("No target message available")
+
+        with tempfile.TemporaryDirectory() as local_path:
+            file_path = os.path.join(local_path, "message.eml")
+            with open(file_path, "wb") as f:
+                msg.download(f).execute_query()
+            self.assertTrue(os.path.getsize(file_path) > 0)

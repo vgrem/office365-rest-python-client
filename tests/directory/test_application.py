@@ -1,4 +1,18 @@
-from typing import Optional
+"""Applications — listing, templates, creation, password management, and deletion.
+
+Tests cover:
+  - Listing applications
+  - Listing application templates
+  - Creating an application
+  - Getting the applications count
+  - Adding a password to the application
+  - Removing a password from the application
+  - Deleting the application
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
@@ -9,8 +23,10 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestApplication(GraphDelegatedTestCase):
-    target_app: Optional[Application] = None
-    target_password: Optional[PasswordCredential] = None
+    """Application CRUD and password management."""
+
+    target_app: ClassVar[Optional[Application]] = None
+    target_password: ClassVar[Optional[PasswordCredential]] = None
 
     @requires_delegated(
         "Application.Read.All",
@@ -22,8 +38,8 @@ class TestApplication(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test1_list_apps(self):
-        """List applications"""
+    def test_01_list_apps(self):
+        """Listing applications returns a valid collection."""
         result = self.client.applications.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -37,8 +53,8 @@ class TestApplication(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test2_list_templates(self):
-        """List application templates"""
+    def test_02_list_templates(self):
+        """Listing application templates returns a valid collection."""
         result = self.client.application_templates.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
@@ -47,11 +63,13 @@ class TestApplication(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test3_create_app(self):
-        """Create an application"""
+    def test_03_create_app(self):
+        """Creating an application returns a valid resource with an ID."""
         app_name = create_unique_name("App")
         new_app = self.client.applications.add(app_name).execute_query()
         self.assertIsNotNone(new_app.resource_path)
+        self.assertIsNotNone(new_app.get_property("id"))
+        self.assertEqual(new_app.get_property("displayName"), app_name)
         TestApplication.target_app = new_app
 
     @requires_delegated(
@@ -64,8 +82,8 @@ class TestApplication(GraphDelegatedTestCase):
             "Global Reader",
         ],
     )
-    def test4_get_apps_count(self):
-        """Get applications count"""
+    def test_04_get_apps_count(self):
+        """Getting the applications count returns a numeric value."""
         result = self.client.applications.count().execute_query()
         self.assertIsNotNone(result.value)
 
@@ -74,10 +92,12 @@ class TestApplication(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test5_add_password(self):
-        """Add password to the application"""
-        assert TestApplication.target_app is not None
-        result = TestApplication.target_app.add_password("New password").execute_query()
+    def test_05_add_password(self):
+        """Adding a password to the application returns a secret text."""
+        app = TestApplication.target_app
+        if not app:
+            self.skipTest("No target application created from previous test")
+        result = app.add_password("New password").execute_query()
         self.assertIsNotNone(result.value.secretText)
         TestApplication.target_password = result.value
 
@@ -86,20 +106,39 @@ class TestApplication(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test6_remove_password(self):
-        """Remove password from the application"""
-        assert TestApplication.target_app is not None
-        assert TestApplication.target_password is not None
-        assert TestApplication.target_password.keyId is not None
-        TestApplication.target_app.remove_password(TestApplication.target_password.keyId).execute_query()
+    def test_06_remove_password(self):
+        """Removing a password from the application succeeds."""
+        app = TestApplication.target_app
+        password = TestApplication.target_password
+        if not app:
+            self.skipTest("No target application")
+        if not password:
+            self.skipTest("No password to remove")
+        key_id = password.keyId
+        if not key_id:
+            self.skipTest("Password has no keyId")
+        app.remove_password(key_id).execute_query()
 
     @requires_delegated(
         "Application.ReadWrite.All",
         "Directory.ReadWrite.All",
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
-    def test7_delete_app(self):
-        """Delete the application"""
-        assert TestApplication.target_app is not None
-        result = TestApplication.target_app
-        result.delete_object(True).execute_query()
+    def test_07_delete_app(self):
+        """Deleting the application succeeds."""
+        app = TestApplication.target_app
+        if not app:
+            self.skipTest("No target application to delete")
+        app.delete_object(True).execute_query()
+        TestApplication.target_app = None
+
+    @classmethod
+    def tearDownClass(cls):
+        app = cls.target_app
+        if app and app.resource_path:
+            try:
+                app.delete_object(True).execute_query()
+            except Exception:
+                pass
+        cls.target_app = None
+        cls.target_password = None

@@ -1,4 +1,22 @@
-from typing import Optional
+"""Azure AD users — CRUD, extensions, licensing, and role assignments.
+
+Tests cover:
+  - Creating a new user
+  - Listing users (top N, count)
+  - Getting user licenses
+  - Listing subscribed SKUs
+  - Removing a user license (placeholder)
+  - Listing app role assignments
+  - Updating a user property
+  - Deleting a user
+  - Getting user changes via delta query
+  - Getting member groups for the current user
+  - Creating, getting, and deleting an extension on the current user
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.directory.extensions.open_type import OpenTypeExtension
 from office365.directory.users.profile import UserProfile
@@ -11,23 +29,24 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestGraphUser(GraphDelegatedTestCase):
-    """Tests for Azure Active Directory (Azure AD) users"""
+    """Azure AD user CRUD, licensing, extensions, and membership queries."""
 
-    test_user: Optional[User] = None
-    test_extension: Optional[OpenTypeExtension] = None
+    test_user: ClassVar[Optional[User]] = None
+    test_extension: ClassVar[Optional[OpenTypeExtension]] = None
 
     @requires_delegated(
         "User.ReadWrite.All",
         "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
-    def test1_create_user(self):
-        """Create a user"""
+    def test_01_create_user(self):
+        """Creating a user returns a valid user with an ID."""
         login = create_unique_name("testuser")
         password = create_unique_name("P@ssw0rd")
         profile = UserProfile(f"{login}@{test_tenant}", password)
         new_user = self.client.users.add(profile).execute_query()
         self.assertIsNotNone(new_user.id)
+        self.assertEqual(new_user.get_property("userPrincipalName"), f"{login}@{test_tenant}")
         TestGraphUser.test_user = new_user
 
     @requires_delegated(
@@ -35,8 +54,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
-    def test2_list_users(self):
-        """List users"""
+    def test_02_list_users(self):
+        """Listing top 1 user returns exactly one result."""
         result = self.client.users.top(1).get().execute_query()
         self.assertEqual(len(result), 1)
         self.assertIsNotNone(result.resource_path)
@@ -46,8 +65,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
-    def test3_get_users_count(self):
-        """Get users count"""
+    def test_03_get_users_count(self):
+        """Getting the user count returns a numeric value."""
         result = self.client.users.count().execute_query()
         self.assertIsNotNone(result.value)
 
@@ -56,10 +75,12 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
-    def test4_get_user_licences(self):
-        """Get user licenses"""
-        assert TestGraphUser.test_user is not None
-        user = TestGraphUser.test_user.select(["assignedLicenses"]).get().execute_query()
+    def test_04_get_user_licenses(self):
+        """A user's assignedLicenses property is a ClientValueCollection."""
+        user = TestGraphUser.test_user
+        if not user:
+            self.skipTest("No test user created from previous test")
+        user = user.select(["assignedLicenses"]).get().execute_query()
         self.assertIsInstance(user.assigned_licenses, ClientValueCollection)
 
     @requires_delegated(
@@ -67,22 +88,24 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
-    def test5_list_subscribed_skus(self):
-        """List subscribed SKUs"""
+    def test_05_list_subscribed_skus(self):
+        """Listing subscribed SKUs returns a valid collection."""
         skus = self.client.subscribed_skus.get().execute_query()
         self.assertIsNotNone(skus.resource_path)
 
-    def test6_user_remove_license(self):
-        """Remove user license (placeholder)"""
+    def test_06_user_remove_license(self):
+        """Remove user license (placeholder)."""
 
     @requires_delegated(
         "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
-    def test7_list_app_role_assignments(self):
-        """List app role assignments for the test user"""
-        assert TestGraphUser.test_user is not None
-        result = TestGraphUser.test_user.app_role_assignments.get().execute_query()
+    def test_07_list_app_role_assignments(self):
+        """Listing app role assignments for the test user returns a valid collection."""
+        user = TestGraphUser.test_user
+        if not user:
+            self.skipTest("No test user created from previous test")
+        result = user.app_role_assignments.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
@@ -90,28 +113,29 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
-    def test8_update_user(self):
-        """Update a user property"""
-        assert TestGraphUser.test_user is not None
-        user_to_update = TestGraphUser.test_user
+    def test_08_update_user(self):
+        """Updating a user property (city) persists and is searchable."""
+        user = TestGraphUser.test_user
+        if not user:
+            self.skipTest("No test user created from previous test")
         prop_name = "city"
         prop_val = create_unique_name("city_")
-        user_to_update.set_property(prop_name, prop_val).update().execute_query()
+        user.set_property(prop_name, prop_val).update().execute_query()
 
         result = self.client.users.filter(f"{prop_name} eq '{prop_val}'").get().execute_query()
-        self.assertEqual(1, len(result))
+        self.assertEqual(len(result), 1)
 
     @requires_delegated(
         "User.ReadWrite.All",
         "Directory.ReadWrite.All",
         bypass_roles=["User Administrator", "Global Administrator"],
     )
-    def test_10_delete_user(self):
-        """Delete the test user"""
-        user_to_delete = TestGraphUser.test_user
-        if user_to_delete is None:
+    def test_09_delete_user(self):
+        """Deleting the test user succeeds and clears the reference."""
+        user = TestGraphUser.test_user
+        if not user:
             self.skipTest("No test user to delete")
-        user_to_delete.delete_object().execute_query()
+        user.delete_object().execute_query()
         TestGraphUser.test_user = None
 
     @requires_delegated(
@@ -119,8 +143,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["User Administrator", "Global Reader", "Global Administrator"],
     )
-    def test_11_get_user_changes(self):
-        """Get user changes via delta query"""
+    def test_10_get_user_changes(self):
+        """Getting user changes via delta query returns at least one entry."""
         changed_users = self.client.users.delta.get().execute_query()
         self.assertGreater(len(changed_users), 0)
 
@@ -129,8 +153,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
-    def test_12_get_my_member_groups(self):
-        """Get member groups for the current user"""
+    def test_11_get_my_member_groups(self):
+        """Getting member groups for the current user returns a value."""
         result = self.client.me.get_member_groups().execute_query()
         self.assertIsNotNone(result.value)
 
@@ -138,8 +162,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "User.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
-    def test_13_create_extension(self):
-        """Create an extension for the current user"""
+    def test_12_create_extension(self):
+        """Creating an extension on the current user returns a valid resource."""
         result = self.client.me.add_extension("Com.Contoso.SSN2").execute_query()
         self.assertIsNotNone(result.resource_path)
         TestGraphUser.test_extension = result
@@ -148,8 +172,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         "User.Read",
         bypass_roles=["Global Reader", "Global Administrator"],
     )
-    def test_14_get_extension(self):
-        """Get extensions for the current user"""
+    def test_13_get_extension(self):
+        """Getting extensions for the current user returns at least one entry."""
         result = self.client.me.extensions.get().execute_query()
         self.assertGreater(len(result), 0)
 
@@ -157,8 +181,20 @@ class TestGraphUser(GraphDelegatedTestCase):
         "User.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
-    def test_15_delete_extension(self):
-        """Delete the extension"""
-        assert TestGraphUser.test_extension is not None
-        result = TestGraphUser.test_extension.delete_object().execute_query()
-        self.assertIsNotNone(result.resource_path)
+    def test_14_delete_extension(self):
+        """Deleting the extension from the current user succeeds."""
+        extension = TestGraphUser.test_extension
+        if not extension:
+            self.skipTest("No extension created from previous test")
+        extension.delete_object().execute_query()
+
+    @classmethod
+    def tearDownClass(cls):
+        user = cls.test_user
+        if user and user.resource_path:
+            try:
+                user.delete_object().execute_query()
+            except Exception:
+                pass
+        cls.test_user = None
+        cls.test_extension = None

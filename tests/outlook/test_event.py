@@ -15,6 +15,11 @@ from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
 from office365.outlook.calendar.events.event import Event
+from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
+from office365.outlook.mail.recurrence_pattern import RecurrencePattern
+from office365.outlook.mail.recurrence_range import RecurrenceRange
+from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
+from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 
 from tests import test_user_principal_name
 from tests.decorators import requires_delegated
@@ -122,6 +127,42 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         matches = [e for e in remaining if e.id == event_id]
         self.assertEqual(len(matches), 0)
         TestOutlookEvent.target_event = None
+
+    @requires_delegated(
+        "Calendars.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_07_create_recurring_event(self):
+        """Creating a weekly recurring event with 4 occurrences should succeed."""
+        when = datetime.now() + timedelta(days=1)
+        result = self.client.me.calendar.events.add(
+            subject="Weekly Standup",
+            body="Team sync.",
+            start=when,
+            end=when + timedelta(hours=1),
+        ).execute_query()
+        self.assertIsNotNone(result.get_property("id"))
+
+        # Set recurrence pattern after creation
+        result.set_property(
+            "recurrence",
+            PatternedRecurrence(
+                pattern=RecurrencePattern(
+                    type=RecurrencePatternType.weekly.value,
+                    interval=1,
+                ),
+                range=RecurrenceRange(
+                    type=RecurrenceRangeType.numbered.value,
+                    numberOfOccurrences=4,
+                    startDate=when.date(),
+                ),
+            ),
+        ).update().execute_query()
+
+        # Re-fetch to verify recurrence persisted
+        updated = self.client.me.calendar.events[result.id].get().execute_query()
+        self.assertIsNotNone(updated.get_property("recurrence"))
+        result.delete_object().execute_query()
 
     @classmethod
     def tearDownClass(cls):

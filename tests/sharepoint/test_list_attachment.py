@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os.path
 from io import BytesIO
+from typing import ClassVar, Optional
 
 from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.listitems.listitem import ListItem
@@ -11,10 +12,12 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestListItemAttachment(SPTestCase):
+    """List item attachment operations tests"""
+
     attachment_file_name = "Sample.txt"
-    target_item: ListItem | None = None
+    target_item: ClassVar[Optional[ListItem]] = None
     attachment_path = f"{os.path.dirname(__file__)}/../data/{attachment_file_name}"
-    target_attachment: Attachment | None = None
+    target_attachment: ClassVar[Optional[Attachment]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -26,47 +29,53 @@ class TestListItemAttachment(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        assert cls.target_item is not None
+        cls.assertIsNotNone(cls.target_item)
         cls.target_item.delete_object().execute_query()
         cls.target_item.parent_list.delete_object().execute_query()
 
-    def test1_upload_attachment(self):
-        assert self.target_item is not None
+    def test_01_upload_attachment(self):
+        """Upload an attachment to a list item"""
+        self.assertIsNotNone(TestListItemAttachment.target_item)
         with open(self.attachment_path, "rb") as f:
-            result = self.target_item.attachment_files.upload(f).execute_query()
+            result = TestListItemAttachment.target_item.attachment_files.upload(f).execute_query()
         self.assertIsNotNone(result.file_name)
-        type(self).target_attachment = result
+        TestListItemAttachment.target_attachment = result
 
-    def test2_list_attachments(self):
-        assert self.target_item is not None
-        result = self.target_item.attachment_files.get().execute_query()
+    def test_02_list_attachments(self):
+        """List all attachments on a list item"""
+        self.assertIsNotNone(TestListItemAttachment.target_item)
+        result = TestListItemAttachment.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 1)
 
-    def test3_get_by_filename(self):
-        assert self.target_item is not None
-        result = self.target_item.attachment_files.get_by_filename(self.attachment_file_name)
+    def test_03_get_by_filename(self):
+        """Get attachment by filename"""
+        self.assertIsNotNone(TestListItemAttachment.target_item)
+        result = TestListItemAttachment.target_item.attachment_files.get_by_filename(self.attachment_file_name)
         self.assertIsNotNone(result.resource_path)
 
-    def test4_download_attachment(self):
-        assert self.target_attachment is not None
+    def test_04_download_attachment(self):
+        """Download attachment content"""
+        self.assertIsNotNone(TestListItemAttachment.target_attachment)
         f = BytesIO()
-        self.target_attachment.download(f).execute_query()
+        TestListItemAttachment.target_attachment.download(f).execute_query()
         self.assertIsNotNone(f.read())
 
-    def test5_update_attachment(self):
-        assert self.target_attachment is not None
+    def test_05_update_attachment(self):
+        """Update attachment content"""
+        self.assertIsNotNone(TestListItemAttachment.target_attachment)
         local_f = BytesIO(b"new attachment content goes here")
-        self.target_attachment.upload(local_f).execute_query()
+        TestListItemAttachment.target_attachment.upload(local_f).execute_query()
 
         remote_f = BytesIO()
-        self.target_attachment.download(remote_f).execute_query()
+        TestListItemAttachment.target_attachment.download(remote_f).execute_query()
         local_content = local_f.getvalue()
         remote_content = remote_f.getvalue()
         self.assertEqual(local_content, remote_content)
 
-    def test6_delete_attachments(self):
-        assert self.target_attachment is not None
-        assert self.target_item is not None
-        self.target_attachment.delete_object().execute_query()
-        result = self.target_item.attachment_files.get().execute_query()
+    def test_06_delete_attachments(self):
+        """Delete attachment and verify"""
+        self.assertIsNotNone(TestListItemAttachment.target_attachment)
+        self.assertIsNotNone(TestListItemAttachment.target_item)
+        TestListItemAttachment.target_attachment.delete_object().execute_query()
+        result = TestListItemAttachment.target_item.attachment_files.get().execute_query()
         self.assertEqual(len(result), 0)

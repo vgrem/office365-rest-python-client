@@ -1,13 +1,13 @@
 # Planner
 
-Examples for working with Microsoft Graph Planner API — creating and
-managing plans, buckets, and tasks.
+Examples for working with Microsoft Graph Planner API — creating plans,
+organizing tasks with buckets, assignments, and tracking progress.
 
 ---
 
 ## Prerequisites
 
-| Requirement | Description | Reference |
+| Permission | Description | Reference |
 |---|---|---|
 | `Group.ReadWrite.All` (delegated) | Create, read, update, and delete plans, buckets, and tasks | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#group-permissions) |
 | `Tasks.ReadWrite.All` (delegated) | Alternative scope focused on tasks | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#tasks-permissions) |
@@ -31,26 +31,30 @@ flowchart LR
 
 A **plan** is owned by a Microsoft 365 group. Plans contain **buckets**
 (todo / in progress / done) that group **tasks**. Each task has **details**
-(description, checklist, references, due date, priority, assignees).
+(description, checklist, references), a **priority** (1-10), a **progress**
+(percent complete), and **assignments** (users responsible).
 
 ---
 
-## Examples
+## Basic usage
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Create a planner plan owned by a group | [`create_plan.py`](./create_plan.py) | `Group.ReadWrite.All` | [create plan](https://learn.microsoft.com/en-us/graph/api/planner-post-plans) |
-| **2** | List all plans for a group | [`list_plans.py`](./list_plans.py) | `Group.ReadWrite.All` | [list plans](https://learn.microsoft.com/en-us/graph/api/planner-list-plans) |
-| **3** | Delete a plan by title | [`delete_plan.py`](./delete_plan.py) | `Group.ReadWrite.All` | [delete plan](https://learn.microsoft.com/en-us/graph/api/planner-delete-plans) |
-| **4** | Create a bucket (task category) in a plan | [`create_bucket.py`](./create_bucket.py) | `Group.ReadWrite.All` | [create bucket](https://learn.microsoft.com/en-us/graph/api/planner-post-buckets) |
-| **5** | List all buckets in a plan | [`list_buckets.py`](./list_buckets.py) | `Group.ReadWrite.All` | [list buckets](https://learn.microsoft.com/en-us/graph/api/planner-list-buckets) |
-| **6** | Create a task in a plan and bucket | [`create_task.py`](./create_task.py) | `Group.ReadWrite.All` | [create task](https://learn.microsoft.com/en-us/graph/api/planner-post-tasks) |
-| **7** | List tasks in a plan (with progress and priority) | [`list_tasks.py`](./list_tasks.py) | `Group.ReadWrite.All` | [list tasks](https://learn.microsoft.com/en-us/graph/api/planner-list-tasks) |
-| **8** | Update a task (title, due date, priority, progress) | [`update_task.py`](./update_task.py) | `Group.ReadWrite.All` | [update task](https://learn.microsoft.com/en-us/graph/api/planner-update-tasks) |
-| **9** | Delete a task by title | [`delete_task.py`](./delete_task.py) | `Group.ReadWrite.All` | [delete task](https://learn.microsoft.com/en-us/graph/api/planner-delete-tasks) |
-| **10** | Assign a task to a user | [`assign_task.py`](./assign_task.py) | `Group.ReadWrite.All` | [assign task](https://learn.microsoft.com/en-us/graph/api/planner-update-tasks) |
-| **11** | Get task details (description, checklist) | [`get_task_details.py`](./get_task_details.py) | `Group.ReadWrite.All` | [task details](https://learn.microsoft.com/en-us/graph/api/planner-get-taskdetails) |
-| **12** | Update plan details (category descriptions) | [`update_plan_details.py`](./update_plan_details.py) | `Group.ReadWrite.All` | [plan details](https://learn.microsoft.com/en-us/graph/api/planner-update-plandetails) |
+| Scenario | File | Permission | API reference |
+|---|---|---|---|
+| Create a planner plan for a group | [`create_plan.py`](./create_plan.py) | `Group.ReadWrite.All` | [create plan](https://learn.microsoft.com/en-us/graph/api/planner-post-plans) |
+
+---
+
+## Patterns
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Full plan provisioning** — plan + category labels + buckets + tasks + assignments in one flow | [`plans/provision.py`](./plans/provision.py) | The "sprint setup" pattern: templates with categories, buckets, and pre-assigned tasks |
+| **Progress dashboard** — scan all tasks across plans with status, priority, and assignee breakdown | [`tasks/progress_report.py`](./tasks/progress_report.py) | Adoption tracking, workload visibility, and status reporting across the org |
+| Create a task in a plan (with optional bucket) | [`create_task.py`](./create_task.py) | Resolve plan and bucket by name, then create a task with references |
+| Update a task (title, due date, priority, progress) | [`update_task.py`](./update_task.py) | Rich update with multiple property changes at once |
+| Assign a task to a user by email | [`assign_task.py`](./assign_task.py) | User resolution + ``plannerAssignment`` object pattern |
+| Get task details (description, checklist, references) | [`get_task_details.py`](./get_task_details.py) | Reading the full task details blob — essential for integrations |
+| Update plan details (category color labels) | [`update_plan_details.py`](./update_plan_details.py) | Custom label categories (Urgent, Client, Internal) for consistent task tagging |
 
 ---
 
@@ -74,7 +78,7 @@ print(f"Task created: {task.title}")
 
 ## Official docs
 
-- [Planner API overview](https://learn.microsoft.com/en-us/graph/api/resources/planner)
+- [Planner API overview](https://learn.microsoft.com/en-us/graph/api/resources/planner-overview)
 - [Planner plans](https://learn.microsoft.com/en-us/graph/api/resources/plannerplan)
 - [Planner tasks](https://learn.microsoft.com/en-us/graph/api/resources/plannertask)
 - [Planner buckets](https://learn.microsoft.com/en-us/graph/api/resources/plannerbucket)

@@ -1,13 +1,14 @@
 # Microsoft OneNote
 
-Examples for working with OneNote via the Microsoft Graph API — notebooks,
-sections, section groups, and pages.
+Examples for working with OneNote via the Microsoft Graph API —
+creating rich content, navigating the hierarchy, and provisioning
+standardized notebooks.
 
 ---
 
 ## Prerequisites
 
-| Requirement | Description | Reference |
+| Permission | Description | Reference |
 |---|---|---|
 | `Notes.Read` | Read notebooks, sections, and pages | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#notes-permissions) |
 | `Notes.ReadWrite` | Create and manage notebooks, sections, and pages | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#notes-permissions) |
@@ -26,25 +27,32 @@ flowchart LR
 
 OneNote content is organized hierarchically. **Notebooks** contain **sections**
 and **section groups**. Sections contain **pages**. Each page has HTML content
-and can include embedded images, files, and attachments.
+and can include embedded images, files, tables, and attachments.
+
+**Group notebooks** are also accessible via the API at
+``/groups/{id}/onenote/``.
 
 ---
 
-## Examples
+## Basic usage
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | List all notebooks | [`list_notebooks.py`](./list_notebooks.py) | `Notes.Read` | [list notebooks](https://learn.microsoft.com/en-us/graph/api/onenote-list-notebooks) |
-| **2** | List recently accessed notebooks | [`list_recent_notebooks.py`](./list_recent_notebooks.py) | `Notes.Read` | [recent notebooks](https://learn.microsoft.com/en-us/graph/api/onenote-list-recentnotebooks) |
-| **3** | Create a new notebook | [`create_notebook.py`](./create_notebook.py) | `Notes.ReadWrite` | [create notebook](https://learn.microsoft.com/en-us/graph/api/onenote-post-notebooks) |
-| **4** | Delete a notebook by name | [`delete_notebook.py`](./delete_notebook.py) | `Notes.ReadWrite` | [delete notebook](https://learn.microsoft.com/en-us/graph/api/onenote-delete-notebook) |
-| **5** | List sections in a notebook | [`list_sections.py`](./list_sections.py) | `Notes.Read` | [list sections](https://learn.microsoft.com/en-us/graph/api/onenote-list-sections) |
-| **6** | Create a section in a notebook | [`create_section.py`](./create_section.py) | `Notes.ReadWrite` | [create section](https://learn.microsoft.com/en-us/graph/api/onenote-post-sections) |
-| **7** | List section groups in a notebook | [`list_section_groups.py`](./list_section_groups.py) | `Notes.Read` | [list section groups](https://learn.microsoft.com/en-us/graph/api/onenote-list-sectiongroups) |
-| **8** | List pages in a section | [`list_pages.py`](./list_pages.py) | `Notes.Read` | [list pages](https://learn.microsoft.com/en-us/graph/api/onenote-list-pages) |
-| **9** | Get page HTML content | [`get_page_content.py`](./get_page_content.py) | `Notes.Read` | [get page](https://learn.microsoft.com/en-us/graph/api/page-get) |
-| **10** | Create a page with attachments | [`create_page.py`](./create_page.py) | `Notes.ReadWrite` | [create page](https://learn.microsoft.com/en-us/graph/onenote-create-page) |
+| Scenario | File | Permission | API reference |
+|---|---|---|---|
+| Create a new notebook | [`create_notebook.py`](./create_notebook.py) | `Notes.ReadWrite` | [create notebook](https://learn.microsoft.com/en-us/graph/api/onenote-post-notebooks) |
 
+---
+
+## Patterns
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Rich page creation** — tables, lists, styled text, inline images all as input HTML | [`pages/create_rich_page.py`](./pages/create_rich_page.py) | Shows the input HTML patterns that OneNote supports — far beyond plain text |
+| **Page with attachments** — embed images and files from disk | [`create_page.py`](./create_page.py) | Multipart request pattern: HTML + binary attachments (images, PDFs, Word docs) |
+| **Download page HTML** — get the full rendered content of a page | [`get_page_content.py`](./get_page_content.py) | Essential for export, backup, or integration with external tools |
+| **Export full notebook hierarchy** — walk all notebooks, section groups, sections, and pages with metadata | [`audit_notebook_structure.py`](./audit_notebook_structure.py) | Content discovery and inventory — the #1 admin scenario for OneNote |
+| **Provision a notebook from template** — create notebook with predefined sections and starter pages | [`notebooks/provision.py`](./notebooks/provision.py) | Standardized notebook onboarding for teams, projects, or training |
+
+---
 ---
 
 ## Quick start
@@ -65,5 +73,8 @@ for nb in notebooks:
 
 ## Official docs
 
-- [OneNote API overview](https://learn.microsoft.com/en-us/graph/api/resources/onenote)
+- [OneNote API overview](https://learn.microsoft.com/en-us/graph/api/resources/onenote-api-overview)
 - [OneNote permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#notes-permissions)
+- [Create OneNote pages](https://learn.microsoft.com/en-us/graph/onenote-create-page)
+- [Get OneNote content](https://learn.microsoft.com/en-us/graph/onenote-get-content)
+- [Input and output HTML](https://learn.microsoft.com/en-us/graph/onenote-input-output-html)

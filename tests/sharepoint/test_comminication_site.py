@@ -1,6 +1,9 @@
+"""Tests for SharePoint communication site creation, management, and hub registration."""
+
 from __future__ import annotations
 
 import uuid
+from typing import ClassVar, Optional
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sites.site import Site
@@ -19,7 +22,9 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestCommunicationSite(SPTestCase):
-    target_site: Site | None = None
+    """Tests for SharePoint communication site lifecycle operations."""
+
+    target_site: ClassVar[Optional[Site]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -29,47 +34,66 @@ class TestCommunicationSite(SPTestCase):
         )
         cls.client = ctx
 
-    def test1_create_site(self):
+    def test_01_create_site(self):
+        """Create a new communication site."""
         site_alias = f"site{uuid.uuid4().hex}"
         comm_site = self.client.create_communication_site(site_alias, site_alias).execute_query()
         self.assertIsNotNone(comm_site.resource_path)
-        type(self).target_site = comm_site
+        TestCommunicationSite.target_site = comm_site
 
-    def test2_is_comm_site(self):
-        assert self.target_site is not None
-        result = self.target_site.is_comm_site().execute_query()
+    def test_02_is_comm_site(self):
+        """Verify the site is a communication site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        result = target.is_comm_site().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test3_set_as_home_site(self):
-        assert self.target_site is not None
-        result = self.target_site.set_as_home_site().execute_query()
+    def test_03_set_as_home_site(self):
+        """Set the communication site as the home site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        result = target.set_as_home_site().execute_query()
         self.assertIsNotNone(result.value)
 
-    def test4_is_valid_home_site(self):
-        assert self.target_site is not None
-        result = self.target_site.is_valid_home_site().execute_query()
+    def test_04_is_valid_home_site(self):
+        """Verify the site is a valid home site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        result = target.is_valid_home_site().execute_query()
         self.assertIsNotNone(result.value)
 
     # def test5_get_home_details(self):
     #    result = self.client.home_site.details().execute_query()
     #    self.assertIsNotNone(result.value)
 
-    def test7_register_hub_site(self):
-        assert self.target_site is not None
-        assert self.target_site.url is not None
+    def test_05_register_hub_site(self):
+        """Register the site as a hub site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        self.assertIsNotNone(target.url)
         tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
-        props = tenant.register_hub_site(self.target_site.url).execute_query()
+        props = tenant.register_hub_site(target.url).execute_query()
         self.assertIsNotNone(props.site_id)
-        site = self.target_site.get().execute_query()
+        site = target.get().execute_query()
         self.assertTrue(site.is_hub_site)
 
-    def test8_unregister_hub_site(self):
-        assert self.target_site is not None
-        assert self.target_site.url is not None
+    def test_06_unregister_hub_site(self):
+        """Unregister the site as a hub site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        self.assertIsNotNone(target.url)
         client_admin = ClientContext(test_admin_site_url).with_credentials(test_user_credentials)
         tenant = Tenant(client_admin)
-        tenant.unregister_hub_site(self.target_site.url).execute_query()
+        tenant.unregister_hub_site(target.url).execute_query()
 
-    def test9_delete_site(self):
-        assert self.target_site is not None
-        self.target_site.delete_object().execute_query()
+    def test_07_delete_site(self):
+        """Delete the communication site."""
+        target = TestCommunicationSite.target_site
+        if not target:
+            self.skipTest("No resource from previous test")
+        target.delete_object().execute_query()

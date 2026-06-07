@@ -1,3 +1,7 @@
+"""Tests for SharePoint client context and query execution (connection, batching, query options)."""
+
+from __future__ import annotations
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.query_options import QueryOptions
@@ -27,24 +31,30 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointClient(SPTestCase):
-    def test1_connect_with_app_principal(self):
+    """Tests for SharePoint client context connection and query execution."""
+
+    def test_01_connect_with_app_principal(self):
+        """Connect using app principal credentials."""
         ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
-    def test2_connect_with_app_principal_alt(self):
+    def test_02_connect_with_app_principal_alt(self):
+        """Connect using client ID and secret directly."""
         ctx = ClientContext(test_site_url).with_client_credentials(test_client_id, test_client_secret)
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
-    def test4_connect_with_user_credentials(self):
+    def test_03_connect_with_user_credentials(self):
+        """Connect using username and password credentials."""
         ctx = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
-    def test5_init_from_url(self):
+    def test_04_init_from_url(self):
+        """Initialize client context from a page URL."""
         page_url = f"{test_team_site_url}/SitePages/Home.aspx"
         ctx = ClientContext.from_url(page_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
@@ -52,7 +62,8 @@ class TestSharePointClient(SPTestCase):
         web = ctx.web.get().execute_query()
         self.assertIsNotNone(web.url)
 
-    def test8_execute_multiple_queries_sequentially(self):
+    def test_05_execute_multiple_queries_sequentially(self):
+        """Execute multiple queries sequentially."""
         client = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
@@ -64,7 +75,8 @@ class TestSharePointClient(SPTestCase):
         self.assertIsNotNone(current_web.url)
         self.assertIsNotNone(current_user.user_id)
 
-    def test9_execute_get_batch_request(self):
+    def test_06_execute_get_batch_request(self):
+        """Execute a GET batch request."""
         client = ClientContext(test_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
@@ -77,7 +89,8 @@ class TestSharePointClient(SPTestCase):
         self.assertIsNotNone(current_user.user_id)
         self.assertIsInstance(current_user.user_id, UserIdInfo)
 
-    def test_10_execute_update_batch_request(self):
+    def test_07_execute_update_batch_request(self):
+        """Execute an UPDATE batch request."""
         client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         web = client.web
         new_web_title = create_unique_name("Site")
@@ -87,7 +100,8 @@ class TestSharePointClient(SPTestCase):
         updated_web = client.web.get().execute_query()
         self.assertEqual(updated_web.properties["Title"], new_web_title)
 
-    def test_11_execute_get_and_update_batch_request(self):
+    def test_08_execute_get_and_update_batch_request(self):
+        """Execute combined GET and UPDATE batch requests."""
         page_url = "/SitePages/Home.aspx"
         client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields
@@ -98,10 +112,12 @@ class TestSharePointClient(SPTestCase):
         updated_list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields.get().execute_query()
         self.assertEqual(updated_list_item.properties["Title"], new_title)
 
-    def test_12_create_and_delete_batch_request(self):
+    def test_09_create_and_delete_batch_request(self):
+        """Placeholder for create and delete batch request test."""
         pass
 
-    def test_13_get_and_delete_batch_request(self):
+    def test_10_get_and_delete_batch_request(self):
+        """Execute get and delete batch requests for a file."""
         file_name = create_unique_file_name("TestFile", "txt")
         client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         list_pages = client.web.lists.get_by_title("Documents")
@@ -116,7 +132,8 @@ class TestSharePointClient(SPTestCase):
         client.execute_batch()
         self.assertEqual(len(files_after), files_count_before)
 
-    def test_14_get_entity_type_name(self):
+    def test_11_get_entity_type_name(self):
+        """Verify entity type name resolution for various types."""
         guid_coll = GuidCollection()
         self.assertEqual(guid_coll.entity_type_name, "Collection(Edm.Guid)")
 
@@ -142,13 +159,15 @@ class TestSharePointClient(SPTestCase):
         expected_type = "Collection(Microsoft.Online.SharePoint.TenantAdministration.SecondaryAdministratorsFieldsData)"
         self.assertEqual(type_col.entity_type_name, expected_type)
 
-    def test_15_build_query_options(self):
+    def test_12_build_query_options(self):
+        """Build query options with select and expand."""
         client = ClientContext(test_site_url)
         lib = client.web.default_document_library()
         options = QueryOptionsBuilder.build(lib, ["Author", "Comments"])
         self.assertEqual(str(options), "$select=Author,Comments&$expand=Author")
 
-    def test_16_ensure_property(self):
+    def test_13_ensure_property(self):
+        """Ensure a property is loaded before accessing it."""
         client = ClientContext(test_site_url).with_credentials(test_client_credentials)
         me = client.web.current_user.get()
         site = client.site
@@ -162,11 +181,13 @@ class TestSharePointClient(SPTestCase):
         self.assertIsNotNone(me.login_name)
         self.assertIsNotNone(lib.title)
 
-    def test_17_test_client_result(self):
+    def test_14_test_client_result(self):
+        """Verify ClientResult wrapping of a value collection."""
         client = ClientContext(test_site_url)
         result = ClientResult(client, StringCollection())
         self.assertIsInstance(result.value, StringCollection)
 
-    def test_18_query_options_is_empty(self):
+    def test_15_query_options_is_empty(self):
+        """Verify that default QueryOptions is empty."""
         options = QueryOptions()
         self.assertTrue(options.is_empty)

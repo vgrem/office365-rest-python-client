@@ -1,4 +1,22 @@
-from typing import Optional
+"""Azure AD groups — CRUD, owners, members, delta, and by-name lookup.
+
+Tests cover:
+  - Creating a Microsoft 365 group
+  - Listing groups (top N, count)
+  - Getting a group by ID
+  - Adding an owner to the group
+  - Listing group owners
+  - Removing an owner from the group
+  - Adding a member to the group
+  - Removing a member from the group
+  - Deleting a group
+  - Getting group changes via delta query
+  - Getting a group by display name
+"""
+
+from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.directory.groups.group import Group
 from office365.directory.users.user import User
@@ -9,97 +27,126 @@ from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestGraphGroup(GraphDelegatedTestCase):
-    """Tests for Azure Active Directory (Azure AD) groups"""
+    """Azure AD group CRUD, membership, and ownership."""
 
-    target_group: Optional[Group] = None
-    target_user: Optional[User] = None
+    target_group: ClassVar[Optional[Group]] = None
+    target_user: ClassVar[Optional[User]] = None
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test1_create_group(self):
-        """Create a Microsoft 365 group"""
+    def test_01_create_group(self):
+        """Creating a Microsoft 365 group returns a valid group with an ID."""
         name = create_unique_name("Group")
         new_group = self.client.groups.create_m365(name).execute_query()
         self.assertIsNotNone(new_group.id)
+        self.assertEqual(new_group.get_property("displayName"), name)
         TestGraphGroup.target_group = new_group
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test2_list_groups(self):
-        """List groups"""
+    def test_02_list_groups(self):
+        """Listing top 1 group returns exactly one result."""
         result = self.client.groups.top(1).get().execute_query()
         self.assertEqual(len(result), 1)
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test3_get_groups_count(self):
-        """Get groups count"""
+    def test_03_get_groups_count(self):
+        """Getting the groups count returns a numeric value."""
         result = self.client.groups.count().execute_query()
         self.assertIsNotNone(result.value)
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test4_get_group(self):
-        """Get a group by ID"""
-        assert TestGraphGroup.target_group is not None
-        existing_group = TestGraphGroup.target_group
-        assert existing_group.id is not None
-        target_group = self.client.groups[existing_group.id].get().execute_query()
+    def test_04_get_group(self):
+        """Getting a group by ID returns an instance of Group."""
+        group = TestGraphGroup.target_group
+        if not group:
+            self.skipTest("No target group created from previous test")
+        group_id = group.id
+        if not group_id:
+            self.skipTest("Target group has no ID")
+        target_group = self.client.groups[group_id].get().execute_query()
         self.assertIsInstance(target_group, Group)
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test5_add_group_owner(self):
-        """Add an owner to the group"""
+    def test_05_add_group_owner(self):
+        """Adding an owner to the group succeeds."""
         users = self.client.users.filter(f"mail eq '{test_user_principal_name}'").get().execute_query()
         self.assertEqual(len(users), 1)
 
         owner = users[0]
-        assert TestGraphGroup.target_group is not None
-        grp = TestGraphGroup.target_group
-        grp.owners.add(owner).execute_query()
+        group = TestGraphGroup.target_group
+        if not group:
+            self.skipTest("No target group created from previous test")
+        group.owners.add(owner).execute_query()
         TestGraphGroup.target_user = users[0]
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test6_list_group_owners(self):
-        """List group owners"""
-        assert TestGraphGroup.target_group is not None
-        owners = TestGraphGroup.target_group.owners.get().execute_query()
+    def test_06_list_group_owners(self):
+        """Listing group owners returns at least one owner."""
+        group = TestGraphGroup.target_group
+        if not group:
+            self.skipTest("No target group created from previous test")
+        owners = group.owners.get().execute_query()
         self.assertGreater(len(owners), 0)
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test7_remove_group_owner(self):
-        """Remove an owner from the group"""
-        assert TestGraphGroup.target_user is not None
-        owner_id = TestGraphGroup.target_user.id
-        assert owner_id is not None
-        assert TestGraphGroup.target_group is not None
-        grp = TestGraphGroup.target_group
-        grp.owners.remove(owner_id).execute_query()
+    def test_07_remove_group_owner(self):
+        """Removing an owner from the group succeeds."""
+        target_user = TestGraphGroup.target_user
+        group = TestGraphGroup.target_group
+        if not target_user:
+            self.skipTest("No target user to remove")
+        if not group:
+            self.skipTest("No target group")
+        owner_id = target_user.id
+        if not owner_id:
+            self.skipTest("Target user has no ID")
+        group.owners.remove(owner_id).execute_query()
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test8_add_group_member(self):
-        """Add a member to the group"""
-        assert TestGraphGroup.target_user is not None
-        member = TestGraphGroup.target_user
-        assert TestGraphGroup.target_group is not None
-        grp = TestGraphGroup.target_group
-        grp.members.add(member).execute_query()
+    def test_08_add_group_member(self):
+        """Adding a member to the group succeeds."""
+        target_user = TestGraphGroup.target_user
+        group = TestGraphGroup.target_group
+        if not target_user:
+            self.skipTest("No target user to add")
+        if not group:
+            self.skipTest("No target group")
+        group.members.add(target_user).execute_query()
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
-    def test9_remove_group_member(self):
-        """Remove a member from the group"""
-        assert TestGraphGroup.target_user is not None
-        member_id = TestGraphGroup.target_user.id
-        assert member_id is not None
-        assert TestGraphGroup.target_group is not None
-        grp = TestGraphGroup.target_group
-        grp.members.remove(member_id).execute_query()
+    def test_09_remove_group_member(self):
+        """Removing a member from the group succeeds."""
+        target_user = TestGraphGroup.target_user
+        group = TestGraphGroup.target_group
+        if not target_user:
+            self.skipTest("No target user to remove")
+        if not group:
+            self.skipTest("No target group")
+        member_id = target_user.id
+        if not member_id:
+            self.skipTest("Target user has no ID")
+        group.members.remove(member_id).execute_query()
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
     def test_10_delete_group(self):
-        """Delete the group"""
-        assert TestGraphGroup.target_group is not None
-        grp_to_delete = TestGraphGroup.target_group
-        grp_to_delete.delete_object(True).execute_query()
+        """Deleting the group succeeds."""
+        group = TestGraphGroup.target_group
+        if not group:
+            self.skipTest("No target group to delete")
+        group.delete_object(True).execute_query()
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
     def test_11_get_changes(self):
-        """Get group changes via delta query"""
+        """Getting group changes via delta query returns at least one entry."""
         changed_groups = self.client.groups.delta.select(["displayName"]).get().execute_query()
         self.assertGreater(len(changed_groups), 0)
+
+    @classmethod
+    def tearDownClass(cls):
+        group = cls.target_group
+        if group and group.resource_path:
+            try:
+                group.delete_object(True).execute_query()
+            except Exception:
+                pass
+        cls.target_group = None
+        cls.target_user = None

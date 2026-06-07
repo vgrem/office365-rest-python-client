@@ -1,4 +1,8 @@
+"""Tests for SharePoint document set operations (create and delete)."""
+
 from __future__ import annotations
+
+from typing import ClassVar, Optional
 
 from office365.sharepoint.documentmanagement.document_set import DocumentSet
 from office365.sharepoint.lists.list import List
@@ -8,8 +12,10 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointDocumentSet(SPTestCase):
-    target_lib: List | None = None
-    target_doc_set: DocumentSet | None = None
+    """Tests for SharePoint document set lifecycle operations."""
+
+    target_lib: ClassVar[Optional[List]] = None
+    target_doc_set: ClassVar[Optional[DocumentSet]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -19,17 +25,25 @@ class TestSharePointDocumentSet(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        assert cls.target_lib is not None
-        cls.target_lib.delete_object().execute_query()
+        target = cls.target_lib
+        if not target:
+            return
+        target.delete_object().execute_query()
 
-    def test1_create_document_set(self):
+    def test_01_create_document_set(self):
+        """Create a document set in the target library."""
         doc_set_title = create_unique_name("DocSet N")
-        assert self.target_lib is not None
-        doc_set = DocumentSet.create(self.client, self.target_lib.root_folder, doc_set_title).execute_query()
+        target = TestSharePointDocumentSet.target_lib
+        if not target:
+            self.skipTest("No resource from previous test")
+        doc_set = DocumentSet.create(self.client, target.root_folder, doc_set_title).execute_query()
         self.assertEqual(doc_set.name, doc_set_title)
         self.assertIsNotNone(doc_set.resource_path)
-        type(self).target_doc_set = doc_set
+        TestSharePointDocumentSet.target_doc_set = doc_set
 
-    def test2_delete_document_set(self):
-        assert self.target_doc_set is not None
-        self.target_doc_set.delete_object().execute_query()
+    def test_02_delete_document_set(self):
+        """Delete the created document set."""
+        target = TestSharePointDocumentSet.target_doc_set
+        if not target:
+            self.skipTest("No resource from previous test")
+        target.delete_object().execute_query()

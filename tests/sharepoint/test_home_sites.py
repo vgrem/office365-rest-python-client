@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
@@ -12,6 +14,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestHomeSites(SPTestCase):
+    """Home site management tests"""
+
     @classmethod
     def setUpClass(cls):
         client = ClientContext(test_admin_site_url).with_username_and_password(
@@ -19,6 +23,7 @@ class TestHomeSites(SPTestCase):
         )
         cls.tenant = Tenant(client)
 
-    def test1_get_home_sites(self):
+    def test_01_get_home_sites(self):
+        """Get home sites"""
         result = self.tenant.get_home_sites().execute_query()
         self.assertIsNotNone(result.value)
