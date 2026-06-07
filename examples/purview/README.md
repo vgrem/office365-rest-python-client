@@ -42,6 +42,7 @@ flowchart LR
 | **Records management** | Create retention label with 365-day retention, record behavior, delete disposition | [`records/retention_label.py`](./records/retention_label.py) | `RecordsManagement.ReadWrite.All` |
 | **Privacy / GDPR** | Create a subject rights request for data export under GDPR Article 15 | [`subject_rights/create_request.py`](./subject_rights/create_request.py) | `SubjectRightsRequest.ReadWrite.All` |
 | **Security** | Submit URL and file for phishing/malware threat assessment | [`threat_assessment/scan_url.py`](./threat_assessment/scan_url.py) | `ThreatAssessment.ReadWrite.All` |
+| **Information protection** | List and audit sensitivity labels | [`sensitivity_labels/apply.py`](./sensitivity_labels/apply.py) | `InformationProtectionPolicy.Read.All` |
 
 ---
 
