@@ -4,8 +4,14 @@ from unittest import TestCase
 
 from office365.sharepoint.client_context import ClientContext
 
-from tests import test_client_id, test_client_secret, test_team_site_url, test_tenant, test_cert_thumbprint, \
-    test_cert_path
+from tests import (
+    test_cert_path,
+    test_cert_thumbprint,
+    test_client_id,
+    test_client_secret,
+    test_team_site_url,
+    test_tenant,
+)
 
 
 class SPTestCase(TestCase):
