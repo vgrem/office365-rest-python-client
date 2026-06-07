@@ -1,5 +1,7 @@
 """
-Search files and folders in your OneDrive by keyword.
+Search the current user's drive for files matching a keyword.
+
+Uses the drive search endpoint.
 
 Requires delegated permission ``Files.Read``.
 
@@ -13,7 +15,8 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(
     test_client_id, test_username, test_password
 )
 
-results = client.me.drive.search("report").execute_query()
-print(f"Found {len(results)} items matching 'report':")
+results = client.me.drive.search("Quarterly").execute_query()
+print(f"Search results for 'Quarterly': {len(results)}")
 for item in results:
-    print(f"  {item.name:40s}  {'📄' if item.is_file else '📁'}  {item.size or 0:,} bytes")
+    item_type = "📄" if item.is_file else "📁"
+    print(f"  {item_type}  {item.name:40s}  {item.parent_reference.path or 'root'}")
