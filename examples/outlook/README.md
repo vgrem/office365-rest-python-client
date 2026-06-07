@@ -13,6 +13,8 @@ Microsoft Graph.
 | `Mail.Send` (delegated) | Send mail on behalf of the signed-in user | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 | `Calendars.ReadWrite` (delegated) | Create, read, update, delete events and calendars | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
 | `MailboxSettings.ReadWrite` (delegated) | Read and update automatic replies, rules | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Mail.Read` (delegated) | Read mail tips and message properties | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
+| `Reports.Read.All` (delegated) | Access email and mailbox usage reports | [Reports permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#reports-permissions) |
 
 ---
 
@@ -49,9 +51,12 @@ flowchart LR
 | **Inbox rules + categories** — automate message handling and visual organization | [`messages/inbox_rules.py`](./messages/inbox_rules.py) | Combine rules (forward/flag) with category management |
 | **Mailbox settings** — enable scheduled automatic replies (OOF) | [`messages/mailbox_settings.py`](./messages/mailbox_settings.py) | Out-of-office configuration via API |
 | **Find meeting times & get schedule** — availability lookup and free/busy | [`calendars/availability.py`](./calendars/availability.py) | Scheduler assistant pattern — find slots and view user availability |
-| **Share calendar** — grant read/write permissions to another user | [`calendars/share.py`](./calendars/share.py) | Calendar delegation and visibility control |
+| **Share calendar** — grant read access to another user | [`calendars/share.py`](./calendars/share.py) | Calendar visibility control — share free/busy level |
+| **Delegate calendar** — grant editor/delegate access to manage events on your behalf | [`calendars/delegate.py`](./calendars/delegate.py) | Delegate access for assistants or team members to manage your calendar |
 | **Recurring event** — weekly pattern with limited occurrences | [`events/recurring.py`](./events/recurring.py) | Recurrence pattern setup — meetings, standups, reminders |
 | **Meeting response** — accept, decline, or cancel an event | [`events/respond.py`](./events/respond.py) | Attendee and organizer response workflows |
+| **Email usage report** — activity counts, mailbox storage across D7/D30/D90 | [`reports/email_usage.py`](./reports/email_usage.py) | Adoption tracking, storage planning, and audit reporting |
+| **Mail tips** — check recipient status before sending (OOF, moderation, size limits) | [`messages/mail_tips.py`](./messages/mail_tips.py) | Pre-flight check for senders — prevents bounced or blocked messages |
 
 ---
 
