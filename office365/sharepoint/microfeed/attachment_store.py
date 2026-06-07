@@ -5,3 +5,7 @@ from office365.sharepoint.entity import Entity
 class MicrofeedAttachmentStore(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Microfeed.MicrofeedAttachmentStore"))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "SP.Microfeed.MicrofeedAttachmentStore"

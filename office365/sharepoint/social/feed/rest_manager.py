@@ -16,3 +16,7 @@ class SocialRestFeedManager(Entity):
         """The My method gets a SocialRestActor object that represents the current user. See section 3.1.5.35 for
         details on the SocialRestActor type."""
         return SocialRestActor(self.context, ResourcePath("My", self.resource_path))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "SP.Social.SocialRestFeedManager"

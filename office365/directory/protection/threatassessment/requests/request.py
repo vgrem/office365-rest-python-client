@@ -1,17 +1,21 @@
 from datetime import datetime
+from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ThreatAssessmentRequest(Entity):
     """An abstract resource type used to represent a threat assessment request item."""
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """The threat assessment request creator."""
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """
@@ -20,11 +24,18 @@ class ThreatAssessmentRequest(Entity):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdDateTime": self.created_datetime,
-                "createdBy": self.created_by,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+    @property
+    def status(self) -> Optional[str]:
+        """The threat assessment status. Possible values are: pending, completed."""
+        return self.properties.get("status", None)
+
+    @odata(name="expectedAssessment")
+    @property
+    def expected_assessment(self) -> Optional[str]:
+        """The expected assessment from submitter. Possible values: block, unblock."""
+        return self.properties.get("expectedAssessment", None)
+
+    @property
+    def category(self) -> Optional[str]:
+        """The threat category. Possible values: spam, phishing, malware."""
+        return self.properties.get("category", None)

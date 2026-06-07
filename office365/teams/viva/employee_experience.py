@@ -1,6 +1,7 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.viva.community import Community
 from office365.teams.viva.learning.courses.activity import LearningCourseActivity
 from office365.teams.viva.learning.provider import LearningProvider
@@ -21,6 +22,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
+    @odata(name="learningCourseActivities")
     @property
     def learning_course_activities(self) -> EntityCollection[LearningCourseActivity]:
         """A collection of learning course activities."""
@@ -33,6 +35,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
+    @odata(name="learningProviders")
     @property
     def learning_providers(self) -> EntityCollection[LearningProvider]:
         """A collection of learning providers."""
@@ -44,12 +47,3 @@ class EmployeeExperience(Entity):
                 ResourcePath("learningProviders", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "learningCourseActivities": self.learning_course_activities,
-                "learningProviders": self.learning_providers,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

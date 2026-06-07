@@ -3,21 +3,25 @@ from typing import List, Optional
 from office365.admin.sharepoint.idle_session_signout import IdleSessionSignOut
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class SharepointSettings(Entity):
     """Represents the tenant-level settings for SharePoint and OneDrive."""
 
+    @odata(name="allowedDomainGuidsForSyncApp")
     @property
     def allowed_domain_guids_for_sync_app(self) -> StringCollection:
         """Collection of trusted domain GUIDs for the OneDrive sync app."""
         return self.properties.get("allowedDomainGuidsForSyncApp", StringCollection())
 
+    @odata(name="availableManagedPathsForSiteCreation")
     @property
     def available_managed_paths_for_site_creation(self) -> StringCollection:
         """Collection of managed paths available for site creation."""
         return self.properties.get("availableManagedPathsForSiteCreation", StringCollection())
 
+    @odata(name="excludedFileExtensionsForSyncApp")
     @property
     def excluded_file_extensions_for_sync_app(self) -> StringCollection:
         """Collection of file extensions not uploaded by the OneDrive sync app."""
@@ -38,6 +42,7 @@ class SharepointSettings(Entity):
         """Indicates whether legacy authentication protocols are enabled for the tenant."""
         return self.properties.get("isLegacyAuthProtocolsEnabled", None)
 
+    @odata(name="sharingAllowedDomainList")
     @property
     def sharing_allowed_domain_list(self) -> StringCollection:
         """
@@ -45,6 +50,7 @@ class SharepointSettings(Entity):
         """
         return self.properties.get("sharingAllowedDomainList", StringCollection())
 
+    @odata(name="sharingBlockedDomainList")
     @property
     def sharing_blocked_domain_list(self) -> StringCollection:
         """
@@ -99,15 +105,3 @@ class SharepointSettings(Entity):
     @property
     def entity_type_name(self) -> str:
         return None  # type: ignore
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "allowedDomainGuidsForSyncApp": self.allowed_domain_guids_for_sync_app,
-                "availableManagedPathsForSiteCreation": self.available_managed_paths_for_site_creation,
-                "excludedFileExtensionsForSyncApp": self.excluded_file_extensions_for_sync_app,
-                "sharingAllowedDomainList": self.sharing_allowed_domain_list,
-                "sharingBlockedDomainList": self.sharing_blocked_domain_list,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

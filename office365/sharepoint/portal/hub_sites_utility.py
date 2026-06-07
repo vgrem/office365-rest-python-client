@@ -1,9 +1,7 @@
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.tenant.administration.hubsites.collection import (
-    HubSiteCollection,
-)
+from office365.sharepoint.tenant.administration.hubsites.collection import HubSiteCollection
 
 
 class SPHubSitesUtility(Entity):
@@ -22,3 +20,7 @@ class SPHubSitesUtility(Entity):
         qry = ServiceOperationQuery(self, "GetHubSites", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @property
+    def entity_type_name(self) -> str:
+        return "Microsoft.SharePoint.Portal.SPHubSitesUtility"

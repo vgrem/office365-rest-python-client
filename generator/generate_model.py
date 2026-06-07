@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from office365.runtime.odata.model import ODataModel
+from office365.runtime.odata.type_information import TypeInformation
 from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
 from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
 
@@ -39,7 +40,7 @@ def _should_skip(
 
 
 def _process_type(
-    name: str, type_schema, checkpoint_file: str, options: dict, docs_service, processed_types: set
+    name: str, type_schema: TypeInformation, checkpoint_file: str, options: dict, docs_service, processed_types: set
 ) -> None:
     """Build, save and checkpoint a single type."""
     try:
@@ -80,6 +81,11 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
             prefix_ignored.append(ignored_type[:-2])
         else:
             exact_ignored.append(ignored_type)
+
+    ignored_properties_raw = options.get("filters_ignored_properties", "")
+    options["ignored_properties"] = [
+        t.strip() for t in ignored_properties_raw.replace("\n", ",").split(",") if t.strip()
+    ]
 
     start_at = options.get("start_at", "").strip()
     total_types = len(model.types)
@@ -150,10 +156,10 @@ def generate_graph_model(cp: ConfigParser) -> None:
 
 
 if __name__ == "__main__":
-    graph_cfg = ConfigParser()
-    graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
-    generate_graph_model(graph_cfg)
+    # graph_cfg = ConfigParser()
+    # graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
+    # generate_graph_model(graph_cfg)
 
-    # sharepoint_cfg = ConfigParser()
-    # sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
-    # generate_sharepoint_model(sharepoint_cfg)
+    sharepoint_cfg = ConfigParser()
+    sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
+    generate_sharepoint_model(sharepoint_cfg)

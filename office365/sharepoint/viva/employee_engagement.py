@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.viva.app_configuration import AppConfiguration
 from office365.sharepoint.viva.connections.page import VivaConnectionsPage
@@ -55,6 +56,7 @@ class EmployeeEngagement(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="AppConfiguration")
     @property
     def app_configuration(self) -> AppConfiguration:
         return self.properties.get(
@@ -62,18 +64,10 @@ class EmployeeEngagement(Entity):
             AppConfiguration(self.context, ResourcePath("AppConfiguration", self.resource_path)),
         )
 
+    @odata(name="VivaConnectionsPage")
     @property
     def viva_connections_page(self) -> VivaConnectionsPage:
         return self.properties.get(
             "VivaConnectionsPage",
             VivaConnectionsPage(self.context, ResourcePath("VivaConnectionsPage", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "AppConfiguration": self.app_configuration,
-                "VivaConnectionsPage": self.viva_connections_page,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

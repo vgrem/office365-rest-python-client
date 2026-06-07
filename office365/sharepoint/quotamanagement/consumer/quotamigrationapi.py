@@ -2,4 +2,6 @@ from office365.sharepoint.entity import Entity
 
 
 class QuotaMigrationApi(Entity):
-    pass
+    @property
+    def entity_type_name(self) -> str:
+        return "Microsoft.SharePoint.QuotaManagement.Consumer.QuotaMigrationApi"

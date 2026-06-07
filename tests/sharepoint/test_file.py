@@ -26,13 +26,13 @@ class TestSharePointFile(SPTestCase):
         super().setUpClass()
         cls.folder_from = cls.client.web.default_document_library().root_folder.add(create_unique_name("from"))
         cls.folder_to = cls.client.web.default_document_library().root_folder.add(create_unique_name("to"))
-        cls.assertIsNotNone(cls.folder_from)
-        cls.assertIsNotNone(cls.folder_to)
+        assert cls.folder_from.resource_path is not None
+        assert cls.folder_to.resource_path is not None
 
     @classmethod
     def tearDownClass(cls):
-        cls.assertIsNotNone(cls.folder_from)
-        cls.assertIsNotNone(cls.folder_to)
+        assert cls.folder_from is not None
+        assert cls.folder_to is not None
         cls.folder_from.delete_object().execute_query()
         cls.folder_to.delete_object().execute_query()
 

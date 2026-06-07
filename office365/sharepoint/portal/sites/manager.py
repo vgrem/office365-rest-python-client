@@ -12,9 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.portal.sites.creation_request import SPSiteCreationRequest
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
-from office365.sharepoint.teams.site_owner_response import (
-    GetTeamChannelSiteOwnerResponse,
-)
+from office365.sharepoint.teams.site_owner_response import GetTeamChannelSiteOwnerResponse
 from office365.sharepoint.viva.site_request_info import VivaSiteRequestInfo
 
 if TYPE_CHECKING:
@@ -99,14 +97,7 @@ class SPSiteManager(Entity):
         :param str site_id: The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, GetTeamChannelSiteOwnerResponse())
-        qry = ServiceOperationQuery(
-            self,
-            "GetTeamChannelSiteOwner",
-            None,
-            {"siteId": site_id},
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetTeamChannelSiteOwner", None, {"siteId": site_id}, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -119,3 +110,7 @@ class SPSiteManager(Entity):
         qry = ServiceOperationQuery(self, "VivaBackendSiteUrlFromName", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @property
+    def entity_type_name(self) -> str:
+        return "Microsoft.SharePoint.Portal.SPSiteManager"

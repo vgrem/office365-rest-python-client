@@ -11,14 +11,10 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
-from office365.sharepoint.search.query.auto_completion_results import (
-    QueryAutoCompletionResults,
-)
+from office365.sharepoint.search.query.auto_completion_results import QueryAutoCompletionResults
 from office365.sharepoint.search.query.popular_tenant_query import PopularTenantQuery
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
-from office365.sharepoint.search.query.tenant_custom_query_suggestions import (
-    TenantCustomQuerySuggestions,
-)
+from office365.sharepoint.search.query.tenant_custom_query_suggestions import TenantCustomQuerySuggestions
 from office365.sharepoint.search.request import SearchRequest
 from office365.sharepoint.search.result import SearchResult
 
@@ -70,9 +66,7 @@ class SearchService(Entity):
         :param int count:
         """
         return_type = ClientResult(self.context, ClientValueCollection(PopularTenantQuery))
-        payload = {
-            "count": count,
-        }
+        payload = {"count": count}
         qry = ServiceOperationQuery(self, "exportpopulartenantqueries", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -134,7 +128,7 @@ class SearchService(Entity):
         if refinement_filters:
             params["refinementFilters"] = ",".join(refinement_filters)
         if sort_list:
-            params["sortList"] = ",".join(str(s) for s in sort_list)
+            params["sortList"] = ",".join((str(s) for s in sort_list))
         if select_properties:
             params["selectProperties"] = ",".join(select_properties)
         if refiners:
@@ -192,11 +186,7 @@ class SearchService(Entity):
              click type MUST be used.
         :param str block_type: Type of query results in the page impression block
         """
-        payload = {
-            "pageInfo": page_info,
-            "clickType": click_type,
-            "blockType": block_type,
-        }
+        payload = {"pageInfo": page_info, "clickType": click_type, "blockType": block_type}
         qry = ServiceOperationQuery(self, "RecordPageClick", None, payload)
         self.context.add_query(qry)
         return self
@@ -264,3 +254,7 @@ class SearchService(Entity):
         qry = ServiceOperationQuery(self, "autocompletions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @property
+    def entity_type_name(self) -> str:
+        return "Microsoft.Office.Server.Search.REST.SearchService"

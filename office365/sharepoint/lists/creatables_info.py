@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.lists.creatable_item_info_col import (
     CreatableItemInfoCollection,
@@ -39,6 +40,7 @@ class CreatablesInfo(Entity):
         """
         return self.properties.get("CanUploadFiles", None)
 
+    @odata(name="CreatablesCollection")
     @property
     def creatables_collection(self) -> CreatableItemInfoCollection:
         """
@@ -46,9 +48,3 @@ class CreatablesInfo(Entity):
         one CreatableItemInfo for each creatable type.
         """
         return self.properties.get("CreatablesCollection", CreatableItemInfoCollection())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"CreatablesCollection": self.creatables_collection}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

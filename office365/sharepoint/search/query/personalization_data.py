@@ -10,7 +10,10 @@ class QueryPersonalizationData(Entity):
         :param str user_id:
         """
         static_path = ServiceOperationPath(
-            "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData",
-            {"guidUserIdString": user_id},
+            "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData", {"guidUserIdString": user_id}
         )
         super().__init__(context, static_path)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData"

@@ -5,11 +5,13 @@ from office365.admin.sharepoint.sharepoint import Sharepoint
 from office365.entity import Entity
 from office365.intune.servicecommunications.announcement import ServiceAnnouncement
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Admin(Entity):
     """Entity that acts as a container for administrator functionality."""
 
+    @odata(name="microsoft365Apps")
     @property
     def microsoft365_apps(self) -> AdminMicrosoft365Apps:
         """A container for the Microsoft 365 apps admin functionality."""
@@ -26,6 +28,7 @@ class Admin(Entity):
             Sharepoint(self.context, ResourcePath("sharepoint", self.resource_path)),
         )
 
+    @odata(name="serviceAnnouncement")
     @property
     def service_announcement(self) -> ServiceAnnouncement:
         """A container for service communications resources. Read-only."""
@@ -34,6 +37,7 @@ class Admin(Entity):
             ServiceAnnouncement(self.context, ResourcePath("serviceAnnouncement", self.resource_path)),
         )
 
+    @odata(name="reportSettings")
     @property
     def report_settings(self) -> AdminReportSettings:
         """A container for administrative resources to manage reports."""
@@ -49,13 +53,3 @@ class Admin(Entity):
             "people",
             PeopleAdminSettings(self.context, ResourcePath("people", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "microsoft365Apps": self.microsoft365_apps,
-                "serviceAnnouncement": self.service_announcement,
-                "reportSettings": self.report_settings,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

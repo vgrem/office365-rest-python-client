@@ -29,7 +29,7 @@ class TestListItemAttachment(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.assertIsNotNone(cls.target_item)
+        assert cls.target_item is not None
         cls.target_item.delete_object().execute_query()
         cls.target_item.parent_list.delete_object().execute_query()
 

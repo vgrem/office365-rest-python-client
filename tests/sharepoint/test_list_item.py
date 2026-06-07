@@ -29,7 +29,7 @@ class TestSharePointListItem(SPTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.assertIsNotNone(cls.target_list)
+        assert cls.target_list is not None
         cls.target_list.delete_object().execute_query()
 
     def test_01_create_list_item(self):

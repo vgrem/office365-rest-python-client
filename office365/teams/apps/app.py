@@ -3,6 +3,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.apps.definition import TeamsAppDefinition
 
 
@@ -22,6 +23,7 @@ class TeamsApp(Entity):
         """The title of the TeamsApp."""
         return self.properties.get("distributionMethod", None)
 
+    @odata(name="appDefinitions")
     @property
     def app_definitions(self) -> EntityCollection[TeamsAppDefinition]:
         """The details for each version of the app."""
@@ -33,9 +35,3 @@ class TeamsApp(Entity):
                 ResourcePath("appDefinitions", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"appDefinitions": self.app_definitions}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

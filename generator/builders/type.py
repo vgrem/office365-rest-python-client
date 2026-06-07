@@ -49,7 +49,7 @@ class TypeBuilder(ast.NodeTransformer):
         [
             self._properties.append(PropertyBuilder(prop_schema))
             for name, prop_schema in self._schema.Properties.items()
-            if name not in options.get("ignoredproperties", [])
+            if name not in options.get("ignored_properties", [])
         ]
 
         [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
@@ -373,11 +373,14 @@ class TypeBuilder(ast.NodeTransformer):
                     relative_path = module_path[len("office365.") :]
                 else:
                     relative_path = module_path
-                type_info["file"] = abspath(
-                    os.path.join(
-                        output_base, relative_path.replace(".", "/"), self._to_snake_case(self.client_type_name) + ".py"
-                    )
-                )
+                sub_dir = relative_path.replace(".", "/")
+                parts = [output_base]
+                if sub_dir not in ("", "."):
+                    base_suffix = output_base.rstrip("/").rsplit("/", 1)[-1]
+                    if sub_dir != base_suffix:
+                        parts.append(sub_dir)
+                parts.append(self._to_snake_case(self.client_type_name) + ".py")
+                type_info["file"] = abspath(os.path.join(*parts))
             else:
                 type_info["file"] = abspath(
                     os.path.join(output_base, self._to_snake_case(self.client_type_name) + ".py")

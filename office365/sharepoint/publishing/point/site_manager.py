@@ -7,3 +7,7 @@ class PointPublishingSiteManager(Entity):
 
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Publishing.PointPublishingSiteManager"))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "SP.Publishing.PointPublishingSiteManager"
