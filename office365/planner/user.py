@@ -1,7 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.planner.tasks.task import PlannerTask
 from office365.runtime.paths.resource_path import ResourcePath
+
+if TYPE_CHECKING:
+    from office365.planner.plans.collection import PlannerPlanCollection
 
 
 class PlannerUser(Entity):
@@ -9,7 +16,7 @@ class PlannerUser(Entity):
     It doesn't contain any usable properties."""
 
     @property
-    def plans(self):
+    def plans(self) -> PlannerPlanCollection:
         """Returns the plannerTasks assigned to the user."""
         from office365.planner.plans.collection import PlannerPlanCollection
 

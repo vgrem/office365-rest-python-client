@@ -22,9 +22,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # 1. Find suggested meeting times
 suggestions = client.me.find_meeting_times().execute_query()

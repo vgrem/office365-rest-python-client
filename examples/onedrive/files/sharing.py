@@ -19,9 +19,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 items = client.me.drive.root.children.top(1).get().execute_query()
 if len(items) == 0:

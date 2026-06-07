@@ -19,4 +19,3 @@ class TestMachineLearningHub(SPTestCase):
         # admin_client = ClientContext(test_admin_site_url).with_credentials(test_admin_credentials)
         # tenant = admin_client.tenant.select(["DefaultContentCenterSite"]).get().execute_query()
         # self.assertIsNotNone(tenant.default_content_center_site)
-        pass

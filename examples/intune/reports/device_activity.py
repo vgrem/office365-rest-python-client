@@ -14,9 +14,7 @@ https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # 1. Device configuration user activity
 user_activity = client.reports.device_configuration_user_activity().execute_query()

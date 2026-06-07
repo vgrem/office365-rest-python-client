@@ -15,9 +15,7 @@ from tests import (
     test_user_principal_name,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # 1. Search sites by keyword
 results = client.sites.search("team").execute_query()

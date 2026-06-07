@@ -25,9 +25,7 @@ CHANNEL_TEMPLATE = [
     {"displayName": "Random", "description": "Water-cooler chat and non-work banter"},
 ]
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 my_teams = client.me.joined_teams.get().top(1).execute_query()
 if len(my_teams) == 0:
@@ -39,11 +37,7 @@ print(f"Provisioning channels in '{team.display_name}'...\n")
 provisioned = 0
 for spec in CHANNEL_TEMPLATE:
     # Skip if channel already exists
-    existing = (
-        team.channels.get()
-        .filter(f"displayName eq '{spec['displayName']}'")
-        .execute_query()
-    )
+    existing = team.channels.get().filter(f"displayName eq '{spec['displayName']}'").execute_query()
     if len(existing) > 0:
         print(f"  ↻ {spec['displayName']} — already exists, skipped")
         continue

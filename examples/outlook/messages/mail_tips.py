@@ -19,9 +19,7 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 tips = client.me.get_mail_tips([test_user_principal_name]).execute_query()
 for tip in tips.value or []:

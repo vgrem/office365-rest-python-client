@@ -16,9 +16,7 @@ https://learn.microsoft.com/en-us/graph/api/onenote-list-pages
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 notebooks = client.me.onenote.notebooks.get().execute_query()
 
@@ -42,7 +40,7 @@ for nb in notebooks:
                 modified = p.properties.get("lastModifiedDateTime", "")
                 print(f"       • {title}  [{modified}]")
             if len(pages) == 0:
-                print(f"       (empty)")
+                print("       (empty)")
 
     # Top-level sections (not inside section groups)
     sections = nb.sections.get().execute_query()
@@ -54,6 +52,6 @@ for nb in notebooks:
             modified = p.properties.get("lastModifiedDateTime", "")
             print(f"     • {title}  [{modified}]")
         if len(pages) == 0:
-            print(f"     (empty)")
+            print("     (empty)")
 
     print()

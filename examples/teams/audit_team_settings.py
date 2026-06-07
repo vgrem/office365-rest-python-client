@@ -22,9 +22,7 @@ BASELINE = {
     "funSettings": {"allowGiphy": False, "allowStickersAndMemes": True},
 }
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 groups = (
     client.groups.get()

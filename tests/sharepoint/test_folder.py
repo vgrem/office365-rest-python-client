@@ -51,7 +51,11 @@ class TestSharePointFolder(SPTestCase):
         self.assertIsNotNone(TestSharePointFolder.input_folder)
         self.assertIsNotNone(TestSharePointFolder.input_folder.name)
         self.assertIsNotNone(TestSharePointFolder.parent_folder)
-        folder = TestSharePointFolder.parent_folder.folders.get_by_path(TestSharePointFolder.input_folder.name).get().execute_query()
+        folder = (
+            TestSharePointFolder.parent_folder.folders.get_by_path(TestSharePointFolder.input_folder.name)
+            .get()
+            .execute_query()
+        )
         self.assertIsNotNone(folder.unique_id)
 
     # def test6_get_by_path_with_props(self):

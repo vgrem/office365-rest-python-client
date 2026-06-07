@@ -42,6 +42,7 @@ class TestSharePointListItem(SPTestCase):
 
     def test_02_enable_folders_in_list(self):
         """Enable folder creation in list"""
+
         def _init_list():
             self.assertIsNotNone(TestSharePointListItem.target_list)
             if not TestSharePointListItem.target_list.enable_folder_creation:

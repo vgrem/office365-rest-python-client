@@ -105,7 +105,6 @@ class TestTenant(SPTestCase):
 
     def test_08_create_site(self):
         """Placeholder for site creation test."""
-        pass
         # current_user = self.client.web.currentUser
         # self.client.load(current_user)
         # self.client.execute_query()

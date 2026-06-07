@@ -114,7 +114,6 @@ class TestSharePointClient(SPTestCase):
 
     def test_09_create_and_delete_batch_request(self):
         """Placeholder for create and delete batch request test."""
-        pass
 
     def test_10_get_and_delete_batch_request(self):
         """Execute get and delete batch requests for a file."""

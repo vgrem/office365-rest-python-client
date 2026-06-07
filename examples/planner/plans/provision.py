@@ -9,9 +9,6 @@ https://learn.microsoft.com/en-us/graph/api/planner-post-buckets
 https://learn.microsoft.com/en-us/graph/api/planner-post-tasks
 """
 
-import sys
-from datetime import datetime, timedelta
-
 from office365.graph_client import GraphClient
 from tests import (
     create_unique_name,
@@ -37,9 +34,7 @@ TASKS = [
     {"title": "API integration", "bucket": "Backlog", "category": "category1", "priority": 1},
 ]
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # Resolve group
 group = client.groups.get_by_name("My Sample Team").get().execute_query()
@@ -74,12 +69,15 @@ for spec in TASKS:
     task.set_property("priority", spec["priority"])
 
     # Assign to user
-    task.set_property("assignments", {
-        user.id: {
-            "@odata.type": "#microsoft.graph.plannerAssignment",
-            "orderHint": " !",
-        }
-    })
+    task.set_property(
+        "assignments",
+        {
+            user.id: {
+                "@odata.type": "#microsoft.graph.plannerAssignment",
+                "orderHint": " !",
+            }
+        },
+    )
 
     task.update().execute_query()
     print(f"  Task: {spec['title']}  (P{spec['priority']}, assigned)")

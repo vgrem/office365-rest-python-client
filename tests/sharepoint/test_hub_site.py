@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
 

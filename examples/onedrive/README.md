@@ -57,7 +57,7 @@ flowchart LR
 | **Sites** | Search sites, follow/unfollow | [`sites/search_and_follow.py`](./sites/search_and_follow.py) | `Sites.ReadWrite.All` |
 | **Lists** | Create document library with columns and items | [`lists/manage.py`](./lists/manage.py) | `Sites.ReadWrite.All` |
 | **Site pages** | Create and publish modern site pages | [`sitepages/manage.py`](./sitepages/manage.py) | `Sites.ReadWrite.All` |
-| **Term store** | Export groups/sets, import new terms | [`termstore/export_import.py`](./termstore/export_import.py) | `Sites.ReadWrite.All` |
+| **Term store** | Export groups/sets, import new terms | [`termstore/export_import.py`](termstore/basic_usage.py) | `Sites.ReadWrite.All` |
 | **Excel** | Read tables and ranges with workbook sessions | [`excel/read_table.py`](./excel/read_table.py) | `Files.ReadWrite` |
 
 ---

@@ -18,9 +18,7 @@ import sys
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 devices = client.device_management.managed_devices.get().execute_query()
 target = next((d for d in devices if d.device_name and "DESKTOP" in d.device_name.upper()), None)
@@ -31,11 +29,11 @@ print(f"Target device: {target.device_name}  (compliance: {target.compliance_sta
 
 # 1. Force sync
 target.sync_device().execute_query()
-print(f"  ✓ Sync command issued")
+print("  ✓ Sync command issued")
 
 # 2. Retire (remove company data)
 target.retire().execute_query()
-print(f"  ✓ Retire command issued")
+print("  ✓ Retire command issued")
 
 # 3. Wipe (factory reset — uncomment with caution)
 # target.wipe().execute_query()

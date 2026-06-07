@@ -13,9 +13,7 @@ https://learn.microsoft.com/en-us/graph/api/sites-list-followed
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # 1. Recently used items
 recent = client.me.drive.recent().execute_query()
@@ -28,7 +26,9 @@ print()
 shared = client.me.drive.shared_with_me().execute_query()
 print(f"Shared with me ({len(shared)}):")
 for item in shared:
-    print(f"  {item.name:40s}  shared by: {item.remote_item.shared.shared_by.user.display_name if item.remote_item else '?'}")
+    print(
+        f"  {item.name:40s}  shared by: {item.remote_item.shared.shared_by.user.display_name if item.remote_item else '?'}"
+    )
 print()
 
 # 3. Followed sites

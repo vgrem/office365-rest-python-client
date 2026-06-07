@@ -39,11 +39,9 @@ class TestSocial(SPTestCase):
         # manager = SocialFeedManager(self.my_client)
         # result = manager.create_post(None, post_data).execute_query()
         # self.assertIsNotNone(result.value)
-        pass
 
     def test_03_delete_post(self):
         """Placeholder for deleting a social post."""
-        pass
 
     def test_04_get_followers(self):
         """Get followers via SocialRestFollowingManager."""

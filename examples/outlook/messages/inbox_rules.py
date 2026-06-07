@@ -22,14 +22,10 @@ from tests import (
     test_username,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # 1. Create a master category
-category = client.me.outlook.master_categories.add(
-    display_name="Urgent", color="preset5"
-).execute_query()
+category = client.me.outlook.master_categories.add(display_name="Urgent", color="preset5").execute_query()
 print(f"Category created: {category.display_name}")
 
 # 2. Create an inbox rule: mark as Urgent when from specific sender
@@ -38,7 +34,5 @@ actions = MessageRuleActions(
     stopProcessingRules=True,
     markImportance="high",
 )
-rule = client.me.mail_folders["inbox"].message_rules.add(
-    "SDK Test Rule", 2, actions
-).execute_query()
+rule = client.me.mail_folders["inbox"].message_rules.add("SDK Test Rule", 2, actions).execute_query()
 print(f"Rule created: {rule.display_name} (priority: {rule.priority})")

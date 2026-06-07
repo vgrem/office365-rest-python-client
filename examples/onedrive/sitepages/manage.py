@@ -18,9 +18,7 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # 1. Create a site page
 page_name = create_unique_name("Status-Report")

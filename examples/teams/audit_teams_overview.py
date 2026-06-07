@@ -14,9 +14,7 @@ https://learn.microsoft.com/en-us/graph/teams-list-all-teams
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # Step 1 — find all groups that have the "Team" provisioning flag
 groups = (
@@ -35,16 +33,12 @@ for group in groups:
     # Step 2 — get members and owners
     members = team.members.get().execute_query()
     owners = [m for m in members if "owner" in (m.properties.get("roles") or [])]
-    guests = [
-        m
-        for m in members
-        if "#EXT#" in (m.properties.get("email", "") or "")
-    ]
+    guests = [m for m in members if "#EXT#" in (m.properties.get("email", "") or "")]
 
     print(f"  {group.display_name}")
     print(f"    Visibility : {group.visibility or '?'}")
     print(f"    Archived  : {'⚠ YES' if team.is_archived else 'No'}")
     print(f"    Members   : {len(members)}  (owners: {len(owners)})")
     if guests:
-        print(f"    Guests    : {len(guests)} — {', '.join(m.properties.get('email','?') for m in guests)}")
+        print(f"    Guests    : {len(guests)} — {', '.join(m.properties.get('email', '?') for m in guests)}")
     print()

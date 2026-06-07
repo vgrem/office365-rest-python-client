@@ -202,7 +202,9 @@ class TestOutlookMessages(GraphDelegatedTestCase):
     )
     def test_13_delta_query_messages(self):
         """Delta query for newly created messages returns valid data."""
-        messages = self.client.me.mail_folders["Inbox"].messages.delta.change_type(ChangeType.created).get().execute_query()
+        messages = (
+            self.client.me.mail_folders["Inbox"].messages.delta.change_type(ChangeType.created).get().execute_query()
+        )
         self.assertIsNotNone(messages)
 
     @requires_delegated(

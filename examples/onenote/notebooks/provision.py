@@ -26,9 +26,7 @@ SECTION_TEMPLATE = [
     {"title": "Resources", "page": "<p>Links to relevant docs, tools, and references.</p>"},
 ]
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 notebook_name = create_unique_name("Project")
 notebook = client.me.onenote.notebooks.add(notebook_name).execute_query()
@@ -39,8 +37,8 @@ for spec in SECTION_TEMPLATE:
     print(f"  Section: {spec['title']}")
 
     page_html = f"""<!DOCTYPE html>
-<html><head><title>{spec['title']}</title></head>
-<body>{spec['page']}</body></html>"""
+<html><head><title>{spec["title"]}</title></head>
+<body>{spec["page"]}</body></html>"""
 
     page = section.pages.add(presentation_file=page_html.encode()).execute_query()
     print(f"    Page: {page.title}")

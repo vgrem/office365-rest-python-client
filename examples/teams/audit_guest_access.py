@@ -14,9 +14,7 @@ https://learn.microsoft.com/en-us/graph/api/team-list-members
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 groups = (
     client.groups.get()
@@ -34,11 +32,7 @@ for group in groups:
     team = client.teams[group.id].get().execute_query()
     members = team.members.get().execute_query()
 
-    guests = [
-        m
-        for m in members
-        if "#EXT#" in (m.properties.get("email", "") or "")
-    ]
+    guests = [m for m in members if "#EXT#" in (m.properties.get("email", "") or "")]
 
     if guests:
         teams_with_guests.append((group.display_name, guests))

@@ -37,11 +37,7 @@ class TestRoleManagement(GraphDelegatedTestCase):
     def test_02_get_role_definition(self):
         """Getting a role definition by ID returns a valid resource."""
         role_id = "a0b1b346-4d3e-4e8b-98f8-753987be4970"
-        result = (
-            self.client.role_management.directory.role_definitions[role_id]
-            .get()
-            .execute_query()
-        )
+        result = self.client.role_management.directory.role_definitions[role_id].get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(

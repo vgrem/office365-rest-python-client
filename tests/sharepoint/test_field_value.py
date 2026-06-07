@@ -73,9 +73,7 @@ class TestFieldValue(SPTestCase):
         if not target:
             self.skipTest("No resource from previous test")
         self.assertIsNotNone(target.id)
-        updated = target.set_multi_lookup_field_value(
-            self.multi_lookup_field_name, [target.id]
-        ).execute_query()
+        updated = target.set_multi_lookup_field_value(self.multi_lookup_field_name, [target.id]).execute_query()
         self.assertIsInstance(updated.properties[self.multi_lookup_field_name], FieldMultiLookupValue)
 
     def test_05_create_user_multi_field(self):
@@ -199,7 +197,5 @@ class TestFieldValue(SPTestCase):
             target = TestFieldValue.target_item
             if not target:
                 self.skipTest("No resource from previous test")
-            target.set_lookup_field_value(
-                self.lookup_field_name, lookup_items[0].properties["Id"]
-            ).execute_query()
+            target.set_lookup_field_value(self.lookup_field_name, lookup_items[0].properties["Id"]).execute_query()
             self.assertIsNotNone(target.properties.get(self.lookup_field_name))

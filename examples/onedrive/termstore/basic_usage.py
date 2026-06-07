@@ -21,11 +21,9 @@ from tests import (
     test_tenant,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
-store = client.sites[test_root_site_url].term_store
+store = client.sites.get_by_url(test_root_site_url).term_store
 
 # 1. List existing groups
 groups = store.groups.get().execute_query()
@@ -45,5 +43,5 @@ print(f"  Set: {term_set.display_name}")
 
 # 4. Add terms to the set
 for term_name in ["Urgent", "In Progress", "Completed"]:
-    term = term_set.children.add(term=term_name).execute_query()
+    term = term_set.children.add(label=term_name).execute_query()
     print(f"    Term: {term.display_name}")
