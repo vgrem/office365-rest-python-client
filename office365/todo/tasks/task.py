@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.directory.extensions.extension import Extension
@@ -71,8 +73,8 @@ class TodoTask(Entity):
         )
 
     @property
-    def entity_type_name(self) -> str:
-        return "microsoft.graph.task"
+    def entity_type_name(self) -> str | None:
+        return None
 
     def get_property(self, name, default_value=None):
         if default_value is None:

@@ -40,7 +40,7 @@ class TestTaskList(GraphDelegatedTestCase):
         name = create_unique_name("SDK Test TaskList")
         task_list = self.client.me.todo.lists.add(name).execute_query()
         self.assertIsNotNone(task_list.resource_path)
-        self.assertEqual(task_list.get_property("displayName"), name)
+        self.assertEqual(task_list.display_name, name)
         TestTaskList.task_list = task_list
 
     @requires_delegated(
