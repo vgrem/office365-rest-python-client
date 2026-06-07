@@ -53,18 +53,6 @@ and can include embedded images, files, tables, and attachments.
 | **Provision a notebook from template** — create notebook with predefined sections and starter pages | [`notebooks/provision.py`](./notebooks/provision.py) | Standardized notebook onboarding for teams, projects, or training |
 
 ---
-
-## Full coverage map
-
-| Category | Example |
-|---|---|
-| **CRUD** | Create notebook, provision sections + pages |
-| **Content** | Rich HTML page, page with file attachments |
-| **Export** | Download page HTML |
-| **Discovery & audit** | Full hierarchy dump (notebook → section groups → sections → pages) |
-| **Provisioning** | Notebook from template with starter content |
-| **Organization** | Section groups, nested hierarchy traversal |
-
 ---
 
 ## Quick start

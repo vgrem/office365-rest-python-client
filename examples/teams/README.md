@@ -67,20 +67,6 @@ conversations not tied to any team/channel.
 | **Usage report** — team counts and user activity over D7/D30/D90 | [`reports/usage.py`](./reports/usage.py) | Adoption tracking, chargeback, and inactivity detection across multiple time windows |
 
 ---
-
-## Full coverage map
-
-| Category | Example |
-|---|---|
-| **CRUD** | Create team, provision channels, add/remove members |
-| **Provisioning** | Group→team async, batch channel template |
-| **Apps** | Catalog install |
-| **Chats** | 1-on-1 create + message |
-| **Audit** | Tenant overview (owners, members, visibility, archived, guests) |
-| **Governance** | Settings baseline scan + auto-remediate |
-| **Lifecycle** | Active vs archived vs deleted teams |
-| **Security** | Guest user detection across all teams |
-
 ---
 
 ## Quick start
