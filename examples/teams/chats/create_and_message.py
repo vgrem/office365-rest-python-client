@@ -10,6 +10,8 @@ https://learn.microsoft.com/en-us/graph/api/chat-post
 https://learn.microsoft.com/en-us/graph/api/chat-post-messages
 """
 
+import sys
+
 from office365.graph_client import GraphClient
 from office365.outlook.mail.item_body import ItemBody
 from office365.teams.chats.type import ChatType
@@ -28,7 +30,7 @@ me = client.me.get().execute_query()
 other = client.users[test_user_principal_name].get().execute_query()
 
 if not me.id or not other.id:
-    exit("Could not resolve user IDs")
+    sys.exit("Could not resolve user IDs")
 
 # Create a 1-on-1 chat
 chat = client.chats.add(ChatType.oneOnOne, owner_ids=[me.id, other.id]).execute_query()

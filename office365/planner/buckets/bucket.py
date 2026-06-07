@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.planner.tasks.task import PlannerTask
@@ -8,6 +10,24 @@ class PlannerBucket(Entity):
     """Represents a bucket (or "custom column") for tasks in a plan in Microsoft 365.
     It is contained in a plannerPlan and can have a collection of plannerTasks.
     """
+
+    @property
+    def name(self) -> Optional[str]:
+        """Required. Name of the bucket."""
+        return self.properties.get("name", None)
+
+    @name.setter
+    def name(self, value: str):
+        self.set_property("name", value)
+
+    @property
+    def plan_id(self) -> Optional[str]:
+        """Required. Name of the bucket."""
+        return self.properties.get("planId", None)
+
+    @plan_id.setter
+    def plan_id(self, value: str):
+        self.set_property("planId", value)
 
     @property
     def tasks(self) -> EntityCollection[PlannerTask]:

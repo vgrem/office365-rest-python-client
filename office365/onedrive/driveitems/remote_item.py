@@ -8,6 +8,7 @@ from office365.onedrive.driveitems.image import Image
 from office365.onedrive.files.file import File
 from office365.onedrive.files.system_info import FileSystemInfo
 from office365.onedrive.folders.folder import Folder
+from office365.onedrive.shares.shared import Shared
 from office365.runtime.client_value import ClientValue
 
 
@@ -28,3 +29,4 @@ class RemoteItem(ClientValue):
     fileSystemInfo: FileSystemInfo | None = field(default_factory=FileSystemInfo)
     folder: Folder | None = field(default_factory=Folder)
     image: Image | None = field(default_factory=Image)
+    shared: Shared | None = field(default_factory=Shared)

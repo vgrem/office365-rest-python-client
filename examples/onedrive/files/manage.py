@@ -11,6 +11,8 @@ https://learn.microsoft.com/en-us/graph/api/driveitem-delete
 https://learn.microsoft.com/en-us/graph/api/driveitem-list-versions
 """
 
+import sys
+
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
@@ -18,7 +20,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 
 item = client.me.drive.root.children.top(1).get().execute_query()
 if len(item) == 0:
-    exit("No files found. Upload a file first.")
+    sys.exit("No files found. Upload a file first.")
 
 file = item[0]
 print(f"Working with: {file.name}  (id: {file.id})")

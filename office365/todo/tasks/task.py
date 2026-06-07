@@ -7,6 +7,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.todo.attachments.base import AttachmentBase
 from office365.todo.checklist_item import ChecklistItem
 from office365.todo.linked_resource import LinkedResource
@@ -16,7 +17,7 @@ class TodoTask(Entity):
     """A todoTask represents a task, such as a piece of work or personal item, that can be tracked and completed."""
 
     def __str__(self) -> str:
-        return self.title or "" or self.entity_type_name
+        return self.title or self.entity_type_name or ""
 
     @property
     def body(self):
@@ -48,6 +49,7 @@ class TodoTask(Entity):
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
+    @odata(name="checklistItems")
     @property
     def checklist_items(self) -> EntityCollection[ChecklistItem]:
         """A collection of checklistItems linked to a task."""
@@ -60,6 +62,7 @@ class TodoTask(Entity):
             ),
         )
 
+    @odata(name="linkedResources")
     @property
     def linked_resources(self) -> EntityCollection[LinkedResource]:
         """A collection of resources linked to the task."""
@@ -73,14 +76,5 @@ class TodoTask(Entity):
         )
 
     @property
-    def entity_type_name(self) -> str | None:
-        return None
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "checklistItems": self.checklist_items,
-                "linked_resources": self.linked_resources,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+    def entity_type_name(self) -> str:
+        return ""

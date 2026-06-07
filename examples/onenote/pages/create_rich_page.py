@@ -12,19 +12,18 @@ https://learn.microsoft.com/en-us/graph/onenote-input-output-html
 """
 
 import sys
+from io import BytesIO
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(
-    test_client_id, test_username, test_password
-)
+client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 sections = client.me.onenote.sections.top(1).get().execute_query()
 if len(sections) == 0:
     sys.exit("No sections found. Create a notebook first.")
 
-html = b"""<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html>
 <head>
     <title>Project Status — June 2026</title>
@@ -73,6 +72,6 @@ html = b"""<!DOCTYPE html>
 </html>"""
 
 section = sections[0]
-page = section.pages.add(presentation_file=html).execute_query()
+page = section.pages.add(presentation_file=BytesIO(html_content.encode("utf-8"))).execute_query()
 print(f"Page created: {page.title}")
 print(f"Web URL: {page.links.oneNoteWebUrl}")

@@ -10,6 +10,8 @@ Requires delegated permission ``Mail.ReadWrite`` or
 https://learn.microsoft.com/en-us/graph/api/user-update-mailboxsettings
 """
 
+from datetime import datetime, timedelta
+
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
@@ -20,8 +22,6 @@ settings = client.me.mailbox_settings.get().execute_query()
 print(f"Current automatic replies: {settings.automatic_replies_status}")
 
 # Enable scheduled automatic replies
-from datetime import datetime, timedelta
-
 settings.set_property(
     "automaticRepliesSetting",
     {

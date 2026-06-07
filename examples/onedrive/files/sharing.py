@@ -10,6 +10,8 @@ https://learn.microsoft.com/en-us/graph/api/driveitem-createlink
 https://learn.microsoft.com/en-us/graph/api/driveitem-invite
 """
 
+import sys
+
 from office365.graph_client import GraphClient
 from tests import (
     test_client_id,
@@ -23,7 +25,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 
 items = client.me.drive.root.children.top(1).get().execute_query()
 if len(items) == 0:
-    exit("No files found")
+    sys.exit("No files found")
 
 item = items[0]
 

@@ -26,9 +26,7 @@ print()
 shared = client.me.drive.shared_with_me().execute_query()
 print(f"Shared with me ({len(shared)}):")
 for item in shared:
-    print(
-        f"  {item.name:40s}  shared by: {item.remote_item.shared.shared_by.user.display_name if item.remote_item else '?'}"
-    )
+    print(f"  {item.name:40s}  shared by: {item.remote_item.shared.sharedBy if item.remote_item else '?'}")
 print()
 
 # 3. Followed sites

@@ -38,7 +38,7 @@ for plan in my_plans:
 
         assignees = []
         if task.assignments:
-            for uid, details in task.assignments.items():
+            for uid, _ in task.assignments:
                 assignees.append(uid[:8])
 
         print(f"     [{pct:3d}%] P{priority}  {task.title}")

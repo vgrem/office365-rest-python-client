@@ -9,6 +9,7 @@ from office365.planner.plans.details import PlannerPlanDetails
 from office365.planner.tasks.task import PlannerTask
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PlannerPlan(Entity):
@@ -41,16 +42,15 @@ class PlannerPlan(Entity):
         return self.properties.get("title", None)
 
     @property
-    def created_by(self):
-        """Identity of the user, device, or application which created the plan."""
-        return self.properties.get("createdBy", IdentitySet())
-
-    @property
     def buckets(self) -> EntityCollection[PlannerBucket]:
         """Collection of buckets in the plan."""
         return self.properties.get(
             "buckets",
-            EntityCollection(self.context, PlannerBucket, ResourcePath("buckets", self.resource_path)),
+            EntityCollection(
+                self.context,
+                PlannerBucket,
+                ResourcePath("buckets", ResourcePath(self.id, ResourcePath("plans", ResourcePath("planner")))),
+            ),
         )
 
     @property
@@ -58,7 +58,10 @@ class PlannerPlan(Entity):
         """Additional details about the plan."""
         return self.properties.get(
             "details",
-            PlannerPlanDetails(self.context, ResourcePath("details", self.resource_path)),
+            PlannerPlanDetails(
+                self.context,
+                ResourcePath("details", ResourcePath(self.id, ResourcePath("plans", ResourcePath("planner")))),
+            ),
         )
 
     @property
@@ -66,13 +69,15 @@ class PlannerPlan(Entity):
         """Collection of tasks in the plan."""
         return self.properties.get(
             "tasks",
-            EntityCollection(self.context, PlannerTask, ResourcePath("tasks", self.resource_path)),
+            EntityCollection(
+                self.context,
+                PlannerTask,
+                ResourcePath("tasks", ResourcePath(self.id, ResourcePath("plans", ResourcePath("planner")))),
+            ),
         )
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdBy": self.created_by,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
+    @odata(name="createdBy")
+    @property
+    def created_by(self):
+        """Identity of the user, device, or application which created the plan."""
+        return self.properties.get("createdBy", IdentitySet())

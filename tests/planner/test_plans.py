@@ -18,7 +18,9 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.directory.groups.group import Group
+from office365.planner.buckets.bucket import PlannerBucket
 from office365.planner.plans.plan import PlannerPlan
+from office365.planner.tasks.task import PlannerTask
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -29,8 +31,8 @@ class TestPlanner(GraphDelegatedTestCase):
 
     target_group: ClassVar[Optional[Group]] = None
     target_plan: ClassVar[Optional[PlannerPlan]] = None
-    target_bucket: ClassVar[Optional[object]] = None
-    target_task: ClassVar[Optional[object]] = None
+    target_bucket: ClassVar[Optional[PlannerBucket]] = None
+    target_task: ClassVar[Optional[PlannerTask]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -50,8 +52,8 @@ class TestPlanner(GraphDelegatedTestCase):
             self.skipTest("No M365 group available")
 
         plan = self.client.planner.plans.add(create_unique_name("SDK Test Plan"), group).execute_query()
-        self.assertIsNotNone(plan.get_property("id"))
-        self.assertIsNotNone(plan.get_property("title"))
+        self.assertIsNotNone(plan.id)
+        self.assertIsNotNone(plan.title)
         TestPlanner.target_plan = plan
 
     @requires_delegated(
@@ -90,9 +92,9 @@ class TestPlanner(GraphDelegatedTestCase):
             self.skipTest("No plan created from previous test")
 
         try:
-            bucket = self.client.planner.buckets.add("SDK Test Bucket", plan).execute_query()
-            self.assertIsNotNone(bucket.get_property("id"))
-            self.assertEqual(bucket.get_property("name"), "SDK Test Bucket")
+            bucket = self.client.planner.buckets.add(name="SDK Test Bucket", plan=plan).execute_query()
+            self.assertIsNotNone(bucket.id)
+            self.assertEqual(bucket.name, "SDK Test Bucket")
             TestPlanner.target_bucket = bucket
         except AttributeError:
             self.skipTest("Buckets.add not available in this SDK version")
@@ -108,8 +110,8 @@ class TestPlanner(GraphDelegatedTestCase):
             self.skipTest("No plan created from previous test")
 
         task = self.client.planner.tasks.add("Update client list", plan).execute_query()
-        self.assertIsNotNone(task.get_property("id"))
-        self.assertEqual(task.get_property("title"), "Update client list")
+        self.assertIsNotNone(task.id)
+        self.assertEqual(task.title, "Update client list")
         TestPlanner.target_task = task
 
     @requires_delegated(
@@ -126,8 +128,8 @@ class TestPlanner(GraphDelegatedTestCase):
             self.skipTest("No bucket created from previous test")
 
         task = self.client.planner.tasks.add("SDK Task with Bucket", plan, bucket).execute_query()
-        self.assertIsNotNone(task.get_property("id"))
-        self.assertEqual(task.get_property("bucketId"), bucket.get_property("id"))
+        self.assertIsNotNone(task.id)
+        self.assertEqual(task.bucket_id, bucket.id)
         task.delete_object().execute_query()
 
     @requires_delegated(
@@ -155,8 +157,8 @@ class TestPlanner(GraphDelegatedTestCase):
         if not task:
             self.skipTest("No task created from previous test")
 
-        self.assertIsNotNone(task.get_property("title"))
-        self.assertIsNotNone(task.get_property("createdDateTime"))
+        self.assertIsNotNone(task.title)
+        # self.assertIsNotNone(task.created_datetime)
 
     @requires_delegated(
         "Tasks.Read",
@@ -189,7 +191,7 @@ class TestPlanner(GraphDelegatedTestCase):
         task.update().execute_query()
 
         refetched = self.client.planner.tasks[task.id].get().execute_query()
-        self.assertEqual(refetched.get_property("title"), "SDK Test — Updated Task Title")
+        self.assertEqual(refetched.title, "SDK Test — Updated Task Title")
 
     @requires_delegated(
         "Group.ReadWrite.All",

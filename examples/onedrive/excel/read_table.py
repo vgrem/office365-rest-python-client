@@ -10,6 +10,8 @@ https://learn.microsoft.com/en-us/graph/api/workbook-list-tables
 https://learn.microsoft.com/en-us/graph/api/workbook-tablerow-list
 """
 
+import sys
+
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
@@ -18,7 +20,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 # Find an Excel file
 items = client.me.drive.search("*.xlsx").execute_query()
 if len(items) == 0:
-    exit("No Excel files found. Upload one first.")
+    sys.exit("No Excel files found. Upload one first.")
 
 workbook = items[0].workbook
 

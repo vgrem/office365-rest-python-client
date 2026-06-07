@@ -1,4 +1,6 @@
-from typing import Optional, Union
+from __future__ import annotations
+
+from typing import Union
 
 from office365.entity_collection import EntityCollection
 from office365.planner.buckets.bucket import PlannerBucket
@@ -15,7 +17,7 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         self,
         title: str,
         plan: Union[str, PlannerPlan],
-        bucket: Optional[Union[str, PlannerBucket]] = None,
+        bucket: str | PlannerBucket | None = None,
     ) -> PlannerTask:
         """
         Create a new plannerTask.
@@ -26,15 +28,34 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         """
         return_type = PlannerTask(self.context)
         self.add_child(return_type)
+        return_type.title = title
 
-        def _add(plan_id: str) -> None:
-            payload = {"title": title, "planId": plan_id, "bucketId": bucket}
-            qry = CreateEntityQuery(self, payload, return_type)
+        def _add(plan_id: str | None, bucket_id: str | None) -> None:
+            assert plan_id is not None
+            # payload = {"title": title, "planId": plan_id, "bucket_id": bucket_id}
+            return_type.plan_id = plan_id
+            qry = CreateEntityQuery(self, return_type, return_type)
             self.context.add_query(qry)
 
-        if isinstance(plan, PlannerPlan):
-            plan.ensure_property("id").after_execute(lambda _: _add(plan.id) if plan.id is not None else None)
+        def _ensure_bucket():
+            if isinstance(bucket, PlannerBucket):
+                bid: str | None = bucket.id
+                bucket.ensure_property("id").after_execute(lambda _: _ensure_plan(bid))
+            else:
+                _ensure_plan(bucket)
+
+        def _ensure_plan(bucket_id: str | None) -> None:
+            if bucket_id:
+                return_type.bucket_id = bucket_id
+            if isinstance(plan, PlannerPlan):
+                pid: str | None = plan.id
+                plan.ensure_property("id").after_execute(lambda _: _add(pid, bucket_id))
+            else:
+                _add(plan, bucket_id)
+
+        if bucket is not None:
+            _ensure_bucket()
         else:
-            _add(plan)
+            _ensure_plan(None)
 
         return return_type
