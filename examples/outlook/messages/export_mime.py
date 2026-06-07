@@ -1,7 +1,7 @@
 """
 Download the MIME (.eml) representation of a message.
 
-Saves the message as an ``.eml`` file openable in any email client.
+Saves the message as an eml file openable in any email client.
 
 Requires delegated permission ``Mail.ReadWrite``.
 
@@ -14,11 +14,13 @@ import tempfile
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=test_tenant).with_username_and_password(
+    test_client_id, test_username, test_password
+)
+
 messages = client.me.messages.select(["id", "subject"]).top(1).get().execute_query()
 with tempfile.TemporaryDirectory() as local_path:
     for message in messages:
         with open(os.path.join(local_path, message.subject + ".eml"), "wb") as f:
             message.download(f).execute_query()
-
-        print(f"Message downloaded into {f.name}")
+        print(f"Downloaded: {f.name}")

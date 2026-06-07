@@ -1,25 +1,35 @@
 """
-Create an event in the current user's default calendar.
+Create a calendar event with attendees and details.
 
-Sets subject, body, start/end time, and an attendee.
+The most common scenario — schedule a meeting with subject,
+time, body, and attendees.
 
 Requires delegated permission ``Calendars.ReadWrite``.
 
-https://learn.microsoft.com/en-us/graph/api/user-post-events?view=graph-rest-1.0
+https://learn.microsoft.com/en-us/graph/api/user-post-events
 """
 
 from datetime import datetime, timedelta
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests import (
+    test_client_id,
+    test_password,
+    test_tenant,
+    test_user_principal_name,
+    test_username,
+)
+
+client = GraphClient(tenant=test_tenant).with_username_and_password(
+    test_client_id, test_username, test_password
+)
 
 when = datetime.utcnow() + timedelta(days=1)
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-new_event = client.me.calendar.events.add(
-    subject="Let's go for lunch",
-    body="Does mid month work for you?",
+event = client.me.calendar.events.add(
+    subject="Team Lunch",
+    body="Let's grab lunch together.",
     start=when,
     end=when + timedelta(hours=1),
-    attendees=["samanthab@contoso.onmicrosoft.com"],
+    attendees=[test_user_principal_name],
 ).execute_query()
-print("Event created")
+print(f"Event created: {event.subject}  (ID: {event.id})")
