@@ -42,7 +42,7 @@ and can include embedded images, files, tables, and attachments.
 
 ---
 
-## Non-trivial patterns
+## Patterns
 
 | Scenario | File | Why it's useful |
 |---|---|---|
