@@ -23,10 +23,10 @@ class SiteSharingReportHelper(Entity):
 
     @staticmethod
     def create_sharing_report_job(context, web_url, folder_url):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str web_url:
-        :param str folder_url:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            web_url (str):
+            folder_url (str):
         """
         return_type = ClientResult(context, SiteSharingReportStatus())
         payload = {"webUrl": web_url, "folderUrl": folder_url}
@@ -45,8 +45,8 @@ class SiteSharingReportHelper(Entity):
 
     @staticmethod
     def get_site_sharing_report_capabilities(context):
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return_type = ClientResult(context, SiteSharingReportCapabilities())
         binding_type = SiteSharingReportHelper(context)

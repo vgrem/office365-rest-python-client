@@ -14,13 +14,12 @@ class RankingLabeling(Entity):
         super().__init__(context, static_path)
 
     def add_judgment(self, user_query: str, url: str, label_id: str) -> Self:
-        """
-        Adds a single relevance judgment for the specified query and URL pair.
+        """Adds a single relevance judgment for the specified query and URL pair.
 
-        :param str user_query: User query for which the relevance judgment is added.
-        :param str url: URL for which the relevance judgment is added.
-        :param str label_id: The judgment for this query-URL pair as represented by an Int16. This value MUST
-            be between 1 and 5 inclusive.
+        Args:
+            user_query (str): User query for which the relevance judgment is added.
+            url (str): URL for which the relevance judgment is added.
+            label_id (str): The judgment for this query-URL pair as represented by an Int16. This value MUST be between 1 and 5 inclusive.
         """
         payload = {"userQuery": user_query, "url": url, "labelId": label_id}
         qry = ServiceOperationQuery(self, "AddJudgment", None, payload)
@@ -28,10 +27,10 @@ class RankingLabeling(Entity):
         return self
 
     def normalize_result_url(self, url: str) -> ClientResult[str]:
-        """
-        A URL string after normalization. The input and output URL strings MUST resolve to the same document.
+        """A URL string after normalization. The input and output URL strings MUST resolve to the same document.
 
-        :param str url: The URL for which the relevance judgment is added.
+        Args:
+            url (str): The URL for which the relevance judgment is added.
         """
         return_type = ClientResult(self.context)
         payload = {"url": url}

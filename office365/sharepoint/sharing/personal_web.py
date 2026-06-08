@@ -8,11 +8,11 @@ class PersonalWeb(Entity):
 
     @staticmethod
     def fix_permission_inheritance(context):
-        """
-        This method fixes the permission inheritance for the default document library of the personal web when
+        """This method fixes the permission inheritance for the default document library of the personal web when
         breakRoleInheritance didn't happen correctly during the default document library creation.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
         """
         binding_type = PersonalWeb(context)
         qry = ServiceOperationQuery(binding_type, "FixPermissionInheritance", None, None, None, None, True)

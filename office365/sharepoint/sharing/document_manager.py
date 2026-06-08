@@ -26,8 +26,9 @@ class DocumentSharingManager(Entity):
         """This method returns a role definition in the current web that is associated with a given Role
         (section 3.2.5.188) value.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param int role: A Role value for which to obtain the associated role definition object.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            role (int): A Role value for which to obtain the associated role definition object.
         """
         return_type = RoleDefinition(context)
         context.web.role_definitions.add_child(return_type)
@@ -48,15 +49,14 @@ class DocumentSharingManager(Entity):
     def remove_items_from_shared_with_me_view(
         context: ClientContext, item_urls: List[str]
     ) -> ClientResult[ClientValueCollection[SharedWithMeViewItemRemovalResult]]:
-        """
-        Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
-            does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.
-            Returns a list of results indicating whether the items were successfully removed. The length of this array
-            will match the length of the itemUrls array that was provided.
+        """Removes an item so that it no longer shows in the current user's 'Shared With Me' view. However, this
+        does not remove the user's actual permissions to the item. Up to 200 items can be provided in a single call.
+        Returns a list of results indicating whether the items were successfully removed. The length of this array
+        will match the length of the itemUrls array that was provided.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param list[str] item_urls: A list of absolute URLs of the items to be removed from the view.
-            These items might belong to any site or site collection in the tenant.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            item_urls (list[str]): A list of absolute URLs of the items to be removed from the view. These items might belong to any site or site collection in the tenant.
         """
         return_type = ClientResult(context, ClientValueCollection(SharedWithMeViewItemRemovalResult))
         binding_type = DocumentSharingManager(context)
@@ -85,37 +85,21 @@ class DocumentSharingManager(Entity):
         propagate_acl=None,
         return_type=None,
     ):
-        """
-        This method allows a caller with the 'ManagePermission' permission to update sharing information about a
+        """This method allows a caller with the 'ManagePermission' permission to update sharing information about a
         document to enable document sharing with a set of users. It returns an array of
         UserSharingResult (section 3.2.5.190) elements where each element contains the sharing status for each user.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str resource_address: A URL that points to a securable object, which can be a document, folder or the
-            root folder of a document library.
-        :param list[UserRoleAssignment] user_role_assignments:An array of recipients and assigned roles on the securable
-            object pointed to by the resourceAddress parameter.
-        :param bool validate_existing_permissions: A Boolean flag indicating how to honor a requested permission
-            for a user. If this value is "true", the protocol server will not grant the requested permission if a user
-            already has sufficient permissions, and if this value is "false", the protocol server will grant the
-            requested permission whether or not a user already has the same or more permissions.
-            This parameter is applicable only when the parameter additiveMode is set to true.
-        :param bool additive_mode: A Boolean flag indicating whether the permission setting uses the additive or strict
-            mode. If this value is "true", the permission setting uses the additive mode, which means that the
-            specified permission will be added to the user's current list of permissions if it is not there already,
-            and if this value is "false", the permission setting uses the strict mode, which means that the specified
-            permission will replace the user's current permissions.
-        :param bool send_server_managed_notification: A Boolean flag to indicate whether or not to generate an email
-            notification to each recipient in the "userRoleAssignments" array after the document update is completed
-            successfully. If this value is "true", the protocol server will send an email notification if an email
-            server is configured, and if the value is "false", no email notification will be sent.
-        :param str custom_message: A custom message to be included in the email notification.
-        :param bool include_anonymous_links_in_notification: A Boolean flag that indicates whether or not to include
-            anonymous access links in the email notification to each recipient in the userRoleAssignments array after
-            the document update is completed successfully. If the value is "true", the protocol server will include
-            an anonymous access link in the email notification, and if the value is "false", no link will be included.
-        :param bool propagate_acl: A flag to determine if permissions SHOULD be pushed to items with unique permission.
-        :param ClientResult return_type:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            resource_address (str): A URL that points to a securable object, which can be a document, folder or the root folder of a document library.
+            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the securable object pointed to by the resourceAddress parameter.
+            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for a user. If this value is "true", the protocol server will not grant the requested permission if a user already has sufficient permissions, and if this value is "false", the protocol server will grant the requested permission whether or not a user already has the same or more permissions. This parameter is applicable only when the parameter additiveMode is set to true.
+            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or strict mode. If this value is "true", the permission setting uses the additive mode, which means that the specified permission will be added to the user's current list of permissions if it is not there already, and if this value is "false", the permission setting uses the strict mode, which means that the specified permission will replace the user's current permissions.
+            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email notification to each recipient in the "userRoleAssignments" array after the document update is completed successfully. If this value is "true", the protocol server will send an email notification if an email server is configured, and if the value is "false", no email notification will be sent.
+            custom_message (str): A custom message to be included in the email notification.
+            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include anonymous access links in the email notification to each recipient in the userRoleAssignments array after the document update is completed successfully. If the value is "true", the protocol server will include an anonymous access link in the email notification, and if the value is "false", no link will be included.
+            propagate_acl (bool): A flag to determine if permissions SHOULD be pushed to items with unique permission.
+            return_type (ClientResult):
         """
         if return_type is None:
             return_type = ClientResult(context, ClientValueCollection(UserSharingResult))

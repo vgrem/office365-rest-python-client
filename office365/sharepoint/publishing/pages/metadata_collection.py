@@ -12,7 +12,9 @@ class SitePageMetadataCollection(EntityCollection[ClientObjectT]):  # type: igno
 
     def get_by_id(self, site_page_id: int) -> ClientObjectT:
         """Gets the site page with the specified ID.
-        :param int site_page_id: Specifies the identifier of the site page.
+
+        Args:
+            site_page_id (int): Specifies the identifier of the site page.
         """
         from office365.sharepoint.publishing.pages.metadata import SitePageMetadata
 

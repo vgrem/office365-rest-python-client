@@ -21,8 +21,8 @@ class TenantCrawlVersionsInfoProvider(Entity):
         return return_type
 
     def disable_crawl_versions(self, site_id: str) -> ClientResult[bool]:
-        """
-        :param str site_id:
+        """Args:
+            site_id (str):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
@@ -38,8 +38,8 @@ class TenantCrawlVersionsInfoProvider(Entity):
         return return_type
 
     def is_crawl_versions_enabled(self, site_id: str):
-        """
-        :param str site_id:
+        """Args:
+            site_id (str):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}

@@ -29,12 +29,12 @@ class SearchService(Entity):
         return self._resource_path
 
     def export(self, user: Union[str, User], start_time: datetime) -> ClientResult[str]:
-        """
-        The operation is used by the administrator to retrieve the query log entries,
+        """The operation is used by the administrator to retrieve the query log entries,
         issued after a specified date, for a specified user.
 
-        :param datetime.datetime start_time: The timestamp of the oldest query log entry returned.
-        :param str or User user: The name of the user or user object that issued the queries.
+        Args:
+            start_time (datetime.datetime): The timestamp of the oldest query log entry returned.
+            user (str or User): The name of the user or user object that issued the queries.
         """
         return_type = ClientResult(self.context, str())
 
@@ -60,10 +60,10 @@ class SearchService(Entity):
         return return_type
 
     def export_popular_tenant_queries(self, count: int) -> ClientResult[ClientValueCollection[PopularTenantQuery]]:
-        """
-        This method is used to get a list of popular search queries executed on the tenant.
+        """This method is used to get a list of popular search queries executed on the tenant.
 
-        :param int count:
+        Args:
+            count (int):
         """
         return_type = ClientResult(self.context, ClientValueCollection(PopularTenantQuery))
         payload = {"count": count}
@@ -90,29 +90,20 @@ class SearchService(Entity):
     ):
         """The operation is used to retrieve search results by using the HTTP protocol with the GET method.
 
-        :param str query_text: The query text of the search query.
-        :param str source_id: Specifies the unique identifier for result source to use for executing the search query.
-            If no value is specified then the protocol server MUST use the id for the default result source.
-        :param str ranking_model_id: The GUID of the ranking model that SHOULD be used for this search query. If this
-            element is not present or a value is not specified, the protocol server MUST use the default ranking model,
-            according to protocol server configuration.
-        :param int start_row: A zero-based index of the first search result in the list of all search results the
-            protocol server returns. The StartRow value MUST be greater than or equal to zero.
-        :param int rows_per_page: The number of result items the protocol client displays per page. If this element is
-            set to an integer value less than 1, the value of the RowLimit element MUST be used as the default value.
-        :param int row_limit: The number of search results the protocol client wants to receive, starting at the index
-            specified in the StartRow element. The RowLimit value MUST be greater than or equal to zero.
-        :param list[str] select_properties: Specifies a property bag of key value pairs.
-        :param list[str] refinement_filters:  The list of refinement tokens for drilldown into search results
-        :param list[str] refiners:  Specifies a list of refiners
-         :param list[Sort] sort_list:  Specifies the list of properties with which to sort the search results.
-        :param bool trim_duplicates:  Specifies whether duplicates are removed by the protocol server before sorting,
-             selecting, and sending the search results.
-        :param bool enable_sorting: Specifies whether sorting of results is enabled or not.
-            MUST ignore the SortList specified if this value is set to false.
-        :param bool enable_query_rules: Specifies whether query rules are included when a search query is executed.
-            If the value is true, query rules are applied in the search query. If the value is false, query rules
-            MUST NOT be applied in the search query.
+        Args:
+            query_text (str): The query text of the search query.
+            source_id (str): Specifies the unique identifier for result source to use for executing the search query. If no value is specified then the protocol server MUST use the id for the default result source.
+            ranking_model_id (str): The GUID of the ranking model that SHOULD be used for this search query. If this element is not present or a value is not specified, the protocol server MUST use the default ranking model, according to protocol server configuration.
+            start_row (int): A zero-based index of the first search result in the list of all search results the protocol server returns. The StartRow value MUST be greater than or equal to zero.
+            rows_per_page (int): The number of result items the protocol client displays per page. If this element is set to an integer value less than 1, the value of the RowLimit element MUST be used as the default value.
+            row_limit (int): The number of search results the protocol client wants to receive, starting at the index specified in the StartRow element. The RowLimit value MUST be greater than or equal to zero.
+            select_properties (list[str]): Specifies a property bag of key value pairs.
+            refinement_filters (list[str]): The list of refinement tokens for drilldown into search results
+            refiners (list[str]): Specifies a list of refiners
+            sort_list (list[Sort]): Specifies the list of properties with which to sort the search results.
+            trim_duplicates (bool): Specifies whether duplicates are removed by the protocol server before sorting, selecting, and sending the search results.
+            enable_sorting (bool): Specifies whether sorting of results is enabled or not. MUST ignore the SortList specified if this value is set to false.
+            enable_query_rules (bool): Specifies whether query rules are included when a search query is executed. If the value is true, query rules are applied in the search query. If the value is false, query rules MUST NOT be applied in the search query.
         """
         params = {
             "querytext": query_text,
@@ -151,12 +142,11 @@ class SearchService(Entity):
         """The operation is used to retrieve search results through the use of the HTTP protocol
         with method type POST.
 
-        :param str query_text: The query text of the search query.
-        :param list[str] select_properties: Specifies a property bag of key value pairs.
-        :param bool trim_duplicates:  Specifies whether duplicates are removed by the protocol server before sorting,
-             selecting, and sending the search results.
-        :param int row_limit: The number of search results the protocol client wants to receive, starting at the index
-            specified in the StartRow element. The RowLimit value MUST be greater than or equal to zero.
+        Args:
+            query_text (str): The query text of the search query.
+            select_properties (list[str]): Specifies a property bag of key value pairs.
+            trim_duplicates (bool): Specifies whether duplicates are removed by the protocol server before sorting, selecting, and sending the search results.
+            row_limit (int): The number of search results the protocol client wants to receive, starting at the index specified in the StartRow element. The RowLimit value MUST be greater than or equal to zero.
         """
         return_type = ClientResult(self.context, SearchResult())
         request = SearchRequest(
@@ -180,11 +170,10 @@ class SearchService(Entity):
         Also this operation MUST NOT be used if a user clicks a query result for which query logging
         information was not returned
 
-        :param str page_info: Specifies the information about the clicked page, the page impression.
-        :param str click_type: Type of clicks. If a particular query result is clicked then the click type returned
-             by the search service for this query result MUST be used. If "more" link is clicked then "ClickMore"
-             click type MUST be used.
-        :param str block_type: Type of query results in the page impression block
+        Args:
+            page_info (str): Specifies the information about the clicked page, the page impression.
+            click_type (str): Type of clicks. If a particular query result is clicked then the click type returned by the search service for this query result MUST be used. If "more" link is clicked then "ClickMore" click type MUST be used.
+            block_type (str): Type of query results in the page impression block
         """
         payload = {"pageInfo": page_info, "clickType": click_type, "blockType": block_type}
         qry = ServiceOperationQuery(self, "RecordPageClick", None, payload)
@@ -209,10 +198,8 @@ class SearchService(Entity):
         return return_type
 
     def suggest(self, query_text: str) -> ClientResult[QuerySuggestionResults]:
-        """
-        :param str query_text: The query text of the search query. If this element is not present or a value
-             is not specified, a default value of an empty string MUST be used, and the server MUST return a
-             FaultException<ExceptionDetail> message.
+        """Args:
+            query_text (str): The query text of the search query. If this element is not present or a value is not specified, a default value of an empty string MUST be used, and the server MUST return a FaultException<ExceptionDetail> message.
         """
         return_type = ClientResult(self.context, QuerySuggestionResults())
         payload = {"querytext": query_text}
@@ -227,22 +214,13 @@ class SearchService(Entity):
         number_of_completions: Optional[int] = None,
         cursor_position: Optional[int] = None,
     ) -> ClientResult[QueryAutoCompletionResults]:
-        """
-        The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
+        """The operation is used to retrieve auto completion results by using the HTTP protocol with the GET method.
 
-        :param str query_text: The query text of the search query. If this element is not present or a value is not
-             specified, a default value of an empty string MUST be used, and the server MUST return
-             a FaultException<ExceptionDetail> message.
-        :param str sources: Specifies the sources that the protocol server SHOULD use when computing the result.
-            If NULL, the protocol server SHOULD use all of the sources for autocompletions. The value SHOULD be a
-            comma separated set of sources for autocompletions. The set of available sources the server SHOULD support
-            is "Tag", which MAY be compiled from the set of #tags applied to documents. If the sources value is not
-            a comma separated set of sources, or any of the source does not match "Tag", the server SHOULD return
-            completions from all available sources.
-        :param int number_of_completions: Specifies the maximum number query completion results in
-            GetQueryCompletionsResponse response message.
-        :param int cursor_position: Specifies the cursor position in the query text when this operation is sent
-            to the protocol server.
+        Args:
+            query_text (str): The query text of the search query. If this element is not present or a value is not specified, a default value of an empty string MUST be used, and the server MUST return a FaultException<ExceptionDetail> message.
+            sources (str): Specifies the sources that the protocol server SHOULD use when computing the result. If NULL, the protocol server SHOULD use all of the sources for autocompletions. The value SHOULD be a comma separated set of sources for autocompletions. The set of available sources the server SHOULD support is "Tag", which MAY be compiled from the set of #tags applied to documents. If the sources value is not a comma separated set of sources, or any of the source does not match "Tag", the server SHOULD return completions from all available sources.
+            number_of_completions (int): Specifies the maximum number query completion results in GetQueryCompletionsResponse response message.
+            cursor_position (int): Specifies the cursor position in the query text when this operation is sent to the protocol server.
         """
         return_type = ClientResult(self.context, QueryAutoCompletionResults())
         payload = {
