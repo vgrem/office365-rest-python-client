@@ -14,15 +14,14 @@ class MessageRuleCollection(EntityCollection[MessageRule]):
 
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def add(self, display_name: str, sequence: int, actions: MessageRuleActions, **kwargs: Any) -> MessageRule:
-        """
-        Create a messageRule object by specifying a set of conditions and actions.
+        """Create a messageRule object by specifying a set of conditions and actions.
         Outlook carries out those actions if an incoming message in the user's Inbox meets the specified conditions.
         This API is available in the following national cloud deployments.
 
-        :param str display_name: The display name of the rule.
-        :param int sequence: Indicates the order in which the rule is executed, among other rules.
-        :param MessageRuleActions actions: Actions to be taken on a message when the corresponding conditions,
-            if any, are fulfilled.
+        Args:
+            display_name (str): The display name of the rule.
+            sequence (int): Indicates the order in which the rule is executed, among other rules.
+            actions (MessageRuleActions): Actions to be taken on a message when the corresponding conditions, if any, are fulfilled.
         """
         props = {
             "displayName": display_name,
