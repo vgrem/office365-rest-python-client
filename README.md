@@ -357,7 +357,7 @@ group = client.groups.add(
 ).execute_query()
 ```
 
-[All user examples](examples/directory/)
+[All user examples](examples/entraid/users/)
 
 ---
 

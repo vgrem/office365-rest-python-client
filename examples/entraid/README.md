@@ -70,6 +70,7 @@ tenant-level policies, and audit logs.
 | Delete a user | [`users/delete.py`](./users/delete.py) | `User.ReadWrite.All` | [delete user](https://learn.microsoft.com/en-us/graph/api/user-delete) |
 | Get user's group memberships | [`users/get_group_memberships.py`](./users/get_group_memberships.py) | `User.Read.All` | [memberOf](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | Invite a guest (B2B) user | [`users/invite_guest.py`](./users/invite_guest.py) | `User.Invite.All` | [invitation](https://learn.microsoft.com/en-us/graph/api/invitation-post) |
+| User report — sign-in activity, inactive, no MFA | [`users/report.py`](./users/report.py) | `User.Read.All`, `AuditLog.Read.All` | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
 
 ## Examples — Groups
 
@@ -83,6 +84,7 @@ tenant-level policies, and audit logs.
 | Add/remove group members | [`groups/add_member.py`](./groups/add_member.py) | `Group.ReadWrite.All` | [group members](https://learn.microsoft.com/en-us/graph/api/group-post-members) |
 | Delete groups by name | [`groups/delete_groups.py`](./groups/delete_groups.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
 | Delete groups in batch | [`groups/delete_batch.py`](./groups/delete_batch.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
+| Group lifecycle — owners, members, orphans | [`groups/manage.py`](./groups/manage.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
 
 ## Examples — Applications
 
@@ -101,6 +103,7 @@ tenant-level policies, and audit logs.
 | Grant delegated permissions | [`applications/grant_delegated_perms.py`](./applications/grant_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [grant](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-delegatedpermissions) |
 | Revoke application permissions | [`applications/revoke_application_perms.py`](./applications/revoke_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-approleassignments) |
 | Revoke delegated permissions | [`applications/revoke_delegated_perms.py`](./applications/revoke_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-delegatedpermissions) |
+| Service principal report — apps, perms, expiring secrets | [`applications/sp_report.py`](./applications/sp_report.py) | `Application.Read.All` | [SP list](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list) |
 
 ## Examples — Roles & Identity
 
@@ -110,6 +113,7 @@ tenant-level policies, and audit logs.
 | Get roles assigned to a user | [`roles/for_user.py`](./roles/for_user.py) | `RoleManagement.ReadWrite.Directory` | [user roles](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | Assign a role to a user | [`roles/assign_role.py`](./roles/assign_role.py) | `RoleManagement.ReadWrite.Directory` | [assign role](https://learn.microsoft.com/en-us/graph/api/directoryrole-post-members) |
 | List identity providers | [`identity/list_provider.py`](./identity/list_provider.py) | `IdentityProvider.Read.All` | [list providers](https://learn.microsoft.com/en-us/graph/api/identityprovider-list) |
+| PIM report — privileged role assignments | [`roles/pim_report.py`](./roles/pim_report.py) | `RoleManagement.Read.All` | [role assignments](https://learn.microsoft.com/en-us/graph/api/privilegedroleassignment-list) |
 
 ## Examples — Policies
 
@@ -121,12 +125,9 @@ tenant-level policies, and audit logs.
 | Get admin consent request policy | [`policies/admin_consent_request.py`](./policies/admin_consent_request.py) | `Policy.Read.All` | [admin consent](https://learn.microsoft.com/en-us/graph/api/adminconsentrequestpolicy-get) |
 | Get device registration policy | [`policies/device_registration.py`](./policies/device_registration.py) | `Policy.Read.All` | [device reg](https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get) |
 | Get cross-tenant access policy | [`policies/cross_tenant_access.py`](./policies/cross_tenant_access.py) | `Policy.Read.All` | [cross-tenant](https://learn.microsoft.com/en-us/graph/api/crosstenantaccesspolicy-get) |
+| CA policy report — break-glass accounts, enforcement state | [`policies/ca_report.py`](./policies/ca_report.py) | `Policy.Read.All` | [CA policy list](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
 
 ## Examples — Audit Logs
-
-| Operation | File | Required role | API reference |
-|---|---|---|---|
-| List user sign-in logs | [`audit/list_signins.py`](./audit/list_signins.py) | `AuditLog.Read.All` | [list signins](https://learn.microsoft.com/en-us/graph/api/signin-list) |
 
 | Operation | File | Required role | API reference |
 |---|---|---|---|
