@@ -24,11 +24,10 @@ class SecurableObject(Entity):
     """An object that can be assigned security permissions."""
 
     def get_role_assignment(self, principal: Principal) -> RoleAssignment:
-        """
-        Retrieves the role assignment object (1) based on the specified user or group
+        """Retrieves the role assignment object (1) based on the specified user or group
 
-        :param Principal principal: Specifies the user or group of the
-            role assignment.
+        Args:
+            principal (Principal): Specifies the user or group of the role assignment.
         """
         return_type = RoleAssignment(self.context)
         self.role_assignments.add_child(return_type)
@@ -42,8 +41,9 @@ class SecurableObject(Entity):
     def add_role_assignment(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
         """Adds a role assignment to securable resource.
 
-        :param RoleDefinition or int principal: Specifies the role definition or role type.
-        :param Principal or str role: Specifies the user or group of the role assignment.
+        Args:
+            principal (RoleDefinition or int): Specifies the role definition or role type.
+            role (Principal or str): Specifies the user or group of the role assignment.
         """
 
         if not isinstance(principal, Principal):
@@ -64,10 +64,10 @@ class SecurableObject(Entity):
 
     def remove_role_assignment(self, principal: Principal | str, role_def: RoleDefinition | RoleType) -> Self:
         """Removes a role assignment from a securable resource.
-        :param Principal principal: Specifies the user or group of the
-        role assignment.
-        :param RoleDefinition role_def: Specifies the role definition
-        of the role assignment.
+
+        Args:
+            principal (Principal): Specifies the user or group of the role assignment.
+            role_def (RoleDefinition): Specifies the role definition of the role assignment.
         """
         if not isinstance(principal, Principal):
             principal = self.context.web.site_users.get_by_principal_name(principal)
@@ -89,21 +89,9 @@ class SecurableObject(Entity):
         """Creates unique role assignments for the securable object. If the securable object already has
         unique role assignments, the protocol server MUST NOT alter any role assignments.
 
-        :param bool clear_sub_scopes:  If the securable object is a site (2), and the clearSubscopes parameter
-             is "true", the role assignments for all child securable objects in the current site (2) and in the sites
-             that inherit role assignments from the current site (2) MUST be cleared and those securable objects
-             inherit role assignments from the current site (2) after this call. If the securable object is a site (2),
-             and the clearSubscopes parameter is "false", the role assignments for all child securable objects that
-             do not inherit role assignments from their parent object (1) MUST remain unchanged.
-             If the securable object is not a site (2), and the clearSubscopes parameter is "true",
-             the role assignments for all child securable objects MUST be cleared and those securable objects inherit
-             role assignments from the current securable object after this call. If the securable object is not a site,
-             and the clearSubscopes parameter is "false", the role assignments for all child securable objects that
-             do not inherit role assignments from their parent object (1) MUST remain unchanged.
-        :param bool copy_role_assignments: Specifies whether to copy the role assignments from
-              the parent securable object.If the value is "false", the collection of role assignments MUST contain
-              only 1 role assignment containing the current user after the operation.
-
+        Args:
+            clear_sub_scopes (bool): If the securable object is a site (2), and the clearSubscopes parameter is "true", the role assignments for all child securable objects in the current site (2) and in the sites that inherit role assignments from the current site (2) MUST be cleared and those securable objects inherit role assignments from the current site (2) after this call. If the securable object is a site (2), and the clearSubscopes parameter is "false", the role assignments for all child securable objects that do not inherit role assignments from their parent object (1) MUST remain unchanged. If the securable object is not a site (2), and the clearSubscopes parameter is "true", the role assignments for all child securable objects MUST be cleared and those securable objects inherit role assignments from the current securable object after this call. If the securable object is not a site, and the clearSubscopes parameter is "false", the role assignments for all child securable objects that do not inherit role assignments from their parent object (1) MUST remain unchanged.
+            copy_role_assignments (bool): Specifies whether to copy the role assignments from the parent securable object.If the value is "false", the collection of role assignments MUST contain only 1 role assignment containing the current user after the operation.
         """
         payload = {
             "copyRoleAssignments": copy_role_assignments,
@@ -121,10 +109,10 @@ class SecurableObject(Entity):
         return self
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
-        """
-        Returns the user permissions for secured object.
+        """Returns the user permissions for secured object.
 
-        :param str or User user: Specifies the user login name or User object.
+        Args:
+            user (str or User): Specifies the user login name or User object.
         """
         return_type = ClientResult(self.context, BasePermissions())
 

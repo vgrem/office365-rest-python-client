@@ -29,19 +29,17 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
         self._delta_request_url = None
 
     def token(self, value: str) -> Self:
-        """
-        Apply delta query
+        """Apply delta query
 
-        :param str value: If unspecified, enumerates the hierarchy's current state. If latest, returns empty
-            response with latest delta token. If a previous delta token, returns new state since that token.
+        Args:
+            value (str): If unspecified, enumerates the hierarchy's current state. If latest, returns empty response with latest delta token. If a previous delta token, returns new state since that token.
         """
         self.query_options.custom["token"] = value
         return self
 
     def __getitem__(self, key: Union[int, str]) -> ClientObjectT:
-        """
-        :param key: key is used to address an entity by either an index or by identifier
-        :type key: int or str
+        """Args:
+            key (int or str): key is used to address an entity by either an index or by identifier
         """
         if isinstance(key, int):
             return super().__getitem__(key)
