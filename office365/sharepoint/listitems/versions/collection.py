@@ -16,18 +16,19 @@ class ListItemVersionCollection(EntityCollection[ListItemVersion]):
         super().__init__(context, ListItemVersion, resource_path)
 
     def get_by_id(self, id_: int) -> ListItemVersion:
-        """
-        Gets an hosted app based on the Id.
-        :param int id_:  A 32-bit integer that specifies the ID of the version to return.
+        """Gets an hosted app based on the Id.
+
+        Args:
+            id_ (int): A 32-bit integer that specifies the ID of the version to return.
         """
         return ListItemVersion(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
     def get_versions(
         self, row_limit: Optional[int] = None, sort_descending: Optional[bool] = None
     ) -> "ListItemVersionCollection":
-        """
-        :param int row_limit: The number of return results
-        :param bool sort_descending:
+        """Args:
+            row_limit (int): The number of return results
+            sort_descending (bool):
         """
         return_type = ListItemVersionCollection(self.context)
         payload = {"getVersionsParams": GetListItemVersionsParameters(row_limit, sort_descending)}

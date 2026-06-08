@@ -7,12 +7,12 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class ActivityIdentityItem(ClientValue):
-    """
-    :param str client_id:
-    :param str clientIdProvider:
-    :param str displayName:
-    :param str email:
-    :param str userPrincipalName:
+    """Args:
+        client_id (str):
+        clientIdProvider (str):
+        displayName (str):
+        email (str):
+        userPrincipalName (str):
     """
 
     clientId: str | None = None

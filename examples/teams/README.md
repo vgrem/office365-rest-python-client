@@ -58,6 +58,7 @@ conversations not tied to any team/channel.
 | **Settings governance** — scan all teams against a policy baseline and report violations | [`audit_team_settings.py`](./audit_team_settings.py) | Enforce Giphy/stickers policy, restrict guest channel creation, lock down messaging. Includes commented-out auto-remediation |
 | **Lifecycle report** — active, archived, and recently deleted teams with restore windows | [`audit_lifecycle.py`](./audit_lifecycle.py) | Track what's been archived/deleted and for how long — essential for cleanup and compliance |
 | **Guest access audit** — find every team containing external guest users | [`audit_guest_access.py`](./audit_guest_access.py) | Security audit — identifies shadow collaboration with external users across the org |
+| **Guest lifecycle** — find stale guest users across the tenant and generate expiry report | [`guests/lifecycle.py`](./guests/lifecycle.py) | Compliance governance — identify external users with no recent activity |
 | **Provision channels from template** — batch create channels with descriptions | [`channels/provision.py`](./channels/provision.py) | Bootstrap a new team with a standard channel structure. Skips existing channels, idempotent |
 | Create a team from an existing M365 group (async with retry callback) | [`create_from_group.py`](./create_from_group.py) | Group→team provisioning is async; shows `execute_query_retry` with a progress callback |
 | Add a member to a team by email (with role assignment) | [`members/add.py`](./members/add.py) | Cross-object user resolution + `members.add()` with roles |
@@ -65,6 +66,8 @@ conversations not tied to any team/channel.
 | Install a Teams app from the catalog into a team | [`apps/install.py`](./apps/install.py) | Two-step flow: query catalog → install into team |
 | Create a 1-on-1 chat and send a message | [`chats/create_and_message.py`](./chats/create_and_message.py) | Multi-step flow: resolve users → create chat → send message |
 | **Usage report** — team counts and user activity over D7/D30/D90 | [`reports/usage.py`](./reports/usage.py) | Adoption tracking, chargeback, and inactivity detection across multiple time windows |
+| **Inactive channels** — channels with no recent messages across all teams | [`find_inactive_channels.py`](./find_inactive_channels.py) | Identify channel sprawl and candidates for archiving |
+| **App inventory** — report installed apps across all teams | [`apps/report.py`](./apps/report.py) | Detect shadow IT and track app adoption across the tenant |
 
 ---
 ---

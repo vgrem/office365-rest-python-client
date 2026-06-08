@@ -9,10 +9,11 @@ from office365.runtime.client_value import ClientValue
 class CommunicationSiteCreationRequest(ClientValue):
     """Options for configuring the Communication Site that will be created.
 
-    :param str title: Site title
-    :param str url: Absolute site url
-    :param str description:
-    :param str lcid: The LCID (locale identifier) for a site
+    Args:
+        title (str): Site title
+        url (str): Absolute site url
+        description (str):
+        lcid (str): The LCID (locale identifier) for a site
     """
 
     Title: str

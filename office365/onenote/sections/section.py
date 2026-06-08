@@ -30,11 +30,12 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         """For Copy operations, you follow an asynchronous calling pattern: First call the Copy action,
         and then poll the operation endpoint for the result.
 
-        :param str group_id: The id of the group to copy to. Use only when copying to a Microsoft 365 group.
-        :param str id_: Required. The id of the destination section group.
-        :param str rename_as: The name of the copy. Defaults to the name of the existing item.
-        :param str site_collection_id:
-        :param str site_id:
+        Args:
+            group_id (str): The id of the group to copy to. Use only when copying to a Microsoft 365 group.
+            id_ (str): Required. The id of the destination section group.
+            rename_as (str): The name of the copy. Defaults to the name of the existing item.
+            site_collection_id (str):
+            site_id (str):
         """
         return_type = OnenoteOperation(self.context)
         payload = {

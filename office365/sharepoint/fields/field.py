@@ -89,7 +89,8 @@ class Field(Entity):
     def set_show_in_display_form(self, flag) -> Self:
         """Sets the value of the ShowInDisplayForm property for this fields.
 
-        :type flag: bool
+        Args:
+            flag (bool):
         """
         qry = ServiceOperationQuery(self, "setShowInDisplayForm", [flag])
         self.context.add_query(qry)
@@ -98,7 +99,8 @@ class Field(Entity):
     def set_show_in_edit_form(self, flag):
         """Sets the value of the ShowInEditForm property for this fields.
 
-        :param bool flag: A Boolean value that indicates whether this field is shown in the edit form.
+        Args:
+            flag (bool): A Boolean value that indicates whether this field is shown in the edit form.
         """
         qry = ServiceOperationQuery(self, "setShowInEditForm", [flag])
         self.context.add_query(qry)
@@ -106,7 +108,8 @@ class Field(Entity):
     def set_show_in_new_form(self, flag: bool) -> Self:
         """Sets the value of the ShowInNewForm property for this fields.
 
-        :param bool flag: A Boolean value that indicates whether this field is shown in the new form.
+        Args:
+            flag (bool): A Boolean value that indicates whether this field is shown in the new form.
         """
         qry = ServiceOperationQuery(self, "setShowInNewForm", [flag])
         self.context.add_query(qry)

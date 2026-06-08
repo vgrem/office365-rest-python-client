@@ -10,13 +10,13 @@ class SocialAnnouncementManager(Entity):
 
     @staticmethod
     def get_current_announcements(context, url):
-        """
-        Gets the currently active announcements for a given site and returns them as a list of TileData objects.
+        """Gets the currently active announcements for a given site and returns them as a list of TileData objects.
         Announcement details are stored in Title, Description, BackgroundImageLocation, and LinkLocation properties
         of the TileData.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str url:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            url (str):
         """
         return_type = ClientResult(context, ClientValueCollection(TileData))
         manager = SocialAnnouncementManager(context)

@@ -9,8 +9,9 @@ from office365.runtime.client_value import ClientValue
 class OnenoteOperationError(ClientValue):
     """An error from a failed OneNote operation.
 
-    :param str message: The error message.
-    :param str code: The error code.
+    Args:
+        message (str): The error message.
+        code (str): The error code.
     """
 
     message: str | None = None

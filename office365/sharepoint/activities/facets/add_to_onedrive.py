@@ -7,10 +7,10 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class AddToOneDriveFacet(ClientValue):
-    """
-    :param str added_datetime:
-    :param str mount_point_name:
-    :param str removed_datetime:
+    """Args:
+        added_datetime (str):
+        mount_point_name (str):
+        removed_datetime (str):
     """
 
     addedDateTime: str | None = None

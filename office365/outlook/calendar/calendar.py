@@ -36,8 +36,8 @@ class Calendar(Entity):
         delegated=["Calendars.Read.Shared", "Calendars.ReadWrite.Shared"], notes="No application permission"
     )
     def allowed_calendar_sharing_roles(self, user) -> ClientResult[StringCollection]:
-        """
-        :param str user: User identifier or principal name
+        """Args:
+            user (str): User identifier or principal name
         """
         params = {"user": user}
         return_type = ClientResult(self.context, StringCollection())
@@ -52,16 +52,14 @@ class Calendar(Entity):
     def get_schedule(
         self, schedules, start_time, end_time, availability_view_interval=30
     ) -> ClientResult[ClientValueCollection[ScheduleInformation]]:
-        """
-        Get the free/busy availability information for a collection of users, distributions lists, or resources
+        """Get the free/busy availability information for a collection of users, distributions lists, or resources
         (rooms or equipment) for a specified time period.
 
-        :param datetime.datetime end_time: The date, time, and time zone that the period ends.
-        :param int availability_view_interval: Represents the duration of a time slot in an availabilityView
-             in the response. The default is 30 minutes, minimum is 5, maximum is 1440. Optional.
-        :param datetime.datetime start_time: The date, time, and time zone that the period starts.
-        :param list[str] schedules: A collection of SMTP addresses of users, distribution lists,
-            or resources to get availability information for.
+        Args:
+            end_time (datetime.datetime): The date, time, and time zone that the period ends.
+            availability_view_interval (int): Represents the duration of a time slot in an availabilityView in the response. The default is 30 minutes, minimum is 5, maximum is 1440. Optional.
+            start_time (datetime.datetime): The date, time, and time zone that the period starts.
+            schedules (list[str]): A collection of SMTP addresses of users, distribution lists, or resources to get availability information for.
         """
         payload = {
             "schedules": schedules,

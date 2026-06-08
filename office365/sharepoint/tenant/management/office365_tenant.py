@@ -49,17 +49,16 @@ class Office365Tenant(Entity):
         return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
     def add_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
-        """
-        Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
+        """Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
         Effectively, a tenant admin points out to a document library, or a folder in the document library
         and requests that content in that library should be retrievable by using a CDN.
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
 
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
-        :param str origin_url: Specifies a path to the doc library to be configured. It can be provided in two ways:
-            relative path, or a mask.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
+            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways: relative path, or a mask.
         """
         payload = {"cdnType": cdn_type, "originUrl": origin_url}
         qry = ServiceOperationQuery(self, "AddTenantCdnOrigin", None, payload)
@@ -67,9 +66,10 @@ class Office365Tenant(Entity):
         return self
 
     def disable_sharing_for_non_owners_of_site(self, site_url: str) -> Self:
-        """
-        Disables Sharing For Non Owners
-        :param str site_url:
+        """Disables Sharing For Non Owners
+
+        Args:
+            site_url (str):
         """
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(self, "DisableSharingForNonOwnersOfSite", None, payload)
@@ -77,13 +77,13 @@ class Office365Tenant(Entity):
         return self
 
     def get_tenant_cdn_enabled(self, cdn_type: int) -> ClientResult[bool]:
-        """
-        Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
+        """Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
 
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
         """
         payload = {"cdnType": cdn_type}
         return_type = ClientResult(self.context)
@@ -108,14 +108,14 @@ class Office365Tenant(Entity):
         return self
 
     def set_tenant_cdn_enabled(self, cdn_type: int, is_enabled: bool) -> Self:
-        """
-        Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
+        """Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
 
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
-        :param bool is_enabled: Specifies if the CDN is enabled.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
+            is_enabled (bool): Specifies if the CDN is enabled.
         """
         payload = {"cdnType": cdn_type, "isEnabled": is_enabled}
         qry = ServiceOperationQuery(self, "SetTenantCdnEnabled", None, payload)
@@ -123,15 +123,14 @@ class Office365Tenant(Entity):
         return self
 
     def remove_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
-        """
-        Removes a new origin from the Public or Private content delivery network (CDN).
+        """Removes a new origin from the Public or Private content delivery network (CDN).
 
         You must have the SharePoint Admin role or Global Administrator role and be a site collection administrator
         to run the operation.
 
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
-        :param str origin_url: Specifies a path to the doc library to be configured. It can be provided in two ways:
-            relative path, or a mask.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
+            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways: relative path, or a mask.
         """
         payload = {"cdnType": cdn_type, "originUrl": origin_url}
         qry = ServiceOperationQuery(self, "RemoveTenantCdnOrigin", None, payload)
@@ -139,13 +138,12 @@ class Office365Tenant(Entity):
         return self
 
     def get_tenant_cdn_policies(self, cdn_type: int) -> ClientResult[ClientValueCollection[str]]:
-        """
-        Get the public or private Policies applied on your SharePoint Online Tenant.
+        """Get the public or private Policies applied on your SharePoint Online Tenant.
 
         Requires Tenant administrator permissions.
 
-
-        :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
         """
         payload = {"cdnType": cdn_type}
         return_type = ClientResult(self.context, ClientValueCollection(str))
@@ -154,19 +152,14 @@ class Office365Tenant(Entity):
         return return_type
 
     def set_tenant_cdn_policy(self, cdn_type, policy, policy_value):
-        """
-                Sets the content delivery network (CDN) policies at the tenant level.
+        """Sets the content delivery network (CDN) policies at the tenant level.
 
-                Requires Tenant administrator permissions.
+        Requires Tenant administrator permissions.
 
-                :param int cdn_type: Specifies the CDN type. The valid values are: public or private.
-                :param int policy: The PolicyType specifies the type of policy to set.
-                       Valid values:
-        # IncludeFileExtensions
-        # ExcludeRestrictedSiteClassifications
-        # ExcludeIfNoScriptDisabled
-                :param str policy_value: A String representing the value of the policy type
-                    defined by the PolicyType parameter.
+        Args:
+            cdn_type (int): Specifies the CDN type. The valid values are: public or private.
+            policy (int): The PolicyType specifies the type of policy to set. Valid values: # IncludeFileExtensions # ExcludeRestrictedSiteClassifications # ExcludeIfNoScriptDisabled
+            policy_value (str): A String representing the value of the policy type defined by the PolicyType parameter.
         """
         payload = {"cdnType": cdn_type, "policy": policy, "policyValue": policy_value}
         qry = ServiceOperationQuery(self, "SetTenantCdnPolicy", None, payload)
@@ -174,19 +167,18 @@ class Office365Tenant(Entity):
         return self
 
     def revoke_all_user_sessions(self, user: Union[str, User]) -> SPOUserSessionRevocationResult:
-        """
-        Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
+        """Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
 
-        :param str or User user: Specifies a user name or user object
-              (for example, user1@contoso.com) or User object
+        Args:
+            user (str or User): Specifies a user name or user object (for example, user1@contoso.com) or User object
         """
         return_type = SPOUserSessionRevocationResult(self.context)
 
         def _revoke_all_user_sessions(login_name: str) -> None:
-            """
-            Logouts a user's sessions across all their devices
+            """Logouts a user's sessions across all their devices
 
-            :type login_name: str
+            Args:
+                login_name (str):
             """
             qry = ServiceOperationQuery(self, "RevokeAllUserSessions", [login_name], None, None, return_type)
             self.context.add_query(qry)
@@ -202,17 +194,13 @@ class Office365Tenant(Entity):
         return return_type
 
     def get_external_users(self, position=0, page_size=50, _filter=None, sort_order=0):
-        """
-        Returns external users in the tenant.
+        """Returns external users in the tenant.
 
-        :param int position: Use to specify the zero-based index of the position in the sorted collection of the
-                             first result to be returned.
-        :param int page_size: Specifies the maximum number of users to be returned in the collection.
-                              The value must be less than or equal to 50.
-        :param str _filter: Limits the results to only those users whose first name, last name, or email address
-                            begins with the text in the string using a case-insensitive comparison.
-        :param int sort_order: Specifies the sort results in Ascending or Descending order on the User.Email property
-                               should occur.
+        Args:
+            position (int): Use to specify the zero-based index of the position in the sorted collection of the first result to be returned.
+            page_size (int): Specifies the maximum number of users to be returned in the collection. The value must be less than or equal to 50.
+            _filter (str): Limits the results to only those users whose first name, last name, or email address begins with the text in the string using a case-insensitive comparison.
+            sort_order (int): Specifies the sort results in Ascending or Descending order on the User.Email property should occur.
         """
         return_type = GetExternalUsersResults(self.context)
         payload = {"position": position, "pageSize": page_size, "filter": _filter, "sortOrder": sort_order}
@@ -221,11 +209,10 @@ class Office365Tenant(Entity):
         return return_type
 
     def remove_external_users(self, unique_ids: Optional[List[str]] = None) -> RemoveExternalUsersResults:
-        """
-        Removes a collection of external users from the tenancy's folder.
+        """Removes a collection of external users from the tenancy's folder.
 
-        :param list[str] unique_ids: Specifies an ID that can be used to identify an external user based on
-                                     their Windows Live ID.
+        Args:
+            unique_ids (list[str]): Specifies an ID that can be used to identify an external user based on their Windows Live ID.
         """
         payload = {"uniqueIds": unique_ids}
         return_type = RemoveExternalUsersResults(self.context)
@@ -243,11 +230,11 @@ class Office365Tenant(Entity):
         return return_type
 
     def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
-        """
-        Adds a new theme to a tenant.
+        """Adds a new theme to a tenant.
 
-        :param str name:
-        :param str theme_json:
+        Args:
+            name (str):
+            theme_json (str):
         """
         return_type = ClientResult(self.context)
         payload = {"name": name, "themeJson": theme_json}
@@ -256,9 +243,10 @@ class Office365Tenant(Entity):
         return return_type
 
     def delete_tenant_theme(self, name: str) -> Self:
-        """
-        Removes a theme from tenant
-        :type name: str
+        """Removes a theme from tenant
+
+        Args:
+            name (str):
         """
         payload = {"name": name}
         qry = ServiceOperationQuery(self, "DeleteTenantTheme", None, payload)
@@ -270,10 +258,11 @@ class Office365Tenant(Entity):
     ) -> ClientResult[str]:
         """Bulk import custom user profile properties
 
-        :param int id_type: The type of id to use when looking up the user profile.
-        :param str source_data_id_property: The name of the ID property in the source data.
-        :param dict property_map: A map from the source property name to the user profile service property name.
-        :param str source_uri: The URI of the source data file to import.
+        Args:
+            id_type (int): The type of id to use when looking up the user profile.
+            source_data_id_property (str): The name of the ID property in the source data.
+            property_map (dict): A map from the source property name to the user profile service property name.
+            source_uri (str): The URI of the source data file to import.
         """
         return_type = ClientResult(self.context)
         payload = {

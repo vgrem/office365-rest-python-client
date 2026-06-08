@@ -13,15 +13,13 @@ from office365.sharepoint.webs.teamappinfo import TeamAppInfo
 
 @dataclass
 class SiteDesignCreationInfo(ClientValue):
-    """
-    :param str or None _id: The ID of the site design to apply.
-    :param str or None title: The display name of the site design.
-    :param str or None description: The display description of site design.
-    :param str or None web_template: Identifies which base template to add the design to. Use the value 64 for the
-    Team site template, and the value 68 for the Communication site template.
-    :param list[UUID] or None site_script_ids: A list of one or more site scripts. Each is identified by an ID.
-    The scripts will run in the order listed.
-    :param str or None design_package_id:
+    """Args:
+        _id (str or None): The ID of the site design to apply.
+        title (str or None): The display name of the site design.
+        description (str or None): The display description of site design.
+        web_template (str or None): Identifies which base template to add the design to. Use the value 64 for the Team site template, and the value 68 for the Communication site template.
+        site_script_ids (list[UUID] or None): A list of one or more site scripts. Each is identified by an ID. The scripts will run in the order listed.
+        design_package_id (str or None):
     """
 
     Id = None

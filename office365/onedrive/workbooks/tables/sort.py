@@ -21,10 +21,10 @@ class WorkbookTableSort(Entity):
     ) -> Self:
         """Perform a sort operation.
 
-        :param list[WorkbookSortField] fields: The list of conditions to sort on.
-        :param bool match_case: Indicates whether to match the case of the items being sorted.
-        :param str method: The ordering method used for Chinese characters.
-             The possible values are: PinYin, StrokeCount.
+        Args:
+            fields (list[WorkbookSortField]): The list of conditions to sort on.
+            match_case (bool): Indicates whether to match the case of the items being sorted.
+            method (str): The ordering method used for Chinese characters. The possible values are: PinYin, StrokeCount.
         """
         payload = {
             "fields": ClientValueCollection(WorkbookSortField, fields),

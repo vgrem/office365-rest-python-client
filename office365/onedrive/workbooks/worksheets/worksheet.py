@@ -32,8 +32,10 @@ class WorkbookWorksheet(Entity):
     def cell(self, row: int, column: int) -> WorkbookRange:
         """Gets the range object containing the single cell based on row and column numbers.
         The cell can be outside the bounds of its parent range, so long as it's stays within the worksheet grid.
-        :param int row: Row number of the cell to be retrieved. Zero-indexed.
-        :param int column: Column number of the cell to be retrieved. Zero-indexed.
+
+        Args:
+            row (int): Row number of the cell to be retrieved. Zero-indexed.
+            column (int): Column number of the cell to be retrieved. Zero-indexed.
         """
         return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
         params = {"row": row, "column": column}
@@ -54,7 +56,8 @@ class WorkbookWorksheet(Entity):
     def used_range(self, values_only: bool = False) -> WorkbookRange:
         """Return the used range of the given range object.
 
-        :param bool values_only: Optional. Considers only cells with values as used cells.
+        Args:
+            values_only (bool): Optional. Considers only cells with values as used cells.
         """
         return_type = WorkbookRange(self.context)
         params = {"valuesOnly": values_only}

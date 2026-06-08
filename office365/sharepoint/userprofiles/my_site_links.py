@@ -9,11 +9,11 @@ class MySiteLinks(Entity):
 
     @staticmethod
     def get_my_site_links(context) -> "MySiteLinks":
-        """
-        Return Type: Microsoft.SharePoint.Portal.UserProfiles.MySiteLinks
+        """Return Type: Microsoft.SharePoint.Portal.UserProfiles.MySiteLinks
         The GetMySiteLinks function retrieves a MySiteLinks (section 3.1.5.22) object for the current user.
 
-        :param office365.sharepoint.client_context.ClientContext context: Client context
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
         """
         return_type = MySiteLinks(context)
         qry = ServiceOperationQuery(MySiteLinks(context), "GetMySiteLinks", None, None, None, return_type)

@@ -24,8 +24,8 @@ class MultilingualSettings(Entity):
     def set_notification_recipients(
         self, notification_recipients: List[TranslationNotificationRecipientCollection]
     ) -> Self:
-        """
-        :param list notification_recipients:
+        """Args:
+            notification_recipients (list):
         """
         request = TranslationNotificationRecipientSetRequest(
             ClientValueCollection(TranslationNotificationRecipientCollection, notification_recipients)

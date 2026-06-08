@@ -8,9 +8,9 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class SiteScriptSerializationResult(ClientValue):
-    """
-    :param str json:
-    :param list[str] warnings:
+    """Args:
+        json (str):
+        warnings (list[str]):
     """
 
     JSON: str | None = None

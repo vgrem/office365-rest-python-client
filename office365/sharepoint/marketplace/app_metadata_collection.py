@@ -10,17 +10,17 @@ class CorporateCatalogAppMetadataCollection(EntityCollection[CorporateCatalogApp
         super().__init__(context, CorporateCatalogAppMetadata, resource_path)
 
     def get_by_id(self, app_id: str) -> CorporateCatalogAppMetadata:
-        """
-        Get app metadata by id.
+        """Get app metadata by id.
 
-        :param str app_id: The identifier of the app to retrieve.
+        Args:
+            app_id (str): The identifier of the app to retrieve.
         """
         return CorporateCatalogAppMetadata(self.context, ServiceOperationPath("GetById", [app_id], self.resource_path))
 
     def get_by_title(self, title: str) -> CorporateCatalogAppMetadata:
-        """
-        Get app metadata by title.
+        """Get app metadata by title.
 
-        :param str title: The title of the app to retrieve.
+        Args:
+            title (str): The title of the app to retrieve.
         """
         return self.first(f"title eq '{title}'")

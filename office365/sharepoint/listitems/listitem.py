@@ -64,11 +64,10 @@ class ListItem(SecurableObject):
     that contains the item, depending on the content type of the item."""
 
     def __init__(self, context, resource_path=None, parent_list=None):
-        """
-
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type resource_path: office365.runtime.paths.resource_path.ResourcePath or None
-        :type parent_list: office365.sharepoint.lists.list.List or None
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            resource_path (office365.runtime.paths.resource_path.ResourcePath or None):
+            parent_list (office365.sharepoint.lists.list.List or None):
         """
         super().__init__(context, resource_path)
         if parent_list is not None:
@@ -119,16 +118,11 @@ class ListItem(SecurableObject):
         """Creates a tokenized sharing link for a list item based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
-        :param link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-        :param expiration: A date/time string for which the format conforms to the ISO 8601:2004(E)
-            complete representation for calendar date and time of day and which represents the time and date of expiry
-            for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference
-            between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry.
-            This value is only applicable to tokenized sharing links that are anonymous access links.
-        :param role: The role to be used for the tokenized sharing link. This is required for Flexible links
-            and ignored for all other kinds.
-        :param password: Optional password value to apply to the tokenized sharing link,
-            if it can support password protection.
+        Args:
+            link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
         """
         return_type = ClientResult(self.context, ShareLinkResponse())
         request = ShareLinkRequest(
@@ -150,12 +144,11 @@ class ListItem(SecurableObject):
         return return_type
 
     def unshare_link(self, link_kind: int, share_id: Optional[str] = None) -> Self:
-        """
-        Removes the specified tokenized sharing link of the list item.
+        """Removes the specified tokenized sharing link of the list item.
 
-        :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
-            sharing link that is intended to be removed.
-        :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
+        Args:
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         payload = {"linkKind": link_kind, "shareId": share_id}
         qry = ServiceOperationQuery(self, "UnshareLink", None, payload)
@@ -165,12 +158,8 @@ class ListItem(SecurableObject):
     def delete_link_by_kind(self, link_kind):
         """Removes the specified tokenized sharing link of the list item
 
-        :param int link_kind: The kind of tokenized sharing link that is intended to be removed.
-            This MUST be set to one of the following values:
-            OrganizationView (section 3.2.5.315.1.3)
-            OrganizationEdit (section 3.2.5.315.1.4)
-            AnonymousView (section 3.2.5.315.1.5)
-            AnonymousEdit (section 3.2.5.315.1.6)
+        Args:
+            link_kind (int): The kind of tokenized sharing link that is intended to be removed. This MUST be set to one of the following values: OrganizationView (section 3.2.5.315.1.3) OrganizationEdit (section 3.2.5.315.1.4) AnonymousView (section 3.2.5.315.1.5) AnonymousEdit (section 3.2.5.315.1.6)
         """
         payload = {"linkKind": link_kind}
         qry = ServiceOperationQuery(self, "DeleteLinkByKind", None, payload)
@@ -238,11 +227,10 @@ class ListItem(SecurableObject):
         return self
 
     def set_rating(self, value: int) -> ClientResult[float]:
-        """
-        Rates an item within the specified list. The return value is the average rating for the specified list item.
+        """Rates an item within the specified list. The return value is the average rating for the specified list item.
 
-        :param int value: An integer value for the rating to be submitted.
-            The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
+        Args:
+            value (int): An integer value for the rating to be submitted. The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
         """
         return_value = ClientResult(self.context)
 
@@ -255,12 +243,11 @@ class ListItem(SecurableObject):
         return return_value
 
     def set_like(self, value: bool) -> ClientResult[int]:
-        """
-        Sets or unsets the like quality for the current user for an item within
-           the specified list. The return value is the total number of likes for the specified list item.
+        """Sets or unsets the like quality for the current user for an item within
+        the specified list. The return value is the total number of likes for the specified list item.
 
-        :param bool value: A Boolean value that indicates the operation being either like or unlike.
-            A True value indicates like.
+        Args:
+            value (bool): A Boolean value that indicates the operation being either like or unlike. A True value indicates like.
         """
         return_value = ClientResult(self.context)
 
@@ -273,11 +260,11 @@ class ListItem(SecurableObject):
         return return_value
 
     def get_wopi_frame_url(self, action: SPWOPIAction) -> ClientResult[str]:
-        """
-        Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
-            application associated with the list item.
+        """Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
+        application associated with the list item.
 
-        :param int action: Indicates which user action is indicated in the returned WOPIFrameUrl.
+        Args:
+            action (int): Indicates which user action is indicated in the returned WOPIFrameUrl.
         """
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "GetWOPIFrameUrl", [action.value], None, None, result)
@@ -294,9 +281,10 @@ class ListItem(SecurableObject):
 
     def get_changes(self, query=None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the ListItem,
-           based on the specified query.
+        based on the specified query.
 
-        :param office365.sharepoint.changeQuery.ChangeQuery query: Specifies which changes to return
+        Args:
+            query (office365.sharepoint.changeQuery.ChangeQuery): Specifies which changes to return
         """
         if query is None:
             query = ChangeQuery(Item=True)
@@ -314,14 +302,14 @@ class ListItem(SecurableObject):
         email_subject: Optional[str] = None,
         email_body: Optional[str] = None,
     ) -> SharingResult:
-        """
-        Share a ListItem (file or folder facet)
+        """Share a ListItem (file or folder facet)
 
-        :param str user_principal_name: User identifier
-        :param ExternalSharingSiteOption share_option: The sharing type of permission to grant on the object.
-        :param bool send_email: A flag to determine if an email notification SHOULD be sent (if email is configured).
-        :param str email_subject: The email subject.
-        :param str email_body: The email subject.
+        Args:
+            user_principal_name (str): User identifier
+            share_option (ExternalSharingSiteOption): The sharing type of permission to grant on the object.
+            send_email (bool): A flag to determine if an email notification SHOULD be sent (if email is configured).
+            email_subject (str): The email subject.
+            email_body (str): The email subject.
         """
 
         return_type = SharingResult(self.context)
@@ -395,11 +383,11 @@ class ListItem(SecurableObject):
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """Validates and sets the values of the specified collection of fields for the list item.
 
-        :param dict form_values: Specifies a collection of field internal names and values for the given field
-        :param bool new_document_update: Specifies whether the list item is a document being updated after upload.
-        :param str checkin_comment: Check-in comment, if any. This parameter is only applicable when the list item
-             is checked out.
-        :param bool or None dates_in_utc:
+        Args:
+            form_values (dict): Specifies a collection of field internal names and values for the given field
+            new_document_update (bool): Specifies whether the list item is a document being updated after upload.
+            checkin_comment (str): Check-in comment, if any. This parameter is only applicable when the list item is checked out.
+            dates_in_utc (bool or None):
         """
         payload = {
             "formValues": [ListItemFormUpdateValue(k, v) for k, v in form_values.items()],
@@ -426,10 +414,9 @@ class ListItem(SecurableObject):
         return self
 
     def update_ex(self, bypass_quota_check: Optional[bool] = None, bypass_shared_lock: Optional[bool] = None):
-        """
-
-        :param bool bypass_quota_check:
-        :param bool bypass_shared_lock:
+        """Args:
+            bypass_quota_check (bool):
+            bypass_shared_lock (bool):
         """
         payload = {"parameters": ListItemUpdateParameters(bypass_quota_check, bypass_shared_lock)}
         qry = ServiceOperationQuery(self, "UpdateEx", None, payload)
@@ -486,20 +473,20 @@ class ListItem(SecurableObject):
         return self
 
     def set_comments_disabled(self, value: bool) -> Self:
-        """
-        Sets the value of CommentsDisabled for the item.
+        """Sets the value of CommentsDisabled for the item.
 
-        :param bool value: Indicates whether comments for this item are disabled or not.
+        Args:
+            value (bool): Indicates whether comments for this item are disabled or not.
         """
         qry = ServiceOperationQuery(self, "SetCommentsDisabled", [value])
         self.context.add_query(qry)
         return self
 
     def set_compliance_tag_with_hold(self, compliance_tag: str) -> Self:
-        """
-        Sets a compliance tag with a hold
+        """Sets a compliance tag with a hold
 
-        :param str compliance_tag: The applying label (tag) to the list item
+        Args:
+            compliance_tag (str): The applying label (tag) to the list item
         """
         payload = {"complianceTag": compliance_tag}
         qry = ServiceOperationQuery(self, "SetComplianceTagWithHold", None, payload)
@@ -518,11 +505,11 @@ class ListItem(SecurableObject):
         return return_type
 
     def override_policy_tip(self, user_action, justification):
-        """
-        Overrides the policy tip on this list item.
+        """Overrides the policy tip on this list item.
 
-        :param int user_action: The user action to take.
-        :param str justification: The reason why the override is being done.
+        Args:
+            user_action (int): The user action to take.
+            justification (str): The reason why the override is being done.
         """
         return_type = ClientResult(self.context, int())
         payload = {"userAction": user_action, "justification": justification}
@@ -532,10 +519,11 @@ class ListItem(SecurableObject):
 
     def parse_and_set_field_value(self, field_name: str, value: str) -> Self:
         """Sets the value of the field (2) for the list item based on an implementation-specific transformation
-           of the value.
+        of the value.
 
-        :param str field_name: Specifies the field internal name.
-        :param str value: Specifies the new value for the field (2).
+        Args:
+            field_name (str): Specifies the field internal name.
+            value (str): Specifies the new value for the field (2).
         """
         payload = {"fieldName": field_name, "value": value}
         qry = ServiceOperationQuery(self, "ParseAndSetFieldValue", None, payload)
@@ -761,10 +749,11 @@ class ListItem(SecurableObject):
         return self
 
     def _set_taxonomy_field_value(self, name: str, value: TaxonomyFieldValueCollection) -> None:
-        """
-        Sets taxonomy field value
-        :param str name: Taxonomy field name
-        :param TaxonomyFieldValueCollection value: Taxonomy field value
+        """Sets taxonomy field value
+
+        Args:
+            name (str): Taxonomy field name
+            value (TaxonomyFieldValueCollection): Taxonomy field value
         """
         tax_field = self.parent_list.fields.get_by_internal_name_or_title(name)
 
@@ -779,11 +768,11 @@ class ListItem(SecurableObject):
         tax_field.ensure_property("TextField").after_execute(lambda _: _tax_field_loaded())
 
     def ensure_type_name(self, target_list, action=None):
-        """
-        Determine metadata annotation for ListItem entity
+        """Determine metadata annotation for ListItem entity
 
-        :param office365.sharepoint.lists.list.List target_list: List resource
-        :param () -> None action: Event handler
+        Args:
+            target_list (office365.sharepoint.lists.list.List): List resource
+            action (() -> None): Event handler
         """
         if self._entity_type_name is None:
 

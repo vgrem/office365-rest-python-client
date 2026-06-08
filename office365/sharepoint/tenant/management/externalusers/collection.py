@@ -10,8 +10,8 @@ class ExternalUserCollection(EntityCollection[ExternalUser]):
         super().__init__(context, ExternalUser, resource_path)
 
     def get_by_id(self, unique_id: str) -> ExternalUser:
-        """
-        :param str unique_id: The Id of the external user.
+        """Args:
+            unique_id (str): The Id of the external user.
         """
         return ExternalUser(
             self.context,

@@ -13,16 +13,15 @@ class CallCollection(EntityCollection):
         super().__init__(context, Call, resource_path)
 
     def create(self, callback_uri: str) -> Call:
-        """
-        Create call enables your bot to create a new outgoing peer-to-peer or group call, or join an existing meeting
+        """Create call enables your bot to create a new outgoing peer-to-peer or group call, or join an existing meeting
 
-        :param str callback_uri: The callback URL on which callbacks will be delivered. Must be https.
+        Args:
+            callback_uri (str): The callback URL on which callbacks will be delivered. Must be https.
         """
         return super().add(callbackUri=callback_uri)
 
     def log_teleconference_device_quality(self, quality: Optional[TeleconferenceDeviceQuality] = None) -> Self:
-        """
-        Log video teleconferencing device quality data.
+        """Log video teleconferencing device quality data.
         The Cloud Video Interop (CVI) bot represents video teleconferencing (VTC) devices and acts as a back-to-back
         agent for a VTC device in a conference call. Because a CVI bot is in the middle of the VTC and Microsoft Teams
         infrastructure as a VTC proxy, it has two media legs. One media leg is between the CVI bot
@@ -32,7 +31,8 @@ class CallCollection(EntityCollection):
         The third-party partners own the VTC media leg and the Teams infrastructure cannot access the quality
         data of the third-party call leg. This method is only for the CVI partners to provide their media quality data.
 
-        :param TeleconferenceDeviceQuality quality : Quality data of VTC media leg.
+        Args:
+            quality (TeleconferenceDeviceQuality): Quality data of VTC media leg.
         """
         qry = ServiceOperationQuery(self, "logTeleconferenceDeviceQuality", None, quality)
         self.context.add_query(qry)

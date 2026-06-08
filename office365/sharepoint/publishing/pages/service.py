@@ -54,8 +54,10 @@ class SitePageService(Entity):
 
     def create_page(self, title: str, language: Optional[str] = None) -> SitePage:
         """Create a new sitePage in the site pages list in a site.
-        :param str title: The title of Site Page
-        :param str language: The language of the Site Page.
+
+        Args:
+            title (str): The title of Site Page
+            language (str): The language of the Site Page.
         """
 
         def _page_created(return_type: SitePage) -> None:
@@ -67,9 +69,10 @@ class SitePageService(Entity):
         return self.pages.add().after_execute(_page_created)
 
     def create_and_publish_page(self, title):
-        """
-        Create and publish a new sitePage in the site pages list in a site.
-        :param str title: The title of Site Page
+        """Create and publish a new sitePage in the site pages list in a site.
+
+        Args:
+            title (str): The title of Site Page
         """
 
         def _page_created(return_type: SitePage) -> None:
@@ -112,10 +115,11 @@ class SitePageService(Entity):
 
     @staticmethod
     def get_time_zone(context: ClientContext, city_name: str) -> PrimaryCityTime:
-        """
-        Gets time zone data for specified city.
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str city_name: The name of the city.
+        """Gets time zone data for specified city.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            city_name (str): The name of the city.
         """
         return_type = PrimaryCityTime(context)
         binding_type = SitePageService(context)
@@ -126,9 +130,9 @@ class SitePageService(Entity):
 
     @staticmethod
     def compute_file_name(context: ClientContext, title: str) -> ClientResult[str]:
-        """
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        :param str title: The title of the page.
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
+            title (str): The title of the page.
         """
         return_type = ClientResult(context)
         binding_type = SitePageService(context)
@@ -190,14 +194,15 @@ class SitePageService(Entity):
         return return_type
 
     def add_image(self, page_name, image_file_name, image_stream):
-        """
-        Adds an image to the site assets library of the current web.
+        """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
 
-        :param str image_stream: The image stream.
-        :param str image_file_name: Indicates the file name of the image to be added.
-        :param str page_name: Indicates the name of that site page that the image is to be used in.
-        :return: File
+        Args:
+            image_stream (str): The image stream.
+            image_file_name (str): Indicates the file name of the image to be added.
+            page_name (str): Indicates the name of that site page that the image is to be used in.
+        Returns:
+            File
         """
         return_type = File(self.context)
         params = {
@@ -210,15 +215,15 @@ class SitePageService(Entity):
         return return_type
 
     def add_image_from_external_url(self, page_name, image_file_name, external_url, sub_folder_name, page_id):
-        """
-        Adds an image to the site assets library of the current web.
+        """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
 
-        :param str image_file_name: Indicates the file name of the image to be added.
-        :param str page_name: Indicates the name of that site page that the image is to be used in.
-        :param str external_url:
-        :param str sub_folder_name:
-        :param str page_id:
+        Args:
+            image_file_name (str): Indicates the file name of the image to be added.
+            page_name (str): Indicates the name of that site page that the image is to be used in.
+            external_url (str):
+            sub_folder_name (str):
+            page_id (str):
         """
         return_type = File(self.context)
         params = {

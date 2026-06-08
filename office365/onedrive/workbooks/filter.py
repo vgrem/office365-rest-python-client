@@ -15,7 +15,8 @@ class WorkbookFilter(Entity):
     def apply_bottom_items_filter(self, count: int | None = None) -> Self:
         """Perform a sort operation.
 
-        :param int count: The number of items to apply the filter to.
+        Args:
+            count (int): The number of items to apply the filter to.
         """
         payload = {"count": count}
         qry = ServiceOperationQuery(self, "applyBottomItemsFilter", None, payload)

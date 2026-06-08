@@ -13,11 +13,11 @@ class DocumentsSharedWithGroup(Entity):
 
     @staticmethod
     def get_shared_with_group_docs(context, group_id=None):
-        """
-        Gets a shared documents for a group.
+        """Gets a shared documents for a group.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str group_id:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint context
+            group_id (str):
         """
         return_type = EntityCollection(context, SharedWithMeDocument)
         payload = {"groupId": group_id}

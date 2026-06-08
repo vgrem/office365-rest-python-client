@@ -20,11 +20,11 @@ class SharingUtility(Entity):
 
     @staticmethod
     def get_user_directory_info_by_email(context: ClientContext, email: str) -> ClientResult[UserDirectoryInfo]:
-        """
-        Get user information by the user’s email address in directory.
+        """Get user information by the user’s email address in directory.
 
-        :param str email: The email address of a user.
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        Args:
+            email (str): The email address of a user.
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
         """
         return_type = ClientResult(context, UserDirectoryInfo())
         payload = {"email": email}
@@ -38,13 +38,13 @@ class SharingUtility(Entity):
     def validate_same_user_emails(
         context, primary_email: str, other_email: str, principal_name: str
     ) -> ClientResult[bool]:
-        """
-        Validate the primary email/principal name and other email are of the same user.
+        """Validate the primary email/principal name and other email are of the same user.
 
-        :param str primary_email: User’s primary email address
-        :param str other_email: Another email address.
-        :param str principal_name: User’s principal name.
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        Args:
+            primary_email (str): User’s primary email address
+            other_email (str): Another email address.
+            principal_name (str): User’s principal name.
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
         """
         utility = SharingUtility(context)
         payload = {

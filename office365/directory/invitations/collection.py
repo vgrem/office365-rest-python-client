@@ -12,22 +12,22 @@ class InvitationCollection(EntityCollection[Invitation]):
         super().__init__(context, Invitation, resource_path)
 
     def create(self, invited_user_email_address: str, invite_redirect_url: Optional[str] = None) -> Invitation:
-        """
-        Use this API to create a new invitation. Invitation adds an external user to the organization.
+        """Use this API to create a new invitation. Invitation adds an external user to the organization.
 
         When creating a new invitation you have several options available:
 
-          - On invitation creation, Microsoft Graph can automatically send an invitation email directly to
-          the invited user, or your app can use the inviteRedeemUrl returned in the creation response to craft your
-          own invitation (through your communication mechanism of choice) to the invited user.
-          If you decide to have Microsoft Graph send an invitation email automatically, you can control the content
-          and language of the email using invitedUserMessageInfo.
-          - When the user is invited, a user entity (of userType Guest) is created and can now be used to control
-          access to resources. The invited user has to go through the redemption process to access any resources
-          they have been invited to.
+        - On invitation creation, Microsoft Graph can automatically send an invitation email directly to
+        the invited user, or your app can use the inviteRedeemUrl returned in the creation response to craft your
+        own invitation (through your communication mechanism of choice) to the invited user.
+        If you decide to have Microsoft Graph send an invitation email automatically, you can control the content
+        and language of the email using invitedUserMessageInfo.
+        - When the user is invited, a user entity (of userType Guest) is created and can now be used to control
+        access to resources. The invited user has to go through the redemption process to access any resources
+        they have been invited to.
 
-          :param str invited_user_email_address: The email address of the user you are inviting.
-          :param str invite_redirect_url: The URL that the user will be redirected to after redemption.
+        Args:
+            invited_user_email_address (str): The email address of the user you are inviting.
+            invite_redirect_url (str): The URL that the user will be redirected to after redemption.
         """
         return_type = Invitation(self.context)
         properties = {

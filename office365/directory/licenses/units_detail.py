@@ -9,7 +9,8 @@ from office365.runtime.client_value import ClientValue
 class LicenseUnitsDetail(ClientValue):
     """LicenseUnitsDetail
 
-    :param int enabled: The number of units that are enabled for the active subscription of the service SKU.
+    Args:
+        enabled (int): The number of units that are enabled for the active subscription of the service SKU.
     """
 
     enabled: int | None = None

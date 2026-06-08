@@ -104,10 +104,7 @@ for f in files:
 
 ## Share
 
-| What | File | Notes |
-|------|------|-------|
-| **Share with people** | [`share.py`](./share.py) | Send email with link |
-| **Share with external user** | [`share_with_external_user.py`](./share_with_external_user.py) | Guest access |
+> Sharing operations for folders are in the [`sharing/`](../sharing/) directory.
 
 ## Update Properties
 

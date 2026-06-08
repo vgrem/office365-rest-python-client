@@ -21,8 +21,7 @@ class CommunicationSite(Entity):
     def create(
         self, title: str, site_url: str, description: Optional[str] = None
     ) -> ClientResult[CommunicationSiteCreationResponse]:
-        """
-        Initiates creation of a Communication Site.
+        """Initiates creation of a Communication Site.
 
         - If the SiteStatus returns 1, the Communication Site is in the process of being created asynchronously.
 
@@ -34,9 +33,10 @@ class CommunicationSite(Entity):
 
         - If the SiteStatus returns 3 or 0, the Communication site failed to be created.
 
-        :param str site_url: Site url
-        :param str title: Site title
-        :param str description: Site description
+        Args:
+            site_url (str): Site url
+            title (str): Site title
+            description (str): Site description
         """
         request = CommunicationSiteCreationRequest(title, site_url, description)
         return_type = ClientResult(self.context, CommunicationSiteCreationResponse())

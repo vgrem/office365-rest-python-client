@@ -12,9 +12,9 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         super().__init__(context, RoleAssignment, resource_path)
 
     def __getitem__(self, key):
+        """Args:
+            key (int or str): key is used to address a RoleAssignment resource by either an index in collection or by resource id
         """
-        :param int or str key: key is used to address a RoleAssignment resource by either an index
-        in collection or by resource id"""
         if isinstance(key, int):
             return super().__getitem__(key)
         else:
@@ -23,7 +23,8 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
     def get_by_principal_id(self, principal_id: int) -> RoleAssignment:
         """Retrieves the role assignment object (1) based on the specified user or group.
 
-        :param int principal_id: Specifies the user or group of the role assignment.
+        Args:
+            principal_id (int): Specifies the user or group of the role assignment.
         """
         return RoleAssignment(
             self.context,
@@ -33,8 +34,9 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
     def add_role_assignment(self, principal_id: int, role_def_id: int):
         """Adds a role assignment to the role assignment collection.
 
-        :param int principal_id: Specifies the user or group of the role assignment.
-        :param int role_def_id: Specifies the role definition of the role assignment.
+        Args:
+            principal_id (int): Specifies the user or group of the role assignment.
+            role_def_id (int): Specifies the role definition of the role assignment.
         """
         payload = {"principalId": principal_id, "roleDefId": role_def_id}
         qry = ServiceOperationQuery(self, "AddRoleAssignment", payload, None, None, None)
@@ -44,8 +46,9 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
     def remove_role_assignment(self, principal_id: int, role_def_id: int):
         """Removes the role assignment with the specified principal and role definition from the collection.
 
-        :param int role_def_id: The ID of the role definition in the role assignment.
-        :param int principal_id: The ID of the user or group in the role assignment.
+        Args:
+            role_def_id (int): The ID of the role definition in the role assignment.
+            principal_id (int): The ID of the user or group in the role assignment.
         """
         payload = {"principalId": principal_id, "roleDefId": role_def_id}
         qry = ServiceOperationQuery(self, "RemoveRoleAssignment", payload, None, None, None)

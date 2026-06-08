@@ -27,14 +27,13 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         description: Optional[str] = None,
         order: Optional[int] = None,
     ):
-        """
-        Adds a new role definition to the collection, based on the passed parameter.
+        """Adds a new role definition to the collection, based on the passed parameter.
 
-        :param BasePermissions base_permissions: Specifies the base permissions for the role definition.
-        :param str name: Specifies the role definition name.
-        :param str description: Specifies the description of the role definition. Its length MUST be equal to or less
-            than 512.
-        :param int order: Specifies the order position of the object (1) in the site collection Permission Levels page.
+        Args:
+            base_permissions (BasePermissions): Specifies the base permissions for the role definition.
+            name (str): Specifies the role definition name.
+            description (str): Specifies the description of the role definition. Its length MUST be equal to or less than 512.
+            order (int): Specifies the order position of the object (1) in the site collection Permission Levels page.
         """
         return_type = RoleDefinition(self.context)
         self.add_child(return_type)
@@ -63,24 +62,24 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
     def get_by_name(self, name: str) -> RoleDefinition:
         """Returns the role definition matching the name provided.
 
-        :param str name: Specifies name of role definition.
+        Args:
+            name (str): Specifies name of role definition.
         """
         return RoleDefinition(self.context, ServiceOperationPath("GetByName", [name], self.resource_path))
 
     def get_by_id(self, id_) -> RoleDefinition:
-        """
-        Retrieves the role definition with the specified Id property from the collection.
+        """Retrieves the role definition with the specified Id property from the collection.
 
-        :param str id_: Specifies the unique identifier of the role definition searched. The value of id does not
-           correspond to the index of the role definition within the collection, but refers to the value of the
-           Id property of the role definition.
+        Args:
+            id_ (str): Specifies the unique identifier of the role definition searched. The value of id does not correspond to the index of the role definition within the collection, but refers to the value of the Id property of the role definition.
         """
         return RoleDefinition(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
     def get_by_type(self, role_type: RoleType) -> RoleDefinition:
         """Returns role definition of the specified type from the collection.
 
-        :param int role_type: Specifies the role type. Role type MUST NOT be None.
+        Args:
+            role_type (int): Specifies the role type. Role type MUST NOT be None.
         """
         return RoleDefinition(
             self.context,

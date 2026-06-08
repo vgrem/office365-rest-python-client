@@ -15,6 +15,7 @@ Microsoft Graph.
 | `MailboxSettings.ReadWrite` (delegated) | Read and update automatic replies, rules | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 | `Mail.Read` (delegated) | Read mail tips and message properties | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 | `Reports.Read.All` (delegated) | Access email and mailbox usage reports | [Reports permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#reports-permissions) |
+| `User.Read.All` (delegated or app) | Read user properties for mailbox audit, shared mailboxes, forwarding detection | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
 
 ---
 
@@ -57,6 +58,9 @@ flowchart LR
 | **Meeting response** — accept, decline, or cancel an event | [`events/respond.py`](./events/respond.py) | Attendee and organizer response workflows |
 | **Email usage report** — activity counts, mailbox storage across D7/D30/D90 | [`reports/email_usage.py`](./reports/email_usage.py) | Adoption tracking, storage planning, and audit reporting |
 | **Mail tips** — check recipient status before sending (OOF, moderation, size limits) | [`messages/mail_tips.py`](./messages/mail_tips.py) | Pre-flight check for senders — prevents bounced or blocked messages |
+| **Mailbox audit** — auto-replies, mailbox settings report | [`mailboxes/report.py`](./mailboxes/report.py) | Bulk audit of user mailbox configurations |
+| **Shared mailboxes** — list and check configuration | [`shared_mailboxes/report.py`](./shared_mailboxes/report.py) | Discover and validate shared mailbox setup |
+| **Mail flow audit** — detect external forwarding | [`mail_flow/forwarding_report.py`](./mail_flow/forwarding_report.py) | Security audit — identify users forwarding mail externally |
 
 ---
 

@@ -33,8 +33,8 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def create_app_page(self, web_part_data: Optional[str] = None) -> ClientResult[str]:
-        """
-        :param str web_part_data:
+        """Args:
+            web_part_data (str):
         """
         return_type = ClientResult(self.context)
         payload = {"webPartDataAsJson": web_part_data}
@@ -43,8 +43,8 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def get_translations(self, source_item_id=None):
-        """
-        :param str source_item_id:
+        """Args:
+            source_item_id (str):
         """
         return_type = TranslationStatusCollection(self.context)
         qry = ServiceOperationQuery(self, "GetTranslations", [source_item_id], None, None, return_type)
@@ -52,9 +52,10 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def is_site_page(self, url: str) -> ClientResult[bool]:
-        """
-        Indicates whether a specific item is a modern site page.
-        :param str url: URL of the SitePage to be checked.
+        """Indicates whether a specific item is a modern site page.
+
+        Args:
+            url (str): URL of the SitePage to be checked.
         """
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "IsSitePage", [url], None, None, return_type)
@@ -62,10 +63,10 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         return return_type
 
     def get_page_column_state(self, url: str) -> ClientResult[int]:
-        """
-        Determines whether a specific SitePage is a single or multicolumn page.
+        """Determines whether a specific SitePage is a single or multicolumn page.
 
-        :param str url: URL of the SitePage for which to return state.
+        Args:
+            url (str): URL of the SitePage for which to return state.
         """
         return_type = ClientResult(self.context, int())
         qry = ServiceOperationQuery(self, "GetPageColumnState", [url], None, None, return_type)
@@ -75,13 +76,16 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
     def get_by_url(self, url: str) -> SitePage:
         """Gets the site page with the specified server relative url.
 
-        :param str url: Specifies the server relative url of the site page.
+        Args:
+            url (str): Specifies the server relative url of the site page.
         """
         return SitePage(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_name(self, name: str) -> SitePage:
         """Gets the site page with the specified file name.
-        :param str name: Specifies the name of the site page.
+
+        Args:
+            name (str): Specifies the name of the site page.
         """
         return self.single(f"FileName eq '{name}'")
 
@@ -94,9 +98,9 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         )
 
     def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
-        """
-        :param str server_relative_url:
-        :param str web_part_data_as_json:
+        """Args:
+            server_relative_url (str):
+            web_part_data_as_json (str):
         """
         payload = {
             "serverRelativeUrl": server_relative_url,

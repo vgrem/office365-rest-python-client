@@ -8,8 +8,9 @@ from office365.runtime.client_value import ClientValue
 class SiteScriptActionResult(ClientValue):
     """Represents the result of a site script action execution.
 
-    :param str outcome_text:
-    :param str target:
+    Args:
+        outcome_text (str):
+        target (str):
     """
 
     OutcomeText: Optional[str] = None

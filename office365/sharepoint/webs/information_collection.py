@@ -13,6 +13,7 @@ class WebInformationCollection(EntityCollection[WebInformation]):
         """Returns an SP.WebInformation (section 3.2.5.192) object that contains metadata about a site (2) specified
         by the identifier of the site
 
-        :param str _id: Specifies the identifier of site
+        Args:
+            _id (str): Specifies the identifier of site
         """
         return WebInformation(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))

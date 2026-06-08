@@ -9,14 +9,12 @@ class WorkbookTableColumnCollection(EntityCollection[WorkbookTableColumn]):
         super().__init__(context, WorkbookTableColumn, resource_path)
 
     def add(self, index: int, name: str, values=None):
-        """
-        Adds a new column to the table.
+        """Adds a new column to the table.
 
-        :param int index: Specifies the relative position of the new column. The previous column at this position
-            is shifted to the right. The index value should be equal to or less than the last column's index value,
-            so it cannot be used to append a column at the end of the table. Zero-indexed.
-        :param list values: A 2-dimensional array of unformatted values of the table column.
-        :param str name: Name
+        Args:
+            index (int): Specifies the relative position of the new column. The previous column at this position is shifted to the right. The index value should be equal to or less than the last column's index value, so it cannot be used to append a column at the end of the table. Zero-indexed.
+            values (list): A 2-dimensional array of unformatted values of the table column.
+            name (str): Name
         """
         return super().add(index=index, values=values, name=name)
 

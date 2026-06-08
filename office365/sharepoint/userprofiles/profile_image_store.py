@@ -20,17 +20,16 @@ class ProfileImageStore(Entity):
         file_size,
         file_stream,
     ):
-        """
-        The SaveUploadedFile method saves an uploaded file as a profile image. This method returns an array of URLs
+        """The SaveUploadedFile method saves an uploaded file as a profile image. This method returns an array of URLs
         that provide access to the saved profile image.
 
-        :param int profile_type: Specifies the profile type.
-        :param str file_name_prefix: Specifies a prefix for the name of the saved file.
-        :param bool is_feed_attachment: Has a true value if the file is being attached to a feed and, otherwise,
-            has a false value.
-        :param str client_file_path:  Specifies the path of the file on the client system.
-        :param int file_size: Specifies the size of the file in bytes.
-        :param str file_stream: Specifies a stream to read the file.
+        Args:
+            profile_type (int): Specifies the profile type.
+            file_name_prefix (str): Specifies a prefix for the name of the saved file.
+            is_feed_attachment (bool): Has a true value if the file is being attached to a feed and, otherwise, has a false value.
+            client_file_path (str): Specifies the path of the file on the client system.
+            file_size (int): Specifies the size of the file in bytes.
+            file_stream (str): Specifies a stream to read the file.
         """
         payload = {
             "profileType": profile_type,

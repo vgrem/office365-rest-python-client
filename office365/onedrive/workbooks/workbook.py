@@ -34,19 +34,19 @@ class Workbook(Entity):
 
     @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def create_session(self, persist_changes: bool | None = None) -> ClientResult[WorkbookSessionInfo]:
-        """
-        Create a new workbook session.
+        """Create a new workbook session.
 
         Excel APIs can be called in one of two modes:
-            Persistent session - All changes made to the workbook are persisted (saved). This is the usual mode of
-                operation.
-            Non-persistent session - Changes made by the API are not saved to the source location. Instead, the Excel
-                backend server keeps a temporary copy of the file that reflects the changes made during that particular
-                API session. When the Excel session expires, the changes are lost. This mode is useful for apps that
-                need to do analysis or obtain the results of a calculation or a chart image, but not affect the
-                document state.
+        Persistent session - All changes made to the workbook are persisted (saved). This is the usual mode of
+        operation.
+        Non-persistent session - Changes made by the API are not saved to the source location. Instead, the Excel
+        backend server keeps a temporary copy of the file that reflects the changes made during that particular
+        API session. When the Excel session expires, the changes are lost. This mode is useful for apps that
+        need to do analysis or obtain the results of a calculation or a chart image, but not affect the
+        document state.
 
-        :param bool persist_changes: Determines whether persist changes
+        Args:
+            persist_changes (bool): Determines whether persist changes
         """
         payload = {"persistChanges": persist_changes}
         return_type = ClientResult(self.context, WorkbookSessionInfo())
@@ -57,7 +57,9 @@ class Workbook(Entity):
     @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def refresh_session(self, session_id: str) -> Self:
         """Use this API to refresh an existing workbook session.
-        :param str session_id: Identifier of the workbook session
+
+        Args:
+            session_id (str): Identifier of the workbook session
         """
 
         def _construct_request(request: RequestOptions) -> None:
@@ -70,7 +72,9 @@ class Workbook(Entity):
     @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def close_session(self, session_id: str) -> Self:
         """Use this API to close an existing workbook session.
-        :param str session_id: Identifier of the workbook session
+
+        Args:
+            session_id (str): Identifier of the workbook session
         """
         qry = ServiceOperationQuery(self, "closeSession")
 

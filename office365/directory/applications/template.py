@@ -12,12 +12,12 @@ class ApplicationTemplate(Entity):
     """Represents an application in the Azure AD application gallery."""
 
     def instantiate(self, display_name: str) -> ApplicationServicePrincipal:
-        """
-        Add an instance of an application from the Azure AD application gallery into your directory. You can also use
+        """Add an instance of an application from the Azure AD application gallery into your directory. You can also use
         this API to instantiate non-gallery apps.
         Use the following ID for the applicationTemplate object: 8adf8e6e-67b2-4cf2-a259-e3dc5476c621.
 
-        :param str display_name: Custom name of the application
+        Args:
+            display_name (str): Custom name of the application
         """
         return_type = ApplicationServicePrincipal(self.context)
         payload = {"displayName": display_name}

@@ -127,11 +127,11 @@ class UserProfile(Entity):
         )
 
     def create_personal_site(self, lcid):
-        """
-        The CreatePersonalSite method creates a personal site (2) for this user, which can be used to share documents,
+        """The CreatePersonalSite method creates a personal site (2) for this user, which can be used to share documents,
         web pages, and other files.
 
-        :param int lcid: Specifies the locale identifier for the site.
+        Args:
+            lcid (int): Specifies the locale identifier for the site.
         """
         payload = {"lcid": lcid}
         qry = ServiceOperationQuery(self, "CreatePersonalSite", None, payload)
@@ -139,11 +139,11 @@ class UserProfile(Entity):
         return self
 
     def create_personal_site_enque(self, is_interactive):
-        """
-        Enqueues creating a personal site for this user, which can be used to share documents, web pages,
-            and other files.
-        :param bool is_interactive: Has a true value if the request is from a web browser and a false value if the
-        request is from a client application.
+        """Enqueues creating a personal site for this user, which can be used to share documents, web pages,
+        and other files.
+
+        Args:
+            is_interactive (bool): Has a true value if the request is from a web browser and a false value if the request is from a client application.
         """
         payload = {"isInteractive": is_interactive}
         qry = ServiceOperationQuery(self, "CreatePersonalSiteEnque", None, payload)
@@ -151,9 +151,10 @@ class UserProfile(Entity):
         return self
 
     def set_my_site_first_run_experience(self, value):
-        """
-        Sets the personal site First Run flag for the user.
-        :param str value: The value to be set for the First Run flag.
+        """Sets the personal site First Run flag for the user.
+
+        Args:
+            value (str): The value to be set for the First Run flag.
         """
         payload = {"value": value}
         qry = ServiceOperationQuery(self, "SetMySiteFirstRunExperience", None, payload)
@@ -161,9 +162,10 @@ class UserProfile(Entity):
         return self
 
     def share_all_social_data(self, share_all):
-        """
-        The ShareAllSocialData method specifies whether the current user's social data is to be shared.
-        :param bool share_all:  If true, social data is shared; if false, social data is not shared.
+        """The ShareAllSocialData method specifies whether the current user's social data is to be shared.
+
+        Args:
+            share_all (bool): If true, social data is shared; if false, social data is not shared.
         """
         payload = {"shareAll": share_all}
         return_type = ClientResult(self.context)

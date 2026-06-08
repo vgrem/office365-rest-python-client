@@ -20,10 +20,11 @@ class FolderCollection(EntityCollection[Folder]):
         super().__init__(context, Folder, resource_path, parent)
 
     def add_using_path(self, decoded_url: str, overwrite: bool) -> Folder:
-        """
-        Adds the folder located at the specified path to the collection.
-        :param str decoded_url: Specifies the path for the folder.
-        :param bool overwrite:  bool
+        """Adds the folder located at the specified path to the collection.
+
+        Args:
+            decoded_url (str): Specifies the path for the folder.
+            overwrite (bool): bool
         """
         parameters = {"DecodedUrl": decoded_url, "Overwrite": overwrite}
         return_type = Folder(self.context)
@@ -32,9 +33,10 @@ class FolderCollection(EntityCollection[Folder]):
         return return_type
 
     def ensure_path(self, path: str) -> Folder:
-        """
-        Ensures a folder exist
-        :param str path: server or site relative url to a folder
+        """Ensures a folder exist
+
+        Args:
+            path (str): server or site relative url to a folder
         """
         path = path.replace(self.context.site_path, "")
         names = [name for name in path.split("/") if name]
@@ -49,8 +51,10 @@ class FolderCollection(EntityCollection[Folder]):
 
     def add(self, name: str, color_hex: Optional[FolderColors] = None) -> Folder:
         """Adds the folder that is located at the specified URL to the collection.
-        :param str name: Specifies the Name or Path of the folder.
-        :param str color_hex: Specifies the color of the folder.
+
+        Args:
+            name (str): Specifies the Name or Path of the folder.
+            color_hex (str): Specifies the color of the folder.
         """
         return_type = Folder(self.context, EntityPath(name, self.resource_path))
         if color_hex:
@@ -76,16 +80,17 @@ class FolderCollection(EntityCollection[Folder]):
 
     def get_by_url(self, url: str) -> Folder:
         """Retrieve Folder resource by url
-        :param str url: Specifies the URL of the list folder. The URL MUST be an absolute URL, a server-relative URL,
-            a site-relative URL relative to the site (2) containing the collection of list folders, or relative to the
-            list folder that directly contains this collection of list folders.
+
+        Args:
+            url (str): Specifies the URL of the list folder. The URL MUST be an absolute URL, a server-relative URL, a site-relative URL relative to the site (2) containing the collection of list folders, or relative to the list folder that directly contains this collection of list folders.
         """
         return Folder(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 
     def get_by_path(self, decoded_url: str) -> Folder:
-        """
-        Get folder at the specified path.
-        :param str decoded_url: Specifies the path for the folder.
+        """Get folder at the specified path.
+
+        Args:
+            decoded_url (str): Specifies the path for the folder.
         """
         return Folder(
             self.context,

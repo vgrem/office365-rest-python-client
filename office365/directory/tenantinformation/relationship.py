@@ -16,7 +16,8 @@ class TenantRelationship(Entity):
         validate tenant information and use their tenantId to configure cross-tenant access settings between you
         and the tenant.
 
-        :param str domain_name: Primary domain name of an Azure AD tenant.
+        Args:
+            domain_name (str): Primary domain name of an Azure AD tenant.
         """
         return_type = ClientResult(self.context, TenantInformation())
         params = {"domainName": domain_name}
@@ -29,7 +30,8 @@ class TenantRelationship(Entity):
         tenant information and use the tenantId to configure cross-tenant cross-tenant access settings between you
         and the tenant.
 
-        :param str tenant_id: Unique tenant identifier of a Microsoft Entra tenant.
+        Args:
+            tenant_id (str): Unique tenant identifier of a Microsoft Entra tenant.
         """
         return_type = ClientResult(self.context, TenantInformation())
         params = {"tenantId": tenant_id}

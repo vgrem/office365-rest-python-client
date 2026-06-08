@@ -10,8 +10,8 @@ class SPMachineLearningModelCollection(EntityCollection[SPMachineLearningModel])
         super().__init__(context, SPMachineLearningModel, resource_path)
 
     def get_by_title(self, title):
-        """
-        :param str title: The title of the model to return.
+        """Args:
+            title (str): The title of the model to return.
         """
         return SPMachineLearningModel(
             self.context,

@@ -21,15 +21,13 @@ class DocumentSet(Folder):
         name: str,
         ct_id: Union[ContentTypeId, str] = "0x0120D520",
     ) -> DocumentSet:
-        """
-        Creates a DocumentSet (section 3.1.5.3) object on the server.
+        """Creates a DocumentSet (section 3.1.5.3) object on the server.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param office365.sharepoint.folders.folder.Folder parent_folder: The folder inside which to create the new
-            DocumentSet.
-        :param str name: The name to give to the new DocumentSet
-        :param office365.sharepoint.contenttypes.content_type_id.ContentTypeId ct_id: The identifier of the content
-            type to give to the new document set.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            parent_folder (office365.sharepoint.folders.folder.Folder): The folder inside which to create the new DocumentSet.
+            name (str): The name to give to the new DocumentSet
+            ct_id (office365.sharepoint.contenttypes.content_type_id.ContentTypeId): The identifier of the content type to give to the new document set.
         """
 
         return_type = DocumentSet(context)
@@ -65,9 +63,9 @@ class DocumentSet(Folder):
     def get_document_set(context: ClientContext, folder: Folder) -> DocumentSet:
         """Retrieves the document set object from a specified folder object.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param office365.sharepoint.folders.folder.Folder folder: the Folder object from which
-            to get the document set
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            folder (office365.sharepoint.folders.folder.Folder): the Folder object from which to get the document set
         """
         return_type = DocumentSet(context)
         return return_type

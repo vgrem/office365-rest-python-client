@@ -9,14 +9,15 @@ class DocumentsSharedWithMe(Entity):
 
     @staticmethod
     def get_list_data(context, sort_field_name, is_ascending_sort, offset, row_limit):
-        """
-        Gets the JSON string containing the row data for a list that shares documents with the current user on the
+        """Gets the JSON string containing the row data for a list that shares documents with the current user on the
         user's personal site.
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        :param str sort_field_name: Specifies the view field on which to sort the data in the Web Part.
-        :param bool is_ascending_sort: Specifies whether the data in the Web Part will be sorted in ascending order.
-        :param int offset: Specifies the number of results to skip before displaying the data in the Web Part.
-        :param int row_limit: Specifies the maximum number of items to be rendered in the Web Part at one time.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
+            sort_field_name (str): Specifies the view field on which to sort the data in the Web Part.
+            is_ascending_sort (bool): Specifies whether the data in the Web Part will be sorted in ascending order.
+            offset (int): Specifies the number of results to skip before displaying the data in the Web Part.
+            row_limit (int): Specifies the maximum number of items to be rendered in the Web Part at one time.
         """
         payload = {
             "sortFieldName": sort_field_name,

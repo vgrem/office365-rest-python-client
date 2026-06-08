@@ -11,12 +11,12 @@ class FollowedContent(Entity):
     """The FollowedContent class provides access to followed content items."""
 
     def follow_item(self, item: FollowedItem) -> ClientResult[FollowResult]:
-        """
-        The FollowItem method is reserved for server-to-server use only.
+        """The FollowItem method is reserved for server-to-server use only.
         The server sets the specified item to be followed by the current user. This method cannot be called
         from the client.
 
-        :param office365.sharepoint.userprofiles.followed_item.FollowedItem item: Identifies the item to follow.
+        Args:
+            item (office365.sharepoint.userprofiles.followed_item.FollowedItem): Identifies the item to follow.
         """
         return_type = ClientResult(self.context, FollowResult())
         payload = {"item": item}
@@ -25,11 +25,11 @@ class FollowedContent(Entity):
         return return_type
 
     def get_followed_status(self, url: str) -> ClientResult[int]:
-        """
-        The GetFollowedStatus method retrieves the followed status of the specified document or site.
+        """The GetFollowedStatus method retrieves the followed status of the specified document or site.
         An item can be followed if the url parameter identifies a document or site that the current user has access to.
 
-        :param str url: URL that identifies the item
+        Args:
+            url (str): URL that identifies the item
         """
         return_type = ClientResult(self.context, int())
         payload = {"url": url}

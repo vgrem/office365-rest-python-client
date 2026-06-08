@@ -10,14 +10,11 @@ from office365.runtime.client_value import ClientValue
 class SignInLocation(ClientValue):
     """Provides the city, state and country/region from where the sign-in happened.
 
-    :param str city: Provides the city where the sign-in originated. This is calculated using latitude/longitude
-        information from the sign-in activity.
-    :param str country_or_region: Provides the country code info (2 letter code) where the sign-in originated.
-        This is calculated using latitude/longitude information from the sign-in activity.
-    :param GeoCoordinates geo_coordinates: Provides the latitude, longitude and altitude where the sign-in
-        originated.
-    :param str state: Provides the State where the sign-in originated. This is calculated using latitude/longitude
-        information from the sign-in activity.
+    Args:
+        city (str): Provides the city where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
+        country_or_region (str): Provides the country code info (2 letter code) where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
+        geo_coordinates (GeoCoordinates): Provides the latitude, longitude and altitude where the sign-in originated.
+        state (str): Provides the State where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
     """
 
     city: str | None = None

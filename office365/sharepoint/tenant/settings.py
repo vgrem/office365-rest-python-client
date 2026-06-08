@@ -25,8 +25,8 @@ class TenantSettings(Entity):
         return return_type
 
     def set_corporate_catalog(self, url: str) -> Self:
-        """
-        :param str url:
+        """Args:
+            url (str):
         """
         payload = {"url": url}
         qry = ServiceOperationQuery(self, "SetCorporateCatalog", None, payload, None, None)
@@ -40,8 +40,9 @@ class TenantSettings(Entity):
 
     @staticmethod
     def current(context):
-        """
-        Specifies the current instance for the SP.TenantSettings.
-        :type context: office365.sharepoint.client_context.ClientContext
+        """Specifies the current instance for the SP.TenantSettings.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return TenantSettings(context, StaticPath("SP.TenantSettings.Current"))

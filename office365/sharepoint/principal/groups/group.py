@@ -36,9 +36,10 @@ class Group(Principal):
         return self
 
     def expand_to_principals(self, max_count: int = 10) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
-        """
-        Expands current group to a collection of principals.
-        :param int max_count: Specifies the maximum number of principals to be returned.
+        """Expands current group to a collection of principals.
+
+        Args:
+            max_count (int): Specifies the maximum number of principals to be returned.
         """
         return_type = ClientResult(self.context, ClientValueCollection(PrincipalInfo))
 
@@ -52,9 +53,10 @@ class Group(Principal):
         return return_type
 
     def set_user_as_owner(self, user: Union[int, Principal]) -> Self:
-        """
-        Sets the user as group owner
-        :param long or Principal user: User object or identifier
+        """Sets the user as group owner
+
+        Args:
+            user (long or Principal): User object or identifier
         """
 
         def _set_user_as_owner(owner_id: int):

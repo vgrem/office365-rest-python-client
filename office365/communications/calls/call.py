@@ -30,8 +30,7 @@ class Call(Entity):
     """
 
     def cancel_media_processing(self, client_context=None):
-        """
-        Cancels processing for any in-progress media operations.
+        """Cancels processing for any in-progress media operations.
 
         Media operations refer to the IVR operations playPrompt and recordResponse, which are by default queued
         to process in order. The cancelMediaProcessing method cancels any operation that is in-process as well as
@@ -39,8 +38,8 @@ class Call(Entity):
         a new media operation. However, it will not cancel a subscribeToTone operation because it operates independent
         of any operation queue.
 
-
-        :param str client_context: The client context.
+        Args:
+            client_context (str): The client context.
         """
         return_type = CancelMediaProcessingOperation(self.context)
         payload = {"clientContext": client_context}
@@ -49,8 +48,7 @@ class Call(Entity):
         return return_type
 
     def reject(self, reason=None, callback_uri=None):
-        """
-        Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
+        """Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
         a group call or a peer-to-peer call. If an invite to a group call is received, the notification will contain
         the chatInfo and meetingInfo parameters.
 
@@ -59,10 +57,9 @@ class Call(Entity):
 
         This API does not end existing calls that have already been answered. Use delete call to end a call.
 
-        :param str reason: The rejection reason. Possible values are None, Busy and Forbidden
-        :param str callback_uri: This allows bots to provide a specific callback URI for the current call to receive
-            later notifications. If this property has not been set, the bot's global callback URI will be used instead.
-            This must be https.
+        Args:
+            reason (str): The rejection reason. Possible values are None, Busy and Forbidden
+            callback_uri (str): This allows bots to provide a specific callback URI for the current call to receive later notifications. If this property has not been set, the bot's global callback URI will be used instead. This must be https.
         """
         payload = {"reason": reason, "callbackUri": callback_uri}
         qry = ServiceOperationQuery(self, "reject", None, payload)
@@ -76,12 +73,12 @@ class Call(Entity):
         return super().delete_object()
 
     def update_recording_status(self, status, client_context):
-        """
-        Update the application's recording status associated with a call.
+        """Update the application's recording status associated with a call.
         This requires the use of the Teams policy-based recording solution.
 
-        :param str status: The recording status. Possible values are: notRecording, recording, or failed.
-        :param str client_context: Unique client context string. Max limit is 256 chars.
+        Args:
+            status (str): The recording status. Possible values are: notRecording, recording, or failed.
+            client_context (str): Unique client context string. Max limit is 256 chars.
         """
         return_type = UpdateRecordingStatusOperation(self.context)
         payload = {"status": status, "clientContext": client_context}
@@ -90,13 +87,13 @@ class Call(Entity):
         return return_type
 
     def unmute(self, client_context):
-        """
-        Allow the application to unmute itself.
+        """Allow the application to unmute itself.
 
         This is a server unmute, meaning that the server will start sending audio packets for this participant
         to other participants again.
 
-        :param str client_context: Unique Client Context string. Max limit is 256 chars.
+        Args:
+            client_context (str): Unique Client Context string. Max limit is 256 chars.
         """
         return_type = UnmuteParticipantOperation(self.context)
         payload = {"clientContext": client_context}

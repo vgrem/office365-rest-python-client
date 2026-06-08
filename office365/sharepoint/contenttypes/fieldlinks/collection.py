@@ -18,11 +18,11 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         super().__init__(context, FieldLink, resource_path)
 
     def add(self, field: Union[str, Field]) -> FieldLink:
-        """
-        Add a field link with the specified link information to the collection.
+        """Add a field link with the specified link information to the collection.
         A reference to the SP.Field that was added is returned.
 
-        :param str or office365.sharepoint.fields.field.Field field: Specifies the internal name of the field or type
+        Args:
+            field (str or office365.sharepoint.fields.field.Field): Specifies the internal name of the field or type
         """
 
         def _add(field_internal_name: str) -> None:
@@ -44,21 +44,19 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         return return_type
 
     def get_by_id(self, _id: str) -> FieldLink:
-        """
-        Gets the field link with the given id from this collection.<20> If the id is not found in the collection,
+        """Gets the field link with the given id from this collection.<20> If the id is not found in the collection,
         returns null.
 
-        :param str _id: The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46)
-            that is returned.
+        Args:
+            _id (str): The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46) that is returned.
         """
         return FieldLink(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
     def reorder(self, internal_names: list[str]) -> Self:
-        """
-        Rearranges the collection of field links in the order in which field internal names are specified.
+        """Rearranges the collection of field links in the order in which field internal names are specified.
 
-        :param list[str] internal_names: Specifies field internal names that are arranged in the order in which the
-            collection of field links is reordered.
+        Args:
+            internal_names (list[str]): Specifies field internal names that are arranged in the order in which the collection of field links is reordered.
         """
         payload = {"internalNames": StringCollection(internal_names)}
         qry = ServiceOperationQuery(self, "Reorder", None, payload)

@@ -9,16 +9,16 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class EmailProperties(ClientValue):
-    """
-    Specifies the definition of the email to send which includes both the message fields and body
+    """Specifies the definition of the email to send which includes both the message fields and body
 
-    :param str body: Specifies the message body to send.
-    :param str subject: Specifies the Subject field of the e-mail.
-    :param list[str] to: Specifies the To field of the email.
-    :param str or None from_address: Specifies the From field of the email.
-    :param list[str] or None cc: Specifies the carbon copy (cc) recipients of the email.
-    :param list[str] or None bcc: Specifies the blind carbon copy (bcc) recipients of the email
-    :param dict or None additional_headers:
+    Args:
+        body (str): Specifies the message body to send.
+        subject (str): Specifies the Subject field of the e-mail.
+        to (list[str]): Specifies the To field of the email.
+        from_address (str or None): Specifies the From field of the email.
+        cc (list[str] or None): Specifies the carbon copy (cc) recipients of the email.
+        bcc (list[str] or None): Specifies the blind carbon copy (bcc) recipients of the email
+        additional_headers (dict or None):
     """
 
     Body: str

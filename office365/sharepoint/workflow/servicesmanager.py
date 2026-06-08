@@ -18,10 +18,10 @@ class WorkflowServicesManager(Entity):
 
     @staticmethod
     def current(context):
-        """
-        Specifies the current instance for the SP.TenantSettings.
+        """Specifies the current instance for the SP.TenantSettings.
 
-        :type context: office365.sharepoint.client_context.ClientContext
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return WorkflowServicesManager(context, ResourcePath("SP.WorkflowServices.WorkflowServicesManager.Current"))
 

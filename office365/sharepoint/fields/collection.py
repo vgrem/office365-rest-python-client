@@ -38,11 +38,12 @@ class FieldCollection(EntityCollection[Field]):
         super().__init__(context, Field, resource_path, parent)
 
     def add_calculated(self, title: str, formula: str, description: Optional[str] = None) -> FieldCalculated:
-        """
-        Creates a Calculated field
-        :param str title: Specifies the display name of the field
-        :param str formula: Specifies the formula for the field
-        :param str or None description: Specifies the description of the field
+        """Creates a Calculated field
+
+        Args:
+            title (str): Specifies the display name of the field
+            formula (str): Specifies the formula for the field
+            description (str or None): Specifies the description of the field
         """
         return_type = self.add_field(
             FieldCreationInformation(
@@ -55,10 +56,11 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def add_datetime(self, title: str, description: Optional[str] = None) -> FieldDateTime:
-        """
-        Creates DateTime field
-        :param str title: Specifies the display name of the field
-        :param str or None description: Specifies the description of the field
+        """Creates DateTime field
+
+        Args:
+            title (str): Specifies the display name of the field
+            description (str or None): Specifies the description of the field
         """
         return_type = self.add_field(
             FieldCreationInformation(
@@ -70,11 +72,11 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def add_geolocation_field(self, title: str, description: Optional[str] = None) -> FieldGeolocation:
-        """
-        Creates Geolocation field
+        """Creates Geolocation field
 
-        :param str title: Specifies the display name of the field
-        :param str or None description: Specifies the description of the field
+        Args:
+            title (str): Specifies the display name of the field
+            description (str or None): Specifies the description of the field
         """
         return_type = self.add_field(
             FieldCreationInformation(
@@ -86,10 +88,11 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def add_number(self, title: str, description: Optional[str] = None) -> FieldNumber:
-        """
-        Creates Number field
-        :param str title: Specifies the display name of the field
-        :param str or None description: Specifies the description of the field
+        """Creates Number field
+
+        Args:
+            title (str): Specifies the display name of the field
+            description (str or None): Specifies the description of the field
         """
         return_type = self.add_field(
             FieldCreationInformation(
@@ -101,10 +104,11 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def add_url_field(self, title: str, description: Optional[str] = None) -> FieldUrl:
-        """
-        Creates Url field
-        :param str title: Specifies the display name of the field
-        :param str or None description:
+        """Creates Url field
+
+        Args:
+            title (str): Specifies the display name of the field
+            description (str or None):
         """
         return self.add_field(
             FieldCreationInformation(Title=title, Description=description, FieldTypeKind=FieldType.URL)
@@ -117,14 +121,13 @@ class FieldCollection(EntityCollection[Field]):
         lookup_field_name: str,
         allow_multiple_values: bool = False,
     ):
-        """
-        Creates a Lookup field
+        """Creates a Lookup field
 
-        :param bool allow_multiple_values: Flag determines whether to create multi lookup field or not
-        :param str lookup_field_name: Specifies the name of the field in the other data source when creating
-            a lookup field
-        :param str or office365.sharepoint.lists.list.List lookup_list: Lookup List object or identifier
-        :param str title: Specifies the display name of the field.
+        Args:
+            allow_multiple_values (bool): Flag determines whether to create multi lookup field or not
+            lookup_field_name (str): Specifies the name of the field in the other data source when creating a lookup field
+            lookup_list (str or office365.sharepoint.lists.list.List): Lookup List object or identifier
+            title (str): Specifies the display name of the field.
         """
         from office365.sharepoint.fields.lookup import FieldLookup
 
@@ -164,12 +167,12 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def add_choice_field(self, title: str, values: list[str], multiple_values: bool = False):
-        """
-        Creates a Choice field
+        """Creates a Choice field
 
-        :param bool multiple_values:
-        :param list[str] values:
-        :param str title: Specifies the display name of the field.
+        Args:
+            multiple_values (bool):
+            values (list[str]):
+            title (str): Specifies the display name of the field.
         """
         fld_type = FieldType.MultiChoice if multiple_values else FieldType.Choice
         create_field_info = FieldCreationInformation(Title=title, FieldTypeKind=fld_type, Choices=values)
@@ -182,13 +185,13 @@ class FieldCollection(EntityCollection[Field]):
         selection_mode=None,
         allow_multiple_values: bool = False,
     ) -> FieldUser:
-        """
-        Creates a User field
+        """Creates a User field
 
-        :param str title: Specifies the display name of the field
-        :param str or None description:
-        :param int or None selection_mode:
-        :param bool allow_multiple_values:
+        Args:
+            title (str): Specifies the display name of the field
+            description (str or None):
+            selection_mode (int or None):
+            allow_multiple_values (bool):
         """
         return self.add(  # type: ignore[returnType]
             FieldType.User,
@@ -199,9 +202,10 @@ class FieldCollection(EntityCollection[Field]):
         )
 
     def add_text_field(self, title: str) -> FieldText:
-        """
-        Creates a Text field
-        :param str title: specifies the display name of the field
+        """Creates a Text field
+
+        Args:
+            title (str): specifies the display name of the field
         """
         return self.add_field(FieldCreationInformation(title, FieldType.Text))
 
@@ -244,8 +248,9 @@ class FieldCollection(EntityCollection[Field]):
     def add_field(self, parameters: FieldCreationInformation, return_type: Optional[T] = None) -> T:
         """Adds a fields to the fields collection.
 
-        :type parameters: FieldCreationInformation
-        :param Field or None return_type: Return type
+        Args:
+            parameters (FieldCreationInformation):
+            return_type (Field or None): Return type
         """
         if return_type is None:
             return_type = cast(T, Field(self.context))
@@ -261,12 +266,12 @@ class FieldCollection(EntityCollection[Field]):
         term_set: Union[str, TermSet],
         allow_multiple_values: bool = False,
     ) -> TaxonomyField:
-        """
-        Creates a Taxonomy field
+        """Creates a Taxonomy field
 
-        :param str name: Field name
-        :param str or TermSet term_set: TermSet identifier or object
-        :param bool allow_multiple_values: Specifies whether the column will allow more than one value
+        Args:
+            name (str): Field name
+            term_set (str or TermSet): TermSet identifier or object
+            allow_multiple_values (bool): Specifies whether the column will allow more than one value
         """
         return_type = TaxonomyField(self.context)
 
@@ -301,11 +306,11 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def create_field_as_xml(self, schema_xml: str, return_type: Optional[T] = None) -> T:
-        """
-        Creates a field based on the values defined in the parameters input parameter.
+        """Creates a field based on the values defined in the parameters input parameter.
 
-        :param str schema_xml: Specifies the schema that defines the field
-        :param Field or None return_type: Return type
+        Args:
+            schema_xml (str): Specifies the schema that defines the field
+            return_type (Field or None): Return type
         """
         if return_type is None:
             return_type = cast(T, Field(self.context))
@@ -316,10 +321,10 @@ class FieldCollection(EntityCollection[Field]):
         return return_type
 
     def get_by_id(self, id_: str) -> Field:
-        """
-        Gets the fields with the specified ID.
+        """Gets the fields with the specified ID.
 
-        :param str id_: The field identifier.
+        Args:
+            id_ (str): The field identifier.
         """
         return Field(self.context, ServiceOperationPath("getById", [id_], self.resource_path))
 
@@ -327,7 +332,8 @@ class FieldCollection(EntityCollection[Field]):
         """Returns the first field in the collection based on the internal name or the title specified
         by the parameter.
 
-        :param str value:  The title or internal name to look up the field (2) by.
+        Args:
+            value (str): The title or internal name to look up the field (2) by.
         """
         return Field(
             self.context,
@@ -335,10 +341,10 @@ class FieldCollection(EntityCollection[Field]):
         )
 
     def get_by_title(self, title: str) -> Field:
-        """
-        Returns the first fields object in the collection based on the title of the specified fields.
+        """Returns the first fields object in the collection based on the title of the specified fields.
 
-        :param str title: The title to look up the field by
+        Args:
+            title (str): The title to look up the field by
         """
         return Field(
             self.context,

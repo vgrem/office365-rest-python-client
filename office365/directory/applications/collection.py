@@ -12,9 +12,10 @@ class ApplicationCollection(CountCollection[Application]):
         super().__init__(context, Application, resource_path)
 
     def add(self, display_name: str, **kwargs: Any) -> Application:
-        """
-        Create a new application object.
-        :param str display_name: Display name of the application.
+        """Create a new application object.
+
+        Args:
+            display_name (str): Display name of the application.
         """
         props = {
             "displayName": display_name,
@@ -25,6 +26,7 @@ class ApplicationCollection(CountCollection[Application]):
     def get_by_app_id(self, app_id: str) -> Application:
         """Retrieves application by Application client identifier
 
-        :param str app_id: Application client identifier
+        Args:
+            app_id (str): Application client identifier
         """
         return Application(self.context, AppIdPath(app_id, self.resource_path))

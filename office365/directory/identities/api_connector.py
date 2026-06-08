@@ -23,8 +23,9 @@ class IdentityApiConnector(Entity):
         The input is a base-64 encoded value of the PKCS 12 certificate contents.
         This method returns an apiConnector.
 
-        :param str pkcs12_value:
-        :param str password:
+        Args:
+            pkcs12_value (str):
+            password (str):
         """
 
         payload = {"pkcs12Value": pkcs12_value, "password": password}

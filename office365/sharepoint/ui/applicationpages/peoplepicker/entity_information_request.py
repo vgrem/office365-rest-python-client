@@ -11,10 +11,11 @@ from office365.sharepoint.principal.type import PrincipalType
 class PickerEntityInformationRequest(ClientValue):
     """Represents a request for GetPickerEntityInformation
 
-    :param str email_address: Gets or sets the email address of the principal.
-    :param str group_id: Gets or sets the SharePoint group Id.
-    :param str key: Gets or sets the identifier of the principal.
-    :param int principal_type: Gets or sets the type of the principal.
+    Args:
+        email_address (str): Gets or sets the email address of the principal.
+        group_id (str): Gets or sets the SharePoint group Id.
+        key (str): Gets or sets the identifier of the principal.
+        principal_type (int): Gets or sets the type of the principal.
     """
 
     EmailAddress: Optional[str] = None

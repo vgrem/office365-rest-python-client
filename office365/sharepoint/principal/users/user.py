@@ -44,8 +44,8 @@ class User(Principal):
         return return_type
 
     def get_user_profile_properties(self, property_names: Optional[List[str]] = None):
-        """
-        :param list[str] property_names:
+        """Args:
+            property_names (list[str]):
         """
         from office365.sharepoint.userprofiles.properties_for_user import UserProfilePropertiesForUser
 

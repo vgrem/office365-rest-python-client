@@ -10,13 +10,12 @@ class WorkbookNamedItemCollection(EntityCollection[WorkbookNamedItem]):
         super().__init__(context, WorkbookNamedItem, resource_path)
 
     def add(self, name: str, reference: str, comment: str | None = None) -> WorkbookNamedItem:
-        """
-        Adds a new name to the collection of the given scope using the user's locale for the formula.
+        """Adds a new name to the collection of the given scope using the user's locale for the formula.
 
-        :param str name: The name of the object.
-        :param str reference: Represents the formula that the name is defined to refer to.
-             For example, =Sheet14!$B$2:$H$12, =4.75,
-        :param str comment: Represents the comment associated with this name.
+        Args:
+            name (str): The name of the object.
+            reference (str): Represents the formula that the name is defined to refer to. For example, =Sheet14!$B$2:$H$12, =4.75,
+            comment (str): Represents the comment associated with this name.
         """
         return_type = WorkbookNamedItem(self.context)
         self.add_child(return_type)

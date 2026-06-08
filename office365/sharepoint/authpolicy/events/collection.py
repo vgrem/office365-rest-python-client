@@ -21,13 +21,13 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
         id_: str,
         container_id: str,
     ):
-        """
-        :param str tenant:
-        :param str action:
-        :param str type_:
-        :param RoleAssignmentResourcePayload resource_payload:
-        :param str id_:
-        :param str container_id:
+        """Args:
+            tenant (str):
+            action (str):
+            type_ (str):
+            resource_payload (RoleAssignmentResourcePayload):
+            id_ (str):
+            container_id (str):
         """
         payload = {
             "tenant": tenant,

@@ -10,20 +10,19 @@ class ListItemCollection(EntityCollection[ListItem]):
         super().__init__(context, ListItem, resource_path)
 
     def get_by_id(self, item_id: int) -> ListItem:
-        """
-        Returns the list item with the specified list item identifier.
+        """Returns the list item with the specified list item identifier.
 
-        :param int item_id: The list item identifier.
+        Args:
+            item_id (int): The list item identifier.
         """
         return ListItem(self.context, ServiceOperationPath("GetById", [item_id], self.resource_path))
 
     def get_by_string_id(self, s_id: str) -> ListItem:
-        """
-        Returns the list item with either the specified list item identifier or the specified identifier
+        """Returns the list item with either the specified list item identifier or the specified identifier
         for an instance of an external content type.
 
-        :param str s_id: Specifies the list item identifier, or if the list is an external list, specifies the
-        identifier for an instance of an external content type as specified in[MS-ECTPWPS] section 3.1.4.1.2.1.
+        Args:
+            s_id (str): Specifies the list item identifier, or if the list is an external list, specifies the identifier for an instance of an external content type as specified in[MS-ECTPWPS] section 3.1.4.1.2.1.
         """
         return ListItem(
             self.context,

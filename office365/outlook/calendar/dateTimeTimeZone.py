@@ -25,9 +25,10 @@ class DateTimeTimeZone(ClientValue):
 
     @staticmethod
     def parse(dt):
-        """
-        Parses from datetime
-        :type dt: datetime.datetime
+        """Parses from datetime
+
+        Args:
+            dt (datetime.datetime):
         """
         local_dt = dt.replace(tzinfo=pytz.utc)
         return DateTimeTimeZone(dateTime=local_dt.isoformat(), timeZone=local_dt.strftime("%Z"))

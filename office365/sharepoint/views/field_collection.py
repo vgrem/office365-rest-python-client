@@ -45,9 +45,10 @@ class ViewFieldCollection(Entity):
         return self
 
     def add_view_field(self, field: Union[str, Field]) -> Self:
-        """
-        Adds the field with the specified field internal name or display name to the collection.
-        :param str field:
+        """Adds the field with the specified field internal name or display name to the collection.
+
+        Args:
+            field (str):
         """
         from office365.sharepoint.fields.field import Field
 
@@ -65,10 +66,11 @@ class ViewFieldCollection(Entity):
         return self
 
     def move_view_field_to(self, field: Union[str, Field], index: int) -> Self:
-        """
-        Moves the field with the specified field internal name to the specified position in the collection
-        :param str field: Specifies the field internal name.
-        :param int index: Specifies the new position for the field (2). The first position is 0.
+        """Moves the field with the specified field internal name to the specified position in the collection
+
+        Args:
+            field (str): Specifies the field internal name.
+            index (int): Specifies the new position for the field (2). The first position is 0.
         """
         from office365.sharepoint.fields.field import Field
 
@@ -91,9 +93,10 @@ class ViewFieldCollection(Entity):
         return self
 
     def remove_view_field(self, field: Union[str, Field]) -> Self:
-        """
-        Removes the field with the specified field internal name or display name from the collection.
-        :param str field:
+        """Removes the field with the specified field internal name or display name from the collection.
+
+        Args:
+            field (str):
         """
         from office365.sharepoint.fields.field import Field
 

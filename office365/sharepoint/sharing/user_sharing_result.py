@@ -13,17 +13,16 @@ class UserSharingResult(ClientValue):
     """Specifies a sharing result for an individual user that method UpdateDocumentSharingInfo
     (section 3.2.5.187.2.1.1) returns.
 
-    :param list[int] allowed_roles: Specifies a set of roles that can be assigned to the user.
-    :param int current_role: Specifies the role that the user is currently assigned to.
-    :param str display_name: Gets the display name of the user.
-    :param str email: Gets the user email.
-    :param str invitation_link: Gets the invitation link.
-    :param bool is_user_known: Specifies whether the user is known to the server. If "true", the user is known to
-        the server; if "false", user is unknown.
-    :param str message: Specifies a message string that explains the reason when the Status  property is "false".
-    :param bool status: Specifies whether the sharing update for the user was completed successfully. If "true",
-        the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
-    :param str user: Specifies the identifier of a user.
+    Args:
+        allowed_roles (list[int]): Specifies a set of roles that can be assigned to the user.
+        current_role (int): Specifies the role that the user is currently assigned to.
+        display_name (str): Gets the display name of the user.
+        email (str): Gets the user email.
+        invitation_link (str): Gets the invitation link.
+        is_user_known (bool): Specifies whether the user is known to the server. If "true", the user is known to the server; if "false", user is unknown.
+        message (str): Specifies a message string that explains the reason when the Status  property is "false".
+        status (bool): Specifies whether the sharing update for the user was completed successfully. If "true", the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
+        user (str): Specifies the identifier of a user.
     """
 
     AllowedRoles: ClientValueCollection[Role] = field(default_factory=lambda: ClientValueCollection(Role))

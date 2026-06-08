@@ -17,10 +17,13 @@ class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):
     def get_by_name(self, name: str) -> DirectoryRole:
         """Retrieve a directory role by its display name.
 
-        :param str name: The display name (e.g. 'Security Administrator')
-        :return: The matching DirectoryRole
-        :raises NotFoundException: If no role matches
-        :raises ValueError: If multiple roles match
+        Args:
+            name (str): The display name (e.g. 'Security Administrator')
+        Returns:
+            The matching DirectoryRole
+        Raises:
+            NotFoundException: If no role matches
+            ValueError: If multiple roles match
         """
         return self.single(f"displayName eq '{name}'")
 
@@ -30,7 +33,8 @@ class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):
         Idempotent — if already activated, the server returns 409 Conflict.
         The caller can catch and ignore it.
 
-        :param str role_name: The display name (e.g. 'Security Administrator')
+        Args:
+            role_name (str): The display name (e.g. 'Security Administrator')
         """
 
         def _assign(templates: DirectoryRoleTemplateCollection) -> None:
@@ -47,7 +51,8 @@ class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):
         Directory roles are system-defined and cannot be deleted.
         This removes all members, effectively deactivating the role.
 
-        :param str role_name: The display name (e.g. 'Security Administrator')
+        Args:
+            role_name (str): The display name (e.g. 'Security Administrator')
         """
 
         def _get_members(role: DirectoryRole) -> None:

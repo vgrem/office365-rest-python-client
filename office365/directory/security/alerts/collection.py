@@ -19,15 +19,16 @@ class AlertCollection(EntityCollection[Alert]):
         source=None,
         vendor_information=None,
     ):
-        """
-        Creates an alert object.
-        :param str title:
-        :param str description:
-        :param str severity:
-        :param str category:
-        :param str status:
-        :param str source:
-        :param str vendor_information:
+        """Creates an alert object.
+
+        Args:
+            title (str):
+            description (str):
+            severity (str):
+            category (str):
+            status (str):
+            source (str):
+            vendor_information (str):
         """
 
         def _construct_request(request: RequestOptions) -> None:

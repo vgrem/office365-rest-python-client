@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Callable, List, Optional, Union
 
 from typing_extensions import Self
@@ -39,7 +37,8 @@ class PeopleManager(Entity):
         """Gets a collection of the 20 (or fewer) most popular hash tags over the past week.
         The returned collection is sorted in descending order of frequency of use.
 
-        :type context: office365.sharepoint.client_context.ClientContext
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return_type = HashTagCollection(context)
         manager = PeopleManager(context)
@@ -48,8 +47,8 @@ class PeopleManager(Entity):
         return return_type
 
     def get_user_onedrive_quota_max(self, account_name: str) -> ClientResult[int]:
-        """
-        :param str account_name: Account name of the specified user.
+        """Args:
+            account_name (str): Account name of the specified user.
         """
         return_type = ClientResult(self.context, int())
         params = {"accountName": account_name}
@@ -57,33 +56,23 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def am_i_following(self, account: User | str) -> ClientResult[bool]:
+    def am_i_following(self, account_name: str) -> ClientResult[bool]:
+        """Checks whether the current user is following the specified user.
+
+        Args:
+            account_name (str): Account name of the specified user.
         """
-        Checks whether the current user is following the specified user.
-
-        :param str account: Login name or User object.
-        :return:
-        """
-        return_type = ClientResult(self.context, bool())
-
-        def _am_i_following(account_name: str | None):
-            assert account_name is not None
-            params = {"accountName": account_name}
-            qry = ServiceOperationQuery(self, "AmIFollowing", params, None, None, return_type)
-            self.context.add_query(qry)
-
-        if isinstance(account, User):
-            account.ensure_properties(["Id", "LoginName"]).after_execute(lambda u: _am_i_following(u.login_name))
-        else:
-            _am_i_following(account)
-
-        return return_type
+        result = ClientResult(self.context, bool())
+        params = {"accountName": account_name}
+        qry = ServiceOperationQuery(self, "AmIFollowing", params, None, None, result)
+        self.context.add_query(qry)
+        return result
 
     def get_followers_for(self, account: Union[str, User]) -> EntityCollection[PersonProperties]:
-        """
-        Gets the people who are following the specified user.
+        """Gets the people who are following the specified user.
 
-        :param str|User account: Account name of the specified user.
+        Args:
+            account (str|User): Account name of the specified user.
         """
         return_type = EntityCollection(self.context, PersonProperties)
 
@@ -105,9 +94,9 @@ class PeopleManager(Entity):
         return return_type
 
     def get_user_information(self, account_name: str, site_id: str) -> ClientResult[dict]:
-        """
-        :param str account_name: Account name of the specified user.
-        :param str site_id: Site Identifier.
+        """Args:
+            account_name (str): Account name of the specified user.
+            site_id (str): Site Identifier.
         """
         return_type = ClientResult(self.context, {})
         params = {"accountName": account_name, "siteId": site_id}
@@ -116,10 +105,10 @@ class PeopleManager(Entity):
         return return_type
 
     def follow(self, account_name: str) -> Self:
-        """
-        Add the specified user to the current user's list of followed users.
+        """Add the specified user to the current user's list of followed users.
 
-        :param str account_name: Account name of the specified user.
+        Args:
+            account_name (str): Account name of the specified user.
         """
         params = {"accountName": account_name}
         qry = ServiceOperationQuery(self, "Follow", params, None, None, None)
@@ -127,10 +116,10 @@ class PeopleManager(Entity):
         return self
 
     def stop_following(self, account_name: str) -> Self:
-        """
-        Remove the specified user from the current user's list of followed users.
+        """Remove the specified user from the current user's list of followed users.
 
-        :param str account_name:
+        Args:
+            account_name (str):
         """
         params = {"accountName": account_name}
         qry = ServiceOperationQuery(self, "StopFollowing", params)
@@ -138,10 +127,10 @@ class PeopleManager(Entity):
         return self
 
     def stop_following_tag(self, value: str) -> Self:
-        """
-        The StopFollowingTag method sets the current user to no longer be following the specified tag.
+        """The StopFollowingTag method sets the current user to no longer be following the specified tag.
 
-        :param str value: Specifies the tag by its GUID
+        Args:
+            value (str): Specifies the tag by its GUID
         """
         params = {"value": value}
         qry = ServiceOperationQuery(self, "StopFollowingTag", params)
@@ -149,10 +138,10 @@ class PeopleManager(Entity):
         return self
 
     def get_user_profile_properties(self, user: Union[str, User]) -> ClientResult[dict]:
-        """
-        Gets the specified user profile properties for the specified user.
+        """Gets the specified user profile properties for the specified user.
 
-        :param str or User user: User or Login name of the specified user.
+        Args:
+            user (str or User): User or Login name of the specified user.
         """
         return_type = ClientResult(self.context, {})
 
@@ -165,9 +154,10 @@ class PeopleManager(Entity):
         return return_type
 
     def get_properties_for(self, account: Union[str, User]) -> PersonProperties:
-        """
-        Gets user properties for the specified user.
-        :param str or User account: Specifies the User object or its login name.
+        """Gets user properties for the specified user.
+
+        Args:
+            account (str or User): Specifies the User object or its login name.
         """
         return_type = PersonProperties(self.context)
 
@@ -185,16 +175,14 @@ class PeopleManager(Entity):
         create_site_if_not_exists=False,
         site_creation_priority=PersonalSiteCreationPriority.Low,
     ) -> ClientResult[str]:
-        """
-        Gets the OneDrive Document library path for a given user.
+        """Gets the OneDrive Document library path for a given user.
 
-        :param str or User user_or_name user: The login name of the user whose OneDrive URL is required.
-             For example, "i:0#.f|membership|admin@contoso.sharepoint.com”.
-        :param bool create_site_if_not_exists: If this value is set to true and the site doesn't exist, the site will
-            get created.
-        :param int site_creation_priority: The priority for site creation. Type: PersonalSiteCreationPriority
+        Args:
+            user (str or User user_or_name): The login name of the user whose OneDrive URL is required. For example, "i:0#.f|membership|admin@contoso.sharepoint.com”.
+            create_site_if_not_exists (bool): If this value is set to true and the site doesn't exist, the site will get created.
+            site_creation_priority (int): The priority for site creation. Type: PersonalSiteCreationPriority
         """
-        return_type = ClientResult[str](self.context)
+        return_type = ClientResult(self.context)
 
         def _get_default_document_library(account_name: str) -> None:
             params = {
@@ -209,12 +197,12 @@ class PeopleManager(Entity):
         return return_type
 
     def get_people_followed_by(self, account_name: str) -> EntityCollection[PersonProperties]:
-        """
-        The GetPeopleFollowedBy method returns a  list of PersonProperties objects for people who the specified user
+        """The GetPeopleFollowedBy method returns a  list of PersonProperties objects for people who the specified user
         is following. This method can result in exceptions for conditions such as null arguments or if the specified
         user cannot be found.
 
-        :param str account_name: Account name of the specified user.
+        Args:
+            account_name (str): Account name of the specified user.
         """
         return_type = EntityCollection(self.context, PersonProperties)
         params = {"accountName": account_name}
@@ -232,9 +220,10 @@ class PeopleManager(Entity):
         return return_type
 
     def follow_tag(self, value: str) -> Self:
-        """
-        The FollowTag method sets the current user to be following the specified tag.
-        :param str value: Specifies the tag by its GUID.
+        """The FollowTag method sets the current user to be following the specified tag.
+
+        Args:
+            value (str): Specifies the tag by its GUID.
         """
 
         qry = ServiceOperationQuery(self, "FollowTag", [value])
@@ -244,7 +233,8 @@ class PeopleManager(Entity):
     def hide_suggestion(self, account_name: str) -> Self:
         """The HideSuggestion method adds the specified user to list of rejected suggestions.
 
-        :param str account_name: Specifies the user by account name.
+        Args:
+            account_name (str): Specifies the user by account name.
         """
         params = {"accountName": account_name}
         qry = ServiceOperationQuery(self, "HideSuggestion", params)
@@ -252,8 +242,8 @@ class PeopleManager(Entity):
         return self
 
     def reset_user_onedrive_quota_to_default(self, account_name: str) -> ClientResult[str]:
-        """
-        :param str account_name: Specifies the user by account name.
+        """Args:
+            account_name (str): Specifies the user by account name.
         """
         return_type = ClientResult(self.context, str())
         params = {"accountName": account_name}
@@ -262,21 +252,21 @@ class PeopleManager(Entity):
         return return_type
 
     def set_my_profile_picture(self, picture: bytes) -> Self:
-        """
-        The SetMyProfilePicture method uploads and sets the user profile picture. Pictures in bmp, jpg and png formats
+        """The SetMyProfilePicture method uploads and sets the user profile picture. Pictures in bmp, jpg and png formats
         and up to 5,000,000 bytes are supported. A user can upload a picture only to the user's own profile.
 
-        :param str or bytes picture: Binary content of an image file
+        Args:
+            picture (str or bytes): Binary content of an image file
         """
         qry = ServiceOperationQuery(self, "SetMyProfilePicture", None, {"picture": picture})
         self.context.add_query(qry)
         return self
 
     def set_user_onedrive_quota(self, account_name: str, new_quota: int, new_quota_warning: int) -> ClientResult[str]:
-        """
-        :param str account_name:
-        :param long new_quota:
-        :param long new_quota_warning:
+        """Args:
+            account_name (str):
+            new_quota (long):
+            new_quota_warning (long):
         """
         return_type = ClientResult(self.context, str())
         payload = {
@@ -291,11 +281,12 @@ class PeopleManager(Entity):
     def set_multi_valued_profile_property(
         self, account_name: str, property_name: str, property_values: List[str]
     ) -> Self:
-        """
-        Sets the value of a multivalued user profile property.
-        :param str account_name: Specifies the user by account name.
-        :param str property_name: The name of the property to set.
-        :param list[str] property_values: The values being set on the property.
+        """Sets the value of a multivalued user profile property.
+
+        Args:
+            account_name (str): Specifies the user by account name.
+            property_name (str): The name of the property to set.
+            property_values (list[str]): The values being set on the property.
         """
         payload = {
             "accountName": account_name,
@@ -307,12 +298,12 @@ class PeopleManager(Entity):
         return self
 
     def set_single_value_profile_property(self, account_name: str, property_name: str, property_value: str) -> Self:
-        """
-        Sets the value of a user profile property.
+        """Sets the value of a user profile property.
 
-        :param str account_name: Specifies the user by account name.
-        :param str property_name: The name of the property to set.
-        :param str property_value: The value being set on the property.
+        Args:
+            account_name (str): Specifies the user by account name.
+            property_name (str): The name of the property to set.
+            property_value (str): The value being set on the property.
         """
         payload = {
             "accountName": account_name,

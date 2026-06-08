@@ -53,6 +53,14 @@ A `Tenant` object is the entry point for all tenant-level operations.
 | **14** | Export all tenant settings to file | [`export_tenant_settings.py`](./export_tenant_settings.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | **15** | Print tenant settings | [`print_tenant_settings.py`](./print_tenant_settings.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | **16** | Add a tenant theme | [`add_tenant_theme.py`](./add_tenant_theme.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **17** | Print server settings | [`print_server_settings.py`](./print_server_settings.py) | SharePoint Admin | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+
+### Storage & resource reporting
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **18** | Storage usage report (all sites) | [`site_storage_report.py`](./site_storage_report.py) | SharePoint Admin + `Sites.Read.All` | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **19** | Find orphan OneDrive sites | [`find_orphan_onedrives.py`](./find_orphan_onedrives.py) | SharePoint Admin + `Directory.Read.All` | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ---
 

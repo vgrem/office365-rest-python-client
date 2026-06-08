@@ -42,9 +42,9 @@ Modern Team Site         Modern Comm Site          Classic Site
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | Create a modern Team site | [`modern/create_team.py`](./modern/create_team.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **2** | Create a modern Communication site | [`modern/create_comm.py`](./modern/create_comm.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **3** | Create a classic site | [`classic/create_classic.py`](./classic/create_classic.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **1** | Create a modern Team site | [`create_team.py`](./create_team.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **2** | Create a modern Communication site | [`create_comm.py`](./create_comm.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| **3** | Create a classic site | [`create_classic.py`](./create_classic.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
 
 ### Read & Manage
 
@@ -57,6 +57,14 @@ Modern Team Site         Modern Comm Site          Classic Site
 | **8** | Add site admin | [`add_admin.py`](./add_admin.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 | **9** | Remove site admin | [`remove_admin.py`](./remove_admin.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 | **10** | Delete site | [`delete_site.py`](./delete_site.py) | SharePoint Admin | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
+
+### Site lifecycle & compliance
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **11** | Find inactive/obsolete sites | [`find_inactive_sites.py`](./find_inactive_sites.py) | SharePoint Admin + `Sites.Read.All` | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **12** | Assign sensitivity label to site | [`assign_sensitivity_label.py`](./assign_sensitivity_label.py) | SharePoint Admin + Purview read | [Graph sensitivity labels](https://learn.microsoft.com/en-us/graph/api/resources/sensitivitylabel) |
+| **13** | Check site retention policy coverage | [`check_retention_policy.py`](./check_retention_policy.py) | SharePoint Admin + `RecordsManagement.Read.All` | [Purview retention](https://learn.microsoft.com/en-us/purview/retention-policies-sharepoint) |
 
 ---
 

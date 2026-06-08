@@ -14,8 +14,8 @@ class LinkInfo(ClientValue):
     """This class provides metadata for the tokenized sharing link including settings details, inheritance status,
     and an optional array of members.
 
-    :param bool is_inherited: Boolean that indicates if the tokenized sharing link is present due to
-         inherited permissions from a parent object.
+    Args:
+        is_inherited (bool): Boolean that indicates if the tokenized sharing link is present due to inherited permissions from a parent object.
     """
 
     inherited_from: InheritedFrom = field(default_factory=InheritedFrom)

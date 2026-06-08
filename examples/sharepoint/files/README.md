@@ -128,13 +128,12 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 
 ## Sharing
 
+> Sharing operations for files are in the [`sharing/`](../sharing/) directory.
+
 | What | File | Notes |
 |------|------|-------|
-| **Share link** | [`share.py`](./share.py) | Create tokenized sharing link |
-| **Anonymous link** | [`create_anonymous_link.py`](./create_anonymous_link.py) | Create anonymous access link |
-| **Unshare link** | [`unshare_link.py`](./unshare_link.py) | Remove a sharing link |
-| **Get sharing info** | [`get_sharing_info.py`](./get_sharing_info.py) | Get sharing metadata |
 | **Get by sharing link** | [`get_by_sharing_link.py`](./get_by_sharing_link.py) | Resolve file from a sharing link |
+| **Download by sharing link** | [`download_by_shared_link.py`](./download_by_shared_link.py) | Download via guest/anonymous link |
 
 ## Create Documents
 
@@ -161,6 +160,14 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **List versions** | [`versions/list.py`](./versions/list.py) | All versions of a file |
 | **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
 | **Restore version** | [`versions/restore_version.py`](./versions/restore_version.py) | Restore a previous version |
+
+## Audit & Compliance
+
+| What | File | Notes |
+|------|------|-------|
+| **Find label downgrades** | [`find_label_downgrades.py`](./find_label_downgrades.py) | Detect sensitivity label downgrades via audit logs |
+| **Find unused files** | [`find_unused_files.py`](./find_unused_files.py) | Files with no user access in N days |
+| **Version storage report** | [`version_storage_report.py`](./version_storage_report.py) | Analyze version count and storage cost per file |
 
 ## Attachments
 

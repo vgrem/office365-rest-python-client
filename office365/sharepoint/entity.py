@@ -74,27 +74,28 @@ class Entity(ClientObject):
         scopes: Optional[List[str]] = None,
         passphrase: Optional[str] = None,
     ) -> Self:
-        """
-        Creates authenticated SharePoint context via certificate credentials
+        """Creates authenticated SharePoint context via certificate credentials
 
-        :param str tenant: Tenant name
-        :param str or None cert_path: Path to A PEM encoded certificate private key.
-        :param str or None private_key: A PEM encoded certificate private key.
-        :param str thumbprint: Hex encoded thumbprint of the certificate.
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
-        :param str passphrase: Passphrase if the private_key is encrypted
+        Args:
+            tenant (str): Tenant name
+            cert_path (str or None): Path to A PEM encoded certificate private key.
+            private_key (str or None): A PEM encoded certificate private key.
+            thumbprint (str): Hex encoded thumbprint of the certificate.
+            client_id (str): The OAuth client id of the calling application.
+            scopes (list[str] or None): Scopes requested to access a protected API (a resource)
+            passphrase (str): Passphrase if the private_key is encrypted
         """
         self.context.with_client_certificate(tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase)
         return self
 
     def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
-        """
-        Initializes a client to acquire a token via Username and password authentication flow.
-        :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param str username: Typically, a UPN in the form of an email address
-        :param str password: The password
+        """Initializes a client to acquire a token via Username and password authentication flow.
+
+        Args:
+            tenant (str): Tenant name or identifier, for example: contoso.onmicrosoft.com
+            client_id (str): The OAuth client id of the calling application.
+            username (str): Typically, a UPN in the form of an email address
+            password (str): The password
         """
         resource = get_absolute_url(self.context.base_url)
         scopes = [f"{resource}/.default"]

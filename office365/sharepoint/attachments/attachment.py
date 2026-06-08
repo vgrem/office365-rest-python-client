@@ -19,8 +19,9 @@ class Attachment(Entity):
     def download(self, file_object: IO, use_path: bool = True) -> Self:
         """Download attachment file
 
-        :type file_object: typing.IO
-        :param bool use_path: Use Path instead of Url for addressing attachments
+        Args:
+            file_object (typing.IO):
+            use_path (bool): Use Path instead of Url for addressing attachments
         """
 
         def _save_content(return_type: ClientResult[AnyStr]) -> None:
@@ -56,11 +57,11 @@ class Attachment(Entity):
         return self
 
     def upload(self, file_object: IO, use_path: bool = True) -> Self:
-        """
-        Upload attachment into list item
+        """Upload attachment into list item
 
-        :type file_object: typing.IO
-        :param bool use_path: Use Path instead of Url for addressing attachments
+        Args:
+            file_object (typing.IO):
+            use_path (bool): Use Path instead of Url for addressing attachments
         """
 
         def _upload_file_by_url():

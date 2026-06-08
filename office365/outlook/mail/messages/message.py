@@ -48,12 +48,12 @@ class Message(OutlookItem):
         message: Optional[Message] = None,
         comment: Optional[str] = None,
     ) -> Message:
-        """
-        Create a draft to forward an existing message, in either JSON or MIME format.
+        """Create a draft to forward an existing message, in either JSON or MIME format.
 
-        :param list[Recipient] to_recipients:
-        :param Message message:
-        :param str comment:
+        Args:
+            to_recipients (list[Recipient]):
+            message (Message):
+            comment (str):
         """
         return_type = Message(self.context)
         payload = {
@@ -83,14 +83,13 @@ class Message(OutlookItem):
         return return_type
 
     def add_file_attachment(self, name: str, content=None, content_type=None, base64_content=None):
-        """
-        Attach a file to message
+        """Attach a file to message
 
-        :param str name: The name representing the text that is displayed below the icon representing the
-             embedded attachment
-        :param str or None content: The contents of the file
-        :param str or None content_type: The content type of the attachment.
-        :param str or None base64_content: The contents of the file in the form of a base64 string.
+        Args:
+            name (str): The name representing the text that is displayed below the icon representing the embedded attachment
+            content (str or None): The contents of the file
+            content_type (str or None): The content type of the attachment.
+            base64_content (str or None): The contents of the file in the form of a base64 string.
         """
         if not content and (not base64_content):
             raise TypeError("Either content or base64_content is required")
@@ -98,12 +97,12 @@ class Message(OutlookItem):
         return self
 
     def upload_attachment(self, file_path: str, chunk_uploaded: Optional[Callable[[int], None]] = None):
-        """
-        This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
+        """This approach is used to attach a file if the file size is between 3 MB and 150 MB, otherwise
         if a file that's smaller than 3 MB, then add_file_attachment method is utilized
 
-        :param str file_path:
-        :param (int)->None chunk_uploaded: Upload action
+        Args:
+            file_path (str):
+            chunk_uploaded ((int)->None): Upload action
         """
         max_upload_chunk = 1000000 * 3
         file_size = os.stat(file_path).st_size
@@ -134,7 +133,8 @@ class Message(OutlookItem):
         """Reply to the sender of a message by specifying a comment and using the Reply method. The message is then
         saved in the Sent Items folder.
 
-        :param str comment: A comment to include. Can be an empty string.
+        Args:
+            comment (str): A comment to include. Can be an empty string.
         """
         message = Message(self.context)
         payload = {"message": message, "comment": comment}
@@ -151,10 +151,10 @@ class Message(OutlookItem):
 
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_reply(self, comment=None) -> Message:
-        """
-        Create a draft to reply to the sender of a message in either JSON or MIME format.
+        """Create a draft to reply to the sender of a message in either JSON or MIME format.
 
-        :param str comment:
+        Args:
+            comment (str):
         """
         return_type = Message(self.context)
         payload = {"comment": comment}
@@ -175,12 +175,11 @@ class Message(OutlookItem):
 
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination: Union[str, MailFolder]) -> Self:
-        """
-        Copy a message to another folder within the specified user's mailbox.
+        """Copy a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder.
 
-        :param str or MailFolder destination: The destination folder ID, or a well-known folder name.
-            For a list of supported well-known folder names, see mailFolder resource type.
+        Args:
+            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
@@ -202,12 +201,11 @@ class Message(OutlookItem):
 
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def move(self, destination: Union[str, MailFolder]) -> Self:
-        """
-        Move a message to another folder within the specified user's mailbox.
+        """Move a message to another folder within the specified user's mailbox.
         This creates a new copy of the message in the destination folder and removes the original message.
 
-        :param str or MailFolder destination: The destination folder ID, or a well-known folder name.
-            For a list of supported well-known folder names, see mailFolder resource type.
+        Args:
+            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
@@ -229,10 +227,11 @@ class Message(OutlookItem):
 
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def forward(self, to_recipients: List[str], comment: str = "") -> Self:
-        """
-        Forward a message. The message is saved in the Sent Items folder.
-        :param list[str] to_recipients: The list of recipients.
-        :param str comment: A comment to include. Can be an empty string.
+        """Forward a message. The message is saved in the Sent Items folder.
+
+        Args:
+            to_recipients (list[str]): The list of recipients.
+            comment (str): A comment to include. Can be an empty string.
         """
         payload = {
             "toRecipients": ClientValueCollection(Recipient, [Recipient.from_email(v) for v in to_recipients]),

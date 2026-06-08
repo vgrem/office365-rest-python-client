@@ -16,11 +16,11 @@ class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
     def clear_presence(self, session_id: str | None = None) -> Self:
-        """
-        Clear the application's presence session for a user. If it is the user's only presence session,
+        """Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
 
-        :param str session_id: The ID of the application's presence session.
+        Args:
+            session_id (str): The ID of the application's presence session.
         """
         payload = {"sessionId": session_id}
         qry = ServiceOperationQuery(self, "clearPresence", None, payload)
@@ -42,15 +42,13 @@ class Presence(Entity):
         activity: Optional[str] = None,
         expiration_duration: Optional[str] = None,
     ):
-        """
-        Set the state of a user's presence session as an application.
+        """Set the state of a user's presence session as an application.
 
-        :param str session_id: The ID of the application's presence session.
-        :param str availability: The base presence information.
-        :param str activity: The supplemental information to availability.
-        :param str expiration_duration: The expiration of the app presence session. The value is represented in
-            ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied.
-            The valid duration range is 5-240 minutes (PT5M to PT4H)
+        Args:
+            session_id (str): The ID of the application's presence session.
+            availability (str): The base presence information.
+            activity (str): The supplemental information to availability.
+            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied. The valid duration range is 5-240 minutes (PT5M to PT4H)
         """
         payload = {
             "sessionId": session_id,
@@ -63,11 +61,11 @@ class Presence(Entity):
         return self
 
     def set_status_message(self, message: str | ItemBody, expiry: Optional[datetime] = None):
-        """
-        Set a presence status message for a user. An optional expiration date and time can be supplied.
-        :param str or ItemBody message: Status message item.
-        :param datetime expiry: Time in which the status message expires. If not provided, the status message
-            doesn't expire.
+        """Set a presence status message for a user. An optional expiration date and time can be supplied.
+
+        Args:
+            message (str or ItemBody): Status message item.
+            expiry (datetime): Time in which the status message expires. If not provided, the status message doesn't expire.
         """
         if not isinstance(message, ItemBody):
             message = ItemBody(message)
@@ -81,19 +79,17 @@ class Presence(Entity):
         return self
 
     def set_user_preferred_presence(self, availability="Available", activity="Available", expiration_duration=None):
-        """
-        Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
+        """Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
         the user's presence shows as the preferred status.
         Preferred presence takes effect only when at least one presence session exists for the user. Otherwise,
         the user's presence shows as Offline.
         A presence session is created as a result of a successful setPresence operation, or if the user is signed in
         on a Microsoft Teams client.
 
-        :param str availability: The base presence information.
-        :param str activity: The supplemental information to availability.
-        :param str expiration_duration: The expiration of the app presence session. The value is represented in
-            ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied.
-            The valid duration range is 5-240 minutes (PT5M to PT4H)
+        Args:
+            availability (str): The base presence information.
+            activity (str): The supplemental information to availability.
+            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied. The valid duration range is 5-240 minutes (PT5M to PT4H)
         """
         payload = {
             "availability": availability,

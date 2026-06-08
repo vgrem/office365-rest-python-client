@@ -13,11 +13,12 @@ class CalendarPermissionCollection(EntityCollection[CalendarPermission]):
 
     @require_permission(delegated=["Calendars.ReadWrite"])
     def add(self, email_address: Union[str, EmailAddress], role: CalendarRoleType) -> CalendarPermission:
-        """
-        Create a calendarPermission resource to specify the identity and role of the user with whom the specified
+        """Create a calendarPermission resource to specify the identity and role of the user with whom the specified
         calendar is being shared or delegated.
-        :param str or EmailAddress email_address: Represents a sharee or delegate who has access to the calendar.
-        :param CalendarRoleType role: Permission level of the calendar sharee or delegate
+
+        Args:
+            email_address (str or EmailAddress): Represents a sharee or delegate who has access to the calendar.
+            role (CalendarRoleType): Permission level of the calendar sharee or delegate
         """
         if not isinstance(email_address, EmailAddress):
             email_address = EmailAddress(email_address)

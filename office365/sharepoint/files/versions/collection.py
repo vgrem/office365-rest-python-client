@@ -31,46 +31,49 @@ class FileVersionCollection(EntityCollection[FileVersion]):
 
     def delete_by_id(self, vid: int) -> Self:
         """Removes the file version object with the specified integer ID from the collection.
-        :param int vid: The file version to remove.
+
+        Args:
+            vid (int): The file version to remove.
         """
         qry = ServiceOperationQuery(self, "DeleteByID", {"vid": vid})
         self.context.add_query(qry)
         return self
 
     def delete_by_label(self, label: str) -> Self:
-        """
-        Deletes the file version object with the specified version label.
-        :param str label: The file version to remove.
+        """Deletes the file version object with the specified version label.
+
+        Args:
+            label (str): The file version to remove.
         """
         qry = ServiceOperationQuery(self, "DeleteByLabel", {"versionlabel": label})
         self.context.add_query(qry)
         return self
 
     def recycle_by_id(self, vid: int) -> Self:
-        """
-        Recycles a file version objects in the collection by version identifier.
+        """Recycles a file version objects in the collection by version identifier.
 
-        :param int vid: The file version to remove.
+        Args:
+            vid (int): The file version to remove.
         """
         qry = ServiceOperationQuery(self, "RecycleByID", {"vid": vid})
         self.context.add_query(qry)
         return self
 
     def recycle_by_label(self, label: str) -> Self:
-        """
-        Recycles the file version object with the specified version label.
+        """Recycles the file version object with the specified version label.
 
-        :param str label: The file version to remove.
+        Args:
+            label (str): The file version to remove.
         """
         qry = ServiceOperationQuery(self, "RecycleByLabel", {"versionlabel": label})
         self.context.add_query(qry)
         return self
 
     def restore_by_label(self, label: str) -> Self:
-        """
-        Restores the file version object that has the specified version label.
+        """Restores the file version object that has the specified version label.
 
-        :param str label: The file version to remove.
+        Args:
+            label (str): The file version to remove.
         """
         qry = ServiceOperationQuery(self, "RestoreByLabel", {"versionlabel": label})
         self.context.add_query(qry)

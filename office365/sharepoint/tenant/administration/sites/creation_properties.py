@@ -9,10 +9,11 @@ from office365.runtime.client_value import ClientValue
 class SiteCreationProperties(ClientValue):
     """Sets the initial properties for a new site when it is created.
 
-    :param str owner: Gets or sets the login name of the owner of the new site
-    :param str url: Gets or sets the new site's URL.
-    :param str template: Gets or sets the web template name of the new site.
-    :param str site_uni_name:
+    Args:
+        owner (str): Gets or sets the login name of the owner of the new site
+        url (str): Gets or sets the new site's URL.
+        template (str): Gets or sets the web template name of the new site.
+        site_uni_name (str):
     """
 
     Url: str | None = None

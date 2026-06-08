@@ -34,12 +34,12 @@ class MessageCollection(DeltaCollection["Message"]):
         to_recipients: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Message:
-        """
-        Create a draft of a new message in either JSON or MIME format.
+        """Create a draft of a new message in either JSON or MIME format.
 
-        :param str subject: The subject of the message.
-        :param str or ItemBody body: The body of the message. It can be in HTML or text format
-        :param list[str] to_recipients:
+        Args:
+            subject (str): The subject of the message.
+            body (str or ItemBody): The body of the message. It can be in HTML or text format
+            to_recipients (list[str]):
         """
         if to_recipients is not None:
             kwargs["toRecipients"] = ClientValueCollection(

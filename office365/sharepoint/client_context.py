@@ -61,10 +61,10 @@ class ClientContext(ClientRuntimeContext):
         allow_ntlm: bool = False,
         browser_mode: bool = False,
     ) -> None:
-        """
-        Instantiates a SharePoint client context
+        """Instantiates a SharePoint client context
 
-        :param str base_url: Absolute Web or Site Url
+        Args:
+            base_url (str): Absolute Web or Site Url
         """
         super().__init__()
         self._base_url: str = base_url.rstrip("/")
@@ -76,10 +76,10 @@ class ClientContext(ClientRuntimeContext):
 
     @staticmethod
     def from_url(full_url: str) -> ClientContext:
-        """
-        Constructs a client from absolute resource url
+        """Constructs a client from absolute resource url
 
-        :param str full_url: Absolute Url to a resource
+        Args:
+            full_url (str): Absolute Url to a resource
         """
         root_site_url = get_absolute_url(full_url)
         ctx = ClientContext(root_site_url)
@@ -114,16 +114,16 @@ class ClientContext(ClientRuntimeContext):
         scopes: Optional[List[str]] = None,
         passphrase: Optional[str] = None,
     ) -> Self:
-        """
-        Creates authenticated SharePoint context via certificate credentials
+        """Creates authenticated SharePoint context via certificate credentials
 
-        :param str tenant: Tenant name
-        :param str or None cert_path: Path to A PEM encoded certificate private key.
-        :param str or None private_key: A PEM encoded certificate private key.
-        :param str thumbprint: Hex encoded thumbprint of the certificate.
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
-        :param str passphrase: Passphrase if the private_key is encrypted
+        Args:
+            tenant (str): Tenant name
+            cert_path (str or None): Path to A PEM encoded certificate private key.
+            private_key (str or None): A PEM encoded certificate private key.
+            thumbprint (str): Hex encoded thumbprint of the certificate.
+            client_id (str): The OAuth client id of the calling application.
+            scopes (list[str] or None): Scopes requested to access a protected API (a resource)
+            passphrase (str): Passphrase if the private_key is encrypted
         """
         self.authentication_context.with_client_certificate(
             tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase
@@ -131,34 +131,35 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
-        """
-        Initializes a client to acquire a token interactively i.e. via a local browser.
+        """Initializes a client to acquire a token interactively i.e. via a local browser.
 
         Prerequisite: In Azure Portal, configure the Redirect URI of your
         "Mobile and Desktop application" as ``http://localhost``.
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Args:
+            tenant (str): Tenant name, for example: contoso.onmicrosoft.com
+            client_id (str): The OAuth client id of the calling application.
+            scopes (list[str] or None): Scopes requested to access a protected API (a resource)
         """
         self.authentication_context.with_interactive(tenant, client_id, scopes)
         return self
 
     def with_device_flow(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
-        """
-        Initializes a client to acquire a token via device flow auth.
+        """Initializes a client to acquire a token via device flow auth.
 
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param list[str] or None scopes:  Scopes requested to access a protected API (a resource)
+        Args:
+            tenant (str): Tenant name, for example: contoso.onmicrosoft.com
+            client_id (str): The OAuth client id of the calling application.
+            scopes (list[str] or None): Scopes requested to access a protected API (a resource)
         """
         self.authentication_context.with_device_flow(tenant, client_id, scopes)
         return self
 
     def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
-        """
-        Initializes a client to acquire a token from a callback
-        :param () -> TokenResponse token_func: A token callback
+        """Initializes a client to acquire a token from a callback
+
+        Args:
+            token_func (() -> TokenResponse): A token callback
         """
         self.authentication_context.with_access_token(token_func)
         return self
@@ -188,14 +189,11 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     def with_user_credentials(self, username: str, password: str) -> Self:
-        """
-        Initializes a client to acquire a token via user credentials.
-        :param str username: Typically, a UPN in the form of an email address
-        :param str password: The password
+        """Initializes a client to acquire a token via user credentials.
 
-        Note: This method uses the legacy SAML/ACS auth flow which Microsoft has
-        retired for SharePoint Online. Use with_username_and_password instead.
-        For on-premises SharePoint, use allow_ntlm=True.
+        Args:
+            username (str): Typically, a UPN in the form of an email address
+            password (str): The password Note: This method uses the legacy SAML/ACS auth flow which Microsoft has retired for SharePoint Online. Use with_username_and_password instead. For on-premises SharePoint, use allow_ntlm=True.
         """
         raise RuntimeError(
             "with_user_credentials uses the legacy SAML/ACS auth flow which "
@@ -205,12 +203,13 @@ class ClientContext(ClientRuntimeContext):
         )
 
     def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
-        """
-        Initializes a client to acquire a token via Username and password authentication flow.
-        :param str tenant: Tenant name or identifier, for example: contoso.onmicrosoft.com
-        :param str client_id: The OAuth client id of the calling application.
-        :param str username: Typically, a UPN in the form of an email address
-        :param str password: The password
+        """Initializes a client to acquire a token via Username and password authentication flow.
+
+        Args:
+            tenant (str): Tenant name or identifier, for example: contoso.onmicrosoft.com
+            client_id (str): The OAuth client id of the calling application.
+            username (str): Typically, a UPN in the form of an email address
+            password (str): The password
         """
         resource = get_absolute_url(self.base_url)
         scopes = [f"{resource}/.default"]
@@ -218,14 +217,14 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     def with_client_credentials(self, client_id: str, client_secret: str) -> Self:
-        """
-        Initializes a client to acquire a token via client credentials (SharePoint App-Only)
+        """Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
         SharePoint App-Only is the older, but still very relevant, model of setting up app-principals.
         This model works for both SharePoint Online and SharePoint 2013/2016/2019 on-premises
 
-        :param str client_id: The OAuth client id of the calling application
-        :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
+        Args:
+            client_id (str): The OAuth client id of the calling application
+            client_secret (str): Secret string that the application uses to prove its identity when requesting a token
         """
         self.authentication_context.with_credentials(ClientCredential(client_id, client_secret))
         return self
@@ -233,8 +232,9 @@ class ClientContext(ClientRuntimeContext):
     def with_cookies(self, cookie_source, ttl_seconds=None):
         """Initializes authentication using browser-session cookies.
 
-        :param cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
-        :param ttl_seconds: Optional max age for cached cookies before reloading from source.
+        Args:
+            cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+            ttl_seconds: Optional max age for cached cookies before reloading from source.
         """
         self.authentication_context.with_cookies(cookie_source, ttl_seconds)
         return self
@@ -251,10 +251,11 @@ class ClientContext(ClientRuntimeContext):
         items_per_batch: int = 100,
         success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
     ) -> Self:
-        """
-        Construct and submit to a server a batch request
-        :param int items_per_batch: Maximum to be selected for bulk operation
-        :param (List[ClientObject|ClientResult])-> None success_callback: A success callback
+        """Construct and submit to a server a batch request
+
+        Args:
+            items_per_batch (int): Maximum to be selected for bulk operation
+            success_callback ((List[ClientObject|ClientResult])-> None): A success callback
         """
         batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
         batch_request.beforeExecute += self.authentication_context.authenticate_request
@@ -296,10 +297,11 @@ class ClientContext(ClientRuntimeContext):
         )
 
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
-        """
-        Creates a clone of ClientContext
-        :param bool clear_queries:
-        :param str url: Site Url
+        """Creates a clone of ClientContext
+
+        Args:
+            clear_queries (bool):
+            url (str): Site Url
         """
         ctx = copy.deepcopy(self)
         ctx.pending_request().set_base_url(url)
@@ -308,13 +310,13 @@ class ClientContext(ClientRuntimeContext):
         return ctx
 
     def create_modern_site(self, title: str, alias: str, owner: Optional[Union[str, User]] = None) -> Site:
-        """
-        Creates a modern (Communication) site
+        """Creates a modern (Communication) site
         https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest#create-a-modern-site
 
-        :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
-        :param str title: Site title
-        :param str or office365.sharepoint.principal.user.User owner: Site owner
+        Args:
+            alias (str): Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
+            title (str): Site title
+            owner (str or office365.sharepoint.principal.user.User): Site owner
         """
         return_type = Site(self)
         site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"
@@ -333,9 +335,10 @@ class ClientContext(ClientRuntimeContext):
     ) -> Site:
         """Creates a modern SharePoint Team site
 
-        :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
-        :param str title: Site title
-        :param bool is_public:
+        Args:
+            alias (str): Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
+            title (str): Site title
+            is_public (bool):
         """
         return_type = Site(self)
 
@@ -350,11 +353,11 @@ class ClientContext(ClientRuntimeContext):
         return return_type
 
     def create_communication_site(self, alias: str, title: str) -> Site:
-        """
-        Creates a modern SharePoint Communication site
+        """Creates a modern SharePoint Communication site
 
-        :param str alias: Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
-        :param str title: Site title
+        Args:
+            alias (str): Site alias which defines site url, e.g. https://contoso.sharepoint.com/sites/{alias}
+            title (str): Site title
         """
         return_type = Site(self)
         site_url = f"{get_absolute_url(self.base_url)}/sites/{alias}"

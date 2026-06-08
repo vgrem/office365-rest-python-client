@@ -184,19 +184,20 @@ class Tenant(Entity):
         return return_type
 
     def delete_policy_definition(self, item_id: int) -> Self:
-        """
-        Deletes a policy definition from a Microsoft 365 tenant.
+        """Deletes a policy definition from a Microsoft 365 tenant.
         Policy definitions may refer to specific settings related to compliance, security,
         or site governance (such as site or group creation policies).
-        :param int item_id:
+
+        Args:
+            item_id (int):
         """
         qry = ServiceOperationQuery(self, "DeletePolicyDefinition", None, {"itemId": item_id})
         self.context.add_query(qry)
         return self
 
     def delete_recent_admin_action_report(self, report_id: int):
-        """
-        :param int report_id:
+        """Args:
+            report_id (int):
         """
         qry = ServiceOperationQuery(self, "DeleteRecentAdminActionReport", None, {"reportId": report_id})
         self.context.add_query(qry)
@@ -261,9 +262,10 @@ class Tenant(Entity):
         return return_type
 
     def get_top_files_sharing_insights(self, query_mode=None):
-        """
-        Retrieves a report or data about the most shared files within a SharePoint Online tenant
-        :param int query_mode:
+        """Retrieves a report or data about the most shared files within a SharePoint Online tenant
+
+        Args:
+            query_mode (int):
         """
         payload = {"queryMode": query_mode}
         return_type = EntityCollection(self.context, TopFilesSharingInsights)
@@ -272,8 +274,8 @@ class Tenant(Entity):
         return return_type
 
     def get_site_thumbnail_logo(self, site_url: str) -> ClientResult[AnyStr]:
-        """
-        :param str site_url:
+        """Args:
+            site_url (str):
         """
         payload = {"siteUrl": site_url}
         return_type = ClientResult(self.context)
@@ -306,10 +308,10 @@ class Tenant(Entity):
         return return_type
 
     def remove_home_site(self, home_site_url: str) -> Self:
-        """
-        Remove home site
+        """Remove home site
 
-        :param str home_site_url:
+        Args:
+            home_site_url (str):
         """
         payload = {"homeSiteUrl": home_site_url}
         qry = ServiceOperationQuery(self, "RemoveHomeSite", None, payload)
@@ -356,12 +358,13 @@ class Tenant(Entity):
         columns_info=None,
         list_name: Optional[str] = None,
     ):
-        """
-        Exports tenant-level data to a CSV file.
-        :param str view_xml:
-        :param int time_zone_id:
-        :param list columns_info:
-        :param str list_name:
+        """Exports tenant-level data to a CSV file.
+
+        Args:
+            view_xml (str):
+            time_zone_id (int):
+            columns_info (list):
+            list_name (str):
         """
         return_type = ClientResult(self.context)
         payload = {
@@ -387,8 +390,8 @@ class Tenant(Entity):
 
     @staticmethod
     def from_url(admin_site_url: str):
-        """
-        :type admin_site_url: str
+        """Args:
+            admin_site_url (str):
         """
         from office365.sharepoint.client_context import ClientContext
 
@@ -396,8 +399,8 @@ class Tenant(Entity):
         return Tenant(admin_client)
 
     def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site
+        """Args:
+            site_id (str): The GUID to uniquely identify a SharePoint site
         """
         return self.sites.get_lock_state_by_id(site_id)
 
@@ -511,10 +514,10 @@ class Tenant(Entity):
         return return_type
 
     def check_tenant_licenses(self, licenses: List[str]) -> ClientResult[bool]:
-        """
-        Checks whether a tenant has the specified licenses.
+        """Checks whether a tenant has the specified licenses.
 
-        :param list[str] licenses: The list of licenses to check for.
+        Args:
+            licenses (list[str]): The list of licenses to check for.
         """
         return_type = ClientResult(self.context, bool())
         params = ClientValueCollection(str, licenses)
@@ -526,8 +529,8 @@ class Tenant(Entity):
         return self._aggregated_site_collections_list.items.single(f"SiteUrl eq '{site_url.rstrip('/')}'").get()
 
     def get_sites_by_state(self, states: Optional[List[int]] = None):
-        """
-        :param list[int] states:
+        """Args:
+            states (list[int]):
         """
         return_type = ListItemCollection(
             self.context,
@@ -550,9 +553,10 @@ class Tenant(Entity):
         self.get_sites_by_state(states).after_execute(_after, execute_first=True)
 
     def get_site_health_status(self, source_url: str) -> ClientResult[PortalHealthStatus]:
-        """
-        Checks the sitehealth of a specific SharePoint site or site collection in their tenant
-        :type source_url: str
+        """Checks the sitehealth of a specific SharePoint site or site collection in their tenant
+
+        Args:
+            source_url (str):
         """
         result = ClientResult(self.context, PortalHealthStatus())
         params = {"sourceUrl": source_url}
@@ -565,11 +569,11 @@ class Tenant(Entity):
         site_id: str,
         return_type: Optional[ClientResult[ClientValueCollection[SiteAdministratorsInfo]]] = None,
     ):
-        """
-        Gets site collection administrators
+        """Gets site collection administrators
 
-        :type site_id: str
-        :type return_type: ClientResult
+        Args:
+            site_id (str):
+            return_type (ClientResult):
         """
         if return_type is None:
             return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
@@ -684,9 +688,10 @@ class Tenant(Entity):
     def create_site(self, url: str, owner: str, title: Optional[str] = None) -> SpoOperation:
         """Queues a site collection for creation with the specified properties.
 
-        :param str title: Sets the new site’s title.
-        :param str url: Sets the new site’s URL.
-        :param str owner: Sets the login name of the owner of the new site.
+        Args:
+            title (str): Sets the new site’s title.
+            url (str): Sets the new site’s URL.
+            owner (str): Sets the login name of the owner of the new site.
         """
         return_type = SpoOperation(self.context)
         payload = {"siteCreationProperties": SiteCreationProperties(Title=title, Url=url, Owner=owner)}
@@ -697,9 +702,10 @@ class Tenant(Entity):
     def create_site_sync(self, url: str, owner: str, title: Optional[str] = None) -> Site:
         """Creates a site collection
 
-        :param str title: Sets the new site’s title.
-        :param str url: Sets the new site’s URL.
-        :param str owner: Sets the login name of the owner of the new site.
+        Args:
+            title (str): Sets the new site’s title.
+            url (str): Sets the new site’s URL.
+            owner (str): Sets the login name of the owner of the new site.
         """
         return_type = Site(self.context)
         return_type.set_property("__siteUrl", url)
@@ -714,7 +720,8 @@ class Tenant(Entity):
     def remove_site(self, site_url: str) -> SpoOperation:
         """Deletes the site with the specified URL
 
-        :param str site_url: A string representing the URL of the site.
+        Args:
+            site_url (str): A string representing the URL of the site.
         """
         return_type = SpoOperation(self.context)
         params = {"siteUrl": site_url}
@@ -738,7 +745,8 @@ class Tenant(Entity):
     def remove_deleted_site(self, site_url: str) -> SpoOperation:
         """Permanently removes the specified deleted site from the recycle bin.
 
-        :param str site_url: A string representing the URL of the site.
+        Args:
+            site_url (str): A string representing the URL of the site.
         """
         result = SpoOperation(self.context)
         payload = {"siteUrl": site_url}
@@ -762,9 +770,10 @@ class Tenant(Entity):
     def reorder_home_sites(
         self, home_sites_site_ids: List[str]
     ) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
-        """
-        Reorders Home Sites within a SharePoint Online tenant
-        :param list[str] home_sites_site_ids:
+        """Reorders Home Sites within a SharePoint Online tenant
+
+        Args:
+            home_sites_site_ids (list[str]):
         """
         payload = {"homeSitesSiteIds": home_sites_site_ids}
         return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
@@ -774,7 +783,9 @@ class Tenant(Entity):
 
     def restore_deleted_site(self, site_url: str):
         """Restores deleted site with the specified URL
-        :param str site_url: A string representing the URL of the site.
+
+        Args:
+            site_url (str): A string representing the URL of the site.
         """
         return_type = SpoOperation(self.context)
         qry = ServiceOperationQuery(self, "RestoreDeletedSite", [site_url], None, None, return_type)
@@ -783,7 +794,9 @@ class Tenant(Entity):
 
     def restore_deleted_site_by_id(self, site_id: str):
         """Restores deleted site with the specified URL
-        :param str site_id: A string representing the site identifier.
+
+        Args:
+            site_id (str): A string representing the site identifier.
         """
         return_type = SpoOperation(self.context)
         qry = ServiceOperationQuery(self, "RestoreDeletedSiteById", [site_id], None, None, return_type)
@@ -823,8 +836,9 @@ class Tenant(Entity):
     def get_site_properties_by_site_id(self, site_id: str, include_detail: bool = False) -> SiteProperties:
         """Gets the site properties for the specified site ID.
 
-        :param str site_id: A string that represents the site identifier.
-        :param bool include_detail: A Boolean value that indicates whether to include all of the SPSite properties.
+        Args:
+            site_id (str): A string that represents the site identifier.
+            include_detail (bool): A Boolean value that indicates whether to include all of the SPSite properties.
         """
         return_type = SiteProperties(self.context)
         return_type.set_property("siteId", site_id, False)
@@ -835,11 +849,11 @@ class Tenant(Entity):
         return return_type
 
     def get_site_properties_by_url(self, url: str, include_detail: bool = False) -> SiteProperties:
-        """
-         Gets the site properties for the specified URL.
+        """Gets the site properties for the specified URL.
 
-        :param str url: A string that represents the site URL.
-        :param bool include_detail: A Boolean value that indicates whether to include all of the SPSite properties.
+        Args:
+            url (str): A string that represents the site URL.
+            include_detail (bool): A Boolean value that indicates whether to include all of the SPSite properties.
         """
         return_type = SiteProperties(self.context)
         return_type.set_property("Url", url, False)
@@ -895,8 +909,9 @@ class Tenant(Entity):
     def connect_site_to_hub_site_by_id(self, site_url: str, hub_site_id: str) -> Self:
         """Connects Site to Hub Site
 
-        :param str site_url:
-        :param str hub_site_id:
+        Args:
+            site_url (str):
+            hub_site_id (str):
         """
         params = {"siteUrl": site_url, "hubSiteId": hub_site_id}
         qry = ServiceOperationQuery(self, "ConnectSiteToHubSiteById", None, params, None, None)
@@ -953,14 +968,14 @@ class Tenant(Entity):
         major_version_limit: int,
         expire_versions_after_days: int,
     ) -> Self:
-        """
-        Automatically delete older versions of documents after a specified number of days.
+        """Automatically delete older versions of documents after a specified number of days.
         Specify the maximum number of major versions to retain and the number of major versions
         for which all minor versions will be kept.
 
-        :param bool is_auto_trim_enabled: If true, versions are trimmed automatically.
-        :param int major_version_limit: Retains only many major versions.
-        :param int expire_versions_after_days: Deletes versions older than this many days.
+        Args:
+            is_auto_trim_enabled (bool): If true, versions are trimmed automatically.
+            major_version_limit (int): Retains only many major versions.
+            expire_versions_after_days (int): Deletes versions older than this many days.
         """
         payload = {
             "isAutoTrimEnabled": is_auto_trim_enabled,

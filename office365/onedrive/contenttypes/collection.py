@@ -26,11 +26,11 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     ) -> ContentType:
         """Create a new contentType
 
-        :param str name: The name of the content type.
-        :param str or ContentType parent: Parent content type or identifier.
-        :param str or None description: The descriptive text for the item.
-        :param str or None group: The name of the group this content type belongs to. Helps organize related
-            content types.
+        Args:
+            name (str): The name of the content type.
+            parent (str or ContentType): Parent content type or identifier.
+            description (str or None): The descriptive text for the item.
+            group (str or None): The name of the group this content type belongs to. Helps organize related content types.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
@@ -54,10 +54,10 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
     @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def add_copy(self, content_type: str) -> ContentType:
-        """
-        Add a copy of a content type from a site to a list.
+        """Add a copy of a content type from a site to a list.
 
-        :param str content_type: Canonical URL to the site content type that will be copied to the list.
+        Args:
+            content_type (str): Canonical URL to the site content type that will be copied to the list.
         """
         payload = {"contentType": content_type}
         return_type = ContentType(self.context)
@@ -68,13 +68,12 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
     @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def add_copy_from_content_type_hub(self, content_type_id: str) -> ContentType:
-        """
-        his method is part of the content type publishing changes to optimize the syncing of published content types
+        """his method is part of the content type publishing changes to optimize the syncing of published content types
         to sites and lists, effectively switching from a "push everywhere" to "pull as needed" approach.
         The method allows users to pull content types directly from the content type hub to a site or list.
 
-        :param str content_type_id: The ID of the content type in the content type hub that will be added to a target
-            site or a list.
+        Args:
+            content_type_id (str): The ID of the content type in the content type hub that will be added to a target site or a list.
         """
         payload = {"contentTypeId": content_type_id}
         return_type = ContentType(self.context)

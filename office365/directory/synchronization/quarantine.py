@@ -10,8 +10,8 @@ from office365.runtime.client_value import ClientValue
 class SynchronizationQuarantine(ClientValue):
     """Provides information about the quarantine state of a synchronizationJob.
 
-    :param SynchronizationError error: Describes the error(s) that occurred when putting the synchronization job
-        into quarantine.
+    Args:
+        error (SynchronizationError): Describes the error(s) that occurred when putting the synchronization job into quarantine.
     """
 
     error: SynchronizationError = field(default_factory=SynchronizationError)

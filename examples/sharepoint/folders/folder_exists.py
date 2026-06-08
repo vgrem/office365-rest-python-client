@@ -1,6 +1,9 @@
 """
 How to determine whether a folder exists.
 
+Uses the ``Exists`` property. An alternative approach is to try
+the request and handle FileNotFoundException (HTTP 404).
+
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 

@@ -70,13 +70,13 @@ class SitePage(SitePageMetadata):
         banner_image_url: Optional[str] = None,
         topic_header: Optional[str] = None,
     ):
-        """
-        Updates the current Site Page with the provided pageStream content.
+        """Updates the current Site Page with the provided pageStream content.
 
-        :param str title: The title of Site Page
-        :param str canvas_content:
-        :param str banner_image_url:
-        :param str topic_header:
+        Args:
+            title (str): The title of Site Page
+            canvas_content (str):
+            banner_image_url (str):
+            topic_header (str):
         """
         payload = SitePageFieldsData(
             Title=title,
@@ -89,14 +89,14 @@ class SitePage(SitePageMetadata):
         return self
 
     def save_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
-        """
-        Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
+        """Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
         has minor versions enabled.
 
-        :param str title: The title of Site Page
-        :param str canvas_content:
-        :param str banner_image_url:
-        :param str topic_header:
+        Args:
+            title (str): The title of Site Page
+            canvas_content (str):
+            banner_image_url (str):
+            topic_header (str):
         """
         payload = SitePageFieldsData(
             Title=title,
@@ -110,14 +110,14 @@ class SitePage(SitePageMetadata):
         return return_type
 
     def save_page_as_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
-        """
-        Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
+        """Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
         has minor versions enabled.
 
-        :param str title: The title of Site Page. At least Title property needs to be provided
-        :param str canvas_content:
-        :param str banner_image_url:
-        :param str topic_header:
+        Args:
+            title (str): The title of Site Page. At least Title property needs to be provided
+            canvas_content (str):
+            banner_image_url (str):
+            topic_header (str):
         """
         payload = SitePageFieldsData(
             Title=title,
@@ -182,9 +182,10 @@ class SitePage(SitePageMetadata):
         return return_type
 
     def schedule_publish(self, publish_start_date):
-        """
-        Schedules the page publication for a certain date
-        :param datetime.datetime publish_start_date: The pending publication scheduled date
+        """Schedules the page publication for a certain date
+
+        Args:
+            publish_start_date (datetime.datetime): The pending publication scheduled date
         """
         payload = SitePageFieldsData(PublishStartDate=publish_start_date)
         result = ClientResult(self.context)
@@ -193,9 +194,9 @@ class SitePage(SitePageMetadata):
         return result
 
     def share_page_preview_by_email(self, message, recipient_emails):
-        """
-        :param str message:
-        :param list[str] recipient_emails:
+        """Args:
+            message (str):
+            recipient_emails (list[str]):
         """
         payload = SharePagePreviewByEmailFieldsData(message, recipient_emails)
         qry = ServiceOperationQuery(self, "SharePagePreviewByEmail", None, payload)

@@ -14,8 +14,7 @@ class AuthenticationMethod(Entity):
     phone (usable via SMS or voice call), FIDO2 security keys, and more."""
 
     def reset_password(self, new_password: Optional[str] = None, require_change_on_next_signin: Optional[bool] = None):
-        """
-        Reset a user's password, represented by a password authentication method object. This can only be done by an
+        """Reset a user's password, represented by a password authentication method object. This can only be done by an
         administrator with appropriate permissions and cannot be performed on a user's own account.
 
         This flow writes the new password to Azure Active Directory and pushes it to on-premises Active Directory
@@ -25,12 +24,9 @@ class AuthenticationMethod(Entity):
         This reset is a long-running operation and will return a Location header with a link where the caller
         can periodically check for the status of the reset operation.
 
-        :param str new_password: The new password. Required for tenants with hybrid password scenarios.
-            If omitted for a cloud-only password, the system returns a system-generated password. This is a unicode
-            string with no other encoding. It is validated against the tenant's banned password system before
-            acceptance, and must adhere to the tenant's cloud and/or on-premises password requirements.
-        :param bool require_change_on_next_signin: Specifies whether the user must change their password at
-            their next sign in.
+        Args:
+            new_password (str): The new password. Required for tenants with hybrid password scenarios. If omitted for a cloud-only password, the system returns a system-generated password. This is a unicode string with no other encoding. It is validated against the tenant's banned password system before acceptance, and must adhere to the tenant's cloud and/or on-premises password requirements.
+            require_change_on_next_signin (bool): Specifies whether the user must change their password at their next sign in.
         """
         return_type = ClientResult(self.context, PasswordResetResponse())
         payload = {

@@ -25,7 +25,8 @@ class DirectoryRole(DirectoryObject):
     def add_member(self, user_principal_name: str) -> Self:
         """Add a user to this directory role by their user principal name.
 
-        :param str user_principal_name: The UPN (e.g. 'user@contoso.com')
+        Args:
+            user_principal_name (str): The UPN (e.g. 'user@contoso.com')
         """
 
         def _add(user: DirectoryObject) -> None:
@@ -37,7 +38,8 @@ class DirectoryRole(DirectoryObject):
     def remove_member(self, user_principal_name: str) -> Self:
         """Remove a user from this directory role by their user principal name.
 
-        :param str user_principal_name: The UPN (e.g. 'user@contoso.com')
+        Args:
+            user_principal_name (str): The UPN (e.g. 'user@contoso.com')
         """
 
         def _remove(user: DirectoryObject) -> None:

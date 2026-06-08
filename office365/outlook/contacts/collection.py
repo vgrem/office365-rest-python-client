@@ -16,12 +16,13 @@ class ContactCollection(DeltaCollection[Contact]):
         notes="Create a contact",
     )
     def add(self, given_name, surname, email_address=None, business_phone=None, **kwargs):
-        """
-        Add a contact to the root Contacts folder or to the contacts endpoint of another contact folder.
-        :param str given_name: The contact's given name.
-        :param str surname: The contact's surname.
-        :param str email_address: Default email address
-        :param str business_phone: Default contact's business phone number.
+        """Add a contact to the root Contacts folder or to the contacts endpoint of another contact folder.
+
+        Args:
+            given_name (str): The contact's given name.
+            surname (str): The contact's surname.
+            email_address (str): Default email address
+            business_phone (str): Default contact's business phone number.
         """
 
         def _create_email_address(address):

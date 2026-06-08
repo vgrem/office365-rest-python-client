@@ -8,11 +8,11 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class WikiPageCreationInformation(ClientValue):
-    """
-    Specifies wiki page creation information
+    """Specifies wiki page creation information
 
-    :param str server_relative_url: The server-relative URL of the wiki page to be created.
-    :param str content: The HTML content of the wiki page.
+    Args:
+        server_relative_url (str): The server-relative URL of the wiki page to be created.
+        content (str): The HTML content of the wiki page.
     """
 
     ServerRelativeUrl: Optional[str] = None

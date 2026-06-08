@@ -17,11 +17,11 @@ class GroupLifecyclePolicy(Entity):
     """
 
     def add_group(self, group_id: str) -> ClientResult[bool]:
-        """
-        Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
+        """Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
         only if the managedGroupTypes property of groupLifecyclePolicy is set to Selected.
 
-        :param str group_id: The identifier of the group to remove from the policy.
+        Args:
+            group_id (str): The identifier of the group to remove from the policy.
         """
         return_type = ClientResult(self.context)
         payload = {"groupId": group_id}
@@ -30,9 +30,10 @@ class GroupLifecyclePolicy(Entity):
         return return_type
 
     def remove_group(self, group_id: str) -> ClientResult[bool]:
-        """
-        Removes a group from a lifecycle policy.
-        :param str group_id: The identifier of the group to add to the policy.
+        """Removes a group from a lifecycle policy.
+
+        Args:
+            group_id (str): The identifier of the group to add to the policy.
         """
         return_type = ClientResult(self.context)
         payload = {"groupId": group_id}

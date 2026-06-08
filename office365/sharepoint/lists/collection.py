@@ -146,13 +146,13 @@ class ListCollection(EntityCollection[List]):
         template_type: ListTemplateType = ListTemplateType.GenericList,
         allow_content_types: bool = False,
     ) -> List:
-        """
-        Creates a new list.
+        """Creates a new list.
 
-        :param str title: Specifies the display name of the new list.
-        :param int template_type: Specifies the list server template of the new list.
-        :param str or None description: Specifies the description of the new list.
-        :param bool allow_content_types:
+        Args:
+            title (str): Specifies the display name of the new list.
+            template_type (int): Specifies the list server template of the new list.
+            description (str or None): Specifies the description of the new list.
+            allow_content_types (bool):
         """
         return self.add(ListCreationInformation(title, description, template_type, allow_content_types))
 

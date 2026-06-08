@@ -29,11 +29,10 @@ class AttachmentCollection(EntityCollection[Attachment]):
         super().__init__(context, Attachment, resource_path, parent)
 
     def add(self, attachment_file_information: Union[AttachmentCreationInformation, Dict]) -> Attachment:
-        """
-        Adds the attachment represented by the file name and stream in the specified parameter to the list item.
+        """Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
-        :param AttachmentCreationInformation attachment_file_information: The creation information which contains file
-            name and content stream.
+        Args:
+            attachment_file_information (AttachmentCreationInformation): The creation information which contains file name and content stream.
         """
         if isinstance(attachment_file_information, dict):
             attachment_file_information = AttachmentCreationInformation(

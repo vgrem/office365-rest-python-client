@@ -5,16 +5,18 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class CreatePolicyRequest(ClientValue):
-    """:param bool is_preview_run:
-    :param str policy_custom_name:
-    :param str policy_definition_details:
-    :param str policy_description:
-    :param int policy_frequency_unit:
-    :param int policy_frequency_value:
-    :param str policy_id:
-    :param str policy_tags:
-    :param str policy_template:
-    :param int policy_type:"""
+    """Args:
+        is_preview_run (bool):
+        policy_custom_name (str):
+        policy_definition_details (str):
+        policy_description (str):
+        policy_frequency_unit (int):
+        policy_frequency_value (int):
+        policy_id (str):
+        policy_tags (str):
+        policy_template (str):
+        policy_type (int):
+    """
 
     isPreviewRun = None
     policyCustomName = None

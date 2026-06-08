@@ -57,9 +57,10 @@ class View(Entity):
         return return_type
 
     def set_view_xml(self, view_xml: str) -> Self:
-        """
-        Sets the view schema.
-        :param str view_xml: The view XML to set.
+        """Sets the view schema.
+
+        Args:
+            view_xml (str): The view XML to set.
         """
         qry = ServiceOperationQuery(self, "SetViewXml", None, {"viewXml": view_xml})
         self.context.add_query(qry)

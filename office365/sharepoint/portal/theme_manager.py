@@ -14,11 +14,11 @@ class ThemeManager(Entity):
         return "SP.Utilities.ThemeManager"
 
     def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
-        """
-        Adds a new theme to a tenant.
+        """Adds a new theme to a tenant.
 
-        :param str name:
-        :param str theme_json:
+        Args:
+            name (str):
+            theme_json (str):
         """
         return_type = ClientResult(self.context)
         payload = {

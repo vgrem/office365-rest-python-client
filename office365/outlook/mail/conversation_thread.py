@@ -22,7 +22,8 @@ class ConversationThread(Entity):
         """Reply to a thread in a group conversation and add a new post to it. You can specify the parent conversation
         in the request, or, you can specify just the thread without the parent conversation.
 
-        :param Post post: A comment to include. Can be an empty string.
+        Args:
+            post (Post): A comment to include. Can be an empty string.
         """
         payload = {"post": post}
         qry = ServiceOperationQuery(self, "reply", None, payload)

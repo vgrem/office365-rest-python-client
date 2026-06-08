@@ -20,11 +20,12 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import (
 class SitePageFieldsData(ClientValue):
     """Represents Site Page metadata for use in page authoring operations.
 
-    :param str title: the Page title
-    :param str banner_image_url: the preview image Url for the current Site Page.
-    :param str canvas_content1: CanvasContent1 for the current Site Page.
-    :param str topic_header: TopicHeader of the current Site Page
-    :param datetime.datetime publish_start_date:
+    Args:
+        title (str): the Page title
+        banner_image_url (str): the preview image Url for the current Site Page.
+        canvas_content1 (str): CanvasContent1 for the current Site Page.
+        topic_header (str): TopicHeader of the current Site Page
+        publish_start_date (datetime.datetime):
     """
 
     Title: str | None = None

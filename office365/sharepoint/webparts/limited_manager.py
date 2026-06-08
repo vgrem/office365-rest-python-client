@@ -16,7 +16,9 @@ class LimitedWebPartManager(Entity):
 
     def export_web_part(self, web_part: Union[str, WebPartDefinition]) -> ClientResult[str]:
         """Exports the specified Web Part, given its ID.
-        :param str or WebPartDefinition web_part: The WebPartDefinition or  Id of the Web Part to export.
+
+        Args:
+            web_part (str or WebPartDefinition): The WebPartDefinition or  Id of the Web Part to export.
         """
         return_type = ClientResult(self.context, str())
 
@@ -37,8 +39,7 @@ class LimitedWebPartManager(Entity):
         return return_type
 
     def import_web_part(self, web_part_xml: str) -> WebPartDefinition:
-        """
-        Imports a Web Part from a string in the .dwp format as specified in [MS-WPPS] section 2.2.4.2,
+        """Imports a Web Part from a string in the .dwp format as specified in [MS-WPPS] section 2.2.4.2,
         or the .webpart format as specified in [MS-WPPS] section 2.2.3.1.
         After importing, the Web Part is not added to a Web Part Page. To add a Web Part to a Web Part Page,
         use AddWebPart, supplying the object (1) returned by this method.
@@ -47,7 +48,8 @@ class LimitedWebPartManager(Entity):
         When Scope is User, the current user MUST have permissions to add and delete personalized Web Parts.
         When Scope is Shared, the current user MUST have permissions to customize pages.
 
-        :param str web_part_xml: The Web Part markup to import.
+        Args:
+            web_part_xml (str): The Web Part markup to import.
         """
         return_type = WebPartDefinition(self.context)
         self.web_parts.add_child(return_type)

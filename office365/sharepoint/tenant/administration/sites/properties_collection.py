@@ -18,8 +18,8 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         super().__init__(context, SiteProperties, resource_path)
 
     def get_by_id(self, site_id: str) -> SiteProperties:
-        """
-        :param str site_id: Site identifier
+        """Args:
+            site_id (str): Site identifier
         """
         return_type = SiteProperties(self.context)
         qry = ServiceOperationQuery(self, "GetById", [site_id], None, None, return_type)
@@ -27,8 +27,8 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
-        """
-        :param str site_id: Site identifier
+        """Args:
+            site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, int())
         qry = ServiceOperationQuery(self, "GetLockStateById", [site_id], None, None, return_type)
@@ -36,10 +36,10 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def get_site_state_properties(self, site_id: str) -> ClientResult[SiteStateProperties]:
-        """
-        Gets site state properties.
+        """Gets site state properties.
 
-        :param str site_id: Site identifier
+        Args:
+            site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, SiteStateProperties())
         qry = ServiceOperationQuery(self, "GetSiteStateProperties", [site_id], None, None, return_type)
@@ -47,10 +47,10 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def get_site_user_groups(self, site_id: str) -> ClientResult[ClientValueCollection[SiteUserGroupInfo]]:
-        """
-        Gets site user groups.
+        """Gets site user groups.
 
-        :param str site_id: Site identifier
+        Args:
+            site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, ClientValueCollection(SiteUserGroupInfo))
         qry = ServiceOperationQuery(self, "GetSiteUserGroups", [site_id], None, None, return_type)
@@ -58,8 +58,8 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         return return_type
 
     def check_site_is_archived_by_id(self, site_id: str) -> ClientResult[bool]:
-        """
-        :param str site_id: Site identifier
+        """Args:
+            site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "CheckSiteIsArchivedById", [site_id], None, None, return_type)
