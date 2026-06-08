@@ -9,7 +9,8 @@ from office365.runtime.client_value import ClientValue
 class ExternalLink(ClientValue):
     """Represents a URL that opens a OneNote page or notebook.
 
-    :param str href: The URL of the link.
+    Args:
+        href (str): The URL of the link.
     """
 
     href: str | None = None

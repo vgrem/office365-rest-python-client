@@ -8,8 +8,9 @@ from office365.runtime.client_value import ClientValue
 class PageLinks(ClientValue):
     """Links for opening a OneNote page.
 
-    :param ExternalLink onenote_client_url: Opens the page in the OneNote native client if it's installed.
-    :param ExternalLink onenote_web_url: Opens the page in OneNote on the web.
+    Args:
+        onenote_client_url (ExternalLink): Opens the page in the OneNote native client if it's installed.
+        onenote_web_url (ExternalLink): Opens the page in OneNote on the web.
     """
 
     oneNoteClientUrl: ExternalLink = field(default_factory=ExternalLink)
