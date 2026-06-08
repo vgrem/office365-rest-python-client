@@ -13,8 +13,11 @@ class WorkbookTableCollection(EntityCollection[WorkbookTable]):
         another table), an error will be thrown.
 
         Args:
-            address (str): Address or name of the range object representing the data source. If the address does not contain a sheet name, the currently-active sheet is used.
-            has_headers (bool): Boolean value that indicates whether the data being imported has column labels. If the source does not contain headers (i.e,. when this property set to false), Excel will automatically generate header shifting the data down by one row.
+            address (str): Address or name of the range object representing the data source. If the address does not
+              contain a sheet name, the currently-active sheet is used.
+            has_headers (bool): Boolean value that indicates whether the data being imported has column labels.
+              If the source does not contain headers (i.e,. when this property set to false), Excel will automatically
+              generate header shifting the data down by one row.
         """
         return_type = WorkbookTable(self.context)
         self.add_child(return_type)

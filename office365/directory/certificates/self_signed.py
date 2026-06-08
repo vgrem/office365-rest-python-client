@@ -11,14 +11,16 @@ class SelfSignedCertificate(ClientValue):
     """Contains the public part of a signing certificate.
 
     Args:
-        custom_key_identifier: Custom key identifier.
-        display_name (str): The friendly name for the key.
-        end_datetime: The date and time at which the credential expires. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time
+        customKeyIdentifier: Custom key identifier.
+        displayName (str): The friendly name for the key.
+        endDateTime: The date and time at which the credential expires. The timestamp type represents date and time
+          information using ISO 8601 format and is always in UTC time
         key: The value for the key credential. Should be a Base-64 encoded value.
-        key_id: The unique identifier (GUID) for the key.
-        start_datetime: The date and time at which the credential becomes valid. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time
+        keyId: The unique identifier (GUID) for the key.
+        startDateTime: The date and time at which the credential becomes valid. The timestamp type represents date
+          and time information using ISO 8601 format and is always in UTC time
         thumbprint: The thumbprint value for the key.
-        type_: The type of key credential. AsymmetricX509Cert.
+        type: The type of key credential. AsymmetricX509Cert.
         usage: A string that describes the purpose for which the key can be used. The possible value is Verify.
     """
 

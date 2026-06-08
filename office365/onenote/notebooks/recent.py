@@ -11,8 +11,9 @@ class RecentNotebook(ClientValue):
     """A recently accessed OneNote notebook. A recentNotebook is similar to a notebook but has fewer properties.
 
     Args:
-        display_name (str): The name of the notebook.
-        links (RecentNotebookLinks): Links for opening the notebook. The oneNoteClientURL link opens the notebook in the OneNote client, if it's installed. The oneNoteWebURL link opens the notebook in OneNote on the web.
+        displayName (str): The name of the notebook.
+        links (RecentNotebookLinks): Links for opening the notebook. The oneNoteClientURL link opens the notebook in
+          the OneNote client, if it's installed. The oneNoteWebURL link opens the notebook in OneNote on the web.
     """
 
     displayName: str | None = None

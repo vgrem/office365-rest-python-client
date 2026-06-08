@@ -9,6 +9,9 @@ from office365.runtime.client_value_collection import ClientValueCollection
 class SubscribedSku(Entity):
     """Contains information about a service SKU that a company is subscribed to."""
 
+    def __str__(self) -> str:
+        return self.sku_part_number or self.entity_type_name
+
     @property
     def account_id(self) -> Optional[str]:
         """The unique ID of the account this SKU belongs to."""

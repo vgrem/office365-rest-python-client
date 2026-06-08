@@ -27,7 +27,7 @@ class WorkbookChart(Entity):
             width (int): Specifies the width of the rendered image in pixels.
             height (int): Specifies the height of the rendered image [ pixels.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
         params = {"width": width, "height": height}
         qry = FunctionQuery(self, "image", params, return_type)
         self.context.add_query(qry)
@@ -49,8 +49,10 @@ class WorkbookChart(Entity):
         """Positions the chart relative to cells on the worksheet.
 
         Args:
-            start_cell (str): The start cell. It is where the chart is moved to. The start cell is the top-left or top-right cell, depending on the user's right-to-left display settings.
-            end_cell (str): The end cell. If specified, the chart's width and height is set to fully cover up this cell/range.
+            start_cell (str): The start cell. It is where the chart is moved to. The start cell is the top-left or
+              top-right cell, depending on the user's right-to-left display settings.
+            end_cell (str): The end cell. If specified, the chart's width and height is set to fully cover up this
+              cell/range.
         """
         payload = {"startCell": start_cell, "endCell": end_cell}
         qry = ServiceOperationQuery(self, "setPosition", None, payload)

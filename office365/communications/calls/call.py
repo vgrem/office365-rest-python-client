@@ -59,7 +59,9 @@ class Call(Entity):
 
         Args:
             reason (str): The rejection reason. Possible values are None, Busy and Forbidden
-            callback_uri (str): This allows bots to provide a specific callback URI for the current call to receive later notifications. If this property has not been set, the bot's global callback URI will be used instead. This must be https.
+            callback_uri (str): This allows bots to provide a specific callback URI for the current call to receive
+            later notifications. If this property has not been set, the bot's global callback URI will be used instead.
+             This must be https.
         """
         payload = {"reason": reason, "callbackUri": callback_uri}
         qry = ServiceOperationQuery(self, "reject", None, payload)

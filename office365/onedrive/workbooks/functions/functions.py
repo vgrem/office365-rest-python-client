@@ -28,10 +28,12 @@ class WorkbookFunctions(Entity):
         Args:
             issue (any): The real number of which you want the absolute value.
             first_interest (any): The security's first interest date.
-            settlement (any): The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
+            settlement (any): The security's settlement date. The security settlement date is the date after the
+              issue date when the security is traded to the buyer.
             rate (any): The security's annual coupon rate.
             par (any): The security's par value. If you omit par, ACCRINT uses $1,000.
-            frequency (any): The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
+            frequency (any): The number of coupon payments per year. For annual payments, frequency = 1;
+              for semiannual, frequency = 2; for quarterly, frequency = 4.
         """
         return_type = WorkbookFunctionResult(self.context)
         payload = {
@@ -51,7 +53,8 @@ class WorkbookFunctions(Entity):
 
         Args:
             issue (any): The real number of which you want the absolute value.
-            settlement (any): The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
+            settlement (any): The security's settlement date. The security settlement date is the date after the
+              issue date when the security is traded to the buyer.
             rate (any): The security's annual coupon rate.
             par (any): The security's par value. If you omit par, ACCRINT uses $1,000.
             basis (any):

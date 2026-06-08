@@ -57,9 +57,11 @@ class Calendar(Entity):
 
         Args:
             end_time (datetime.datetime): The date, time, and time zone that the period ends.
-            availability_view_interval (int): Represents the duration of a time slot in an availabilityView in the response. The default is 30 minutes, minimum is 5, maximum is 1440. Optional.
+            availability_view_interval (int): Represents the duration of a time slot in an availabilityView in the
+              response. The default is 30 minutes, minimum is 5, maximum is 1440. Optional.
             start_time (datetime.datetime): The date, time, and time zone that the period starts.
-            schedules (list[str]): A collection of SMTP addresses of users, distribution lists, or resources to get availability information for.
+            schedules (list[str]): A collection of SMTP addresses of users, distribution lists, or resources to get
+              availability information for.
         """
         payload = {
             "schedules": schedules,

@@ -48,7 +48,9 @@ class Presence(Entity):
             session_id (str): The ID of the application's presence session.
             availability (str): The base presence information.
             activity (str): The supplemental information to availability.
-            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied. The valid duration range is 5-240 minutes (PT5M to PT4H)
+            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO
+              8601 format for durations. If not provided, a default expiration of 5 minutes will be applied.
+              The valid duration range is 5-240 minutes (PT5M to PT4H)
         """
         payload = {
             "sessionId": session_id,
@@ -65,7 +67,8 @@ class Presence(Entity):
 
         Args:
             message (str or ItemBody): Status message item.
-            expiry (datetime): Time in which the status message expires. If not provided, the status message doesn't expire.
+            expiry (datetime): Time in which the status message expires. If not provided, the status message
+            doesn't expire.
         """
         if not isinstance(message, ItemBody):
             message = ItemBody(message)
@@ -89,7 +92,9 @@ class Presence(Entity):
         Args:
             availability (str): The base presence information.
             activity (str): The supplemental information to availability.
-            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO 8601 format for durations. If not provided, a default expiration of 5 minutes will be applied. The valid duration range is 5-240 minutes (PT5M to PT4H)
+            expiration_duration (str): The expiration of the app presence session. The value is represented in ISO
+              8601 format for durations. If not provided, a default expiration of 5 minutes will be applied.
+              The valid duration range is 5-240 minutes (PT5M to PT4H)
         """
         payload = {
             "availability": availability,

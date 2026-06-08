@@ -20,7 +20,8 @@ class NotebookCollection(EntityCollection[Notebook]):
         """Create a new OneNote notebook.
 
         Args:
-            display_name (str): Name for the notebook. Notebook names must be unique. The name cannot contain more than 128 characters or contain the following characters: ?*/:<>|'"
+            display_name (str): Name for the notebook. Notebook names must be unique. The name cannot contain more
+              than 128 characters or contain the following characters: ?*/:<>|'"
         """
         return super().add(displayName=display_name)
 
@@ -52,7 +53,9 @@ class NotebookCollection(EntityCollection[Notebook]):
         """Get a list of recentNotebook instances that have been accessed by the signed-in user.
 
         Args:
-            include_personal_notebooks (bool): Include notebooks owned by the user. Set to true to include notebooks owned by the user; otherwise, set to false. If you don't include the includePersonalNotebooks parameter, your request will return a 400 error response.
+            include_personal_notebooks (bool): Include notebooks owned by the user. Set to true to include notebooks
+              owned by the user; otherwise, set to false. If you don't include the includePersonalNotebooks parameter,
+              your request will return a 400 error response.
         """
 
         return_type = ClientResult(self.context, ClientValueCollection(RecentNotebook))

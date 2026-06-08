@@ -11,7 +11,8 @@ class SynchronizationQuarantine(ClientValue):
     """Provides information about the quarantine state of a synchronizationJob.
 
     Args:
-        error (SynchronizationError): Describes the error(s) that occurred when putting the synchronization job into quarantine.
+        error (SynchronizationError): Describes the error(s) that occurred when putting the synchronization job
+          into quarantine.
     """
 
     error: SynchronizationError = field(default_factory=SynchronizationError)

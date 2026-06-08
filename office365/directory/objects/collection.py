@@ -22,8 +22,12 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         """Returns the directory objects specified in a list of IDs.
 
         Args:
-            ids (list[str]): A collection of IDs for which to return objects. The IDs are GUIDs, represented as strings. You can specify up to 1000 IDs.
-            types (list[str]): A collection of resource types that specifies the set of resource collections to search. If not specified, the default is directoryObject, which contains all of the resource types defined in the directory. Any object that derives from directoryObject may be specified in the collection; for example: user, group, and device objects.
+            ids (list[str]): A collection of IDs for which to return objects. The IDs are GUIDs, represented as strings.
+              You can specify up to 1000 IDs.
+            types (list[str]): A collection of resource types that specifies the set of resource collections to
+              search. If not specified, the default is directoryObject, which contains all of the resource types
+              defined in the directory. Any object that derives from directoryObject may be specified in the collection
+              for example: user, group, and device objects.
         """
         return_type = DirectoryObjectCollection(self.context)
         params = {"ids": ids, "types": types}
@@ -100,9 +104,12 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
         Args:
             entity_type (str): Group is the only supported entity type.
-            display_name (str): The display name of the group to validate. The property is not individually required. However, at least one property (displayName or mailNickname) is required.
-            mail_nickname (str): The mail nickname of the group to validate. The property is not individually required. However, at least one property (displayName or mailNickname) is required.
-            on_behalf_of_userid (str): The ID of the user to impersonate when calling the API. The validation results are for the onBehalfOfUserId's attributes and roles.
+            display_name (str): The display name of the group to validate. The property is not individually required.
+              However, at least one property (displayName or mailNickname) is required.
+            mail_nickname (str): The mail nickname of the group to validate. The property is not individually required.
+              However, at least one property (displayName or mailNickname) is required.
+            on_behalf_of_userid (str): The ID of the user to impersonate when calling the API.
+              The validation results are for the onBehalfOfUserId's attributes and roles.
         """
         payload = {
             "entityType": entity_type,

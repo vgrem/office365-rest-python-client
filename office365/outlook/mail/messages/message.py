@@ -86,7 +86,8 @@ class Message(OutlookItem):
         """Attach a file to message
 
         Args:
-            name (str): The name representing the text that is displayed below the icon representing the embedded attachment
+            name (str): The name representing the text that is displayed below the icon representing the embedded
+              attachment
             content (str or None): The contents of the file
             content_type (str or None): The content type of the attachment.
             base64_content (str or None): The contents of the file in the form of a base64 string.
@@ -179,22 +180,19 @@ class Message(OutlookItem):
         This creates a new copy of the message in the destination folder.
 
         Args:
-            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
+            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list
+              of supported well-known folder names, see mailFolder resource type.
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
-        def _copy(destination_id: str) -> None:
+        def _copy(destination_id: str | None) -> None:
+            assert destination.id is not None
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "copy", None, payload, None, None)
             self.context.add_query(qry)
 
         if isinstance(destination, MailFolder):
-
-            def _loaded():
-                assert destination.id is not None
-                _copy(destination.id)
-
-            destination.ensure_property("id").after_execute(lambda _: _loaded())
+            destination.ensure_property("id").after_execute(lambda _: _copy(destination.id))
         else:
             _copy(destination)
         return self
@@ -205,22 +203,19 @@ class Message(OutlookItem):
         This creates a new copy of the message in the destination folder and removes the original message.
 
         Args:
-            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
+            destination (str or MailFolder): The destination folder ID, or a well-known folder name. For a list of
+              supported well-known folder names, see mailFolder resource type.
         """
         from office365.outlook.mail.folders.folder import MailFolder
 
-        def _move(destination_id: str) -> None:
+        def _move(destination_id: str | None) -> None:
+            assert destination.id is not None
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "move", None, payload, None, None)
             self.context.add_query(qry)
 
         if isinstance(destination, MailFolder):
-
-            def _loaded():
-                assert destination.id is not None
-                _move(destination.id)
-
-            destination.ensure_property("id").after_execute(lambda _: _loaded())
+            destination.ensure_property("id").after_execute(lambda _: _move(destination.id))
         else:
             _move(destination)
         return self

@@ -11,10 +11,13 @@ class SignInLocation(ClientValue):
     """Provides the city, state and country/region from where the sign-in happened.
 
     Args:
-        city (str): Provides the city where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
-        country_or_region (str): Provides the country code info (2 letter code) where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
-        geo_coordinates (GeoCoordinates): Provides the latitude, longitude and altitude where the sign-in originated.
-        state (str): Provides the State where the sign-in originated. This is calculated using latitude/longitude information from the sign-in activity.
+        city (str): Provides the city where the sign-in originated. This is calculated using latitude/longitude
+          information from the sign-in activity.
+        countryOrRegion (str): Provides the country code info (2 letter code) where the sign-in originated.
+          This is calculated using latitude/longitude information from the sign-in activity.
+        geoCoordinates (GeoCoordinates): Provides the latitude, longitude and altitude where the sign-in originated.
+        state (str): Provides the State where the sign-in originated. This is calculated using latitude/longitude
+          information from the sign-in activity.
     """
 
     city: str | None = None

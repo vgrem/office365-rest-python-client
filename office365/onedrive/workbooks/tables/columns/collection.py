@@ -12,7 +12,9 @@ class WorkbookTableColumnCollection(EntityCollection[WorkbookTableColumn]):
         """Adds a new column to the table.
 
         Args:
-            index (int): Specifies the relative position of the new column. The previous column at this position is shifted to the right. The index value should be equal to or less than the last column's index value, so it cannot be used to append a column at the end of the table. Zero-indexed.
+            index (int): Specifies the relative position of the new column. The previous column at this position is
+              shifted to the right. The index value should be equal to or less than the last column's index value,
+              so it cannot be used to append a column at the end of the table. Zero-indexed.
             values (list): A 2-dimensional array of unformatted values of the table column.
             name (str): Name
         """
@@ -20,7 +22,7 @@ class WorkbookTableColumnCollection(EntityCollection[WorkbookTableColumn]):
 
     def count(self) -> ClientResult[int]:
         """"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[int](self.context)
         qry = FunctionQuery(self, "count", None, return_type)
         self.context.add_query(qry)
         return return_type

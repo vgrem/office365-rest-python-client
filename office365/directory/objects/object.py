@@ -45,7 +45,10 @@ class DirectoryObject(Entity):
         transitive.
 
         Args:
-            security_enabled_only (bool): true to specify that only security groups that the entity is a member of should be returned; false to specify that all groups and directory roles that the entity is a member of should be returned. true can be specified only for users or service principals to return security-enabled groups.
+            security_enabled_only (bool): true to specify that only security groups that the entity is a member of
+              should be returned; false to specify that all groups and directory roles that the entity is a
+                member of should be returned. true can be specified only for users or service principals to return
+                security-enabled groups.
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
@@ -62,7 +65,8 @@ class DirectoryObject(Entity):
         So membership in a Microsoft 365 group is always direct.
 
         Args:
-            group_ids (list[str]): A collection that contains the object IDs of the groups in which to check membership. Up to 20 groups may be specified.
+            group_ids (list[str]): A collection that contains the object IDs of the groups in which to check
+              membership. Up to 20 groups may be specified.
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"groupIds": group_ids}

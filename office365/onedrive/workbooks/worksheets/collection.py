@@ -18,7 +18,8 @@ class WorkbookWorksheetCollection(EntityCollection[WorkbookWorksheet]):
         If you wish to activate the newly added worksheet, call ".activate() on it.
 
         Args:
-            name (str): The name of the worksheet to be added. If specified, name should be unique. If not specified, Excel determines the name of the new worksheet.
+            name (str): The name of the worksheet to be added. If specified, name should be unique. If not specified,
+              Excel determines the name of the new worksheet.
         """
         return_type = WorkbookWorksheet(self.context)
         self.add_child(return_type)

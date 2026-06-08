@@ -23,7 +23,8 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
 
         Args:
             values (list): A two-dimensional array of unformatted values of the table rows.
-            index (int): Specifies the relative position of the new row. If null, the addition happens at the end. Any rows below the inserted row are shifted downwards. Zero-indexed.
+            index (int): Specifies the relative position of the new row. If null, the addition happens at the end.
+              Any rows below the inserted row are shifted downwards. Zero-indexed.
         """
         return super().add(values=values, index=index)
 

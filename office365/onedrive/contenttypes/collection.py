@@ -30,7 +30,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             name (str): The name of the content type.
             parent (str or ContentType): Parent content type or identifier.
             description (str or None): The descriptive text for the item.
-            group (str or None): The name of the group this content type belongs to. Helps organize related content types.
+            group (str or None): The name of the group this content type belongs to. Helps organize related content
+              types.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
@@ -73,7 +74,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         The method allows users to pull content types directly from the content type hub to a site or list.
 
         Args:
-            content_type_id (str): The ID of the content type in the content type hub that will be added to a target site or a list.
+            content_type_id (str): The ID of the content type in the content type hub that will be added to a target
+              site or a list.
         """
         payload = {"contentTypeId": content_type_id}
         return_type = ContentType(self.context)

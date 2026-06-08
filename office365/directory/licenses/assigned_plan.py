@@ -11,10 +11,12 @@ class AssignedPlan(ClientValue):
     """The assignedPlans property of both the user entity and the organization entity is a collection of assignedPlan.
 
     Args:
-        assigned_datetime (datetime.datetime): The date and time at which the plan was assigned.
-        capability_status (str): Condition of the capability assignment. The possible values are Enabled, Warning, Suspended, Deleted, LockedOut. See a detailed description of each value.
+        assignedDateTime (datetime.datetime): The date and time at which the plan was assigned.
+        capabilityStatus (str): Condition of the capability assignment. The possible values are Enabled, Warning,
+          Suspended, Deleted, LockedOut. See a detailed description of each value.
         service (str): The name of the service; for example, exchange.
-        service_plan_id (str): A GUID that identifies the service plan. For a complete list of GUIDs and their equivalent friendly service names, see Product names and service plan identifiers for licensing.
+        servicePlanId (str): A GUID that identifies the service plan. For a complete list of GUIDs and their
+          equivalent friendly service names, see Product names and service plan identifiers for licensing.
     """
 
     assignedDateTime: datetime | None = None

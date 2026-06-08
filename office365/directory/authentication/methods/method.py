@@ -25,8 +25,12 @@ class AuthenticationMethod(Entity):
         can periodically check for the status of the reset operation.
 
         Args:
-            new_password (str): The new password. Required for tenants with hybrid password scenarios. If omitted for a cloud-only password, the system returns a system-generated password. This is a unicode string with no other encoding. It is validated against the tenant's banned password system before acceptance, and must adhere to the tenant's cloud and/or on-premises password requirements.
-            require_change_on_next_signin (bool): Specifies whether the user must change their password at their next sign in.
+            new_password (str): The new password. Required for tenants with hybrid password scenarios.
+              If omitted for a cloud-only password, the system returns a system-generated password.
+              This is a unicode string with no other encoding. It is validated against the tenant's banned password
+              system before acceptance, and must adhere to the tenant's cloud and/or on-premises password requirements.
+            require_change_on_next_signin (bool): Specifies whether the user must change their password at their next
+              sign in.
         """
         return_type = ClientResult(self.context, PasswordResetResponse())
         payload = {

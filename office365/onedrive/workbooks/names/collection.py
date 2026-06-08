@@ -14,7 +14,8 @@ class WorkbookNamedItemCollection(EntityCollection[WorkbookNamedItem]):
 
         Args:
             name (str): The name of the object.
-            reference (str): Represents the formula that the name is defined to refer to. For example, =Sheet14!$B$2:$H$12, =4.75,
+            reference (str): Represents the formula that the name is defined to refer to.
+               For example, =Sheet14!$B$2:$H$12, =4.75,
             comment (str): Represents the comment associated with this name.
         """
         return_type = WorkbookNamedItem(self.context)

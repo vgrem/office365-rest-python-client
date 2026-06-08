@@ -70,7 +70,9 @@ class Event(OutlookItem):
         and how to receive and accept a new time proposal, see Propose new meeting times.
 
         Args:
-            proposed_new_time (office365.outlook.calendar.time_slot.TimeSlot): An alternate date/time proposed by an invitee for a meeting request to start and end. Valid only for events that allow new time proposals. Setting this parameter requires setting sendResponse to true. Optional.
+            proposed_new_time (office365.outlook.calendar.time_slot.TimeSlot): An alternate date/time proposed by
+              an invitee for a meeting request to start and end. Valid only for events that allow new time proposals.
+              Setting this parameter requires setting sendResponse to true. Optional.
             send_response (bool): true if a response is to be sent to the organizer; otherwise, false.
             comment (str): Text included in the response.
         """

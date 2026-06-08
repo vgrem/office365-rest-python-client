@@ -145,7 +145,8 @@ class Application(DirectoryObject):
         For more information, including prerequisites to setting a verified publisher, see Publisher verification.
 
         Args:
-            verified_publisher_id (str): The Microsoft Partner Network ID (MPNID) of the verified publisher to be set on the application, from the publisher's Partner Center account.
+            verified_publisher_id (str): The Microsoft Partner Network ID (MPNID) of the verified publisher to be set
+              on the application, from the publisher's Partner Center account.
         """
         qry = ServiceOperationQuery(self, "setVerifiedPublisher", None, {"verifiedPublisherId": verified_publisher_id})
         self.context.add_query(qry)
@@ -168,8 +169,12 @@ class Application(DirectoryObject):
         to automate rolling its expiring keys.
 
         Args:
-            key_credential (KeyCredential): The new application key credential to add. The type, usage and key are required properties for this usage. Supported key types are: AsymmetricX509Cert: The usage must be Verify. X509CertAndPassword: The usage must be Sign
-            password_credential (PasswordCredential): Only secretText is required to be set which should contain the password for the key. This property is required only for keys of type X509CertAndPassword. Set it to null otherwise.
+            key_credential (KeyCredential): The new application key credential to add. The type, usage and key
+               are required properties for this usage. Supported key types are: AsymmetricX509Cert:
+               The usage must be Verify. X509CertAndPassword: The usage must be Sign
+            password_credential (PasswordCredential): Only secretText is required to be set which should contain
+              the password for the key. This property is required only for keys of type X509CertAndPassword.
+              Set it to null otherwise.
             proof (str): A self-signed JWT token used as a proof of possession of the existing keys
         """
         payload = {"keyCredential": key_credential, "passwordCredential": password_credential, "proof": proof}
@@ -185,7 +190,12 @@ class Application(DirectoryObject):
 
         Args:
             key_id (str): The unique identifier for the password.
-            proof (str): A self-signed JWT token used as a proof of possession of the existing keys. This JWT token must be signed using the private key of one of the application's existing valid certificates. The token should contain the following claims: aud - Audience needs to be 00000002-0000-0000-c000-000000000000. iss - Issuer needs to be the id of the application that is making the call. nbf - Not before time. exp - Expiration time should be "nbf" + 10 mins.
+            proof (str): A self-signed JWT token used as a proof of possession of the existing keys. This JWT token
+              must be signed using the private key of one of the application's existing valid certificates.
+              The token should contain the following claims: aud -
+              Audience needs to be 00000002-0000-0000-c000-000000000000. iss - Issuer needs to be the id of
+                the application that is making the call. nbf - Not before time. exp - Expiration time should be
+                "nbf" + 10 mins.
         """
         qry = ServiceOperationQuery(self, "removeKey", None, {"keyId": key_id, "proof": proof})
         self.context.add_query(qry)

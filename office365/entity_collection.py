@@ -32,7 +32,8 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
         """Apply delta query
 
         Args:
-            value (str): If unspecified, enumerates the hierarchy's current state. If latest, returns empty response with latest delta token. If a previous delta token, returns new state since that token.
+            value (str): If unspecified, enumerates the hierarchy's current state. If latest, returns empty response
+              with latest delta token. If a previous delta token, returns new state since that token.
         """
         self.query_options.custom["token"] = value
         return self

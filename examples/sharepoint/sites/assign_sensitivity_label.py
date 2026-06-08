@@ -96,8 +96,8 @@ def main():
         return
 
     print("Available labels:")
-    for l in sorted(labels, key=lambda x: x["priority"]):
-        print(f"  [{l['id'][:8]}...] {l['display_name']} (priority {l['priority']})")
+    for lbl in sorted(labels, key=lambda x: x["priority"]):
+        print(f"  [{lbl['id'][:8]}...] {lbl['display_name']} (priority {lbl['priority']})")
 
     # 2. Check current label on the site
     ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)

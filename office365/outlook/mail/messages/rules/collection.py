@@ -21,7 +21,8 @@ class MessageRuleCollection(EntityCollection[MessageRule]):
         Args:
             display_name (str): The display name of the rule.
             sequence (int): Indicates the order in which the rule is executed, among other rules.
-            actions (MessageRuleActions): Actions to be taken on a message when the corresponding conditions, if any, are fulfilled.
+            actions (MessageRuleActions): Actions to be taken on a message when the corresponding conditions, if any,
+              are fulfilled.
         """
         props = {
             "displayName": display_name,

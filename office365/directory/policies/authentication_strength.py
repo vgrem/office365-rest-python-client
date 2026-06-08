@@ -43,7 +43,8 @@ class AuthenticationStrengthPolicy(Entity):
         use the Update authenticationStrengthPolicy method.
 
         Args:
-            allowed_combinations (list[str]): The authentication method combinations allowed by this authentication strength policy.
+            allowed_combinations (list[str]): The authentication method combinations allowed by this authentication
+              strength policy.
         """
         return_type = ClientResult(self.context, UpdateAllowedCombinationsResult())
         payload = {"allowedCombinations": allowed_combinations}

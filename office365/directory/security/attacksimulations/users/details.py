@@ -11,8 +11,9 @@ class UserSimulationDetails(ClientValue):
     """Represents a user of a tenant and their online actions in an attack simulation and training campaign.
 
     Args:
-        assigned_trainings_count (int): Number of trainings assigned to a user in an attack simulation and training campaign.
-        simulation_user (AttackSimulationUser):
+        assignedTrainingsCount (int): Number of trainings assigned to a user in an attack simulation and training
+          campaign.
+        simulationUser (AttackSimulationUser):
     """
 
     assignedTrainingsCount: int | None = None

@@ -29,7 +29,8 @@ class MailFolder(Entity):
         """Copy a mailfolder and its contents to another mailfolder.
 
         Args:
-            destination_id (str): The folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
+            destination_id (str): The folder ID, or a well-known folder name. For a list of supported well-known folder
+              names, see mailFolder resource type.
         """
         return_type = MailFolder(self.context)
         payload = {"DestinationId": destination_id}

@@ -87,7 +87,8 @@ def main():
     for c in expiring:
         days = (c["expires"] - datetime.now(timezone.utc)).days
         print(
-            f"  {c['app']:35s}  [{c['type']:12s}]  {c['hint'][:25]:25s}  Expires: {c['expires'].strftime('%Y-%m-%d')}  ({days}d)"
+            f"  {c['app']:35s}  [{c['type']:12s}]  {c['hint'][:25]:25s}"
+            f"  Expires: {c['expires'].strftime('%Y-%m-%d')}  ({days}d)"
         )
 
 

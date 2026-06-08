@@ -43,8 +43,10 @@ class ContentType(BaseItem):
         Note: This feature is limited to tenants that have a SharePoint Syntex license.
 
         Args:
-            hub_site_urls (list[str]): List of canonical URLs to the hub sites where the content type needs to be enforced. Required.
-            propagate_to_existing_lists (bool): If true, content types will be enforced on existing lists in the hub sites; otherwise, it'll be applied only to newly created lists.
+            hub_site_urls (list[str]): List of canonical URLs to the hub sites where the content type needs to be
+              enforced. Required.
+            propagate_to_existing_lists (bool): If true, content types will be enforced on existing lists in the
+              hub sites; otherwise, it'll be applied only to newly created lists.
         """
         payload = {
             "hubSiteUrls": StringCollection(hub_site_urls),

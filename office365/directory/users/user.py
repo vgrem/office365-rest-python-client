@@ -174,7 +174,8 @@ class User(DirectoryObject):
 
         Args:
             remove_licenses (list[str]): A collection of skuIds that identify the licenses to remove.
-            add_licenses (list[AssignedLicense]): A collection of assignedLicense objects that specify the licenses to add.
+            add_licenses (list[AssignedLicense]): A collection of assignedLicense objects that specify the
+              licenses to add.
         """
         from office365.directory.licenses.assigned_license import AssignedLicense
 
@@ -310,7 +311,10 @@ class User(DirectoryObject):
 
         Args:
             email_addresses (list[str]): A collection of SMTP addresses of recipients to get MailTips for.
-            mail_tips_options (str): A enumeration of flags that represents the requested mailtips. Possible values are: automaticReplies, customMailTip, deliveryRestriction, externalMemberCount, mailboxFullStatus, maxMessageSize, moderationStatus, recipientScope, recipientSuggestions, and totalMemberCount.
+            mail_tips_options (str): A enumeration of flags that represents the requested mailtips.
+              Possible values are: automaticReplies, customMailTip, deliveryRestriction, externalMemberCount,
+              mailboxFullStatus, maxMessageSize, moderationStatus, recipientScope, recipientSuggestions,
+              and totalMemberCount.
         """
         return_type = ClientResult(self.context, ClientValueCollection(MailTips))
         payload = {"EmailAddresses": StringCollection(email_addresses), "MailTipsOptions": mail_tips_options}
@@ -349,7 +353,8 @@ class User(DirectoryObject):
             cc_recipients (list[str]): The CC: recipients for the message.
             bcc_recipients (list[str]): The BCC: recipients for the message.
             reply_to (list[str]): The Reply-To: : recipients for the reply to the message.
-            save_to_sent_items (bool): Indicates whether to save the message in Sent Items. Specify it only if the parameter is false; default is true
+            save_to_sent_items (bool): Indicates whether to save the message in Sent Items. Specify it only if the
+              parameter is false; default is true
             body_type (str): The type of the message body. It can be "HTML" or "Text". Default is "Text".
         """
         return_type = Message(self.context)
@@ -375,7 +380,8 @@ class User(DirectoryObject):
         It does not return anything in the response body. The response contains the following response headers.
 
         Args:
-            storage_location (str): This is a shared access signature (SAS) URL to an Azure Storage account, to where data should be exported.
+            storage_location (str): This is a shared access signature (SAS) URL to an Azure Storage account, to where
+              data should be exported.
         """
         qry = ServiceOperationQuery(self, "exportPersonalData", None, {"storage_location": storage_location})
         self.context.add_query(qry)
@@ -411,14 +417,27 @@ class User(DirectoryObject):
         that the suggested results may differ over time.
 
         Args:
-            attendees (list[AttendeeBase] or None): A collection of attendees or resources for the meeting. Since findMeetingTimes assumes that any attendees who is a person is always required, specify required for a person and resource for a resource in the corresponding type property. An empty collection causes findMeetingTimes to look for free time slots for only the organizer. Optional.
-            location_constraint (office365.outlook.calendar.location_constraint.LocationConstraint or None): The organizer's requirements about the meeting location, such as whether a suggestion for a meeting location is required, or there are specific locations only where the meeting can take place. Optional.
-            time_constraint (TimeConstraint): Any time restrictions for a meeting, which can include the nature of the meeting (activityDomain property) and possible meeting time periods (timeSlots property). findMeetingTimes assumes activityDomain as work if you don't specify this parameter. Optional.
-            meeting_duration (str): The length of the meeting, denoted in ISO8601 format. For example, 1 hour is denoted as 'PT1H', where 'P' is the duration designator, 'T' is the time designator, and 'H' is the hour designator. Use M to indicate minutes for the duration; for example, 2 hours and 30 minutes would be 'PT2H30M'. If no meeting duration is specified, findMeetingTimes uses the default of 30 minutes. Optional.
+            attendees (list[AttendeeBase] or None): A collection of attendees or resources for the meeting.
+              Since findMeetingTimes assumes that any attendees who is a person is always required, specify required
+              for a person and resource for a resource in the corresponding type property. An empty collection causes
+              findMeetingTimes to look for free time slots for only the organizer. Optional.
+            location_constraint (office365.outlook.calendar.location_constraint.LocationConstraint or None):
+              The organizer's requirements about the meeting location, such as whether a suggestion for a meeting
+              location is required, or there are specific locations only where the meeting can take place. Optional.
+            time_constraint (TimeConstraint): Any time restrictions for a meeting, which can include the nature of
+              the meeting (activityDomain property) and possible meeting time periods (timeSlots property).
+              findMeetingTimes assumes activityDomain as work if you don't specify this parameter. Optional.
+            meeting_duration (str): The length of the meeting, denoted in ISO8601 format. For example, 1 hour is
+              denoted as 'PT1H', where 'P' is the duration designator, 'T' is the time designator, and 'H' is the
+              hour designator. Use M to indicate minutes for the duration; for example, 2 hours and 30 minutes would
+              be 'PT2H30M'. If no meeting duration is specified, findMeetingTimes uses the default of 30 minutes.
             max_candidates (int): The maximum number of meeting time suggestions to be returned. Optional.
-            is_organizer_optional (bool): Specify True if the organizer doesn't necessarily have to attend. The default is false. Optiona
-            return_suggestion_reasons (bool): Specify True to return a reason for each meeting suggestion in the suggestionReason property. The default is false to not return that property. Optional.
-            minimum_attendee_percentage (float): The minimum required confidence for a time slot to be returned in the response. It is a % value ranging from 0 to 100. Optional.
+            is_organizer_optional (bool): Specify True if the organizer doesn't necessarily have to attend.
+              The default is false. Optional
+            return_suggestion_reasons (bool): Specify True to return a reason for each meeting suggestion in the
+              suggestionReason property. The default is false to not return that property. Optional.
+            minimum_attendee_percentage (float): The minimum required confidence for a time slot to be returned
+              in the response. It is a % value ranging from 0 to 100. Optional.
         """
         payload = {
             "attendees": ClientValueCollection(AttendeeBase, attendees),
@@ -440,8 +459,10 @@ class User(DirectoryObject):
         from the user's default calendar, or from some other calendar of the user's.
 
         Args:
-            end_dt (datetime.datetime): The end date and time of the time range, represented in ISO 8601 format. For example, "2019-11-08T20:00:00-08:00".
-            start_dt (datetime.datetime): The start date and time of the time range, represented in ISO 8601 format. For example, "2019-11-08T19:00:00-08:00".
+            end_dt (datetime.datetime): The end date and time of the time range, represented in ISO 8601 format.
+              For example, "2019-11-08T20:00:00-08:00".
+            start_dt (datetime.datetime): The start date and time of the time range, represented in ISO 8601 format.
+              For example, "2019-11-08T19:00:00-08:00".
         """
         return_type = EntityCollection(self.context, Event, ResourcePath("calendarView", self.resource_path))
         qry = ServiceOperationQuery(self, "calendarView", None, None, None, return_type)
@@ -458,8 +479,10 @@ class User(DirectoryObject):
         from the user's default calendar, or from some other calendar of the user's.
 
         Args:
-            end_dt (datetime.datetime): The end date and time of the event for which the reminder is set up. The value is represented in ISO 8601 format, for example, "2015-11-08T20:00:00.0000000"..
-            start_dt (datetime.datetime): The start date and time of the event for which the reminder is set up. The value is represented in ISO 8601 format, for example, "2015-11-08T19:00:00.0000000".
+            end_dt (datetime.datetime): The end date and time of the event for which the reminder is set up.
+              The value is represented in ISO 8601 format, for example, "2015-11-08T20:00:00.0000000"..
+            start_dt (datetime.datetime): The start date and time of the event for which the reminder is set up.
+              The value is represented in ISO 8601 format, for example, "2015-11-08T19:00:00.0000000".
         """
         return_type = ClientResult(self.context, ClientValueCollection(Reminder))
         params = {"startDateTime": start_dt.isoformat(), "endDateTime": end_dt.isoformat()}
@@ -549,7 +572,9 @@ class User(DirectoryObject):
         """Translate identifiers of Outlook-related resources between formats.
 
         Args:
-            input_ids (list[str]): A collection of identifiers to convert. All identifiers in the collection MUST have the same source ID type, and MUST be for items in the same mailbox. Maximum size of this collection is 1000 strings.
+            input_ids (list[str]): A collection of identifiers to convert. All identifiers in the collection
+              MUST have the same source ID type, and MUST be for items in the same mailbox.
+              Maximum size of this collection is 1000 strings.
             source_id_type (str): The ID type of the identifiers in the InputIds parameter.
             target_id_type (str): The requested ID type to convert to.
         """

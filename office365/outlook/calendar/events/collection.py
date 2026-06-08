@@ -36,8 +36,10 @@ class EventCollection(DeltaCollection[Event]):
         Args:
             subject (str): The subject of the message.
             body (str or ItemBody): The body of the message. It can be in HTML or text format
-            start (datetime.datetime): The start date, time, and time zone of the event. By default, the start time is in UTC.
-            end (datetime.datetime): The date, time, and time zone that the event ends. By default, the end time is in UTC.
+            start (datetime.datetime): The start date, time, and time zone of the event. By default, the start time
+              is in UTC.
+            end (datetime.datetime): The date, time, and time zone that the event ends. By default, the end time is in
+              UTC.
             attendees (list[str]): The collection of attendees for the event.
         """
 

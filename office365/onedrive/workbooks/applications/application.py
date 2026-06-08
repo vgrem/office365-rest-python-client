@@ -15,7 +15,8 @@ class WorkbookApplication(Entity):
         """Recalculate all currently opened workbooks in Excel.
 
         Args:
-            calculation_type (str): Specifies the calculation type to use. Possible values are: Recalculate, Full, FullRebuild.
+            calculation_type (str): Specifies the calculation type to use. Possible values are: Recalculate, Full,
+              FullRebuild.
         """
         payload = {"calculationType": calculation_type}
         qry = ServiceOperationQuery(self, "calculate", None, payload)

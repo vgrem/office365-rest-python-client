@@ -38,7 +38,8 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """Attach a file to message
 
         Args:
-            name (str): The name representing the text that is displayed below the icon representing the embedded attachment
+            name (str): The name representing the text that is displayed below the icon representing the embedded
+              attachment
             content (str or None): The contents of the file
             content_type (str or None): The content type of the attachment.
             base64_content (str or None): The contents of the file in the form of a base64 string.

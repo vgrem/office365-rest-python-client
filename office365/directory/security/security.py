@@ -30,7 +30,9 @@ class Security(Entity):
         to proactively look for specific threats in your environment.
 
         Args:
-            query (str): The hunting query in Kusto Query Language (KQL). For more information on KQL syntax,see KQL quick reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/kql-quick-reference
+            query (str): The hunting query in Kusto Query Language (KQL). For more information on KQL syntax,
+              see KQL quick reference:
+              https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/kql-quick-reference
         """
         return_type = ClientResult(self.context, HuntingQueryResults())
         payload = {"Query": query}

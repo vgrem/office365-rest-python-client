@@ -39,12 +39,16 @@ class ServicePrincipal(DirectoryObject):
         password_credential: PasswordCredential,
         proof: str,
     ) -> ClientResult[KeyCredential]:
-        """Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a servicePrincipal
-        to automate rolling its expiring keys.
+        """Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a
+        servicePrincipal to automate rolling its expiring keys.
 
         Args:
-            key_credential (KeyCredential): The new application key credential to add. The type, usage and key are required properties for this usage. Supported key types are: AsymmetricX509Cert: The usage must be Verify. X509CertAndPassword: The usage must be Sign
-            password_credential (PasswordCredential): Only secretText is required to be set which should contain the password for the key. This property is required only for keys of type X509CertAndPassword. Set it to null otherwise.
+            key_credential (KeyCredential): The new application key credential to add. The type, usage and key are
+              required properties for this usage. Supported key types are: AsymmetricX509Cert:
+              The usage must be Verify. X509CertAndPassword: The usage must be Sign
+            password_credential (PasswordCredential): Only secretText is required to be set which should contain
+              the password for the key. This property is required only for keys of type X509CertAndPassword.
+              Set it to null otherwise.
             proof (str): A self-signed JWT token used as a proof of possession of the existing keys
         """
         payload = {
@@ -91,7 +95,10 @@ class ServicePrincipal(DirectoryObject):
 
         Args:
             display_name (str): Friendly name for the key. It must start with CN=.
-            end_datetime (str): The date and time when the credential expires. It can be up to 3 years from the date the certificate is created. If not supplied, the default is three years from the time of creation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+            end_datetime (str): The date and time when the credential expires. It can be up to 3 years from the
+              date the certificate is created. If not supplied, the default is three years from the time of creation.
+              The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
+              For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
         """
         payload = {"displayName": display_name, "endDateTime": end_datetime}
         return_type = ClientResult(self.context, SelfSignedCertificate())
@@ -175,16 +182,16 @@ class ServicePrincipal(DirectoryObject):
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Grants an app role assignment to a client service principal"""
 
-        def _grant(principal_id: str, app_role_id: str) -> None:
+        def _grant(principal_id: str | None, app_role_id: str | None) -> None:
+            assert principal_id is not None
+            assert app_role_id is not None
             self.app_role_assigned_to.add(principalId=principal_id, resourceId=self.id, appRoleId=app_role_id)
 
         def _ensure_resource():
             assert self.id is not None
 
             def _after(sp: ServicePrincipal):
-                assert sp.id is not None
                 if isinstance(app_role, AppRole):
-                    assert app_role.id is not None
                     _grant(sp.id, app_role.id)
                 else:
                     _grant(sp.id, self.app_roles[app_role].id)
@@ -197,7 +204,8 @@ class ServicePrincipal(DirectoryObject):
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Revokes an app role assignment from a client service principal"""
 
-        def _revoke(principal_id: str, app_role_id: str) -> None:
+        def _revoke(principal_id: str | None, app_role_id: str | None) -> None:
+            assert principal_id is not None
             app_role_to_revoke = [item for item in self.app_role_assigned_to if item.principal_id == principal_id]
             if len(app_role_to_revoke) > 0:
                 item_id = app_role_to_revoke[0].id
@@ -207,7 +215,6 @@ class ServicePrincipal(DirectoryObject):
         def _ensure_app_role(sp: ServicePrincipal) -> None:
             assert sp.id is not None
             if isinstance(app_role, AppRole):
-                assert app_role.id is not None
                 _revoke(sp.id, app_role.id)
             else:
                 _revoke(sp.id, self.app_roles[app_role].id)
