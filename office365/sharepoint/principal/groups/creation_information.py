@@ -8,8 +8,9 @@ from office365.runtime.client_value import ClientValue
 class GroupCreationInformation(ClientValue):
     """An object used to facilitate creation of a cross-site group.
 
-    :param str title:
-    :param str description:
+    Args:
+        title (str):
+        description (str):
     """
 
     Title: Optional[str] = None

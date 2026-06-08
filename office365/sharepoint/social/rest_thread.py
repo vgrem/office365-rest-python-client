@@ -22,10 +22,10 @@ class SocialRestThread(Entity):
         return self._resource_path
 
     def like(self, post_id: str) -> Self:
-        """
-        The Like method makes the current user a liker of the specified post.
+        """The Like method makes the current user a liker of the specified post.
 
-        :param str post_id: Specifies the post by its identifier.
+        Args:
+            post_id (str): Specifies the post by its identifier.
         """
         payload = {"ID": post_id}
         qry = ServiceOperationQuery(self, "Like", None, payload, None, self)
@@ -33,11 +33,11 @@ class SocialRestThread(Entity):
         return self
 
     def unlike(self, post_id: str) -> Self:
-        """
-        The Unlike method removes the current user from the list of likers for the specified post.
+        """The Unlike method removes the current user from the list of likers for the specified post.
         If the current is not a liker of the post, this method has no effect.
 
-        :param str post_id: Specifies the post by its identifier.
+        Args:
+            post_id (str): Specifies the post by its identifier.
         """
         payload = {"ID": post_id}
         qry = ServiceOperationQuery(self, "UnLike", None, payload, None, self)

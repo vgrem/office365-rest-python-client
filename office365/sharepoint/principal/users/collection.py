@@ -73,16 +73,18 @@ class UserCollection(EntityCollection[User]):
         )
 
     def get_by_id(self, user_id: str) -> User:
-        """
-        Returns the user with the specified member identifier.
-        :param int user_id: Specifies the member identifier.
+        """Returns the user with the specified member identifier.
+
+        Args:
+            user_id (int): Specifies the member identifier.
         """
         return User(self.context, ServiceOperationPath("GetById", [user_id], self.resource_path))
 
     def get_by_login_name(self, login_name: str) -> User:
-        """
-        Retrieve User object by login name
-        :param str login_name: A string that contains the login name of the user.
+        """Retrieve User object by login name
+
+        Args:
+            login_name (str): A string that contains the login name of the user.
         """
         return User(
             self.context,
@@ -90,18 +92,20 @@ class UserCollection(EntityCollection[User]):
         )
 
     def remove_by_id(self, user_id: str) -> Self:
-        """
-        Retrieve User object by id
-        :param int user_id: Specifies the member identifier.
+        """Retrieve User object by id
+
+        Args:
+            user_id (int): Specifies the member identifier.
         """
         qry = ServiceOperationQuery(self, "RemoveById", [user_id])
         self.context.add_query(qry)
         return self
 
     def remove_by_login_name(self, login_name: str) -> Self:
-        """
-        Remove User object by login name
-        :param str login_name: A string that contains the username.
+        """Remove User object by login name
+
+        Args:
+            login_name (str): A string that contains the username.
         """
         qry = ServiceOperationQuery(self, "RemoveByLoginName", [login_name])
         self.context.add_query(qry)

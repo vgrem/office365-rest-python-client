@@ -30,14 +30,14 @@ class SPSiteManager(Entity):
     def create(
         self, title: str, site_url: str, owner: Optional[Union[User, str]] = None
     ) -> ClientResult[SPSiteCreationResponse]:
-        """
-        When executing this method server MUST create a SharePoint site according to the parameters passed in the
+        """When executing this method server MUST create a SharePoint site according to the parameters passed in the
         SPSiteCreationRequest and return the information about the site it created in the format of a
         SPSiteCreationResponse.
 
-        :param str title: Site title
-        :param str site_url: Site url
-        :param str or office365.sharepoint.principal.user.User owner: Site owner object or principal name
+        Args:
+            title (str): Site title
+            site_url (str): Site url
+            owner (str or office365.sharepoint.principal.user.User): Site owner object or principal name
         """
         return_type = ClientResult(self.context, SPSiteCreationResponse())
 
@@ -60,7 +60,8 @@ class SPSiteManager(Entity):
         the parameter passed in the siteId, if the SharePoint site of giving siteId exists and the site has
         no attached AD group.
 
-        :param str site_id: The GUID to uniquely identify a SharePoint site.
+        Args:
+            site_id (str): The GUID to uniquely identify a SharePoint site.
         """
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(self, "Delete", None, payload)
@@ -71,7 +72,8 @@ class SPSiteManager(Entity):
         """When executing this method server SHOULD return a SharePoint site status in the format
         of a SPSiteCreationResponse according to the parameter passed in the url.
 
-        :param str site_url: URL of the site to return status for
+        Args:
+            site_url (str): URL of the site to return status for
         """
         response = ClientResult(self.context, SPSiteCreationResponse())
         qry = ServiceOperationQuery(self, "Status", None, {"url": site_url}, None, response)
@@ -84,8 +86,8 @@ class SPSiteManager(Entity):
         return response
 
     def get_site_url(self, site_id: str) -> ClientResult[str]:
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site.
+        """Args:
+            site_id (str): The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "SiteUrl", None, {"siteId": site_id}, None, return_type)
@@ -93,8 +95,8 @@ class SPSiteManager(Entity):
         return return_type
 
     def get_team_channel_site_owner(self, site_id: str) -> ClientResult[GetTeamChannelSiteOwnerResponse]:
-        """
-        :param str site_id: The GUID to uniquely identify a SharePoint site.
+        """Args:
+            site_id (str): The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, GetTeamChannelSiteOwnerResponse())
         qry = ServiceOperationQuery(self, "GetTeamChannelSiteOwner", None, {"siteId": site_id}, None, return_type)
@@ -102,8 +104,8 @@ class SPSiteManager(Entity):
         return return_type
 
     def viva_backend_site_url_from_name(self, site_name: str) -> ClientResult[VivaSiteRequestInfo]:
-        """
-        :param str site_name:
+        """Args:
+            site_name (str):
         """
         return_type = ClientResult(self.context, VivaSiteRequestInfo())
         payload = {"siteName": site_name}

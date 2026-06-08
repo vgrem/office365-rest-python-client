@@ -21,16 +21,12 @@ class SocialFeedManager(Entity):
         super().__init__(context, resource_path)
 
     def create_post(self, target_id: Optional[str] = None, creation_data: Optional[SocialPostCreationData] = None):
-        """
-        The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
+        """The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
         the specified thread. This method returns a new or a modified thread.
 
-        :param str or None target_id: Optional, specifies the target of the post. If this parameter is null, the post is
-            created as a root post in the current user's feed. If this parameter is set to a site (2) URL or a site
-            (2) actor identification, the post is created as a root post in the specified site (2) feed.
-            If this parameter is set to a thread identification, the post is created as a reply post in the specified
-            thread.
-        :param SocialPostCreationData creation_data: Specifies the text and details of the post.
+        Args:
+            target_id (str or None): Optional, specifies the target of the post. If this parameter is null, the post is created as a root post in the current user's feed. If this parameter is set to a site (2) URL or a site (2) actor identification, the post is created as a root post in the specified site (2) feed. If this parameter is set to a thread identification, the post is created as a reply post in the specified thread.
+            creation_data (SocialPostCreationData): Specifies the text and details of the post.
         """
         return_type = ClientResult(self.context, SocialThread())
         payload = {"targetId": target_id, "creationData": creation_data}
@@ -39,13 +35,11 @@ class SocialFeedManager(Entity):
         return return_type
 
     def delete_post(self, post_id: str) -> ClientResult[SocialThread]:
-        """
-        The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
+        """The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
         If the entire thread is deleted, this method returns null.
 
-        :param str post_id: Specifies the post to be deleted. The post identifier is specified in the
-            SocialPost.Id property
-
+        Args:
+            post_id (str): Specifies the post to be deleted. The post identifier is specified in the SocialPost.Id property
         """
         return_type = ClientResult(self.context, SocialThread())
         payload = {"postId": post_id}
@@ -54,12 +48,12 @@ class SocialFeedManager(Entity):
         return return_type
 
     def create_file_attachment(self, name, description, file_data):
-        """
-        Creates a file attachment for a future post.
+        """Creates a file attachment for a future post.
 
-        :param str name: The name of the file.
-        :param str description: An optional description of the file.
-        :param str or bytes file_data: A stream for reading the file data.
+        Args:
+            name (str): The name of the file.
+            description (str): An optional description of the file.
+            file_data (str or bytes): A stream for reading the file data.
         """
         return_type = ClientResult(self.context, SocialAttachment())
         payload = {"name": name, "description": description, "fileData": file_data}
@@ -68,18 +62,15 @@ class SocialFeedManager(Entity):
         return return_type
 
     def get_feed(self, feed_type=None, options=None):
-        """
-        The GetFeed method returns a feed for the current user. The feed consists of an array of message threads.
+        """The GetFeed method returns a feed for the current user. The feed consists of an array of message threads.
         Each thread consists of a root post and an array of reply posts. See section 3.1.5.17 for details on
         the SocialFeed type. The server selects a set of posts to return in the feed based on the type
         and options parameters, but this protocol does require any specific algorithm to select the set of posts
         from all posts that meet the specified type and options.
 
-        :param int feed_type: Specifies the type of feed to be returned. Feeds can be viewed using a personal view, news
-            view, timeline view, or likes view. If the type is not specified, GetFeed returns the news view.
-        :param SocialFeedOptions options: Specifies the maximum number of threads to get in the feed, the sort order
-            of the threads, and how the threads are to be selected based on the date and time that the threads were
-            created.
+        Args:
+            feed_type (int): Specifies the type of feed to be returned. Feeds can be viewed using a personal view, news view, timeline view, or likes view. If the type is not specified, GetFeed returns the news view.
+            options (SocialFeedOptions): Specifies the maximum number of threads to get in the feed, the sort order of the threads, and how the threads are to be selected based on the date and time that the threads were created.
         """
         return_type = ClientResult(self.context, SocialFeed())
         payload = {"type": feed_type, "options": options}

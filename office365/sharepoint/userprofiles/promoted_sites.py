@@ -18,14 +18,14 @@ class PromotedSites(Entity):
     def add_site_link(
         context, url: str, title: str, description: Optional[str] = None, image_url: Optional[str] = None
     ) -> PromotedSites:
-        """
-        Creates a new site link in the collection of promoted sites.
+        """Creates a new site link in the collection of promoted sites.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint context
-        :param str url: Specifies the URL of the promoted site.
-        :param str title: Specifies a string with the title of the promoted site.
-        :param str description: Specifies the description of the promoted site.
-        :param str image_url: Specifies a URL of an image representing the promoted site.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint context
+            url (str): Specifies the URL of the promoted site.
+            title (str): Specifies a string with the title of the promoted site.
+            description (str): Specifies the description of the promoted site.
+            image_url (str): Specifies a URL of an image representing the promoted site.
         """
         payload = {
             "url": url,
@@ -40,11 +40,11 @@ class PromotedSites(Entity):
 
     @staticmethod
     def delete_site_link(context, item_id: int) -> PromotedSites:
-        """
-        Removes the promoted site with the specified identifier from the collection.
+        """Removes the promoted site with the specified identifier from the collection.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        :param int item_id: Specifies a number that represents the identifier of the site to remove
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+            item_id (int): Specifies a number that represents the identifier of the site to remove
         """
         payload = {"itemID": item_id}
         binding_type = PromotedSites(context)

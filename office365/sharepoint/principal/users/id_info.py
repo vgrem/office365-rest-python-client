@@ -8,8 +8,9 @@ from office365.runtime.client_value import ClientValue
 class UserIdInfo(ClientValue):
     """Represents an identity providers unique identifier information
 
-    :param str name_id: Specifies the identity provider's unique identifier.
-    :param str name_id_issuer: Specifies the identity provider's display name as registered in a farm.
+    Args:
+        name_id (str): Specifies the identity provider's unique identifier.
+        name_id_issuer (str): Specifies the identity provider's display name as registered in a farm.
     """
 
     NameId: Optional[str] = None

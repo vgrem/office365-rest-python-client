@@ -49,13 +49,13 @@ class GroupSiteManager(ClientObject):
         is_public: Optional[bool] = None,
         optional_params: Optional[GroupCreationParams] = None,
     ):
-        """
-        Create a modern site
+        """Create a modern site
 
-        :param str display_name:
-        :param str alias:
-        :param bool or None is_public:
-        :param office365.sharepoint.portal.group_creation_params.GroupCreationParams or None optional_params:
+        Args:
+            display_name (str):
+            alias (str):
+            is_public (bool or None):
+            optional_params (office365.sharepoint.portal.group_creation_params.GroupCreationParams or None):
         """
         payload = {
             "displayName": display_name,
@@ -85,10 +85,10 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def delete(self, site_url: str) -> Self:
-        """
-        Deletes a SharePoint Team site
+        """Deletes a SharePoint Team site
 
-        :type site_url: str
+        Args:
+            site_url (str):
         """
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(self, "Delete", None, payload)
@@ -134,10 +134,11 @@ class GroupSiteManager(ClientObject):
     def get_current_user_joined_teams(
         self, get_logo_data: bool = False, force_cache_update: bool = False
     ) -> ClientResult[str]:
-        """
-        Get the teams in Microsoft Teams that the current user is a direct member of.
-        :type get_logo_data: bool
-        :type force_cache_update: bool
+        """Get the teams in Microsoft Teams that the current user is a direct member of.
+
+        Args:
+            get_logo_data (bool):
+            force_cache_update (bool):
         """
         result = ClientResult(self.context, str())
         payload = {"getLogoData": get_logo_data, "forceCacheUpdate": force_cache_update}
@@ -160,11 +161,11 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels(self, team_id: str, use_staging_endpoint: bool = False) -> ClientResult[bytes]:
-        """
-        Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
+        """Retrieves the channels associated with a specific Microsoft 365 Group (or Team)
 
-        :param str team_id:
-        :param bool use_staging_endpoint:
+        Args:
+            team_id (str):
+            use_staging_endpoint (bool):
         """
         return_type = ClientResult[bytes](self.context)
         payload = {"teamId": team_id, "useStagingEndpoint": use_staging_endpoint}
@@ -173,8 +174,8 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels_direct(self, team_id: str) -> ClientResult[str]:
-        """
-        :param str team_id:
+        """Args:
+            team_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {
@@ -185,9 +186,10 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def get_team_channels_with_site_url(self, site_url: str) -> ClientResult[ChannelInfoCollection]:
-        """
-        Returns a list of team channels associated with a Microsoft 365 Group.
-        :param str site_url:
+        """Returns a list of team channels associated with a Microsoft 365 Group.
+
+        Args:
+            site_url (str):
         """
         return_type = ClientResult(self.context, ChannelInfoCollection())
         payload = {
@@ -198,8 +200,8 @@ class GroupSiteManager(ClientObject):
         return return_type
 
     def notebook(self, group_id: str) -> ClientResult[str]:
-        """
-        :param str group_id:
+        """Args:
+            group_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"groupId": group_id}
@@ -214,13 +216,13 @@ class GroupSiteManager(ClientObject):
         include_pinned: Optional[bool] = None,
         existing_joined_teams_data: Optional[str] = None,
     ) -> ClientResult[RecentAndJoinedTeamsResponse]:
-        """
-        Retrieves a list of teams that a user has recently accessed or joined
+        """Retrieves a list of teams that a user has recently accessed or joined
 
-        :param bool include_recent:
-        :param bool include_teams:
-        :param bool include_pinned:
-        :param str existing_joined_teams_data:
+        Args:
+            include_recent (bool):
+            include_teams (bool):
+            include_pinned (bool):
+            existing_joined_teams_data (str):
         """
         return_type = ClientResult(self.context, RecentAndJoinedTeamsResponse())
         payload = {

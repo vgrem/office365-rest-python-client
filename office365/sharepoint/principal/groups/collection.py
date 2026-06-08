@@ -22,10 +22,10 @@ class GroupCollection(EntityCollection[Group]):
         super().__init__(context, Group, resource_path)
 
     def expand_to_principals(self, max_count: int) -> ClientResult[ClientValueCollection[PrincipalInfo]]:
-        """
-        Expands groups to a collection of principals.
+        """Expands groups to a collection of principals.
 
-        :param int max_count: Specifies the maximum number of principals to be returned.
+        Args:
+            max_count (int): Specifies the maximum number of principals to be returned.
         """
         return_type = ClientResult(self.context, ClientValueCollection(PrincipalInfo))
         for cur_grp in self:
@@ -33,13 +33,11 @@ class GroupCollection(EntityCollection[Group]):
         return return_type
 
     def add(self, title: str, description: Optional[str] = None) -> Group:
-        """
-        Adds a group to the collection. A reference to the SP.Group that was added is returned.
+        """Adds a group to the collection. A reference to the SP.Group that was added is returned.
 
-        :param str title: A string that specifies the name of the cross-site group to be created.
-            It MUST NOT be NULL. Its length MUST be equal to or less than 255. It MUST NOT be empty.
-        :param str description: A string that contains the description of the cross-site group to be created.
-            Its length MUST be equal to or less than 512.
+        Args:
+            title (str): A string that specifies the name of the cross-site group to be created. It MUST NOT be NULL. Its length MUST be equal to or less than 255. It MUST NOT be empty.
+            description (str): A string that contains the description of the cross-site group to be created. Its length MUST be equal to or less than 512.
         """
         return_type = Group(self.context)
         self.add_child(return_type)
@@ -51,7 +49,8 @@ class GroupCollection(EntityCollection[Group]):
     def get_by_id(self, group_id: str) -> Group:
         """Returns the list item with the specified list item identifier.
 
-        :param str group_id: Specifies the member identifier.
+        Args:
+            group_id (str): Specifies the member identifier.
         """
         return Group(
             self.context,
@@ -61,7 +60,8 @@ class GroupCollection(EntityCollection[Group]):
     def get_by_name(self, group_name: str) -> Group:
         """Returns a cross-site group from the collection based on the name of the group.
 
-        :param str group_name: A string that contains the name of the group.
+        Args:
+            group_name (str): A string that contains the name of the group.
         """
         return Group(
             self.context,
@@ -71,7 +71,8 @@ class GroupCollection(EntityCollection[Group]):
     def remove_by_id(self, group_id) -> Self:
         """Removes the group with the specified member ID from the collection.
 
-        :param int group_id: Specifies the member identifier.
+        Args:
+            group_id (int): Specifies the member identifier.
         """
         qry = ServiceOperationQuery(self, "RemoveById", [group_id])
         self.context.add_query(qry)
@@ -80,7 +81,8 @@ class GroupCollection(EntityCollection[Group]):
     def remove_by_login_name(self, group_name: str) -> Self:
         """Removes the cross-site group with the specified name from the collection.
 
-        :param str group_name:  A string that contains the name of the group.
+        Args:
+            group_name (str): A string that contains the name of the group.
         """
         qry = ServiceOperationQuery(self, "RemoveByLoginName", [group_name])
         self.context.add_query(qry)
