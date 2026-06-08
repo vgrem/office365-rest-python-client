@@ -14,19 +14,18 @@ class FormCollection(EntityCollection[Form]):
     def get_by_id(self, id_: str) -> Form:
         """Gets the form with the specified ID.
 
-        :param str id_: Specifies the identifier of the list form.
+        Args:
+            id_ (str): Specifies the identifier of the list form.
         """
         return Form(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
     def get_by_page_type(self, form_type: PageType) -> Form:
-        """
-        Returns the list form with the specified page type. If there is more than one list form with
+        """Returns the list form with the specified page type. If there is more than one list form with
         the specified page type, the protocol server MUST return one list form as determined by the protocol server.
         If there is no list form with the specified page type, the server MUST return NULL.
 
-        :param str or office365.sharepoint.pages.page_type.PageType form_type: Specifies the page type of the list
-            form to return. It MUST be DISPLAYFORM, EDITFORM or NEWFORM.
-            Type: office365.sharepoint.pages.page_type.PageType
+        Args:
+            form_type (str or office365.sharepoint.pages.page_type.PageType): Specifies the page type of the list form to return. It MUST be DISPLAYFORM, EDITFORM or NEWFORM. Type: office365.sharepoint.pages.page_type.PageType
         """
         return Form(
             self.context,

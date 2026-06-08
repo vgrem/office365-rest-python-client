@@ -18,19 +18,19 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         super().__init__(context, ContentType, resource_path, parent)
 
     def get_by_name(self, name: str) -> ContentType:
-        """
-        Returns the content type with the given name from the collection.
+        """Returns the content type with the given name from the collection.
 
-        :param str name: Content type name
+        Args:
+            name (str): Content type name
         """
         return self.single(f"Name eq '{name}'")
 
     def get_by_id(self, content_type_id: str) -> ContentType:
-        """
-        Returns the content type with the given identifier from the collection.
+        """Returns the content type with the given identifier from the collection.
         If a content type with the given identifier is not found in the collection, the server MUST return null.
 
-        :param str content_type_id: A hexadecimal value representing the identifier of a content type.
+        Args:
+            content_type_id (str): A hexadecimal value representing the identifier of a content type.
         """
         return ContentType(
             self.context,
@@ -41,8 +41,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.
 
-        :param ContentTypeCreationInformation content_type_info: Specifies properties that is to be used to
-            construct the new content type.
+        Args:
+            content_type_info (ContentTypeCreationInformation): Specifies properties that is to be used to construct the new content type.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
@@ -63,13 +63,13 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         group: Optional[str] = None,
         parent_content_type: Optional[ContentType] = None,
     ) -> ContentType:
-        """
-        Creates a new content type to the collection and returns a reference to the added SP.ContentType.
+        """Creates a new content type to the collection and returns a reference to the added SP.ContentType.
 
-        :param str name:  Specifies the name
-        :param str description: Specifies the description
-        :param str group: Specifies the group of the content type
-        :param str or ContentType parent_content_type: Specifies the parent content type (string identifier or object)
+        Args:
+            name (str): Specifies the name
+            description (str): Specifies the description
+            group (str): Specifies the group of the content type
+            parent_content_type (str or ContentType): Specifies the parent content type (string identifier or object)
         """
 
         def _create(parent_content_type_id: Optional[str]):
@@ -93,8 +93,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def add_available_content_type(self, content_type_id: str) -> ContentType:
         """Adds the specified content type to the content type collection.
 
-        :param str content_type_id: Specifies the identifier of the content type to be added to the content type
-            collection. It MUST exist in the web's available content types.
+        Args:
+            content_type_id (str): Specifies the identifier of the content type to be added to the content type collection. It MUST exist in the web's available content types.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)

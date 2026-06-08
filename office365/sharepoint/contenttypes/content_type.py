@@ -28,10 +28,10 @@ class ContentType(Entity):
         return self.string_id or str(self.id) or self.entity_type_name
 
     def reorder_fields(self, field_names: List[str]) -> Self:
-        """
-        The ReorderFields method is called to change the order in which fields appear in a content type.
-        :param list[str] field_names: Rearranges the collection of fields in the order in which field internal
-             names are specified.
+        """The ReorderFields method is called to change the order in which fields appear in a content type.
+
+        Args:
+            field_names (list[str]): Rearranges the collection of fields in the order in which field internal names are specified.
         """
         payload = {"fieldNames": StringCollection(field_names)}
         qry = ServiceOperationQuery(self, "ReorderFields", None, payload)
@@ -43,10 +43,11 @@ class ContentType(Entity):
         return self
 
     def update(self, *args: Any, update_children: bool = False) -> Self:
-        """
-        Updates the content type, and any child objects  of the content type if specified,
+        """Updates the content type, and any child objects  of the content type if specified,
         with any changes made to the content type.
-        :param bool update_children: Specifies whether changes propagate to child objects of the content type.
+
+        Args:
+            update_children (bool): Specifies whether changes propagate to child objects of the content type.
         """
         super().update()
         if update_children:

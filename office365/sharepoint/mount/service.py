@@ -13,9 +13,9 @@ from office365.sharepoint.mount.requests.get_remote_item_Info import (
 class MountService(Entity):
     @staticmethod
     def get_remote_item_info(context: ClientContext, remote_item_unique_ids: List[str]) -> ClientResult[str]:
-        """
-        :param office365.sharepoint.client_context.ClientContext context: client context
-        :param list[str] remote_item_unique_ids:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            remote_item_unique_ids (list[str]):
         """
         return_type = ClientResult(context, str())
         payload = {"request": GetRemoteItemInfoRequest(RemoteItemUniqueIds=StringCollection(remote_item_unique_ids))}

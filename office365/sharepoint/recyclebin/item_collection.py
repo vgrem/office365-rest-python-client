@@ -26,10 +26,10 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         return self
 
     def delete_by_ids(self, ids: List[str]) -> Self:
-        """
-        Permanently deletes Recycle Bin items by their identifiers
+        """Permanently deletes Recycle Bin items by their identifiers
 
-        :param list[str] ids: Recycle Bin items identifiers
+        Args:
+            ids (list[str]): Recycle Bin items identifiers
         """
         payload = {"ids": StringCollection(ids)}
         qry = ServiceOperationQuery(self, "DeleteByIds", None, payload)
@@ -37,10 +37,10 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         return self
 
     def move_to_second_stage_by_ids(self, ids: List[str]) -> Self:
-        """
-        Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their identifies
+        """Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their identifies
 
-        :param list[str] ids: Recycle Bin items identifiers
+        Args:
+            ids (list[str]): Recycle Bin items identifiers
         """
         payload = {"ids": StringCollection(ids)}
         qry = ServiceOperationQuery(self, "MoveToSecondStageByIds", None, payload)
@@ -58,10 +58,10 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         return self
 
     def get_by_id(self, recycle_bin_id: str) -> RecycleBinItem:
-        """
-        Returns the recycle bin type with the given identifier from the collection.
+        """Returns the recycle bin type with the given identifier from the collection.
 
-        :param str recycle_bin_id: A hexadecimal value representing the identifier of a recycle bin.
+        Args:
+            recycle_bin_id (str): A hexadecimal value representing the identifier of a recycle bin.
         """
         return RecycleBinItem(
             self.context,

@@ -10,11 +10,11 @@ class MountPoint(Entity):
     def get_mounted_folder_info(
         context, target_site_id: str, target_web_id: str, target_unique_id: str
     ) -> MountedFolderInfo:
-        """
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str target_site_id:
-        :param str target_web_id:
-        :param str target_unique_id:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            target_site_id (str):
+            target_web_id (str):
+            target_unique_id (str):
         """
         return_type = MountedFolderInfo(context)
         payload = {

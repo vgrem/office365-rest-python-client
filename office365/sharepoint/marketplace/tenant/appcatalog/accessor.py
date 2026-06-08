@@ -37,13 +37,12 @@ class TenantCorporateCatalogAccessor(Entity):
     """Accessor for the tenant corporate catalog."""
 
     def add(self, content: bytes, overwrite: bool, url: Optional[str] = None) -> File:
-        """
-        Adds a file to the corporate catalog.
+        """Adds a file to the corporate catalog.
 
-        :param str or bytes content: Specifies the binary content of the file to be added.
-        :param bool overwrite: Specifies whether to overwrite an existing file with the same name and in the same
-            location as the one being added.
-        :param str url: Specifies the URL of the file to be added.
+        Args:
+            content (str or bytes): Specifies the binary content of the file to be added.
+            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same location as the one being added.
+            url (str): Specifies the URL of the file to be added.
         """
         return_type = File(self.context)
         params = {"Overwrite": overwrite, "Url": url}
@@ -69,9 +68,10 @@ class TenantCorporateCatalogAccessor(Entity):
         return return_type
 
     def download_teams_solution(self, id_: int) -> TeamsPackageDownload:
-        """
-        Downloads a Microsoft Teams solution package associated with an app from the SharePoint App Catalog
-        :param int id_:
+        """Downloads a Microsoft Teams solution package associated with an app from the SharePoint App Catalog
+
+        Args:
+            id_ (int):
         """
         return_type = TeamsPackageDownload(self.context)
         payload = {"id": id_}
@@ -80,16 +80,17 @@ class TenantCorporateCatalogAccessor(Entity):
         return return_type
 
     def get_app_by_id(self, item_unique_id: str) -> CorporateCatalogAppMetadata:
-        """
-        :param str item_unique_id:
+        """Args:
+            item_unique_id (str):
         """
         params = {"itemUniqueId": item_unique_id}
         return CorporateCatalogAppMetadata(self.context, ServiceOperationPath("GetAppById", params, self.resource_path))
 
     def is_app_upgrade_available(self, id_: int) -> ClientResult[AppUpgradeAvailability]:
-        """
-        Determines if an upgrade is available for an app in the SharePoint app catalog
-        :param int id_:
+        """Determines if an upgrade is available for an app in the SharePoint app catalog
+
+        Args:
+            id_ (int):
         """
         return_type = ClientResult(self.context, AppUpgradeAvailability())
         payload = {"id": id_}
@@ -110,9 +111,10 @@ class TenantCorporateCatalogAccessor(Entity):
         return self
 
     def send_app_request_status_notification_email(self, request_guid: str) -> Self:
-        """
-        Sends email notifications about the status of an app request in the corporate app catalog
-        :param str request_guid:
+        """Sends email notifications about the status of an app request in the corporate app catalog
+
+        Args:
+            request_guid (str):
         """
         qry = ServiceOperationQuery(self, "SendAppRequestStatusNotificationEmail", [request_guid])
         self.context.add_query(qry)

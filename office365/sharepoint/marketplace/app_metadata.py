@@ -16,7 +16,8 @@ class CorporateCatalogAppMetadata(Entity):
         """This method deploys an app on the app catalog.  It MUST be called in the context of the tenant app
         catalog web or it will fail.
 
-        :param bool skip_feature_deployment: Specifies whether the app can be centrally deployed across the tenant.
+        Args:
+            skip_feature_deployment (bool): Specifies whether the app can be centrally deployed across the tenant.
         """
         payload = {"skipFeatureDeployment": skip_feature_deployment}
         qry = ServiceOperationQuery(self, "Deploy", None, payload)
