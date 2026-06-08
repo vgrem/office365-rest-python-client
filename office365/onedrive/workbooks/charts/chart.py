@@ -23,8 +23,9 @@ class WorkbookChart(Entity):
     def image(self, width: int | None = None, height: int | None = None) -> ClientResult[str]:
         """Renders the chart as a base64-encoded image by scaling the chart to fit the specified dimensions.
 
-        :param int width: Specifies the width of the rendered image in pixels.
-        :param int height: Specifies the height of the rendered image [ pixels.
+        Args:
+            width (int): Specifies the width of the rendered image in pixels.
+            height (int): Specifies the height of the rendered image [ pixels.
         """
         return_type = ClientResult(self.context)
         params = {"width": width, "height": height}
@@ -33,10 +34,11 @@ class WorkbookChart(Entity):
         return return_type
 
     def set_data(self, source_data: Dict, series_by: str) -> Self:
-        """
-        Updates the data source of a chart
-        :param dict source_data:
-        :param str series_by:
+        """Updates the data source of a chart
+
+        Args:
+            source_data (dict):
+            series_by (str):
         """
         payload = {"sourceData": source_data, "seriesBy": series_by}
         qry = ServiceOperationQuery(self, "setData", None, payload)
@@ -45,10 +47,10 @@ class WorkbookChart(Entity):
 
     def set_position(self, start_cell: str, end_cell: str) -> Self:
         """Positions the chart relative to cells on the worksheet.
-        :param str start_cell: The start cell. It is where the chart is moved to. The start cell is the top-left or
-             top-right cell, depending on the user's right-to-left display settings.
-        :param str end_cell: The end cell. If specified, the chart's width and height is set to fully cover up
-             this cell/range.
+
+        Args:
+            start_cell (str): The start cell. It is where the chart is moved to. The start cell is the top-left or top-right cell, depending on the user's right-to-left display settings.
+            end_cell (str): The end cell. If specified, the chart's width and height is set to fully cover up this cell/range.
         """
         payload = {"startCell": start_cell, "endCell": end_cell}
         qry = ServiceOperationQuery(self, "setPosition", None, payload)

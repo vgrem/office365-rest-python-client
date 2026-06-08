@@ -14,12 +14,11 @@ class WorkbookWorksheetCollection(EntityCollection[WorkbookWorksheet]):
 
     @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def add(self, name: str | None = None) -> WorkbookWorksheet:
-        """
-        Adds a new worksheet to the workbook. The worksheet will be added at the end of existing worksheets.
+        """Adds a new worksheet to the workbook. The worksheet will be added at the end of existing worksheets.
         If you wish to activate the newly added worksheet, call ".activate() on it.
 
-        :param str name: The name of the worksheet to be added. If specified, name should be unique.
-            If not specified, Excel determines the name of the new worksheet.
+        Args:
+            name (str): The name of the worksheet to be added. If specified, name should be unique. If not specified, Excel determines the name of the new worksheet.
         """
         return_type = WorkbookWorksheet(self.context)
         self.add_child(return_type)

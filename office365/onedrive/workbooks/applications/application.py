@@ -14,8 +14,8 @@ class WorkbookApplication(Entity):
     def calculate(self, calculation_type: str | None = None) -> Self:
         """Recalculate all currently opened workbooks in Excel.
 
-        :param str calculation_type: Specifies the calculation type to use. Possible values are: Recalculate, Full,
-            FullRebuild.
+        Args:
+            calculation_type (str): Specifies the calculation type to use. Possible values are: Recalculate, Full, FullRebuild.
         """
         payload = {"calculationType": calculation_type}
         qry = ServiceOperationQuery(self, "calculate", None, payload)
