@@ -36,7 +36,8 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         Args:
             context (office365.sharepoint.client_context.ClientContext):
             provider_id (str): The identifier of a claims provider.
-            hierarchy_node_id (str): The identifier of a node in the hierarchy. The search MUST be conducted under this node.
+            hierarchy_node_id (str): The identifier of a node in the hierarchy. The search MUST be conducted under
+                this node.
             entity_types (str): The type of principals to search for.
             context_url (str): The URL to use as context when searching for principals.
         """
@@ -84,7 +85,8 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint client context
             query_string (str): Specifies the value to be used in the principal query.
-            maximum_entity_suggestions (int): Specifies the maximum number of principals to be returned by the principal query.
+            maximum_entity_suggestions (int): Specifies the maximum number of principals to be returned by the
+                principal query.
         """
         return_type = ClientResult(context, str())
         binding_type = ClientPeoplePickerWebServiceInterface(context)
@@ -147,9 +149,11 @@ class PeoplePickerWebServiceInterface(Entity):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext):
-            search_pattern (str): Specifies a pattern used to search for principals. The value is implementation-specific.
+            search_pattern (str): Specifies a pattern used to search for principals. The value is
+                implementation-specific.
             provider_id (str): The identifier of a claims provider.
-            hierarchy_node_id (str): The identifier of a node in the hierarchy. The search MUST be conducted under this node.
+            hierarchy_node_id (str): The identifier of a node in the hierarchy. The search MUST be conducted under
+                this node.
             entity_types (str): The type of principals to search for.
         """
         return_type = ClientResult(context, str())

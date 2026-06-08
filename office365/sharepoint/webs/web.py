@@ -148,7 +148,7 @@ class Web(SecurableObject):
 
     def available_addins(self, server_relative_urls: Optional[list[str]] = None):
         """Args:
-            server_relative_urls (list[str]):
+        server_relative_urls (list[str]):
         """
         payload = {"serverRelativeUrls": server_relative_urls}
         return_type = ClientResult(self.context, SPAvailableAddinsResponse())
@@ -158,7 +158,7 @@ class Web(SecurableObject):
 
     def add_cross_farm_message(self, message: str) -> ClientResult[bool]:
         """Args:
-            message (str):
+        message (str):
         """
         payload = {"messagePayloadBase64": message}
         return_type = ClientResult(self.context, bool())
@@ -210,7 +210,8 @@ class Web(SecurableObject):
         Args:
             include_branding (bool): Extracts the configuration of the site's branding.
             included_lists (list[str] or None): A list of one or more lists. Each is identified by the list url.
-            include_links_to_exported_items (bool): Extracts navigation links. In order to export navigation links pointing to lists, the list needs to be included in the request as well.
+            include_links_to_exported_items (bool): Extracts navigation links. In order to export navigation
+                links pointing to lists, the list needs to be included in the request as well.
             include_regional_settings (bool): Extracts the site's regional settings.
         """
         result = ClientResult(self.context, SiteScriptSerializationResult())
@@ -317,7 +318,7 @@ class Web(SecurableObject):
 
     def get_client_side_components_by_component_type(self, component_types):
         """Args:
-            component_types (str):
+        component_types (str):
         """
         return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentIdentifier))
         payload = {"componentTypesString": component_types}
@@ -368,7 +369,8 @@ class Web(SecurableObject):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext):
-            url (str): he URL of the site, with the path of the object in SharePoint that is represented as query string parameters, forSharing set to 1 if sharing, and bypass set to 1 to bypass any mobile logic.
+            url (str): he URL of the site, with the path of the object in SharePoint that is represented as query
+                string parameters, forSharing set to 1 if sharing, and bypass set to 1 to bypass any mobile logic.
             is_edit_link (bool): If true, the link will allow the logged in user to edit privileges on the item.
         """
         return_type = ClientResult(context, str())
@@ -396,9 +398,11 @@ class Web(SecurableObject):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint client context
-            url (str): the URL of the site, with the path of the object in SharePoint that is represented as query string parameters, forSharing set to 1 if sharing, and bypass set to 1 to bypass any mobile logic.
+            url (str): the URL of the site, with the path of the object in SharePoint that is represented as query string
+            parameters, forSharing set to 1 if sharing, and bypass set to 1 to bypass any mobile logic.
             is_edit_link (bool): If true, the link will allow the logged in user to edit privileges on the item.
-            remove_associated_sharing_link_group (bool): Indicates whether to remove the groups that contain the users who have been given access to the shared object via the sharing link
+            remove_associated_sharing_link_group (bool): Indicates whether to remove the groups that contain the users
+            who have been given access to the shared object via the sharing link
         """
         payload = {
             "url": url,
@@ -445,7 +449,10 @@ class Web(SecurableObject):
         Args:
             user_login (str): The user logon name of the group owner.
             user_login2 (str): The secondary contact for the group.
-            group_name_seed (str): The name seed to use when creating of the full names of the default groups. For example, if the name seed is Contoso then the default groups will be created with the names: Contoso Owners, Contoso Members and Contoso Visitors. If the value of this parameter is null then the web title is used instead.
+            group_name_seed (str): The name seed to use when creating of the full names of the default groups.
+                For example, if the name seed is Contoso then the default groups will be created with the names:
+                Contoso Owners, Contoso Members and Contoso Visitors. If the value of this parameter is null then
+                the web title is used instead.
         """
         payload = {
             "userLogin": user_login,
@@ -483,7 +490,7 @@ class Web(SecurableObject):
 
     def sync_flow_instances(self, target_web_url: str) -> FlowSynchronizationResult:
         """Args:
-            target_web_url (str):
+        target_web_url (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"targetWebUrl": target_web_url}
@@ -493,7 +500,7 @@ class Web(SecurableObject):
 
     def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """Args:
-            category (str):
+        category (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"category": category}
@@ -512,8 +519,8 @@ class Web(SecurableObject):
         self, server_relative_urls: Optional[list[str]] = None, urls: Optional[list[str]] = None
     ) -> ClientResult[SPGetAddinPrincipalsResponse]:
         """Args:
-            server_relative_urls (list[str]):
-            urls (list[str]):
+        server_relative_urls (list[str]):
+        urls (list[str]):
         """
         payload = {"serverRelativeUrls": server_relative_urls, "urls": urls}
         return_type = ClientResult(self.context, SPGetAddinPrincipalsResponse())
@@ -544,7 +551,8 @@ class Web(SecurableObject):
         """It MUST return an array of 3rd party webpart components installed on this site
 
         Args:
-            include_errors (bool): If true, webparts with errors MUST be included in the results of the request. If false, webparts with errors MUST be excluded in the results of the request.
+            include_errors (bool): If true, webparts with errors MUST be included in the results of the request.
+                If false, webparts with errors MUST be excluded in the results of the request.
             project (str):
         """
         return_type = ClientResult(self.context, ClientValueCollection(SPClientSideComponentQueryResult))
@@ -565,7 +573,7 @@ class Web(SecurableObject):
 
     def get_lists(self, row_limit: int = 100) -> ListCollection:
         """Args:
-            row_limit (int): Specifies a limit for the number of lists in the query that are returned per page
+        row_limit (int): Specifies a limit for the number of lists in the query that are returned per page
         """
         return_type = ListCollection(self.context)
         payload = {"getListsParams": GetListsParameters(RowLimit=row_limit)}
@@ -783,7 +791,8 @@ class Web(SecurableObject):
 
         Args:
             is_edit_link (bool): If true, the link will allow the guest user edit privileges on the item.
-            url (str): The URL of the site, with the path of the object in SharePoint represented as query string parameters
+            url (str): The URL of the site, with the path of the object in SharePoint represented as query string
+                parameters
             context (office365.sharepoint.client_context.ClientContext): client context
             return_type (ClientResult[str]): Return type
         """
@@ -809,8 +818,13 @@ class Web(SecurableObject):
 
         Args:
             is_edit_link (bool): If true, the link will allow the guest user edit privileges on the item.
-            url (str): The URL of the site, with the path of the object in SharePoint represented as query string parameters
-            expiration_string (str): A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day, and which represents the time and date of expiry for the anonymous link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00.
+            url (str): The URL of the site, with the path of the object in SharePoint represented as query string
+                parameters
+            expiration_string (str): A date/time string for which the format conforms to the ISO 8601:2004(E) complete
+            representation for calendar date and time of day, and which represents the time and date of expiry for the
+            anonymous link. Both the minutes and hour value MUST be specified for the difference between the local
+                and UTC time.
+            Midnight is represented as 00:00:00.
             context (office365.sharepoint.client_context.ClientContext): client context
             return_type (ClientResult): Return type
         """
@@ -846,9 +860,15 @@ class Web(SecurableObject):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint client
-            object_url (str): A URL with one of two possible formats. The two possible URL formats are: 1) The URL of the site, with the path of the object in SharePoint represented as query string parameters, forSharing set to 1 if sharing, and mbypass set to 1 to bypass any mobile logic e.g. https://contoso.com/?forSharing=1&mbypass=1&List=%7BCF908473%2D72D4%2D449D%2D8A53%2D4BD01EC54B84%7D& obj={CF908473-72D4-449D-8A53-4BD01EC54B84},1,DOCUMENT 2) The URL of the SharePoint object (web, list, item) intended for sharing e.g. https://contoso.com/Documents/SampleFile.docx
+            object_url (str): A URL with one of two possible formats. The two possible URL formats are: 1) The URL
+            of the site, with the path of the object in SharePoint represented as query string parameters,
+            forSharing set to 1 if sharing, and mbypass set to 1 to bypass any mobile logic e.g.
+            https://contoso.com/?forSharing=1&mbypass=1&List=%7BCF908473%2D72D4%2D449D%2D8A53%2D4BD01EC54B84%7D&
+            obj={CF908473-72D4-449D-8A53-4BD01EC54B84},1,DOCUMENT 2) The URL of the SharePoint object
+            (web, list, item) intended for sharing e.g. https://contoso.com/Documents/SampleFile.docx
             group_id (int): The id value of the permissions group if adding to a group, 0 otherwise.
-            use_simplified_roles (bool): A Boolean value indicating whether to use the SharePoint simplified roles (Edit, View) or not.
+            use_simplified_roles (bool): A Boolean value indicating whether to use the SharePoint simplified
+            roles (Edit, View) or not.
             return_type (ObjectSharingSettings): Return type
         """
         if return_type is None:
@@ -937,7 +957,7 @@ class Web(SecurableObject):
 
     def get_site_page_copy_to_status(self, work_item_id):
         """Args:
-            work_item_id (str):
+        work_item_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"workItemId": work_item_id}
@@ -947,7 +967,7 @@ class Web(SecurableObject):
 
     def get_site_page_move_status(self, work_item_id):
         """Args:
-            work_item_id (str):
+        work_item_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"workItemId": work_item_id}
@@ -965,7 +985,7 @@ class Web(SecurableObject):
 
     def ensure_edu_class_setup(self, bypass_for_automation):
         """Args:
-            bypass_for_automation (bool):
+        bypass_for_automation (bool):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"byPassForAutomation": bypass_for_automation}
@@ -988,7 +1008,7 @@ class Web(SecurableObject):
 
     def ensure_tenant_app_catalog(self, caller_id):
         """Args:
-            caller_id (str):
+        caller_id (str):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"callerId": caller_id}
@@ -1108,7 +1128,9 @@ class Web(SecurableObject):
         """Retrieves data describing a SharePoint hub site.
 
         Args:
-            force_refresh (bool): Default value is false. When false, the data is returned from the server's cache. When true, the cache is refreshed with the latest updates and then returned. Use this if you just made changes and need to see those changes right away.
+            force_refresh (bool): Default value is false. When false, the data is returned from the server's cache.
+                When true, the cache is refreshed with the latest updates and then returned. Use this if you just made
+                changes and need to see those changes right away.
         """
         return_type = ClientResult(self.context, str())
         payload = {"forceRefresh": force_refresh}
@@ -1156,8 +1178,15 @@ class Web(SecurableObject):
 
         Args:
             guest_url (str): The tokenized sharing link URL for the folder.
-            password (str): This value contains the password to be supplied to a tokenized sharing link for validation. This value is only needed if the link requires a password before granting access and the calling user does not currently have perpetual access through the tokenized sharing link. This value MUST be set to the correct password for the tokenized sharing link for the access granting operation to succeed. If the tokenized sharing link does not require a password or the calling user already has perpetual access through the tokenized sharing link, this value will be ignored.
-            ensure_access (bool): Indicates if the request to the tokenized sharing link grants perpetual access to the calling user.
+            password (str): This value contains the password to be supplied to a tokenized sharing link for
+            validation. This value is only needed if the link requires a password before granting access
+            and the calling user does not currently have perpetual access through the tokenized sharing link.
+            This value MUST be set to the correct password for the tokenized sharing link for the access
+            granting operation to succeed. If the tokenized sharing link does not require a password
+            or the calling user already has perpetual access through the tokenized sharing link, this
+            value will be ignored.
+            ensure_access (bool): Indicates if the request to the tokenized sharing link grants
+            perpetual access to the calling user.
         """
         return_type = File(self.context)
         payload = {
@@ -1173,7 +1202,9 @@ class Web(SecurableObject):
 
         Args:
             guest_url (str): The guest access URL to get the file with.
-            ensure_access (bool): Indicates if the request to the tokenized sharing link grants perpetual access to the calling user. If it is set to true then the user who is requesting the file will be granted perpetual permissions through the tokenized sharing link.
+            ensure_access (bool): Indicates if the request to the tokenized sharing link grants perpetual access
+                to the calling user. If it is set to true then the user who is requesting the file will be granted
+                perpetual permissions through the tokenized sharing link.
         """
         return_type = File(self.context)
         payload = {"guestUrl": guest_url, "ensureAccess": ensure_access}
@@ -1185,7 +1216,8 @@ class Web(SecurableObject):
         """Returns the file object from the linking URL.
 
         Args:
-            linking_url (str): The linking URL to return the file object for. A linking URL can be obtained from LinkingUrl.
+            linking_url (str): The linking URL to return the file object for. A linking URL
+            can be obtained from LinkingUrl.
         """
         return_type = File(self.context)
         payload = {"linkingUrl": linking_url}
@@ -1233,8 +1265,15 @@ class Web(SecurableObject):
 
         Args:
             guest_url (str): The tokenized sharing link URL for the folder.
-            password (str): This value contains the password to be supplied to a tokenized sharing link for validation. This value is only needed if the link requires a password before granting access and the calling user does not currently have perpetual access through the tokenized sharing link. This value MUST be set to the correct password for the tokenized sharing link for the access granting operation to succeed. If the tokenized sharing link does not require a password or the calling user already has perpetual access through the tokenized sharing link, this value will be ignored.
-            ensure_access (bool): Indicates if the request to the tokenized sharing link grants perpetual access to the calling user.
+            password (str): This value contains the password to be supplied to a tokenized sharing link for
+            validation. This value is only needed if the link requires a password before granting access
+            and the calling user does not currently have perpetual access through the tokenized sharing link.
+            This value MUST be set to the correct password for the tokenized sharing link for the access
+            granting operation to succeed. If the tokenized sharing link does not require a password or
+            the calling user already has perpetual access through the tokenized sharing link, this value
+            will be ignored.
+            ensure_access (bool): Indicates if the request to the tokenized sharing link grants perpetual access
+                to the calling user.
         """
         return_type = Folder(self.context, parent_collection=self.folders)
         payload = {
@@ -1254,7 +1293,9 @@ class Web(SecurableObject):
         """Returns parsed DateTime value.
 
         Args:
-            value (str): The input is the string of a datetime that's in web's local time and in web's calendar. For example, the input "09/08/1430" when web's calendar was set to Hijri, the actual datetime is 07/31/2009 in Gregorian calendar.
+            value (str): The input is the string of a datetime that's in web's local time and in web's calendar.
+            For example, the input "09/08/1430" when web's calendar was set to Hijri, the actual datetime
+            is 07/31/2009 in Gregorian calendar.
             display_format (int): Int value representing SP.DateTimeFieldFormatType
             calendar_type (int): Int value representing SP.CalendarType
         """
@@ -1422,7 +1463,8 @@ class Web(SecurableObject):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            url (str): The URL of the object being shared, with the path of the object in SharePoint that is represented as query string parameters.
+            url (str): The URL of the object being shared, with the path of the object in SharePoint that is
+                represented as query string parameters.
         """
         payload = {"url": url}
         qry = ServiceOperationQuery(context.web, "DeleteAllAnonymousLinksForObject", None, payload)
@@ -1436,9 +1478,12 @@ class Web(SecurableObject):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            url (str): The URL of the object being shared, with the path of the object in SharePoint that is represented as query string parameters.
-            is_edit_link (bool): If true, the edit link for the object will be removed. If false, the view only link for the object will be removed.
-            remove_associated_sharing_link_group (bool): Indicates whether to remove the groups that contain the users who have been given access to the shared object via the sharing link¹.
+            url (str): The URL of the object being shared, with the path of the object in SharePoint that is
+                represented as query string parameters.
+            is_edit_link (bool): If true, the edit link for the object will be removed. If false, the view only
+                link for the object will be removed.
+            remove_associated_sharing_link_group (bool): Indicates whether to remove the groups that contain the
+                users who have been given access to the shared object via the sharing link¹.
         """
         payload = {
             "url": url,
@@ -1558,10 +1603,12 @@ class Web(SecurableObject):
             group_id (int): The ID of the group to be added. Zero if not adding to a permissions group.
             propagate_acl (bool): A flag to determine if permissions SHOULD be pushed to items with unique permissions
             send_email (bool): A flag to determine if an email notification SHOULD be sent (if email is configured).
-            include_anonymous_link_in_email (bool): If an email is being sent, this determines if an anonymous link SHOULD be added to the message.
+            include_anonymous_link_in_email (bool): If an email is being sent, this determines if an anonymous link
+                SHOULD be added to the message.
             email_subject (str): The email subject.
             email_body (str): The email subject.
-            use_simplified_roles (bool): A Boolean value indicating whether to use the SharePoint simplified roles (Edit, View) or not.
+            use_simplified_roles (bool): A Boolean value indicating whether to use the SharePoint simplified
+            roles (Edit, View) or not.
             return_type (SharingResult or None): Return type
         """
         if return_type is None:
@@ -1614,7 +1661,8 @@ class Web(SecurableObject):
         """Returns the list item that is associated with the specified server-relative URL.
 
         Args:
-            str_url (str): A string that contains the server-relative URL, for example, "/sites/MySite/Shared Documents/MyDocument.docx".
+            str_url (str): A string that contains the server-relative URL,
+            for example, "/sites/MySite/Shared Documents/MyDocument.docx".
         """
         return ListItem(
             self.context,
@@ -1625,7 +1673,9 @@ class Web(SecurableObject):
         """Returns the list item that is associated with the specified server-relative path.
 
         Args:
-            decoded_url (str): A string that contains the server-relative path, for example, "/sites/MySite/Shared Documents/MyDocument.docx" or "Shared Documents/MyDocument.docx".
+            decoded_url (str): A string that contains the server-relative path,
+            for example, "/sites/MySite/Shared Documents/MyDocument.docx"
+            or "Shared Documents/MyDocument.docx".
         """
         params = SPResPath.create_relative(self.context.base_url, decoded_url)
         return ListItem(
@@ -1751,7 +1801,7 @@ class Web(SecurableObject):
 
     def set_access_request_site_description_and_update(self, description: Optional[str] = None) -> Self:
         """Args:
-            description (str):
+        description (str):
         """
         payload = {"description": description}
         qry = ServiceOperationQuery(self, "SetAccessRequestSiteDescriptionAndUpdate", None, payload)
@@ -1760,8 +1810,8 @@ class Web(SecurableObject):
 
     def set_global_nav_settings(self, title: str, source: str) -> Self:
         """Args:
-            title (str):
-            source (str):
+        title (str):
+        source (str):
         """
         payload = {"title": title, "source": source}
         qry = ServiceOperationQuery(self, "SetGlobalNavSettings", None, payload)
@@ -1778,7 +1828,11 @@ class Web(SecurableObject):
         """Assign Document IDs
 
         Args:
-            site_prefix (str): Specify whether IDs will be automatically assigned to all documents in the Site Collection. Additionally, you can specify a set of 4-12 characters that will be used at the beginning of all IDs assigned for documents in this Site Collection, to help ensure that items in different Site Collections will never get the same ID. Note: A timer job will be scheduled to assign IDs to documents already in the Site Collection.
+            site_prefix (str): Specify whether IDs will be automatically assigned to all documents in the Site
+            Collection. Additionally, you can specify a set of 4-12 characters that will be used at the
+            beginning of all IDs assigned for documents in this Site Collection, to help ensure that items in
+            different Site Collections will never get the same ID. Note: A timer job will be scheduled to assign
+            IDs to documents already in the Site Collection.
             enabled (bool):
         """
 
