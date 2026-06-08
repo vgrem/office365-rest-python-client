@@ -1,8 +1,7 @@
 """
 Shared mailboxes: list, check quotas, and find without owners.
 
-IT Pros need to track shared mailboxes for licensing and
-governance.
+Track shared mailboxes for licensing and governance.
 
 Requires delegated permission ``User.Read.All``.
 

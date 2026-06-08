@@ -1,7 +1,7 @@
 """
 Report: user sign-in activity, inactive accounts, and accounts without MFA.
 
-Common IT Pro audit scenarios for identity hygiene.
+Common audit scenarios for identity hygiene.
 
 Requires delegated permission ``User.Read.All``, ``AuditLog.Read.All``,
 ``Reports.Read.All``.
