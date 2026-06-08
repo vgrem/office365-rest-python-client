@@ -9,11 +9,12 @@ class ThemeInfo(Entity):
     """Specifies a theme for a site"""
 
     def get_theme_font_by_name(self, name: str, lcid: int) -> ClientResult[str]:
-        """
-        Returns the name of the theme font for the specified font slot name and language code identifier (LCID).
+        """Returns the name of the theme font for the specified font slot name and language code identifier (LCID).
         MUST return null if the font slot does not exist.
-        :param str name: Name of the font slot.
-        :param int lcid: The language code identifier (LCID) for the required language.
+
+        Args:
+            name (str): Name of the font slot.
+            lcid (int): The language code identifier (LCID) for the required language.
         """
         return_type = ClientResult(self.context, str())
         payload = {"name": name, "lcid": lcid}

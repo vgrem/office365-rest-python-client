@@ -46,9 +46,10 @@ class Folder(Entity):
 
     @staticmethod
     def from_url(abs_url: str):
-        """
-        Addresses a Folder by absolute url
-        :type abs_url: str
+        """Addresses a Folder by absolute url
+
+        Args:
+            abs_url (str):
         """
         from office365.sharepoint.client_context import ClientContext
 
@@ -59,11 +60,12 @@ class Folder(Entity):
     def download_folder(
         self, download_file: IO, after_file_downloaded: Optional[Callable[[File], None]] = None, recursive: bool = True
     ):
-        """
-        Downloads a folder into a zip file
-        :param typing.IO download_file: A download zip file object
-        :param (office365.sharepoint.files.file.File)->None after_file_downloaded: A download callback
-        :param bool recursive: Determines whether to traverse folders recursively
+        """Downloads a folder into a zip file
+
+        Args:
+            download_file (typing.IO): A download zip file object
+            after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
+            recursive (bool): Determines whether to traverse folders recursively
         """
         return MoveCopyUtil.download_folder(self, download_file, after_file_downloaded, recursive)
 
@@ -72,9 +74,10 @@ class Folder(Entity):
         return self.list_item_all_fields.get_user_effective_permissions(user)
 
     def get_folders(self, recursive: bool = False) -> FolderCollection:
-        """
-        Retrieves folders
-        :param bool recursive: Determines whether to enumerate folders recursively
+        """Retrieves folders
+
+        Args:
+            recursive (bool): Determines whether to enumerate folders recursively
         """
         from office365.sharepoint.folders.collection import FolderCollection
 
@@ -90,9 +93,10 @@ class Folder(Entity):
         return return_type
 
     def get_files(self, recursive: bool = False) -> FileCollection:
-        """
-        Retrieves files
-        :param bool recursive: Determines whether to enumerate folders recursively
+        """Retrieves files
+
+        Args:
+            recursive (bool): Determines whether to enumerate folders recursively
         """
         from office365.sharepoint.files.collection import FileCollection
 
@@ -116,14 +120,13 @@ class Folder(Entity):
         return self.list_item_all_fields.get_sharing_information()
 
     def move_to(self, destination: Union[str, Folder]) -> Self:
-        """
-        Moves the folder and its contents under a new folder at the specified destination.
+        """Moves the folder and its contents under a new folder at the specified destination.
         This method applies only to the context of a single site.
 
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
 
-        :param str or Folder destination: Specifies the server relative url or an existing folder
-            where to move a folder.
+        Args:
+            destination (str or Folder): Specifies the server relative url or an existing folder where to move a folder.
         """
 
         def _move_to(destination_folder: Folder) -> None:
@@ -146,12 +149,11 @@ class Folder(Entity):
         return self
 
     def move_to_using_path(self, destination: Union[str, Folder]) -> Self:
-        """
-        Moves the folder and its contents to a new folder at the specified path.
+        """Moves the folder and its contents to a new folder at the specified path.
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
 
-        :param str or Folder destination: Specifies the server relative url or an existing folder
-            where to move a folder.
+        Args:
+            destination (str or Folder): Specifies the server relative url or an existing folder where to move a folder.
         """
 
         def _move_to_using_path(destination_folder: Folder) -> None:
@@ -178,8 +180,9 @@ class Folder(Entity):
     ) -> Folder:
         """Moves the folder with files to the destination Path.
 
-        :param str new_relative_path: A full URL path that represents the destination folder.
-        :param bool retain_editor_and_modified:
+        Args:
+            new_relative_path (str): A full URL path that represents the destination folder.
+            retain_editor_and_modified (bool):
         """
         return_type = Folder(self.context)
         return_type.set_property("ServerRelativePath", SPResPath(new_relative_path))
@@ -202,28 +205,22 @@ class Folder(Entity):
         """Creates a tokenized sharing link for a folder based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
-        :param link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-        :param expiration: A date/time string for which the format conforms to the ISO 8601:2004(E)
-            complete representation for calendar date and time of day and which represents the time and date of expiry
-            for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference
-            between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry.
-            This value is only applicable to tokenized sharing links that are anonymous access links.
-        :param role: The role to be used for the tokenized sharing link. This is required for Flexible links
-            and ignored for all other kinds.
-        :param password: Optional password value to apply to the tokenized sharing link,
-            if it can support password protection.
+        Args:
+            link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
         """
         return self.list_item_all_fields.share_link(
             link_kind=link_kind, expiration=expiration, role=role, password=password
         )
 
     def unshare_link(self, link_kind: int, share_id: Optional[str] = None) -> Self:
-        """
-        Removes the specified tokenized sharing link of the folder.
+        """Removes the specified tokenized sharing link of the folder.
 
-        :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
-            sharing link that is intended to be removed.
-        :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
+        Args:
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         return self.list_item_all_fields.unshare_link(link_kind, share_id)  # type: ignore[returnType]
 
@@ -235,10 +232,10 @@ class Folder(Entity):
         return return_type
 
     def recycle_with_parameters(self, parameters: FolderDeleteParameters) -> ClientResult[str]:
-        """
-        Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
+        """Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
 
-        :type parameters: FolderDeleteParameters
+        Args:
+            parameters (FolderDeleteParameters):
         """
         return_type = ClientResult(self.context, str())
         payload = {"parameters": parameters}
@@ -248,9 +245,10 @@ class Folder(Entity):
 
     def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the folder,
-           based on the specified query.
+        based on the specified query.
 
-        :param ChangeQuery query: Specifies which changes to return
+        Args:
+            query (ChangeQuery): Specifies which changes to return
         """
         if query is None:
             query = ChangeQuery(Folder=True)
@@ -261,11 +259,11 @@ class Folder(Entity):
         return return_type
 
     def get_list_item_changes(self, query: ChangeQuery) -> ChangeCollection:
-        """
-        Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
+        """Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
         folder based on the specified query.
 
-        :param ChangeQuery query: Specifies which changes to return
+        Args:
+            query (ChangeQuery): Specifies which changes to return
         """
         return_type = ChangeCollection(self.context)
         payload = {"query": query}
@@ -290,8 +288,9 @@ class Folder(Entity):
         """Uploads a file into folder.
         Note: This method only supports files up to 4MB in size!
 
-        :param str file_name: Specifies the URL of the file to be added
-        :param str or bytes content: Specifies the binary content of the file to be added.
+        Args:
+            file_name (str): Specifies the URL of the file to be added
+            content (str or bytes): Specifies the binary content of the file to be added.
         """
         return self.files.add(file_name, content, True)
 
@@ -305,33 +304,18 @@ class Folder(Entity):
         include_anonymous_links_in_notification: Optional[bool] = None,
         propagate_acl: Optional[bool] = None,
     ) -> ClientResult[ClientValueCollection[UserSharingResult]]:
-        """
-        This method allows a caller with the 'ManagePermission' permission to update sharing information about a
+        """This method allows a caller with the 'ManagePermission' permission to update sharing information about a
         document to enable document sharing with a set of users. It returns an array of
         UserSharingResult (section 3.2.5.190) elements where each element contains the sharing status for each user.
 
-        :param list[UserRoleAssignment] user_role_assignments:An array of recipients and assigned roles on the securable
-            object pointed to by the resourceAddress parameter.
-        :param bool validate_existing_permissions: A Boolean flag indicating how to honor a requested permission
-            for a user. If this value is "true", the protocol server will not grant the requested permission if a user
-            already has sufficient permissions, and if this value is "false", the protocol server will grant the
-            requested permission whether or not a user already has the same or more permissions.
-            This parameter is applicable only when the parameter additiveMode is set to true.
-        :param bool additive_mode: A Boolean flag indicating whether the permission setting uses the additive or strict
-            mode. If this value is "true", the permission setting uses the additive mode, which means that the
-            specified permission will be added to the user's current list of permissions if it is not there already,
-            and if this value is "false", the permission setting uses the strict mode, which means that the specified
-            permission will replace the user's current permissions.
-        :param bool send_server_managed_notification: A Boolean flag to indicate whether or not to generate an email
-            notification to each recipient in the "userRoleAssignments" array after the document update is completed
-            successfully. If this value is "true", the protocol server will send an email notification if an email
-            server is configured, and if the value is "false", no email notification will be sent.
-        :param str custom_message: A custom message to be included in the email notification.
-        :param bool include_anonymous_links_in_notification: A Boolean flag that indicates whether or not to include
-            anonymous access links in the email notification to each recipient in the userRoleAssignments array after
-            the document update is completed successfully. If the value is "true", the protocol server will include
-            an anonymous access link in the email notification, and if the value is "false", no link will be included.
-        :param bool propagate_acl: A flag to determine if permissions SHOULD be pushed to items with unique permission.
+        Args:
+            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the securable object pointed to by the resourceAddress parameter.
+            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for a user. If this value is "true", the protocol server will not grant the requested permission if a user already has sufficient permissions, and if this value is "false", the protocol server will grant the requested permission whether or not a user already has the same or more permissions. This parameter is applicable only when the parameter additiveMode is set to true.
+            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or strict mode. If this value is "true", the permission setting uses the additive mode, which means that the specified permission will be added to the user's current list of permissions if it is not there already, and if this value is "false", the permission setting uses the strict mode, which means that the specified permission will replace the user's current permissions.
+            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email notification to each recipient in the "userRoleAssignments" array after the document update is completed successfully. If this value is "true", the protocol server will send an email notification if an email server is configured, and if the value is "false", no email notification will be sent.
+            custom_message (str): A custom message to be included in the email notification.
+            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include anonymous access links in the email notification to each recipient in the userRoleAssignments array after the document update is completed successfully. If the value is "true", the protocol server will include an anonymous access link in the email notification, and if the value is "false", no link will be included.
+            propagate_acl (bool): A flag to determine if permissions SHOULD be pushed to items with unique permission.
         """
         return_type = ClientResult(self.context, ClientValueCollection(UserSharingResult))
 
@@ -358,9 +342,10 @@ class Folder(Entity):
     ) -> Folder:
         """Copies the folder with files to the destination URL.
 
-        :param str or Folder destination: Parent folder object or server relative folder url
-        :param bool keep_both: bool
-        :param bool reset_author_and_created:
+        Args:
+            destination (str or Folder): Parent folder object or server relative folder url
+            keep_both (bool): bool
+            reset_author_and_created (bool):
         """
         return_type = Folder(self.context)
         assert self.parent_collection is not None
@@ -387,9 +372,10 @@ class Folder(Entity):
     ) -> Folder:
         """Copies the folder with files to the destination Path.
 
-        :param str or Folder destination: Parent folder object or server relative folder url
-        :type keep_both: bool
-        :type reset_author_and_created: bool
+        Args:
+            destination (str or Folder): Parent folder object or server relative folder url
+            keep_both (bool):
+            reset_author_and_created (bool):
         """
         return_type = Folder(self.context)
         assert self.parent_collection is not None

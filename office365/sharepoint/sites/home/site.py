@@ -25,12 +25,12 @@ class SPHSite(Entity):
 
     @staticmethod
     def is_comm_site(context, site_url, return_value=None):
-        """
-        Determines whether a site is a communication site
+        """Determines whether a site is a communication site
 
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str site_url: URL of the site to return status for
-        :param ClientResult return_value:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_url (str): URL of the site to return status for
+            return_value (ClientResult):
         """
         if return_value is None:
             return_value = ClientResult(context)
@@ -41,12 +41,12 @@ class SPHSite(Entity):
 
     @staticmethod
     def is_modern_site_with_horizontal_nav(context, site_url, return_type=None):
-        """
-        Determines whether a site is a modern site with horizontal navigation
+        """Determines whether a site is a modern site with horizontal navigation
 
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str site_url: URL of the site to return status for
-        :param ClientResult return_type: Return value
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_url (str): URL of the site to return status for
+            return_type (ClientResult): Return value
         """
         if return_type is None:
             return_type = ClientResult(context)
@@ -65,12 +65,12 @@ class SPHSite(Entity):
 
     @staticmethod
     def is_valid_home_site(context, site_url, return_value=None):
-        """
-        Determines whether a site is landing site for your intranet.
+        """Determines whether a site is landing site for your intranet.
 
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str site_url: URL of the site to return status for
-        :param ClientResult return_value:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_url (str): URL of the site to return status for
+            return_value (ClientResult):
         """
 
         if return_value is None:
@@ -84,11 +84,10 @@ class SPHSite(Entity):
 
     @staticmethod
     def validate_home_site(context, site_url, validation_action_type):
-        """
-
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str site_url: URL of the site to return status for
-        :param int validation_action_type:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_url (str): URL of the site to return status for
+            validation_action_type (int):
         """
         sph = SPHSite(context)
         params = {"siteUrl": site_url, "validationActionType": validation_action_type}
@@ -98,13 +97,13 @@ class SPHSite(Entity):
 
     @staticmethod
     def set_as_home_site(context, site_url, viva_connections_default_start=None, return_value=None):
-        """
-        Sets a site as a landing site for your intranet.
+        """Sets a site as a landing site for your intranet.
 
-        :param ClientResult return_value:
-        :param office365.sharepoint.client_context.ClientContext context:
-        :param str site_url:
-        :param bool viva_connections_default_start:
+        Args:
+            return_value (ClientResult):
+            context (office365.sharepoint.client_context.ClientContext):
+            site_url (str):
+            viva_connections_default_start (bool):
         """
 
         if return_value is None:

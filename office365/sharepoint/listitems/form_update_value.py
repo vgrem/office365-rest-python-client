@@ -11,10 +11,10 @@ from office365.sharepoint.fields.lookup_value import FieldLookupValue
 class ListItemFormUpdateValue(ClientValue):
     """Specifies the properties of a list item field and its value.
 
-    :param str name: Specifies the field internal name for a field.
-    :param str value: Specifies a value for a field.
-    :param bool has_exception: Specifies whether there was an error result after validating the value for the field
-    param int ErrorCode: Specifies the error code after validating the value for the field
+    Args:
+        name (str): Specifies the field internal name for a field.
+        value (str): Specifies a value for a field.
+        has_exception (bool): Specifies whether there was an error result after validating the value for the field param int ErrorCode: Specifies the error code after validating the value for the field
     """
 
     FieldName: str | None = None

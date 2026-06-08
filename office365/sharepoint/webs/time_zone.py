@@ -12,11 +12,10 @@ class TimeZone(Entity):
     """Represents the time zone setting that is implemented on a SharePoint Web site."""
 
     def local_time_to_utc(self, date: datetime) -> ClientResult:  # type: ignore[type-arg]
-        """
-        Converts the specified date from local time to Coordinated Universal Time (UTC).
+        """Converts the specified date from local time to Coordinated Universal Time (UTC).
 
-        :param datetime date: The local date and time value to convert.
-        :return:
+        Args:
+            date (datetime): The local date and time value to convert.
         """
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "LocalTimeToUTC", [date], None, None, result)
@@ -24,8 +23,8 @@ class TimeZone(Entity):
         return result
 
     def set_id(self, _id):
-        """
-        :type _id: int
+        """Args:
+            _id (int):
         """
         qry = ServiceOperationQuery(self, "SetId", [_id], None, None, None)
         self.context.add_query(qry)

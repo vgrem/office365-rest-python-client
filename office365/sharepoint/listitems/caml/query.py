@@ -12,16 +12,15 @@ from office365.sharepoint.views.scope import ViewScope
 
 @dataclass
 class CamlQuery(ClientValue):
-    """
-    Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
+    """Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
 
     :type bool allowIncrementalResults: Specifies whether the incremental results can be returned.
-    :param ListItemCollectionPosition list_item_collection_position: Specifies the information required to
-        get the next page of data for the list view.
-    :param str view_xml: Specifies the XML schema that defines the list view.
-    :param str or None folder_server_relative_url: Specifies the server-relative URL of a list folder from which
-        results are to be returned.
-    :param bool dates_in_utc: Specifies whether the query returns dates in Coordinated Universal Time (UTC) format.
+
+    Args:
+        list_item_collection_position (ListItemCollectionPosition): Specifies the information required to get the next page of data for the list view.
+        view_xml (str): Specifies the XML schema that defines the list view.
+        folder_server_relative_url (str or None): Specifies the server-relative URL of a list folder from which results are to be returned.
+        dates_in_utc (bool): Specifies whether the query returns dates in Coordinated Universal Time (UTC) format.
     """
 
     DatesInUtc: bool = True
@@ -33,11 +32,11 @@ class CamlQuery(ClientValue):
 
     @staticmethod
     def parse(query_expr: str, scope: ViewScope = ViewScope.DefaultValue) -> CamlQuery:
-        """
-        Creates a CamlQuery object from a query expression
+        """Creates a CamlQuery object from a query expression
 
-        :param str query_expr: Defines the query for a view.
-        :param ViewScope scope: Specifies whether and how files and subfolders are included in a view.
+        Args:
+            query_expr (str): Defines the query for a view.
+            scope (ViewScope): Specifies whether and how files and subfolders are included in a view.
         """
         qry = CamlQuery()
         qry.ViewXml = f'<View Scope="{scope}"><Query>{query_expr}</Query></View>'

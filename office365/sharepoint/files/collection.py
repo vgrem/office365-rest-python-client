@@ -44,8 +44,10 @@ class FileCollection(EntityCollection[File]):
 
         Note: This method only supports files up to 4MB in size!
         Consider create_upload_session method instead for larger files
-        :param str or typing.IO path_or_file: Path where file to upload resides or file handle
-        :param str file_name: New file name
+
+        Args:
+            path_or_file (str or typing.IO): Path where file to upload resides or file handle
+            file_name (str): New file name
         """
         if isinstance(path_or_file, str):
             with open(path_or_file, "rb") as f:
@@ -128,15 +130,13 @@ class FileCollection(EntityCollection[File]):
             return self.add(file_name, f.read(), True)
 
     def add(self, url: str, content: Optional[bytes | str] = None, overwrite=False):
-        """
-        Adds a file to the collection based on provided file creation information. A reference to the SP.File that
+        """Adds a file to the collection based on provided file creation information. A reference to the SP.File that
         was added is returned.
 
-        :param str url: Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative
-            or absolute form. Its length MUST be equal to or greater than 1.
-        :param bool overwrite: Specifies whether to overwrite an existing file with the same name and in the same
-            location as the one being added.
-        :param str or bytes or None content: Specifies the binary content of the file to be added.
+        Args:
+            url (str): Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative or absolute form. Its length MUST be equal to or greater than 1.
+            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same location as the one being added.
+            content (str or bytes or None): Specifies the binary content of the file to be added.
         """
         return_type = File(self.context)
         self.add_child(return_type)
@@ -148,8 +148,9 @@ class FileCollection(EntityCollection[File]):
     def add_template_file(self, url_of_file: str, template_file_type: TemplateFileType):
         """Adds a ghosted file to an existing list or document library.
 
-        :param str url_of_file: server relative url of a file
-        :param int template_file_type: refer TemplateFileType enum
+        Args:
+            url_of_file (str): server relative url of a file
+            template_file_type (int): refer TemplateFileType enum
         """
         return_type = File(self.context)
         self.add_child(return_type)

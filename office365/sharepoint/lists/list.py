@@ -137,14 +137,14 @@ class List(SecurableObject):
         document_template_type: DocumentTemplateType = DocumentTemplateType.Word,
         template_url: Optional[str] = None,
     ):
-        """
-        Creates a document at the path and of the type specified within the current list.
+        """Creates a document at the path and of the type specified within the current list.
         Returns an edit link to the file.
 
-        :param str file_name: Specifies the name of the document.
-        :param str folder_path: Specifies the path within the current list to create the document in.
-        :param str document_template_type: A number representing the type of document to create.
-        :param str template_url: Specifies the URL of the document template (2) to base the new document on.
+        Args:
+            file_name (str): Specifies the name of the document.
+            folder_path (str): Specifies the path within the current list to create the document in.
+            document_template_type (str): A number representing the type of document to create.
+            template_url (str): Specifies the URL of the document template (2) to base the new document on.
         """
         return_type: ClientResult[str] = ClientResult(self.context, str())
         payload = {
@@ -158,8 +158,8 @@ class List(SecurableObject):
         return return_type
 
     def delete_rule(self, rule_id) -> Self:
-        """
-        :param str rule_id:
+        """Args:
+            rule_id (str):
         """
         payload = {"ruleId": rule_id}
         qry = ServiceOperationQuery(self, "DeleteRule", None, payload)
@@ -174,10 +174,10 @@ class List(SecurableObject):
         return return_type
 
     def get_bloom_filter(self, start_item_id: Optional[int] = None) -> ListBloomFilter:
-        """
-        Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current list
+        """Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current list
 
-        :param int start_item_id: he ID of the list item to start the search at.
+        Args:
+            start_item_id (int): he ID of the list item to start the search at.
         """
         return_type = ListBloomFilter(self.context)
         payload = {"startItemId": start_item_id}
@@ -277,7 +277,8 @@ class List(SecurableObject):
     def get_site_script(self, options: Optional[Dict] = None) -> ClientResult[str]:
         """Creates site script syntax
 
-        :param dict or None options:
+        Args:
+            options (dict or None):
         """
         return_type = ClientResult(self.context)
 
@@ -319,10 +320,10 @@ class List(SecurableObject):
     def search_lookup_field_choices(
         self, target_field_name: str, begins_with_search_string: str, paging_info: str
     ) -> FlowSynchronizationResult:
-        """
-        :param str target_field_name:
-        :param str begins_with_search_string:
-        :param str paging_info:
+        """Args:
+            target_field_name (str):
+            begins_with_search_string (str):
+            paging_info (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {
@@ -335,8 +336,8 @@ class List(SecurableObject):
         return return_type
 
     def sync_flow_callback_url(self, flow_id: object) -> FlowSynchronizationResult:
-        """
-        :param str flow_id:
+        """Args:
+            flow_id (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "SyncFlowCallbackUrl", None, {"flowId": flow_id}, None, return_type)
@@ -344,8 +345,8 @@ class List(SecurableObject):
         return return_type
 
     def sync_flow_instance(self, flow_id: str) -> FlowSynchronizationResult:
-        """
-        :param str flow_id:
+        """Args:
+            flow_id (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "SyncFlowInstance", None, {"flowId": flow_id}, None, return_type)
@@ -353,8 +354,8 @@ class List(SecurableObject):
         return return_type
 
     def sync_flow_instances(self, retrieve_group_flows: bool) -> FlowSynchronizationResult:
-        """
-        :param bool retrieve_group_flows:
+        """Args:
+            retrieve_group_flows (bool):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"retrieveGroupFlows": retrieve_group_flows}
@@ -363,8 +364,8 @@ class List(SecurableObject):
         return return_type
 
     def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
-        """
-        :param str category:
+        """Args:
+            category (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"category": category}
@@ -373,12 +374,12 @@ class List(SecurableObject):
         return return_type
 
     def create_document_with_default_name(self, folder_path: str, extension: str):
-        """
-        Creates a empty document with default filename with the given extension at the path given by folderPath.
+        """Creates a empty document with default filename with the given extension at the path given by folderPath.
         Returns the name of the newly created document.
 
-        :param str folder_path: The path within the current list at which to create the document.
-        :param str extension: The file extension without dot prefix.
+        Args:
+            folder_path (str): The path within the current list at which to create the document.
+            extension (str): The file extension without dot prefix.
         """
         return_type: ClientResult[str] = ClientResult(self.context)
         payload = {"folderPath": folder_path, "extension": extension}
@@ -401,12 +402,11 @@ class List(SecurableObject):
         return return_type
 
     def render_list_data(self, view_xml: str) -> ClientResult[bytes]:
-        """
-        Returns the data for the specified query view. The result is implementation-specific, used for
+        """Returns the data for the specified query view. The result is implementation-specific, used for
         providing data to a user interface.
 
-        :param str view_xml:  Specifies the query as XML that conforms to the ViewDefinition type as specified in
-            [MS-WSSCAML] section 2.3.2.17.
+        Args:
+            view_xml (str): Specifies the query as XML that conforms to the ViewDefinition type as specified in [MS-WSSCAML] section 2.3.2.17.
         """
         return_type = ClientResult(self.context)
         payload = {"viewXml": view_xml}
@@ -426,18 +426,18 @@ class List(SecurableObject):
         field_internal_name: Optional[str] = None,
         return_type: Optional[ClientResult[bytes]] = None,
     ) -> ClientResult[bytes]:
-        """
-        Returns list data from the specified list url and for the specified query parameters.
+        """Returns list data from the specified list url and for the specified query parameters.
 
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        :param str list_full_url: The absolute URL of the list.
-        :param RenderListDataParameters parameters: The parameters to be used.
-        :param str casc_del_warn_message:
-        :param str custom_action:
-        :param str drill_down:
-        :param str field:
-        :param str field_internal_name:
-        :param ClientResult[dict] return_type: The return type.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
+            list_full_url (str): The absolute URL of the list.
+            parameters (RenderListDataParameters): The parameters to be used.
+            casc_del_warn_message (str):
+            custom_action (str):
+            drill_down (str):
+            field (str):
+            field_internal_name (str):
+            return_type (ClientResult[dict]): The return type.
         """
         if return_type is None:
             return_type = ClientResult(context, bytes())
@@ -460,12 +460,12 @@ class List(SecurableObject):
         parameters: Optional[RenderListDataParameters] = None,
         return_type: Optional[ClientResult[bytes]] = None,
     ) -> ClientResult[bytes]:
-        """
-        Returns list data from the specified list url and for the specified query parameters.
+        """Returns list data from the specified list url and for the specified query parameters.
 
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        :param RenderListDataParameters parameters: The parameters to be used.
-        :param ClientResult[dict] return_type: The return type.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
+            parameters (RenderListDataParameters): The parameters to be used.
+            return_type (ClientResult[dict]): The return type.
         """
         if return_type is None:
             return_type = ClientResult(context, bytes())
@@ -492,17 +492,14 @@ class List(SecurableObject):
         checkin_comment=None,
         folder_path=None,
     ):
-        """
-        Validate and update multiple list items.
+        """Validate and update multiple list items.
 
-        :param list[int] item_ids: A collection of item Ids that need to be updated with the same formValues.
-        :param list[ListItemFormUpdateValue] form_values: A collection of field internal names and values
-            for the given field. If the collection is empty, no update will take place.
-        :param bool new_document_update: Indicates whether the list item is a document being updated after upload.
-            A value of "true" means yes.
-        :param str checkin_comment: The comment of check in if any. It's only applicable when the item is checked out.
-        :param str folder_path: Decoded path of the folder where the items belong to. If not provided,
-            the server will try to find items to update under root folder.
+        Args:
+            item_ids (list[int]): A collection of item Ids that need to be updated with the same formValues.
+            form_values (list[ListItemFormUpdateValue]): A collection of field internal names and values for the given field. If the collection is empty, no update will take place.
+            new_document_update (bool): Indicates whether the list item is a document being updated after upload. A value of "true" means yes.
+            checkin_comment (str): The comment of check in if any. It's only applicable when the item is checked out.
+            folder_path (str): Decoded path of the folder where the items belong to. If not provided, the server will try to find items to update under root folder.
         """
         return_type = ClientResult(self.context, ClientValueCollection(ListItemFormUpdateValue))
         params = {
@@ -517,10 +514,11 @@ class List(SecurableObject):
         return return_type
 
     def get_lookup_field_choices(self, target_field_name: str, paging_info: Optional[str] = None) -> ClientResult[str]:
-        """
-        Retrieves the possible choices or values for a lookup field in a SharePoint list
-        :param str target_field_name:
-        :param str paging_info:
+        """Retrieves the possible choices or values for a lookup field in a SharePoint list
+
+        Args:
+            target_field_name (str):
+            paging_info (str):
         """
         return_type = ClientResult(self.context, str())
         params = {"targetFieldName": target_field_name, "pagingInfo": paging_info}
@@ -540,15 +538,15 @@ class List(SecurableObject):
         return return_type  # type: ignore[return-type]
 
     def save_as_new_view(self, old_name: str, new_name: str, private_view: bool, uri: str) -> ClientResult[str]:
-        """
-        Overwrites a view if it already exists, creates a new view if it does not; and then extracts the
+        """Overwrites a view if it already exists, creates a new view if it does not; and then extracts the
         implementation-specific filter and sort information from the URL and builds and updates the view's XML.
         Returns the URL of the view.
 
-        :param str old_name: The name of the view the user is currently on.
-        :param str new_name: The new name given by the user.
-        :param bool private_view: Set to "true" to make the view private; otherwise, "false".
-        :param str uri: URL that contains all the implementation-specific filter and sort information for the view.
+        Args:
+            old_name (str): The name of the view the user is currently on.
+            new_name (str): The new name given by the user.
+            private_view (bool): Set to "true" to make the view private; otherwise, "false".
+            uri (str): URL that contains all the implementation-specific filter and sort information for the view.
         """
         payload = {
             "oldName": old_name,
@@ -562,14 +560,14 @@ class List(SecurableObject):
         return return_type
 
     def save_as_template(self, file_name: str, name: str, description: str, save_data: bool) -> Self:
-        """
-        Saves the list as a template in the list template gallery and includes the option of saving with or
+        """Saves the list as a template in the list template gallery and includes the option of saving with or
         without the data that is contained in the current list.
 
-        :param bool save_data: true to save the data of the original list along with the list template; otherwise, false
-        :param str description: A string that contains the description for the list template.
-        :param str name: A string that contains the title for the list template.
-        :param str file_name: A string that contains the file name for the list template with an .stp extension.
+        Args:
+            save_data (bool): true to save the data of the original list along with the list template; otherwise, false
+            description (str): A string that contains the description for the list template.
+            name (str): A string that contains the title for the list template.
+            file_name (str): A string that contains the file name for the list template with an .stp extension.
         """
         payload = {
             "strFileName": file_name,
@@ -582,9 +580,10 @@ class List(SecurableObject):
         return self
 
     def get_item_by_unique_id(self, unique_id: str) -> ListItem:
-        """
-        Returns the list item with the specified ID.
-        :param str unique_id: The unique ID that is associated with the list item.
+        """Returns the list item with the specified ID.
+
+        Args:
+            unique_id (str): The unique ID that is associated with the list item.
         """
         return ListItem(
             self.context,
@@ -592,9 +591,10 @@ class List(SecurableObject):
         )
 
     def get_web_dav_url(self, source_url: str) -> ClientResult[str]:
-        """
-        Gets the trusted URL for opening the folder in Explorer view.
-        :param str source_url: The URL of the current folder the user is in.
+        """Gets the trusted URL for opening the folder in Explorer view.
+
+        Args:
+            source_url (str): The URL of the current folder the user is in.
         """
 
         return_type = ClientResult(self.context, str())
@@ -649,10 +649,11 @@ class List(SecurableObject):
         return return_type
 
     def create_wiki_page(self, page_name: str, page_content: str) -> File:
-        """
-        Creates a wiki page.
-        :param str page_name:
-        :param str page_content:
+        """Creates a wiki page.
+
+        Args:
+            page_name (str):
+            page_content (str):
         """
         return_type = File(self.context)
         self.root_folder.files.add_child(return_type)
@@ -667,17 +668,12 @@ class List(SecurableObject):
         return return_type
 
     def add_item_using_path(self, leaf_name: str, object_type: int, folder_url: str) -> ListItem:
-        """
-        Adds a ListItem to an existing List.
+        """Adds a ListItem to an existing List.
 
-        :param str leaf_name: Specifies the name of the list item that will be created. In the case of a
-            document library, the name is equal to the filename of the list item.
-        :param int object_type: Specifies the file system object type for the item that will be created.
-            It MUST be either FileSystemObjectType.File or FileSystemObjectType.Folder.
-        :param str ot None folder_url: Specifies the url of the folder of the new list item.
-            The value MUST be either null or the decoded url value an empty string or a server-relative
-            URL or an absolute URL. If the value is not null or the decoded url value not being empty string,
-            the decoded url value MUST point to a location within the list.
+        Args:
+            leaf_name (str): Specifies the name of the list item that will be created. In the case of a document library, the name is equal to the filename of the list item.
+            object_type (int): Specifies the file system object type for the item that will be created. It MUST be either FileSystemObjectType.File or FileSystemObjectType.Folder.
+            folder_url (str ot None): Specifies the url of the folder of the new list item. The value MUST be either null or the decoded url value an empty string or a server-relative URL or an absolute URL. If the value is not null or the decoded url value not being empty string, the decoded url value MUST point to a location within the list.
         """
         parameters = ListItemCreationInformationUsingPath(leaf_name, object_type, FolderPath=folder_url)
         return_type = ListItem(self.context)
@@ -689,14 +685,12 @@ class List(SecurableObject):
     def add_validate_update_item(
         self, create_info: ListItemCreationInformation, form_values: Optional[Dict] = None
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
-        """
-        Adds an item to an existing list and validate the list item update values. If all fields validated successfully,
-         commit all changes. If there's any exception in any of the fields, the item will not be committed.
+        """Adds an item to an existing list and validate the list item update values. If all fields validated successfully,
+        commit all changes. If there's any exception in any of the fields, the item will not be committed.
 
-        :param ListItemCreationInformation create_info:  Contains the information that determines how the item
-            will be created.
-        :param dict form_values: A collection of field internal names and values for the given field. If the collection
-            is empty, no update will take place.
+        Args:
+            create_info (ListItemCreationInformation): Contains the information that determines how the item will be created.
+            form_values (dict): A collection of field internal names and values for the given field. If the collection is empty, no update will take place.
         """
         assert form_values is not None
         payload = {
@@ -733,7 +727,9 @@ class List(SecurableObject):
 
     def get_view(self, view_id: str) -> View:
         """Returns the list view with the specified view identifier.
-        :type view_id: str
+
+        Args:
+            view_id (str):
         """
         return View(
             self.context,
@@ -743,9 +739,10 @@ class List(SecurableObject):
 
     def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the list,
-           based on the specified query.
+        based on the specified query.
 
-        :param ChangeQuery query: Specifies which changes to return
+        Args:
+            query (ChangeQuery): Specifies which changes to return
         """
         if query is None:
             query = ChangeQuery(List=True)
@@ -773,9 +770,10 @@ class List(SecurableObject):
     ) -> ClientResult[bytes]:
         """Returns the data for the specified query view.
 
-        :param str view_xml: Specifies the CAML view XML.
-        :param int render_options: Specifies the type of output to return.
-        :param bool expand_groups: Specifies whether to expand the grouping or not.
+        Args:
+            view_xml (str): Specifies the CAML view XML.
+            render_options (int): Specifies the type of output to return.
+            expand_groups (bool): Specifies whether to expand the grouping or not.
         """
         return_type = ClientResult(self.context, bytes())
         if view_xml is None:
@@ -811,12 +809,12 @@ class List(SecurableObject):
     def get_special_folder_url(
         self, folder_type: int, force_create: bool, existing_folder_guid: str
     ) -> ClientResult[str]:
-        """
-        Gets the relative URL of the Save to OneDrive folder.
+        """Gets the relative URL of the Save to OneDrive folder.
 
-        :param int folder_type: The Save-to-OneDrive type.
-        :param bool force_create: Specify true if the folder doesn't exist and SHOULD be created.
-        :param str existing_folder_guid:  The GUID of the created folders that exist, if any.
+        Args:
+            folder_type (int): The Save-to-OneDrive type.
+            force_create (bool): Specify true if the folder doesn't exist and SHOULD be created.
+            existing_folder_guid (str): The GUID of the created folders that exist, if any.
         """
         payload = {
             "type": folder_type,

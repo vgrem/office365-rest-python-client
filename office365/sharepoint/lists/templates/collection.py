@@ -12,6 +12,8 @@ class ListTemplateCollection(EntityCollection[ListTemplate]):
 
     def get_by_name(self, name: str) -> ListTemplate:
         """Returns the list template with the specified name.
-        :param str name: The specified name.
+
+        Args:
+            name (str): The specified name.
         """
         return ListTemplate(self.context, ServiceOperationPath("getByName", [name], self.resource_path))

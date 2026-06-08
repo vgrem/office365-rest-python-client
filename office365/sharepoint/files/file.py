@@ -79,9 +79,10 @@ class File(AbstractFile):
 
     @staticmethod
     def from_url(abs_url: str) -> File:
-        """
-        Retrieves a File from absolute url
-        :type abs_url: str
+        """Retrieves a File from absolute url
+
+        Args:
+            abs_url (str):
         """
         from office365.sharepoint.client_context import ClientContext
 
@@ -93,7 +94,8 @@ class File(AbstractFile):
     def create_anonymous_link(self, is_edit_link: bool = False) -> ClientResult[str]:
         """Create an anonymous link which can be used to access a document without needing to authenticate.
 
-        :param bool is_edit_link: If true, the link will allow the guest user edit privileges on the item.
+        Args:
+            is_edit_link (bool): If true, the link will allow the guest user edit privileges on the item.
         """
         return_type = ClientResult(self.context, str())
 
@@ -111,12 +113,9 @@ class File(AbstractFile):
     ) -> ClientResult[str]:
         """Creates and returns an anonymous link that can be used to access a document without needing to authenticate.
 
-        :param is_edit_link: If true, the link will allow the guest user edit privileges on the item.
-        string parameters
-        :param expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete
-        representation for calendar date and time of day, and which represents the time and date of expiry for the
-        anonymous link. Both the minutes and hour value MUST be specified for the difference between the local and
-        UTC time. Midnight is represented as 00:00:00.
+        Args:
+            is_edit_link: If true, the link will allow the guest user edit privileges on the item. string parameters
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day, and which represents the time and date of expiry for the anonymous link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00.
         """
         return_type = ClientResult(self.context, str())
 
@@ -161,9 +160,9 @@ class File(AbstractFile):
 
     def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:
         """Returns a link for downloading the file without authentication.
-        :param int expiration_hours: The number of hours until the link expires. If the maximum expiration time
-        defined in the web application is less than the specified expiration time, the maximum expiration time
-        takes precedence.
+
+        Args:
+            expiration_hours (int): The number of hours until the link expires. If the maximum expiration time defined in the web application is less than the specified expiration time, the maximum expiration time takes precedence.
         """
         return_type = ClientResult(self.context, str())
         params = {"expirationHours": expiration_hours}
@@ -190,12 +189,12 @@ class File(AbstractFile):
         return self.listItemAllFields.get_user_effective_permissions(user)
 
     def get_wopi_frame_url(self, action: SPWOPIFrameAction = SPWOPIFrameAction.View) -> ClientResult[str]:
-        """
-        Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
+        """Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
         file's associated WOPI application. If there is no associated WOPI application or associated action,
         the return value is an empty string.
 
-        :param str action: The full URL to the WOPI frame.
+        Args:
+            action (str): The full URL to the WOPI frame.
         """
         return_type = ClientResult(self.context, str())
         params = {"action": action.value}
@@ -213,38 +212,31 @@ class File(AbstractFile):
         """Creates a tokenized sharing link for a file based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.
 
-        :param link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-        :param expiration: A date/time string for which the format conforms to the ISO 8601:2004(E)
-            complete representation for calendar date and time of day and which represents the time and date of expiry
-            for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference
-            between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry.
-            This value is only applicable to tokenized sharing links that are anonymous access links.
-        :param role: The role to be used for the tokenized sharing link. This is required for Flexible links
-            and ignored for all other kinds.
-        :param password: Optional password value to apply to the tokenized sharing link,
-            if it can support password protection.
+        Args:
+            link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
         """
         return self.listItemAllFields.share_link(link_kind, expiration, role, password)
 
     def unshare_link(self, link_kind, share_id=None) -> ListItem:
-        """
-        Removes the specified tokenized sharing link of the file.
+        """Removes the specified tokenized sharing link of the file.
 
-        :param int link_kind: This optional value specifies the globally unique identifier (GUID) of the tokenized
-            sharing link that is intended to be removed.
-        :param str or None share_id: The kind of tokenized sharing link that is intended to be removed.
+        Args:
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         return self.listItemAllFields.unshare_link(link_kind, share_id)  # type: ignore[arg-type]
 
     def get_image_preview_uri(self, width: int, height: int, client_type=None) -> ClientResult[str]:
-        """
-        Returns the uri where the thumbnail with the closest size to the desired can be found.
+        """Returns the uri where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
 
-
-        :param int width: The desired width of the resolution.
-        :param int height: The desired height of the resolution.
-        :param str client_type: The client type. Used for logging.
+        Args:
+            width (int): The desired width of the resolution.
+            height (int): The desired height of the resolution.
+            client_type (str): The client type. Used for logging.
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
@@ -253,13 +245,13 @@ class File(AbstractFile):
         return return_type
 
     def get_image_preview_url(self, width: int, height: int, client_type: Optional[str] = None) -> ClientResult[str]:
-        """
-        Returns the url where the thumbnail with the closest size to the desired can be found.
+        """Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
 
-        :param int width: The desired width of the resolution.
-        :param int height: The desired height of the resolution.
-        :param str client_type: The client type. Used for logging.
+        Args:
+            width (int): The desired width of the resolution.
+            height (int): The desired height of the resolution.
+            client_type (str): The client type. Used for logging.
         """
         return_type = ClientResult(self.context, str())
         payload = {"width": width, "height": height, "clientType": client_type}
@@ -275,10 +267,10 @@ class File(AbstractFile):
         return return_type
 
     def approve(self, comment: str) -> Self:
-        """
-        Approves the file submitted for content approval with the specified comment.
+        """Approves the file submitted for content approval with the specified comment.
 
-        :param str comment: A string containing the comment.
+        Args:
+            comment (str): A string containing the comment.
         """
         qry = ServiceOperationQuery(self, "Approve", {"comment": comment})
         self.context.add_query(qry)
@@ -287,7 +279,8 @@ class File(AbstractFile):
     def deny(self, comment: str) -> Self:
         """Denies approval for a file that was submitted for content approval.
 
-        :param str comment: A string containing the comment.
+        Args:
+            comment (str): A string containing the comment.
         """
         qry = ServiceOperationQuery(self, "Deny", {"comment": comment})
         self.context.add_query(qry)
@@ -301,10 +294,10 @@ class File(AbstractFile):
     ) -> "File":
         """Copies the file to the destination URL.
 
-        :param office365.sharepoint.folders.folder.Folder or str destination: Specifies the destination folder or
-            folder server relative url where to copy a file.
-        :param bool overwrite: Specifies whether a file with the same name is overwritten.
-        :param str file_name: A new file name
+        Args:
+            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder server relative url where to copy a file.
+            overwrite (bool): Specifies whether a file with the same name is overwritten.
+            file_name (str): A new file name
         """
         return_type = File(self.context)
         assert self.parent_collection is not None
@@ -330,14 +323,13 @@ class File(AbstractFile):
         return return_type
 
     def copyto_using_path(self, destination, overwrite=False, file_name=None):  # type: ignore[override]
-        """
-        Copies the file to the destination path. Server MUST overwrite an existing file of the same name
+        """Copies the file to the destination path. Server MUST overwrite an existing file of the same name
         if overwrite is true.
 
-        :param bool overwrite: Specifies whether a file with the same name is overwritten.
-        :param office365.sharepoint.folders.folder.Folder or str destination: Specifies the destination folder or
-            folder server relative url where to copy a file.
-        :param str file_name: New file name
+        Args:
+            overwrite (bool): Specifies whether a file with the same name is overwritten.
+            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder server relative url where to copy a file.
+            file_name (str): New file name
         """
 
         return_type = File(self.context)
@@ -369,9 +361,9 @@ class File(AbstractFile):
     def moveto(self, destination: Union[str, Folder], flag: int) -> Self:
         """Moves the file to the specified destination url.
 
-        :param str or Folder destination: Specifies the existing folder or folder
-             site relative url.
-        :param int flag: Specifies the kind of move operation.
+        Args:
+            destination (str or Folder): Specifies the existing folder or folder site relative url.
+            flag (int): Specifies the kind of move operation.
         """
 
         def _moveto(destination_folder: Folder) -> None:
@@ -398,12 +390,11 @@ class File(AbstractFile):
         return self
 
     def move_to_using_path(self, destination: Union[str, Folder], flag: MoveOperations) -> Self:
-        """
-        Moves the file to the specified destination path.
+        """Moves the file to the specified destination path.
 
-        :param str or office365.sharepoint.folders.folder.Folder destination: Specifies the destination folder path or
-            existing folder object
-        :param int flag: Specifies the kind of move operation.
+        Args:
+            destination (str or office365.sharepoint.folders.folder.Folder): Specifies the destination folder path or existing folder object
+            flag (int): Specifies the kind of move operation.
         """
 
         def _move_to_using_path(destination_folder: Folder) -> None:
@@ -431,7 +422,9 @@ class File(AbstractFile):
 
     def publish(self, comment: str) -> Self:
         """Submits the file for content approval with the specified comment.
-        :param str comment: Specifies the comment.
+
+        Args:
+            comment (str): Specifies the comment.
         """
         qry = ServiceOperationQuery(self, "Publish", {"comment": comment})
         self.context.add_query(qry)
@@ -439,7 +432,9 @@ class File(AbstractFile):
 
     def unpublish(self, comment: str) -> Self:
         """Removes the file from content approval or unpublishes a major version.
-        :param str comment: Specifies the comment for UnPublish. Its length MUST be equal to or less than 1023.
+
+        Args:
+            comment (str): Specifies the comment for UnPublish. Its length MUST be equal to or less than 1023.
         """
         qry = ServiceOperationQuery(self, "unpublish", {"comment": comment})
         self.context.add_query(qry)
@@ -459,14 +454,12 @@ class File(AbstractFile):
         return self
 
     def checkin(self, comment: str, checkin_type: CheckinType) -> Self:
-        """
-        Checks the file in to a document library based on the check-in type.
+        """Checks the file in to a document library based on the check-in type.
 
-        :param comment: comment to the new version of the file
-        :param checkin_type: 0 (minor), or 1 (major) or 2 (overwrite)
-            For more information on checkin types, please see
-            https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
-        :param int checkin_type: Specifies the type of check-in.
+        Args:
+            comment: comment to the new version of the file
+            checkin_type: 0 (minor), or 1 (major) or 2 (overwrite) For more information on checkin types, please see https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
+            checkin_type (int): Specifies the type of check-in.
         """
         params = {"comment": comment, "checkInType": checkin_type.value}
         qry = ServiceOperationQuery(self, "checkin", params)
@@ -485,8 +478,8 @@ class File(AbstractFile):
         """Specifies the control set used to access, modify, or add Web Parts associated with this Web Part Page and
         view.
 
-        :param int scope:  Specifies the personalization scope value that depicts how Web Parts are viewed on the
-            Web Part Page.
+        Args:
+            scope (int): Specifies the personalization scope value that depicts how Web Parts are viewed on the Web Part Page.
         """
         return LimitedWebPartManager(
             self.context,
@@ -503,7 +496,8 @@ class File(AbstractFile):
     def save_binary_stream(self, stream: bytes) -> Self:
         """Saves the file in binary format.
 
-        :param str or bytes stream: A stream containing the contents of the specified file.
+        Args:
+            stream (str or bytes): A stream containing the contents of the specified file.
         """
         qry = ServiceOperationQuery(self, "SaveBinaryStream", None, stream)  # type: ignore[arg-type]
         self.context.add_query(qry)
@@ -511,7 +505,9 @@ class File(AbstractFile):
 
     def get_upload_status(self, upload_id: str) -> UploadStatus:
         """Gets the status of a chunk upload session.
-        :param str upload_id:  The upload session ID.
+
+        Args:
+            upload_id (str): The upload session ID.
         """
         payload = {
             "uploadId": upload_id,
@@ -522,10 +518,10 @@ class File(AbstractFile):
         return return_type
 
     def upload_with_checksum(self, upload_id: str, checksum: str, stream: bytes) -> File:
-        """
-        :param str upload_id: The upload session ID.
-        :param str checksum:
-        :param bytes stream:
+        """Args:
+            upload_id (str): The upload session ID.
+            checksum (str):
+            stream (bytes):
         """
         return_type = File(self.context)
         params = {"uploadId": upload_id, "checksum": checksum}
@@ -534,11 +530,11 @@ class File(AbstractFile):
         return return_type
 
     def cancel_upload(self, upload_id: str) -> Self:
-        """
-        Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
+        """Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
         created the file, the file will be deleted.
 
-        :param str upload_id:  The upload session ID.
+        Args:
+            upload_id (str): The upload session ID.
         """
         payload = {
             "uploadId": upload_id,
@@ -550,8 +546,9 @@ class File(AbstractFile):
     def start_upload(self, upload_id: str, content: bytes) -> ClientResult[int]:
         """Starts a new chunk upload session and uploads the first fragment.
 
-        :param bytes content: File content
-        :param str upload_id: Upload session id
+        Args:
+            content (bytes): File content
+            upload_id (str): Upload session id
         """
         return_type = ClientResult(self.context, int())
         params = {"uploadID": upload_id}
@@ -560,12 +557,12 @@ class File(AbstractFile):
         return return_type
 
     def continue_upload(self, upload_id: str, file_offset: int, content: bytes) -> ClientResult[int]:
-        """
-        Continues the chunk upload session with an additional fragment. The current file content is not changed.
+        """Continues the chunk upload session with an additional fragment. The current file content is not changed.
 
-        :param str upload_id: Upload session id
-        :param int file_offset: File offset
-        :param bytes content: File content
+        Args:
+            upload_id (str): Upload session id
+            file_offset (int): File offset
+            content (bytes): File content
         """
         return_type = ClientResult(self.context, int())
         qry = ServiceOperationQuery(
@@ -586,9 +583,10 @@ class File(AbstractFile):
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
 
-        :param str upload_id: Upload session id
-        :param int file_offset: File offset
-        :param bytes content: File content
+        Args:
+            upload_id (str): Upload session id
+            file_offset (int): File offset
+            content (bytes): File content
         """
         params = {"uploadID": upload_id, "fileOffset": file_offset}
         qry = ServiceOperationQuery(self, "finishUpload", params, content, None, self)  # type: ignore[arg-type]
@@ -599,10 +597,11 @@ class File(AbstractFile):
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
 
-        :param str upload_id: Upload session id
-        :param int file_offset: File offset
-        :param str checksum: File checksum
-        :param bytes stream: File content
+        Args:
+            upload_id (str): Upload session id
+            file_offset (int): File offset
+            checksum (str): File checksum
+            stream (bytes): File content
         """
         payload = {
             "uploadID": upload_id,
@@ -656,11 +655,11 @@ class File(AbstractFile):
         return response
 
     def download(self, file_object: IO, after_downloaded: Optional[Callable[[File], None]] = None) -> Self:
-        """
-        Download a file content. Use this method to download a content of a small size
+        """Download a file content. Use this method to download a content of a small size
 
-        :param typing.IO file_object: File object
-        :param (File) -> None after_downloaded: A download callback
+        Args:
+            file_object (typing.IO): File object
+            after_downloaded ((File) -> None): A download callback
         """
 
         def _save_content(return_type: ClientResult[AnyStr]) -> None:
@@ -675,13 +674,13 @@ class File(AbstractFile):
         return self
 
     def download_session(self, file_object, chunk_downloaded=None, chunk_size=1024 * 1024, use_path=True):
-        """
-        Download a file content. Use this method to download a content of a large size
+        """Download a file content. Use this method to download a content of a large size
 
-        :type file_object: typing.IO
-        :type chunk_downloaded: (int)->None or None
-        :type chunk_size: int
-        :param bool use_path: File addressing by path flag
+        Args:
+            file_object (typing.IO):
+            chunk_downloaded ((int)->None or None):
+            chunk_size (int):
+            use_path (bool): File addressing by path flag
         """
 
         def _download_as_stream():
@@ -714,9 +713,10 @@ class File(AbstractFile):
         return self
 
     def rename(self, new_file_name: str) -> Self:
-        """
-        Rename a file
-        :param str new_file_name: A new file name
+        """Rename a file
+
+        Args:
+            new_file_name (str): A new file name
         """
         item = self.listItemAllFields
         item.set_property("FileLeafRef", new_file_name)

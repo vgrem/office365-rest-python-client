@@ -153,15 +153,12 @@ class Site(Entity):
         return return_type
 
     def create_preview_site(self, upgrade: Optional[bool] = None, sendemail: Optional[str] = None) -> Self:
-        """
-        Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
+        """Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
         of the site collection to a newer version
 
-        :param bool upgrade: If "true", the evaluation site collection MUST be upgraded when it is created.
-            If "false", the evaluation site collection MUST NOT be upgraded when it is created
-        :param bool sendemail: If "true", a notification email MUST be sent to the requestor and the site collection
-            administrators at the completion of the creation of the evaluation site collection. If "false",
-            such notification MUST NOT be sent
+        Args:
+            upgrade (bool): If "true", the evaluation site collection MUST be upgraded when it is created. If "false", the evaluation site collection MUST NOT be upgraded when it is created
+            sendemail (bool): If "true", a notification email MUST be sent to the requestor and the site collection administrators at the completion of the creation of the evaluation site collection. If "false", such notification MUST NOT be sent
         """
         payload = {"upgrade": upgrade, "sendemail": sendemail}
         qry = ServiceOperationQuery(self, "CreatePreviewSPSite", None, payload)
@@ -201,10 +198,10 @@ class Site(Entity):
 
     @staticmethod
     def from_url(url: str):
-        """
-        Initiates and returns a site instance
+        """Initiates and returns a site instance
 
-        :type url: str
+        Args:
+            url (str):
         """
         from office365.sharepoint.client_context import ClientContext
 
@@ -235,8 +232,8 @@ class Site(Entity):
         return return_type
 
     def get_copy_job_progress(self, copy_job_info=None) -> ClientResult[CopyJobProgress]:
-        """
-        :param copy_job_info: Optional copyJobInfo object.
+        """Args:
+            copy_job_info: Optional copyJobInfo object.
         """
         payload = {"copyJobInfo": copy_job_info}
         return_type = ClientResult(self.context, CopyJobProgress())
@@ -267,7 +264,8 @@ class Site(Entity):
     def set_site_logo(self, relative_logo_url: str) -> Self:
         """Uploads a site logo
 
-        :param str relative_logo_url:
+        Args:
+            relative_logo_url (str):
         """
         site_manager = SiteIconManager(self.context)
         site_manager.set_site_logo(relative_logo_url=relative_logo_url)
@@ -307,7 +305,8 @@ class Site(Entity):
         """Returns the collection of all changes from the change log that have occurred within the scope of the site,
         based on the specified query.
 
-        :param office365.sharepoint.changes.query.ChangeQuery query: Specifies which changes to return
+        Args:
+            query (office365.sharepoint.changes.query.ChangeQuery): Specifies which changes to return
         """
         if query is None:
             query = ChangeQuery(Site=True, FetchLimit="100")
@@ -318,13 +317,11 @@ class Site(Entity):
         return return_type
 
     def get_recycle_bin_items(self, row_limit: int = 100, is_ascending: bool = True) -> RecycleBinItemCollection:
-        """
-        Returns a collection of recycle bin items based on the specified query.
+        """Returns a collection of recycle bin items based on the specified query.
 
-        :param int row_limit: The maximum number of Recycle Bin items to retrieve.
-        :param bool is_ascending: Specifies whether the Recycle Bin items are sorted in ascending order by the column
-            specified in the orderBy parameter. A value of true indicates ascending order, and a value of false
-            indicates descending order.
+        Args:
+            row_limit (int): The maximum number of Recycle Bin items to retrieve.
+            is_ascending (bool): Specifies whether the Recycle Bin items are sorted in ascending order by the column specified in the orderBy parameter. A value of true indicates ascending order, and a value of false indicates descending order.
         """
         return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {"rowLimit": row_limit, "isAscending": is_ascending}
@@ -343,9 +340,9 @@ class Site(Entity):
         return return_type
 
     def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:
-        """
-        :param int site_id: The site identifier
-        :param int web_id: The web identifier
+        """Args:
+            site_id (int): The site identifier
+            web_id (int): The web identifier
         """
         params = {"siteId": site_id, "webId": web_id}
         return_type = ClientResult(self.context, SPResPath())
@@ -355,15 +352,12 @@ class Site(Entity):
         return return_type
 
     def get_web_templates(self, lcid=1033, override_compat_level=0) -> WebTemplateCollection:
-        """
-        Returns the collection of site definitions that are available for creating
-            Web sites within the site collection.
+        """Returns the collection of site definitions that are available for creating
+        Web sites within the site collection.
 
-        :param int lcid: A 32-bit unsigned integer that specifies the language of the site definitions that are
-            returned from the site collection.
-        :param int override_compat_level: Specifies the compatibility level of the site (2)
-            to return from the site collection. If this value is 0, the compatibility level of the site (2) is used.
-        :return:
+        Args:
+            lcid (int): A 32-bit unsigned integer that specifies the language of the site definitions that are returned from the site collection.
+            override_compat_level (int): Specifies the compatibility level of the site (2) to return from the site collection. If this value is 0, the compatibility level of the site (2) is used.
         """
         params = {"LCID": lcid, "overrideCompatLevel": override_compat_level}
         return_type = WebTemplateCollection(
@@ -385,13 +379,12 @@ class Site(Entity):
         return self
 
     def needs_upgrade_by_type(self, version_upgrade: bool, recursive: bool) -> ClientResult[bool]:
-        """
-        Returns "true" if this site collection requires site collection upgrade of the specified type;
+        """Returns "true" if this site collection requires site collection upgrade of the specified type;
         otherwise, "false"
 
-        :param bool version_upgrade: If "true", version-to-version site collection upgrade is requested;
-            otherwise "false" for build-to-build site collection upgrade.
-        :param bool recursive: If "true", child upgradable objects will be inspected; otherwise "false".
+        Args:
+            version_upgrade (bool): If "true", version-to-version site collection upgrade is requested; otherwise "false" for build-to-build site collection upgrade.
+            recursive (bool): If "true", child upgradable objects will be inspected; otherwise "false".
         """
         return_type = ClientResult(self.context)
         payload = {
@@ -408,12 +401,12 @@ class Site(Entity):
         approval_token: Optional[str] = None,
         approval_correlation_id: Optional[str] = None,
     ) -> Self:
-        """
-        Associates a site with an existing hub site.
+        """Associates a site with an existing hub site.
 
-        :param str hub_site_id: ID of the hub site to join.
-        :param str approval_token:
-        :param str approval_correlation_id:
+        Args:
+            hub_site_id (str): ID of the hub site to join.
+            approval_token (str):
+            approval_correlation_id (str):
         """
         payload = {
             "hubSiteId": hub_site_id,
@@ -428,9 +421,10 @@ class Site(Entity):
     def get_url_by_id(context: ClientContext, site_id: str, stop_redirect: bool = False) -> ClientResult[str]:
         """Gets Site Url By Id
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type site_id: str
-        :type stop_redirect: bool
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_id (str):
+            stop_redirect (bool):
         """
         return_type = ClientResult(context, str())
         payload = {"id": site_id, "stopRedirect": stop_redirect}
@@ -442,10 +436,11 @@ class Site(Entity):
     def get_url_by_id_for_web(context, site_id: str, stop_redirect: bool, web_id: str) -> ClientResult[str]:
         """Gets Site Url By Id
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type site_id: str
-        :type stop_redirect: bool
-        :type web_id: str
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            site_id (str):
+            stop_redirect (bool):
+            web_id (str):
         """
         return_type = ClientResult(context)
         payload = {"id": site_id, "stopRedirect": stop_redirect, "webId": web_id}
@@ -458,8 +453,9 @@ class Site(Entity):
     def exists(context, url: str) -> ClientResult[bool]:
         """Determine whether site exists
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str url: The absolute url of a site.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            url (str): The absolute url of a site.
         """
         return_type: ClientResult[bool] = ClientResult(context)
         payload = {"url": url}
@@ -478,11 +474,11 @@ class Site(Entity):
         return return_type
 
     def get_catalog(self, type_catalog: Union[ListTemplateType, int]) -> List:
-        """
-        Specifies the list template gallery, site template gallery, Web Part gallery, master page gallery,
+        """Specifies the list template gallery, site template gallery, Web Part gallery, master page gallery,
         or other galleries from the site collection, including custom galleries that are defined by users.
 
-        :type type_catalog: int
+        Args:
+            type_catalog (int):
         """
         return List(
             self.context,
@@ -492,9 +488,8 @@ class Site(Entity):
     def open_web(self, str_url: str) -> Web:
         """Returns the specified Web site from the site collection.
 
-        :param str str_url: A string that contains either the server-relative or site-relative URL of the
-        Web site or of an object within the Web site. A server-relative URL begins with a forward slash ("/"),
-        while a site-relative URL does not begin with a forward slash.
+        Args:
+            str_url (str): A string that contains either the server-relative or site-relative URL of the Web site or of an object within the Web site. A server-relative URL begins with a forward slash ("/"), while a site-relative URL does not begin with a forward slash.
         """
         return_type = Web(self.context)
         qry = ServiceOperationQuery(self, "OpenWeb", {"strUrl": str_url}, None, None, return_type)
@@ -504,7 +499,8 @@ class Site(Entity):
     def open_web_by_id(self, web_id: str) -> Web:
         """Returns the specified Web site from the site collection.
 
-        :param str web_id: An identifier of the Web site
+        Args:
+            web_id (str): An identifier of the Web site
         """
         return_type = Web(self.context)
         qry = ServiceOperationQuery(self, "OpenWebById", {"gWebId": web_id}, None, None, return_type)
@@ -529,7 +525,8 @@ class Site(Entity):
     def register_hub_site(self, create_info: Optional[HubSiteCreationInformation] = None) -> Self:
         """Registers an existing site as a hub site.
 
-        :type create_info: HubSiteCreationInformation
+        Args:
+            create_info (HubSiteCreationInformation):
         """
         qry = ServiceOperationQuery(self, "RegisterHubSite", None, create_info, "creationInformation", None)
         self.context.add_query(qry)
@@ -538,15 +535,13 @@ class Site(Entity):
     def run_health_check(
         self, rule_id: Optional[str] = None, repair: Optional[bool] = None, run_always: Optional[bool] = None
     ) -> SiteHealthSummary:
-        """
-        Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
+        """Runs a health check as follows. (The health rules referenced below perform an implementation-dependent check
         on the health of a site collection.)
 
-        :param str rule_id: Specifies the rule or rules to be run. If the value is an empty GUID, all rules are run,
-             otherwise only the specified rule is run.
-        :param bool repair: Specifies whether repairable rules are to be run in repair mode.
-        :param bool run_always: Specifies whether the rules will be run as a result of this call or cached results
-             from a previous run can be returned.
+        Args:
+            rule_id (str): Specifies the rule or rules to be run. If the value is an empty GUID, all rules are run, otherwise only the specified rule is run.
+            repair (bool): Specifies whether repairable rules are to be run in repair mode.
+            run_always (bool): Specifies whether the rules will be run as a result of this call or cached results from a previous run can be returned.
         """
         payload = {"ruleId": rule_id, "bRepair": repair, "bRunAlways": run_always}
         return_type = SiteHealthSummary(self.context)
@@ -561,12 +556,11 @@ class Site(Entity):
         return self
 
     def update_client_object_model_use_remote_apis_permission_setting(self, require_use_remote_apis: bool) -> Self:
-        """
-        Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
+        """Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
         the site collection require UseRemoteAPIs permission.
 
-        :param bool require_use_remote_apis: Specifies whether the client-side object model (CSOM) requests that are
-            made in the context of any site inside the site collection require UseRemoteAPIs permission
+        Args:
+            require_use_remote_apis (bool): Specifies whether the client-side object model (CSOM) requests that are made in the context of any site inside the site collection require UseRemoteAPIs permission
         """
         payload = {"requireUseRemoteAPIs": require_use_remote_apis}
         qry = ServiceOperationQuery(self, "UpdateClientObjectModelUseRemoteAPIsPermissionSetting", None, payload)

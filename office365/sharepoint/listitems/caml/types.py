@@ -44,8 +44,8 @@ class RowLimitElement:
     """Sets the row limit for the number of items to display in a view."""
 
     def __init__(self, top=None):
-        """
-        :param int top:
+        """Args:
+            top (int):
         """
         self.Top = top
 

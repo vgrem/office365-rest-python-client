@@ -12,11 +12,11 @@ class CurrencyList(Entity):
 
     @staticmethod
     def get_list(context: ClientContext) -> ClientResult[CurrencyInformationCollection]:
-        """
-        Generates a list of all the currencies allowed in SharePoint currency columns.
+        """Generates a list of all the currencies allowed in SharePoint currency columns.
         The list contains CurrencyInformation objects with display strings and LCIDs for each currency.
 
-        :type context: office365.sharepoint.client_context.ClientContext
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return_type = ClientResult(context, CurrencyInformationCollection())
         qry = ServiceOperationQuery(CurrencyList(context), "GetList", None, None, None, return_type, True)

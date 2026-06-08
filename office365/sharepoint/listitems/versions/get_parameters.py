@@ -10,9 +10,9 @@ from office365.sharepoint.listitems.versions.collection_position import (
 
 @dataclass
 class GetListItemVersionsParameters(ClientValue):
-    """
-    :param int row_limit:
-    :param bool sort_descending:
+    """Args:
+        row_limit (int):
+        sort_descending (bool):
     """
 
     RowLimit: int | None = None
