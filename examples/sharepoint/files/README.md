@@ -128,13 +128,12 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 
 ## Sharing
 
+> Sharing operations for files are in the [`sharing/`](../sharing/) directory.
+
 | What | File | Notes |
 |------|------|-------|
-| **Share link** | [`share.py`](./share.py) | Create tokenized sharing link |
-| **Anonymous link** | [`create_anonymous_link.py`](./create_anonymous_link.py) | Create anonymous access link |
-| **Unshare link** | [`unshare_link.py`](./unshare_link.py) | Remove a sharing link |
-| **Get sharing info** | [`get_sharing_info.py`](./get_sharing_info.py) | Get sharing metadata |
 | **Get by sharing link** | [`get_by_sharing_link.py`](./get_by_sharing_link.py) | Resolve file from a sharing link |
+| **Download by sharing link** | [`download_by_shared_link.py`](./download_by_shared_link.py) | Download via guest/anonymous link |
 
 ## Create Documents
 

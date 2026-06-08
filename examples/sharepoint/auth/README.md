@@ -34,6 +34,7 @@ flowchart TD
 | **Device code** | `with_device_flow(tenant, client_id)` | [`modern/with_device_flow.py`](./modern/with_device_flow.py) | Headless / CLI with MFA |
 | **Cookies** | `with_cookies(...)` | [`modern/with_cookies.py`](./modern/with_cookies.py) | Reuse browser session |
 | **Capture cookies** | Playwright script | [`capture_cookies_with_playwright.py`](./capture_cookies_with_playwright.py) | Automated cookie capture |
+| **Load cookies** | Playwright storage state | [`load_cookies_from_playwright.py`](./load_cookies_from_playwright.py) | Import ``storage_state.json`` from Playwright |
 
 ## Legacy, retired for SharePoint Online (on-prem only)
 
