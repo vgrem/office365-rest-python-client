@@ -14,10 +14,10 @@ class CloudCommunications(Entity):
     """ """
 
     def get_presences_by_user_id(self, ids: List[str]) -> EntityCollection[Presence]:
-        """
-        Get the presence information for multiple users.
+        """Get the presence information for multiple users.
 
-        :param list[str] ids: The user object IDs.
+        Args:
+            ids (list[str]): The user object IDs.
         """
         return_type = EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path))
         qry = ServiceOperationQuery(self, "getPresencesByUserId", None, {"ids": ids}, None, return_type)

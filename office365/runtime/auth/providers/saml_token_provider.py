@@ -44,13 +44,13 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         browser_mode: bool,
         environment: Optional[AzureEnvironment] = None,
     ):
-        """
-        SAML Security Token Service provider (claims-based authentication)
+        """SAML Security Token Service provider (claims-based authentication)
 
-        :param str url: Site or Web absolute url
-        :param UserCredential credential: User credentials
-        :param bool browser_mode:
-        :param AzureEnvironment environment: The Office 365 Cloud Environment endpoint used for authentication.
+        Args:
+            url (str): Site or Web absolute url
+            credential (UserCredential): User credentials
+            browser_mode (bool):
+            environment (AzureEnvironment): The Office 365 Cloud Environment endpoint used for authentication.
         """
         # Security Token Service info
         self._sts_profile = STSProfile(url, environment or AzureEnvironment.Global)
@@ -250,8 +250,9 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
     def _get_authentication_cookie(self, security_token: str, federated: bool = False) -> AuthCookies:
         """Retrieve auth cookie from STS
 
-        :type federated: bool
-        :type security_token: str
+        Args:
+            federated (bool):
+            security_token (str):
         """
         logger = self.logger(self._get_authentication_cookie.__name__)
 

@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 
 class SetCollection(EntityCollection[Set]):
     def __init__(self, context, resource_path=None, parent_group=None):
-        """
-        :param office365.onedrive.termstore.groups.group.Group parent_group: The parent group that contains the set
+        """Args:
+            parent_group (office365.onedrive.termstore.groups.group.Group): The parent group that contains the set
         """
         super().__init__(context, Set, resource_path)
         self._parent_group = parent_group
@@ -50,8 +50,9 @@ class SetCollection(EntityCollection[Set]):
     def add(self, name: str, parent_group: Group | None = None) -> Set:
         """Create a new set object.
 
-        :param office365.onedrive.termstore.group.Group parent_group: The parent group that contains the set.
-        :param str name: Default name (in en-US localization).
+        Args:
+            parent_group (office365.onedrive.termstore.group.Group): The parent group that contains the set.
+            name (str): Default name (in en-US localization).
         """
         return_type = Set(self.context)
         self.add_child(return_type)

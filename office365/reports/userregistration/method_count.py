@@ -9,8 +9,9 @@ from office365.runtime.client_value import ClientValue
 class UserRegistrationMethodCount(ClientValue):
     """Represents the number of users registered for an authentication method.
 
-    :param str authentication_method: Name of the authentication method.
-    :param str user_count: Number of users registered.
+    Args:
+        authentication_method (str): Name of the authentication method.
+        user_count (str): Number of users registered.
     """
 
     authenticationMethod: str | None = None

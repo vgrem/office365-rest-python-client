@@ -9,10 +9,11 @@ from office365.runtime.client_value import ClientValue
 class TeamFunSettings(ClientValue):
     """Settings to configure use of Giphy, memes, and stickers in the team.
 
-    :param bool allow_custom_memes: f set to true, enables users to include custom memes.
-    :param bool allow_giphy: If set to true, enables Giphy use.
-    :param bool allow_stickers_and_memes: 	If set to true, enables users to include stickers and memes.
-    :param str giphy_content_rating: Giphy content rating. Possible values are: moderate, strict.
+    Args:
+        allow_custom_memes (bool): f set to true, enables users to include custom memes.
+        allow_giphy (bool): If set to true, enables Giphy use.
+        allow_stickers_and_memes (bool): If set to true, enables users to include stickers and memes.
+        giphy_content_rating (str): Giphy content rating. Possible values are: moderate, strict.
     """
 
     allowCustomMemes: bool | None = None

@@ -9,7 +9,8 @@ from office365.runtime.client_value import ClientValue
 class Report(ClientValue):
     """Returns the content appropriate for the context
 
-    :param str content: Report content; details vary by report type.
+    Args:
+        content (str): Report content; details vary by report type.
     """
 
     content: bytes | None = None

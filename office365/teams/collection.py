@@ -36,8 +36,9 @@ class TeamCollection(EntityCollection[Team]):
 
         This is async operation.
 
-        :param str display_name: The name of the team.
-        :param str or None description: An optional description for the team. Maximum length: 1024 characters.
+        Args:
+            display_name (str): The name of the team.
+            description (str or None): An optional description for the team. Maximum length: 1024 characters.
         """
         return_type = Team(self.context)
         self.add_child(return_type)

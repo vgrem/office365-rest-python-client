@@ -11,10 +11,11 @@ class TeamsTabConfiguration(ClientValue):
     When a tab is interactively configured, this information is set by the tab provider application.
     In addition to the properties below, some tab provider applications specify additional custom properties.
 
-    :param str content_url: Url used for rendering tab contents in Teams.
-    :param str entity_id: Identifier for the entity hosted by the tab provider.
-    :param str remove_url: Url called by Teams client when a Tab is removed using the Teams Client.
-    :param str website_url: Url for showing tab contents outside of Teams.
+    Args:
+        content_url (str): Url used for rendering tab contents in Teams.
+        entity_id (str): Identifier for the entity hosted by the tab provider.
+        remove_url (str): Url called by Teams client when a Tab is removed using the Teams Client.
+        website_url (str): Url for showing tab contents outside of Teams.
     """
 
     contentUrl: str | None = None

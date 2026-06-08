@@ -17,9 +17,10 @@ class ChannelCollection(EntityCollection[Channel]):
     ) -> Channel:
         """Create a new channel in a Microsoft Team, as specified in the request body.
 
-        :param str description: Optional textual description for the channel.
-        :param str display_name: Channel name as it will appear to the user in Microsoft Teams.
-        :param str membership_type: The type of the channel.
+        Args:
+            description (str): Optional textual description for the channel.
+            display_name (str): Channel name as it will appear to the user in Microsoft Teams.
+            membership_type (str): The type of the channel.
         """
         return super().add(displayName=display_name, description=description, membershipType=membership_type, **kwargs)
 

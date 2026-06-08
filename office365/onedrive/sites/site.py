@@ -57,10 +57,10 @@ class Site(BaseItem):
         return return_type
 
     def get_applicable_content_types_for_list(self, list_or_id: Union[List, str]) -> ContentTypeCollection:
-        """
-        Get site contentTypes that can be added to a list.
+        """Get site contentTypes that can be added to a list.
 
-        :param str|List list_or_id: GUID of the list for which the applicable content types need to be fetched.
+        Args:
+            list_or_id (str|List): GUID of the list for which the applicable content types need to be fetched.
         """
         return_type = ContentTypeCollection(self.context, self.content_types.resource_path)
 
@@ -82,13 +82,13 @@ class Site(BaseItem):
     def get_activities_by_interval(
         self, start_dt: datetime | None = None, end_dt: datetime | None = None, interval: str | None = None
     ) -> EntityCollection[ItemActivityStat]:
-        """
-        Get a collection of itemActivityStats resources for the activities that took place on this resource
+        """Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
-        :param datetime.datetime start_dt: The start time over which to aggregate activities.
-        :param datetime.datetime end_dt: The end time over which to aggregate activities.
-        :param str interval: The aggregation interval.
+        Args:
+            start_dt (datetime.datetime): The start time over which to aggregate activities.
+            end_dt (datetime.datetime): The end time over which to aggregate activities.
+            interval (str): The aggregation interval.
         """
         params = {
             "startDateTime": start_dt.strftime("%m-%d-%Y") if start_dt else None,

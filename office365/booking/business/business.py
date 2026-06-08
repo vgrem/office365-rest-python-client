@@ -28,11 +28,12 @@ class BookingBusiness(Entity):
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
     ) -> ClientResult[ClientValueCollection[StaffAvailabilityItem]]:
-        """
-        Get the availability information of staff members of a Microsoft Bookings calendar.
-        :param list[str] staff_ids: The list of staff IDs
-        :param datetime.datetime start_datetime:
-        :param datetime.datetime end_datetime:
+        """Get the availability information of staff members of a Microsoft Bookings calendar.
+
+        Args:
+            staff_ids (list[str]): The list of staff IDs
+            start_datetime (datetime.datetime):
+            end_datetime (datetime.datetime):
         """
         return_type = ClientResult(self.context, ClientValueCollection(StaffAvailabilityItem))
         payload = {

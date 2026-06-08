@@ -13,14 +13,14 @@ class ChatCollection(EntityCollection[Chat]):
         super().__init__(context, Chat, resource_path)
 
     def add(self, chat_type: Union[str, ChatType], owner_ids: Optional[List[str]] = None) -> Chat:
-        """
-        Create a new chat object.
+        """Create a new chat object.
 
         Note: Only one one-on-one chat can exist between two members. If a one-on-one chat already exists,
         this operation will return the existing chat and not create a new one.
 
-        :param str chat_type: Specifies the type of chat. Possible values are: group and oneOnOne.
-        :param List[str] owner_ids: The list of user IDs of the chat members that are owners.
+        Args:
+            chat_type (str): Specifies the type of chat. Possible values are: group and oneOnOne.
+            owner_ids (List[str]): The list of user IDs of the chat members that are owners.
         """
         if isinstance(chat_type, ChatType):
             chat_type = chat_type.value

@@ -11,18 +11,18 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
     """"""
 
     def approve(self, message: str) -> Self:
-        """
-        Approve an ScheduleChangeRequest object.
+        """Approve an ScheduleChangeRequest object.
 
-        :param str message: A custom approval message.
+        Args:
+            message (str): A custom approval message.
         """
         qry = ServiceOperationQuery(self, "approve", None, {"message": message})
         self.context.add_query(qry)
         return self
 
     def decline(self, message: str) -> Self:
-        """
-        :param str message: A custom approval message.
+        """Args:
+            message (str): A custom approval message.
         """
         qry = ServiceOperationQuery(self, "decline", None, {"message": message})
         self.context.add_query(qry)

@@ -132,16 +132,14 @@ class ClientObject:
         failure_callback=None,
         exceptions=(ClientRequestException,),
     ):
-        """
-        Executes the current set of data retrieval queries and method invocations and retries it if needed.
+        """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
-        :param int max_retry: Number of times to retry the request
-        :param int timeout_secs: Seconds to wait before retrying the request.
-        :param (office365.runtime.client_object.ClientObject)-> None success_callback: A callback to call
-            if the request executes successfully.
-        :param (int, requests.exceptions.RequestException)-> None failure_callback: A callback to call if the request
-            fails to execute
-        :param exceptions: tuple of exceptions that we retry
+        Args:
+            max_retry (int): Number of times to retry the request
+            timeout_secs (int): Seconds to wait before retrying the request.
+            success_callback ((office365.runtime.client_object.ClientObject)-> None): A callback to call if the request executes successfully.
+            failure_callback ((int, requests.exceptions.RequestException)-> None): A callback to call if the request fails to execute
+            exceptions: tuple of exceptions that we retry
         """
         self.context.execute_query_retry(
             max_retry=max_retry,

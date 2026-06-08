@@ -9,7 +9,8 @@ from office365.runtime.client_value import ClientValue
 class AuditResource(ClientValue):
     """A class containing the properties for Audit Resource.
 
-    :param str audit_resource_type: Audit resource's type.
+    Args:
+        audit_resource_type (str): Audit resource's type.
     """
 
     auditResourceType: str | None = None

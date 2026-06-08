@@ -278,22 +278,19 @@ class Team(Entity):
         template_parameters: Dict[str, Any],
         recipient: TeamworkNotificationRecipient,
     ):
-        """
-        Send an activity feed notification in the scope of a team.
+        """Send an activity feed notification in the scope of a team.
         For more details about sending notifications and the requirements for doing so,
         see sending Teams activity notifications:
         https://docs.microsoft.com/en-us/graph/teams-send-activityfeednotifications
 
-        :param teamworkActivityTopic topic: Topic of the notification. Specifies the resource being talked about.
-        :param str activity_type: Activity type. This must be declared in the Teams app manifest.
-        :param str chain_id: Optional. Used to override a previous notification. Use the same chainId in subsequent
-            requests to override the previous notification.
-        :param str preview_text: Preview text for the notification. Microsoft Teams will only show first 150 characters
-        :param dict template_parameters: Values for template variables defined in the activity feed entry corresponding
-            to activityType in Teams app manifest.
-        :param dict template_parameters: Recipient of the notification.
-             Only Azure AD users are supported.
-        :param teamworkNotificationRecipient recipient: Recipient of the notification
+        Args:
+            topic (teamworkActivityTopic): Topic of the notification. Specifies the resource being talked about.
+            activity_type (str): Activity type. This must be declared in the Teams app manifest.
+            chain_id (str): Optional. Used to override a previous notification. Use the same chainId in subsequent requests to override the previous notification.
+            preview_text (str): Preview text for the notification. Microsoft Teams will only show first 150 characters
+            template_parameters (dict): Values for template variables defined in the activity feed entry corresponding to activityType in Teams app manifest.
+            template_parameters (dict): Recipient of the notification. Only Azure AD users are supported.
+            recipient (teamworkNotificationRecipient): Recipient of the notification
         """
         payload = {
             "topic": topic,

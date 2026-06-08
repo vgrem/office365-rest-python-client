@@ -27,12 +27,14 @@ class DeviceCollection(DeltaCollection[Device]):
         device_id: str | None = None,
     ):
         """Create and register a new device in the organization.
-        :param str display_name: The display name for the device
-        :param str operating_system:
-        :param str operating_system_version:
-        :param bool account_enabled:
-        :param AlternativeSecurityId alternative_security_id:
-        :param str device_id:
+
+        Args:
+            display_name (str): The display name for the device
+            operating_system (str):
+            operating_system_version (str):
+            account_enabled (bool):
+            alternative_security_id (AlternativeSecurityId):
+            device_id (str):
         """
 
         if alternative_security_id is None:

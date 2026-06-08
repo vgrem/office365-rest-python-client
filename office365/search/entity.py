@@ -55,17 +55,15 @@ class SearchEntity(Entity):
         enable_top_results: Optional[bool] = None,
         region: Optional[str] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
-        """
-        Runs the query specified in the request body. Search results are provided in the response.
+        """Runs the query specified in the request body. Search results are provided in the response.
 
-        :param str query_string: Contains the query terms.
-        :param list[str] entity_types: One or more types of resources expected in the response.
-            Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500. Optional.
-        :param bool enable_top_results: This triggers hybrid sort for messages
-        :param str region: The geographic location for the search. Required for searches that use application
-             permissions. For details, see Get the region value.
+        Args:
+            query_string (str): Contains the query terms.
+            entity_types (list[str]): One or more types of resources expected in the response. Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500. Optional.
+            enable_top_results (bool): This triggers hybrid sort for messages
+            region (str): The geographic location for the search. Required for searches that use application permissions. For details, see Get the region value.
         """
         search_request = SearchRequest(
             query=SearchQuery(query_string),
@@ -106,10 +104,12 @@ class SearchEntity(Entity):
         enable_top_results: Optional[bool] = None,
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook messages. Alias to query method
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500. Optional.
-        :param bool enable_top_results: This triggers hybrid sort for messages
+
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500. Optional.
+            enable_top_results (bool): This triggers hybrid sort for messages
         """
         return self.query(
             query_string,
@@ -122,7 +122,9 @@ class SearchEntity(Entity):
     @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def query_events(self, query_string: str) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Outlook calendar events. Alias to query method
-        :param str query_string: Contains the query terms.
+
+        Args:
+            query_string (str): Contains the query terms.
         """
         return self.query(query_string, entity_types=[EntityType.event])
 
@@ -134,9 +136,11 @@ class SearchEntity(Entity):
         self, query_string: str, page_from: Optional[int] = None, size: Optional[int] = None
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches OneDrive items. Alias to query method
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500.
+
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500.
         """
         return self.query(
             query_string,
@@ -158,10 +162,11 @@ class SearchEntity(Entity):
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches list items. Alias to query method
 
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500.
-        :param str region: The geographic location for the search. Required for searches that use application
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500.
+            region (str): The geographic location for the search. Required for searches that use application
         """
         return self.query(
             query_string,
@@ -181,10 +186,11 @@ class SearchEntity(Entity):
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches peoples. Alias to query method
 
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500.
-        :param str region: The geographic location for the search. Required for searches that use application
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500.
+            region (str): The geographic location for the search. Required for searches that use application
         """
         return self.query(
             query_string,
@@ -207,10 +213,11 @@ class SearchEntity(Entity):
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches sites. Alias to query method
 
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500.
-        :param str region: The geographic location for the search. Required for searches that use application
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500.
+            region (str): The geographic location for the search. Required for searches that use application
         """
         return self.query(
             query_string,
@@ -233,10 +240,11 @@ class SearchEntity(Entity):
     ) -> ClientResult[ClientValueCollection[SearchResponse]]:
         """Searches Teams chat messages. Alias to query method
 
-        :param str query_string: Contains the query terms.
-        :param int page_from: Specifies the offset for the search results. Offset 0 returns the very first result.
-        :param int size: The size of the page to be retrieved. The maximum value is 500.
-        :param str region: The geographic location for the search. Required for searches that use application
+        Args:
+            query_string (str): Contains the query terms.
+            page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
+            size (int): The size of the page to be retrieved. The maximum value is 500.
+            region (str): The geographic location for the search. Required for searches that use application
         """
         return self.query(
             query_string,

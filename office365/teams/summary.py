@@ -9,9 +9,10 @@ from office365.runtime.client_value import ClientValue
 class TeamSummary(ClientValue):
     """Contains information about a team in Microsoft Teams, including number of owners, members, and guests.
 
-    :param int guests_count: Count of guests in a team.
-    :param int members_count: Count of members in a team.
-    :param int owners_count: Count of owners in a team.
+    Args:
+        guests_count (int): Count of guests in a team.
+        members_count (int): Count of members in a team.
+        owners_count (int): Count of owners in a team.
     """
 
     guestsCount: int | None = None

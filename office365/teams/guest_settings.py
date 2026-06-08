@@ -9,8 +9,9 @@ from office365.runtime.client_value import ClientValue
 class TeamGuestSettings(ClientValue):
     """Settings to configure whether guests can create, update, or delete channels in the team.
 
-    :param bool allow_create_update_channels:
-    :param bool allow_delete_channels:
+    Args:
+        allow_create_update_channels (bool):
+        allow_delete_channels (bool):
     """
 
     allowCreateUpdateChannels: bool = True

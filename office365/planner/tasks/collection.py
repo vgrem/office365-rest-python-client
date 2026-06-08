@@ -19,12 +19,12 @@ class PlannerTaskCollection(EntityCollection[PlannerTask]):
         plan: Union[str, PlannerPlan],
         bucket: str | PlannerBucket | None = None,
     ) -> PlannerTask:
-        """
-        Create a new plannerTask.
+        """Create a new plannerTask.
 
-        :param str title: Task title
-        :param str|PlannerPlan plan: Plan identifier or Plan object
-        :param str|PlannerBucket bucket: Bucket identifier or Plan object
+        Args:
+            title (str): Task title
+            plan (str|PlannerPlan): Plan identifier or Plan object
+            bucket (str|PlannerBucket): Bucket identifier or Plan object
         """
         return_type = PlannerTask(self.context)
         self.add_child(return_type)
