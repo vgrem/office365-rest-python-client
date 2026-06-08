@@ -66,8 +66,8 @@ class TestTeamChats(GraphDelegatedTestCase):
         if not chat:
             self.skipTest("No chat created from previous test")
 
-        self.assertIsNotNone(chat.get_property("chatType"))
-        self.assertIsNotNone(chat.get_property("createdDateTime"))
+        self.assertIsNotNone(chat.chat_type)
+        self.assertIsNotNone(chat.created_datetime)
 
     @requires_delegated(
         "Chat.ReadWrite",
@@ -94,7 +94,7 @@ class TestTeamChats(GraphDelegatedTestCase):
             self.skipTest("No chat created from previous test")
 
         msg = chat.messages.add(body=ItemBody("Hello from office365-rest-python-client!")).execute_query()
-        self.assertIsNotNone(msg.get_property("id"))
+        self.assertIsNotNone(msg.id)
 
     @requires_delegated(
         "Chat.Read",

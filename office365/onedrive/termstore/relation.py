@@ -1,5 +1,6 @@
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Relation(Entity):
@@ -16,6 +17,7 @@ class Relation(Entity):
     reflected in the other term sets in which the term is reused.
     """
 
+    @odata(name="fromTerm")
     @property
     def from_term(self):
         """The from term of the relation. The term from which the relationship is defined.
@@ -24,6 +26,7 @@ class Relation(Entity):
 
         return self.properties.get("fromTerm", Term(self.context, ResourcePath("fromTerm", self.resource_path)))
 
+    @odata(name="toTerm")
     @property
     def to_term(self):
         """The to term of the relation. The term to which the relationship is defined."""
@@ -37,9 +40,3 @@ class Relation(Entity):
         from office365.onedrive.termstore.sets.set import Set
 
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"fromTerm": self.from_term, "toTerm": self.to_term}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

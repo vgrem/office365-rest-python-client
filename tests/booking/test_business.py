@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.booking.business.business import BookingBusiness
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -22,7 +23,7 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestBusiness(GraphDelegatedTestCase):
     """Booking business lifecycle and sub-resources."""
 
-    target_business: ClassVar[Optional[object]] = None
+    target_business: ClassVar[Optional[BookingBusiness]] = None
 
     @requires_delegated(
         "Bookings.Read.All",
@@ -43,7 +44,7 @@ class TestBusiness(GraphDelegatedTestCase):
         """Creating a booking business with a display name should succeed."""
         result = self.client.solutions.booking_businesses.add("SDK Test Business").execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("displayName"), "SDK Test Business")
+        self.assertEqual(result.display_name, "SDK Test Business")
         TestBusiness.target_business = result
 
     @requires_delegated(
@@ -60,7 +61,7 @@ class TestBusiness(GraphDelegatedTestCase):
 
         result = business.get().execute_query_retry()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("displayName"), "SDK Test Business")
+        self.assertEqual(result.display_name, "SDK Test Business")
 
     @requires_delegated(
         "Bookings.Read.All",
@@ -74,10 +75,10 @@ class TestBusiness(GraphDelegatedTestCase):
         if not business:
             self.skipTest("No business created from previous test")
 
-        self.assertIsNotNone(business.get_property("displayName"))
+        self.assertIsNotNone(business.display_name)
         # These may be None for a newly created minimal business, but should exist as keys
-        self.assertIsNotNone(business.get_property("address"))
-        self.assertIsNotNone(business.get_property("businessHours"))
+        self.assertIsNotNone(business.address)
+        self.assertIsNotNone(business.business_hours)
 
     @requires_delegated(
         "Bookings.Manage.All",

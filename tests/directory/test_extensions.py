@@ -53,7 +53,7 @@ class TestExtensions(GraphDelegatedTestCase):
             self.skipTest("No target app created in setUpClass")
         new_extension = app.extension_properties.add(name="extensionName").execute_query()
         self.assertIsNotNone(new_extension.resource_path)
-        self.assertIsNotNone(new_extension.get_property("id"))
+        self.assertIsNotNone(new_extension.id)
         TestExtensions.target_extension = new_extension
 
     @requires_delegated(

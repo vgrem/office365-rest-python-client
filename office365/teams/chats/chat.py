@@ -23,6 +23,7 @@ class Chat(Entity):
         """Specifies the type of chat. Possible values are: group, oneOnOne, meeting, unknownFutureValue."""
         return self.properties.get("chatType", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """Date and time at which the chat was created."""
@@ -33,11 +34,13 @@ class Chat(Entity):
         """Indicates whether the chat is hidden for all its members."""
         return self.properties.get("isHiddenForAllMembers", None)
 
+    @odata(name="lastUpdatedDateTime")
     @property
     def last_updated_datetime(self) -> Optional[datetime]:
         """Date and time at which the chat was renamed or the list of members was last changed."""
         return self.properties.get("lastUpdatedDateTime", datetime.min)
 
+    @odata(name="onlineMeetingInfo")
     @property
     def online_meeting_info(self) -> TeamworkOnlineMeetingInfo:
         """Represents details about an online meeting. If the chat isn't associated with an online meeting,
@@ -66,6 +69,7 @@ class Chat(Entity):
         """The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed."""
         return self.properties.get("webUrl", None)
 
+    @odata(name="installedApps")
     @property
     def installed_apps(self) -> EntityCollection[TeamsAppInstallation]:
         """A collection of all the apps in the chat. Nullable."""
@@ -78,6 +82,7 @@ class Chat(Entity):
             ),
         )
 
+    @odata(name="lastMessagePreview")
     @property
     def last_message_preview(self) -> ChatMessageInfo:
         """Preview of the last message sent in the chat. Null if no messages have been sent in the chat."""
@@ -124,15 +129,3 @@ class Chat(Entity):
             "tabs",
             EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdDateTime": self.created_datetime,
-                "installedApps": self.installed_apps,
-                "lastMessagePreview": self.last_message_preview,
-                "lastUpdatedDateTime": self.last_updated_datetime,
-                "onlineMeetingInfo": self.online_meeting_info,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

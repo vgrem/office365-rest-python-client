@@ -29,6 +29,10 @@ class TodoTask(Entity):
         """A brief description of the task."""
         return self.properties.get("title", None)
 
+    @title.setter
+    def title(self, value):
+        self.set_property("title", value)
+
     @property
     def attachments(self) -> EntityCollection[AttachmentBase]:
         """A collection of file attachments for the task."""
@@ -77,4 +81,4 @@ class TodoTask(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return ""
+        return None  # type: ignore

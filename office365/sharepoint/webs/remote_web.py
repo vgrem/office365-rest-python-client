@@ -1,11 +1,11 @@
 from office365.onedrive.lists.list import List
-from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.entity import Entity
 from office365.sharepoint.webs.web import Web
 
 
-class RemoteWeb(ClientObject):
+class RemoteWeb(Entity):
     """Specifies a remote web that might be on a different domain."""
 
     def get_list_by_server_relative_url(self, server_relative_url):
@@ -27,7 +27,7 @@ class RemoteWeb(ClientObject):
         return target_list
 
     @staticmethod
-    def create(context, request_url):
+    def create(context, request_url: str) -> "RemoteWeb":
         """Args:
         context (ClientContext):
         request_url (str):
@@ -42,4 +42,3 @@ class RemoteWeb(ClientObject):
     def web(self):
         """Gets the SPWeb."""
         return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
-        # type: ignore[arg-type]

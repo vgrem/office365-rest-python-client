@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Optional
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, List, Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -15,6 +13,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.permissions.collection import PermissionCollection
@@ -48,21 +47,25 @@ class Permission(Entity):
         """For user type permissions, the details of the users & applications for this permission."""
         return self.properties.get("invitation", SharingInvitation())
 
+    @odata(name="grantedTo")
     @property
     def granted_to(self) -> IdentitySet:
         """For user type permissions, the details of the users & applications for this permission."""
         return self.properties.get("grantedTo", IdentitySet())
 
+    @odata(name="grantedToV2")
     @property
     def granted_to_v2(self) -> SharePointIdentitySet:
         """For user type permissions, the details of the users and applications for this permission."""
         return self.properties.get("grantedToV2", SharePointIdentitySet())
 
+    @odata(name="grantedToIdentities")
     @property
     def granted_to_identities(self) -> ClientValueCollection[IdentitySet]:
         """For link type permissions, the details of the users to whom permission was granted. Read-only."""
         return self.properties.get("grantedToIdentities", ClientValueCollection(IdentitySet))
 
+    @odata(name="grantedToIdentitiesV2")
     @property
     def granted_to_identities_v2(self) -> ClientValueCollection[SharePointIdentitySet]:
         """For link type permissions, the details of the users to whom permission was granted."""
@@ -99,6 +102,7 @@ class Permission(Entity):
         """
         return self.properties.get("hasPassword", None)
 
+    @odata(name="inheritedFrom")
     @property
     def inherited_from(self) -> ItemReference:
         """
@@ -106,15 +110,3 @@ class Permission(Entity):
         provides a reference to the item where the content type is defined.
         """
         return self.properties.get("inheritedFrom", ItemReference())
-
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "inheritedFrom": self.inherited_from,
-                "grantedTo": self.granted_to,
-                "grantedToV2": self.granted_to_v2,
-                "grantedToIdentities": self.granted_to_identities,
-                "grantedToIdentitiesV2": self.granted_to_identities_v2,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

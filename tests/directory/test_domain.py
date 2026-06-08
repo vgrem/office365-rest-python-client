@@ -34,5 +34,5 @@ class TestDomain(GraphApplicationTestCase):
         domain = TestDomain.target_domain
         if not domain:
             self.skipTest("No domain retrieved from list")
-        self.assertIsNotNone(domain.get_property("id"))
-        self.assertIsNotNone(domain.get_property("supportedServices"))
+        self.assertIsNotNone(domain.id)
+        self.assertIsNotNone(domain.supported_services)

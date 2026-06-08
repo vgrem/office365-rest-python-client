@@ -79,7 +79,7 @@ class TestTaskList(GraphDelegatedTestCase):
 
         task = tl.tasks.add(title="SDK Test Task").execute_query()
         self.assertIsNotNone(task.resource_path)
-        self.assertEqual(task.get_property("title"), "SDK Test Task")
+        self.assertEqual(task.title, "SDK Test Task")
         TestTaskList.task = task
 
     @requires_delegated(
@@ -110,8 +110,8 @@ class TestTaskList(GraphDelegatedTestCase):
         task.title = "SDK Updated Task Title"
         task.status = "completed"
         task.update().execute_query()
-        self.assertEqual(task.get_property("title"), "SDK Updated Task Title")
-        self.assertEqual(task.get_property("status"), "completed")
+        self.assertEqual(task.title, "SDK Updated Task Title")
+        self.assertEqual(task.status, "completed")
 
     @requires_delegated(
         "Tasks.Read",

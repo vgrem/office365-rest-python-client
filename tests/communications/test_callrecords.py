@@ -59,7 +59,7 @@ class TestCallRecords(GraphApplicationTestCase):
             self.skipTest("No call records found")
 
         for record in records:
-            self.assertIsNotNone(record.get_property("id"))
+            self.assertIsNotNone(record.id)
             self.assertIsNotNone(record.get_property("startDateTime"))
             self.assertIsNotNone(record.get_property("endDateTime"))
             self.assertIsNotNone(record.get_property("type"))

@@ -38,4 +38,4 @@ class TodoTaskList(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return ""
+        return None  # type: ignore

@@ -62,7 +62,7 @@ class TestTeamMembers(GraphDelegatedTestCase):
 
         members = team.members.get().execute_query()
         if len(members) > 0:
-            self.assertIsNotNone(members[0].get_property("displayName"))
+            self.assertIsNotNone(members[0].display_name)
 
     @requires_delegated(
         "TeamMember.Read.All",
@@ -76,4 +76,4 @@ class TestTeamMembers(GraphDelegatedTestCase):
 
         members = team.members.get().execute_query()
         if len(members) > 0:
-            self.assertIsNotNone(members[0].get_property("roles"))
+            self.assertIsNotNone(members[0].roles)

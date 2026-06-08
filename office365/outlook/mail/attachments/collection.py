@@ -14,7 +14,6 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.upload_session import UploadSessionQuery
 from office365.runtime.utilities import parse_query_param
 

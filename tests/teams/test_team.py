@@ -37,8 +37,8 @@ class TestGraphTeam(GraphDelegatedTestCase):
         """Creating a team with a unique name should succeed."""
         name = "Team_" + uuid.uuid4().hex
         result = self.client.teams.create(name).execute_query()
-        self.assertIsNotNone(result.get_property("id"))
-        self.assertIsNotNone(result.get_property("displayName"))
+        self.assertIsNotNone(result.id)
+        self.assertIsNotNone(result.display_name)
         TestGraphTeam.target_team = result
 
     @requires_delegated(

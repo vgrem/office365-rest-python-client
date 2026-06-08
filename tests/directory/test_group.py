@@ -38,7 +38,7 @@ class TestGraphGroup(GraphDelegatedTestCase):
         name = create_unique_name("Group")
         new_group = self.client.groups.create_m365(name).execute_query()
         self.assertIsNotNone(new_group.id)
-        self.assertEqual(new_group.get_property("displayName"), name)
+        self.assertEqual(new_group.display_name, name)
         TestGraphGroup.target_group = new_group
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])

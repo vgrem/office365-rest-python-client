@@ -71,6 +71,7 @@ class BookingBusiness(Entity):
         """The hours of operation for the business."""
         return self.properties.get("businessHours", ClientValueCollection(BookingWorkHours))
 
+    @property
     def display_name(self) -> Optional[str]:
         """
         The name of the business, which interfaces with customers. This name appears at the top of the business

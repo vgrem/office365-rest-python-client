@@ -27,6 +27,7 @@ class SharepointSettings(Entity):
         """Collection of file extensions not uploaded by the OneDrive sync app."""
         return self.properties.get("excludedFileExtensionsForSyncApp", StringCollection())
 
+    @odata(name="idleSessionSignOut")
     @property
     def idle_session_sign_out(self) -> IdleSessionSignOut:
         """Specifies the idle session sign-out policies for the tenant."""

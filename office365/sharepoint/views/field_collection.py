@@ -52,16 +52,16 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _add_view_field(field_name: str) -> None:
+        def _add_view_field(field_name: str | None) -> None:
             """
             Adds the field with the specified field internal name or display name to the collection.
             """
+            assert field_name is not None
             qry = ServiceOperationQuery(self, "AddViewField", [field_name])
             self.context.add_query(qry)
 
         if isinstance(field, Field):
             field.ensure_property("InternalName").after_execute(lambda _: _add_view_field(field.internal_name))
-            # type: ignore[arg-type]
         else:
             _add_view_field(field)
         return self
@@ -75,14 +75,14 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _move_view_field_to(field_name: str) -> None:
+        def _move_view_field_to(field_name: str | None) -> None:
+            assert field_name is not None
             params = {"field": field_name, "index": index}
             qry = ServiceOperationQuery(self, "MoveViewFieldTo", None, params)
             self.context.add_query(qry)
 
         if isinstance(field, Field):
             field.ensure_property("InternalName").after_execute(lambda _: _move_view_field_to(field.internal_name))
-            # type: ignore[arg-type]
         else:
             _move_view_field_to(field)
 
@@ -102,13 +102,13 @@ class ViewFieldCollection(Entity):
         """
         from office365.sharepoint.fields.field import Field
 
-        def _remove_view_field(field_name: str) -> None:
+        def _remove_view_field(field_name: str | None) -> None:
+            assert field_name is not None
             qry = ServiceOperationQuery(self, "RemoveViewField", [field_name])
             self.context.add_query(qry)
 
         if isinstance(field, Field):
             field.ensure_property("InternalName").after_execute(lambda _: _remove_view_field(field.internal_name))
-            # type: ignore[arg-type]
         else:
             _remove_view_field(field)
 

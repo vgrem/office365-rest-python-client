@@ -46,7 +46,7 @@ class TestSharePointAdminSettings(GraphDelegatedTestCase):
         """The sharingCapability field should be a known enum value."""
         settings = self.client.admin.sharepoint.settings.get().execute_query()
 
-        capability = settings.get_property("sharingCapability")
+        capability = settings.sharing_capability
         if capability:
             known_values = {
                 "disabled",
@@ -63,10 +63,9 @@ class TestSharePointAdminSettings(GraphDelegatedTestCase):
     def test_04_idle_session_sign_out_has_timeout(self):
         """Idle session sign-out configuration includes a signOutAfterInSeconds value."""
         settings = self.client.admin.sharepoint.settings.get().execute_query()
-        idle = settings.get_property("idleSessionSignOut")
+        idle = settings.idle_session_sign_out
         if idle:
-            timeout = idle.get_property("signOutAfterInSeconds")
-            self.assertIsNotNone(timeout)
+            self.assertIsNotNone(idle.signOutAfterInSeconds)
 
     @requires_delegated(
         "SharePointTenantSettings.ReadWrite.All",
@@ -80,7 +79,7 @@ class TestSharePointAdminSettings(GraphDelegatedTestCase):
 
         # Re-read and verify
         updated = self.client.admin.sharepoint.settings.get().execute_query()
-        blocked = updated.get_property("sharingBlockedDomainList")
+        blocked = updated.sharing_blocked_domain_list
         if blocked:
             self.assertIn("sdk-test-blocked.com", blocked)
 
@@ -171,8 +170,8 @@ class TestServiceAnnouncement(GraphDelegatedTestCase):
             self.skipTest("No service issues found")
 
         for issue in issues:
-            self.assertIsNotNone(issue.get_property("id"))
-            self.assertIsNotNone(issue.get_property("classification"))
+            self.assertIsNotNone(issue.id)
+            self.assertIsNotNone(issue.classification)
             self.assertIsNotNone(issue.get_property("status"))
             break
 

@@ -14,3 +14,7 @@ class ChecklistItem(Entity):
     def display_name(self) -> Optional[str]:
         """Indicates the title of the checklistItem."""
         return self.properties.get("displayName", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return None  # type: ignore
