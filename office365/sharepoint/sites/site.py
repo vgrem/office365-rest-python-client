@@ -260,7 +260,7 @@ class Site(Entity):
         return_type = ClientResult(self.context)
 
         def _site_loaded():
-            # type: ignore[arg-type]
+            assert self.group_id is not None
             self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)
 
         self.ensure_property("GroupId").after_execute(lambda _: _site_loaded())
@@ -298,11 +298,11 @@ class Site(Entity):
 
     def set_as_home_site(self):
         """Sets a site as a landing site for your intranet."""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
 
         def _site_loaded():
-            # type: ignore[assignment]
-            self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)
+            assert self.url is not None
+            SPHSite.set_as_home_site(self.context, self.url, False, return_type)
 
         self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type

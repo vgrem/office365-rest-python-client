@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -96,7 +98,9 @@ class SPHSite(Entity):
         return sph
 
     @staticmethod
-    def set_as_home_site(context, site_url, viva_connections_default_start=None, return_value=None):
+    def set_as_home_site(
+        context, site_url, viva_connections_default_start=None, return_value: ClientResult[str] | None = None
+    ):
         """Sets a site as a landing site for your intranet.
 
         Args:
@@ -107,7 +111,7 @@ class SPHSite(Entity):
         """
 
         if return_value is None:
-            return_value = ClientResult(context)
+            return_value = ClientResult[str](context)
         sph = SPHSite(context)
         params = {
             "siteUrl": site_url,
