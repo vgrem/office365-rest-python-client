@@ -185,7 +185,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, bool())
 
         def _check_is_deletable():
-            # type: ignore[arg-type]
+            assert self.id is not None
             SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)
 
         self.ensure_property("Id").after_execute(lambda _: _check_is_deletable())
