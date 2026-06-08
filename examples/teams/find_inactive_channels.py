@@ -20,6 +20,8 @@ from datetime import datetime, timedelta, timezone
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
+_DISPLAY_LIMIT = 30
+
 
 def find_inactive_channels(days_threshold: int = 90) -> list[dict]:
     """Find channels across all teams without recent messages.
@@ -97,11 +99,11 @@ def main():
     print(f"Found {len(channels)} inactive channels:\n")
     print(f"{'Team':30s} {'Channel':35s} {'Type':12s} {'Last Message':20s}")
     print("-" * 100)
-    for c in channels[:30]:
+    for c in channels[:_DISPLAY_LIMIT]:
         last = c["last_message"].strftime("%Y-%m-%d") if c["last_message"] else "Never"
         print(f"{c['team'][:28]:30s} {c['channel'][:33]:35s} {c['channel_type']:12s} {last:20s}")
-    if len(channels) > 30:
-        print(f"\n... and {len(channels) - 30} more")
+    if len(channels) > _DISPLAY_LIMIT:
+        print(f"\n... and {len(channels) - _DISPLAY_LIMIT} more")
 
 
 if __name__ == "__main__":

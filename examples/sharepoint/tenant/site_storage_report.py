@@ -19,11 +19,15 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
 
+_KB = 1024
+_WARNING_PCT = 80
+_MAX_PCT = 100
+
 
 def format_mb(mb_value: int) -> str:
     """Format megabytes into a human-readable size string."""
-    if mb_value >= 1024:
-        return f"{mb_value / 1024:.1f} GB"
+    if mb_value >= _KB:
+        return f"{mb_value / _KB:.1f} GB"
     return f"{mb_value} MB"
 
 
@@ -76,11 +80,11 @@ def main():
     # Summary
     total_sites = len(report)
     exceeded = [r for r in report if r["exceeded"]]
-    near_limit = [r for r in report if 80 <= r["usage_pct"] < 100]
+    near_limit = [r for r in report if _WARNING_PCT <= r["usage_pct"] < _MAX_PCT]
 
     print(f"Total sites:         {total_sites}")
     print(f"Exceeding quota:     {len(exceeded)}")
-    print(f"Near limit (80%+):   {len(near_limit)}")
+    print(f"Near limit ({_WARNING_PCT}%+):   {len(near_limit)}")
     print()
 
     if exceeded:

@@ -27,6 +27,8 @@ STRONG_METHODS = {
     "passwordlessMicrosoftAuthenticatorAuthenticationMethod",
 }
 
+_DISPLAY_LIMIT = 20
+
 
 def user_has_mfa(client: GraphClient, user_id: str) -> bool:
     """Check if a user has at least one strong MFA method registered."""
@@ -78,10 +80,10 @@ def main():
 
     if without_mfa:
         print(f"\nUsers without MFA ({len(without_mfa)}):\n")
-        for u in without_mfa[:20]:
+        for u in without_mfa[:_DISPLAY_LIMIT]:
             print(f"  {u['upn']:45s}  {u['display_name'][:30]}")
-        if len(without_mfa) > 20:
-            print(f"\n  ... and {len(without_mfa) - 20} more")
+        if len(without_mfa) > _DISPLAY_LIMIT:
+            print(f"\n  ... and {len(without_mfa) - _DISPLAY_LIMIT} more")
 
 
 if __name__ == "__main__":

@@ -26,6 +26,8 @@ from tests import (
     test_tenant,
 )
 
+_KB = 1024
+
 
 def get_inactive_users(graph_client: GraphClient) -> set:
     """Get set of user principal names for deleted or blocked users.
@@ -106,7 +108,7 @@ def main():
     total_storage = sum(o["storage_mb"] for o in orphans)
     print(f"Found {len(orphans)} orphan OneDrive sites ({total_storage} MB total):\n")
     for o in orphans:
-        storage = f"{o['storage_mb']} MB" if o["storage_mb"] < 1024 else f"{o['storage_mb'] / 1024:.1f} GB"
+        storage = f"{o['storage_mb']} MB" if o["storage_mb"] < _KB else f"{o['storage_mb'] / _KB:.1f} GB"
         print(f"  {o['user']}")
         print(f"    URL:     {o['url']}")
         print(f"    Storage: {storage}")

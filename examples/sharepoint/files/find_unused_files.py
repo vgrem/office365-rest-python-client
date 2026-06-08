@@ -26,6 +26,8 @@ from tests import (
     test_tenant,
 )
 
+_DISPLAY_LIMIT = 20
+
 
 def get_all_files_in_site(ctx: ClientContext) -> dict:
     """Get all files in the default document library.
@@ -130,11 +132,11 @@ def main():
     print(f"\nFound {len(unused)} files with no recent access:\n")
     print(f"{'File':50s} {'Days Since Access':>20s}")
     print("-" * 70)
-    for f in unused[:20]:
+    for f in unused[:_DISPLAY_LIMIT]:
         print(f"{f['name'][:48]:50s} {f['days_since_access']:>20d}")
 
-    if len(unused) > 20:
-        print(f"\n... and {len(unused) - 20} more files")
+    if len(unused) > _DISPLAY_LIMIT:
+        print(f"\n... and {len(unused) - _DISPLAY_LIMIT} more files")
 
 
 if __name__ == "__main__":

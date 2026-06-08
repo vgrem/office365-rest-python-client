@@ -19,6 +19,8 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.principal.type import PrincipalType
 from tests import test_client_id, test_client_secret, test_site_url, test_tenant
 
+_MAX_MEMBERS = 5
+
 
 def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0) -> list[dict]:
     """Recursively scan folders for unique permissions.
@@ -97,10 +99,10 @@ def main():
         print(f"  {f['path']}")
         print(f"    Role assignments: {f['role_assignment_count']}")
         if f["members"]:
-            for m in f["members"][:5]:  # show up to 5
+            for m in f["members"][:_MAX_MEMBERS]:  # show up to 5
                 print(f"      - {m}")
-            if len(f["members"]) > 5:
-                print(f"      ... and {len(f['members']) - 5} more")
+            if len(f["members"]) > _MAX_MEMBERS:
+                print(f"      ... and {len(f['members']) - _MAX_MEMBERS} more")
         print()
 
 

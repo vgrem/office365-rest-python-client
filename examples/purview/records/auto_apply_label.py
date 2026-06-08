@@ -27,6 +27,8 @@ from tests import (
     test_tenant,
 )
 
+_SAMPLE_SIZE = 10
+
 
 def get_retention_label_id(client: GraphClient, label_name: str) -> str | None:
     """Fetch a retention label by display name.
@@ -129,11 +131,11 @@ def main():
     print(f"Found {len(files)} older unlabelled files\n")
 
     # 3. Apply labels
-    for f in files[:10]:  # limit for safety
+    for f in files[:_SAMPLE_SIZE]:  # limit for safety
         apply_label_to_file(ctx, f["url"], label_name)
 
-    if len(files) > 10:
-        print(f"\n... and {len(files) - 10} more files would be labeled")
+    if len(files) > _SAMPLE_SIZE:
+        print(f"\n... and {len(files) - _SAMPLE_SIZE} more files would be labeled")
     print("\nReview the file list and uncomment the update call to apply.")
 
 
