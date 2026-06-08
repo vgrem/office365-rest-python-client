@@ -152,7 +152,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
             .add_file_attachment("BinaryAttachment.txt", base64_content=content)
             .execute_query()
         )
-        self.assertIsNotNone(draft.get_property("id"))
+        self.assertIsNotNone(draft.id)
 
         attachments = self.client.me.messages[draft.id].attachments.get().execute_query()
         self.assertEqual(len(attachments), 2)

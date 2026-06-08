@@ -39,7 +39,7 @@ class TestCalendar(GraphDelegatedTestCase):
         """Finding meeting times returns suggestions."""
         result = self.client.me.find_meeting_times().execute_query()
         self.assertIsNotNone(result.value)
-        self.assertIsNotNone(result.get_property("meetingTimeSuggestions"))
+        self.assertIsNotNone(result.value.meetingTimeSuggestions)
 
     @requires_delegated(
         "Calendars.ReadBasic",
@@ -200,8 +200,8 @@ class TestCalendar(GraphDelegatedTestCase):
         perm = self.client.me.calendar.calendar_permissions.add(
             "samanthab@contoso.onmicrosoft.com", CalendarRoleType.read
         ).execute_query()
-        self.assertIsNotNone(perm.get_property("id"))
-        self.assertIsNotNone(perm.get_property("role"))
+        self.assertIsNotNone(perm.id)
+        self.assertIsNotNone(perm.role)
 
     @classmethod
     def tearDownClass(cls):

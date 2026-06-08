@@ -12,6 +12,7 @@ https://learn.microsoft.com/en-us/graph/api/outlookuser-post-mastercategories
 """
 
 from office365.graph_client import GraphClient
+from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -32,7 +33,7 @@ print(f"Category created: {category.display_name}")
 actions = MessageRuleActions(
     forwardTo=ClientValueCollection(Recipient, [Recipient.from_email("fannyd@contoso.onmicrosoft.com")]),
     stopProcessingRules=True,
-    markImportance="high",
+    markImportance=Importance.high,
 )
 rule = client.me.mail_folders["inbox"].message_rules.add("SDK Test Rule", 2, actions).execute_query()
 print(f"Rule created: {rule.display_name} (priority: {rule.priority})")

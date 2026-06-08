@@ -216,7 +216,8 @@ class Site(Entity):
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
 
         def _site_loaded():
-            SPPolicyStoreProxy.get_available_tags_for_site(self.context, self.url, return_type)  # type: ignore[arg-type]
+            assert self.url is not None
+            SPPolicyStoreProxy.get_available_tags_for_site(self.context, self.url, return_type)
 
         self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type

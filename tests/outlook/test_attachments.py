@@ -57,7 +57,7 @@ class TestAttachments(GraphDelegatedTestCase):
         attachment = AttachmentItem(attachmentType=AttachmentType.file, name="flower.png", size=3483322)
         result = msg.attachments.create_upload_session(attachment).execute_query()
         self.assertIsNotNone(result.value)
-        upload_url = result.get_property("uploadUrl")
+        upload_url = result.value.uploadUrl
         self.assertIsNotNone(upload_url)
 
     @requires_delegated(
@@ -70,10 +70,10 @@ class TestAttachments(GraphDelegatedTestCase):
         if not msg:
             self.skipTest("No target message available")
 
-        msg.add_file_attachment("hello.txt", "Hello World!").execute_query()
+        msg.add_file_attachment("hello.txt", "Hello World!").update().execute_query()
 
         attachments = msg.attachments.get().execute_query()
-        matched = [a for a in attachments if a.get_property("name") == "hello.txt"]
+        matched = [a for a in attachments if a.name == "hello.txt"]
         self.assertGreaterEqual(len(matched), 1)
 
     @requires_delegated(
@@ -94,7 +94,7 @@ class TestAttachments(GraphDelegatedTestCase):
         msg.add_file_attachment("data.bin", base64_content=content).execute_query()
 
         attachments = msg.attachments.get().execute_query()
-        matched = [a for a in attachments if a.get_property("name") == "data.bin"]
+        matched = [a for a in attachments if a.name == "data.bin"]
         self.assertGreaterEqual(len(matched), 1)
 
     @requires_delegated(
@@ -129,6 +129,6 @@ class TestAttachments(GraphDelegatedTestCase):
             self.skipTest("No attachments on the message")
 
         for a in attachments:
-            self.assertIsNotNone(a.get_property("name"))
-            self.assertIsNotNone(a.get_property("size"))
+            self.assertIsNotNone(a.name)
+            self.assertIsNotNone(a.size)
             break
