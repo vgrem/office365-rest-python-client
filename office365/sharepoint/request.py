@@ -130,11 +130,11 @@ class SharePointRequest(ODataRequest):
 
     def with_cookies(self, cookie_source, ttl_seconds=None):
         # type: (object, object) -> Self
-        """
-        Initializes authentication using browser-session cookies.
+        """Initializes authentication using browser-session cookies.
 
-        :param object cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
-        :param object ttl_seconds: Optional max age for cached cookies before reloading from source.
+        Args:
+            cookie_source (object): Callable returning Dict[str, str] or an AuthCookies instance.
+            ttl_seconds (object): Optional max age for cached cookies before reloading from source.
         """
         self._auth_context.with_cookies(cookie_source, ttl_seconds)  # type: ignore[arg-type]
         return self

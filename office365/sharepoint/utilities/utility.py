@@ -35,8 +35,10 @@ class Utility(Entity):
     @staticmethod
     def create_email_body_for_invitation(context: ClientContext, page_address: str) -> ClientResult[str]:
         """Creates the contents of the e-mail message used to invite users to a document or resource in a site
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str page_address: Specifies part of the display name for the document or resource.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            page_address (str): Specifies part of the display name for the document or resource.
         """
         return_type = ClientResult(context, str())
         utility = Utility(context)
@@ -55,10 +57,11 @@ class Utility(Entity):
 
     @staticmethod
     def get_current_user_email_addresses(context: ClientContext) -> ClientResult[str]:
-        """
-        Returns the email addresses of the current user. If more than one email address exists for the current user,
+        """Returns the email addresses of the current user. If more than one email address exists for the current user,
         returns a list of email addresses separated by semicolons.
-        :type context: office365.sharepoint.client_context.ClientContext
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
         """
         result = ClientResult(context, str())
         utility = Utility(context)
@@ -89,17 +92,16 @@ class Utility(Entity):
         max_count: int,
         group_name: Optional[str] = None,
     ) -> ClientResult[StringCollection]:
-        """
-        Returns the collection of principals that partially or uniquely matches the specified search criteria in the
+        """Returns the collection of principals that partially or uniquely matches the specified search criteria in the
         context of the current Web site
-        :param str s_input: Specifies the value to be used when searching for a principal.
-        :param str sources: Specifies the source to be used when searching for a principal.
-        :param int scopes: Specifies the type to be used when searching for a principal.
-        :param int max_count: Specifies the maximum number of principals to be returned.
-        :param str or None group_name:  Specifies the name of a site collection group in the site collection that
-            contains the current Web site. The collection of users in this site collection group is used when searching
-            for a principal.
-        :type context: office365.sharepoint.client_context.ClientContext
+
+        Args:
+            s_input (str): Specifies the value to be used when searching for a principal.
+            sources (str): Specifies the source to be used when searching for a principal.
+            scopes (int): Specifies the type to be used when searching for a principal.
+            max_count (int): Specifies the maximum number of principals to be returned.
+            group_name (str or None): Specifies the name of a site collection group in the site collection that contains the current Web site. The collection of users in this site collection group is used when searching for a principal.
+            context (office365.sharepoint.client_context.ClientContext):
         """
         return_type = ClientResult(context, StringCollection())
         utility = Utility(context)
@@ -142,10 +144,11 @@ class Utility(Entity):
 
     @staticmethod
     def send_email(context: ClientContext, properties: EmailProperties) -> Utility:
-        """
-        This method is a static method.
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type properties: office365.sharepoint.utilities.email_properties.EmailProperties
+        """This method is a static method.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            properties (office365.sharepoint.utilities.email_properties.EmailProperties):
         """
         utility = Utility(context)
         payload = {"properties": properties}
@@ -155,11 +158,12 @@ class Utility(Entity):
 
     @staticmethod
     def unmark_discussion_as_featured(context: ClientContext, list_id: str, topic_ids: str) -> Utility:
-        """
-        This method is a static method.
-        :type context: office365.sharepoint.client_context.ClientContext
-        :type list_id: str
-        :type topic_ids: str
+        """This method is a static method.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            list_id (str):
+            topic_ids (str):
         """
         utility = Utility(context)
         payload = {"listID": list_id, "topicIDs": topic_ids}
@@ -174,12 +178,13 @@ class Utility(Entity):
         max_count: Optional[int] = None,
         return_type: Optional[ClientResult[ClientValueCollection[PrincipalInfo]]] = None,
     ):
-        """
-        Expands groups to a collection of principals.
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param list[str] inputs: A collection of groups to be expanded.
-        :param int max_count: Specifies the maximum number of principals to be returned.
-        :type return_type: ClientResult
+        """Expands groups to a collection of principals.
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            inputs (list[str]): A collection of groups to be expanded.
+            max_count (int): Specifies the maximum number of principals to be returned.
+            return_type (ClientResult):
         """
         binding_type = Utility(context)
         payload = {"inputs": inputs, "maxCount": max_count}
@@ -192,12 +197,12 @@ class Utility(Entity):
 
     @staticmethod
     def log_custom_app_error(context: ClientContext, error: str) -> ClientResult[int]:
-        """
-        Logs an error from a SharePoint Add-in. The return value indicates the success or failure of this operation.
+        """Logs an error from a SharePoint Add-in. The return value indicates the success or failure of this operation.
         These errors are of interest to administrators who monitor such apps (2).
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str error: Error string to log
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            error (str): Error string to log
         """
         utility = Utility(context)
         payload = {
@@ -219,18 +224,17 @@ class Utility(Entity):
         add_to_user_info_list: Optional[bool] = None,
         match_user_info_list: Optional[bool] = None,
     ) -> ClientResult[PrincipalInfo]:
-        """
-        Returns information about a principal that matches the specified search criteria in the context of the current
+        """Returns information about a principal that matches the specified search criteria in the context of the current
         Web site.
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str string_input: Specifies the value to be used when searching for a principal.
-        :param int scopes: Specifies the type to be used when searching for a principal.
-        :param str sources: Specifies the source to be used when searching for a principal.
-        :param bool input_is_email_only: Specifies whether only the e-mail address is used when searching for
-            a principal
-        :param bool add_to_user_info_list: Specifies whether to add the principal to the user information list.
-        :param bool match_user_info_list: Specifies whether to return the principal found in the user information list.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            string_input (str): Specifies the value to be used when searching for a principal.
+            scopes (int): Specifies the type to be used when searching for a principal.
+            sources (str): Specifies the source to be used when searching for a principal.
+            input_is_email_only (bool): Specifies whether only the e-mail address is used when searching for a principal
+            add_to_user_info_list (bool): Specifies whether to add the principal to the user information list.
+            match_user_info_list (bool): Specifies whether to return the principal found in the user information list.
         """
         utility = Utility(context)
         payload = {

@@ -7,10 +7,10 @@ class HostedAppsManager(Entity):
     """Hosted Apps Manager"""
 
     def get_by_id(self, id_: str) -> HostedApp:
-        """
-        Gets an hosted app based on the Id.
+        """Gets an hosted app based on the Id.
 
-        :param str id_: The Id of the hosted app to get.
+        Args:
+            id_ (str): The Id of the hosted app to get.
         """
         return HostedApp(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 

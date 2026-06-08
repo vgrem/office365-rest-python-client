@@ -19,8 +19,8 @@ class EmployeeEngagement(Entity):
         super().__init__(context, ResourcePath("SP.EmployeeEngagement"))
 
     def dashboard_content(self, override_language_code: Optional[str] = None) -> ClientResult[str]:
-        """
-        :param str override_language_code:
+        """Args:
+            override_language_code (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"override_language_code": override_language_code}
@@ -31,9 +31,9 @@ class EmployeeEngagement(Entity):
     def full_dashboard_content(
         self, canvas_as_json: Optional[bool] = None, include_personalization_data: Optional[bool] = None
     ) -> ClientResult[DashboardConfiguration]:
-        """
-        :param bool canvas_as_json:
-        :param bool include_personalization_data:
+        """Args:
+            canvas_as_json (bool):
+            include_personalization_data (bool):
         """
         return_type = ClientResult(self.context, DashboardConfiguration())
         payload = {

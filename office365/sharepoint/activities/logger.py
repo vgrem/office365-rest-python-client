@@ -13,14 +13,14 @@ class ActivityLogger(Entity):
         audit_creation_time,
         is_offline,
     ):
-        """
-        :param str operation:
-        :param str list_id:
-        :param str list_item_unique_id:
-        :param str affected_resource_url:
-        :param str item_type:
-        :param str audit_creation_time:
-        :param bool is_offline:
+        """Args:
+            operation (str):
+            list_id (str):
+            list_item_unique_id (str):
+            affected_resource_url (str):
+            item_type (str):
+            audit_creation_time (str):
+            is_offline (bool):
         """
         payload = {
             "Operation": operation,

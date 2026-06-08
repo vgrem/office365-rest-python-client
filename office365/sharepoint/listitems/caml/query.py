@@ -17,10 +17,10 @@ class CamlQuery(ClientValue):
     :type bool allowIncrementalResults: Specifies whether the incremental results can be returned.
 
     Args:
-        list_item_collection_position (ListItemCollectionPosition): Specifies the information required to get the next page of data for the list view.
-        view_xml (str): Specifies the XML schema that defines the list view.
-        folder_server_relative_url (str or None): Specifies the server-relative URL of a list folder from which results are to be returned.
-        dates_in_utc (bool): Specifies whether the query returns dates in Coordinated Universal Time (UTC) format.
+    list_item_collection_position (ListItemCollectionPosition): Specifies the information required to get the next page of data for the list view.
+    view_xml (str): Specifies the XML schema that defines the list view.
+    folder_server_relative_url (str or None): Specifies the server-relative URL of a list folder from which results are to be returned.
+    dates_in_utc (bool): Specifies whether the query returns dates in Coordinated Universal Time (UTC) format.
     """
 
     DatesInUtc: bool = True

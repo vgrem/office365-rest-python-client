@@ -18,15 +18,15 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         return Subscription(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
     def add(self, parameters):
-        """
-        :param SubscriptionInformation or str parameters: Subscription information object or notification string
+        """Args:
+            parameters (SubscriptionInformation or str): Subscription information object or notification string
         """
         return_type = Subscription(self.context)
         self.add_child(return_type)
 
         def _create_and_add_query(information):
-            """
-            :type information: SubscriptionInformation
+            """Args:
+                information (SubscriptionInformation):
             """
             payload = {"parameters": information}
             qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)
@@ -47,7 +47,8 @@ class SubscriptionCollection(EntityCollection[Subscription]):
     def remove(self, subscription_id):
         """Removes the subscription with the specified subscriptionId from the collection.
 
-        :param str subscription_id: The ID of the subscription.
+        Args:
+            subscription_id (str): The ID of the subscription.
         """
         payload = {
             "subscriptionId": subscription_id,

@@ -18,14 +18,14 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_file_by_path(context, src_path, dest_path, overwrite, options=None):
-        """
-        Copies a file from a source URL to a destination URL.
+        """Copies a file from a source URL to a destination URL.
 
-        :param office365.sharepoint.client_context.ClientContext context: client context
-        :param str src_path: A full or server relative path that represents the source file.
-        :param str dest_path:  A full or server relative url that represents the destination file.
-        :param bool overwrite: Overwrites the destination file when it exists.
-        :param office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None options:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            src_path (str): A full or server relative path that represents the source file.
+            dest_path (str): A full or server relative url that represents the destination file.
+            overwrite (bool): Overwrites the destination file when it exists.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None):
         """
         return_type = ClientResult(context)
         payload = {
@@ -48,14 +48,13 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_folder(context, src_url, dest_url, options=None):
-        """
-        Copies a folder from a source URL to a destination URL.
+        """Copies a folder from a source URL to a destination URL.
 
-        :param office365.sharepoint.client_context.ClientContext context: Client context
-        :param str src_url: A full or server relative url that represents the source folder.
-        :param str dest_url: A full or server relative url that represents the destination folder.
-        :param office365.sharepoint.utilities.move_copy_options.MoveCopyOptions options: Contains options used to
-            modify the behavior.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): Client context
+            src_url (str): A full or server relative url that represents the source folder.
+            dest_url (str): A full or server relative url that represents the destination folder.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
         """
         return_type = ClientResult(context)
         binding_type = MoveCopyUtil(context)
@@ -70,13 +69,13 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def copy_folder_by_path(context, src_path, dest_path, options=None):
-        """
-        Copies a folder from a source URL to a destination URL.
+        """Copies a folder from a source URL to a destination URL.
 
-        :param office365.sharepoint.client_context.ClientContext context: client context
-        :param str src_path: A full or server relative path that represents the source folder.
-        :param str dest_path:  A full or server relative url that represents the destination folder.
-        :param office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None options:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            src_path (str): A full or server relative path that represents the source folder.
+            dest_path (str): A full or server relative url that represents the destination folder.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None):
         """
         return_type = ClientResult(context)
         payload = {
@@ -98,14 +97,13 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def move_folder(context, src_url, dest_url, options):
-        """
-        Moves a folder from a source URL to a destination URL.
+        """Moves a folder from a source URL to a destination URL.
 
-        :param office365.sharepoint.client_context.ClientContext context: client context
-        :param str src_url: A full or server relative url that represents the source folder.
-        :param str dest_url: A full or server relative url that represents the destination folder.
-        :param office365.sharepoint.utilities.move_copy_options.MoveCopyOptions options: Contains options used to
-            modify the behavior.
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            src_url (str): A full or server relative url that represents the source folder.
+            dest_url (str): A full or server relative url that represents the destination folder.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
         """
         binding_type = MoveCopyUtil(context)
         payload = {
@@ -119,14 +117,13 @@ class MoveCopyUtil(Entity):
 
     @staticmethod
     def move_folder_by_path(context, src_path, dest_path, options):
-        """
-        Moves a folder from a source URL to a destination URL.
+        """Moves a folder from a source URL to a destination URL.
 
-        :param str src_path: A full or server relative path that represents the source folder.
-        :param str dest_path: A full or server relative path that represents the destination folder.
-        :param office365.sharepoint.client_context.ClientContext context: client context
-        :param office365.sharepoint.utilities.move_copy_options.MoveCopyOptions options: Contains options used
-            to modify the behavior.
+        Args:
+            src_path (str): A full or server relative path that represents the source folder.
+            dest_path (str): A full or server relative path that represents the destination folder.
+            context (office365.sharepoint.client_context.ClientContext): client context
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
         """
         binding_type = MoveCopyUtil(context)
         payload = {
@@ -145,12 +142,13 @@ class MoveCopyUtil(Entity):
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
     ) -> Folder:
-        """
-        Downloads a folder into a zip file
-        :param office365.sharepoint.folders.folder.Folder remove_folder: Parent folder
-        :param typing.IO download_file: A download zip file object
-        :param (office365.sharepoint.files.file.File)->None after_file_downloaded: A download callback
-        :param bool recursive: Determines whether to traverse folders recursively
+        """Downloads a folder into a zip file
+
+        Args:
+            remove_folder (office365.sharepoint.folders.folder.Folder): Parent folder
+            download_file (typing.IO): A download zip file object
+            after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
+            recursive (bool): Determines whether to traverse folders recursively
         """
         import zipfile
 

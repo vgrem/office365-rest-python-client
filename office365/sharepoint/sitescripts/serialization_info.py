@@ -9,11 +9,11 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class SiteScriptSerializationInfo(ClientValue):
-    """
-    :param bool include_branding:
-    :param list[str] included_lists:
-    :param bool include_site_external_sharing_capability:
-    :param bool include_theme:
+    """Args:
+        include_branding (bool):
+        included_lists (list[str]):
+        include_site_external_sharing_capability (bool):
+        include_theme (bool):
     """
 
     IncludeBranding: Optional[bool] = None

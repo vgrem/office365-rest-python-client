@@ -10,14 +10,13 @@ class SiteScriptMetadata(ClientValue):
     Site scripts are used to automate the provisioning of SharePoint sites by defining actions like
     applying a theme, adding lists, and configuring site settings.
 
-    :param Optional[str] Id: unique identifier (GUID) for the site script. This is used to uniquely identify
-         the script within SharePoint.
-    :param Optional[str] Content: The actual JSON content of the site script. This contains the actions that
-         the script will execute when applied to a SharePoint site.
-    :param Optional[str] Description:
-    :param Optional[bool] IsSiteScriptPackage:
-    :param Optional[str] Title:
-    :param Optional[int] Version:
+    Args:
+        Id (Optional[str]): unique identifier (GUID) for the site script. This is used to uniquely identify the script within SharePoint.
+        Content (Optional[str]): The actual JSON content of the site script. This contains the actions that the script will execute when applied to a SharePoint site.
+        Description (Optional[str]):
+        IsSiteScriptPackage (Optional[bool]):
+        Title (Optional[str]):
+        Version (Optional[int]):
     """
 
     Id: Optional[str] = None

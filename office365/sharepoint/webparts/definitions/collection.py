@@ -10,10 +10,10 @@ class WebPartDefinitionCollection(EntityCollection[WebPartDefinition]):
         super().__init__(context, WebPartDefinition, resource_path)
 
     def get_by_id(self, def_id: str) -> WebPartDefinition:
-        """
-        Returns the Web Part definition object (1) in the collection with a Web Part identifier
+        """Returns the Web Part definition object (1) in the collection with a Web Part identifier
         equal to the id parameter.
 
-        :param str def_id: The Web Part identifier of the Web Part definition to retrieve.
+        Args:
+            def_id (str): The Web Part identifier of the Web Part definition to retrieve.
         """
         return WebPartDefinition(self.context, ServiceOperationPath("GetById", [def_id], self.resource_path))

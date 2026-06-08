@@ -9,13 +9,13 @@ from office365.sharepoint.activities.identity import ActivityIdentity
 
 @dataclass
 class GetCommentFacet(ClientValue):
-    """
-    :param list[ActivityIdentity] assignees:
-    :param str comment_id:
-    :param bool is_reply:
-    :param ActivityIdentity parent_author: Gets or sets the parent author.
-    :param str parent_comment_id:
-    :param list[ActivityIdentity] participants:
+    """Args:
+        assignees (list[ActivityIdentity]):
+        comment_id (str):
+        is_reply (bool):
+        parent_author (ActivityIdentity): Gets or sets the parent author.
+        parent_comment_id (str):
+        participants (list[ActivityIdentity]):
     """
 
     assignees: ClientValueCollection[ActivityIdentity] = field(

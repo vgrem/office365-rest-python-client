@@ -13,13 +13,13 @@ class TargetApplicationField(Entity):
 
     @staticmethod
     def create(context, name, masked, credential_type):
-        """
-        Creates a credential field
+        """Creates a credential field
 
-        :type context: office365.sharepoint.client_context.ClientContext
-        :param str name:
-        :param bool masked:
-        :param int credential_type:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext):
+            name (str):
+            masked (bool):
+            credential_type (int):
         """
         return_type = TargetApplicationField(context)
         payload = {"name": name, "masked": masked, "credentialType": credential_type}

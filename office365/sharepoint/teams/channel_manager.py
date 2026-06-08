@@ -9,13 +9,13 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def add_team_channel(context, channel_url, private_channel=False, private_channel_group_owner=None):
-        """
-        Create Team Channel based folder with specific prodID.
+        """Create Team Channel based folder with specific prodID.
 
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        :param str channel_url:  Team channel URL to be stored in the folder metadata.
-        :param bool private_channel:
-        :param str private_channel_group_owner:
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+            channel_url (str): Team channel URL to be stored in the folder metadata.
+            private_channel (bool):
+            private_channel_group_owner (str):
         """
         manager = TeamChannelManager(context)
         payload = {
@@ -31,9 +31,9 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def get_team_site_data(context, ignore_validation: bool = True):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        :param bool ignore_validation:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+            ignore_validation (bool):
         """
         payload = {
             "ignoreValidation": ignore_validation,
@@ -55,11 +55,11 @@ class TeamChannelManager(Entity):
     def save_conversations(
         context, list_url: str, list_item_id: int, updated_conversations_object: str
     ) -> "TeamChannelManager":
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
-        :param str list_url:
-        :param int list_item_id:
-        :param str updated_conversations_object:
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+            list_url (str):
+            list_item_id (int):
+            updated_conversations_object (str):
         """
         payload = {
             "listUrl": list_url,
@@ -73,8 +73,8 @@ class TeamChannelManager(Entity):
 
     @staticmethod
     def sync_teamsite_settings(context):
-        """
-        :param office365.sharepoint.client_context.ClientContext context: SharePoint client context
+        """Args:
+            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
         """
         return_type = TeamSiteData(context)
         qry = ServiceOperationQuery(
