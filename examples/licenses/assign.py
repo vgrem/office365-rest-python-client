@@ -9,8 +9,8 @@ Requires delegated permission ``User.ReadWrite.All``,
 https://learn.microsoft.com/en-us/graph/api/user-assignlicense
 """
 
-from office365.graph_client import GraphClient
 from office365.directory.licenses.assigned_license import AssignedLicense
+from office365.graph_client import GraphClient
 from tests import (
     test_client_id,
     test_client_secret,
@@ -18,9 +18,7 @@ from tests import (
     test_user_principal_name,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # Find the first available license SKU
 skus = client.subscribed_skus.get().execute_query()

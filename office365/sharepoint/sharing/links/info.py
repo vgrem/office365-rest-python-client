@@ -15,12 +15,16 @@ class SharingLinkInfo(ClientValue):
     Args:
         allows_anonymous_access (bool): Indicates whether the tokenized sharing link allows anonymous access.
         application_id (str):
-        created (str): The UTC date/time string with complete representation for calendar date and time of day which represents the time and date of creation of the tokenized sharing link.
-        created_by (Principal): Indicates the principal who created the tokenized sharing link, or null if the created by value is not recorded.
+        created (str): The UTC date/time string with complete representation for calendar date and time of day
+        which represents the time and date of creation of the tokenized sharing link.
+        created_by (Principal): Indicates the principal who created the tokenized sharing link, or null
+        if the created by value is not recorded.
         password_protected (bool):
-        invitations (list[LinkInvitation]): This value contains the current membership list for principals that have been Invited to the tokenized sharing link.
+        invitations (list[LinkInvitation]): This value contains the current membership list for principals
+        that have been Invited to the tokenized sharing link.
         redeemed_users (list[LinkInvitation]):
-        last_modified_by (Principal): Indicates the principal who last modified the tokenized sharing link. This value MUST be null if the last modified by value is not recorded.
+        last_modified_by (Principal): Indicates the principal who last modified the tokenized sharing link.
+        This value MUST be null if the last modified by value is not recorded.
         password_last_modified_by (Principal):
         track_link_users (bool):
         share_token_string (str):

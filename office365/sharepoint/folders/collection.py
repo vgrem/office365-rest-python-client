@@ -82,7 +82,10 @@ class FolderCollection(EntityCollection[Folder]):
         """Retrieve Folder resource by url
 
         Args:
-            url (str): Specifies the URL of the list folder. The URL MUST be an absolute URL, a server-relative URL, a site-relative URL relative to the site (2) containing the collection of list folders, or relative to the list folder that directly contains this collection of list folders.
+            url (str): Specifies the URL of the list folder.
+                The URL MUST be an absolute URL, a server-relative URL, a site-relative URL relative to the site (2)
+                    containing the collection of list folders, or relative to the list folder that directly contains
+                    this collection of list folders.
         """
         return Folder(self.context, ServiceOperationPath("GetByUrl", [url], self.resource_path))
 

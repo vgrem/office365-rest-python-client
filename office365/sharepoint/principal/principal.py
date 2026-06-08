@@ -70,5 +70,6 @@ class Principal(Entity):
         # fallback: create a new resource path
         if self._resource_path is None:
             if name == "LoginName":
-                self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)  # type: ignore[arg-type]
+                self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)
+                # type: ignore[arg-type]
         return self

@@ -197,7 +197,7 @@ class Tenant(Entity):
 
     def delete_recent_admin_action_report(self, report_id: int):
         """Args:
-            report_id (int):
+        report_id (int):
         """
         qry = ServiceOperationQuery(self, "DeleteRecentAdminActionReport", None, {"reportId": report_id})
         self.context.add_query(qry)
@@ -275,7 +275,7 @@ class Tenant(Entity):
 
     def get_site_thumbnail_logo(self, site_url: str) -> ClientResult[AnyStr]:
         """Args:
-            site_url (str):
+        site_url (str):
         """
         payload = {"siteUrl": site_url}
         return_type = ClientResult(self.context)
@@ -391,7 +391,7 @@ class Tenant(Entity):
     @staticmethod
     def from_url(admin_site_url: str):
         """Args:
-            admin_site_url (str):
+        admin_site_url (str):
         """
         from office365.sharepoint.client_context import ClientContext
 
@@ -400,7 +400,7 @@ class Tenant(Entity):
 
     def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
         """Args:
-            site_id (str): The GUID to uniquely identify a SharePoint site
+        site_id (str): The GUID to uniquely identify a SharePoint site
         """
         return self.sites.get_lock_state_by_id(site_id)
 
@@ -530,7 +530,7 @@ class Tenant(Entity):
 
     def get_sites_by_state(self, states: Optional[List[int]] = None):
         """Args:
-            states (list[int]):
+        states (list[int]):
         """
         return_type = ListItemCollection(
             self.context,

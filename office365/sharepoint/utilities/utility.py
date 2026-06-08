@@ -100,7 +100,9 @@ class Utility(Entity):
             sources (str): Specifies the source to be used when searching for a principal.
             scopes (int): Specifies the type to be used when searching for a principal.
             max_count (int): Specifies the maximum number of principals to be returned.
-            group_name (str or None): Specifies the name of a site collection group in the site collection that contains the current Web site. The collection of users in this site collection group is used when searching for a principal.
+            group_name (str or None): Specifies the name of a site collection group in the site collection that
+                contains the current Web site. The collection of users in this site collection group is used when
+                searching for a principal.
             context (office365.sharepoint.client_context.ClientContext):
         """
         return_type = ClientResult(context, StringCollection())

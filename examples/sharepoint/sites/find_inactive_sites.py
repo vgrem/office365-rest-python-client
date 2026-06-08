@@ -16,7 +16,7 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
@@ -51,9 +51,7 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
     Returns:
         List of dicts with site URL, title, last activity, storage, owner.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     admin = Tenant(ctx)
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
 
@@ -76,22 +74,22 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
 
         try:
             # Get site properties with last activity
-            site_props = admin.get_site_properties_from_sharepoint_by_url(
-                site.url
-            ).execute_query()
+            site_props = admin.get_site_properties_from_sharepoint_by_url(site.url).execute_query()
 
             last_activity = getattr(site_props, "last_content_modified_date", None)
 
             if last_activity and last_activity < cutoff:
-                results.append({
-                    "url": site.url,
-                    "title": site.title,
-                    "last_activity": last_activity,
-                    "template": template,
-                    "storage_used_mb": getattr(site, "storage_usage_current", 0),
-                    "storage_quota_mb": getattr(site, "storage_quota", 0),
-                    "owner": get_site_owner(site),
-                })
+                results.append(
+                    {
+                        "url": site.url,
+                        "title": site.title,
+                        "last_activity": last_activity,
+                        "template": template,
+                        "storage_used_mb": getattr(site, "storage_usage_current", 0),
+                        "storage_quota_mb": getattr(site, "storage_quota", 0),
+                        "owner": get_site_owner(site),
+                    }
+                )
         except Exception as e:
             print(f"  Skipping {site.url}: {e}")
 

@@ -9,8 +9,9 @@ class PeoplePickerQuerySettings(ClientValue):
     """Represents additional settings for the principal query.
 
     Args:
-        exclude_all_users_on_tenant_claim (bool): Specifies whether the all users on tenant claim provider is excluded or not from the principal query.
-        is_sharing (bool): Specifies if the principal query is for sharing scenario or not.
+        ExcludeAllUsersOnTenantClaim (bool): Specifies whether the all users on tenant claim provider
+        is excluded or not from the principal query.
+        IsSharing (bool): Specifies if the principal query is for sharing scenario or not.
     """
 
     ExcludeAllUsersOnTenantClaim: Optional[bool] = None

@@ -8,7 +8,7 @@ class ChatGptRequestOptions(BaseGptRequestOptions):
 
     def __init__(self, messages=None):
         """Args:
-            messages (list[MessageEntry]):
+        messages (list[MessageEntry]):
         """
         super().__init__()
         self.Messages = ClientValueCollection(MessageEntry, messages)

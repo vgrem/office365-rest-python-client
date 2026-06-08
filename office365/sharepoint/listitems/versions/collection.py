@@ -27,8 +27,8 @@ class ListItemVersionCollection(EntityCollection[ListItemVersion]):
         self, row_limit: Optional[int] = None, sort_descending: Optional[bool] = None
     ) -> "ListItemVersionCollection":
         """Args:
-            row_limit (int): The number of return results
-            sort_descending (bool):
+        row_limit (int): The number of return results
+        sort_descending (bool):
         """
         return_type = ListItemVersionCollection(self.context)
         payload = {"getVersionsParams": GetListItemVersionsParameters(row_limit, sort_descending)}

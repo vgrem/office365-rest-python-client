@@ -14,11 +14,11 @@ class RichSharing(Entity):
 
     def share_page_by_email(self, url: str, message: str, recipient_emails: List[str], page_content: str, subject: str):
         """Args:
-            url (str):
-            message (str):
-            recipient_emails (list[str]):
-            page_content (str):
-            subject (str):
+        url (str):
+        message (str):
+        recipient_emails (list[str]):
+        page_content (str):
+        subject (str):
         """
         payload = {
             "url": url,
@@ -33,11 +33,11 @@ class RichSharing(Entity):
 
     def share_site_by_email(self, custom_description, custom_title, message, url, recipient_emails):
         """Args:
-            url (str):
-            message (str):
-            recipient_emails (list[str]):
-            custom_description (str):
-            custom_title (str):
+        url (str):
+        message (str):
+        recipient_emails (list[str]):
+        custom_description (str):
+        custom_title (str):
         """
         payload = {
             "Url": url,

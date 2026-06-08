@@ -26,9 +26,12 @@ class ClientPeoplePickerQueryParameters(ClientValue):
     force_claims (bool): Specifies whether the principal query SHOULD be handled by claims providers.
     enabled_claim_providers (bool): Specifies the claims providers to be used in the principal query.
     all_url_zones (bool): Specifies whether the principal query will search all locations in the topology of the farm.
-    allow_only_email_addresses (bool): Specifies whether to allow the picker to resolve only email addresses as valid entities. This property is only used when AllowEmailAddresses (section 3.2.5.217.1.1.1) is set to True. Otherwise it is ignored.
+    allow_only_email_addresses (bool): Specifies whether to allow the picker to resolve only email addresses as
+    valid entities. This property is only used when AllowEmailAddresses (section 3.2.5.217.1.1.1) is set to True.
+    Otherwise it is ignored.
     allow_multiple_entities (bool): Specifies whether the principal query allows multiple values.
-    allow_emai_addresses (bool): Specifies whether the principal query can return a resolved principal matching an unverified e-mail address when unable to resolve to a known principal.
+    allow_emai_addresses (bool): Specifies whether the principal query can return a resolved principal
+    matching an unverified e-mail address when unable to resolve to a known principal.
     """
 
     QueryString: str

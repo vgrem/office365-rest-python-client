@@ -50,9 +50,7 @@ def find_label_downgrades(days_back: int = 90) -> list[dict]:
     Returns:
         List of downgrade events with file, user, old/new label, timestamp.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     labels = get_available_labels(client)
     print(f"  Found {len(labels)} sensitivity labels")

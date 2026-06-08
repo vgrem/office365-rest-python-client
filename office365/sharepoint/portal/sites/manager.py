@@ -87,7 +87,7 @@ class SPSiteManager(Entity):
 
     def get_site_url(self, site_id: str) -> ClientResult[str]:
         """Args:
-            site_id (str): The GUID to uniquely identify a SharePoint site.
+        site_id (str): The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "SiteUrl", None, {"siteId": site_id}, None, return_type)
@@ -96,7 +96,7 @@ class SPSiteManager(Entity):
 
     def get_team_channel_site_owner(self, site_id: str) -> ClientResult[GetTeamChannelSiteOwnerResponse]:
         """Args:
-            site_id (str): The GUID to uniquely identify a SharePoint site.
+        site_id (str): The GUID to uniquely identify a SharePoint site.
         """
         return_type = ClientResult(self.context, GetTeamChannelSiteOwnerResponse())
         qry = ServiceOperationQuery(self, "GetTeamChannelSiteOwner", None, {"siteId": site_id}, None, return_type)
@@ -105,7 +105,7 @@ class SPSiteManager(Entity):
 
     def viva_backend_site_url_from_name(self, site_name: str) -> ClientResult[VivaSiteRequestInfo]:
         """Args:
-            site_name (str):
+        site_name (str):
         """
         return_type = ClientResult(self.context, VivaSiteRequestInfo())
         payload = {"siteName": site_name}

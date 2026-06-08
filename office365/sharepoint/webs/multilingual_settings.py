@@ -25,7 +25,7 @@ class MultilingualSettings(Entity):
         self, notification_recipients: List[TranslationNotificationRecipientCollection]
     ) -> Self:
         """Args:
-            notification_recipients (list):
+        notification_recipients (list):
         """
         request = TranslationNotificationRecipientSetRequest(
             ClientValueCollection(TranslationNotificationRecipientCollection, notification_recipients)

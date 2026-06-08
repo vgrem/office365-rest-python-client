@@ -8,11 +8,11 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class ActivityIdentityItem(ClientValue):
     """Args:
-        client_id (str):
-        clientIdProvider (str):
-        displayName (str):
-        email (str):
-        userPrincipalName (str):
+    client_id (str):
+    clientIdProvider (str):
+    displayName (str):
+    email (str):
+    userPrincipalName (str):
     """
 
     clientId: str | None = None

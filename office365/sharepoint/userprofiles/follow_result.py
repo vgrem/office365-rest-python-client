@@ -11,7 +11,8 @@ class FollowResult(ClientValue):
 
     Args:
         Item (FollowedItem): The Item property contains the item being followed.
-        ResultType (int): The ResultType property provides information about the attempt to follow an item. For details on the FollowResultType type, see section 3.1.5.54.
+        ResultType (int): The ResultType property provides information about the attempt to follow an item.
+        For details on the FollowResultType type, see section 3.1.5.54.
     """
 
     Item: FollowedItem = field(default_factory=FollowedItem)

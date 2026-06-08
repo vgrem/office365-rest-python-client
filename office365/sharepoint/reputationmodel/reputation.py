@@ -23,7 +23,8 @@ class Reputation(Entity):
             context (office365.sharepoint.client_context.ClientContext): SharePoint client context
             list_id (str): A string-represented GUID value specifying the list that the list item belongs to.
             item_id (int): An integer value that identifies a list item within the list it belongs to.
-            rating (int): An integer value for the rating to be submitted. The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
+            rating (int): An integer value for the rating to be submitted.
+                The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
             return_type (ClientResult): return value
         """
         if return_type is None:
@@ -51,7 +52,8 @@ class Reputation(Entity):
             context (office365.sharepoint.client_context.ClientContext): SharePoint client context
             list_id (str): A string-represented GUID value specifying the list that the list item belongs to.
             item_id (int): An integer value that identifies a list item within the list it belongs to.
-            like (bool): A Boolean value that indicates the operation being either like or unlike. A True value indicates like.
+            like (bool): A Boolean value that indicates the operation being either like or unlike.
+                A True value indicates like.
             return_type (ClientResult): return value
         """
         if return_type is None:

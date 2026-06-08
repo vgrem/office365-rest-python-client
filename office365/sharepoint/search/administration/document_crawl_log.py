@@ -38,7 +38,8 @@ class DocumentCrawlLog(Entity):
         """Retrieves information about all the contents that were crawled.
 
         Args:
-            get_count_only (bool): f true, only the count of the contents crawled MUST be returned. If false, all the information about the crawled contents MUST be returned.
+            get_count_only (bool): f true, only the count of the contents crawled MUST be returned.
+                If false, all the information about the crawled contents MUST be returned.
             max_rows (int):
             query_string (str):
             content_source_id (int):

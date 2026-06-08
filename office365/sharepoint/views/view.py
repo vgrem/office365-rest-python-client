@@ -46,7 +46,7 @@ class View(Entity):
             qry = ServiceOperationQuery(self.parent_list, "GetItems", None, caml_query, "query", return_type)
             self.context.add_query(qry)
 
-        self.ensure_properties(["ViewQuery", "ViewFields"]).after_execute(lambda _: _get_items())  # type: ignore[arg-type]
+        self.ensure_properties(["ViewQuery", "ViewFields"]).after_execute(lambda _: _get_items())
         return return_type
 
     def render_as_html(self) -> ClientResult[str]:

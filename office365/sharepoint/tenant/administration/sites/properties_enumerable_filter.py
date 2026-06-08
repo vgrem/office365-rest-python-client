@@ -8,12 +8,12 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class SitePropertiesEnumerableFilter(ClientValue):
     """Args:
-        _filter (str):
-        start_index (str):
-        include_detail (bool):
-        include_personal_site (int):
-        group_id_defined (int):
-        template (str):
+    _filter (str):
+    start_index (str):
+    include_detail (bool):
+    include_personal_site (int):
+    group_id_defined (int):
+    template (str):
     """
 
     Filter: str | None = None

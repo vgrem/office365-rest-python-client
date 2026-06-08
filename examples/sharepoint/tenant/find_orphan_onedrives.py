@@ -58,15 +58,11 @@ def find_orphan_onedrives() -> list[dict]:
     Returns:
         List of orphan OneDrive site details.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     admin = Tenant(ctx)
 
     # Also connect Graph to check user status
-    graph = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     print("Fetching inactive users...")
     inactive_users = get_inactive_users(graph)
@@ -88,11 +84,13 @@ def find_orphan_onedrives() -> list[dict]:
         user_upn = url.rsplit("/", 1)[-1].replace("_", "@") if "/" in url else url
 
         if user_upn in inactive_users:
-            orphans.append({
-                "url": url,
-                "storage_mb": getattr(site, "storage_usage_current", 0),
-                "user": user_upn,
-            })
+            orphans.append(
+                {
+                    "url": url,
+                    "storage_mb": getattr(site, "storage_usage_current", 0),
+                    "user": user_upn,
+                }
+            )
 
     return orphans
 
@@ -108,7 +106,7 @@ def main():
     total_storage = sum(o["storage_mb"] for o in orphans)
     print(f"Found {len(orphans)} orphan OneDrive sites ({total_storage} MB total):\n")
     for o in orphans:
-        storage = f"{o['storage_mb']} MB" if o['storage_mb'] < 1024 else f"{o['storage_mb'] / 1024:.1f} GB"
+        storage = f"{o['storage_mb']} MB" if o["storage_mb"] < 1024 else f"{o['storage_mb'] / 1024:.1f} GB"
         print(f"  {o['user']}")
         print(f"    URL:     {o['url']}")
         print(f"    Storage: {storage}")

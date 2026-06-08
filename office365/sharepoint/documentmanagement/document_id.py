@@ -27,7 +27,8 @@ class DocumentId(Entity):
         the identifier and URL to ensure they are globally unique in the farm.
 
         Args:
-            decoded_url (str): server relative path to the specified document for which the document identifier MUST be reset if it is not unique.
+            decoded_url (str): server relative path to the specified document for which the document identifier MUST be
+                reset if it is not unique.
         """
         payload = {"DecodedUrl": decoded_url}
         qry = ServiceOperationQuery(self, "ResetDocIdByServerRelativePath", None, payload, None, None)
@@ -39,7 +40,8 @@ class DocumentId(Entity):
         document in the specified document library.
 
         Args:
-            decoded_url (str): Server relative path to the document library, for which all document identifiers MUST be reset to guarantee global uniqueness in the farm.
+            decoded_url (str): Server relative path to the document library, for which all document identifiers MUST be
+                reset to guarantee global uniqueness in the farm.
             content_type_id (str or None): The content type identifier.
         """
         payload = {"decodedUrl": decoded_url, "contentTypeId": content_type_id}

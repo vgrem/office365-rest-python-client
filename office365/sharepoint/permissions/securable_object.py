@@ -90,8 +90,24 @@ class SecurableObject(Entity):
         unique role assignments, the protocol server MUST NOT alter any role assignments.
 
         Args:
-            clear_sub_scopes (bool): If the securable object is a site (2), and the clearSubscopes parameter is "true", the role assignments for all child securable objects in the current site (2) and in the sites that inherit role assignments from the current site (2) MUST be cleared and those securable objects inherit role assignments from the current site (2) after this call. If the securable object is a site (2), and the clearSubscopes parameter is "false", the role assignments for all child securable objects that do not inherit role assignments from their parent object (1) MUST remain unchanged. If the securable object is not a site (2), and the clearSubscopes parameter is "true", the role assignments for all child securable objects MUST be cleared and those securable objects inherit role assignments from the current securable object after this call. If the securable object is not a site, and the clearSubscopes parameter is "false", the role assignments for all child securable objects that do not inherit role assignments from their parent object (1) MUST remain unchanged.
-            copy_role_assignments (bool): Specifies whether to copy the role assignments from the parent securable object.If the value is "false", the collection of role assignments MUST contain only 1 role assignment containing the current user after the operation.
+            clear_sub_scopes (bool): If the securable object is a site (2), and the clearSubscopes parameter is "true",
+                the role assignments for all child securable objects in the current site (2) and in
+                the sites that inherit role assignments from the current site (2) MUST be cleared
+                and those securable objects inherit role assignments from the current site (2)
+                after this call.
+                If the securable object is a site (2), and the clearSubscopes parameter is "false",
+                the role assignments for all child securable objects that do not inherit role
+                assignments from their parent object (1) MUST remain unchanged.
+                If the securable object is not a site (2), and the clearSubscopes parameter is
+                "true", the role assignments for all child securable objects MUST be cleared and
+                those securable objects inherit role assignments from the current securable object
+                after this call.
+                If the securable object is not a site, and the clearSubscopes parameter is "false",
+                the role assignments for all child securable objects that do not inherit role
+                assignments from their parent object (1) MUST remain unchanged.
+            copy_role_assignments (bool): Specifies whether to copy the role assignments from the parent securable
+                object.If the value is "false", the collection of role assignments MUST
+                contain only 1 role assignment containing the current user after the operation.
         """
         payload = {
             "copyRoleAssignments": copy_role_assignments,

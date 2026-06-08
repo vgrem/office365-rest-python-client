@@ -58,7 +58,8 @@ class Office365Tenant(Entity):
 
         Args:
             cdn_type (int): Specifies the CDN type. The valid values are: public or private.
-            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways: relative path, or a mask.
+            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways:
+                relative path, or a mask.
         """
         payload = {"cdnType": cdn_type, "originUrl": origin_url}
         qry = ServiceOperationQuery(self, "AddTenantCdnOrigin", None, payload)
@@ -130,7 +131,8 @@ class Office365Tenant(Entity):
 
         Args:
             cdn_type (int): Specifies the CDN type. The valid values are: public or private.
-            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways: relative path, or a mask.
+            origin_url (str): Specifies a path to the doc library to be configured. It can be provided in two ways:
+                relative path, or a mask.
         """
         payload = {"cdnType": cdn_type, "originUrl": origin_url}
         qry = ServiceOperationQuery(self, "RemoveTenantCdnOrigin", None, payload)
@@ -158,7 +160,8 @@ class Office365Tenant(Entity):
 
         Args:
             cdn_type (int): Specifies the CDN type. The valid values are: public or private.
-            policy (int): The PolicyType specifies the type of policy to set. Valid values: # IncludeFileExtensions # ExcludeRestrictedSiteClassifications # ExcludeIfNoScriptDisabled
+            policy (int): The PolicyType specifies the type of policy to set. Valid values:
+                # IncludeFileExtensions # ExcludeRestrictedSiteClassifications # ExcludeIfNoScriptDisabled
             policy_value (str): A String representing the value of the policy type defined by the PolicyType parameter.
         """
         payload = {"cdnType": cdn_type, "policy": policy, "policyValue": policy_value}
@@ -167,7 +170,8 @@ class Office365Tenant(Entity):
         return self
 
     def revoke_all_user_sessions(self, user: Union[str, User]) -> SPOUserSessionRevocationResult:
-        """Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their devices.
+        """Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their
+        devices.
 
         Args:
             user (str or User): Specifies a user name or user object (for example, user1@contoso.com) or User object
@@ -197,10 +201,14 @@ class Office365Tenant(Entity):
         """Returns external users in the tenant.
 
         Args:
-            position (int): Use to specify the zero-based index of the position in the sorted collection of the first result to be returned.
-            page_size (int): Specifies the maximum number of users to be returned in the collection. The value must be less than or equal to 50.
-            _filter (str): Limits the results to only those users whose first name, last name, or email address begins with the text in the string using a case-insensitive comparison.
-            sort_order (int): Specifies the sort results in Ascending or Descending order on the User.Email property should occur.
+            position (int): Use to specify the zero-based index of the position in the sorted collection of the
+                first result to be returned.
+            page_size (int): Specifies the maximum number of users to be returned in the collection. The value must
+                be less than or equal to 50.
+            _filter (str): Limits the results to only those users whose first name, last name, or email address
+                begins with the text in the string using a case-insensitive comparison.
+            sort_order (int): Specifies the sort results in Ascending or Descending order on the User.Email
+                property should occur.
         """
         return_type = GetExternalUsersResults(self.context)
         payload = {"position": position, "pageSize": page_size, "filter": _filter, "sortOrder": sort_order}
@@ -212,7 +220,8 @@ class Office365Tenant(Entity):
         """Removes a collection of external users from the tenancy's folder.
 
         Args:
-            unique_ids (list[str]): Specifies an ID that can be used to identify an external user based on their Windows Live ID.
+            unique_ids (list[str]): Specifies an ID that can be used to identify an external user based on their
+                Windows Live ID.
         """
         payload = {"uniqueIds": unique_ids}
         return_type = RemoveExternalUsersResults(self.context)

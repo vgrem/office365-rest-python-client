@@ -484,7 +484,7 @@ class User(DirectoryObject):
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
         """Args:
-            permanent_delete (bool): Permanently deletes the user from directory
+        permanent_delete (bool): Permanently deletes the user from directory
         """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)

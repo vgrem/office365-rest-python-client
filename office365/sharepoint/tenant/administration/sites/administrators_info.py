@@ -8,9 +8,9 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class SiteAdministratorsInfo(ClientValue):
     """Args:
-        email (str):
-        login_name (str):
-        name (str):
+    email (str):
+    login_name (str):
+    name (str):
     """
 
     email = None

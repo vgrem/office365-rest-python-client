@@ -20,7 +20,7 @@ class EmployeeEngagement(Entity):
 
     def dashboard_content(self, override_language_code: Optional[str] = None) -> ClientResult[str]:
         """Args:
-            override_language_code (str):
+        override_language_code (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"override_language_code": override_language_code}
@@ -32,8 +32,8 @@ class EmployeeEngagement(Entity):
         self, canvas_as_json: Optional[bool] = None, include_personalization_data: Optional[bool] = None
     ) -> ClientResult[DashboardConfiguration]:
         """Args:
-            canvas_as_json (bool):
-            include_personalization_data (bool):
+        canvas_as_json (bool):
+        include_personalization_data (bool):
         """
         return_type = ClientResult(self.context, DashboardConfiguration())
         payload = {

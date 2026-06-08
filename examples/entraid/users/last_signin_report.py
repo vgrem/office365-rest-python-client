@@ -31,13 +31,14 @@ def last_signin_report(days_threshold: int = 90) -> list[dict]:
     Returns:
         List of user dicts sorted by most recently active first.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # Fetch users with sign-in activity data
-    users = client.users.select(["id", "displayName", "userPrincipalName",
-                                  "userType", "signInActivity"]).get().execute_query()
+    users = (
+        client.users.select(["id", "displayName", "userPrincipalName", "userType", "signInActivity"])
+        .get()
+        .execute_query()
+    )
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
     inactive = []
@@ -53,22 +54,26 @@ def last_signin_report(days_threshold: int = 90) -> list[dict]:
 
         if last and last < cutoff:
             days_since = (datetime.now(timezone.utc) - last).days
-            inactive.append({
-                "upn": user.user_principal_name,
-                "display_name": user.display_name,
-                "user_type": getattr(user, "user_type", "Member"),
-                "last_signin": last,
-                "days_since": days_since,
-            })
+            inactive.append(
+                {
+                    "upn": user.user_principal_name,
+                    "display_name": user.display_name,
+                    "user_type": getattr(user, "user_type", "Member"),
+                    "last_signin": last,
+                    "days_since": days_since,
+                }
+            )
         elif not last:
             # Never signed in
-            inactive.append({
-                "upn": user.user_principal_name,
-                "display_name": user.display_name,
-                "user_type": getattr(user, "user_type", "Member"),
-                "last_signin": None,
-                "days_since": days_threshold + 1,
-            })
+            inactive.append(
+                {
+                    "upn": user.user_principal_name,
+                    "display_name": user.display_name,
+                    "user_type": getattr(user, "user_type", "Member"),
+                    "last_signin": None,
+                    "days_since": days_threshold + 1,
+                }
+            )
 
     inactive.sort(key=lambda x: x["days_since"], reverse=True)
     return inactive

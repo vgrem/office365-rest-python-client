@@ -48,7 +48,8 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         returns null.
 
         Args:
-            _id (str): The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46) that is returned.
+            _id (str): The GUID that specifies the Microsoft.SharePoint.Client.FieldLink (section 3.2.5.46) that is
+                returned.
         """
         return FieldLink(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
@@ -56,7 +57,8 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         """Rearranges the collection of field links in the order in which field internal names are specified.
 
         Args:
-            internal_names (list[str]): Specifies field internal names that are arranged in the order in which the collection of field links is reordered.
+            internal_names (list[str]): Specifies field internal names that are arranged in the order in which the
+                collection of field links is reordered.
         """
         payload = {"internalNames": StringCollection(internal_names)}
         qry = ServiceOperationQuery(self, "Reorder", None, payload)

@@ -56,7 +56,8 @@ class DocumentSharingManager(Entity):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext):
-            item_urls (list[str]): A list of absolute URLs of the items to be removed from the view. These items might belong to any site or site collection in the tenant.
+            item_urls (list[str]): A list of absolute URLs of the items to be removed from the view. These items
+                might belong to any site or site collection in the tenant.
         """
         return_type = ClientResult(context, ClientValueCollection(SharedWithMeViewItemRemovalResult))
         binding_type = DocumentSharingManager(context)
@@ -91,13 +92,30 @@ class DocumentSharingManager(Entity):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext):
-            resource_address (str): A URL that points to a securable object, which can be a document, folder or the root folder of a document library.
-            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the securable object pointed to by the resourceAddress parameter.
-            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for a user. If this value is "true", the protocol server will not grant the requested permission if a user already has sufficient permissions, and if this value is "false", the protocol server will grant the requested permission whether or not a user already has the same or more permissions. This parameter is applicable only when the parameter additiveMode is set to true.
-            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or strict mode. If this value is "true", the permission setting uses the additive mode, which means that the specified permission will be added to the user's current list of permissions if it is not there already, and if this value is "false", the permission setting uses the strict mode, which means that the specified permission will replace the user's current permissions.
-            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email notification to each recipient in the "userRoleAssignments" array after the document update is completed successfully. If this value is "true", the protocol server will send an email notification if an email server is configured, and if the value is "false", no email notification will be sent.
+            resource_address (str): A URL that points to a securable object, which can be a document, folder or the
+                root folder of a document library.
+            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the
+                securable object pointed to by the resourceAddress parameter.
+            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for
+                a user. If this value is "true", the protocol server will not grant the requested permission if a
+                user already has sufficient permissions, and if this value is "false", the protocol server will
+                grant the requested permission whether or not a user already has the same or more permissions. This
+                parameter is applicable only when the parameter additiveMode is set to true.
+            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or
+                strict mode. If this value is "true", the permission setting uses the additive mode, which means
+                that the specified permission will be added to the user's current list of permissions if it is not
+                there already, and if this value is "false", the permission setting uses the strict mode, which
+                means that the specified permission will replace the user's current permissions.
+            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email
+                notification to each recipient in the "userRoleAssignments" array after the document update is
+                completed successfully. If this value is "true", the protocol server will send an email notification
+                if an email server is configured, and if the value is "false", no email notification will be sent.
             custom_message (str): A custom message to be included in the email notification.
-            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include anonymous access links in the email notification to each recipient in the userRoleAssignments array after the document update is completed successfully. If the value is "true", the protocol server will include an anonymous access link in the email notification, and if the value is "false", no link will be included.
+            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include
+                anonymous access links in the email notification to each recipient in the userRoleAssignments array
+                after the document update is completed successfully. If the value is "true", the protocol server
+                will include an anonymous access link in the email notification, and if the value is "false", no
+                link will be included.
             propagate_acl (bool): A flag to determine if permissions SHOULD be pushed to items with unique permission.
             return_type (ClientResult):
         """

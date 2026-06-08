@@ -32,7 +32,8 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         Args:
             base_permissions (BasePermissions): Specifies the base permissions for the role definition.
             name (str): Specifies the role definition name.
-            description (str): Specifies the description of the role definition. Its length MUST be equal to or less than 512.
+            description (str): Specifies the description of the role definition.
+                Its length MUST be equal to or less than 512.
             order (int): Specifies the order position of the object (1) in the site collection Permission Levels page.
         """
         return_type = RoleDefinition(self.context)
@@ -71,7 +72,9 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         """Retrieves the role definition with the specified Id property from the collection.
 
         Args:
-            id_ (str): Specifies the unique identifier of the role definition searched. The value of id does not correspond to the index of the role definition within the collection, but refers to the value of the Id property of the role definition.
+            id_ (str): Specifies the unique identifier of the role definition searched.
+                The value of id does not correspond to the index of the role definition within the collection, but
+                    refers to the value of the Id property of the role definition.
         """
         return RoleDefinition(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 

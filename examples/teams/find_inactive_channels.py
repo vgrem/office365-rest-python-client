@@ -30,9 +30,7 @@ def find_inactive_channels(days_threshold: int = 90) -> list[dict]:
     Returns:
         List of channel dicts sorted by most recent message (ascending).
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
     inactive = []
@@ -63,22 +61,26 @@ def find_inactive_channels(days_threshold: int = 90) -> list[dict]:
 
             if last_message and last_message < cutoff:
                 days = (datetime.now(timezone.utc) - last_message).days
-                inactive.append({
-                    "team": team_name,
-                    "channel": channel_name,
-                    "channel_type": channel_type,
-                    "last_message": last_message,
-                    "days_since": days,
-                })
+                inactive.append(
+                    {
+                        "team": team_name,
+                        "channel": channel_name,
+                        "channel_type": channel_type,
+                        "last_message": last_message,
+                        "days_since": days,
+                    }
+                )
             elif not last_message:
                 # No messages ever
-                inactive.append({
-                    "team": team_name,
-                    "channel": channel_name,
-                    "channel_type": channel_type,
-                    "last_message": None,
-                    "days_since": days_threshold + 1,
-                })
+                inactive.append(
+                    {
+                        "team": team_name,
+                        "channel": channel_name,
+                        "channel_type": channel_type,
+                        "last_message": None,
+                        "days_since": days_threshold + 1,
+                    }
+                )
 
     inactive.sort(key=lambda x: x["days_since"], reverse=True)
     return inactive

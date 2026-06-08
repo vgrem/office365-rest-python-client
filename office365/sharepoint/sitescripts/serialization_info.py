@@ -10,10 +10,10 @@ from office365.runtime.types.collections import StringCollection
 @dataclass
 class SiteScriptSerializationInfo(ClientValue):
     """Args:
-        include_branding (bool):
-        included_lists (list[str]):
-        include_site_external_sharing_capability (bool):
-        include_theme (bool):
+    include_branding (bool):
+    included_lists (list[str]):
+    include_site_external_sharing_capability (bool):
+    include_theme (bool):
     """
 
     IncludeBranding: Optional[bool] = None

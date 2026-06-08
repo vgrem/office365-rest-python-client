@@ -19,14 +19,14 @@ class SubscriptionCollection(EntityCollection[Subscription]):
 
     def add(self, parameters):
         """Args:
-            parameters (SubscriptionInformation or str): Subscription information object or notification string
+        parameters (SubscriptionInformation or str): Subscription information object or notification string
         """
         return_type = Subscription(self.context)
         self.add_child(return_type)
 
         def _create_and_add_query(information):
             """Args:
-                information (SubscriptionInformation):
+            information (SubscriptionInformation):
             """
             payload = {"parameters": information}
             qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)

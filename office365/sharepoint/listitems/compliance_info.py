@@ -8,10 +8,10 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class ListItemComplianceInfo(ClientValue):
     """Args:
-        compliance_tag (str):
-        tag_policy_event_based (bool):
-        tag_policy_hold (bool):
-        tag_policy_record (bool):
+    compliance_tag (str):
+    tag_policy_event_based (bool):
+    tag_policy_hold (bool):
+    tag_policy_record (bool):
     """
 
     ComplianceTag: str | None = None

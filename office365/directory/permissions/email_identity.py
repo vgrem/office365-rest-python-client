@@ -8,7 +8,7 @@ class EmailIdentity(Identity):
 
     def __init__(self, id_: Optional[str] = None, email: Optional[str] = None, display_name: Optional[str] = None):
         """Args:
-            email (str):
+        email (str):
         """
         super().__init__(display_name, id_)
         self.email = email

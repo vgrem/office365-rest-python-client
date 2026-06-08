@@ -26,7 +26,8 @@ class ProfileImageStore(Entity):
         Args:
             profile_type (int): Specifies the profile type.
             file_name_prefix (str): Specifies a prefix for the name of the saved file.
-            is_feed_attachment (bool): Has a true value if the file is being attached to a feed and, otherwise, has a false value.
+            is_feed_attachment (bool): Has a true value if the file is being attached to a feed and, otherwise,
+            has a false value.
             client_file_path (str): Specifies the path of the file on the client system.
             file_size (int): Specifies the size of the file in bytes.
             file_stream (str): Specifies a stream to read the file.

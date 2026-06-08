@@ -7,10 +7,10 @@ class MicroServiceManager(Entity):
     @staticmethod
     def add_microservice_work_item(context, payload, minutes, properties):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext):
-            payload (str or byte):
-            minutes (int):
-            properties (MicroServiceWorkItemProperties):
+        context (office365.sharepoint.client_context.ClientContext):
+        payload (str or byte):
+        minutes (int):
+        properties (MicroServiceWorkItemProperties):
         """
         return_type = ClientResult(context)
         payload = {"payLoad": payload, "minutes": minutes, "properties": properties}

@@ -13,9 +13,7 @@ https://learn.microsoft.com/en-us/graph/api/informationprotectionpolicy-list-lab
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(
-    test_client_id, test_client_secret
-)
+client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # 1. List sensitivity labels
 labels = client.security.information_protection.sensitivity_labels.top(20).get().execute_query()

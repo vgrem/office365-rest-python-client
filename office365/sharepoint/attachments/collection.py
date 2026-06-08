@@ -32,7 +32,8 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
         Args:
-            attachment_file_information (AttachmentCreationInformation): The creation information which contains file name and content stream.
+            attachment_file_information (AttachmentCreationInformation): The creation information which contains file
+                name and content stream.
         """
         if isinstance(attachment_file_information, dict):
             attachment_file_information = AttachmentCreationInformation(
@@ -69,7 +70,8 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         return_type = Attachment(self.context)
         params = {"DecodedUrl": decoded_url}
-        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)  # type: ignore[reportArgumentType]
+        qry = ServiceOperationQuery(self, "AddUsingPath", params, content_stream, None, return_type)
+        # type: ignore[reportArgumentType]
         self.context.add_query(qry)
         self.add_child(return_type)
         return return_type

@@ -32,8 +32,8 @@ class TeamChannelManager(Entity):
     @staticmethod
     def get_team_site_data(context, ignore_validation: bool = True):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
-            ignore_validation (bool):
+        context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+        ignore_validation (bool):
         """
         payload = {
             "ignoreValidation": ignore_validation,
@@ -56,10 +56,10 @@ class TeamChannelManager(Entity):
         context, list_url: str, list_item_id: int, updated_conversations_object: str
     ) -> "TeamChannelManager":
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
-            list_url (str):
-            list_item_id (int):
-            updated_conversations_object (str):
+        context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+        list_url (str):
+        list_item_id (int):
+        updated_conversations_object (str):
         """
         payload = {
             "listUrl": list_url,
@@ -74,7 +74,7 @@ class TeamChannelManager(Entity):
     @staticmethod
     def sync_teamsite_settings(context):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+        context (office365.sharepoint.client_context.ClientContext): SharePoint client context
         """
         return_type = TeamSiteData(context)
         qry = ServiceOperationQuery(

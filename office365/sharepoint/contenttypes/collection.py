@@ -42,7 +42,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.
 
         Args:
-            content_type_info (ContentTypeCreationInformation): Specifies properties that is to be used to construct the new content type.
+            content_type_info (ContentTypeCreationInformation): Specifies properties that is to be used to construct the
+                new content type.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
@@ -94,7 +95,8 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """Adds the specified content type to the content type collection.
 
         Args:
-            content_type_id (str): Specifies the identifier of the content type to be added to the content type collection. It MUST exist in the web's available content types.
+            content_type_id (str): Specifies the identifier of the content type to be added to the content type
+                collection. It MUST exist in the web's available content types.
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)

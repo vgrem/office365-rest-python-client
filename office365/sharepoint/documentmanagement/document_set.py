@@ -25,9 +25,11 @@ class DocumentSet(Folder):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext):
-            parent_folder (office365.sharepoint.folders.folder.Folder): The folder inside which to create the new DocumentSet.
+            parent_folder (office365.sharepoint.folders.folder.Folder): The folder inside which to create the new
+                DocumentSet.
             name (str): The name to give to the new DocumentSet
-            ct_id (office365.sharepoint.contenttypes.content_type_id.ContentTypeId): The identifier of the content type to give to the new document set.
+            ct_id (office365.sharepoint.contenttypes.content_type_id.ContentTypeId): The identifier of the content type
+                to give to the new document set.
         """
 
         return_type = DocumentSet(context)

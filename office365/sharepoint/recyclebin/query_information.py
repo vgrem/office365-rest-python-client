@@ -11,7 +11,8 @@ class RecycleBinQueryInformation(ClientValue):
     """Represents information for the recycle bin query.
 
     Args:
-        show_only_my_items (bool): Gets or sets a Boolean value that specifies whether to get items deleted by other users.
+        show_only_my_items (bool): Gets or sets a Boolean value that specifies whether to get items deleted by other
+            users.
         row_limit (int): Gets or sets a limit for the number of items returned in the query per page.
         paging_info (str): Gets or sets a string used to get the next set of rows in the page.
         order_by (int): Gets or sets the column by which to order the Recycle Bin query.

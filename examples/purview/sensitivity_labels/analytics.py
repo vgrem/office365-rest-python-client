@@ -31,9 +31,7 @@ def get_label_usage() -> dict:
     Returns:
         Dict mapping label name -> stats (id, priority, count).
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     usage = {}
     try:

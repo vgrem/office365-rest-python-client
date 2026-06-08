@@ -10,8 +10,12 @@ class CustomActionElement(ClientValue):
     """A class specifies a custom action element.
 
     Args:
-        clientside_component_id (str): The unique identifier of the client-side component associated with the custom action.
-        client_side_component_properties (str): This property is only used when a ClientSideComponentId is specified. It is optional. If non-empty, the string MUST contain a JSON object with custom initialization properties whose format and meaning are defined by the client-side component.
+        clientside_component_id (str): The unique identifier of the client-side component associated with the custom
+            action.
+        client_side_component_properties (str): This property is only used when a ClientSideComponentId is specified.
+            It is optional.
+            If non-empty, the string MUST contain a JSON object with custom initialization properties whose format and
+                meaning are defined by the client-side component.
         command_ui_extension (str): This property is only used when a ClientSideComponentId is specified.
         enabled_script (str): The client side script to enabled or disable the custom action.
     """

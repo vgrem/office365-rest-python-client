@@ -9,7 +9,7 @@ class SPWebService(Entity):
     @staticmethod
     def content_service(context):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
         """
         return_type = SPWebService(context)
         qry = ServiceOperationQuery(return_type, "ContentService", None, None, None, return_type)

@@ -73,12 +73,19 @@ class ObjectSharingInformation(Entity):
 
         Args:
             context (office365.sharepoint.client_context.ClientContext): SharePoint client context
-            exclude_current_user (bool): Specifies whether the returned sharing state information will exclude information about the user making the request.
-            exclude_site_admin (bool): Specifies whether the returned sharing state information will exclude information about users who are site collection administrators of the site collection which contains the current site
-            exclude_security_groups (bool): Specifies whether the returned sharing state information will exclude information about security groups which have permissions to the current site
+            exclude_current_user (bool): Specifies whether the returned sharing state information will exclude
+            information about the user making the request.
+            exclude_site_admin (bool): Specifies whether the returned sharing state information will exclude
+            information about users who are site collection administrators of the site collection which contains
+            the current site
+            exclude_security_groups (bool): Specifies whether the returned sharing state information will exclude
+            information about security groups which have permissions to the current site
             retrieve_anonymous_links (bool): This parameter is ignored by the method.
-            retrieve_user_info_details (bool): Specifies whether the returned sharing state information will contain basic or detailed information about the users with permissions to the current site
-            check_for_access_requests (bool): Specifies whether the returned sharing state information will contain a URL to a location which describes any access requests present in the current site, if such a URL is available
+            retrieve_user_info_details (bool): Specifies whether the returned sharing state information will contain
+            basic or detailed information about the users with permissions to the current site
+            check_for_access_requests (bool): Specifies whether the returned sharing state information will contain a
+            URL to a location which describes any access requests present in the current site,
+            if such a URL is available
         """
         return_type = ObjectSharingInformation(context)
         payload = {
@@ -124,14 +131,21 @@ class ObjectSharingInformation(Entity):
         """Retrieves information about the sharing state for a given list.
 
         Args:
-            check_for_access_requests: Specifies whether the returned sharing state information will contain a URL to a location which describes any access requests present in the site (2), if such a URL is available.
-            retrieve_user_info_details: Specifies whether the returned sharing state information will contain basic or detailed information about the users with permissions to the list item.
-            retrieve_anonymous_links: Specifies whether the returned sharing state information will contain information about a URL that allows an anonymous user to access the list item.
-            exclude_security_groups: Specifies whether the returned sharing state information will exclude information about security groups which have permissions to the list item.
-            exclude_site_admin: Specifies whether the returned sharing state information will exclude information about users who are site collection administrators of the site collection which contains the list.
-            exclude_current_user: Specifies whether the returned sharing state information will exclude information about the user making the request.
+            check_for_access_requests: Specifies whether the returned sharing state information will contain a
+            URL to a location which describes any access requests present in the site (2), if such a URL is available.
+            retrieve_user_info_details: Specifies whether the returned sharing state information will contain basic
+            or detailed information about the users with permissions to the list item.
+            retrieve_anonymous_links: Specifies whether the returned sharing state information will contain information
+            about a URL that allows an anonymous user to access the list item.
+            exclude_security_groups: Specifies whether the returned sharing state information will exclude information
+            about security groups which have permissions to the list item.
+            exclude_site_admin: Specifies whether the returned sharing state information will exclude information
+            about users who are site collection administrators of the site collection which contains the list.
+            exclude_current_user: Specifies whether the returned sharing state information will exclude information
+            about the user making the request.
             item_id: The list item identifier for the list item for which the sharing state is requested.
-            list_id: The list identifier for the list which contains the list item for which the sharing state is requested.
+            list_id: The list identifier for the list which contains the list item for which the sharing state
+            is requested.
             context: SharePoint client context
             return_type: Return type
         """

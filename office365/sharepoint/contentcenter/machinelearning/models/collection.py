@@ -11,7 +11,7 @@ class SPMachineLearningModelCollection(EntityCollection[SPMachineLearningModel])
 
     def get_by_title(self, title):
         """Args:
-            title (str): The title of the model to return.
+        title (str): The title of the model to return.
         """
         return SPMachineLearningModel(
             self.context,

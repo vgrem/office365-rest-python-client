@@ -8,8 +8,8 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class SmtpServer(ClientValue):
     """Args:
-        value (str):
-        is_readonly (bool):
+    value (str):
+    is_readonly (bool):
     """
 
     Value = None

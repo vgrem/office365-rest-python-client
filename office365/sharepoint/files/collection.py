@@ -134,8 +134,10 @@ class FileCollection(EntityCollection[File]):
         was added is returned.
 
         Args:
-            url (str): Specifies the URL of the file to be added. It MUST NOT be NULL. It MUST be a URL of relative or absolute form. Its length MUST be equal to or greater than 1.
-            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same location as the one being added.
+            url (str): Specifies the URL of the file to be added. It MUST NOT be NULL.
+                It MUST be a URL of relative or absolute form. Its length MUST be equal to or greater than 1.
+            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same
+                location as the one being added.
             content (str or bytes or None): Specifies the binary content of the file to be added.
         """
         return_type = File(self.context)

@@ -19,7 +19,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
 
     def get_by_id(self, site_id: str) -> SiteProperties:
         """Args:
-            site_id (str): Site identifier
+        site_id (str): Site identifier
         """
         return_type = SiteProperties(self.context)
         qry = ServiceOperationQuery(self, "GetById", [site_id], None, None, return_type)
@@ -28,7 +28,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
 
     def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
         """Args:
-            site_id (str): Site identifier
+        site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, int())
         qry = ServiceOperationQuery(self, "GetLockStateById", [site_id], None, None, return_type)
@@ -59,7 +59,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
 
     def check_site_is_archived_by_id(self, site_id: str) -> ClientResult[bool]:
         """Args:
-            site_id (str): Site identifier
+        site_id (str): Site identifier
         """
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "CheckSiteIsArchivedById", [site_id], None, None, return_type)

@@ -159,7 +159,7 @@ class List(SecurableObject):
 
     def delete_rule(self, rule_id) -> Self:
         """Args:
-            rule_id (str):
+        rule_id (str):
         """
         payload = {"ruleId": rule_id}
         qry = ServiceOperationQuery(self, "DeleteRule", None, payload)
@@ -174,7 +174,8 @@ class List(SecurableObject):
         return return_type
 
     def get_bloom_filter(self, start_item_id: Optional[int] = None) -> ListBloomFilter:
-        """Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current list
+        """Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current
+            list
 
         Args:
             start_item_id (int): he ID of the list item to start the search at.
@@ -321,9 +322,9 @@ class List(SecurableObject):
         self, target_field_name: str, begins_with_search_string: str, paging_info: str
     ) -> FlowSynchronizationResult:
         """Args:
-            target_field_name (str):
-            begins_with_search_string (str):
-            paging_info (str):
+        target_field_name (str):
+        begins_with_search_string (str):
+        paging_info (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {
@@ -337,7 +338,7 @@ class List(SecurableObject):
 
     def sync_flow_callback_url(self, flow_id: object) -> FlowSynchronizationResult:
         """Args:
-            flow_id (str):
+        flow_id (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "SyncFlowCallbackUrl", None, {"flowId": flow_id}, None, return_type)
@@ -346,7 +347,7 @@ class List(SecurableObject):
 
     def sync_flow_instance(self, flow_id: str) -> FlowSynchronizationResult:
         """Args:
-            flow_id (str):
+        flow_id (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "SyncFlowInstance", None, {"flowId": flow_id}, None, return_type)
@@ -355,7 +356,7 @@ class List(SecurableObject):
 
     def sync_flow_instances(self, retrieve_group_flows: bool) -> FlowSynchronizationResult:
         """Args:
-            retrieve_group_flows (bool):
+        retrieve_group_flows (bool):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"retrieveGroupFlows": retrieve_group_flows}
@@ -365,7 +366,7 @@ class List(SecurableObject):
 
     def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """Args:
-            category (str):
+        category (str):
         """
         return_type = FlowSynchronizationResult(self.context)
         payload = {"category": category}
@@ -406,7 +407,8 @@ class List(SecurableObject):
         providing data to a user interface.
 
         Args:
-            view_xml (str): Specifies the query as XML that conforms to the ViewDefinition type as specified in [MS-WSSCAML] section 2.3.2.17.
+            view_xml (str): Specifies the query as XML that conforms to the ViewDefinition type as specified in
+                [MS-WSSCAML] section 2.3.2.17.
         """
         return_type = ClientResult(self.context)
         payload = {"viewXml": view_xml}
@@ -496,10 +498,13 @@ class List(SecurableObject):
 
         Args:
             item_ids (list[int]): A collection of item Ids that need to be updated with the same formValues.
-            form_values (list[ListItemFormUpdateValue]): A collection of field internal names and values for the given field. If the collection is empty, no update will take place.
-            new_document_update (bool): Indicates whether the list item is a document being updated after upload. A value of "true" means yes.
+            form_values (list[ListItemFormUpdateValue]): A collection of field internal names and values for the given
+                field. If the collection is empty, no update will take place.
+            new_document_update (bool): Indicates whether the list item is a document being updated after upload.
+                A value of "true" means yes.
             checkin_comment (str): The comment of check in if any. It's only applicable when the item is checked out.
-            folder_path (str): Decoded path of the folder where the items belong to. If not provided, the server will try to find items to update under root folder.
+            folder_path (str): Decoded path of the folder where the items belong to.
+                If not provided, the server will try to find items to update under root folder.
         """
         return_type = ClientResult(self.context, ClientValueCollection(ListItemFormUpdateValue))
         params = {
@@ -671,9 +676,14 @@ class List(SecurableObject):
         """Adds a ListItem to an existing List.
 
         Args:
-            leaf_name (str): Specifies the name of the list item that will be created. In the case of a document library, the name is equal to the filename of the list item.
-            object_type (int): Specifies the file system object type for the item that will be created. It MUST be either FileSystemObjectType.File or FileSystemObjectType.Folder.
-            folder_url (str ot None): Specifies the url of the folder of the new list item. The value MUST be either null or the decoded url value an empty string or a server-relative URL or an absolute URL. If the value is not null or the decoded url value not being empty string, the decoded url value MUST point to a location within the list.
+            leaf_name (str): Specifies the name of the list item that will be created.
+                In the case of a document library, the name is equal to the filename of the list item.
+            object_type (int): Specifies the file system object type for the item that will be created.
+                It MUST be either FileSystemObjectType.File or FileSystemObjectType.Folder.
+            folder_url (str ot None): Specifies the url of the folder of the new list item.
+                The value MUST be either null or the decoded url value an empty string or a server-relative URL or an
+                    absolute URL. If the value is not null or the decoded url value not being empty string, the decoded
+                    url value MUST point to a location within the list.
         """
         parameters = ListItemCreationInformationUsingPath(leaf_name, object_type, FolderPath=folder_url)
         return_type = ListItem(self.context)
@@ -685,12 +695,15 @@ class List(SecurableObject):
     def add_validate_update_item(
         self, create_info: ListItemCreationInformation, form_values: Optional[Dict] = None
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
-        """Adds an item to an existing list and validate the list item update values. If all fields validated successfully,
+        """Adds an item to an existing list and validate the list item update values. If all fields validated
+            successfully,
         commit all changes. If there's any exception in any of the fields, the item will not be committed.
 
         Args:
-            create_info (ListItemCreationInformation): Contains the information that determines how the item will be created.
-            form_values (dict): A collection of field internal names and values for the given field. If the collection is empty, no update will take place.
+            create_info (ListItemCreationInformation): Contains the information that determines how the item will be
+                created.
+            form_values (dict): A collection of field internal names and values for the given field.
+                If the collection is empty, no update will take place.
         """
         assert form_values is not None
         payload = {

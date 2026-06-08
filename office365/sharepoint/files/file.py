@@ -115,7 +115,10 @@ class File(AbstractFile):
 
         Args:
             is_edit_link: If true, the link will allow the guest user edit privileges on the item. string parameters
-            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day, and which represents the time and date of expiry for the anonymous link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation
+                for calendar date and time of day, and which represents the time and date of expiry for the anonymous
+                link. Both the minutes and hour value MUST be specified for the difference between the local and UTC
+                time. Midnight is represented as 00:00:00.
         """
         return_type = ClientResult(self.context, str())
 
@@ -162,7 +165,9 @@ class File(AbstractFile):
         """Returns a link for downloading the file without authentication.
 
         Args:
-            expiration_hours (int): The number of hours until the link expires. If the maximum expiration time defined in the web application is less than the specified expiration time, the maximum expiration time takes precedence.
+            expiration_hours (int): The number of hours until the link expires.
+                If the maximum expiration time defined in the web application is less than the specified expiration
+                    time, the maximum expiration time takes precedence.
         """
         return_type = ClientResult(self.context, str())
         params = {"expirationHours": expiration_hours}
@@ -214,9 +219,15 @@ class File(AbstractFile):
 
         Args:
             link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
-            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
-            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation
+                for calendar date and time of day and which represents the time and date of expiry for the tokenized
+                sharing link. Both the minutes and hour value MUST be specified for the difference between the local and
+                UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only
+                applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored
+                for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password
+                protection.
         """
         return self.listItemAllFields.share_link(link_kind, expiration, role, password)
 
@@ -224,7 +235,8 @@ class File(AbstractFile):
         """Removes the specified tokenized sharing link of the file.
 
         Args:
-            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized
+                sharing link that is intended to be removed.
             share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         return self.listItemAllFields.unshare_link(link_kind, share_id)  # type: ignore[arg-type]
@@ -295,7 +307,8 @@ class File(AbstractFile):
         """Copies the file to the destination URL.
 
         Args:
-            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder server relative url where to copy a file.
+            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder
+                server relative url where to copy a file.
             overwrite (bool): Specifies whether a file with the same name is overwritten.
             file_name (str): A new file name
         """
@@ -328,7 +341,8 @@ class File(AbstractFile):
 
         Args:
             overwrite (bool): Specifies whether a file with the same name is overwritten.
-            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder server relative url where to copy a file.
+            destination (office365.sharepoint.folders.folder.Folder or str): Specifies the destination folder or folder
+                server relative url where to copy a file.
             file_name (str): New file name
         """
 
@@ -393,7 +407,8 @@ class File(AbstractFile):
         """Moves the file to the specified destination path.
 
         Args:
-            destination (str or office365.sharepoint.folders.folder.Folder): Specifies the destination folder path or existing folder object
+            destination (str or office365.sharepoint.folders.folder.Folder): Specifies the destination folder path or
+                existing folder object
             flag (int): Specifies the kind of move operation.
         """
 
@@ -458,7 +473,8 @@ class File(AbstractFile):
 
         Args:
             comment: comment to the new version of the file
-            checkin_type: 0 (minor), or 1 (major) or 2 (overwrite) For more information on checkin types, please see https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
+            checkin_type: 0 (minor), or 1 (major) or 2 (overwrite) For more information on checkin types, please see
+                https://docs.microsoft.com/en-us/previous-versions/office/sharepoint-csom/ee542953(v%3Doffice.15)
             checkin_type (int): Specifies the type of check-in.
         """
         params = {"comment": comment, "checkInType": checkin_type.value}
@@ -479,7 +495,8 @@ class File(AbstractFile):
         view.
 
         Args:
-            scope (int): Specifies the personalization scope value that depicts how Web Parts are viewed on the Web Part Page.
+            scope (int): Specifies the personalization scope value that depicts how Web Parts are viewed on the Web Part
+                Page.
         """
         return LimitedWebPartManager(
             self.context,
@@ -519,13 +536,14 @@ class File(AbstractFile):
 
     def upload_with_checksum(self, upload_id: str, checksum: str, stream: bytes) -> File:
         """Args:
-            upload_id (str): The upload session ID.
-            checksum (str):
-            stream (bytes):
+        upload_id (str): The upload session ID.
+        checksum (str):
+        stream (bytes):
         """
         return_type = File(self.context)
         params = {"uploadId": upload_id, "checksum": checksum}
-        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)  # type: ignore[arg-type]
+        qry = ServiceOperationQuery(self, "UploadWithChecksum", params, stream, None, return_type)
+        # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type
 
@@ -608,7 +626,8 @@ class File(AbstractFile):
             "fileOffset": file_offset,
             "checksum": checksum,
         }
-        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)  # type: ignore[arg-type]
+        qry = ServiceOperationQuery(self, "FinishUploadWithChecksum", payload, stream, None, self)
+        # type: ignore[arg-type]
         self.context.add_query(qry)
         return self
 

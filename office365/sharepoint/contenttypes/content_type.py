@@ -31,7 +31,8 @@ class ContentType(Entity):
         """The ReorderFields method is called to change the order in which fields appear in a content type.
 
         Args:
-            field_names (list[str]): Rearranges the collection of fields in the order in which field internal names are specified.
+            field_names (list[str]): Rearranges the collection of fields in the order in which field internal names are
+                specified.
         """
         payload = {"fieldNames": StringCollection(field_names)}
         qry = ServiceOperationQuery(self, "ReorderFields", None, payload)

@@ -29,9 +29,7 @@ def query_file_sharing_events(days_back: int = 30) -> list[dict]:
     Returns:
         List of sharing event dicts with user, file, target, timestamp.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     end_date = datetime.now(timezone.utc)
     start_date = end_date - timedelta(days=days_back)

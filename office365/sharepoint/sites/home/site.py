@@ -85,9 +85,9 @@ class SPHSite(Entity):
     @staticmethod
     def validate_home_site(context, site_url, validation_action_type):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext):
-            site_url (str): URL of the site to return status for
-            validation_action_type (int):
+        context (office365.sharepoint.client_context.ClientContext):
+        site_url (str): URL of the site to return status for
+        validation_action_type (int):
         """
         sph = SPHSite(context)
         params = {"siteUrl": site_url, "validationActionType": validation_action_type}

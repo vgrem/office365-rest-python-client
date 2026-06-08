@@ -36,11 +36,13 @@ def list_available_labels(client: GraphClient) -> list[dict]:
     try:
         result = client.security.sensitivity_labels.get().execute_query()
         for label in result:
-            labels.append({
-                "id": label.id,
-                "display_name": getattr(label, "display_name", label.id),
-                "priority": getattr(label, "priority", 0),
-            })
+            labels.append(
+                {
+                    "id": label.id,
+                    "display_name": getattr(label, "display_name", label.id),
+                    "priority": getattr(label, "priority", 0),
+                }
+            )
     except Exception as e:
         print(f"  Warning: could not fetch labels: {e}")
 
@@ -66,9 +68,7 @@ def assign_sensitivity_label(site_url: str, label_id: str) -> bool:
     Returns:
         True if successful, False otherwise.
     """
-    ctx = ClientContext(site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     try:
         # Set the sensitivity label on the site
@@ -85,9 +85,7 @@ def assign_sensitivity_label(site_url: str, label_id: str) -> bool:
 def main():
     print("SharePoint site sensitivity label management\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # 1. List available labels
     print("Fetching available sensitivity labels...")
@@ -97,14 +95,12 @@ def main():
         print("No sensitivity labels found. Create labels in Purview first.")
         return
 
-    print(f"Available labels:")
+    print("Available labels:")
     for l in sorted(labels, key=lambda x: x["priority"]):
         print(f"  [{l['id'][:8]}...] {l['display_name']} (priority {l['priority']})")
 
     # 2. Check current label on the site
-    ctx = ClientContext(test_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     current = get_current_site_label(ctx)
     print(f"\nCurrent label on {test_site_url}: {current or 'None'}")
 

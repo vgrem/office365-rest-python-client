@@ -65,9 +65,9 @@ class ListItem(SecurableObject):
 
     def __init__(self, context, resource_path=None, parent_list=None):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext):
-            resource_path (office365.runtime.paths.resource_path.ResourcePath or None):
-            parent_list (office365.sharepoint.lists.list.List or None):
+        context (office365.sharepoint.client_context.ClientContext):
+        resource_path (office365.runtime.paths.resource_path.ResourcePath or None):
+        parent_list (office365.sharepoint.lists.list.List or None):
         """
         super().__init__(context, resource_path)
         if parent_list is not None:
@@ -120,9 +120,15 @@ class ListItem(SecurableObject):
 
         Args:
             link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
-            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
-            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation
+                for calendar date and time of day and which represents the time and date of expiry for the tokenized
+                sharing link. Both the minutes and hour value MUST be specified for the difference between the local and
+                UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only
+                applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored
+                for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password
+                protection.
         """
         return_type = ClientResult(self.context, ShareLinkResponse())
         request = ShareLinkRequest(
@@ -147,7 +153,8 @@ class ListItem(SecurableObject):
         """Removes the specified tokenized sharing link of the list item.
 
         Args:
-            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized
+                sharing link that is intended to be removed.
             share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         payload = {"linkKind": link_kind, "shareId": share_id}
@@ -159,7 +166,10 @@ class ListItem(SecurableObject):
         """Removes the specified tokenized sharing link of the list item
 
         Args:
-            link_kind (int): The kind of tokenized sharing link that is intended to be removed. This MUST be set to one of the following values: OrganizationView (section 3.2.5.315.1.3) OrganizationEdit (section 3.2.5.315.1.4) AnonymousView (section 3.2.5.315.1.5) AnonymousEdit (section 3.2.5.315.1.6)
+            link_kind (int): The kind of tokenized sharing link that is intended to be removed.
+                This MUST be set to one of the following values: OrganizationView (section 3.2.5.315.1.3)
+                    OrganizationEdit (section 3.2.5.315.1.4) AnonymousView (section 3.2.5.315.1.5) AnonymousEdit
+                    (section 3.2.5.315.1.6)
         """
         payload = {"linkKind": link_kind}
         qry = ServiceOperationQuery(self, "DeleteLinkByKind", None, payload)
@@ -230,7 +240,8 @@ class ListItem(SecurableObject):
         """Rates an item within the specified list. The return value is the average rating for the specified list item.
 
         Args:
-            value (int): An integer value for the rating to be submitted. The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
+            value (int): An integer value for the rating to be submitted.
+                The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
         """
         return_value = ClientResult(self.context)
 
@@ -247,7 +258,8 @@ class ListItem(SecurableObject):
         the specified list. The return value is the total number of likes for the specified list item.
 
         Args:
-            value (bool): A Boolean value that indicates the operation being either like or unlike. A True value indicates like.
+            value (bool): A Boolean value that indicates the operation being either like or unlike.
+                A True value indicates like.
         """
         return_value = ClientResult(self.context)
 
@@ -386,7 +398,8 @@ class ListItem(SecurableObject):
         Args:
             form_values (dict): Specifies a collection of field internal names and values for the given field
             new_document_update (bool): Specifies whether the list item is a document being updated after upload.
-            checkin_comment (str): Check-in comment, if any. This parameter is only applicable when the list item is checked out.
+            checkin_comment (str): Check-in comment, if any.
+                This parameter is only applicable when the list item is checked out.
             dates_in_utc (bool or None):
         """
         payload = {
@@ -415,8 +428,8 @@ class ListItem(SecurableObject):
 
     def update_ex(self, bypass_quota_check: Optional[bool] = None, bypass_shared_lock: Optional[bool] = None):
         """Args:
-            bypass_quota_check (bool):
-            bypass_shared_lock (bool):
+        bypass_quota_check (bool):
+        bypass_shared_lock (bool):
         """
         payload = {"parameters": ListItemUpdateParameters(bypass_quota_check, bypass_shared_lock)}
         qry = ServiceOperationQuery(self, "UpdateEx", None, payload)

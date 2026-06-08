@@ -195,8 +195,8 @@ class SitePage(SitePageMetadata):
 
     def share_page_preview_by_email(self, message, recipient_emails):
         """Args:
-            message (str):
-            recipient_emails (list[str]):
+        message (str):
+        recipient_emails (list[str]):
         """
         payload = SharePagePreviewByEmailFieldsData(message, recipient_emails)
         qry = ServiceOperationQuery(self, "SharePagePreviewByEmail", None, payload)

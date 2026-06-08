@@ -6,11 +6,11 @@ from office365.sharepoint.entity import Entity
 class VideoItem(Entity):
     def get_video_embed_code(self, width, height, autoplay=True, show_info=True, make_responsive=True):
         """Args:
-            width (int):
-            height (int):
-            autoplay (bool):
-            show_info (bool):
-            make_responsive (bool):
+        width (int):
+        height (int):
+        autoplay (bool):
+        show_info (bool):
+        make_responsive (bool):
         """
         return_type = ClientResult(self.context)
         params = {
@@ -26,7 +26,7 @@ class VideoItem(Entity):
 
     def set_video_owner(self, owner_id):
         """Args:
-            owner_id (int):
+        owner_id (int):
         """
         payload = {"id": owner_id}
         qry = ServiceOperationQuery(self, "SetVideoOwner", None, payload)

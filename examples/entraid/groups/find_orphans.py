@@ -26,9 +26,7 @@ def find_orphan_groups() -> tuple[list[dict], list[dict]]:
     Returns:
         Tuple of (no_owners, no_members) — lists of group dicts.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     no_owners = []
     no_members = []
@@ -45,33 +43,39 @@ def find_orphan_groups() -> tuple[list[dict], list[dict]]:
         try:
             owners = client.groups[gid].owners.get().execute_query()
             if len(owners) == 0:
-                no_owners.append({
+                no_owners.append(
+                    {
+                        "id": gid,
+                        "name": display,
+                        "type": gtype,
+                        "mail_enabled": mail,
+                        "security_enabled": security,
+                    }
+                )
+        except Exception:
+            no_owners.append(
+                {
                     "id": gid,
                     "name": display,
                     "type": gtype,
                     "mail_enabled": mail,
                     "security_enabled": security,
-                })
-        except Exception:
-            no_owners.append({
-                "id": gid,
-                "name": display,
-                "type": gtype,
-                "mail_enabled": mail,
-                "security_enabled": security,
-                "error": "Could not fetch owners",
-            })
+                    "error": "Could not fetch owners",
+                }
+            )
 
         try:
             members = client.groups[gid].members.get().execute_query()
             if len(members) == 0:
-                no_members.append({
-                    "id": gid,
-                    "name": display,
-                    "type": gtype,
-                    "mail_enabled": mail,
-                    "security_enabled": security,
-                })
+                no_members.append(
+                    {
+                        "id": gid,
+                        "name": display,
+                        "type": gtype,
+                        "mail_enabled": mail,
+                        "security_enabled": security,
+                    }
+                )
         except Exception:
             pass
 

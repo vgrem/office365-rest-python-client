@@ -25,9 +25,7 @@ def find_teams_apps() -> dict[str, list[dict]]:
     Returns:
         Dict mapping app name -> list of teams it's installed in.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     app_map = {}
 
@@ -72,11 +70,13 @@ def main():
     # Sort by install count (most widespread first)
     sorted_apps = sorted(app_map.items(), key=lambda x: len(x[1]["teams"]), reverse=True)
 
-    print(f"Found {len(sorted_apps)} distinct apps across {sum(len(v['teams']) for _, v in sorted_apps)} team installs\n")
+    print(
+        f"Found {len(sorted_apps)} distinct apps across {sum(len(v['teams']) for _, v in sorted_apps)} team installs\n"
+    )
     print(f"{'App':35s} {'Teams':>6s} {'Version':15s} {'State':10s}")
     print("-" * 70)
     for name, info in sorted_apps:
-        abbreviation = "msft" if "microsoft" in name.lower() else "3rd"
+        # abbreviation = "msft" if "microsoft" in name.lower() else "3rd"
         print(f"{name[:33]:35s} {len(info['teams']):>6d} {info['version'][:13]:15s} {info['publisher_state'][:8]:10s}")
 
     # Show least-widespread (potential shadow IT candidates)

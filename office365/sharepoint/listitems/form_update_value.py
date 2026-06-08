@@ -14,7 +14,8 @@ class ListItemFormUpdateValue(ClientValue):
     Args:
         name (str): Specifies the field internal name for a field.
         value (str): Specifies a value for a field.
-        has_exception (bool): Specifies whether there was an error result after validating the value for the field param int ErrorCode: Specifies the error code after validating the value for the field
+        has_exception (bool): Specifies whether there was an error result after validating the value for the field param
+            int ErrorCode: Specifies the error code after validating the value for the field
     """
 
     FieldName: str | None = None

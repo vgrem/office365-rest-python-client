@@ -11,7 +11,7 @@ class ExternalUserCollection(EntityCollection[ExternalUser]):
 
     def get_by_id(self, unique_id: str) -> ExternalUser:
         """Args:
-            unique_id (str): The Id of the external user.
+        unique_id (str): The Id of the external user.
         """
         return ExternalUser(
             self.context,

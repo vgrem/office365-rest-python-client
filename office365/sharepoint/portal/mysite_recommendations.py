@@ -32,7 +32,8 @@ class MySiteRecommendations(Entity):
 
     @staticmethod
     def stop_following_item(context, uri, personal_site_uri, category):
-        """The StopFollowingItem method removes the specified document or site from list of followed content (as described
+        """The StopFollowingItem method removes the specified document or site from list of followed content (as
+            described
         in [MS-SOCCSOM] section 3.1.5.38.2.1.6). StopFollowingItem MUST return TRUE if successful or FALSE if
         not successful.
 

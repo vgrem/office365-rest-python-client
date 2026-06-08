@@ -193,7 +193,9 @@ class ClientContext(ClientRuntimeContext):
 
         Args:
             username (str): Typically, a UPN in the form of an email address
-            password (str): The password Note: This method uses the legacy SAML/ACS auth flow which Microsoft has retired for SharePoint Online. Use with_username_and_password instead. For on-premises SharePoint, use allow_ntlm=True.
+            password (str): The password Note: This method uses the legacy SAML/ACS auth flow which Microsoft has
+                retired for SharePoint Online. Use with_username_and_password instead.
+                For on-premises SharePoint, use allow_ntlm=True.
         """
         raise RuntimeError(
             "with_user_credentials uses the legacy SAML/ACS auth flow which "

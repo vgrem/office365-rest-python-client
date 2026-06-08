@@ -37,7 +37,7 @@ class Calendar(Entity):
     )
     def allowed_calendar_sharing_roles(self, user) -> ClientResult[StringCollection]:
         """Args:
-            user (str): User identifier or principal name
+        user (str): User identifier or principal name
         """
         params = {"user": user}
         return_type = ClientResult(self.context, StringCollection())

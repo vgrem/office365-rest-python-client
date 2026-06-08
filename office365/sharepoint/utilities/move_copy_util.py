@@ -54,7 +54,8 @@ class MoveCopyUtil(Entity):
             context (office365.sharepoint.client_context.ClientContext): Client context
             src_url (str): A full or server relative url that represents the source folder.
             dest_url (str): A full or server relative url that represents the destination folder.
-            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to
+                modify the behavior.
         """
         return_type = ClientResult(context)
         binding_type = MoveCopyUtil(context)
@@ -103,7 +104,8 @@ class MoveCopyUtil(Entity):
             context (office365.sharepoint.client_context.ClientContext): client context
             src_url (str): A full or server relative url that represents the source folder.
             dest_url (str): A full or server relative url that represents the destination folder.
-            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to
+                modify the behavior.
         """
         binding_type = MoveCopyUtil(context)
         payload = {
@@ -123,7 +125,8 @@ class MoveCopyUtil(Entity):
             src_path (str): A full or server relative path that represents the source folder.
             dest_path (str): A full or server relative path that represents the destination folder.
             context (office365.sharepoint.client_context.ClientContext): client context
-            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to modify the behavior.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions): Contains options used to
+                modify the behavior.
         """
         binding_type = MoveCopyUtil(context)
         payload = {

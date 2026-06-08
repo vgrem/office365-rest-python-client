@@ -15,7 +15,7 @@ class TenantCdnApi(Entity):
 
     def get_cdn_urls(self, items=None):
         """Args:
-            items (list[str]):
+        items (list[str]):
         """
         payload = {
             "items": items,

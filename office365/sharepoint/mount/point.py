@@ -11,10 +11,10 @@ class MountPoint(Entity):
         context, target_site_id: str, target_web_id: str, target_unique_id: str
     ) -> MountedFolderInfo:
         """Args:
-            context (office365.sharepoint.client_context.ClientContext):
-            target_site_id (str):
-            target_web_id (str):
-            target_unique_id (str):
+        context (office365.sharepoint.client_context.ClientContext):
+        target_site_id (str):
+        target_web_id (str):
+        target_unique_id (str):
         """
         return_type = MountedFolderInfo(context)
         payload = {

@@ -14,15 +14,18 @@ class UserSharingResult(ClientValue):
     (section 3.2.5.187.2.1.1) returns.
 
     Args:
-        allowed_roles (list[int]): Specifies a set of roles that can be assigned to the user.
-        current_role (int): Specifies the role that the user is currently assigned to.
-        display_name (str): Gets the display name of the user.
-        email (str): Gets the user email.
-        invitation_link (str): Gets the invitation link.
-        is_user_known (bool): Specifies whether the user is known to the server. If "true", the user is known to the server; if "false", user is unknown.
-        message (str): Specifies a message string that explains the reason when the Status  property is "false".
-        status (bool): Specifies whether the sharing update for the user was completed successfully. If "true", the sharing update completed successfully for the user; if "false", the sharing update failed for the user.
-        user (str): Specifies the identifier of a user.
+        AllowedRoles (list[int]): Specifies a set of roles that can be assigned to the user.
+        CurrentRole (Role): Specifies the role that the user is currently assigned to.
+        DisplayName (str): Gets the display name of the user.
+        Email (str): Gets the user email.
+        InvitationLink (str): Gets the invitation link.
+        IsUserKnown (bool): Specifies whether the user is known to the server.
+        If "true", the user is known to the server; if "false", user is unknown.
+        Message (str): Specifies a message string that explains the reason when the Status  property is "false".
+        Status (bool): Specifies whether the sharing update for the user was completed successfully.
+        If "true", the sharing update completed successfully for the user; if "false", the sharing update failed
+        for the user.
+        User (str): Specifies the identifier of a user.
     """
 
     AllowedRoles: ClientValueCollection[Role] = field(default_factory=lambda: ClientValueCollection(Role))

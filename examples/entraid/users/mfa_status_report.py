@@ -19,12 +19,13 @@ https://learn.microsoft.com/en-us/graph/api/resources/authenticationmethods-over
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-
-STRONG_METHODS = {"microsoftAuthenticatorAuthenticationMethod",
-                  "phoneAuthenticationMethod",
-                  "fido2AuthenticationMethod",
-                  "windowsHelloForBusinessAuthenticationMethod",
-                  "passwordlessMicrosoftAuthenticatorAuthenticationMethod"}
+STRONG_METHODS = {
+    "microsoftAuthenticatorAuthenticationMethod",
+    "phoneAuthenticationMethod",
+    "fido2AuthenticationMethod",
+    "windowsHelloForBusinessAuthenticationMethod",
+    "passwordlessMicrosoftAuthenticatorAuthenticationMethod",
+}
 
 
 def user_has_mfa(client: GraphClient, user_id: str) -> bool:
@@ -45,9 +46,7 @@ def mfa_status_report() -> tuple[list[dict], list[dict]]:
     Returns:
         Tuple of (users_with_mfa, users_without_mfa).
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     with_mfa = []
     without_mfa = []
@@ -74,8 +73,8 @@ def main():
 
     total = len(with_mfa) + len(without_mfa)
     print(f"Total users: {total}")
-    print(f"MFA registered: {len(with_mfa)} ({len(with_mfa)/total*100:.0f}%)")
-    print(f"No MFA:        {len(without_mfa)} ({len(without_mfa)/total*100:.0f}%)")
+    print(f"MFA registered: {len(with_mfa)} ({len(with_mfa) / total * 100:.0f}%)")
+    print(f"No MFA:        {len(without_mfa)} ({len(without_mfa) / total * 100:.0f}%)")
 
     if without_mfa:
         print(f"\nUsers without MFA ({len(without_mfa)}):\n")

@@ -207,9 +207,15 @@ class Folder(Entity):
 
         Args:
             link_kind: The kind of the tokenized sharing link to be created/updated or retrieved.
-            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation for calendar date and time of day and which represents the time and date of expiry for the tokenized sharing link. Both the minutes and hour value MUST be specified for the difference between the local and UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only applicable to tokenized sharing links that are anonymous access links.
-            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
-            password: Optional password value to apply to the tokenized sharing link, if it can support password protection.
+            expiration: A date/time string for which the format conforms to the ISO 8601:2004(E) complete representation
+                for calendar date and time of day and which represents the time and date of expiry for the tokenized
+                sharing link. Both the minutes and hour value MUST be specified for the difference between the local and
+                UTC time. Midnight is represented as 00:00:00. A null value indicates no expiry. This value is only
+                applicable to tokenized sharing links that are anonymous access links.
+            role: The role to be used for the tokenized sharing link. This is required for Flexible links and ignored
+                for all other kinds.
+            password: Optional password value to apply to the tokenized sharing link, if it can support password
+                protection.
         """
         return self.list_item_all_fields.share_link(
             link_kind=link_kind, expiration=expiration, role=role, password=password
@@ -219,7 +225,8 @@ class Folder(Entity):
         """Removes the specified tokenized sharing link of the folder.
 
         Args:
-            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized sharing link that is intended to be removed.
+            link_kind (int): This optional value specifies the globally unique identifier (GUID) of the tokenized
+                sharing link that is intended to be removed.
             share_id (str or None): The kind of tokenized sharing link that is intended to be removed.
         """
         return self.list_item_all_fields.unshare_link(link_kind, share_id)  # type: ignore[returnType]
@@ -309,12 +316,34 @@ class Folder(Entity):
         UserSharingResult (section 3.2.5.190) elements where each element contains the sharing status for each user.
 
         Args:
-            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the securable object pointed to by the resourceAddress parameter.
-            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for a user. If this value is "true", the protocol server will not grant the requested permission if a user already has sufficient permissions, and if this value is "false", the protocol server will grant the requested permission whether or not a user already has the same or more permissions. This parameter is applicable only when the parameter additiveMode is set to true.
-            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or strict mode. If this value is "true", the permission setting uses the additive mode, which means that the specified permission will be added to the user's current list of permissions if it is not there already, and if this value is "false", the permission setting uses the strict mode, which means that the specified permission will replace the user's current permissions.
-            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email notification to each recipient in the "userRoleAssignments" array after the document update is completed successfully. If this value is "true", the protocol server will send an email notification if an email server is configured, and if the value is "false", no email notification will be sent.
+            user_role_assignments (list[UserRoleAssignment]): An array of recipients and assigned roles on the securable
+                object pointed to by the resourceAddress parameter.
+            validate_existing_permissions (bool): A Boolean flag indicating how to honor a requested permission for a
+                user.
+                If this value is "true", the protocol server will not grant the
+                requested permission if a user already has sufficient permissions, and
+                if this value is "false", the protocol server will grant the requested
+                permission whether or not a user already has the same or more
+                permissions. This parameter is applicable only when the parameter additiveMode is set to true.
+            additive_mode (bool): A Boolean flag indicating whether the permission setting uses the additive or strict
+                mode.
+                If this value is "true", the permission setting uses the additive mode, which means
+                that the specified permission will be added to the user's current list of permissions
+                if it is not there already, and if this value is "false", the permission setting uses
+                the strict mode, which means that the specified permission will replace the user's current permissions.
+            send_server_managed_notification (bool): A Boolean flag to indicate whether or not to generate an email
+                notification to each recipient in the "userRoleAssignments" array
+                after the document update is completed successfully.
+                If this value is "true", the protocol server will send an email
+                notification if an email server is configured, and if the value is
+                "false", no email notification will be sent.
             custom_message (str): A custom message to be included in the email notification.
-            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include anonymous access links in the email notification to each recipient in the userRoleAssignments array after the document update is completed successfully. If the value is "true", the protocol server will include an anonymous access link in the email notification, and if the value is "false", no link will be included.
+            include_anonymous_links_in_notification (bool): A Boolean flag that indicates whether or not to include
+                anonymous access links in the email notification to each
+                recipient in the userRoleAssignments array after the
+                document update is completed successfully.
+                If the value is "true", the protocol server will include an
+                anonymous access link in the email notification, and if the value is "false", no link will be included.
             propagate_acl (bool): A flag to determine if permissions SHOULD be pushed to items with unique permission.
         """
         return_type = ClientResult(self.context, ClientValueCollection(UserSharingResult))

@@ -31,20 +31,20 @@ def run_compliance_search(name: str, query: str) -> dict:
     Returns:
         Search result summary with hit and partially indexed counts.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # Create eDiscovery case for the search
-    case = client.security.cases.ediscovery_cases.add(
-        display_name=f"Compliance scan — {name}"
-    ).execute_query()
+    case = client.security.cases.ediscovery_cases.add(display_name=f"Compliance scan — {name}").execute_query()
 
-    search = client.security.cases.ediscovery_cases[case.id].searches.add(
-        display_name=name,
-        content_query=query,
-        data_source_scopes="allTenantMailboxes,allTenantSites",
-    ).execute_query()
+    search = (
+        client.security.cases.ediscovery_cases[case.id]
+        .searches.add(
+            display_name=name,
+            content_query=query,
+            data_source_scopes="allTenantMailboxes,allTenantSites",
+        )
+        .execute_query()
+    )
 
     # Estimate the search results (kicks off the search)
     estimate = search.estimate_statistics().execute_query()

@@ -39,7 +39,7 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
 
     def __getitem__(self, key: Union[int, str]) -> ClientObjectT:
         """Args:
-            key (int or str): key is used to address an entity by either an index or by identifier
+        key (int or str): key is used to address an entity by either an index or by identifier
         """
         if isinstance(key, int):
             return super().__getitem__(key)

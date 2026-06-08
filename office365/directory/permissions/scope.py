@@ -15,10 +15,16 @@ class PermissionScope(ClientValue):
     application object.
 
     Args:
-        admin_consent_display_name (str): The permission's title, intended to be read by an administrator granting the permission on behalf of all users.
-        admin_consent_description (str): A description of the delegated permissions, intended to be read by an administrator granting the permission on behalf of all users. This text appears in tenant-wide admin consent experiences.
-        id_ (str): Unique delegated permission identifier inside the collection of delegated permissions defined for a resource application.
-        is_enabled (str): When creating or updating a permission, this property must be set to true (which is the default). To delete a permission, this property must first be set to false. At that point, in a subsequent call, the permission may be removed.
+        adminConsentDisplayName (str): The permission's title, intended to be read by an administrator granting the
+        permission on behalf of all users.
+        adminConsentDescription (str): A description of the delegated permissions, intended to be read by an
+        administrator granting the permission on behalf of all users. This text appears in tenant-wide admin consent
+        experiences.
+        id (str): Unique delegated permission identifier inside the collection of delegated permissions defined
+        for a resource application.
+        isEnabled (str): When creating or updating a permission, this property must be set to true
+        (which is the default). To delete a permission, this property must first be set to false. At that point, in
+        a subsequent call, the permission may be removed.
         value (str): Specifies the value to include in the scp (scope) claim in access tokens.
     """
 

@@ -143,7 +143,8 @@ class UserProfile(Entity):
         and other files.
 
         Args:
-            is_interactive (bool): Has a true value if the request is from a web browser and a false value if the request is from a client application.
+            is_interactive (bool): Has a true value if the request is from a web browser and a false value if the
+                request is from a client application.
         """
         payload = {"isInteractive": is_interactive}
         qry = ServiceOperationQuery(self, "CreatePersonalSiteEnque", None, payload)

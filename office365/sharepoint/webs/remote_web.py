@@ -29,8 +29,8 @@ class RemoteWeb(ClientObject):
     @staticmethod
     def create(context, request_url):
         """Args:
-            context (ClientContext):
-            request_url (str):
+        context (ClientContext):
+        request_url (str):
         """
         remote_web = RemoteWeb(context)
         qry = ServiceOperationQuery(context, None, [request_url], None, None, remote_web)
@@ -41,4 +41,5 @@ class RemoteWeb(ClientObject):
     @property
     def web(self):
         """Gets the SPWeb."""
-        return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))  # type: ignore[arg-type]
+        return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
+        # type: ignore[arg-type]

@@ -34,7 +34,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
 
     def create_app_page(self, web_part_data: Optional[str] = None) -> ClientResult[str]:
         """Args:
-            web_part_data (str):
+        web_part_data (str):
         """
         return_type = ClientResult(self.context)
         payload = {"webPartDataAsJson": web_part_data}
@@ -44,7 +44,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
 
     def get_translations(self, source_item_id=None):
         """Args:
-            source_item_id (str):
+        source_item_id (str):
         """
         return_type = TranslationStatusCollection(self.context)
         qry = ServiceOperationQuery(self, "GetTranslations", [source_item_id], None, None, return_type)
@@ -99,8 +99,8 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
 
     def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
         """Args:
-            server_relative_url (str):
-            web_part_data_as_json (str):
+        server_relative_url (str):
+        web_part_data_as_json (str):
         """
         payload = {
             "serverRelativeUrl": server_relative_url,

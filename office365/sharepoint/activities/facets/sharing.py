@@ -10,8 +10,8 @@ from office365.sharepoint.activities.identity import ActivityIdentity
 @dataclass
 class SharingFacet(ClientValue):
     """Args:
-        recipients (list[ActivityIdentity]):
-        sharing_type (str):
+    recipients (list[ActivityIdentity]):
+    sharing_type (str):
     """
 
     recipients: ClientValueCollection[ActivityIdentity] = field(

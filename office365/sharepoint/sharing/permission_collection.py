@@ -17,11 +17,12 @@ class PermissionCollection(ClientValue):
     implicit access.
 
     Args:
-        has_inherited_links (bool):
+        hasInheritedLinks (bool):
         links (list[LinkInfo]): The List of tokenized sharing links with their LinkInfo objects.
         principals (list[PrincipalInfo]): The List of Principals with their roles on this list item.
-        site_admins (list[PrincipalInfo]): The List of Principals who are Site Admins. This property is returned only if the caller is an Auditor.
-        total_number_of_principals (int):
+        siteAdmins (list[PrincipalInfo]): The List of Principals who are Site Admins. This property is returned only
+        if the caller is an Auditor.
+        totalNumberOfPrincipals (int):
     """
 
     appConsentPrincipals: ClientValueCollection[PrincipalInfo] = field(

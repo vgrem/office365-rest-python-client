@@ -58,9 +58,12 @@ def find_files_without_label(ctx: ClientContext, age_days: int) -> list[dict]:
 
     try:
         lib = ctx.web.default_document_library()
-        items = lib.items.select(["FileLeafRef", "FileRef", "Created", "ComplianceTag"]).filter(
-            "FSObjType eq 0"
-        ).get_all().execute_query()
+        items = (
+            lib.items.select(["FileLeafRef", "FileRef", "Created", "ComplianceTag"])
+            .filter("FSObjType eq 0")
+            .get_all()
+            .execute_query()
+        )
 
         for item in items:
             created = item.properties.get("Created", "")
@@ -75,11 +78,13 @@ def find_files_without_label(ctx: ClientContext, age_days: int) -> list[dict]:
                 continue
 
             if created_dt < cutoff:
-                unlabeled.append({
-                    "name": item.properties.get("FileLeafRef", "Unknown"),
-                    "url": item.properties.get("FileRef", ""),
-                    "created": created_dt,
-                })
+                unlabeled.append(
+                    {
+                        "name": item.properties.get("FileLeafRef", "Unknown"),
+                        "url": item.properties.get("FileRef", ""),
+                        "created": created_dt,
+                    }
+                )
     except Exception as e:
         print(f"  Error scanning files: {e}")
 
@@ -104,9 +109,7 @@ def apply_label_to_file(ctx: ClientContext, file_url: str, label_name: str) -> b
 def main():
     print("Auto-apply retention labels to unlabelled files...\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # 1. Find the label
     label_name = "Default Retention — 7 years"
@@ -120,9 +123,7 @@ def main():
     print(f"Using label: {label_name} ({label_id[:12]}...)")
 
     # 2. Scan for unlabelled files older than 365 days
-    ctx = ClientContext(test_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     files = find_files_without_label(ctx, age_days=365)
     print(f"Found {len(files)} older unlabelled files\n")

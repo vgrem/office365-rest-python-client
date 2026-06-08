@@ -26,7 +26,7 @@ class TenantSettings(Entity):
 
     def set_corporate_catalog(self, url: str) -> Self:
         """Args:
-            url (str):
+        url (str):
         """
         payload = {"url": url}
         qry = ServiceOperationQuery(self, "SetCorporateCatalog", None, payload, None, None)

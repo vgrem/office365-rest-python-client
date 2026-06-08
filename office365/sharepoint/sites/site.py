@@ -157,8 +157,11 @@ class Site(Entity):
         of the site collection to a newer version
 
         Args:
-            upgrade (bool): If "true", the evaluation site collection MUST be upgraded when it is created. If "false", the evaluation site collection MUST NOT be upgraded when it is created
-            sendemail (bool): If "true", a notification email MUST be sent to the requestor and the site collection administrators at the completion of the creation of the evaluation site collection. If "false", such notification MUST NOT be sent
+            upgrade (bool): If "true", the evaluation site collection MUST be upgraded when it is created.
+                If "false", the evaluation site collection MUST NOT be upgraded when it is created
+            sendemail (bool): If "true", a notification email MUST be sent to the requestor and the site collection
+                administrators at the completion of the creation of the evaluation site collection. If "false", such
+                notification MUST NOT be sent
         """
         payload = {"upgrade": upgrade, "sendemail": sendemail}
         qry = ServiceOperationQuery(self, "CreatePreviewSPSite", None, payload)
@@ -182,7 +185,8 @@ class Site(Entity):
         return_type = ClientResult(self.context, bool())
 
         def _check_is_deletable():
-            SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)  # type: ignore[arg-type]
+            # type: ignore[arg-type]
+            SPPolicyStoreProxy.check_site_is_deletable_by_id(self.context, self.id, return_type)
 
         self.ensure_property("Id").after_execute(lambda _: _check_is_deletable())
         return return_type
@@ -233,7 +237,7 @@ class Site(Entity):
 
     def get_copy_job_progress(self, copy_job_info=None) -> ClientResult[CopyJobProgress]:
         """Args:
-            copy_job_info: Optional copyJobInfo object.
+        copy_job_info: Optional copyJobInfo object.
         """
         payload = {"copyJobInfo": copy_job_info}
         return_type = ClientResult(self.context, CopyJobProgress())
@@ -256,7 +260,8 @@ class Site(Entity):
         return_type = ClientResult(self.context)
 
         def _site_loaded():
-            self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)  # type: ignore[arg-type]
+            # type: ignore[arg-type]
+            self.context.group_service.get_group_image(group_id=self.group_id, return_type=return_type)
 
         self.ensure_property("GroupId").after_execute(lambda _: _site_loaded())
         return return_type
@@ -296,7 +301,8 @@ class Site(Entity):
         return_type = ClientResult(self.context)
 
         def _site_loaded():
-            self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)  # type: ignore[assignment]
+            # type: ignore[assignment]
+            self.result = SPHSite.set_as_home_site(self.context, self.url, False, return_type)
 
         self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
@@ -321,7 +327,9 @@ class Site(Entity):
 
         Args:
             row_limit (int): The maximum number of Recycle Bin items to retrieve.
-            is_ascending (bool): Specifies whether the Recycle Bin items are sorted in ascending order by the column specified in the orderBy parameter. A value of true indicates ascending order, and a value of false indicates descending order.
+            is_ascending (bool): Specifies whether the Recycle Bin items are sorted in ascending order by the column
+                specified in the orderBy parameter. A value of true indicates ascending order, and a value of false
+                indicates descending order.
         """
         return_type = RecycleBinItemCollection(self.context, self.recycle_bin.resource_path)
         payload = {"rowLimit": row_limit, "isAscending": is_ascending}
@@ -341,8 +349,8 @@ class Site(Entity):
 
     def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:
         """Args:
-            site_id (int): The site identifier
-            web_id (int): The web identifier
+        site_id (int): The site identifier
+        web_id (int): The web identifier
         """
         params = {"siteId": site_id, "webId": web_id}
         return_type = ClientResult(self.context, SPResPath())
@@ -356,8 +364,10 @@ class Site(Entity):
         Web sites within the site collection.
 
         Args:
-            lcid (int): A 32-bit unsigned integer that specifies the language of the site definitions that are returned from the site collection.
-            override_compat_level (int): Specifies the compatibility level of the site (2) to return from the site collection. If this value is 0, the compatibility level of the site (2) is used.
+            lcid (int): A 32-bit unsigned integer that specifies the language of the site definitions that are
+                returned from the site collection.
+            override_compat_level (int): Specifies the compatibility level of the site (2) to return from the site
+                collection. If this value is 0, the compatibility level of the site (2) is used.
         """
         params = {"LCID": lcid, "overrideCompatLevel": override_compat_level}
         return_type = WebTemplateCollection(
@@ -383,7 +393,8 @@ class Site(Entity):
         otherwise, "false"
 
         Args:
-            version_upgrade (bool): If "true", version-to-version site collection upgrade is requested; otherwise "false" for build-to-build site collection upgrade.
+            version_upgrade (bool): If "true", version-to-version site collection upgrade is requested; otherwise
+                "false" for build-to-build site collection upgrade.
             recursive (bool): If "true", child upgradable objects will be inspected; otherwise "false".
         """
         return_type = ClientResult(self.context)
@@ -489,7 +500,9 @@ class Site(Entity):
         """Returns the specified Web site from the site collection.
 
         Args:
-            str_url (str): A string that contains either the server-relative or site-relative URL of the Web site or of an object within the Web site. A server-relative URL begins with a forward slash ("/"), while a site-relative URL does not begin with a forward slash.
+            str_url (str): A string that contains either the server-relative or site-relative URL of the Web site
+                or of an object within the Web site. A server-relative URL begins with a forward slash ("/"), while a
+                site-relative URL does not begin with a forward slash.
         """
         return_type = Web(self.context)
         qry = ServiceOperationQuery(self, "OpenWeb", {"strUrl": str_url}, None, None, return_type)
@@ -539,9 +552,11 @@ class Site(Entity):
         on the health of a site collection.)
 
         Args:
-            rule_id (str): Specifies the rule or rules to be run. If the value is an empty GUID, all rules are run, otherwise only the specified rule is run.
+            rule_id (str): Specifies the rule or rules to be run. If the value is an empty GUID, all rules are run,
+                otherwise only the specified rule is run.
             repair (bool): Specifies whether repairable rules are to be run in repair mode.
-            run_always (bool): Specifies whether the rules will be run as a result of this call or cached results from a previous run can be returned.
+            run_always (bool): Specifies whether the rules will be run as a result of this call or cached results
+                from a previous run can be returned.
         """
         payload = {"ruleId": rule_id, "bRepair": repair, "bRunAlways": run_always}
         return_type = SiteHealthSummary(self.context)
@@ -560,7 +575,8 @@ class Site(Entity):
         the site collection require UseRemoteAPIs permission.
 
         Args:
-            require_use_remote_apis (bool): Specifies whether the client-side object model (CSOM) requests that are made in the context of any site inside the site collection require UseRemoteAPIs permission
+            require_use_remote_apis (bool): Specifies whether the client-side object model (CSOM) requests that are
+                made in the context of any site inside the site collection require UseRemoteAPIs permission
         """
         payload = {"requireUseRemoteAPIs": require_use_remote_apis}
         qry = ServiceOperationQuery(self, "UpdateClientObjectModelUseRemoteAPIsPermissionSetting", None, payload)

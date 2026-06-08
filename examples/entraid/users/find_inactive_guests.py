@@ -31,9 +31,7 @@ def find_inactive_guests(days_threshold: int = 90) -> list[dict]:
     Returns:
         List of guest dicts with user info and days since last activity.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
     inactive = []
@@ -54,22 +52,26 @@ def find_inactive_guests(days_threshold: int = 90) -> list[dict]:
         last_activity = last_success or created
         if last_activity and last_activity < cutoff:
             days_since = (datetime.now(timezone.utc) - last_activity).days
-            inactive.append({
-                "upn": guest.user_principal_name,
-                "display_name": guest.display_name,
-                "created": created,
-                "last_signin": last_success,
-                "days_since_activity": days_since,
-            })
+            inactive.append(
+                {
+                    "upn": guest.user_principal_name,
+                    "display_name": guest.display_name,
+                    "created": created,
+                    "last_signin": last_success,
+                    "days_since_activity": days_since,
+                }
+            )
         elif not last_activity:
             # No sign-in history at all
-            inactive.append({
-                "upn": guest.user_principal_name,
-                "display_name": guest.display_name,
-                "created": created,
-                "last_signin": None,
-                "days_since_activity": days_threshold + 1,
-            })
+            inactive.append(
+                {
+                    "upn": guest.user_principal_name,
+                    "display_name": guest.display_name,
+                    "created": created,
+                    "last_signin": None,
+                    "days_since_activity": days_threshold + 1,
+                }
+            )
 
     inactive.sort(key=lambda x: x["days_since_activity"], reverse=True)
     return inactive

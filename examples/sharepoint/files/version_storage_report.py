@@ -19,10 +19,10 @@ from tests import test_client_id, test_client_secret, test_site_url, test_tenant
 
 def format_bytes(size: int) -> str:
     """Format byte count to human-readable string."""
-    if size >= 1024 ** 3:
-        return f"{size / (1024 ** 3):.2f} GB"
-    elif size >= 1024 ** 2:
-        return f"{size / (1024 ** 2):.2f} MB"
+    if size >= 1024**3:
+        return f"{size / (1024**3):.2f} GB"
+    elif size >= 1024**2:
+        return f"{size / (1024**2):.2f} MB"
     elif size >= 1024:
         return f"{size / 1024:.2f} KB"
     return f"{size} B"
@@ -61,14 +61,16 @@ def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Docu
         except Exception:
             pass
 
-        results.append({
-            "name": getattr(f, "name", "Unknown"),
-            "url": getattr(f, "server_relative_url", ""),
-            "current_size": current_size,
-            "version_count": version_count,
-            "total_version_size": total_version_size,
-            "storage_ratio": (total_version_size / current_size) if current_size > 0 else 0,
-        })
+        results.append(
+            {
+                "name": getattr(f, "name", "Unknown"),
+                "url": getattr(f, "server_relative_url", ""),
+                "current_size": current_size,
+                "version_count": version_count,
+                "total_version_size": total_version_size,
+                "storage_ratio": (total_version_size / current_size) if current_size > 0 else 0,
+            }
+        )
 
     # Sort by version count descending
     results.sort(key=lambda r: r["version_count"], reverse=True)
@@ -78,9 +80,7 @@ def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Docu
 def main():
     print("Analyzing file version storage...\n")
 
-    ctx = ClientContext(test_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     report = analyze_version_storage(ctx, "Shared Documents")
 
@@ -112,7 +112,7 @@ def main():
     # Files with excessive versions (20+)
     excessive = [r for r in report if r["version_count"] >= 20]
     if excessive:
-        print(f"\n=== Files with 20+ versions (cleanup candidates) ===\n")
+        print("\n=== Files with 20+ versions (cleanup candidates) ===\n")
         for r in excessive:
             print(f"  {r['name']} — {r['version_count']} versions, {format_bytes(r['total_version_size'])}")
 

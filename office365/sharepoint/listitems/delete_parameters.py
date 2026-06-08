@@ -8,7 +8,7 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class ListItemDeleteParameters(ClientValue):
     """Args:
-        bypass_shared_lock (bool):
+    bypass_shared_lock (bool):
     """
 
     BypassSharedLock: bool | None = None

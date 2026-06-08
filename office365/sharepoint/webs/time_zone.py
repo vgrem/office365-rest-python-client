@@ -24,7 +24,7 @@ class TimeZone(Entity):
 
     def set_id(self, _id):
         """Args:
-            _id (int):
+        _id (int):
         """
         qry = ServiceOperationQuery(self, "SetId", [_id], None, None, None)
         self.context.add_query(qry)

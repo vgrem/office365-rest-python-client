@@ -49,12 +49,14 @@ def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0
                 member_type = "Group" if ra.member.principal_type == PrincipalType.SharePointGroup else "User"
                 members.append(f"{member_name} ({member_type})")
 
-            results.append({
-                "path": folder_url,
-                "has_unique_permissions": True,
-                "role_assignment_count": len(role_assignments),
-                "members": members,
-            })
+            results.append(
+                {
+                    "path": folder_url,
+                    "has_unique_permissions": True,
+                    "role_assignment_count": len(role_assignments),
+                    "members": members,
+                }
+            )
 
         # Recurse into subfolders
         sub_folders = folder.folders.get().execute_query()
@@ -72,9 +74,7 @@ def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0
 def main():
     print("Scanning folders with unique permissions...\n")
 
-    ctx = ClientContext(test_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     # Start from the default document library
     lib = ctx.web.default_document_library().get().execute_query()

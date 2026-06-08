@@ -33,9 +33,7 @@ def get_all_sites() -> list[dict]:
 
     Returns list of site dicts with URL, title, and template.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     admin = Tenant(ctx)
     sites = admin.get_site_properties_from_sharepoint().execute_query()
 
@@ -62,10 +60,12 @@ def get_retention_policies(client: GraphClient) -> list[dict]:
         # Exact API path depends on your Graph version and permissions.
         result = client.security.retention_labels.get().execute_query()
         for label in result:
-            policies.append({
-                "id": label.id,
-                "display_name": getattr(label, "display_name", label.id),
-            })
+            policies.append(
+                {
+                    "id": label.id,
+                    "display_name": getattr(label, "display_name", label.id),
+                }
+            )
     except Exception as e:
         print(f"  Warning: could not fetch retention policies: {e}")
     return policies
@@ -92,7 +92,7 @@ def check_site_retention_coverage(sites: list[dict]) -> None:
     print(f"Sites without retention coverage: {len(not_covered)}")
 
     if not_covered:
-        print(f"\nUp to 10 sites without coverage:")
+        print("\nUp to 10 sites without coverage:")
         for s in not_covered[:10]:
             print(f"  {s['title']}  ({s['url']})")
 
@@ -100,9 +100,7 @@ def check_site_retention_coverage(sites: list[dict]) -> None:
 def main():
     print("Checking SharePoint site retention policy coverage...\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     # 1. Fetch all sites
     print("Fetching all SharePoint sites...")

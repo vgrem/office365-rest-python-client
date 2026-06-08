@@ -55,12 +55,12 @@ class SearchSetting(Entity):
         site_collection_id=None,
     ) -> ClientResult[ReportBase]:
         """Args:
-            tenant_id (str):
-            report_type (str):
-            interval (str):
-            start_date (str):
-            end_date (str):
-            site_collection_id (str):
+        tenant_id (str):
+        report_type (str):
+        interval (str):
+        start_date (str):
+        end_date (str):
+        site_collection_id (str):
         """
         return_type = ClientResult(self.context, ReportBase())
         payload = {
@@ -92,9 +92,14 @@ class SearchSetting(Entity):
         site collection.
 
         Args:
-            site_collection_level (bool): This parameter is used by the protocol server to decide which promoted results to return to the client. If the parameter is true, the promoted results for the current site collection are returned. If the parameter is false, all promoted results for the tenant/Search Service Application are returned.
-            offset (int): This parameter is the offset into the collection of promoted results. Default value is zero. It is used to page through a large result set.
-            number_of_rules (int): his parameter is the number of promoted results that are returned in the operation. Default value is 100. It is used together with the offset to page through a large result set.
+            site_collection_level (bool): This parameter is used by the protocol server to decide which promoted
+              results to return to the client. If the parameter is true, the promoted results for the current site
+              collection are returned. If the parameter is false, all promoted results for the tenant/Search
+              Service Application are returned.
+            offset (int): This parameter is the offset into the collection of promoted results. Default value is zero.
+              It is used to page through a large result set.
+            number_of_rules (int): his parameter is the number of promoted results that are returned in the operation.
+              Default value is 100. It is used together with the offset to page through a large result set.
         """
         return_type = ClientResult(self.context, PromotedResultsOperationsResult())
         payload = {

@@ -131,8 +131,8 @@ class SitePageService(Entity):
     @staticmethod
     def compute_file_name(context: ClientContext, title: str) -> ClientResult[str]:
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): Client context
-            title (str): The title of the page.
+        context (office365.sharepoint.client_context.ClientContext): Client context
+        title (str): The title of the page.
         """
         return_type = ClientResult(context)
         binding_type = SitePageService(context)

@@ -48,7 +48,7 @@ class PeopleManager(Entity):
 
     def get_user_onedrive_quota_max(self, account_name: str) -> ClientResult[int]:
         """Args:
-            account_name (str): Account name of the specified user.
+        account_name (str): Account name of the specified user.
         """
         return_type = ClientResult(self.context, int())
         params = {"accountName": account_name}
@@ -95,8 +95,8 @@ class PeopleManager(Entity):
 
     def get_user_information(self, account_name: str, site_id: str) -> ClientResult[dict]:
         """Args:
-            account_name (str): Account name of the specified user.
-            site_id (str): Site Identifier.
+        account_name (str): Account name of the specified user.
+        site_id (str): Site Identifier.
         """
         return_type = ClientResult(self.context, {})
         params = {"accountName": account_name, "siteId": site_id}
@@ -178,11 +178,13 @@ class PeopleManager(Entity):
         """Gets the OneDrive Document library path for a given user.
 
         Args:
-            user (str or User user_or_name): The login name of the user whose OneDrive URL is required. For example, "i:0#.f|membership|admin@contoso.sharepoint.com”.
-            create_site_if_not_exists (bool): If this value is set to true and the site doesn't exist, the site will get created.
+            user (str or User user_or_name): The login name of the user whose OneDrive URL is required.
+            For example, "i:0#.f|membership|admin@contoso.sharepoint.com”.
+            create_site_if_not_exists (bool): If this value is set to true and the site doesn't exist, the site will
+            get created.
             site_creation_priority (int): The priority for site creation. Type: PersonalSiteCreationPriority
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
 
         def _get_default_document_library(account_name: str) -> None:
             params = {
@@ -243,7 +245,7 @@ class PeopleManager(Entity):
 
     def reset_user_onedrive_quota_to_default(self, account_name: str) -> ClientResult[str]:
         """Args:
-            account_name (str): Specifies the user by account name.
+        account_name (str): Specifies the user by account name.
         """
         return_type = ClientResult(self.context, str())
         params = {"accountName": account_name}
@@ -264,9 +266,9 @@ class PeopleManager(Entity):
 
     def set_user_onedrive_quota(self, account_name: str, new_quota: int, new_quota_warning: int) -> ClientResult[str]:
         """Args:
-            account_name (str):
-            new_quota (long):
-            new_quota_warning (long):
+        account_name (str):
+        new_quota (long):
+        new_quota_warning (long):
         """
         return_type = ClientResult(self.context, str())
         payload = {

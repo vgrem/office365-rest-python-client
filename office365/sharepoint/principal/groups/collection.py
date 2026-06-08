@@ -36,8 +36,10 @@ class GroupCollection(EntityCollection[Group]):
         """Adds a group to the collection. A reference to the SP.Group that was added is returned.
 
         Args:
-            title (str): A string that specifies the name of the cross-site group to be created. It MUST NOT be NULL. Its length MUST be equal to or less than 255. It MUST NOT be empty.
-            description (str): A string that contains the description of the cross-site group to be created. Its length MUST be equal to or less than 512.
+            title (str): A string that specifies the name of the cross-site group to be created. It MUST NOT be NULL.
+                Its length MUST be equal to or less than 255. It MUST NOT be empty.
+            description (str): A string that contains the description of the cross-site group to be created.
+                Its length MUST be equal to or less than 512.
         """
         return_type = Group(self.context)
         self.add_child(return_type)

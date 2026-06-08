@@ -37,7 +37,8 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
         return self
 
     def move_to_second_stage_by_ids(self, ids: List[str]) -> Self:
-        """Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their identifies
+        """Moves all Recycle Bin items from the first-stage Recycle Bin to the second-stage Recycle Bin by their
+            identifies
 
         Args:
             ids (list[str]): Recycle Bin items identifiers

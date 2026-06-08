@@ -22,7 +22,7 @@ class TenantCrawlVersionsInfoProvider(Entity):
 
     def disable_crawl_versions(self, site_id: str) -> ClientResult[bool]:
         """Args:
-            site_id (str):
+        site_id (str):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}
@@ -39,7 +39,7 @@ class TenantCrawlVersionsInfoProvider(Entity):
 
     def is_crawl_versions_enabled(self, site_id: str):
         """Args:
-            site_id (str):
+        site_id (str):
         """
         return_type = ClientResult(self.context, bool())
         payload = {"siteId": site_id}

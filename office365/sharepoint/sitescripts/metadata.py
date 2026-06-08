@@ -11,8 +11,10 @@ class SiteScriptMetadata(ClientValue):
     applying a theme, adding lists, and configuring site settings.
 
     Args:
-        Id (Optional[str]): unique identifier (GUID) for the site script. This is used to uniquely identify the script within SharePoint.
-        Content (Optional[str]): The actual JSON content of the site script. This contains the actions that the script will execute when applied to a SharePoint site.
+        Id (Optional[str]): unique identifier (GUID) for the site script. This is used to uniquely identify the
+            script within SharePoint.
+        Content (Optional[str]): The actual JSON content of the site script. This contains the actions that the
+            script will execute when applied to a SharePoint site.
         Description (Optional[str]):
         IsSiteScriptPackage (Optional[bool]):
         Title (Optional[str]):

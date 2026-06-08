@@ -128,7 +128,7 @@ class Application(DirectoryObject):
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
         """Args:
-            permanent_delete (bool): Permanently deletes the application from directory
+        permanent_delete (bool): Permanently deletes the application from directory
         """
         super().delete_object()
         deleted_app = DirectoryObject(

@@ -6,9 +6,9 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class HubSitePermission(ClientValue):
     """Args:
-        display_name (str):
-        principal_name (str):
-        rights (int):
+    display_name (str):
+    principal_name (str):
+    rights (int):
     """
 
     DisplayName = None

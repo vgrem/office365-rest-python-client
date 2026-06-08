@@ -19,9 +19,9 @@ class FolderColoring(Entity):
         return_type: Optional[Folder] = None,
     ):
         """Args:
-            decoded_url (str):
-            coloring_information (FolderColoringInformation):
-            return_type (Folder): Return type
+        decoded_url (str):
+        coloring_information (FolderColoringInformation):
+        return_type (Folder): Return type
         """
         if return_type is None:
             return_type = Folder(self.context)
@@ -36,8 +36,8 @@ class FolderColoring(Entity):
 
     def stamp_color(self, decoded_url: str, coloring_information: FolderColoringInformation) -> Self:
         """Args:
-            decoded_url (str):
-            coloring_information (FolderColoringInformation):
+        decoded_url (str):
+        coloring_information (FolderColoringInformation):
         """
         payload = {
             "DecodedUrl": decoded_url,

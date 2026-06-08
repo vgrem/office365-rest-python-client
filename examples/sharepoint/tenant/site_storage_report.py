@@ -37,9 +37,7 @@ def get_site_storage_report(threshold_pct: float = 80.0) -> list[dict]:
     Returns:
         List of dicts with site storage details, sorted by usage % descending.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     admin = Tenant(ctx)
 
     sites = admin.get_site_properties_from_sharepoint().execute_query()
@@ -54,15 +52,17 @@ def get_site_storage_report(threshold_pct: float = 80.0) -> list[dict]:
         else:
             pct = round((usage / quota) * 100, 1)
 
-        report.append({
-            "url": site.url,
-            "title": site.title,
-            "template": getattr(site, "template", ""),
-            "quota_mb": quota,
-            "usage_mb": usage,
-            "usage_pct": pct,
-            "exceeded": usage > quota,
-        })
+        report.append(
+            {
+                "url": site.url,
+                "title": site.title,
+                "template": getattr(site, "template", ""),
+                "quota_mb": quota,
+                "usage_mb": usage,
+                "usage_pct": pct,
+                "exceeded": usage > quota,
+            }
+        )
 
     # Sort by usage percentage descending
     report.sort(key=lambda r: r["usage_pct"], reverse=True)

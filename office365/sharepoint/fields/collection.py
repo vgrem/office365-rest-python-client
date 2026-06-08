@@ -125,7 +125,8 @@ class FieldCollection(EntityCollection[Field]):
 
         Args:
             allow_multiple_values (bool): Flag determines whether to create multi lookup field or not
-            lookup_field_name (str): Specifies the name of the field in the other data source when creating a lookup field
+            lookup_field_name (str): Specifies the name of the field in the other data source when creating a lookup
+                field
             lookup_list (str or office365.sharepoint.lists.list.List): Lookup List object or identifier
             title (str): Specifies the display name of the field.
         """

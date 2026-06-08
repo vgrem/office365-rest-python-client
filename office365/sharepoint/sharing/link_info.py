@@ -15,7 +15,8 @@ class LinkInfo(ClientValue):
     and an optional array of members.
 
     Args:
-        is_inherited (bool): Boolean that indicates if the tokenized sharing link is present due to inherited permissions from a parent object.
+        is_inherited (bool): Boolean that indicates if the tokenized sharing link is present due to inherited
+            permissions from a parent object.
     """
 
     inherited_from: InheritedFrom = field(default_factory=InheritedFrom)

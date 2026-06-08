@@ -8,9 +8,9 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class AddToOneDriveFacet(ClientValue):
     """Args:
-        added_datetime (str):
-        mount_point_name (str):
-        removed_datetime (str):
+    added_datetime (str):
+    mount_point_name (str):
+    removed_datetime (str):
     """
 
     addedDateTime: str | None = None

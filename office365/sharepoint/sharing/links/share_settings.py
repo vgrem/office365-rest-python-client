@@ -12,15 +12,23 @@ class ShareLinkSettings(ClientValue):
     """Represents the settings the retrieval or creation/update of a tokenized sharing link
 
     Args:
-        allow_anonymous_access (bool): Indicates if the tokenized sharing link supports anonymous access. This value is optional and defaults to false for Flexible links (section 3.2.5.315.1.7) and is ignored for other link kinds.
-        application_link (bool):
-        link_kind (int): The kind of the tokenized sharing link to be created/updated or retrieved. This value MUST NOT be set to Uninitialized (section 3.2.5.315.1.1) nor Direct (section 3.2.5.315.1.2)
-        password (str): Optional password value to apply to the tokenized sharing link, if it can support password protection. If this value is null or empty when the updatePassword parameter is set, any existing password on the tokenized sharing link MUST be cleared. Any other value will be applied to the tokenized sharing link as a password setting.
+        allowAnonymousAccess (bool): Indicates if the tokenized sharing link supports anonymous access.
+        This value is optional and defaults to false for Flexible links (section 3.2.5.315.1.7) and is ignored
+        for other link kinds.
+        applicationLink (bool):
+        linkKind (int): The kind of the tokenized sharing link to be created/updated or retrieved.
+        This value MUST NOT be set to Uninitialized (section 3.2.5.315.1.1) nor Direct (section 3.2.5.315.1.2)
+        password (str): Optional password value to apply to the tokenized sharing link, if it can support password
+        protection. If this value is null or empty when the updatePassword parameter is set, any existing password on
+        the tokenized sharing link MUST be cleared. Any other value will be applied to the tokenized sharing link as
+        a password setting.
         password_protected (bool):
-        role (int): The role to be used for the tokenized sharing link. This is required for Flexible links and ignored for all other kinds.
-        track_link_users (bool):
-        share_id (str): The optional unique identifier of an existing section tokenized sharing link to be retrieved and updated if necessary.
-        update_password (bool):
+        role (int): The role to be used for the tokenized sharing link. This is required for Flexible links
+        and ignored for all other kinds.
+        trackLinkUsers (bool):
+        shareId (str): The optional unique identifier of an existing section tokenized sharing link to be retrieved
+        and updated if necessary.
+        updatePassword (bool):
     """
 
     allowAnonymousAccess: bool | None = None

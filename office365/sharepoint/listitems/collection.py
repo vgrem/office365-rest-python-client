@@ -22,7 +22,8 @@ class ListItemCollection(EntityCollection[ListItem]):
         for an instance of an external content type.
 
         Args:
-            s_id (str): Specifies the list item identifier, or if the list is an external list, specifies the identifier for an instance of an external content type as specified in[MS-ECTPWPS] section 3.1.4.1.2.1.
+            s_id (str): Specifies the list item identifier, or if the list is an external list, specifies the identifier
+                for an instance of an external content type as specified in[MS-ECTPWPS] section 3.1.4.1.2.1.
         """
         return ListItem(
             self.context,

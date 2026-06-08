@@ -41,7 +41,8 @@ class TenantCorporateCatalogAccessor(Entity):
 
         Args:
             content (str or bytes): Specifies the binary content of the file to be added.
-            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same location as the one being added.
+            overwrite (bool): Specifies whether to overwrite an existing file with the same name and in the same
+                location as the one being added.
             url (str): Specifies the URL of the file to be added.
         """
         return_type = File(self.context)
@@ -81,7 +82,7 @@ class TenantCorporateCatalogAccessor(Entity):
 
     def get_app_by_id(self, item_unique_id: str) -> CorporateCatalogAppMetadata:
         """Args:
-            item_unique_id (str):
+        item_unique_id (str):
         """
         params = {"itemUniqueId": item_unique_id}
         return CorporateCatalogAppMetadata(self.context, ServiceOperationPath("GetAppById", params, self.resource_path))

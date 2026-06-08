@@ -125,7 +125,8 @@ class GroupSiteManager(ClientObject):
             self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(group, Site):
-            group.ensure_property("GroupId").after_execute(lambda _: _get_status(group.group_id))  # type: ignore[arg-type]
+            group.ensure_property("GroupId").after_execute(lambda _: _get_status(group.group_id))
+            # type: ignore[arg-type]
         else:
             _get_status(group)
 
@@ -175,7 +176,7 @@ class GroupSiteManager(ClientObject):
 
     def get_team_channels_direct(self, team_id: str) -> ClientResult[str]:
         """Args:
-            team_id (str):
+        team_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {
@@ -201,7 +202,7 @@ class GroupSiteManager(ClientObject):
 
     def notebook(self, group_id: str) -> ClientResult[str]:
         """Args:
-            group_id (str):
+        group_id (str):
         """
         return_type = ClientResult(self.context, str())
         payload = {"groupId": group_id}

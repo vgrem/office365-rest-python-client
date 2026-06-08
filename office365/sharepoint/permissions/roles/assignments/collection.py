@@ -13,7 +13,8 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
 
     def __getitem__(self, key):
         """Args:
-            key (int or str): key is used to address a RoleAssignment resource by either an index in collection or by resource id
+        key (int or str): key is used to address a RoleAssignment resource by either an index in collection or by
+            resource id
         """
         if isinstance(key, int):
             return super().__getitem__(key)

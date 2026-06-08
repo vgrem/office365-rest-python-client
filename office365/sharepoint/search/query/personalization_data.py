@@ -7,7 +7,7 @@ class QueryPersonalizationData(Entity):
 
     def __init__(self, context, user_id):
         """Args:
-            user_id (str):
+        user_id (str):
         """
         static_path = ServiceOperationPath(
             "Microsoft.SharePoint.Client.Search.Query.QueryPersonalizationData", {"guidUserIdString": user_id}

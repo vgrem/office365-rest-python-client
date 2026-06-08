@@ -25,7 +25,11 @@ class SocialFeedManager(Entity):
         the specified thread. This method returns a new or a modified thread.
 
         Args:
-            target_id (str or None): Optional, specifies the target of the post. If this parameter is null, the post is created as a root post in the current user's feed. If this parameter is set to a site (2) URL or a site (2) actor identification, the post is created as a root post in the specified site (2) feed. If this parameter is set to a thread identification, the post is created as a reply post in the specified thread.
+            target_id (str or None): Optional, specifies the target of the post. If this parameter is null, the
+                post is created as a root post in the current user's feed. If this parameter is set to a site (2)
+                URL or a site (2) actor identification, the post is created as a root post in the specified site (2)
+                feed. If this parameter is set to a thread identification, the post is created as a reply post in
+                the specified thread.
             creation_data (SocialPostCreationData): Specifies the text and details of the post.
         """
         return_type = ClientResult(self.context, SocialThread())
@@ -39,7 +43,8 @@ class SocialFeedManager(Entity):
         If the entire thread is deleted, this method returns null.
 
         Args:
-            post_id (str): Specifies the post to be deleted. The post identifier is specified in the SocialPost.Id property
+            post_id (str): Specifies the post to be deleted. The post identifier is specified in the
+                SocialPost.Id property
         """
         return_type = ClientResult(self.context, SocialThread())
         payload = {"postId": post_id}
@@ -69,8 +74,11 @@ class SocialFeedManager(Entity):
         from all posts that meet the specified type and options.
 
         Args:
-            feed_type (int): Specifies the type of feed to be returned. Feeds can be viewed using a personal view, news view, timeline view, or likes view. If the type is not specified, GetFeed returns the news view.
-            options (SocialFeedOptions): Specifies the maximum number of threads to get in the feed, the sort order of the threads, and how the threads are to be selected based on the date and time that the threads were created.
+            feed_type (int): Specifies the type of feed to be returned. Feeds can be viewed using a personal view,
+                news view, timeline view, or likes view. If the type is not specified, GetFeed returns the news view.
+            options (SocialFeedOptions): Specifies the maximum number of threads to get in the feed, the sort order
+                of the threads, and how the threads are to be selected based on the date and time that the threads
+                were created.
         """
         return_type = ClientResult(self.context, SocialFeed())
         payload = {"type": feed_type, "options": options}

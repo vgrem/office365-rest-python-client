@@ -9,8 +9,8 @@ class SharedWithMeItemCollection(Entity):
     @staticmethod
     def get_shared_with_me_external_items(context, top: int) -> ClientResult[str]:
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): Client context
-            top (int):
+        context (office365.sharepoint.client_context.ClientContext): Client context
+        top (int):
         """
         binding_type = SharedWithMeItemCollection(context)
         return_type = ClientResult(context, str())
@@ -28,10 +28,10 @@ class SharedWithMeItemCollection(Entity):
     @staticmethod
     def get_shared_with_me_items(context, top, skip_token=None, include_sharing_history=None):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): Client context
-            top (int):
-            skip_token (str):
-            include_sharing_history (bool):
+        context (office365.sharepoint.client_context.ClientContext): Client context
+        top (int):
+        skip_token (str):
+        include_sharing_history (bool):
         """
         binding_type = SharedWithMeItemCollection(context)
         return_type = ClientResult(context, str())

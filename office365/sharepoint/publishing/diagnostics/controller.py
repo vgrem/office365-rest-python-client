@@ -12,7 +12,7 @@ class PageDiagnosticsController(Entity):
 
     def by_page(self, page_relative_file_path):
         """Args:
-            page_relative_file_path (str):
+        page_relative_file_path (str):
         """
         return_type = ClientResult(self.context, PageDiagnostics())
         payload = {"pageRelativeFilePath": page_relative_file_path}

@@ -41,7 +41,8 @@ class AlertCollection(EntityCollection[Alert]):
         """Deletes the alert based on the given index.
 
         Args:
-            index (int): A 32-bit integer that is greater than or equal to 0 and less than the count of the alert in the collection. Specifies the index of the alert in the collection.
+            index (int): A 32-bit integer that is greater than or equal to 0 and less than the count of the alert in the
+                collection. Specifies the index of the alert in the collection.
         """
         qry = ServiceOperationQuery(self, "DeleteAlertAtIndex", {"index": index}, None, None, None)
         self.context.add_query(qry)

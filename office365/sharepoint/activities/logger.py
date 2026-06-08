@@ -14,13 +14,13 @@ class ActivityLogger(Entity):
         is_offline,
     ):
         """Args:
-            operation (str):
-            list_id (str):
-            list_item_unique_id (str):
-            affected_resource_url (str):
-            item_type (str):
-            audit_creation_time (str):
-            is_offline (bool):
+        operation (str):
+        list_id (str):
+        list_item_unique_id (str):
+        affected_resource_url (str):
+        item_type (str):
+        audit_creation_time (str):
+        is_offline (bool):
         """
         payload = {
             "Operation": operation,

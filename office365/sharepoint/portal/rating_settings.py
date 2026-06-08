@@ -7,8 +7,8 @@ class RatingSettings(Entity):
     @staticmethod
     def get_list_rating(context, list_id):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext):
-            list_id (str): The List identifier.
+        context (office365.sharepoint.client_context.ClientContext):
+        list_id (str): The List identifier.
         """
         return_type = ClientResult(context, int())
         payload = {"listID": list_id}

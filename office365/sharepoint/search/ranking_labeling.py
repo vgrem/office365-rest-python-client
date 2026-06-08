@@ -19,7 +19,8 @@ class RankingLabeling(Entity):
         Args:
             user_query (str): User query for which the relevance judgment is added.
             url (str): URL for which the relevance judgment is added.
-            label_id (str): The judgment for this query-URL pair as represented by an Int16. This value MUST be between 1 and 5 inclusive.
+            label_id (str): The judgment for this query-URL pair as represented by an Int16.
+                This value MUST be between 1 and 5 inclusive.
         """
         payload = {"userQuery": user_query, "url": url, "labelId": label_id}
         qry = ServiceOperationQuery(self, "AddJudgment", None, payload)

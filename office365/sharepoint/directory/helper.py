@@ -29,10 +29,10 @@ class SPHelper(Entity):
         result: Optional[ClientResult[bool]] = None,
     ) -> ClientResult[bool]:
         """Args:
-            principal_name (str): User principal name
-            group_id (str): Group id
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            result (ClientResult or None): Client result
+        principal_name (str): User principal name
+        group_id (str): Group id
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        result (ClientResult or None): Client result
         """
         if result is None:
             result = ClientResult(context)
@@ -60,8 +60,8 @@ class SPHelper(Entity):
     @staticmethod
     def get_membership(context, user_id):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint client context
-            user_id (str): User's identifier
+        context (office365.sharepoint.client_context.ClientContext): SharePoint client context
+        user_id (str): User's identifier
         """
         payload = {"userId": user_id}
         return_type = MembershipResult(context)
@@ -72,10 +72,10 @@ class SPHelper(Entity):
     @staticmethod
     def get_members_info(context, group_id, row_limit, return_type=None):
         """Args:
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            group_id (str): User's login
-            row_limit (int): Result offset
-            return_type (MembersInfo): Result
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        group_id (str): User's login
+        row_limit (int): Result offset
+        return_type (MembersInfo): Result
         """
         if return_type is None:
             return_type = MembersInfo(context)
@@ -108,9 +108,9 @@ class SPHelper(Entity):
     @staticmethod
     def get_members(context, group_id, return_type=None):
         """Args:
-            group_id (str): Group identifier
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            return_type (EntityCollection or None): Returns members
+        group_id (str): Group identifier
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        return_type (EntityCollection or None): Returns members
         """
         if return_type is None:
             return_type = EntityCollection(context, User)
@@ -126,9 +126,9 @@ class SPHelper(Entity):
         return_type: Optional[EntityCollection[User]] = None,
     ) -> EntityCollection[User]:
         """Args:
-            group_id (str): Group identifier
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
-            return_type (EntityCollection or None): Returns members
+        group_id (str): Group identifier
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        return_type (EntityCollection or None): Returns members
         """
         if return_type is None:
             return_type = EntityCollection(context, User)
@@ -140,8 +140,8 @@ class SPHelper(Entity):
     @staticmethod
     def remove_external_members(context: ClientContext, group_id: str) -> SPHelper:
         """Args:
-            group_id (str): Group identifier
-            context (office365.sharepoint.client_context.ClientContext): SharePoint context
+        group_id (str): Group identifier
+        context (office365.sharepoint.client_context.ClientContext): SharePoint context
         """
         binding_type = SPHelper(context)
         qry = ServiceOperationQuery(binding_type, "RemoveExternalMembers", [group_id], is_static=True)

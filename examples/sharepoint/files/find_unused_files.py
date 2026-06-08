@@ -17,9 +17,7 @@ https://learn.microsoft.com/en-us/graph/api/security/auditlogquery-query
 """
 
 from datetime import datetime, timedelta, timezone
-from collections import defaultdict
 
-from office365.graph_client import GraphClient
 from office365.sharepoint.client_context import ClientContext
 from tests import (
     test_client_id,
@@ -38,9 +36,12 @@ def get_all_files_in_site(ctx: ClientContext) -> dict:
 
     try:
         lib = ctx.web.default_document_library()
-        items = lib.items.select(["FileLeafRef", "FileRef", "Created", "Modified"]).filter(
-            "FSObjType eq 0"
-        ).get_all().execute_query()
+        items = (
+            lib.items.select(["FileLeafRef", "FileRef", "Created", "Modified"])
+            .filter("FSObjType eq 0")
+            .get_all()
+            .execute_query()
+        )
 
         for item in items:
             file_url = item.properties.get("FileRef", "")
@@ -78,9 +79,7 @@ def find_unused_files(days_threshold: int = 180) -> list[dict]:
     Returns:
         List of file dicts with last access info.
     """
-    ctx = ClientContext(test_site_url).with_client_secret(
-        test_tenant, test_client_id, test_client_secret
-    )
+    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     print("Fetching files from document library...")
     files = get_all_files_in_site(ctx)
@@ -107,12 +106,14 @@ def find_unused_files(days_threshold: int = 180) -> list[dict]:
                 last_access = datetime.now(timezone.utc) - timedelta(days=1000)
 
         if last_access < cutoff:
-            unused.append({
-                "name": info["name"],
-                "url": info["url"],
-                "last_access": last_access,
-                "days_since_access": (datetime.now(timezone.utc) - last_access).days,
-            })
+            unused.append(
+                {
+                    "name": info["name"],
+                    "url": info["url"],
+                    "last_access": last_access,
+                    "days_since_access": (datetime.now(timezone.utc) - last_access).days,
+                }
+            )
 
     unused.sort(key=lambda x: x["last_access"])
     return unused

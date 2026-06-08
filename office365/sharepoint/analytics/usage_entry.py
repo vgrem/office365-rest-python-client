@@ -31,7 +31,9 @@ class AnalyticsUsageEntry(Entity):
             context (office365.sharepoint.client_context.ClientContext):
             app_event_type_id (str): The event type identifier of the analytics event to be created.
             item_id (str): The identifier of the item for which the event is being logged.
-            rollup_scope_id (str): The identifier of a rollup scope. Events for different items with the same rollup scope can be aggregated together at that rollup scope in addition to being counted just at the item scope.
+            rollup_scope_id (str): The identifier of a rollup scope.
+                Events for different items with the same rollup scope can be aggregated together at that rollup scope in
+                    addition to being counted just at the item scope.
             site_id (str): The identifier of the item's site.
             user_id (str): The identifier of the user generating the event.
         """
