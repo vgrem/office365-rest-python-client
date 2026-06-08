@@ -26,10 +26,10 @@ class MailFolder(Entity):
 
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination_id: str) -> MailFolder:
-        """
-        Copy a mailfolder and its contents to another mailfolder.
-        :param str destination_id: The folder ID, or a well-known folder name. For a list of supported well-known folder
-            names, see mailFolder resource type.
+        """Copy a mailfolder and its contents to another mailfolder.
+
+        Args:
+            destination_id (str): The folder ID, or a well-known folder name. For a list of supported well-known folder names, see mailFolder resource type.
         """
         return_type = MailFolder(self.context)
         payload = {"DestinationId": destination_id}
@@ -38,9 +38,10 @@ class MailFolder(Entity):
         return return_type
 
     def empty(self, delete_sub_folders=False):
-        """
-        Empties the folder
-        :param bool delete_sub_folders: true to indicate that subfolders should also be deleted; otherwise, false.
+        """Empties the folder
+
+        Args:
+            delete_sub_folders (bool): true to indicate that subfolders should also be deleted; otherwise, false.
         """
 
         def _empty(col: MessageCollection) -> None:
