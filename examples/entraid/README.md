@@ -74,6 +74,8 @@ tenant-level policies, and audit logs.
 | MFA status report — users without strong auth registered | [`users/mfa_status_report.py`](./users/mfa_status_report.py) | `UserAuthenticationMethod.Read.All` | [auth methods](https://learn.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview) |
 | Last sign-in report — users without recent sign-in | [`users/last_signin_report.py`](./users/last_signin_report.py) | `User.Read.All`, `AuditLog.Read.All` | [signInActivity](https://learn.microsoft.com/en-us/graph/api/resources/signinactivity) |
 | Find inactive guest accounts | [`users/find_inactive_guests.py`](./users/find_inactive_guests.py) | `User.Read.All`, `AuditLog.Read.All` | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
+| Break-glass account audit — CA exclusions, permanent Global Admins | [`users/break_glass_report.py`](./users/break_glass_report.py) | `Policy.Read.All`, `RoleManagement.Read.All` | [CA policies](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy) |
+| Bulk assign licenses from CSV | [`users/bulk_assign_license.py`](./users/bulk_assign_license.py) | `User.ReadWrite.All` | [assign license](https://learn.microsoft.com/en-us/graph/api/user-assignlicense) |
 
 ## Examples — Groups
 
@@ -89,6 +91,7 @@ tenant-level policies, and audit logs.
 | Delete groups in batch | [`groups/delete_batch.py`](./groups/delete_batch.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
 | Group lifecycle — owners, members, orphans | [`groups/manage.py`](./groups/manage.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
 | Find orphaned groups — no owners or members | [`groups/find_orphans.py`](./groups/find_orphans.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
+| Group membership changes audit — who was added/removed | [`audit/group_membership_changes.py`](./audit/group_membership_changes.py) | `AuditLog.Read.All` | [directory audit](https://learn.microsoft.com/en-us/graph/api/resources/directoryaudit) |
 
 ## Examples — Applications
 
@@ -109,6 +112,8 @@ tenant-level policies, and audit logs.
 | Revoke delegated permissions | [`applications/revoke_delegated_perms.py`](./applications/revoke_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-delegatedpermissions) |
 | Service principal report — apps, perms, expiring secrets | [`applications/sp_report.py`](./applications/sp_report.py) | `Application.Read.All` | [SP list](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list) |
 | App secret expiry report — certs/passwords expiring soon | [`applications/secret_expiry.py`](./applications/secret_expiry.py) | `Application.Read.All` | [app credentials](https://learn.microsoft.com/en-us/graph/api/resources/application) |
+| OAuth consent grants — review delegated permissions per app | [`applications/consent_grants.py`](./applications/consent_grants.py) | `DelegatedPermissionGrant.Read.All` | [consent grants](https://learn.microsoft.com/en-us/graph/api/resources/oauth2permissiongrant) |
+| Find orphaned apps — registrations/SPs without owners | [`applications/find_orphans.py`](./applications/find_orphans.py) | `Application.Read.All` | [app list](https://learn.microsoft.com/en-us/graph/api/application-list) |
 
 ## Examples — Roles & Identity
 
@@ -131,6 +136,7 @@ tenant-level policies, and audit logs.
 | Get device registration policy | [`policies/device_registration.py`](./policies/device_registration.py) | `Policy.Read.All` | [device reg](https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get) |
 | Get cross-tenant access policy | [`policies/cross_tenant_access.py`](./policies/cross_tenant_access.py) | `Policy.Read.All` | [cross-tenant](https://learn.microsoft.com/en-us/graph/api/crosstenantaccesspolicy-get) |
 | CA policy report — break-glass accounts, enforcement state | [`policies/ca_report.py`](./policies/ca_report.py) | `Policy.Read.All` | [CA policy list](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
+| Stale device report — devices without recent sign-in | [`devices/stale_report.py`](./devices/stale_report.py) | `Device.Read.All` | [device list](https://learn.microsoft.com/en-us/graph/api/device-list) |
 
 ## Examples — Audit Logs
 
