@@ -8,9 +8,11 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class SPOAppBillingProperties(ClientValue):
-    """:param str application_id: The application ID.
-    :param str azure_region: The Azure region.
-    :param bool is_activated:"""
+    """Args:
+        application_id (str): The application ID.
+        azure_region (str): The Azure region.
+        is_activated (bool):
+    """
 
     ApplicationId = None
     AzureRegion = None

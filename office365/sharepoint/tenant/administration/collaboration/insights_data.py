@@ -14,9 +14,9 @@ from office365.sharepoint.tenant.administration.collaboration.collaborativeusers
 
 @dataclass
 class CollaborationInsightsData(ClientValue):
-    """
-    :param str last_report_date:
-    :param list[CollaborativeUsers] collaborative_users:
+    """Args:
+        last_report_date (str):
+        collaborative_users (list[CollaborativeUsers]):
     """
 
     collaborativeUsers: ClientValueCollection[CollaborativeUsers] = field(
