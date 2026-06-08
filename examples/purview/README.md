@@ -43,6 +43,9 @@ flowchart LR
 | **Privacy / GDPR** | Create a subject rights request for data export under GDPR Article 15 | [`subject_rights/create_request.py`](./subject_rights/create_request.py) | `SubjectRightsRequest.ReadWrite.All` |
 | **Security** | Submit URL and file for phishing/malware threat assessment | [`threat_assessment/scan_url.py`](./threat_assessment/scan_url.py) | `ThreatAssessment.ReadWrite.All` |
 | **Information protection** | List and audit sensitivity labels | [`sensitivity_labels/apply.py`](./sensitivity_labels/apply.py) | `InformationProtectionPolicy.Read.All` |
+| **Information protection** | Sensitivity label usage analytics | [`sensitivity_labels/analytics.py`](./sensitivity_labels/analytics.py) | `InformationProtectionPolicy.Read.All` |
+| **Compliance** | Search partially indexed items (eDiscovery) | [`compliance/search_partially_indexed.py`](./compliance/search_partially_indexed.py) | `eDiscovery.ReadWrite.All` |
+| **Records management** | Auto-apply retention labels to unlabelled files | [`records/auto_apply_label.py`](./records/auto_apply_label.py) | `RecordsManagement.ReadWrite.All` |
 
 ---
 

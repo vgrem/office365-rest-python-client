@@ -66,6 +66,8 @@ conversations not tied to any team/channel.
 | Install a Teams app from the catalog into a team | [`apps/install.py`](./apps/install.py) | Two-step flow: query catalog → install into team |
 | Create a 1-on-1 chat and send a message | [`chats/create_and_message.py`](./chats/create_and_message.py) | Multi-step flow: resolve users → create chat → send message |
 | **Usage report** — team counts and user activity over D7/D30/D90 | [`reports/usage.py`](./reports/usage.py) | Adoption tracking, chargeback, and inactivity detection across multiple time windows |
+| **Inactive channels** — channels with no recent messages across all teams | [`find_inactive_channels.py`](./find_inactive_channels.py) | Identify channel sprawl and candidates for archiving |
+| **App inventory** — report installed apps across all teams | [`apps/report.py`](./apps/report.py) | Detect shadow IT and track app adoption across the tenant |
 
 ---
 ---
