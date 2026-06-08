@@ -39,14 +39,12 @@ class ContentType(BaseItem):
 
     @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def associate_with_hub_sites(self, hub_site_urls: List[str], propagate_to_existing_lists: bool = False) -> Self:
-        """
-        Associate a published content type present in a content type hub with a list of hub sites.
+        """Associate a published content type present in a content type hub with a list of hub sites.
         Note: This feature is limited to tenants that have a SharePoint Syntex license.
 
-        :param list[str] hub_site_urls: List of canonical URLs to the hub sites where the content type needs to
-            be enforced. Required.
-        :param bool propagate_to_existing_lists: If true, content types will be enforced on existing lists in the
-            hub sites; otherwise, it'll be applied only to newly created lists.
+        Args:
+            hub_site_urls (list[str]): List of canonical URLs to the hub sites where the content type needs to be enforced. Required.
+            propagate_to_existing_lists (bool): If true, content types will be enforced on existing lists in the hub sites; otherwise, it'll be applied only to newly created lists.
         """
         payload = {
             "hubSiteUrls": StringCollection(hub_site_urls),

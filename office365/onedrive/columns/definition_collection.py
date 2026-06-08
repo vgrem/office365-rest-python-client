@@ -23,11 +23,12 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         notes="Create a number column",
     )
     def add_number(self, name: str, minimum: float | None = None, maximum: float | None = None):
-        """
-        Creates a number column
-        :param str name: The API-facing name of the column as it appears in the fields on a listItem
-        :param float minimum: The minimum permitted value.
-        :param float maximum: The maximum permitted value.
+        """Creates a number column
+
+        Args:
+            name (str): The API-facing name of the column as it appears in the fields on a listItem
+            minimum (float): The minimum permitted value.
+            maximum (float): The maximum permitted value.
         """
         from office365.onedrive.columns.number import NumberColumn
 
@@ -39,12 +40,12 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         notes="Create a text column",
     )
     def add_text(self, name: str, max_length: int | None = None, text_type: str | None = None):
-        """
-        Creates a text column
+        """Creates a text column
 
-        :param str name: The API-facing name of the column as it appears in the fields on a listItem
-        :param int or None max_length: The maximum number of characters for the value.
-        :param str or None text_type: The type of text being stored
+        Args:
+            name (str): The API-facing name of the column as it appears in the fields on a listItem
+            max_length (int or None): The maximum number of characters for the value.
+            text_type (str or None): The type of text being stored
         """
         from office365.onedrive.columns.text import TextColumn
 
@@ -56,11 +57,11 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         notes="Create a hyperlink or picture column",
     )
     def add_hyperlink_or_picture(self, name: str, is_picture: bool | None = None):
-        """
-        Creates a hyperlink or picture column
+        """Creates a hyperlink or picture column
 
-        :param str name: The API-facing name of the column as it appears in the fields on a listItem
-        :param bool is_picture: Specifies whether the display format used for URL columns is an image or a hyperlink.
+        Args:
+            name (str): The API-facing name of the column as it appears in the fields on a listItem
+            is_picture (bool): Specifies whether the display format used for URL columns is an image or a hyperlink.
         """
         from office365.onedrive.columns.hyperlink_or_picture import (
             HyperlinkOrPictureColumn,
@@ -82,12 +83,12 @@ class ColumnDefinitionCollection(EntityCollection[ColumnDefinition]):
         lookup_list: Union[List, str],
         column_name: Optional[str] = None,
     ) -> ColumnDefinition:
-        """
-        Creates a lookup column
+        """Creates a lookup column
 
-        :param str name: The API-facing name of the column as it appears in the fields on a listItem
-        :param office365.onedrive.lists.list.List or str lookup_list: Lookup source list or identifier
-        :param str column_name: The name of the lookup source column.
+        Args:
+            name (str): The API-facing name of the column as it appears in the fields on a listItem
+            lookup_list (office365.onedrive.lists.list.List or str): Lookup source list or identifier
+            column_name (str): The name of the lookup source column.
         """
         from office365.onedrive.columns.lookup import LookupColumn
         from office365.onedrive.lists.list import List
