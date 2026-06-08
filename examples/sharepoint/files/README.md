@@ -161,6 +161,14 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 | **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
 | **Restore version** | [`versions/restore_version.py`](./versions/restore_version.py) | Restore a previous version |
 
+## Audit & Compliance
+
+| What | File | Notes |
+|------|------|-------|
+| **Find label downgrades** | [`find_label_downgrades.py`](./find_label_downgrades.py) | Detect sensitivity label downgrades via audit logs |
+| **Find unused files** | [`find_unused_files.py`](./find_unused_files.py) | Files with no user access in N days |
+| **Version storage report** | [`version_storage_report.py`](./version_storage_report.py) | Analyze version count and storage cost per file |
+
 ## Attachments
 
 | What | File | Notes |

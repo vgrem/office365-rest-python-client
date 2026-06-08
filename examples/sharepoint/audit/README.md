@@ -20,6 +20,7 @@ Query audit logs from SharePoint sites and Microsoft Graph.
 | **1** | Site audit — get audit configuration for a SharePoint site | [`site_audit.py`](./site_audit.py) | Site Owner | [SharePoint audit API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/audit) |
 | **2** | Sign-in logs — query Azure AD sign-in logs | [`signin_logs.py`](./signin_logs.py) | `AuditLog.Read.All` | [Graph sign-in logs](https://learn.microsoft.com/en-us/graph/api/signin-list) |
 | **3** | Directory audits — query Azure AD directory audit logs | [`directory_audits.py`](./directory_audits.py) | `AuditLog.Read.All` | [Graph directory audits](https://learn.microsoft.com/en-us/graph/api/directoryaudit-list) |
+| **4** | File sharing audit events — detect when users share files | [`file_sharing_audit.py`](./file_sharing_audit.py) | `AuditLog.Read.All` | [Graph auditLogQuery](https://learn.microsoft.com/en-us/graph/api/security/auditlogquery-query) |
 
 > For **unified audit log export** (Office 365 Management API), use the Microsoft Graph API directly.
 > This library does not yet expose the unified audit log export endpoints.

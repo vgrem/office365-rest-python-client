@@ -73,6 +73,12 @@ at any level and assign **unique permissions**.
 | **15** | Break inheritance on folder | [`break_inheritance_folder.py`](./break_inheritance_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
 | **15** | Reset inheritance on list | [`reset_inheritance.py`](./reset_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
 
+### Reporting
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **16** | Folder permissions report (scan unique permissions) | [`folder_permissions_report.py`](./folder_permissions_report.py) | Site Owner + `Sites.FullControl.All` | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+
 ---
 
 ## Quick start

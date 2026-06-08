@@ -58,6 +58,14 @@ Modern Team Site         Modern Comm Site          Classic Site
 | **9** | Remove site admin | [`remove_admin.py`](./remove_admin.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 | **10** | Delete site | [`delete_site.py`](./delete_site.py) | SharePoint Admin | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
 
+### Site lifecycle & compliance
+
+| Step | Operation | File | Required role | API reference |
+|---|---|---|---|---|
+| **11** | Find inactive/obsolete sites | [`find_inactive_sites.py`](./find_inactive_sites.py) | SharePoint Admin + `Sites.Read.All` | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **12** | Assign sensitivity label to site | [`assign_sensitivity_label.py`](./assign_sensitivity_label.py) | SharePoint Admin + Purview read | [Graph sensitivity labels](https://learn.microsoft.com/en-us/graph/api/resources/sensitivitylabel) |
+| **13** | Check site retention policy coverage | [`check_retention_policy.py`](./check_retention_policy.py) | SharePoint Admin + `RecordsManagement.Read.All` | [Purview retention](https://learn.microsoft.com/en-us/purview/retention-policies-sharepoint) |
+
 ---
 
 ## Quick start
