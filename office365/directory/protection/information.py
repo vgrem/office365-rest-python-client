@@ -14,10 +14,11 @@ class InformationProtection(Entity):
     def create_email_file_assessment(self, recipient_email, content_data, expected_assessment, category):
         """Create an email assessment request
 
-        :param str recipient_email: The mail recipient whose policies are used to assess the mail.
-        :param str content_data: Base64 encoded file content. The file content can't fetch back because it isn't stored.
-        :param str expected_assessment: The expected assessment from submitter. Possible values are: block, unblock.
-        :param str category: The threat category. Possible values are: spam, phishing, malware.
+        Args:
+            recipient_email (str): The mail recipient whose policies are used to assess the mail.
+            content_data (str): Base64 encoded file content. The file content can't fetch back because it isn't stored.
+            expected_assessment (str): The expected assessment from submitter. Possible values are: block, unblock.
+            category (str): The threat category. Possible values are: spam, phishing, malware.
         """
 
         from office365.directory.protection.threatassessment.requests.email_file import (
@@ -37,10 +38,11 @@ class InformationProtection(Entity):
     def create_file_assessment(self, file_name, content_data, expected_assessment, category):
         """Create a new threat assessment request.
 
-        :param str file_name: File name
-        :param str content_data: Base64 encoded file content. The file content can't fetch back because it isn't stored.
-        :param str expected_assessment: The expected assessment from submitter. Possible values are: block, unblock.
-        :param str category: The threat category. Possible values are: spam, phishing, malware.
+        Args:
+            file_name (str): File name
+            content_data (str): Base64 encoded file content. The file content can't fetch back because it isn't stored.
+            expected_assessment (str): The expected assessment from submitter. Possible values are: block, unblock.
+            category (str): The threat category. Possible values are: spam, phishing, malware.
         """
 
         from office365.directory.protection.threatassessment.requests.file import (
@@ -73,12 +75,13 @@ class InformationProtection(Entity):
         return return_type
 
     def create_mail_assessment(self, message, recipient=None, expected_assessment="block", category="spam"):
-        """
-        Create a mail assessment request
-        :param str recipient: Recipient email
-        :param office365.outlook.mail.messages.message.Message message: Message object or identifier
-        :param str expected_assessment:
-        :param str category:
+        """Create a mail assessment request
+
+        Args:
+            recipient (str): Recipient email
+            message (office365.outlook.mail.messages.message.Message): Message object or identifier
+            expected_assessment (str):
+            category (str):
         """
 
         from office365.directory.protection.threatassessment.requests.mail import (

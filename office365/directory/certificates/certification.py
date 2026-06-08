@@ -10,7 +10,8 @@ from office365.runtime.client_value import ClientValue
 class Certification(ClientValue):
     """Represents the certification details of an application.
 
-    :param str certification_details_url:
+    Args:
+        certification_details_url (str):
     """
 
     certificationDetailsUrl: str | None = None

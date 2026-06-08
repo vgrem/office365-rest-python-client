@@ -132,9 +132,10 @@ class User(DirectoryObject):
         return self
 
     def disable_automatic_replies_setting(self, clear_all=False) -> Self:
-        """
-        Disable automatic replies (notify people automatically upon receipt of their email)
-        :param bool clear_all: If true, clear all automatic replies settings
+        """Disable automatic replies (notify people automatically upon receipt of their email)
+
+        Args:
+            clear_all (bool): If true, clear all automatic replies settings
         """
         from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSetting
 
@@ -150,10 +151,11 @@ class User(DirectoryObject):
 
     @require_permission(delegated=["User.ReadWrite", "User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def add_extension(self, name: str) -> OpenTypeExtension:
-        """
-        Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
+        """Creates an open extension (openTypeExtension object) and add custom properties in a new or existing instance
         of a User resource.
-        :param str name:
+
+        Args:
+            name (str):
         """
         from office365.directory.extensions.open_type import OpenTypeExtension
 
@@ -168,12 +170,11 @@ class User(DirectoryObject):
     def assign_license(
         self, add_licenses: list[str] | list[AssignedLicense], remove_licenses: list[str] | None = None
     ) -> Self:
-        """
-        Add or remove licenses on the user.
+        """Add or remove licenses on the user.
 
-        :param list[str] remove_licenses: A collection of skuIds that identify the licenses to remove.
-        :param list[AssignedLicense] add_licenses: A collection of assignedLicense objects that specify
-             the licenses to add.
+        Args:
+            remove_licenses (list[str]): A collection of skuIds that identify the licenses to remove.
+            add_licenses (list[AssignedLicense]): A collection of assignedLicense objects that specify the licenses to add.
         """
         from office365.directory.licenses.assigned_license import AssignedLicense
 
@@ -193,11 +194,10 @@ class User(DirectoryObject):
 
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def assign_manager(self, user: str | User | OrgContact) -> DirectoryObject:
-        """
-        Assign a user's manager.
+        """Assign a user's manager.
 
-        :param str or User or OrgContact user: User or office365.intune.organizations.contact.OrgContact
-            or identifier
+        Args:
+            user (str or User or OrgContact): User or office365.intune.organizations.contact.OrgContact or identifier
         """
 
         def _construct_request(request: RequestOptions) -> None:
@@ -231,12 +231,12 @@ class User(DirectoryObject):
 
     @require_permission(delegated=["User.ReadWrite"], application=["User.ReadWrite.All"])
     def change_password(self, current_password: str, new_password: str) -> Self:
-        """
-        Enable the user to update their password. Any user can update their password without belonging
+        """Enable the user to update their password. Any user can update their password without belonging
         to any administrator role.
 
-        :param str current_password: Your current password.
-        :param str new_password: Your new password.
+        Args:
+            current_password (str): Your current password.
+            new_password (str): Your new password.
         """
         qry = ServiceOperationQuery(
             self, "changePassword", None, {"currentPassword": current_password, "newPassword": new_password}
@@ -307,11 +307,10 @@ class User(DirectoryObject):
         self, email_addresses: list[str], mail_tips_options: str | None = None
     ) -> ClientResult[ClientValueCollection[MailTips]]:
         """Get the MailTips of one or more recipients as available to the signed-in user.
-        :param list[str] email_addresses: A collection of SMTP addresses of recipients to get MailTips for.
-        :param str mail_tips_options: A enumeration of flags that represents the requested mailtips.
-            Possible values are: automaticReplies, customMailTip, deliveryRestriction, externalMemberCount,
-            mailboxFullStatus, maxMessageSize, moderationStatus, recipientScope, recipientSuggestions,
-            and totalMemberCount.
+
+        Args:
+            email_addresses (list[str]): A collection of SMTP addresses of recipients to get MailTips for.
+            mail_tips_options (str): A enumeration of flags that represents the requested mailtips. Possible values are: automaticReplies, customMailTip, deliveryRestriction, externalMemberCount, mailboxFullStatus, maxMessageSize, moderationStatus, recipientScope, recipientSuggestions, and totalMemberCount.
         """
         return_type = ClientResult(self.context, ClientValueCollection(MailTips))
         payload = {"EmailAddresses": StringCollection(email_addresses), "MailTipsOptions": mail_tips_options}
@@ -343,15 +342,15 @@ class User(DirectoryObject):
     ) -> Message:
         """Send a new message on the fly
 
-        :param str subject: The subject of the message.
-        :param str body: The body of the message. It can be in HTML or text format
-        :param list[str] to_recipients: The To: recipients for the message.
-        :param list[str] cc_recipients: The CC: recipients for the message.
-        :param list[str] bcc_recipients: The BCC: recipients for the message.
-        :param list[str] reply_to: The Reply-To: : recipients for the reply to the message.
-        :param bool save_to_sent_items: Indicates whether to save the message in Sent Items. Specify it only if
-            the parameter is false; default is true
-        :param str body_type: The type of the message body. It can be "HTML" or "Text". Default is "Text".
+        Args:
+            subject (str): The subject of the message.
+            body (str): The body of the message. It can be in HTML or text format
+            to_recipients (list[str]): The To: recipients for the message.
+            cc_recipients (list[str]): The CC: recipients for the message.
+            bcc_recipients (list[str]): The BCC: recipients for the message.
+            reply_to (list[str]): The Reply-To: : recipients for the reply to the message.
+            save_to_sent_items (bool): Indicates whether to save the message in Sent Items. Specify it only if the parameter is false; default is true
+            body_type (str): The type of the message body. It can be "HTML" or "Text". Default is "Text".
         """
         return_type = Message(self.context)
         return_type.subject = subject
@@ -369,15 +368,14 @@ class User(DirectoryObject):
         return return_type
 
     def export_personal_data(self, storage_location) -> Self:
-        """
-        Submit a data policy operation request from a company administrator or an application to
+        """Submit a data policy operation request from a company administrator or an application to
         export an organizational user's data.
 
         If successful, this method returns a 202 Accepted response code.
         It does not return anything in the response body. The response contains the following response headers.
 
-        :param str storage_location: This is a shared access signature (SAS) URL to an Azure Storage account,
-            to where data should be exported.
+        Args:
+            storage_location (str): This is a shared access signature (SAS) URL to an Azure Storage account, to where data should be exported.
         """
         qry = ServiceOperationQuery(self, "exportPersonalData", None, {"storage_location": storage_location})
         self.context.add_query(qry)
@@ -401,8 +399,7 @@ class User(DirectoryObject):
         return_suggestion_reasons: bool | None = None,
         minimum_attendee_percentage: float | None = None,
     ) -> ClientResult[MeetingTimeSuggestionsResult]:
-        """
-        Suggest meeting times and locations based on organizer and attendees availability, and time or location
+        """Suggest meeting times and locations based on organizer and attendees availability, and time or location
         constraints specified as parameters.
 
         If findMeetingTimes cannot return any meeting suggestions, the response would indicate a reason in the
@@ -413,28 +410,15 @@ class User(DirectoryObject):
         In scenarios like test environments where the input parameters and calendar data remain static, expect
         that the suggested results may differ over time.
 
-        :param list[AttendeeBase] or None attendees: A collection of attendees or resources for the meeting.
-            Since findMeetingTimes assumes that any attendees who is a person is always required, specify required
-            for a person and resource for a resource in the corresponding type property. An empty collection causes
-            findMeetingTimes to look for free time slots for only the organizer. Optional.
-        :param office365.outlook.calendar.location_constraint.LocationConstraint or None location_constraint:
-            The organizer's requirements about the meeting location, such as whether a suggestion for a meeting
-            location is required, or there are specific locations only where the meeting can take place. Optional.
-        :param TimeConstraint time_constraint: Any time restrictions for a meeting, which can include the nature
-            of the meeting (activityDomain property) and possible meeting time periods (timeSlots property).
-            findMeetingTimes assumes activityDomain as work if you don't specify this parameter. Optional.
-        :param str meeting_duration: The length of the meeting, denoted in ISO8601 format.
-             For example, 1 hour is denoted as 'PT1H', where 'P' is the duration designator,
-             'T' is the time designator, and 'H' is the hour designator.
-             Use M to indicate minutes for the duration; for example, 2 hours and 30 minutes would be 'PT2H30M'.
-             If no meeting duration is specified, findMeetingTimes uses the default of 30 minutes. Optional.
-        :param int max_candidates: The maximum number of meeting time suggestions to be returned. Optional.
-        :param bool is_organizer_optional: Specify True if the organizer doesn't necessarily have to attend.
-             The default is false. Optiona
-        :param bool return_suggestion_reasons: Specify True to return a reason for each meeting suggestion in
-             the suggestionReason property. The default is false to not return that property. Optional.
-        :param float minimum_attendee_percentage: The minimum required confidence for a time slot to be returned
-            in the response. It is a % value ranging from 0 to 100. Optional.
+        Args:
+            attendees (list[AttendeeBase] or None): A collection of attendees or resources for the meeting. Since findMeetingTimes assumes that any attendees who is a person is always required, specify required for a person and resource for a resource in the corresponding type property. An empty collection causes findMeetingTimes to look for free time slots for only the organizer. Optional.
+            location_constraint (office365.outlook.calendar.location_constraint.LocationConstraint or None): The organizer's requirements about the meeting location, such as whether a suggestion for a meeting location is required, or there are specific locations only where the meeting can take place. Optional.
+            time_constraint (TimeConstraint): Any time restrictions for a meeting, which can include the nature of the meeting (activityDomain property) and possible meeting time periods (timeSlots property). findMeetingTimes assumes activityDomain as work if you don't specify this parameter. Optional.
+            meeting_duration (str): The length of the meeting, denoted in ISO8601 format. For example, 1 hour is denoted as 'PT1H', where 'P' is the duration designator, 'T' is the time designator, and 'H' is the hour designator. Use M to indicate minutes for the duration; for example, 2 hours and 30 minutes would be 'PT2H30M'. If no meeting duration is specified, findMeetingTimes uses the default of 30 minutes. Optional.
+            max_candidates (int): The maximum number of meeting time suggestions to be returned. Optional.
+            is_organizer_optional (bool): Specify True if the organizer doesn't necessarily have to attend. The default is false. Optiona
+            return_suggestion_reasons (bool): Specify True to return a reason for each meeting suggestion in the suggestionReason property. The default is false to not return that property. Optional.
+            minimum_attendee_percentage (float): The minimum required confidence for a time slot to be returned in the response. It is a % value ranging from 0 to 100. Optional.
         """
         payload = {
             "attendees": ClientValueCollection(AttendeeBase, attendees),
@@ -453,13 +437,11 @@ class User(DirectoryObject):
 
     def get_calendar_view(self, start_dt: datetime, end_dt: datetime) -> EntityCollection[Event]:
         """Get the occurrences, exceptions, and single instances of events in a calendar view defined by a time range,
-           from the user's default calendar, or from some other calendar of the user's.
+        from the user's default calendar, or from some other calendar of the user's.
 
-        :param datetime.datetime end_dt: The end date and time of the time range, represented in ISO 8601 format.
-             For example, "2019-11-08T20:00:00-08:00".
-        :param datetime.datetime start_dt: The start date and time of the time range, represented in ISO 8601 format.
-            For example, "2019-11-08T19:00:00-08:00".
-
+        Args:
+            end_dt (datetime.datetime): The end date and time of the time range, represented in ISO 8601 format. For example, "2019-11-08T20:00:00-08:00".
+            start_dt (datetime.datetime): The start date and time of the time range, represented in ISO 8601 format. For example, "2019-11-08T19:00:00-08:00".
         """
         return_type = EntityCollection(self.context, Event, ResourcePath("calendarView", self.resource_path))
         qry = ServiceOperationQuery(self, "calendarView", None, None, None, return_type)
@@ -473,12 +455,11 @@ class User(DirectoryObject):
 
     def get_reminder_view(self, start_dt: datetime, end_dt: datetime) -> ClientResult[ClientValueCollection[Reminder]]:
         """Get the occurrences, exceptions, and single instances of events in a calendar view defined by a time range,
-                   from the user's default calendar, or from some other calendar of the user's.
+        from the user's default calendar, or from some other calendar of the user's.
 
-        :param datetime.datetime end_dt: The end date and time of the event for which the reminder is set up.
-            The value is represented in ISO 8601 format, for example, "2015-11-08T20:00:00.0000000"..
-        :param datetime.datetime start_dt: The start date and time of the event for which the reminder is set up.
-            The value is represented in ISO 8601 format, for example, "2015-11-08T19:00:00.0000000".
+        Args:
+            end_dt (datetime.datetime): The end date and time of the event for which the reminder is set up. The value is represented in ISO 8601 format, for example, "2015-11-08T20:00:00.0000000"..
+            start_dt (datetime.datetime): The start date and time of the event for which the reminder is set up. The value is represented in ISO 8601 format, for example, "2015-11-08T19:00:00.0000000".
         """
         return_type = ClientResult(self.context, ClientValueCollection(Reminder))
         params = {"startDateTime": start_dt.isoformat(), "endDateTime": end_dt.isoformat()}
@@ -502,9 +483,8 @@ class User(DirectoryObject):
 
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
-        """
-        :param permanent_delete: Permanently deletes the user from directory
-        :type permanent_delete: bool
+        """Args:
+            permanent_delete (bool): Permanently deletes the user from directory
         """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
@@ -550,9 +530,10 @@ class User(DirectoryObject):
         return self
 
     def wipe_managed_app_registrations_by_device_tag(self, device_tag: str) -> Self:
-        """
-        Issues a wipe operation on an app registration with specified device tag.
-        :param str device_tag: device tag
+        """Issues a wipe operation on an app registration with specified device tag.
+
+        Args:
+            device_tag (str): device tag
         """
         payload = {"deviceTag": device_tag}
         qry = ServiceOperationQuery(self, "wipeManagedAppRegistrationsByDeviceTag", None, payload)
@@ -565,14 +546,12 @@ class User(DirectoryObject):
         source_id_type: ExchangeIdFormat | None = None,
         target_id_type: ExchangeIdFormat | None = None,
     ) -> ClientResult[ConvertIdResult]:
-        """
-        Translate identifiers of Outlook-related resources between formats.
+        """Translate identifiers of Outlook-related resources between formats.
 
-        :param list[str] input_ids: A collection of identifiers to convert. All identifiers in the collection MUST
-            have the same source ID type, and MUST be for items in the same mailbox. Maximum size of this collection
-            is 1000 strings.
-        :param str source_id_type: The ID type of the identifiers in the InputIds parameter.
-        :param str target_id_type: The requested ID type to convert to.
+        Args:
+            input_ids (list[str]): A collection of identifiers to convert. All identifiers in the collection MUST have the same source ID type, and MUST be for items in the same mailbox. Maximum size of this collection is 1000 strings.
+            source_id_type (str): The ID type of the identifiers in the InputIds parameter.
+            target_id_type (str): The requested ID type to convert to.
         """
         return_type = ClientResult(self.context, ConvertIdResult())
         payload = {

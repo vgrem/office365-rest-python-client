@@ -16,7 +16,8 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
         """Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level
         to high.
 
-        :param list[str] user_ids: Specify the risky user IDs to dismiss in the request body.
+        Args:
+            user_ids (list[str]): Specify the risky user IDs to dismiss in the request body.
         """
         payload = {"userIds": StringCollection(user_ids)}
         qry = ServiceOperationQuery(self, "confirmCompromised", None, payload)
@@ -26,7 +27,8 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
     def dismiss(self, user_ids=None):
         """Dismiss the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
-        :param list[str] user_ids: Specify the risky user IDs to dismiss in the request body.
+        Args:
+            user_ids (list[str]): Specify the risky user IDs to dismiss in the request body.
         """
         payload = {"userIds": StringCollection(user_ids or [])}
         qry = ServiceOperationQuery(self, "dismiss", None, payload)

@@ -26,11 +26,11 @@ class Security(Entity):
     It doesn't contain any usable properties."""
 
     def run_hunting_query(self, query: str) -> ClientResult[HuntingQueryResults]:
-        """
-        Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
+        """Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
         to proactively look for specific threats in your environment.
-        :param str query: The hunting query in Kusto Query Language (KQL). For more information on KQL syntax,see KQL
-            quick reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/kql-quick-reference
+
+        Args:
+            query (str): The hunting query in Kusto Query Language (KQL). For more information on KQL syntax,see KQL quick reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/kql-quick-reference
         """
         return_type = ClientResult(self.context, HuntingQueryResults())
         payload = {"Query": query}

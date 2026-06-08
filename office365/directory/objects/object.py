@@ -15,11 +15,11 @@ class DirectoryObject(Entity):
     directory entity types."""
 
     def check_member_objects(self, ids: list[str] | None = None) -> ClientResult[StringCollection]:
-        """
-        Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
+        """Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
         the specified user, group, service principal, organizational contact, device, or directory object.
 
-        :param list[str] ids: The unique identifiers for the objects
+        Args:
+            ids (list[str]): The unique identifiers for the objects
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"ids": StringCollection(ids or [])}
@@ -31,7 +31,9 @@ class DirectoryObject(Entity):
         """Returns all the groups and directory roles that a user, group, or directory object is a member of.
         This function is transitive.
 
-        :type security_enabled_only: bool"""
+        Args:
+            security_enabled_only (bool):
+        """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
         qry = ServiceOperationQuery(self, "getMemberObjects", None, payload, None, return_type)
@@ -42,10 +44,8 @@ class DirectoryObject(Entity):
         """Return all the groups that the specified user, group, or directory object is a member of. This function is
         transitive.
 
-        :param bool security_enabled_only: true to specify that only security groups that the entity is a member
-            of should be returned; false to specify that all groups and directory roles that the entity is a member
-            of should be returned. true can be specified only for users or service principals to return security-enabled
-            groups.
+        Args:
+            security_enabled_only (bool): true to specify that only security groups that the entity is a member of should be returned; false to specify that all groups and directory roles that the entity is a member of should be returned. true can be specified only for users or service principals to return security-enabled groups.
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"securityEnabledOnly": security_enabled_only}
@@ -61,8 +61,8 @@ class DirectoryObject(Entity):
         of groups provisioned in Azure AD. Note that Microsoft 365 groups cannot contain groups.
         So membership in a Microsoft 365 group is always direct.
 
-        :param list[str] group_ids: A collection that contains the object IDs of the groups in which to
-            check membership. Up to 20 groups may be specified.
+        Args:
+            group_ids (list[str]): A collection that contains the object IDs of the groups in which to check membership. Up to 20 groups may be specified.
         """
         return_type = ClientResult(self.context, StringCollection())
         payload = {"groupIds": group_ids}

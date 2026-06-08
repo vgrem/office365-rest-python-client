@@ -16,13 +16,13 @@ class GroupCollection(CountCollection[Group]):
 
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def add(self, group_properties: GroupProfile) -> Group:
-        """
-        Create a Group resource.
+        """Create a Group resource.
         You can create the following types of groups:
-           - Microsoft 365 group (unified group)
-           - Security group
+        - Microsoft 365 group (unified group)
+        - Security group
 
-        :param GroupProfile group_properties: Group properties
+        Args:
+            group_properties (GroupProfile): Group properties
         """
         return_type = Group(self.context)
         self.add_child(return_type)
@@ -38,13 +38,14 @@ class GroupCollection(CountCollection[Group]):
         owners: list[str] | None = None,
         members: list[str] | None = None,
     ) -> Group:
-        """
-        Creates a Microsoft 365 group.
+        """Creates a Microsoft 365 group.
         If the owners have not been specified, the calling user is automatically added as the owner of the group.
-        :param str name: The display name for the group
-        :param str description: An optional description for the group
-        :param list[str] owners: The group owners
-        :param list[str] members: The group members
+
+        Args:
+            name (str): The display name for the group
+            description (str): An optional description for the group
+            owners (list[str]): The group owners
+            members (list[str]): The group members
         """
         params = GroupProfile(
             mailNickname=name,
@@ -60,10 +61,11 @@ class GroupCollection(CountCollection[Group]):
 
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def create_security(self, name: str, description: str | None = None) -> Group:
-        """
-        Creates a Security group
-        :param str name: The display name for the group
-        :param str description: An optional description for the group
+        """Creates a Security group
+
+        Args:
+            name (str): The display name for the group
+            description (str): An optional description for the group
         """
         params = GroupProfile(
             mailNickname=name,
@@ -79,14 +81,15 @@ class GroupCollection(CountCollection[Group]):
         delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"]
     )
     def create_with_team(self, group_name: str) -> Group:
-        """
-        Provision a new group along with a team.
+        """Provision a new group along with a team.
 
         Note: After the group is successfully created, which can take up to 15 minutes,
         create a Microsoft Teams team using this method could throw an error since
         the group creation process might not be completed. For that scenario prefer submit the request to server via
         execute_query_retry instead of execute_query when using this method.
-        :param str group_name: The display name for the group
+
+        Args:
+            group_name (str): The display name for the group
         """
 
         def _after_group_created(return_type: Group) -> None:

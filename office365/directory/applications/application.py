@@ -71,10 +71,11 @@ class Application(DirectoryObject):
     ) -> Self:
         """Adds a certificate to an application.
 
-        :param str display_name: Friendly name for the key.
-        :param bytes cert_data: The certificate's raw data or path.
-        :param datetime.datetime start_datetime: The date and time at which the credential becomes valid. Default: now
-        :param datetime.datetime end_datetime: The date and time at which the credential expires. Default: now + 180days
+        Args:
+            display_name (str): Friendly name for the key.
+            cert_data (bytes): The certificate's raw data or path.
+            start_datetime (datetime.datetime): The date and time at which the credential becomes valid. Default: now
+            end_datetime (datetime.datetime): The date and time at which the credential expires. Default: now + 180days
         """
         if start_datetime is None:
             start_datetime = datetime.utcnow()
@@ -93,9 +94,10 @@ class Application(DirectoryObject):
         return self
 
     def remove_certificate(self, thumbprint: str) -> Self:
-        """
-        Remove a certificate from an application.
-        :param str thumbprint: The unique identifier for the password.
+        """Remove a certificate from an application.
+
+        Args:
+            thumbprint (str): The unique identifier for the password.
         """
         raise NotImplementedError("remove_certificate")
 
@@ -103,7 +105,8 @@ class Application(DirectoryObject):
     def add_password(self, display_name: str) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
-        :param str display_name: App display name
+        Args:
+            display_name (str): App display name
         """
         params = PasswordCredential(displayName=display_name)
         result = ClientResult(self.context, params)
@@ -115,7 +118,8 @@ class Application(DirectoryObject):
     def remove_password(self, key_id: str) -> Self:
         """Remove a password from an application.
 
-        :param str key_id: The unique identifier for the password.
+        Args:
+            key_id (str): The unique identifier for the password.
         """
         qry = ServiceOperationQuery(self, "removePassword", None, {"keyId": key_id})
         self.context.add_query(qry)
@@ -123,10 +127,8 @@ class Application(DirectoryObject):
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
-        """
-        :param permanent_delete: Permanently deletes the application from directory
-        :type permanent_delete: bool
-
+        """Args:
+            permanent_delete (bool): Permanently deletes the application from directory
         """
         super().delete_object()
         deleted_app = DirectoryObject(
@@ -142,8 +144,8 @@ class Application(DirectoryObject):
         """Set the verifiedPublisher on an application.
         For more information, including prerequisites to setting a verified publisher, see Publisher verification.
 
-        :param str verified_publisher_id: The Microsoft Partner Network ID (MPNID) of the verified publisher
-        to be set on the application, from the publisher's Partner Center account.
+        Args:
+            verified_publisher_id (str): The Microsoft Partner Network ID (MPNID) of the verified publisher to be set on the application, from the publisher's Partner Center account.
         """
         qry = ServiceOperationQuery(self, "setVerifiedPublisher", None, {"verifiedPublisherId": verified_publisher_id})
         self.context.add_query(qry)
@@ -162,18 +164,13 @@ class Application(DirectoryObject):
     def add_key(
         self, key_credential: KeyCredential, password_credential: PasswordCredential, proof: str
     ) -> ClientResult[KeyCredential]:
-        """
-        Add a key credential to an application. This method, along with removeKey can be used by an application
+        """Add a key credential to an application. This method, along with removeKey can be used by an application
         to automate rolling its expiring keys.
 
-        :param KeyCredential key_credential: The new application key credential to add.
-            The type, usage and key are required properties for this usage. Supported key types are:
-                AsymmetricX509Cert: The usage must be Verify.
-                X509CertAndPassword: The usage must be Sign
-        :param PasswordCredential password_credential: Only secretText is required to be set which should contain
-             the password for the key. This property is required only for keys of type X509CertAndPassword.
-             Set it to null otherwise.
-        :param str proof: A self-signed JWT token used as a proof of possession of the existing keys
+        Args:
+            key_credential (KeyCredential): The new application key credential to add. The type, usage and key are required properties for this usage. Supported key types are: AsymmetricX509Cert: The usage must be Verify. X509CertAndPassword: The usage must be Sign
+            password_credential (PasswordCredential): Only secretText is required to be set which should contain the password for the key. This property is required only for keys of type X509CertAndPassword. Set it to null otherwise.
+            proof (str): A self-signed JWT token used as a proof of possession of the existing keys
         """
         payload = {"keyCredential": key_credential, "passwordCredential": password_credential, "proof": proof}
         return_type = ClientResult(self.context, KeyCredential())
@@ -183,18 +180,12 @@ class Application(DirectoryObject):
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def remove_key(self, key_id: str, proof: str) -> Self:
-        """
-        Remove a key credential from an application.
+        """Remove a key credential from an application.
         This method along with addKey can be used by an application to automate rolling its expiring keys.
 
-        :param str key_id: The unique identifier for the password.
-        :param str proof: A self-signed JWT token used as a proof of possession of the existing keys.
-             This JWT token must be signed using the private key of one of the application's existing
-             valid certificates. The token should contain the following claims:
-                 aud - Audience needs to be 00000002-0000-0000-c000-000000000000.
-                 iss - Issuer needs to be the id of the application that is making the call.
-                 nbf - Not before time.
-                 exp - Expiration time should be "nbf" + 10 mins.
+        Args:
+            key_id (str): The unique identifier for the password.
+            proof (str): A self-signed JWT token used as a proof of possession of the existing keys. This JWT token must be signed using the private key of one of the application's existing valid certificates. The token should contain the following claims: aud - Audience needs to be 00000002-0000-0000-c000-000000000000. iss - Issuer needs to be the id of the application that is making the call. nbf - Not before time. exp - Expiration time should be "nbf" + 10 mins.
         """
         qry = ServiceOperationQuery(self, "removeKey", None, {"keyId": key_id, "proof": proof})
         self.context.add_query(qry)

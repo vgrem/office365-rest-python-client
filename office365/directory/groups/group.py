@@ -126,10 +126,8 @@ class Group(DirectoryObject):
 
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def delete_object(self, permanent_delete: bool = False) -> Self:
-        """
-        :param permanent_delete: Permanently deletes the group from directory
-        :type permanent_delete: bool
-
+        """Args:
+            permanent_delete (bool): Permanently deletes the group from directory
         """
         super().delete_object()
         deleted_group = DirectoryObject(

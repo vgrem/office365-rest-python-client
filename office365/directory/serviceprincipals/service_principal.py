@@ -39,18 +39,13 @@ class ServicePrincipal(DirectoryObject):
         password_credential: PasswordCredential,
         proof: str,
     ) -> ClientResult[KeyCredential]:
-        """
-        Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a servicePrincipal
+        """Adds a key credential to a servicePrincipal. This method along with removeKey can be used by a servicePrincipal
         to automate rolling its expiring keys.
 
-        :param KeyCredential key_credential: The new application key credential to add.
-            The type, usage and key are required properties for this usage. Supported key types are:
-                AsymmetricX509Cert: The usage must be Verify.
-                X509CertAndPassword: The usage must be Sign
-        :param PasswordCredential password_credential: Only secretText is required to be set which should contain
-            the password for the key. This property is required only for keys of type X509CertAndPassword.
-            Set it to null otherwise.
-        :param str proof: A self-signed JWT token used as a proof of possession of the existing keys
+        Args:
+            key_credential (KeyCredential): The new application key credential to add. The type, usage and key are required properties for this usage. Supported key types are: AsymmetricX509Cert: The usage must be Verify. X509CertAndPassword: The usage must be Sign
+            password_credential (PasswordCredential): Only secretText is required to be set which should contain the password for the key. This property is required only for keys of type X509CertAndPassword. Set it to null otherwise.
+            proof (str): A self-signed JWT token used as a proof of possession of the existing keys
         """
         payload = {
             "keyCredential": key_credential,
@@ -65,7 +60,8 @@ class ServicePrincipal(DirectoryObject):
     def add_password(self, display_name: str | None = None) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
-        :param str display_name: App display name
+        Args:
+            display_name (str): App display name
         """
         params = PasswordCredential(displayName=display_name)
         return_type = ClientResult(self.context, params)
@@ -76,17 +72,16 @@ class ServicePrincipal(DirectoryObject):
     def add_token_signing_certificate(
         self, display_name: str, end_datetime: str | None = None
     ) -> ClientResult[SelfSignedCertificate]:
-        """
-        Create a self-signed signing certificate and return a selfSignedCertificate object, which is the public part
+        """Create a self-signed signing certificate and return a selfSignedCertificate object, which is the public part
         of the generated certificate.
 
         The self-signed signing certificate is composed of the following objects,
         which are added to the servicePrincipal:
 
-          The keyCredentials object with the following objects:
-              A private key object with usage set to Sign.
-              A public key object with usage set to Verify.
-              The passwordCredentials object.
+        The keyCredentials object with the following objects:
+        A private key object with usage set to Sign.
+        A public key object with usage set to Verify.
+        The passwordCredentials object.
         All the objects have the same value of customKeyIdentifier.
 
         The passwordCredential is used to open the PFX file (private key). It and the associated private key object
@@ -94,11 +89,9 @@ class ServicePrincipal(DirectoryObject):
         certificate cannot be updated. The startDateTime is set to the same time the certificate is created using
         the action. The endDateTime can be up to three years after the certificate is created.
 
-        :param str display_name: Friendly name for the key. It must start with CN=.
-        :param str end_datetime: The date and time when the credential expires. It can be up to 3 years from the date
-            the certificate is created. If not supplied, the default is three years from the time of creation.
-            The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
-            For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+        Args:
+            display_name (str): Friendly name for the key. It must start with CN=.
+            end_datetime (str): The date and time when the credential expires. It can be up to 3 years from the date the certificate is created. If not supplied, the default is three years from the time of creation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
         """
         payload = {"displayName": display_name, "endDateTime": end_datetime}
         return_type = ClientResult(self.context, SelfSignedCertificate())
@@ -241,9 +234,10 @@ class ServicePrincipal(DirectoryObject):
         return self
 
     def remove_password(self, key_id: str) -> Self:
-        """
-        Remove a password from a servicePrincipal object.
-        :param str key_id: The unique identifier for the password.
+        """Remove a password from a servicePrincipal object.
+
+        Args:
+            key_id (str): The unique identifier for the password.
         """
         qry = ServiceOperationQuery(self, "removePassword", None, {"keyId": key_id})
         self.context.add_query(qry)

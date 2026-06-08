@@ -19,14 +19,11 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         super().__init__(context, DirectoryObject, resource_path)
 
     def get_by_ids(self, ids: List[str], types: list[str] | None = None) -> DirectoryObjectCollection:
-        """
-        Returns the directory objects specified in a list of IDs.
-        :param list[str] ids: A collection of IDs for which to return objects. The IDs are GUIDs, represented as
-            strings. You can specify up to 1000 IDs.
-        :param list[str] types: A collection of resource types that specifies the set of resource collections to search.
-            If not specified, the default is directoryObject, which contains all of the resource types defined in
-            the directory. Any object that derives from directoryObject may be specified in the collection;
-            for example: user, group, and device objects.
+        """Returns the directory objects specified in a list of IDs.
+
+        Args:
+            ids (list[str]): A collection of IDs for which to return objects. The IDs are GUIDs, represented as strings. You can specify up to 1000 IDs.
+            types (list[str]): A collection of resource types that specifies the set of resource collections to search. If not specified, the default is directoryObject, which contains all of the resource types defined in the directory. Any object that derives from directoryObject may be specified in the collection; for example: user, group, and device objects.
         """
         return_type = DirectoryObjectCollection(self.context)
         params = {"ids": ids, "types": types}
@@ -65,7 +62,9 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
     def remove(self, directory_object: Union[DirectoryObject, str]) -> Self:
         """Removes directory object from the collection.
-        :param str directory_object: Directory object or identifier
+
+        Args:
+            directory_object (str): Directory object or identifier
         """
 
         def _remove(id_):
@@ -94,20 +93,16 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         mail_nickname: str | None = None,
         on_behalf_of_userid: str | None = None,
     ) -> Self:
-        """
-        Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.
+        """Validate that a Microsoft 365 group's display name or mail nickname complies with naming policies.
         Clients can use this API to determine whether a display name or mail nickname is valid before trying to
         create a Microsoft 365 group. To validate the properties of an existing group, use the group:
         validateProperties function.
 
-        :param str entity_type: Group is the only supported entity type.
-        :param str display_name: The display name of the group to validate. The property is not individually required.
-             However, at least one property (displayName or mailNickname) is required.
-        :param str mail_nickname: The mail nickname of the group to validate.
-             The property is not individually required. However, at least one property (displayName or mailNickname)
-             is required.
-        :param str on_behalf_of_userid: The ID of the user to impersonate when calling the API. The validation results
-            are for the onBehalfOfUserId's attributes and roles.
+        Args:
+            entity_type (str): Group is the only supported entity type.
+            display_name (str): The display name of the group to validate. The property is not individually required. However, at least one property (displayName or mailNickname) is required.
+            mail_nickname (str): The mail nickname of the group to validate. The property is not individually required. However, at least one property (displayName or mailNickname) is required.
+            on_behalf_of_userid (str): The ID of the user to impersonate when calling the API. The validation results are for the onBehalfOfUserId's attributes and roles.
         """
         payload = {
             "entityType": entity_type,

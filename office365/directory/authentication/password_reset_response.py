@@ -9,7 +9,8 @@ from office365.runtime.client_value import ClientValue
 class PasswordResetResponse(ClientValue):
     """Represents the new system-generated password after a password reset operation.
 
-    :param str new_password: The Azure AD-generated password.
+    Args:
+        new_password (str): The Azure AD-generated password.
     """
 
     newPassword: str | None = None

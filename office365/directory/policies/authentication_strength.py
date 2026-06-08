@@ -38,13 +38,12 @@ class AuthenticationStrengthPolicy(Entity):
     def update_allowed_combinations(
         self, allowed_combinations: List[str] | None = None
     ) -> ClientResult[UpdateAllowedCombinationsResult]:
-        """
-        Update the allowedCombinations property of an authenticationStrengthPolicy object.
+        """Update the allowedCombinations property of an authenticationStrengthPolicy object.
         To update other properties of an authenticationStrengthPolicy object,
         use the Update authenticationStrengthPolicy method.
 
-        :param list[str] allowed_combinations: The authentication method combinations allowed by this authentication
-             strength policy.
+        Args:
+            allowed_combinations (list[str]): The authentication method combinations allowed by this authentication strength policy.
         """
         return_type = ClientResult(self.context, UpdateAllowedCombinationsResult())
         payload = {"allowedCombinations": allowed_combinations}

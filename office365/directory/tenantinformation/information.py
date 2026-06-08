@@ -9,10 +9,11 @@ from office365.runtime.client_value import ClientValue
 class TenantInformation(ClientValue):
     """Information about your Azure AD tenant that is publicly displayed to users in other Azure AD tenants.
 
-    :param str default_domain_name: Primary domain name of an Azure AD tenant.
-    :param str display_name: Display name of an Azure AD tenant.
-    :param str federation_brand_name: Name shown to users that sign in to an Azure AD tenant.
-    :param str tenant_id: Unique identifier of an Azure AD tenant.
+    Args:
+        default_domain_name (str): Primary domain name of an Azure AD tenant.
+        display_name (str): Display name of an Azure AD tenant.
+        federation_brand_name (str): Name shown to users that sign in to an Azure AD tenant.
+        tenant_id (str): Unique identifier of an Azure AD tenant.
     """
 
     defaultDomainName: str | None = None

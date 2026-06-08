@@ -13,9 +13,10 @@ class UserCollection(CountCollection[User]):
         super().__init__(context, User, resource_path)
 
     def get_by_principal_name(self, name: str) -> User:
-        """
-        Retrieves User by principal name
-        :param str name: User principal name
+        """Retrieves User by principal name
+
+        Args:
+            name (str): User principal name
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
@@ -26,7 +27,8 @@ class UserCollection(CountCollection[User]):
     def add(self, user_properties: UserProfile) -> User:
         """Create a new user.
 
-        :type user_properties: office365.directory.users.profile.UserProfile
+        Args:
+            user_properties (office365.directory.users.profile.UserProfile):
         """
         return_type = User(self.context)
         qry = CreateEntityQuery(self, user_properties, return_type)

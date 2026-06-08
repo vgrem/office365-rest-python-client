@@ -9,9 +9,10 @@ from office365.runtime.client_value import ClientValue
 class ResourceReference(ClientValue):
     """Complex type containing properties of officeGraphInsights.
 
-    :param str _id: The item's unique identifier.
-    :param str _type:A string value that can be used to classify the item, such as "microsoft.graph.driveItem"
-    :param str web_url: A URL leading to the referenced item.
+    Args:
+        _id (str): The item's unique identifier.
+        _type (str): A string value that can be used to classify the item, such as "microsoft.graph.driveItem"
+        web_url (str): A URL leading to the referenced item.
     """
 
     id: str | None = None
