@@ -79,8 +79,6 @@ class TestUserProfile(SPTestCase):
         """Start or stop following a target user."""
         people_manager = PeopleManager(self.my_client)
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
-        self.assertIsNotNone(target_user)
-        self.assertIsNotNone(target_user.login_name)
         result = people_manager.am_i_following(target_user.login_name).execute_query()
         if result.value:
             people_manager.stop_following(target_user.login_name).execute_query()

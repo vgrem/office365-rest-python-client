@@ -19215,6 +19215,15 @@ within the time frame of their original request."/>
             <Member Name="disabled" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
          </EnumType>
+         <EnumType Name="rootDomains">
+            <Member Name="none" Value="0"/>
+            <Member Name="all" Value="1"/>
+            <Member Name="allFederated" Value="2"/>
+            <Member Name="allManaged" Value="3"/>
+            <Member Name="enumerated" Value="4"/>
+            <Member Name="allManagedAndEnumeratedFederated" Value="5"/>
+            <Member Name="unknownFutureValue" Value="6"/>
+         </EnumType>
          <EnumType Name="scopeCollectionKind">
             <Member Name="allAllowed" Value="0"/>
             <Member Name="enumerated" Value="1"/>
@@ -19492,6 +19501,19 @@ within the time frame of their original request."/>
             <Member Name="invalidBillingProfile" Value="1"/>
             <Member Name="userRequested" Value="2"/>
             <Member Name="unknownFutureValue" Value="3"/>
+         </EnumType>
+         <EnumType Name="notificationEventsType" IsFlags="true">
+            <Member Name="none" Value="1"/>
+            <Member Name="restoreAndPolicyUpdates" Value="2"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="notificationRecipientsType" IsFlags="true">
+            <Member Name="none" Value="0"/>
+            <Member Name="globalAdmins" Value="1"/>
+            <Member Name="backupAdmins" Value="2"/>
+            <Member Name="custom" Value="4"/>
+            <Member Name="allAdmins" Value="8"/>
+            <Member Name="unknownFutureValue" Value="16"/>
          </EnumType>
          <EnumType Name="protectionPolicyStatus">
             <Member Name="inactive" Value="0"/>
@@ -26379,6 +26401,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="claimsMappingPolicies" Type="Collection(graph.claimsMappingPolicy)" ContainsTarget="true"/>
             <NavigationProperty Name="crossTenantAccessPolicy" Type="graph.crossTenantAccessPolicy" ContainsTarget="true"/>
             <NavigationProperty Name="defaultAppManagementPolicy" Type="graph.tenantAppManagementPolicy" ContainsTarget="true"/>
+            <NavigationProperty Name="federatedTokenValidationPolicy" Type="graph.federatedTokenValidationPolicy" ContainsTarget="true"/>
             <NavigationProperty Name="homeRealmDiscoveryPolicies" Type="Collection(graph.homeRealmDiscoveryPolicy)" ContainsTarget="true"/>
             <NavigationProperty Name="permissionGrantPolicies" Type="Collection(graph.permissionGrantPolicy)" ContainsTarget="true"/>
             <NavigationProperty Name="tokenIssuancePolicies" Type="Collection(graph.tokenIssuancePolicy)" ContainsTarget="true"/>
@@ -26426,6 +26449,9 @@ within the time frame of their original request."/>
             <Property Name="applicationRestrictions" Type="graph.appManagementApplicationConfiguration"/>
             <Property Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="servicePrincipalRestrictions" Type="graph.appManagementServicePrincipalConfiguration"/>
+         </EntityType>
+         <EntityType Name="federatedTokenValidationPolicy" BaseType="graph.directoryObject">
+            <Property Name="validatingDomains" Type="graph.validatingDomains" Nullable="false"/>
          </EntityType>
          <EntityType Name="permissionGrantPolicy" BaseType="graph.policyBase">
             <NavigationProperty Name="excludes" Type="Collection(graph.permissionGrantConditionSet)" ContainsTarget="true"/>
@@ -26788,6 +26814,7 @@ within the time frame of their original request."/>
             <NavigationProperty Name="driveInclusionRules" Type="Collection(graph.driveProtectionRule)" ContainsTarget="true"/>
             <NavigationProperty Name="driveProtectionUnits" Type="Collection(graph.driveProtectionUnit)" ContainsTarget="true"/>
             <NavigationProperty Name="driveProtectionUnitsBulkAdditionJobs" Type="Collection(graph.driveProtectionUnitsBulkAdditionJob)" ContainsTarget="true"/>
+            <NavigationProperty Name="emailNotificationsSetting" Type="graph.emailNotificationsSetting" ContainsTarget="true"/>
             <NavigationProperty Name="exchangeProtectionPolicies" Type="Collection(graph.exchangeProtectionPolicy)" ContainsTarget="true"/>
             <NavigationProperty Name="exchangeRestoreSessions" Type="Collection(graph.exchangeRestoreSession)" ContainsTarget="true"/>
             <NavigationProperty Name="mailboxInclusionRules" Type="Collection(graph.mailboxProtectionRule)" ContainsTarget="true"/>
@@ -28790,6 +28817,10 @@ within the time frame of their original request."/>
             <Property Name="kind" Type="graph.scopeCollectionKind" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="allAllowedScopes" BaseType="graph.inheritableScopes"/>
+         <ComplexType Name="validatingDomains" Abstract="true">
+            <Property Name="rootDomains" Type="graph.rootDomains" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="allDomains" BaseType="graph.validatingDomains"/>
          <ComplexType Name="alternativeSecurityId">
             <Property Name="identityProvider" Type="Edm.String"/>
             <Property Name="key" Type="Edm.Binary"/>
@@ -28909,6 +28940,9 @@ within the time frame of their original request."/>
             <Property Name="lastActionDateTime" Type="Edm.DateTimeOffset"/>
             <Property Name="operation" Type="Edm.String"/>
             <Property Name="status" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="enumeratedDomains" BaseType="graph.validatingDomains">
+            <Property Name="domainNames" Type="Collection(Edm.String)" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="enumeratedScopes" BaseType="graph.inheritableScopes">
             <Property Name="scopes" Type="Collection(Edm.String)" Nullable="false"/>
@@ -30263,6 +30297,13 @@ within the time frame of their original request."/>
             <Property Name="type" Type="graph.browseQueryResponseItemType" Nullable="false"/>
             <Property Name="webUrl" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="notificationRecipients">
+            <Property Name="customRecipients" Type="Collection(graph.emailIdentity)" Nullable="false"/>
+            <Property Name="role" Type="graph.notificationRecipientsType" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="emailIdentity" BaseType="graph.identity" OpenType="true">
+            <Property Name="email" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="protectionPolicyArtifactCount">
             <Property Name="completed" Type="Edm.Int32"/>
             <Property Name="failed" Type="Edm.Int32"/>
@@ -30356,6 +30397,11 @@ within the time frame of their original request."/>
          <EntityType Name="driveProtectionUnitsBulkAdditionJob" BaseType="graph.protectionUnitsBulkJobBase">
             <Property Name="directoryObjectIds" Type="Collection(Edm.String)"/>
             <Property Name="drives" Type="Collection(Edm.String)"/>
+         </EntityType>
+         <EntityType Name="emailNotificationsSetting" BaseType="graph.entity">
+            <Property Name="additionalEvents" Type="graph.notificationEventsType" Nullable="false"/>
+            <Property Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="recipients" Type="graph.notificationRecipients" Nullable="false"/>
          </EntityType>
          <EntityType Name="protectionPolicyBase" BaseType="graph.entity" Abstract="true">
             <Property Name="createdBy" Type="graph.identitySet"/>
@@ -36910,9 +36956,6 @@ within the time frame of their original request."/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="durationInMinutes" Type="Edm.Int32"/>
             <Property Name="url" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="emailIdentity" BaseType="graph.identity" OpenType="true">
-            <Property Name="email" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="payloadDetail" Abstract="true">
             <Property Name="coachmarks" Type="Collection(graph.payloadCoachmark)"/>

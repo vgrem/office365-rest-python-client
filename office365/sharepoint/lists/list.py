@@ -85,7 +85,7 @@ class List(SecurableObject):
     """
 
     def __repr__(self):
-        return self.id or self.title or self.entity_type_name
+        return self.title or self.entity_type_name
 
     def export(
         self,
@@ -168,7 +168,7 @@ class List(SecurableObject):
 
     def get_async_action_config(self) -> ClientResult[Dict]:
         """ """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[dict](self.context)
         qry = ServiceOperationQuery(self, "GetAsyncActionConfig", return_type=return_type)
         self.context.add_query(qry)
         return return_type
@@ -1263,6 +1263,7 @@ class List(SecurableObject):
         """Gets a value that specifies the number of list items in the list"""
         return self.properties.get("ItemCount", None)
 
+    @odata(name="LastItemDeletedDate")
     @property
     def last_item_deleted_date(self) -> datetime:
         """
@@ -1271,6 +1272,7 @@ class List(SecurableObject):
         """
         return self.properties.get("LastItemDeletedDate", datetime.min)
 
+    @odata(name="LastItemModifiedDate")
     @property
     def last_item_modified_date(self) -> datetime:
         """
@@ -1279,6 +1281,7 @@ class List(SecurableObject):
         """
         return self.properties.get("LastItemModifiedDate", datetime.min)
 
+    @odata(name="LastItemUserModifiedDate")
     @property
     def last_item_user_modified_date(self) -> datetime:
         """

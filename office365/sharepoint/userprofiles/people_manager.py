@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, List, Optional, Union
 
 from typing_extensions import Self
@@ -55,18 +57,27 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def am_i_following(self, account_name: str) -> ClientResult[bool]:
+    def am_i_following(self, account: User | str) -> ClientResult[bool]:
         """
         Checks whether the current user is following the specified user.
 
-        :param str account_name: Account name of the specified user.
+        :param str account: Login name or User object.
         :return:
         """
-        result = ClientResult(self.context, bool())
-        params = {"accountName": account_name}
-        qry = ServiceOperationQuery(self, "AmIFollowing", params, None, None, result)
-        self.context.add_query(qry)
-        return result
+        return_type = ClientResult(self.context, bool())
+
+        def _am_i_following(account_name: str | None):
+            assert account_name is not None
+            params = {"accountName": account_name}
+            qry = ServiceOperationQuery(self, "AmIFollowing", params, None, None, return_type)
+            self.context.add_query(qry)
+
+        if isinstance(account, User):
+            account.ensure_properties(["Id", "LoginName"]).after_execute(lambda u: _am_i_following(u.login_name))
+        else:
+            _am_i_following(account)
+
+        return return_type
 
     def get_followers_for(self, account: Union[str, User]) -> EntityCollection[PersonProperties]:
         """
@@ -183,7 +194,7 @@ class PeopleManager(Entity):
             get created.
         :param int site_creation_priority: The priority for site creation. Type: PersonalSiteCreationPriority
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
 
         def _get_default_document_library(account_name: str) -> None:
             params = {

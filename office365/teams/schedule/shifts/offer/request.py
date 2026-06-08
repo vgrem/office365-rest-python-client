@@ -1,12 +1,14 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_request import ScheduleChangeRequest
 
 
 class OfferShiftRequest(ScheduleChangeRequest):
     """Represents a request to offer a shift to another user in the team."""
 
+    @odata(name="recipientActionDateTime")
     @property
     def recipient_action_datetime(self):
         """
@@ -34,11 +36,3 @@ class OfferShiftRequest(ScheduleChangeRequest):
         User ID of the sender of the offer shift request.
         """
         return self.properties.get("senderShiftId", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "recipientActionDateTime": self.recipient_action_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

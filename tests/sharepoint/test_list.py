@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.currency import CurrencyList
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
@@ -20,13 +19,13 @@ class TestSPList(SPTestCase):
 
     def test_01_create_list(self):
         """Create a SharePoint list"""
-        list_properties = ListCreationInformation()
-        list_properties.AllowContentTypes = True
-        list_properties.BaseTemplate = ListTemplateType.TasksWithTimelineAndHierarchy
-        list_properties.Title = self.target_list_title
-        list_to_create = self.client.web.lists.add(list_properties).execute_query()
-        self.assertEqual(list_properties.Title, list_to_create.title)
-        TestSPList.target_list = list_to_create
+        result = self.client.web.lists.add_list(
+            title=self.target_list_title,
+            allow_content_types=True,
+            template_type=ListTemplateType.TasksWithTimelineAndHierarchy,
+        ).execute_query()
+        self.assertEqual(result.title, self.target_list_title)
+        TestSPList.target_list = result
 
     def test_02_read_list_by_title(self):
         """Read list by title"""

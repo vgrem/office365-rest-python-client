@@ -25,12 +25,13 @@ from office365.directory.security.labels.retention.duration_in_days import (
 )
 from office365.directory.security.labels.retention.trigger import RetentionTrigger
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests import test_admin_principal_name, test_client_id, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
+
 
 label = client.security.labels.retention_labels.add(
-    "Retain 1 Year — Delete",  # display_name
+    "Retain 1 Year — Delete v2",  # display_name
     RetentionTrigger.dateLabeled,  # retention_trigger
     RetentionDurationInDays(365),  # retention_duration
     BehaviorDuringRetentionPeriod.retainAsRecord,  # behavior_during_retention
@@ -40,5 +41,11 @@ label = client.security.labels.retention_labels.add(
 
 print(f"Label created: {label.display_name}")
 print(f"  Trigger: {label.retention_trigger}")
-print(f"  Action: {label.action_after_retention}")
-print(f"  Retention days: {label.retention_duration_days}")
+print(f"  Action: {label.action_after_retention_period}")
+print(f"  Default behavior: {label.default_record_behavior}")
+print(f"  Created: {label.created_date_time}")
+print(f"  In use: {label.is_in_use}")
+
+print(f"\nRetention duration: {label.retention_duration}")
+if hasattr(label, "retention_duration") and hasattr(label.retention_duration, "days"):
+    print(f"  Days: {label.retention_duration.days}")

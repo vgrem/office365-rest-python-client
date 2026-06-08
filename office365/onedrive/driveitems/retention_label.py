@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.onedrive.driveitems.retention_label_settings import (
     RetentionLabelSettings,
 )
+from office365.runtime.types.odata_property import odata
 
 
 class ItemRetentionLabel(Entity):
@@ -26,6 +27,7 @@ class ItemRetentionLabel(Entity):
         """Identity of the user who applied the label. Read-only."""
         return self.properties.get("labelAppliedBy", IdentitySet())
 
+    @odata(name="labelAppliedDateTime")
     @property
     def label_applied_datetime(self) -> Optional[datetime]:
         """The date and time when the label was applied on the item.
@@ -43,16 +45,8 @@ class ItemRetentionLabel(Entity):
         """Sets the retention label on the document"""
         self.set_property("name", value)
 
+    @odata(name="retentionSettings")
     @property
     def retention_settings(self) -> RetentionLabelSettings:
         """The retention settings enforced on the item. Read-write."""
         return self.properties.get("retentionSettings", RetentionLabelSettings())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "labelAppliedBy": self.label_applied_by,
-                "retentionSettings": self.retention_settings,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

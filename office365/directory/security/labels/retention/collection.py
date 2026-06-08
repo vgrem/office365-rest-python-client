@@ -1,3 +1,5 @@
+from typing import Optional
+
 from office365.directory.security.labels.retention.actionafterretentionperiod import (
     ActionAfterRetentionPeriod,
 )
@@ -12,6 +14,8 @@ from office365.directory.security.labels.retention.label import RetentionLabel
 from office365.directory.security.labels.retention.trigger import RetentionTrigger
 from office365.entity_collection import EntityCollection
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.paths.v4.entity import EntityPath
+from office365.runtime.queries.create_entity import CreateEntityQuery
 
 
 class RetentionLabelCollection(EntityCollection[RetentionLabel]):
@@ -28,6 +32,9 @@ class RetentionLabelCollection(EntityCollection[RetentionLabel]):
         behavior_during_retention_period: BehaviorDuringRetentionPeriod,
         default_record_behavior: DefaultRecordBehavior,
         action_after_retention_period: ActionAfterRetentionPeriod,
+        description_for_admins: Optional[str] = None,
+        description_for_users: Optional[str] = None,
+        label_to_be_applied: Optional[str] = None,
     ):
         """
         Create a new retentionLabel object.
@@ -39,15 +46,23 @@ class RetentionLabelCollection(EntityCollection[RetentionLabel]):
         def _construct_request(request: RequestOptions) -> None:
             request.set_header("Content-Type", "application/json")
 
-        return (
-            super()
-            .add(
-                displayName=display_name,
-                retentionTrigger=retention_trigger.name,
-                retentionDuration=retention_duration,
-                behaviorDuringRetentionPeriod=behavior_during_retention_period.name,
-                defaultRecordBehavior=default_record_behavior.name,
-                actionAfterRetentionPeriod=action_after_retention_period.name,
-            )
-            .before_execute(_construct_request)
+        payload = dict(
+            displayName=display_name,
+            retentionTrigger=retention_trigger.name,
+            retentionDuration=retention_duration,
+            behaviorDuringRetentionPeriod=behavior_during_retention_period.name,
+            defaultRecordBehavior=default_record_behavior.name,
+            actionAfterRetentionPeriod=action_after_retention_period.name,
         )
+        if description_for_admins is not None:
+            payload["descriptionForAdmins"] = description_for_admins
+        if description_for_users is not None:
+            payload["descriptionForUsers"] = description_for_users
+        if label_to_be_applied is not None:
+            payload["labelToBeApplied"] = label_to_be_applied
+
+        return_type = RetentionLabel(self.context, EntityPath(None, self.resource_path))
+        self.add_child(return_type)
+        qry = CreateEntityQuery(self, payload, return_type)
+        self.context.add_query(qry)
+        return return_type
