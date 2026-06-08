@@ -27,20 +27,18 @@ class EventCollection(DeltaCollection[Event]):
         attendees: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Event:
-        """
-        Create an event in the user's default calendar or specified calendar.
+        """Create an event in the user's default calendar or specified calendar.
 
         By default, the allowNewTimeProposals property is set to true when an event is created,
         which means invitees can propose a different date/time for the event. See Propose new meeting times
         for more information on how to propose a time, and how to receive and accept a new time proposal.
 
-        :param str subject: The subject of the message.
-        :param str or ItemBody body: The body of the message. It can be in HTML or text format
-        :param datetime.datetime start: The start date, time, and time zone of the event.
-             By default, the start time is in UTC.
-        :param datetime.datetime end: The date, time, and time zone that the event ends.
-            By default, the end time is in UTC.
-        :param list[str] attendees: The collection of attendees for the event.
+        Args:
+            subject (str): The subject of the message.
+            body (str or ItemBody): The body of the message. It can be in HTML or text format
+            start (datetime.datetime): The start date, time, and time zone of the event. By default, the start time is in UTC.
+            end (datetime.datetime): The date, time, and time zone that the event ends. By default, the end time is in UTC.
+            attendees (list[str]): The collection of attendees for the event.
         """
 
         if body is not None:

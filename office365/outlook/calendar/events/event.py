@@ -33,11 +33,11 @@ class Event(OutlookItem):
 
     @require_permission(delegated=["Calendars.ReadWrite"])
     def accept(self, send_response, comment=None):
-        """
-        Accept the specified event in a user calendar.
+        """Accept the specified event in a user calendar.
 
-        :param bool send_response: true if a response is to be sent to the organizer; otherwise, false.
-        :param str comment: Text included in the response.
+        Args:
+            send_response (bool): true if a response is to be sent to the organizer; otherwise, false.
+            comment (str): Text included in the response.
         """
         payload = {"SendResponse": send_response, "Comment": comment}
         qry = ServiceOperationQuery(self, "accept", None, payload)
@@ -46,15 +46,15 @@ class Event(OutlookItem):
 
     @require_permission(delegated=["Calendars.ReadWrite"])
     def cancel(self, comment=None):
-        """
-        This action allows the organizer of a meeting to send a cancellation message and cancel the event.
+        """This action allows the organizer of a meeting to send a cancellation message and cancel the event.
 
         The action moves the event to the Deleted Items folder. The organizer can also cancel an occurrence
         of a recurring meeting by providing the occurrence event ID.
         An attendees calling this action gets an error (HTTP 400 Bad Request), with the following error message:
-            Your request can't be completed. You need to be an organizer to cancel a meeting.
+        Your request can't be completed. You need to be an organizer to cancel a meeting.
 
-        :param str comment: Text included in the response.
+        Args:
+            comment (str): Text included in the response.
         """
         payload = {"Comment": comment}
         qry = ServiceOperationQuery(self, "cancel", None, payload)
@@ -63,18 +63,16 @@ class Event(OutlookItem):
 
     @require_permission(delegated=["Calendars.ReadWrite"])
     def decline(self, proposed_new_time=None, send_response=True, comment=None):
-        """
-        Decline invitation to the specified event in a user calendar.
+        """Decline invitation to the specified event in a user calendar.
 
         If the event allows proposals for new times, on declining the event, an invitee can choose to suggest
         an alternative time by including the proposedNewTime parameter. For more information on how to propose a time,
         and how to receive and accept a new time proposal, see Propose new meeting times.
 
-        :param office365.outlook.calendar.time_slot.TimeSlot proposed_new_time: An alternate date/time proposed by an
-            invitee for a meeting request to start and end. Valid only for events that allow new time proposals.
-            Setting this parameter requires setting sendResponse to true. Optional.
-        :param bool send_response: true if a response is to be sent to the organizer; otherwise, false.
-        :param str comment: Text included in the response.
+        Args:
+            proposed_new_time (office365.outlook.calendar.time_slot.TimeSlot): An alternate date/time proposed by an invitee for a meeting request to start and end. Valid only for events that allow new time proposals. Setting this parameter requires setting sendResponse to true. Optional.
+            send_response (bool): true if a response is to be sent to the organizer; otherwise, false.
+            comment (str): Text included in the response.
         """
         payload = {"ProposedNewTime": proposed_new_time, "SendResponse": send_response, "Comment": comment}
         qry = ServiceOperationQuery(self, "decline", None, payload)
@@ -190,10 +188,10 @@ class Event(OutlookItem):
 
     @start.setter
     def start(self, value):
-        """
-        Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
+        """Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
 
-        :type value: datetime.datetime
+        Args:
+            value (datetime.datetime):
         """
         self.set_property("start", DateTimeTimeZone.parse(value))
 
@@ -204,10 +202,10 @@ class Event(OutlookItem):
 
     @end.setter
     def end(self, value):
-        """
-        Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
+        """Sets the date, time, and time zone that the event starts. By default, the start time is in UTC.
 
-        :type value: datetime.datetime
+        Args:
+            value (datetime.datetime):
         """
         self.set_property("end", DateTimeTimeZone.parse(value))
 
