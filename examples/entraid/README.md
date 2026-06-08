@@ -71,6 +71,9 @@ tenant-level policies, and audit logs.
 | Get user's group memberships | [`users/get_group_memberships.py`](./users/get_group_memberships.py) | `User.Read.All` | [memberOf](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | Invite a guest (B2B) user | [`users/invite_guest.py`](./users/invite_guest.py) | `User.Invite.All` | [invitation](https://learn.microsoft.com/en-us/graph/api/invitation-post) |
 | User report — sign-in activity, inactive, no MFA | [`users/report.py`](./users/report.py) | `User.Read.All`, `AuditLog.Read.All` | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
+| MFA status report — users without strong auth registered | [`users/mfa_status_report.py`](./users/mfa_status_report.py) | `UserAuthenticationMethod.Read.All` | [auth methods](https://learn.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview) |
+| Last sign-in report — users without recent sign-in | [`users/last_signin_report.py`](./users/last_signin_report.py) | `User.Read.All`, `AuditLog.Read.All` | [signInActivity](https://learn.microsoft.com/en-us/graph/api/resources/signinactivity) |
+| Find inactive guest accounts | [`users/find_inactive_guests.py`](./users/find_inactive_guests.py) | `User.Read.All`, `AuditLog.Read.All` | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
 
 ## Examples — Groups
 
@@ -85,6 +88,7 @@ tenant-level policies, and audit logs.
 | Delete groups by name | [`groups/delete_groups.py`](./groups/delete_groups.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
 | Delete groups in batch | [`groups/delete_batch.py`](./groups/delete_batch.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
 | Group lifecycle — owners, members, orphans | [`groups/manage.py`](./groups/manage.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
+| Find orphaned groups — no owners or members | [`groups/find_orphans.py`](./groups/find_orphans.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
 
 ## Examples — Applications
 
@@ -104,6 +108,7 @@ tenant-level policies, and audit logs.
 | Revoke application permissions | [`applications/revoke_application_perms.py`](./applications/revoke_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-approleassignments) |
 | Revoke delegated permissions | [`applications/revoke_delegated_perms.py`](./applications/revoke_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-delegatedpermissions) |
 | Service principal report — apps, perms, expiring secrets | [`applications/sp_report.py`](./applications/sp_report.py) | `Application.Read.All` | [SP list](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list) |
+| App secret expiry report — certs/passwords expiring soon | [`applications/secret_expiry.py`](./applications/secret_expiry.py) | `Application.Read.All` | [app credentials](https://learn.microsoft.com/en-us/graph/api/resources/application) |
 
 ## Examples — Roles & Identity
 
