@@ -35,14 +35,13 @@ class AttachmentCollection(EntityCollection[Attachment]):
         content_type: str | None = None,
         base64_content: bytes | None = None,
     ):
-        """
-        Attach a file to message
+        """Attach a file to message
 
-        :param str name: The name representing the text that is displayed below the icon representing the
-             embedded attachment
-        :param str or None content: The contents of the file
-        :param str or None content_type: The content type of the attachment.
-        :param str or None base64_content: The contents of the file in the form of a base64 string.
+        Args:
+            name (str): The name representing the text that is displayed below the icon representing the embedded attachment
+            content (str or None): The contents of the file
+            content_type (str or None): The content type of the attachment.
+            base64_content (str or None): The contents of the file in the form of a base64 string.
         """
         if not content and not base64_content:
             raise TypeError("Either content or base64_content is required")
@@ -68,14 +67,14 @@ class AttachmentCollection(EntityCollection[Attachment]):
         chunk_size: int = 1000000,
         chunk_uploaded: Callable[[int], None] | None = None,
     ):
-        """
-        Create an upload session to allow your app to upload files up to the maximum file size.
+        """Create an upload session to allow your app to upload files up to the maximum file size.
         An upload session allows your app to upload ranges of the file in sequential API requests,
         which allows the transfer to be resumed if a connection is dropped while the upload is in progress.
 
-        :param str source_path: Local file path
-        :param int chunk_size: File chunk size
-        :param (int)->None chunk_uploaded: Upload action
+        Args:
+            source_path (str): Local file path
+            chunk_size (int): File chunk size
+            chunk_uploaded ((int)->None): Upload action
         """
         from office365.outlook.mail.attachments.attachment_item import AttachmentItem
         from office365.outlook.mail.attachments.file import FileAttachment
@@ -113,11 +112,11 @@ class AttachmentCollection(EntityCollection[Attachment]):
         notes="Create an upload session for attaching a large file",
     )
     def create_upload_session(self, attachment_item: AttachmentItem) -> ClientResult[UploadSession]:
-        """
-        Create an upload session that allows an app to iteratively upload ranges of a file,
-             so as to attach the file to the specified Outlook item. The item can be a message or event.
+        """Create an upload session that allows an app to iteratively upload ranges of a file,
+        so as to attach the file to the specified Outlook item. The item can be a message or event.
 
-        :type attachment_item: office365.mail.attachment_item.AttachmentItem
+        Args:
+            attachment_item (office365.mail.attachment_item.AttachmentItem):
         """
         qry = UploadSessionQuery(self, {"AttachmentItem": attachment_item})
         self.context.add_query(qry)
