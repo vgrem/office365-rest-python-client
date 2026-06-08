@@ -42,10 +42,7 @@ def find_inactive_channels(days_threshold: int = 90) -> list[dict]:
         team_id = team.id
         team_name = getattr(team, "display_name", "Unnamed")
 
-        try:
-            channels = client.teams[team_id].channels.get().execute_query()
-        except Exception:
-            continue
+        channels = team.channels.get().execute_query()
 
         for channel in channels:
             channel_id = channel.id

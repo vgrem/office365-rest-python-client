@@ -186,7 +186,7 @@ class Message(OutlookItem):
         from office365.outlook.mail.folders.folder import MailFolder
 
         def _copy(destination_id: str | None) -> None:
-            assert destination.id is not None
+            assert destination_id is not None
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "copy", None, payload, None, None)
             self.context.add_query(qry)
@@ -209,7 +209,7 @@ class Message(OutlookItem):
         from office365.outlook.mail.folders.folder import MailFolder
 
         def _move(destination_id: str | None) -> None:
-            assert destination.id is not None
+            assert destination_id is not None
             payload = {"DestinationId": destination_id}
             qry = ServiceOperationQuery(self, "move", None, payload, None, None)
             self.context.add_query(qry)

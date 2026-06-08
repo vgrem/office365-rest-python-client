@@ -67,9 +67,7 @@ class Principal(Entity):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        # fallback: create a new resource path
         if self._resource_path is None:
-            if name == "LoginName":
+            if name == "LoginName" and self.parent_collection is not None:
                 self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)
-                # type: ignore[arg-type]
         return self

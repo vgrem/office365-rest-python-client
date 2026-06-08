@@ -115,7 +115,8 @@ class GroupSiteManager(ClientObject):
 
         return_type = ClientResult(self.context, GroupSiteInfo())
 
-        def _get_status(group_id: str):
+        def _get_status(group_id: str | None):
+            assert group_id is not None
             qry = ServiceOperationQuery(self, "GetSiteStatus", None, {"groupId": group_id}, None, return_type)
 
             def _construct_request(request: RequestOptions) -> None:
@@ -126,7 +127,6 @@ class GroupSiteManager(ClientObject):
 
         if isinstance(group, Site):
             group.ensure_property("GroupId").after_execute(lambda _: _get_status(group.group_id))
-            # type: ignore[arg-type]
         else:
             _get_status(group)
 
