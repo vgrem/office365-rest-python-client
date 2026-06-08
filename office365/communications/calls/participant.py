@@ -21,8 +21,9 @@ class Participant(Entity):
     def invite(self, participants: List[InvitationParticipantInfo], client_context: str) -> InviteParticipantsOperation:
         """Invite participants to the active call.
 
-        :param list[InvitationParticipantInfo] participants: Unique Client Context string. Max limit is 256 chars.
-        :param str client_context: Unique Client Context string. Max limit is 256 chars.
+        Args:
+            participants (list[InvitationParticipantInfo]): Unique Client Context string. Max limit is 256 chars.
+            client_context (str): Unique Client Context string. Max limit is 256 chars.
         """
         return_type = InviteParticipantsOperation(self.context)
         payload = {
@@ -36,11 +37,11 @@ class Participant(Entity):
     def start_hold_music(
         self, custom_prompt: Optional[str] = None, client_context: Optional[str] = None
     ) -> StartHoldMusicOperation:
-        """
-        Put a participant on hold and play music in the background.
+        """Put a participant on hold and play music in the background.
 
-        :param str or None custom_prompt: Audio prompt the participant will hear when placed on hold.
-        :param str or None client_context: Unique client context string. Can have a maximum of 256 characters.
+        Args:
+            custom_prompt (str or None): Audio prompt the participant will hear when placed on hold.
+            client_context (str or None): Unique client context string. Can have a maximum of 256 characters.
         """
         return_type = StartHoldMusicOperation(self.context)
         payload = {"customPrompt": custom_prompt, "clientContext": client_context}
@@ -49,10 +50,10 @@ class Participant(Entity):
         return return_type
 
     def stop_hold_music(self, client_context: Optional[str] = None) -> StopHoldMusicOperation:
-        """
-        Reincorporate a participant previously put on hold to the call.
+        """Reincorporate a participant previously put on hold to the call.
 
-        :param str or None client_context: Unique client context string. Can have a maximum of 256 characters.
+        Args:
+            client_context (str or None): Unique client context string. Can have a maximum of 256 characters.
         """
         return_type = StopHoldMusicOperation(self.context)
         payload = {"clientContext": client_context}
