@@ -1,3 +1,4 @@
+from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.shifts.item import ShiftItem
 
@@ -7,6 +8,7 @@ class Shift(ChangeTrackedEntity):
     Represents a unit of scheduled work in a shifts.
     """
 
+    @odata(name="draftShift")
     @property
     def draft_shift(self) -> ShiftItem:
         """
@@ -14,6 +16,7 @@ class Shift(ChangeTrackedEntity):
         """
         return self.properties.get("draftShift", ShiftItem())
 
+    @odata(name="sharedShift")
     @property
     def shared_shift(self) -> ShiftItem:
         """
@@ -21,11 +24,3 @@ class Shift(ChangeTrackedEntity):
         """
         return self.properties.get("sharedShift", ShiftItem())
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "draftShift": self.draft_shift,
-                "sharedShift": self.shared_shift,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

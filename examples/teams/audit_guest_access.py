@@ -16,27 +16,20 @@ from tests import test_client_id, test_client_secret, test_tenant
 
 client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
-groups = (
-    client.groups.get()
-    .filter("resourceProvisioningOptions/Any(x:x eq 'Team')")
-    .select(["id", "displayName"])
-    .top(999)
-    .execute_query()
-)
+teams = client.teams.get_all().select(["id", "displayName"]).top(999).execute_query()
 
-print(f"Scanning {len(groups)} teams for guest access...\n")
+print(f"Scanning {len(teams)} teams for guest access...\n")
 
 teams_with_guests = []
 
-for group in groups:
-    team = client.teams[group.id].get().execute_query()
+for team in teams:
     members = team.members.get().execute_query()
 
     guests = [m for m in members if "#EXT#" in (m.properties.get("email", "") or "")]
 
     if guests:
-        teams_with_guests.append((group.display_name, guests))
-        print(f"  ⚠ {group.display_name}")
+        teams_with_guests.append((team.display_name, guests))
+        print(f"  ⚠ {team.display_name}")
         for g in guests:
             email = g.properties.get("email", "?")
             roles = g.properties.get("roles", [])
@@ -45,4 +38,4 @@ for group in groups:
 if not teams_with_guests:
     print("  ✅ No guest users found in any team.")
 
-print(f"\nSummary: {len(teams_with_guests)} / {len(groups)} teams have guest access.")
+print(f"\nSummary: {len(teams_with_guests)} / {len(teams)} teams have guest access.")

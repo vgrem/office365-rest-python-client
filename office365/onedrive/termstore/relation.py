@@ -51,6 +51,7 @@ class Relation(Entity):
     @property
     def set_(self) -> Set:
         from office365.onedrive.termstore.sets.set import Set
+
         """Gets the set property"""
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
 

@@ -22,12 +22,7 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 # — Active teams, filtered by archive status —
 
-teams = (
-    client.teams.get_all()
-    .select(["id", "displayName", "deletedDateTime"])
-    .top(999)
-    .execute_query()
-)
+teams = client.teams.get_all().select(["id", "displayName", "deletedDateTime"]).top(999).execute_query()
 
 archived = []
 active = []
@@ -48,21 +43,17 @@ if archived:
 
 # — Recently deleted teams (soft-deleted in directory) —
 
-deleted_groups = (
-    client.directory.deleted_groups.get()
-    .filter("resourceProvisioningOptions/Any(x:x eq 'Team')")
-    .select(["id", "displayName", "deletedDateTime"])
-    .top(999)
-    .execute_query()
+deleted_teams = (
+    client.directory.deleted_teams.get().select(["id", "displayName", "deletedDateTime"]).top(999).execute_query()
 )
 
-print(f"\nRecently deleted (restorable): {len(deleted_groups)}")
+print(f"\nRecently deleted (restorable): {len(deleted_teams)}")
 
-for g in deleted_groups:
+for del_team in deleted_teams:
     label = ""
-    if g.deleted_datetime:
-        deleted_dt = g.deleted_datetime.replace(tzinfo=timezone.utc)
+    if del_team.deleted_datetime:
+        deleted_dt = del_team.deleted_datetime.replace(tzinfo=timezone.utc)
         days_ago = (datetime.now(timezone.utc) - deleted_dt).days
         remaining = max(0, 30 - days_ago)
         label = f" (deleted {days_ago}d ago, {remaining}d to restore)"
-    print(f"  {g.display_name}{label}")
+    print(f"  {del_team.get_property('displayName')}{label}")

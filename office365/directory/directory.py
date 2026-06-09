@@ -104,6 +104,11 @@ class Directory(Entity):
         return self.deleted_items("microsoft.graph.group")
 
     @property
+    def deleted_teams(self):
+        """Recently deleted groups"""
+        return self.deleted_items("microsoft.graph.group").filter("resourceProvisioningOptions/Any(x:x eq 'Team')")
+
+    @property
     def deleted_users(self):
         """Recently deleted users"""
         return self.deleted_items("microsoft.graph.user")

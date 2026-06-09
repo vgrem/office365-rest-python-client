@@ -28,6 +28,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         subject: str,
         start_datetime: datetime | None = None,
         end_datetime: datetime | None = None,
+        **kwargs,
     ):
         """Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
 
@@ -42,6 +43,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "startDateTime": start_datetime,
             "endDateTime": end_datetime,
             "subject": subject,
+            **kwargs,
         }
         qry = CreateEntityQuery(self, payload, return_type)
         self.context.add_query(qry)
