@@ -22,9 +22,9 @@ class AuthenticationContext:
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
         """Args:
-            tenant (str): Tenant name, for example: contoso.onmicrosoft.com
-            scopes (list[str] or None): Scopes requested to access an API
-            token_cache (Any): Default cache is in memory only, Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
+        tenant (str): Tenant name, for example: contoso.onmicrosoft.com
+        scopes (list[str] or None): Scopes requested to access an API
+        token_cache (Any): Default cache is in memory only, Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
         """
         self._tenant = tenant
         if scopes is None:

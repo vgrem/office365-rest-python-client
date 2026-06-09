@@ -14,7 +14,6 @@ Requires delegated permission ``Tasks.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/resources/todo-overview
 """
 
-import sys
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient

@@ -31,9 +31,7 @@ def query_group_membership_changes(days_back: int = 30) -> list[dict]:
     Returns:
         List of change event dicts.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     end = datetime.now(timezone.utc)
     start = end - timedelta(days=days_back)
@@ -41,13 +39,21 @@ def query_group_membership_changes(days_back: int = 30) -> list[dict]:
     changes = []
 
     try:
-        audit_logs = client.audit_logs.directory_audits.filter(
-            f"activityDateTime ge {start.strftime('%Y-%m-%dT%H:%M:%SZ')} and "
-            f"activityDateTime le {end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-        ).get().execute_query()
+        audit_logs = (
+            client.audit_logs.directory_audits.filter(
+                f"activityDateTime ge {start.strftime('%Y-%m-%dT%H:%M:%SZ')} and "
+                f"activityDateTime le {end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
+            .get()
+            .execute_query()
+        )
 
-        target_activities = {"Add member to group", "Remove member from group",
-                             "Add member to role", "Remove member from role"}
+        target_activities = {
+            "Add member to group",
+            "Remove member from group",
+            "Add member to role",
+            "Remove member from role",
+        }
 
         for log in audit_logs:
             activity = getattr(log, "activity_display_name", "")
@@ -68,14 +74,18 @@ def query_group_membership_changes(days_back: int = 30) -> list[dict]:
                     member_name = getattr(t, "display_name", "Unknown")
                     member_upn = getattr(t, "user_principal_name", "")
 
-            changes.append({
-                "timestamp": getattr(log, "activity_date_time", None),
-                "activity": activity,
-                "group": group_name,
-                "member": member_name,
-                "member_upn": member_upn,
-                "initiated_by": getattr(log, "initiated_by", {}).get("user", {}).get("user_principal_name", "Unknown"),
-            })
+            changes.append(
+                {
+                    "timestamp": getattr(log, "activity_date_time", None),
+                    "activity": activity,
+                    "group": group_name,
+                    "member": member_name,
+                    "member_upn": member_upn,
+                    "initiated_by": getattr(log, "initiated_by", {})
+                    .get("user", {})
+                    .get("user_principal_name", "Unknown"),
+                }
+            )
     except Exception as e:
         print(f"  Warning: could not query audit logs: {e}")
 

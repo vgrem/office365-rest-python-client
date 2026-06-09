@@ -23,9 +23,7 @@ def walk_folders(client: GraphClient, parent_path="inbox", indent=0):
 
     prefix = "  " * indent
     print(
-        f"{prefix}{parent.display_name}  "
-        f"({parent.total_item_count or 0} items, "
-        f"{parent.unread_item_count or 0} unread)"
+        f"{prefix}{parent.display_name}  ({parent.total_item_count or 0} items, {parent.unread_item_count or 0} unread)"
     )
 
     if parent.child_folders:

@@ -14,8 +14,6 @@ Requires delegated permission ``Sites.FullControl.All``.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/SetSiteProperties
 """
 
-import sys
-
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
@@ -80,19 +78,19 @@ def main():
         target = near_limit[0]
         print(f"Updating quota for: {target['title']}")
         print(f"  Current quota: {format_mb(target['quota_mb'])}")
-        new_quota = target['quota_mb'] + (5 * _KB)  # +5 GB
+        new_quota = target["quota_mb"] + (5 * _KB)  # +5 GB
         print(f"  New quota:     {format_mb(new_quota)}")
 
         # Update the site properties to set new quota
-        target['site'].set_property("StorageMaximumLevel", new_quota)
-        target['site'].set_property("StorageWarningLevel", int(new_quota * 0.8))
-        target['site'].update_ex().execute_query()
+        target["site"].set_property("StorageMaximumLevel", new_quota)
+        target["site"].set_property("StorageWarningLevel", int(new_quota * 0.8))
+        target["site"].update_ex().execute_query()
         print("  ✓ Quota updated.")
 
         # Verify
         updated_site = tenant.get_site_properties_from_sharepoint().execute_query()
         for s in updated_site:
-            if s.url == target['url']:
+            if s.url == target["url"]:
                 print(f"  Verified: quota = {format_mb(getattr(s, 'storage_quota', 0))}")
 
     # -- Step 3: read current OneDrive default storage quota --

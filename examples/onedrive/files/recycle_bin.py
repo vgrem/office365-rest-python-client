@@ -15,8 +15,6 @@ Requires delegated permission ``Files.ReadWrite.All`` and
 https://learn.microsoft.com/en-us/graph/api/resources/recyclebin
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -56,7 +54,7 @@ def main():
         print("Test file deleted to recycle bin.\n")
         print("Recycle bin items can be accessed via the drive's recycleBin.")
         print("See Graph API docs for the exact endpoint:\n")
-        print(f"  GET /drives/{drive.properties.get('id','?')}/recycleBin/items\n")
+        print(f"  GET /drives/{drive.properties.get('id', '?')}/recycleBin/items\n")
         return
 
     if len(items) == 0:

@@ -30,9 +30,7 @@ def find_stale_devices(days_threshold: int = 180) -> list[dict]:
     Returns:
         List of device dicts sorted by last sign-in (ascending).
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
     stale = []
@@ -51,14 +49,16 @@ def find_stale_devices(days_threshold: int = 180) -> list[dict]:
             last_signin = getattr(device, "registration_date_time", None)
 
         if last_signin and last_signin < cutoff:
-            stale.append({
-                "name": name,
-                "device_id": device_id,
-                "os": f"{os} {os_version}".strip(),
-                "trust_type": trust_type,
-                "last_signin": last_signin,
-                "days_since": (datetime.now(timezone.utc) - last_signin).days,
-            })
+            stale.append(
+                {
+                    "name": name,
+                    "device_id": device_id,
+                    "os": f"{os} {os_version}".strip(),
+                    "trust_type": trust_type,
+                    "last_signin": last_signin,
+                    "days_since": (datetime.now(timezone.utc) - last_signin).days,
+                }
+            )
 
     stale.sort(key=lambda x: x["days_since"], reverse=True)
     return stale
@@ -85,8 +85,8 @@ def main():
     # OS breakdown
     os_counts = {}
     for d in devices:
-        os_counts[d['os']] = os_counts.get(d['os'], 0) + 1
-    print(f"\nBreakdown by OS:")
+        os_counts[d["os"]] = os_counts.get(d["os"], 0) + 1
+    print("\nBreakdown by OS:")
     for os_name, count in sorted(os_counts.items(), key=lambda x: -x[1]):
         print(f"  {os_name or 'Unknown':30s} {count}")
 

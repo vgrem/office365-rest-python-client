@@ -64,7 +64,8 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             start_datetime (datetime.datetime): The meeting start time in UTC.
             end_datetime (datetime.datetime): The meeting end time in UTC.
             subject (str): The subject of the online meeting.
-            participants (MeetingParticipants): The participants associated with the online meeting. This includes the organizer and the attendees.
+            participants (MeetingParticipants): The participants associated with the online meeting.
+              This includes the organizer and the attendees.
             chat_info (ChatInfo):
         """
         return_type = OnlineMeeting(self.context)
@@ -91,9 +92,13 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         This API currently doesn't support getting call recordings from channel meetings.
 
         Args:
-            meeting_organizer_user_id (str): The user identifier of the meeting organizer to filter for artifacts for meetings organized by the given user identifier.
-            start_datetime (datetime.datetime): Optional parameter to filter for artifacts created after the given start date. The timestamp type represents date and time information using ISO 8601 format and is always in UTC
-            end_datetime (datetime.datetime): Optional parameter to filter for artifacts created before the given end date. The timestamp type represents date and time information using ISO 8601 format and is always in UTC
+            meeting_organizer_user_id (str): The user identifier of the meeting organizer to filter for artifacts for
+              meetings organized by the given user identifier.
+            start_datetime (datetime.datetime): Optional parameter to filter for artifacts created after the given
+              start date. The timestamp type represents date and time information using ISO 8601 format and is always
+              in UTC
+            end_datetime (datetime.datetime): Optional parameter to filter for artifacts created before the given end
+              date. The timestamp type represents date and time information using ISO 8601 format and is always in UTC
         """
         return_type = EntityCollection(self.context, CallRecording)
         payload = {

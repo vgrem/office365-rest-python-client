@@ -15,20 +15,21 @@ Requires delegated permission ``Sites.FullControl.All``.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/SpoOperation
 """
 
-import time
 import sys
+import time
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant, create_unique_name
+from tests import create_unique_name, test_admin_site_url, test_client_id, test_client_secret, test_tenant
 
 
-def poll_operation(op, label: str, max_wait_min: int = 10) -> bool:
+def poll_operation(ctx, op, label: str, max_wait_min: int = 10) -> bool:
     """Poll a SpoOperation until it completes or times out.
 
     Uses the server-recommended polling interval when available.
 
     Args:
+        ctx: The ClientContext
         op: The SpoOperation to poll
         label: Human-readable label for progress output
         max_wait_min: Maximum minutes to wait
@@ -58,7 +59,6 @@ def poll_operation(op, label: str, max_wait_min: int = 10) -> bool:
 
 
 def main():
-    global ctx
     ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
     tenant = Tenant(ctx)
 
@@ -69,22 +69,20 @@ def main():
 
     print(f"Creating site '{site_name}'...")
     op = tenant.create_site(url=site_url, owner=owner, title=site_name).execute_query()
-    created = poll_operation(op, "Create site")
+    created = poll_operation(ctx, op, "Create site")
     if not created:
         sys.exit(1)
 
     # -- Step 2: update site properties (async) --
-    properties = (
-        tenant.get_site_properties_by_url(site_url, include_detail=True).execute_query()
-    )
+    properties = tenant.get_site_properties_by_url(site_url, include_detail=True).execute_query()
     properties.set_property("SharingCapability", "ExternalUserSharingOnly")
     op = properties.update_ex().execute_query()
-    poll_operation(op, "Update site properties")
+    poll_operation(ctx, op, "Update site properties")
 
     # -- Step 3: delete the site (async) --
     print("\nDeleting site...")
     op = tenant.remove_site(site_url).execute_query()
-    deleted = poll_operation(op, "Delete site")
+    deleted = poll_operation(ctx, op, "Delete site")
 
     print(f"\n{'✅' if created and deleted else '❌'} Async operations complete.")
 

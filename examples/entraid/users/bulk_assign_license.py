@@ -20,7 +20,6 @@ from io import StringIO
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-
 CSV_DATA = """user_principal_name,sku_id,disabled_plans
 user1@contoso.com,contoso:SPE_E3,
 user2@contoso.com,contoso:SPE_E5,SWAY
@@ -59,9 +58,7 @@ def bulk_assign_licenses(csv_content: str) -> list[dict]:
     Returns:
         List of result dicts with status per user.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     reader = csv.DictReader(StringIO(csv_content))
     results = []

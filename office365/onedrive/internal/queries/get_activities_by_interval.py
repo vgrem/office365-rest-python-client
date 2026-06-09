@@ -14,10 +14,10 @@ def build_get_activities_by_interval_query(
     interval: str | None = None,
 ) -> FunctionQuery:
     """Args:
-        binding_type (Entity): Binding type
-        start_dt (datetime): The start time over which to aggregate activities.
-        end_dt (datetime): The end time over which to aggregate activities.
-        interval (str): The aggregation interval.
+    binding_type (Entity): Binding type
+    start_dt (datetime): The start time over which to aggregate activities.
+    end_dt (datetime): The end time over which to aggregate activities.
+    interval (str): The aggregation interval.
     """
     params = {
         "startDateTime": start_dt.strftime("%m-%d-%Y") if start_dt else None,

@@ -17,7 +17,6 @@ https://learn.microsoft.com/en-us/graph/api/user-post-users
 """
 
 import csv
-import sys
 from io import StringIO
 
 from office365.graph_client import GraphClient

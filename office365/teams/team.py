@@ -286,9 +286,11 @@ class Team(Entity):
         Args:
             topic (teamworkActivityTopic): Topic of the notification. Specifies the resource being talked about.
             activity_type (str): Activity type. This must be declared in the Teams app manifest.
-            chain_id (str): Optional. Used to override a previous notification. Use the same chainId in subsequent requests to override the previous notification.
+            chain_id (str): Optional. Used to override a previous notification. Use the same chainId in subsequent
+            requests to override the previous notification.
             preview_text (str): Preview text for the notification. Microsoft Teams will only show first 150 characters
-            template_parameters (dict): Values for template variables defined in the activity feed entry corresponding to activityType in Teams app manifest.
+            template_parameters (dict): Values for template variables defined in the activity feed entry corresponding
+              to activityType in Teams app manifest.
             template_parameters (dict): Recipient of the notification. Only Azure AD users are supported.
             recipient (teamworkNotificationRecipient): Recipient of the notification
         """

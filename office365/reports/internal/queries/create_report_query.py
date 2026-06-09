@@ -21,7 +21,9 @@ def create_report_query(
     Args:
         report_root (ReportRoot): Report container
         report_name (str): Report name
-        period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+        period (str): Specifies the length of time over which the report is aggregated. The supported values for
+          {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number
+          of days over which the report is aggregated. Required.
         return_stream (bool): If true, return a stream of report data.
     """
     params = {

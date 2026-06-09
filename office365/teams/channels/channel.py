@@ -32,11 +32,14 @@ class Channel(Entity):
         """Determine whether a user has access to a shared channel.
 
         Args:
-            user_id (str): Unique identifier for the user. Either specify the userId or the userPrincipalName property in the request.
-            tenant_id (str): The ID of the Azure Active Directory tenant that the user belongs to. The default value for this property is the current tenantId of the signed-in user or app.
-            user_principal_name (str): The user principal name (UPN) of the user. Either specify the userId or the userPrincipalName property in the request.
+            user_id (str): Unique identifier for the user. Either specify the userId or the userPrincipalName property
+              in the request.
+            tenant_id (str): The ID of the Azure Active Directory tenant that the user belongs to. The default value
+              for this property is the current tenantId of the signed-in user or app.
+            user_principal_name (str): The user principal name (UPN) of the user. Either specify the userId or the
+              userPrincipalName property in the request.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bool](self.context)
         params = {
             "userId": user_id,
             "tenantId": tenant_id,

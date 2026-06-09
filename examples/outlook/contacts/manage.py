@@ -9,8 +9,6 @@ Requires delegated permission ``Contacts.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/resources/contact
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
@@ -30,28 +28,25 @@ def main():
         print(f"Using existing folder: '{folder.display_name}'")
 
     # -- Step 2: create a contact --
-    contact = (
-        folder.contacts.add(
-            given_name="Maria",
-            surname="Andersen",
-            email_address="mariaa@contoso.onmicrosoft.com",
-            business_phone="+1 555 123 4567",
-        )
-        .execute_query()
-    )
+    contact = folder.contacts.add(
+        given_name="Maria",
+        surname="Andersen",
+        email_address="mariaa@contoso.onmicrosoft.com",
+        business_phone="+1 555 123 4567",
+    ).execute_query()
     print(f"Created contact: {contact.display_name}  ({contact.primary_email_address.address})")
 
     # -- Step 3: update fields --
     contact.set_property("mobilePhone", "+1 555 987 6543")
     contact.set_property("jobTitle", "Senior Engineer")
     contact.update().execute_query()
-    print(f"Updated contact: mobile & job title set.")
+    print("Updated contact: mobile & job title set.")
 
     # -- Step 4: add a second email address --
     # The email_addresses property is a collection — append to it
     contact.email_addresses.add("maria.andersen@personal.com")
     contact.update().execute_query()
-    print(f"Added secondary email.")
+    print("Added secondary email.")
 
     # -- Step 5: list all contacts in the folder --
     contacts = folder.contacts.get().execute_query()

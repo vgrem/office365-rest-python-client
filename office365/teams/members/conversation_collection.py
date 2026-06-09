@@ -25,7 +25,10 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         """Add a conversationMember.
 
         Args:
-            user (str or office365.directory.users.user.User): The conversation members that should be added. Every user who will participate in the chat, including the user who initiates the create request, must be specified in this list. Each member must be assigned a role of owner or guest. Guest tenant members must be assigned the guest role
+            user (str or office365.directory.users.user.User): The conversation members that should be added.
+              Every user who will participate in the chat, including the user who initiates the create request,
+              must be specified in this list. Each member must be assigned a role of owner or guest.
+              Guest tenant members must be assigned the guest role
             roles (list[str]): The roles for that user.
             visible_history_start_datetime (datetime.datetime):
         """

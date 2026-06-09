@@ -40,7 +40,9 @@ def main():
         if hasattr(completion, "strftime"):
             completion = completion.strftime("%Y-%m-%d")
 
-        print(f"  {display:50s}  status={status:15s}  technique={technique:20s}  created={created}  complete={completion}")
+        print(
+            f"  {display:50s}  status={status:15s}  technique={technique:20s}  created={created}  complete={completion}"
+        )
 
     # -- Step 2: list simulation automations (recurring campaigns) --
     automations = sim.simulation_automations.get().execute_query()

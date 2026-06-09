@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
+import requests
 from requests import RequestException
 from typing_extensions import Self
 
@@ -42,7 +43,6 @@ from office365.sharepoint.webs.context_web_information import ContextWebInformat
 from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
-    from requests import Session
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.portal.theme_manager import ThemeManager
     from office365.sharepoint.search.service import SearchService

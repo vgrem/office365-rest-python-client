@@ -80,6 +80,7 @@ from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
     from requests import Session
+
     from office365.directory.applications.roles.collection import AppRoleCollection
     from office365.directory.applications.roles.role import AppRole
     from office365.directory.groups.setting import GroupSetting

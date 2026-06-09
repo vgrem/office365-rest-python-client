@@ -27,7 +27,8 @@ class Permission(Entity):
 
         Args:
             recipients (list[str]): A collection of recipients who will receive access.
-            roles (list[str]): If the link is an "existing access" link, specifies roles to be granted to the users. Otherwise must match the role of the link.
+            roles (list[str]): If the link is an "existing access" link, specifies roles to be granted to the users.
+              Otherwise must match the role of the link.
         """
         from office365.onedrive.permissions.collection import PermissionCollection
 

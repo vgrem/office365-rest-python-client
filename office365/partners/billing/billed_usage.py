@@ -13,7 +13,8 @@ class BilledUsage(Entity):
 
         Args:
             invoice_id: The invoice ID for which the partner requested to export data. Required.
-            attribute_set: Attributes that should be exported. Possible values are: full, basic, unknownFutureValue. The default value is full. Choose full for a complete response or basic for a subset of attributes.
+            attribute_set: Attributes that should be exported. Possible values are: full, basic, unknownFutureValue.
+              The default value is full. Choose full for a complete response or basic for a subset of attributes.
         """
         payload = {"invoiceId": invoice_id, "attributeSet": attribute_set}
         return_type = Operation(self.context)

@@ -63,9 +63,11 @@ def main():
         city = loc.city if loc and hasattr(loc, "city") and loc.city else ""
         country = loc.country_or_region if loc and hasattr(loc, "country_or_region") and loc.country_or_region else ""
         location_str = f"{city}, {country}" if city or country else ""
-        print(f"  {dt}  user={d.user_principal_name:30s}  risk={d.risk_level.name:10s}  "
-              f"activity={d.activity.name or '?':12s}  "
-              f"ip={ip:15s}  {location_str}")
+        print(
+            f"  {dt}  user={d.user_principal_name:30s}  risk={d.risk_level.name:10s}  "
+            f"activity={d.activity.name or '?':12s}  "
+            f"ip={ip:15s}  {location_str}"
+        )
 
     # -- Step 4: dismiss and confirm-compromise (commented out by default) --
 
@@ -83,7 +85,7 @@ def main():
     #     ).execute_query()
 
     # -- Summary --
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     print(f"Risky users: {len(risky_users)}")
     high_risk = [u for u in risky_users if u.risk_level and u.risk_level.name == "high"]
     print(f"High risk: {len(high_risk)}")

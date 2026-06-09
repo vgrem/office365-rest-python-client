@@ -35,9 +35,11 @@ def main():
 
     for hd in hist_defs:
         created_by = getattr(hd.created_by, "user_principal_name", "?") if hd.created_by else "?"
-        print(f"  {hd.display_name:35s}  status={hd.status.name if hd.status else '?':12s}  "
-              f"created_by={created_by:30s}  "
-              f"period={str(hd.review_history_period_start_date_time)[:10] or '?'} → {str(hd.review_history_period_end_date_time)[:10] or '?'}")
+        print(
+            f"  {hd.display_name:35s}  status={hd.status.name if hd.status else '?':12s}  "
+            f"created_by={created_by:30s}  "
+            f"period={str(hd.review_history_period_start_date_time)[:10] or '?'} → {str(hd.review_history_period_end_date_time)[:10] or '?'}"
+        )
 
         # Enumerate instances
         instances = hd.instances.get().execute_query()
@@ -68,15 +70,15 @@ def main():
     print("\nDirect API call to list schedule definitions:")
     try:
         response = client.execute_request_get(
-            "/identityGovernance/accessReviews/definitions"
-            "?$select=id,displayName,status,createdDateTime"
-            "&$top=10"
+            "/identityGovernance/accessReviews/definitions?$select=id,displayName,status,createdDateTime&$top=10"
         )
         definitions = response.json().get("value", [])
         print(f"  Schedule definitions: {len(definitions)}")
         for d in definitions:
-            print(f"    {d.get('displayName','?'):40s}  status={d.get('status','?'):15s}  "
-                  f"created={str(d.get('createdDateTime',''))[:10]}")
+            print(
+                f"    {d.get('displayName', '?'):40s}  status={d.get('status', '?'):15s}  "
+                f"created={str(d.get('createdDateTime', ''))[:10]}"
+            )
     except Exception as e:
         print(f"  (not available: {e})")
 

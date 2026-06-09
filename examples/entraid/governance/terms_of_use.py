@@ -35,11 +35,7 @@ def main():
         per_device = a.is_per_device_acceptance_required
         reaccept = a.user_reaccept_required_frequency
 
-        print(f"  {display_name:45s}  "
-              f"view_required={required}  "
-              f"per_device={per_device}  "
-              f"reaccept_freq={reaccept}"
-        )
+        print(f"  {display_name:45s}  view_required={required}  per_device={per_device}  reaccept_freq={reaccept}")
 
         # Count acceptances
         try:
@@ -52,12 +48,14 @@ def main():
             print(f"    Accepted by: {len(accepted_users)} user(s)")
             if accepted_users:
                 for u in list(accepted_users)[:5]:
-                    displayed = u.properties.get("displayName", u.properties.get("userPrincipalName", u.id if hasattr(u, 'id') else str(u)))
+                    displayed = u.properties.get(
+                        "displayName", u.properties.get("userPrincipalName", u.id if hasattr(u, "id") else str(u))
+                    )
                     print(f"      {u}")
                 if len(accepted_users) > 5:
                     print(f"      … and {len(accepted_users) - 5} more")
         except Exception:
-            print(f"    (acceptances not accessible)")
+            print("    (acceptances not accessible)")
 
         # Show agreement download link
         try:
@@ -85,7 +83,7 @@ def main():
 
     # -- Step 3: users who have NOT accepted (compliance check) --
     if agreements:
-        print(f"\n--- Compliance check: acceptance status ---")
+        print("\n--- Compliance check: acceptance status ---")
         users = client.users.get().select(["id", "userPrincipalName", "displayName"]).top(100).execute_query()
         accepted_upns = set()
         for acc in all_acceptances:

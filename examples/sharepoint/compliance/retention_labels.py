@@ -12,10 +12,8 @@ operations; ``Sites.FullControl.All`` to set compliance tags.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/compliance/compliance-tag-rest-api
 """
 
-import sys
-
 from office365.sharepoint.client_context import ClientContext
-from tests import test_site_url, test_client_id, test_client_secret, test_tenant
+from tests import test_client_id, test_client_secret, test_site_url, test_tenant
 
 TAG_NAME = "Financial Records"  # Name of a compliance tag to apply
 
@@ -35,10 +33,7 @@ def main():
         auto_delete = tag.AutoDelete or False
         block_delete = tag.BlockDelete or False
         block_edit = tag.BlockEdit or False
-        print(f"  {display_name:40s}  "
-              f"auto_delete={auto_delete}  "
-              f"block_delete={block_delete}  "
-              f"block_edit={block_edit}")
+        print(f"  {display_name:40s}  auto_delete={auto_delete}  block_delete={block_delete}  block_edit={block_edit}")
 
     # -- Step 2: get compliance tag on a target list --
     target_list = ctx.web.lists.get_by_title("Documents")
@@ -48,7 +43,7 @@ def main():
             t = tag_info.value
             print(f"\nList 'Documents' compliance tag: {t.TagName or t.DisplayName or '(none)'}")
         else:
-            print(f"\nList 'Documents' has no compliance tag set.")
+            print("\nList 'Documents' has no compliance tag set.")
     except Exception as e:
         print(f"\n  (compliance tag read not available: {e})")
 

@@ -27,9 +27,7 @@ def find_break_glass_accounts() -> dict:
 
     Returns a dict with keys: 'ca_excluded', 'permanent_admins', 'no_mfa_admins'.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     result = {"ca_excluded": [], "permanent_admins": [], "no_mfa_admins": []}
 
@@ -47,14 +45,22 @@ def find_break_glass_accounts() -> dict:
                 for uid in exclude_users:
                     try:
                         user = client.users[uid].select(["displayName", "userPrincipalName"]).get().execute_query()
-                        result["ca_excluded"].append({
-                            "upn": getattr(user, "user_principal_name", uid),
-                            "display_name": getattr(user, "display_name", uid),
-                            "excluded_by_policy": getattr(policy, "display_name", "Unknown"),
-                            "id": uid,
-                        })
+                        result["ca_excluded"].append(
+                            {
+                                "upn": getattr(user, "user_principal_name", uid),
+                                "display_name": getattr(user, "display_name", uid),
+                                "excluded_by_policy": getattr(policy, "display_name", "Unknown"),
+                                "id": uid,
+                            }
+                        )
                     except Exception:
-                        result["ca_excluded"].append({"upn": uid, "display_name": uid, "excluded_by_policy": getattr(policy, "display_name", "Unknown")})
+                        result["ca_excluded"].append(
+                            {
+                                "upn": uid,
+                                "display_name": uid,
+                                "excluded_by_policy": getattr(policy, "display_name", "Unknown"),
+                            }
+                        )
     except Exception as e:
         print(f"  Warning: could not read CA policies: {e}")
 
@@ -63,13 +69,19 @@ def find_break_glass_accounts() -> dict:
         roles = client.identity_providers  # placeholder — actual call
         role_assignments = client.identity_governance.role_management.directory.role_assignments.get().execute_query()
         for ra in role_assignments:
-            role_def = client.identity_governance.role_management.directory.role_definitions[ra.role_definition_id].get().execute_query()
+            role_def = (
+                client.identity_governance.role_management.directory.role_definitions[ra.role_definition_id]
+                .get()
+                .execute_query()
+            )
             role_name = getattr(role_def, "display_name", "")
             if role_name in ("Global Administrator", "Global Admin"):
-                result["permanent_admins"].append({
-                    "upn": getattr(ra.principal, "user_principal_name", ra.principal_id),
-                    "role": role_name,
-                })
+                result["permanent_admins"].append(
+                    {
+                        "upn": getattr(ra.principal, "user_principal_name", ra.principal_id),
+                        "role": role_name,
+                    }
+                )
     except Exception as e:
         print(f"  Warning: could not read role assignments: {e}")
 

@@ -95,8 +95,11 @@ class DriveItem(BaseItem):
 
         Args:
             justification_text: Justification text for audit purposes, and is required when downgrading/removing a label.
-            sensitivity_label_id: Required. ID of the sensitivity label to be assigned, or empty string to remove the sensitivity label.
-            assignment_method: The assignment method of the label on the document. Indicates whether the assignment of the label was done automatically, standard, or as a privileged operation (the equivalent of an administrator operation).
+            sensitivity_label_id: Required. ID of the sensitivity label to be assigned, or empty string to remove the
+              sensitivity label.
+            assignment_method: The assignment method of the label on the document. Indicates whether the assignment
+              of the label was done automatically, standard, or as a privileged operation (the equivalent of an
+              administrator operation).
         """
         payload = {
             "sensitivityLabelId": sensitivity_label_id,
@@ -210,10 +213,14 @@ class DriveItem(BaseItem):
         Args:
             link_type (str): The type of sharing link to create. Either view, edit, or embed.
             scope (str): The scope of link to create. Either anonymous or organization.
-            expiration_datetime (str or datetime.datetime): A String with format of yyyy-MM-ddTHH:mm:ssZ of DateTime indicate the expiration time of the permission.
-            password (str): The password of the sharing link that is set by the creator. Optional and OneDrive Personal only.
+            expiration_datetime (str or datetime.datetime): A String with format of yyyy-MM-ddTHH:mm:ssZ of DateTime
+              indicate the expiration time of the permission.
+            password (str): The password of the sharing link that is set by the creator. Optional and OneDrive
+              Personal only.
             message (str):
-            retain_inherited_permissions (bool): Optional. If true (default), any existing inherited permissions are retained on the shared item when sharing this item for the first time. If false, all existing permissions are removed when sharing for the first time.
+            retain_inherited_permissions (bool): Optional. If true (default), any existing inherited permissions
+              are retained on the shared item when sharing this item for the first time. If false, all existing
+              permissions are removed when sharing for the first time.
         """
         payload = {
             "type": link_type,
@@ -303,7 +310,8 @@ class DriveItem(BaseItem):
 
         Args:
             comment (str): comment to the new version of the file
-            checkin_as (str): The status of the document after the check-in operation is complete. Can be published or unspecified.
+            checkin_as (str): The status of the document after the check-in operation is complete. Can be published or
+              unspecified.
         """
         qry = ServiceOperationQuery[DriveItem](
             self, "checkin", None, {"comment": comment, "checkInAs": checkin_as or ""}
@@ -575,9 +583,12 @@ class DriveItem(BaseItem):
         new name.
 
         Args:
-            name (str or None): The new name for the copy. If this isn't provided, the same name will be used as the original.
-            parent (office365.onedrive.listitems.item_reference.ItemReference or DriveItem or None): Reference to the parent item the copy will be created in.
-            conflict_behavior (str): query parameter to customize the behavior when a conflict occurs. Returns location for details about how to monitor the progress of the copy, upon accepting the request.
+            name (str or None): The new name for the copy. If this isn't provided, the same name will be used as the
+              original.
+            parent (office365.onedrive.listitems.item_reference.ItemReference or DriveItem or None): Reference
+              to the parent item the copy will be created in.
+            conflict_behavior (str): query parameter to customize the behavior when a conflict occurs.
+              Returns location for details about how to monitor the progress of the copy, upon accepting the request.
         """
         return_type = ClientResult(self.context, str())
 
@@ -781,8 +792,10 @@ class DriveItem(BaseItem):
         NOTE: This functionality is currently only available for OneDrive Personal.
 
         Args:
-            name (str): Optional. The new name for the restored item. If this isn't provided, the same name will be used as the original.
-            parent_reference (ItemReference or None): Optional. Reference to the parent item the deleted item will be restored to.
+            name (str): Optional. The new name for the restored item. If this isn't provided, the same name will be
+              used as the original.
+            parent_reference (ItemReference or None): Optional. Reference to the parent item the deleted item
+              will be restored to.
         """
         payload = {"name": name, "parentReference": parent_reference}
         return_type = DriveItem(self.context)
@@ -796,7 +809,8 @@ class DriveItem(BaseItem):
         to render a temporary preview.
 
         Args:
-            page (str or int): Optional. Page number of document to start at, if applicable. Specified as string for future use cases around file types such as ZIP.
+            page (str or int): Optional. Page number of document to start at, if applicable. Specified as string
+              for future use cases around file types such as ZIP.
             zoom (int): Optional. Zoom level to start at, if applicable.
         """
         return_type = ClientResult[ItemPreviewInfo](self.context, ItemPreviewInfo())

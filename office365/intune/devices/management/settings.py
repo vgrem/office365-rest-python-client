@@ -11,9 +11,11 @@ class DeviceManagementSettings(ClientValue):
     well as the end user web portal.
 
     Args:
-        device_compliance_checkin_threshold_days (int): The number of days a device is allowed to go without checking in to remain compliant.
-        is_scheduled_action_enabled (bool): Is feature enabled or not for scheduled action for rule.
-        secure_by_default (bool): Device should be noncompliant when there is no compliance policy targeted when this is true
+        deviceComplianceCheckinThresholdDays (int): The number of days a device is allowed to go without checking
+          in to remain compliant.
+        isScheduledActionEnabled (bool): Is feature enabled or not for scheduled action for rule.
+        secureByDefault (bool): Device should be noncompliant when there is no compliance policy targeted when
+          this is true
     """
 
     deviceComplianceCheckinThresholdDays: int | None = None

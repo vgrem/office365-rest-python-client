@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class SetCollection(EntityCollection[Set]):
     def __init__(self, context, resource_path=None, parent_group=None):
         """Args:
-            parent_group (office365.onedrive.termstore.groups.group.Group): The parent group that contains the set
+        parent_group (office365.onedrive.termstore.groups.group.Group): The parent group that contains the set
         """
         super().__init__(context, Set, resource_path)
         self._parent_group = parent_group

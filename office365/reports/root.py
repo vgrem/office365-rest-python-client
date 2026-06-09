@@ -66,7 +66,9 @@ class ReportRoot(Entity):
         in your organization.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values for
+              {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "getEmailActivityCounts", {"period": period}, return_type)
@@ -78,7 +80,9 @@ class ReportRoot(Entity):
         like send, read, and receive.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getEmailActivityUserCounts", period)
         self.context.add_query(qry)
@@ -88,7 +92,9 @@ class ReportRoot(Entity):
         """Get details about email activity users have performed.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getEmailActivityUserDetail", period, return_stream=True)
         self.context.add_query(qry)
@@ -99,7 +105,9 @@ class ReportRoot(Entity):
         """Get the count of unique users per email app.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getEmailAppUsageAppsUserCounts", period)
         self.context.add_query(qry)
@@ -110,7 +118,9 @@ class ReportRoot(Entity):
         """Get the count of unique users that connected to Exchange Online using any email app.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getEmailAppUsageUserCounts", period, True)
         self.context.add_query(qry)
@@ -122,7 +132,9 @@ class ReportRoot(Entity):
         """Get details about which activities users performed on the various email apps.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getEmailAppUsageUserDetail", period, True)
         self.context.add_query(qry)
@@ -133,7 +145,9 @@ class ReportRoot(Entity):
         """Get the amount of storage used in your organization.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getMailboxUsageStorage", period, True)
         self.context.add_query(qry)
@@ -179,7 +193,9 @@ class ReportRoot(Entity):
         """Get the number of unique, licensed users that performed file interactions against any OneDrive account.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getOneDriveActivityFileCounts", period)
         self.context.add_query(qry)
@@ -190,7 +206,9 @@ class ReportRoot(Entity):
         """Get the trend in the number of active OneDrive users.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getOneDriveActivityUserCounts", period)
         self.context.add_query(qry)
@@ -201,7 +219,9 @@ class ReportRoot(Entity):
         """Get details about OneDrive activity by user.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getOneDriveActivityUserDetail", period)
         self.context.add_query(qry)
@@ -212,7 +232,9 @@ class ReportRoot(Entity):
         if it has been saved, synced, modified, or shared within the specified time period.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getOneDriveUsageFileCounts", period)
         self.context.add_query(qry)
@@ -223,7 +245,9 @@ class ReportRoot(Entity):
         """Get the trend on the amount of storage you are using in OneDrive for Business.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getOneDriveUsageStorage", period)
         self.context.add_query(qry)
@@ -233,7 +257,9 @@ class ReportRoot(Entity):
         """Get details about mailbox usage.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getMailboxUsageDetail", period)
         self.context.add_query(qry)
@@ -244,7 +270,9 @@ class ReportRoot(Entity):
         period. A mailbox is considered active if the user sent or read any email.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+              for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+              the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getMailboxUsageMailboxCounts", period, True)
         self.context.add_query(qry)
@@ -253,7 +281,9 @@ class ReportRoot(Entity):
 
     def get_mailbox_usage_quota_status_mailbox_counts(self, period: str):
         """Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+        period (str): Specifies the length of time over which the report is aggregated. The supported values
+          for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+          the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getMailboxUsageQuotaStatusMailboxCounts", period)
         self.context.add_query(qry)
@@ -264,7 +294,9 @@ class ReportRoot(Entity):
         """Get the number of unique pages visited by users.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated. The supported values
+            for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
+            the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getSharePointActivityPages", period)
         self.context.add_query(qry)
@@ -287,7 +319,9 @@ class ReportRoot(Entity):
         file activity (save, sync, modify, or share) or visited a page within the specified time period.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated.
+            The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
+            format Dn where n represents the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getSharePointActivityUserCounts", period)
         self.context.add_query(qry)
@@ -297,7 +331,9 @@ class ReportRoot(Entity):
         """Get details about SharePoint activity by user.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated.
+            The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
+            format Dn where n represents the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getSharePointActivityUserDetail", period)
         self.context.add_query(qry)
@@ -307,7 +343,9 @@ class ReportRoot(Entity):
         """Get details about SharePoint site usage.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated.
+            The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
+            Dn where n represents the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getSharePointSiteUsageDetail", period)
         self.context.add_query(qry)
@@ -318,7 +356,9 @@ class ReportRoot(Entity):
         """Get the trend of total and active site count during the reporting period.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated.
+            The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
+            Dn where n represents the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getSharePointSiteUsageSiteCounts", period)
         self.context.add_query(qry)
@@ -330,7 +370,9 @@ class ReportRoot(Entity):
         """Get the number of teams of a particular type in an instance of Microsoft Teams.
 
         Args:
-            period (str): Specifies the length of time over which the report is aggregated. The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents the number of days over which the report is aggregated. Required.
+            period (str): Specifies the length of time over which the report is aggregated.
+            The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
+            format Dn where n represents the number of days over which the report is aggregated. Required.
         """
         qry = create_report_query(self, "getTeamsTeamCounts", period, return_stream=True)
         self.context.add_query(qry)

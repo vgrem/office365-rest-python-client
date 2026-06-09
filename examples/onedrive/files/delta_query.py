@@ -69,8 +69,13 @@ def main():
             deleted += 1
         elif item.name:
             # Check if it's new or updated
-            tag = "[new]" if item.created_date_time and item.last_modified_date_time and \
-                item.created_date_time == item.last_modified_date_time else "[updated]"
+            tag = (
+                "[new]"
+                if item.created_date_time
+                and item.last_modified_date_time
+                and item.created_date_time == item.last_modified_date_time
+                else "[updated]"
+            )
             print(f"  {tag} {name:35s}  size={item.size or '?'}")
             added += 1
 

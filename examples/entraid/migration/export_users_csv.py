@@ -17,17 +17,28 @@ https://learn.microsoft.com/en-us/graph/api/user-list
 """
 
 import csv
-import sys
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
 OUTPUT_FILE = "/tmp/users_export.csv"
 FIELDS = [
-    "userPrincipalName", "displayName", "givenName", "surname",
-    "department", "jobTitle", "officeLocation", "city", "country",
-    "mobilePhone", "businessPhones", "mail", "accountEnabled",
-    "userType", "createdDateTime", "signInActivity",
+    "userPrincipalName",
+    "displayName",
+    "givenName",
+    "surname",
+    "department",
+    "jobTitle",
+    "officeLocation",
+    "city",
+    "country",
+    "mobilePhone",
+    "businessPhones",
+    "mail",
+    "accountEnabled",
+    "userType",
+    "createdDateTime",
+    "signInActivity",
     "assignedLicenses",
 ]
 
@@ -59,7 +70,9 @@ def main():
     print(f"  Resolved {len(sku_map)} license SKUs")
 
     with open(OUTPUT_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDS + ["licenseSkus", "mfaRegistered", "passwordlessCapable", "lastSignIn"])
+        writer = csv.DictWriter(
+            f, fieldnames=FIELDS + ["licenseSkus", "mfaRegistered", "passwordlessCapable", "lastSignIn"]
+        )
         writer.writeheader()
 
         for u in users:
@@ -77,29 +90,31 @@ def main():
                     sku_id = lic.properties.get("skuId", "")
                     licenses.append(sku_map.get(sku_id, sku_id))
 
-            writer.writerow({
-                "userPrincipalName": upn,
-                "displayName": u.display_name or "",
-                "givenName": u.given_name or "",
-                "surname": u.surname or "",
-                "department": u.department or "",
-                "jobTitle": u.job_title or "",
-                "officeLocation": u.office_location or "",
-                "city": u.city or "",
-                "country": u.country or "",
-                "mobilePhone": u.mobile_phone or "",
-                "businessPhones": ", ".join(u.business_phones) if u.business_phones else "",
-                "mail": u.mail or "",
-                "accountEnabled": u.account_enabled,
-                "userType": u.user_type or "",
-                "createdDateTime": u.created_date_time.strftime("%Y-%m-%d") if u.created_date_time else "",
-                "signInActivity": str(last_signin)[:10] if last_signin else "",
-                "assignedLicenses": ";".join(licenses) if licenses else "",
-                "licenseSkus": ";".join(licenses) if licenses else "",
-                "mfaRegistered": str(mfa.is_mfa_registered) if mfa else "",
-                "passwordlessCapable": str(mfa.is_passwordless_capable) if mfa else "",
-                "lastSignIn": str(last_signin)[:10] if last_signin else "",
-            })
+            writer.writerow(
+                {
+                    "userPrincipalName": upn,
+                    "displayName": u.display_name or "",
+                    "givenName": u.given_name or "",
+                    "surname": u.surname or "",
+                    "department": u.department or "",
+                    "jobTitle": u.job_title or "",
+                    "officeLocation": u.office_location or "",
+                    "city": u.city or "",
+                    "country": u.country or "",
+                    "mobilePhone": u.mobile_phone or "",
+                    "businessPhones": ", ".join(u.business_phones) if u.business_phones else "",
+                    "mail": u.mail or "",
+                    "accountEnabled": u.account_enabled,
+                    "userType": u.user_type or "",
+                    "createdDateTime": u.created_date_time.strftime("%Y-%m-%d") if u.created_date_time else "",
+                    "signInActivity": str(last_signin)[:10] if last_signin else "",
+                    "assignedLicenses": ";".join(licenses) if licenses else "",
+                    "licenseSkus": ";".join(licenses) if licenses else "",
+                    "mfaRegistered": str(mfa.is_mfa_registered) if mfa else "",
+                    "passwordlessCapable": str(mfa.is_passwordless_capable) if mfa else "",
+                    "lastSignIn": str(last_signin)[:10] if last_signin else "",
+                }
+            )
 
     print(f"\n✓ Exported {len(users)} users to {OUTPUT_FILE}")
 

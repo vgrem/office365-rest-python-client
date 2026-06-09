@@ -81,7 +81,9 @@ def main():
         if hasattr(result, "meeting_time_suggestions") and result.meeting_time_suggestions:
             for s in result.meeting_time_suggestions:
                 slot = s.meeting_time_slot
-                print(f"  {slot.start.strftime('%Y-%m-%d %H:%M')} — {slot.end.strftime('%H:%M')}  (confidence: {s.confidence})")
+                print(
+                    f"  {slot.start.strftime('%Y-%m-%d %H:%M')} — {slot.end.strftime('%H:%M')}  (confidence: {s.confidence})"
+                )
                 if hasattr(s, "locations") and s.locations:
                     for loc in s.locations:
                         print(f"    Location: {loc.display_name}")

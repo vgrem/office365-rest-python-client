@@ -14,11 +14,9 @@ operations; ``Sites.FullControl.All`` for configuration updates.
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/search-in-sharepoint
 """
 
-import sys
-
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.search.administration.document_crawl_log import DocumentCrawlLog
-from tests import test_site_url, test_client_id, test_client_secret, test_tenant
+from tests import test_client_id, test_client_secret, test_site_url, test_tenant
 
 
 def main():
@@ -81,8 +79,7 @@ def main():
             if hasattr(data, "rows") and data.rows:
                 print(f"  Unsuccessful URLs: {len(data.rows)}")
                 for row in data.rows[:5]:
-                    print(f"    URL: {row[0] if len(row) > 0 else '?'}  "
-                          f"error: {row[1] if len(row) > 1 else '?'}")
+                    print(f"    URL: {row[0] if len(row) > 0 else '?'}  error: {row[1] if len(row) > 1 else '?'}")
     except Exception as e:
         print(f"  (crawl diagnostics not available: {e})")
 

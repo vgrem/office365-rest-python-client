@@ -14,8 +14,10 @@ class PlannerPlanContainer(ClientValue):
     is created.
 
     Args:
-        container_id (str): The identifier of the resource that contains the plan
-        type_ (str): The type of the resource that contains the plan. For supported types, see the previous table. Possible values are: group, unknownFutureValue, roster. Use the Prefer: include-unknown-enum-members request header to get the following value in this evolvable enum: roster.
+        containerId (str): The identifier of the resource that contains the plan
+        type (str): The type of the resource that contains the plan. For supported types, see the previous table.
+          Possible values are: group, unknownFutureValue, roster. Use the Prefer: include-unknown-enum-members
+          request header to get the following value in this evolvable enum: roster.
         url (str): The full canonical URL of the container.
     """
 

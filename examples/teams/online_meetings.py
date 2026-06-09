@@ -16,7 +16,6 @@ Requires delegated permission ``OnlineMeetings.ReadWrite.All``.
 https://learn.microsoft.com/en-us/graph/api/resources/onlinemeeting
 """
 
-import sys
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
@@ -37,7 +36,7 @@ def main():
         description="Weekly sync with demo team.",
     ).execute_query()
 
-    print(f"Meeting created:\n")
+    print("Meeting created:\n")
     print(f"  Subject:     {meeting.subject}")
     print(f"  Join link:   {meeting.join_web_url}")
     print(f"  Start:       {meeting.start_date_time.strftime('%Y-%m-%d %H:%M') if meeting.start_date_time else '?'}")
@@ -57,16 +56,14 @@ def main():
         allowTranscription=True,
     ).execute_query()
 
-    print(f"\nMeeting with lobby control:\n")
+    print("\nMeeting with lobby control:\n")
     print(f"  Subject:     {meeting2.subject}")
     print(f"  Join link:   {meeting2.join_web_url}")
     print(f"  Chat:        {meeting2.allow_meeting_chat}")
     print(f"  Transcript:  {meeting2.allow_transcription}")
 
     # -- Step 3: get meeting details by join web URL --
-    fetched = client.me.online_meetings.get_by_join_web_url(
-        meeting2.join_web_url
-    ).execute_query()
+    fetched = client.me.online_meetings.get_by_join_web_url(meeting2.join_web_url).execute_query()
     print(f"\nFetched by join URL: {fetched.subject}")
 
     # -- Step 4: list recent meetings (last 30 days) --

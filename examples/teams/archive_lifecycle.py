@@ -128,7 +128,7 @@ def main():
     print()
     print("To unarchive a specific team later:")
     print('  team = client.teams["<teamId>"].get().execute_query()')
-    print('  team.unarchive().execute_query()')
+    print("  team.unarchive().execute_query()")
     print('  print(f"Unarchived: {team.display_name}")')
 
 

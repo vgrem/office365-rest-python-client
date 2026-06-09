@@ -13,12 +13,22 @@ class ChatMessageAttachment(ClientValue):
     chatMessage entity.
 
     Args:
-        content (str): The content of the attachment. If the attachment is a rich card, set the property to the rich card object. This property and contentUrl are mutually exclusive.
-        content_type (str): The media type of the content attachment. It can have the following values: reference: Attachment is a link to another file. Populate the contentURL with the link to the object. Any contentTypes supported by the Bot Framework's Attachment object application/vnd.microsoft.card.codesnippet: A code snippet. application/vnd.microsoft.card.announcement: An announcement header.
-        content_url (str): URL for the content of the attachment. Supported protocols: http, https, file and data.
+        content (str): The content of the attachment. If the attachment is a rich card, set the property to
+          the rich card object. This property and contentUrl are mutually exclusive.
+        contentType (str): The media type of the content attachment. It can have the following values:
+          reference: Attachment is a link to another file. Populate the contentURL with the link to the object.
+          Any contentTypes supported by the Bot Framework's Attachment object
+          application/vnd.microsoft.card.codesnippet: A code snippet. application/vnd.microsoft.card.announcement:
+          An announcement header.
+        contentUrl (str): URL for the content of the attachment. Supported protocols: http, https, file and data.
         name (str): Name of the attachment.
-        teams_app_id (str): The ID of the Teams app that is associated with the attachment. The property is specifically used to attribute a Teams message card to the specified app.
-        thumbnail_url (str): URL to a thumbnail image that the channel can use if it supports using an alternative, smaller form of content or contentUrl. For example, if you set contentType to application/word and set contentUrl to the location of the Word document, you might include a thumbnail image that represents the document. The channel could display the thumbnail image instead of the document. When the user clicks the image, the channel would open the document.
+        teamsAppId (str): The ID of the Teams app that is associated with the attachment.
+          The property is specifically used to attribute a Teams message card to the specified app.
+        thumbnailUrl (str): URL to a thumbnail image that the channel can use if it supports using an alternative,
+          smaller form of content or contentUrl. For example, if you set contentType to application/word and set
+          contentUrl to the location of the Word document, you might include a thumbnail image that represents
+          the document. The channel could display the thumbnail image instead of the document. When the user
+          clicks the image, the channel would open the document.
     """
 
     id: str | None = None

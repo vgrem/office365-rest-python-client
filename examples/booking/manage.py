@@ -16,7 +16,6 @@ Requires delegated permission ``Bookings.ReadWrite.All``,
 https://learn.microsoft.com/en-us/graph/api/resources/booking-api-overview
 """
 
-import sys
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
@@ -47,7 +46,7 @@ def main():
 
     biz = businesses[0]
     print(f"\nInspecting: {biz.display_name}")
-    print(f"  Business hours:")
+    print("  Business hours:")
     if biz.business_hours and biz.business_hours.value:
         for wh in biz.business_hours.value:
             print(f"    {wh.properties.get('day', '?'):10s}  {wh.properties.get('timeSlots', [])}")
@@ -63,7 +62,7 @@ def main():
         print(f"    {display:35s}  duration={duration}  price={price} {currency}")
 
     # -- Step 3: get staff availability --
-    print(f"\n  Getting staff availability for next 7 days...")
+    print("\n  Getting staff availability for next 7 days...")
     staff = biz.staff_members.get().execute_query()
     print(f"  Staff members: {len(staff)}")
     for s in staff[:3]:

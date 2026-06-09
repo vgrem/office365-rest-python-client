@@ -15,7 +15,6 @@ https://learn.microsoft.com/en-us/graph/api/group-list
 """
 
 import csv
-import sys
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
@@ -32,18 +31,32 @@ def main():
 
     with open(OUTPUT_FILE, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "groupId", "displayName", "mail", "groupType", "visibility",
-            "description", "createdDateTime", "memberCount",
-            "members (UPN)", "owners (UPN)",
-        ])
+        writer.writerow(
+            [
+                "groupId",
+                "displayName",
+                "mail",
+                "groupType",
+                "visibility",
+                "description",
+                "createdDateTime",
+                "memberCount",
+                "members (UPN)",
+                "owners (UPN)",
+            ]
+        )
 
         for g in groups:
             gid = g.id or "?"
             display = g.display_name or "(unnamed)"
             mail = g.mail or ""
-            gtype = "Microsoft 365" if g.mail_enabled and not g.security_enabled else \
-                    "Security" if g.security_enabled else "Distribution"
+            gtype = (
+                "Microsoft 365"
+                if g.mail_enabled and not g.security_enabled
+                else "Security"
+                if g.security_enabled
+                else "Distribution"
+            )
             visibility = g.visibility or "?"
             desc = (g.description or "")[:80]
             created = g.created_date_time.strftime("%Y-%m-%d") if g.created_date_time else ""
@@ -64,12 +77,20 @@ def main():
             except Exception:
                 pass
 
-            writer.writerow([
-                gid, display, mail, gtype, visibility,
-                desc, created, len(member_upns),
-                ";".join(member_upns) if member_upns else "",
-                ";".join(owner_upns) if owner_upns else "",
-            ])
+            writer.writerow(
+                [
+                    gid,
+                    display,
+                    mail,
+                    gtype,
+                    visibility,
+                    desc,
+                    created,
+                    len(member_upns),
+                    ";".join(member_upns) if member_upns else "",
+                    ";".join(owner_upns) if owner_upns else "",
+                ]
+            )
 
             print(f"  {display:40s}  type={gtype:15s}  members={len(member_upns):>4}  owners={len(owner_upns)}")
 

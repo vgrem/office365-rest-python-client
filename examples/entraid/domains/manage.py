@@ -15,8 +15,6 @@ Requires delegated permission ``Domain.ReadWrite.All``.
 https://learn.microsoft.com/en-us/graph/api/resources/domain
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -60,7 +58,7 @@ def main():
 
     # -- Step 4: verify the domain --
     # Do this only after you've added the DNS records at your registrar.
-    response = input(f"\nAdd the DNS records above at your registrar, then type 'verify' to confirm: ")
+    response = input("\nAdd the DNS records above at your registrar, then type 'verify' to confirm: ")
     if response.strip().lower() == "verify":
         domain = domain.verify().execute_query()
         is_verified = domain.state and domain.state.status == "Verified"
@@ -69,7 +67,7 @@ def main():
         print("  Skipped verification.")
 
     # -- Step 5: show service configuration records --
-    print(f"\nService configuration DNS records:")
+    print("\nService configuration DNS records:")
     s_records = domain.service_configuration_records.get().execute_query()
     for r in s_records:
         rtype = r.properties.get("recordType", "?")

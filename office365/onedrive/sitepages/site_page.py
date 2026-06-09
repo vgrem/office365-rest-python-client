@@ -31,10 +31,12 @@ class SitePage(BaseSitePage):
         """Get a collection of webPart by providing webPartPosition information.
 
         Args:
-            web_part_index (float): Index of the current WebPart. Represents the order of WebPart in this column or section. Only works if either columnId or isInVerticalSection is provided.
+            web_part_index (float): Index of the current WebPart. Represents the order of WebPart in this column or
+              section. Only works if either columnId or isInVerticalSection is provided.
             horizontal_section_id (float): Indicate the horizontal section where the WebPart located in.
             is_in_vertical_section (bool): Indicate whether the WebPart located in the vertical section.
-            column_id (float): Indicate the identifier of the column where the WebPart located in. Only works if horizontalSectionId is provided.
+            column_id (float): Indicate the identifier of the column where the WebPart located in. Only works if
+              horizontalSectionId is provided.
         """
         params = {
             "webPartIndex": web_part_index,

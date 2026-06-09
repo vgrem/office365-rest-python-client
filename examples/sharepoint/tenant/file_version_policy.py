@@ -14,8 +14,6 @@ Requires delegated permission ``Sites.FullControl.All``.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/SetFileVersionPolicy
 """
 
-import sys
-
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
@@ -69,6 +67,7 @@ def main():
     # -- Step 3: get per-library version policy --
     try:
         from office365.sharepoint.tenant.administration.policies.list_parameters import SPOListParameters
+
         list_params = SPOListParameters(
             listUrl=LIBRARY_URL,
             listType="DocumentLibrary",
@@ -80,7 +79,7 @@ def main():
 
         if lib_policy and lib_policy.value:
             p = lib_policy.value
-            print(f"\nLibrary file version policy:")
+            print("\nLibrary file version policy:")
             print(f"  MajorVersionLimit:          {p.MajorVersionLimit}")
             print(f"  MajorWithMinorVersionsLimit: {p.MajorWithMinorVersionsLimit}")
             print(f"  Expiration interval:         {p.ExpirationInterval} days")

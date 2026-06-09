@@ -39,7 +39,7 @@ def main():
 
     # Load subject and body for display
     message.select(["subject", "body"]).execute_query()
-    print(f"Source message: \"{message.subject}\"\n")
+    print(f'Source message: "{message.subject}"\n')
 
     # -- Step 2: reply --
     draft = message.create_reply().execute_query()
@@ -63,7 +63,7 @@ def main():
 
     if archive_folder is None:
         archive_folder = inbox.child_folders.add("Archive").execute_query()
-        print(f"  (Created 'Archive' folder)")
+        print("  (Created 'Archive' folder)")
 
     moved = message.move(archive_folder.id).execute_query()
     print(f"✓ Moved to '{archive_folder.display_name}' (new id: {moved.id})")
@@ -71,8 +71,8 @@ def main():
     # -- Step 5: copy back to inbox --
     inbox = client.me.mail_folders["inbox"]
     # Refresh the message reference from its new location
-    copied = client.me.messages[moved.id].copy(inbox.id).execute_query()
-    print(f"✓ Copied back to Inbox.")
+    client.me.messages[moved.id].copy(inbox.id).execute_query()
+    print("✓ Copied back to Inbox.")
 
 
 if __name__ == "__main__":

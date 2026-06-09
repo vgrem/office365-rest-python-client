@@ -104,7 +104,7 @@ def main():
         # The cloned team ID can be found in the targetResourceLocation
         # of the "succeeded" operation if needed.
     else:
-        print(f"\n❌ Clone failed or timed out.")
+        print("\n❌ Clone failed or timed out.")
 
 
 if __name__ == "__main__":

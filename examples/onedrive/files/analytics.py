@@ -58,7 +58,7 @@ def main():
     start = now - timedelta(days=30)
     end = now
 
-    print(f"\nActivity by day for the last 30 days:")
+    print("\nActivity by day for the last 30 days:")
     try:
         activities = target.get_activities_by_interval(
             start_dt=start,
@@ -78,7 +78,7 @@ def main():
         print(f"  (activity by interval not available: {e})")
 
     # -- Step 4: item activity (who did what) --
-    print(f"\nRecent activities on this file:")
+    print("\nRecent activities on this file:")
     try:
         activities_v2 = target.get_activities_by_interval(
             start_dt=start,
@@ -86,7 +86,7 @@ def main():
             interval="day",
         ).execute_query()
         if activities_v2:
-            print(f"  (see activity timeline above — details available via activity insight resources)")
+            print("  (see activity timeline above — details available via activity insight resources)")
     except Exception as e:
         print(f"  {e}")
 

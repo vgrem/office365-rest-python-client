@@ -12,8 +12,6 @@ Requires application permission ``CallRecords.Read.All``.
 https://learn.microsoft.com/en-us/graph/api/resources/callrecords-api-overview
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -50,8 +48,10 @@ def main():
         failure = r.properties.get("failureInfo", {})
         failure_phase = failure.get("stage", "") if isinstance(failure, dict) else ""
 
-        print(f"  {r_id[:20]:20s}  type={call_type:15s}  modality={str(modality[:3]):10s}  "
-              f"users={user_count}  organizer={org_upn[:25]:25s}")
+        print(
+            f"  {r_id[:20]:20s}  type={call_type:15s}  modality={str(modality[:3]):10s}  "
+            f"users={user_count}  organizer={org_upn[:25]:25s}"
+        )
         print(f"    start={start}  end={end}  failure={failure_phase or 'none'}")
 
     # -- Step 2: drill into sessions for the most recent call --
@@ -68,8 +68,10 @@ def main():
             callee = s.properties.get("callee", {}).get("user", {}).get("userPrincipalName", "?")
             caller = s.properties.get("caller", {}).get("user", {}).get("userPrincipalName", "?")
             modality = s.properties.get("modalities", [])
-            print(f"    session {s_id}  caller={str(caller)[:25]:25s}  "
-                  f"callee={str(callee)[:25]:25s}  modality={str(modality[:3]):10s}")
+            print(
+                f"    session {s_id}  caller={str(caller)[:25]:25s}  "
+                f"callee={str(callee)[:25]:25s}  modality={str(modality[:3]):10s}"
+            )
 
             # Segments within this session
             segments = s.segments.get().execute_query()

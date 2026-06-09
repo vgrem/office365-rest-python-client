@@ -24,9 +24,7 @@ def list_consent_grants() -> list[dict]:
 
     Returns list of consent grant dicts sorted by app name.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     grants = []
     try:
@@ -44,12 +42,14 @@ def list_consent_grants() -> list[dict]:
             except Exception:
                 pass
 
-            grants.append({
-                "app": app_name,
-                "app_id": client_app,
-                "scope": scope,
-                "consent_type": consent_type,
-            })
+            grants.append(
+                {
+                    "app": app_name,
+                    "app_id": client_app,
+                    "scope": scope,
+                    "consent_type": consent_type,
+                }
+            )
     except Exception as e:
         print(f"  Warning: could not fetch consent grants: {e}")
 
@@ -69,8 +69,8 @@ def main():
     print(f"{'App':40s} {'Scope (+ client)':40s} {'Type'}")
     print("-" * 90)
     for g in grants:
-        app = g['app'][:38]
-        scope = g['scope'][:38]
+        app = g["app"][:38]
+        scope = g["scope"][:38]
         print(f"{app:40s} {scope:40s} {g['consent_type']}")
 
     admin_consent = [g for g in grants if g["consent_type"] == "AllPrincipals"]

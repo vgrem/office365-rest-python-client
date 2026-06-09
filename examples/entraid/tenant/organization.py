@@ -12,8 +12,6 @@ Requires delegated permission ``Organization.Read.All``
 https://learn.microsoft.com/en-us/graph/api/resources/organization
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -43,9 +41,11 @@ def main():
         for d in org.verified_domains:
             is_default = d.properties.get("isDefault", False)
             is_initial = d.properties.get("isInitial", False)
-            print(f"    {d.properties.get('name', '?'):35s}  "
-                  f"{'default ' if is_default else ''}"
-                  f"{'initial' if is_initial else ''}")
+            print(
+                f"    {d.properties.get('name', '?'):35s}  "
+                f"{'default ' if is_default else ''}"
+                f"{'initial' if is_initial else ''}"
+            )
 
     # -- Step 2: notification contacts --
     print(f"\n  Technical notification mails:       {org.technical_notification_mails or '(none)'}")
@@ -57,7 +57,7 @@ def main():
     # -- Step 3: list organization branding --
     try:
         branding = org.branding.get().execute_query()
-        print(f"\n  Branding:")
+        print("\n  Branding:")
         print(f"    Locale:                       {branding.locale or '?'}")
         print(f"    Background color:             {branding.background_color or '?'}")
         print(f"    Sign-in page text:            {(branding.sign_in_page_text or '')[:60]}")
@@ -72,10 +72,9 @@ def main():
         partners = org.partner_tenant_relationships.get().execute_query()
         print(f"\n  Partner tenant relationships: {len(partners)}")
         for pt in partners:
-            print(f"    {pt.properties.get('partnerTenantId', '?'):40s}  "
-                  f"status={pt.properties.get('status', '?')}")
+            print(f"    {pt.properties.get('partnerTenantId', '?'):40s}  status={pt.properties.get('status', '?')}")
     except Exception:
-        print(f"\n  (partner relationships not available)")
+        print("\n  (partner relationships not available)")
 
 
 if __name__ == "__main__":

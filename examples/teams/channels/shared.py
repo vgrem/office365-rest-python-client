@@ -98,12 +98,7 @@ def main():
     print("Allowed member added (AadUserConversationMember).")
 
     # — Step 5: check whether the user has access —
-    result = (
-        client.teams[host_id]
-        .channels[channel.id]
-        .does_user_have_access(user_id=guest_user.id)
-        .execute_query()
-    )
+    result = client.teams[host_id].channels[channel.id].does_user_have_access(user_id=guest_user.id).execute_query()
     has_access = result.value
     print(f"User has access to shared channel: {has_access}")
 

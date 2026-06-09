@@ -60,13 +60,15 @@ def main():
 
     for d in details:
         pref = d.user_preferred_method_for_secondary_authentication or "-"
-        print(f"{d.user_principal_name[:33]:35s} "
-              f"{'✔' if d.is_mfa_registered else '✗':6s} "
-              f"{'✔' if d.is_passwordless_capable else '✗':9s} "
-              f"{'✔' if d.is_sspr_capable else '✗':9s} "
-              f"{'✔' if d.is_sspr_enabled else '✗':8s} "
-              f"{'✔' if d.is_admin else '':6s}  "
-              f"{pref}")
+        print(
+            f"{d.user_principal_name[:33]:35s} "
+            f"{'✔' if d.is_mfa_registered else '✗':6s} "
+            f"{'✔' if d.is_passwordless_capable else '✗':9s} "
+            f"{'✔' if d.is_sspr_capable else '✗':9s} "
+            f"{'✔' if d.is_sspr_enabled else '✗':8s} "
+            f"{'✔' if d.is_admin else '':6s}  "
+            f"{pref}"
+        )
 
     # -- Step 4: per-user registered methods for a specific user --
     print()

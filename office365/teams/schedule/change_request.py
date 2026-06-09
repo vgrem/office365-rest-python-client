@@ -22,7 +22,7 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
 
     def decline(self, message: str) -> Self:
         """Args:
-            message (str): A custom approval message.
+        message (str): A custom approval message.
         """
         qry = ServiceOperationQuery(self, "decline", None, {"message": message})
         self.context.add_query(qry)

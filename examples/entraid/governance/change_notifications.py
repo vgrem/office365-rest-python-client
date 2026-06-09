@@ -20,7 +20,6 @@ Requires delegated permission appropriate to the resource. For
 https://learn.microsoft.com/en-us/graph/api/resources/subscription
 """
 
-import sys
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
@@ -44,17 +43,14 @@ def main():
 
     # -- Step 1: create a subscription --
     expiry = datetime.now(timezone.utc) + timedelta(hours=12)
-    sub = (
-        client.subscriptions.add(
-            changeType=CHANGE_TYPE,
-            notificationUrl=NOTIFICATION_URL,
-            resource=RESOURCE,
-            expirationDateTime=expiry.isoformat(),
-            clientState="secret-123",  # verify notifications in your handler
-        )
-        .execute_query()
-    )
-    print(f"Subscription created:")
+    sub = client.subscriptions.add(
+        changeType=CHANGE_TYPE,
+        notificationUrl=NOTIFICATION_URL,
+        resource=RESOURCE,
+        expirationDateTime=expiry.isoformat(),
+        clientState="secret-123",  # verify notifications in your handler
+    ).execute_query()
+    print("Subscription created:")
     print(f"  ID:             {sub.id}")
     print(f"  Resource:       {sub.resource}")
     print(f"  Change type:    {sub.change_type}")
@@ -75,7 +71,7 @@ def main():
     new_expiry = datetime.now(timezone.utc) + timedelta(hours=24)
     sub.set_property("expirationDateTime", new_expiry.isoformat())
     sub.update().execute_query()
-    print(f"Subscription renewed — new expiration:")
+    print("Subscription renewed — new expiration:")
     print(f"  {sub.expiration_date_time.strftime('%Y-%m-%d %H:%M')}")
     print()
 

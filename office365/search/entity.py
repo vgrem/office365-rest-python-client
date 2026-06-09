@@ -59,11 +59,13 @@ class SearchEntity(Entity):
 
         Args:
             query_string (str): Contains the query terms.
-            entity_types (list[str]): One or more types of resources expected in the response. Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem.
+            entity_types (list[str]): One or more types of resources expected in the response.
+              Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem.
             page_from (int): Specifies the offset for the search results. Offset 0 returns the very first result.
             size (int): The size of the page to be retrieved. The maximum value is 500. Optional.
             enable_top_results (bool): This triggers hybrid sort for messages
-            region (str): The geographic location for the search. Required for searches that use application permissions. For details, see Get the region value.
+            region (str): The geographic location for the search. Required for searches that use application
+              permissions. For details, see Get the region value.
         """
         search_request = SearchRequest(
             query=SearchQuery(query_string),

@@ -43,7 +43,8 @@ class Drive(BaseItem):
 
         Args:
             name (str): Bundle name
-            children (list): the list of file facets if creating a files or a folder facets if creating a folder or a remoteItem facets if adding a shared folders
+            children (list): the list of file facets if creating a files or a folder facets if creating a folder or
+              a remoteItem facets if adding a shared folders
         """
         return_type = DriveItem(self.context)
         self.bundles.add_child(return_type)

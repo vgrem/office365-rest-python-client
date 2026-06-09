@@ -14,8 +14,6 @@ Requires delegated permission ``Group.ReadWrite.All``.
 https://learn.microsoft.com/en-us/graph/api/resources/grouplifecyclepolicy
 """
 
-import sys
-
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -31,9 +29,7 @@ def main():
         lifetime = p.group_lifetime_in_days or "?"
         notification = p.alternate_notification_emails or "(none)"
         managed = p.managed_group_types or []
-        print(f"  Lifetime: {lifetime:>3} days  "
-              f"notification: {notification:45s}  "
-              f"managed types: {managed}")
+        print(f"  Lifetime: {lifetime:>3} days  notification: {notification:45s}  managed types: {managed}")
 
     # -- Step 2: find groups not covered by any policy --
     groups = (

@@ -39,7 +39,7 @@ def main():
     if not active:
         print("No active alerts. Showing recent alerts:\n")
 
-    for a in (active or all_alerts[:10]):
+    for a in active or all_alerts[:10]:
         alert_id = a.id or "?"
         title = a.properties.get("title", "(untitled)")
         severity = a.properties.get("severity", "?")

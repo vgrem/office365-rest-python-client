@@ -25,9 +25,7 @@ def find_apps_without_owners() -> tuple[list[dict], list[dict]]:
     Returns:
         Tuple of (apps_no_owners, sps_no_owners).
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(
-        test_client_id, test_client_secret
-    )
+    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
     apps_no_owners = []
     sps_no_owners = []
@@ -41,11 +39,13 @@ def find_apps_without_owners() -> tuple[list[dict], list[dict]]:
         try:
             owners = client.applications[app_id].owners.get().execute_query()
             if not owners:
-                apps_no_owners.append({
-                    "name": app_name,
-                    "id": app_id,
-                    "created": getattr(app, "created_date_time", None),
-                })
+                apps_no_owners.append(
+                    {
+                        "name": app_name,
+                        "id": app_id,
+                        "created": getattr(app, "created_date_time", None),
+                    }
+                )
         except Exception:
             pass
 
@@ -58,10 +58,12 @@ def find_apps_without_owners() -> tuple[list[dict], list[dict]]:
         try:
             owners = client.service_principals[sp_id].owners.get().execute_query()
             if not owners:
-                sps_no_owners.append({
-                    "name": sp_name,
-                    "id": sp_id,
-                })
+                sps_no_owners.append(
+                    {
+                        "name": sp_name,
+                        "id": sp_id,
+                    }
+                )
         except Exception:
             pass
 

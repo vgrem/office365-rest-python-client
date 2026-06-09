@@ -17,7 +17,6 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/GetSitePro
 """
 
 import csv
-import sys
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
@@ -43,12 +42,24 @@ def main():
 
     with open(OUTPUT_FILE, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "url", "title", "template", "owner", "storageQuotaMB",
-            "storageUsageMB", "storageUsagePct", "compatibilityLevel",
-            "sharingCapability", "lockState", "lastContentModifiedDate",
-            "hubSite", "createdDate", "websCount",
-        ])
+        writer.writerow(
+            [
+                "url",
+                "title",
+                "template",
+                "owner",
+                "storageQuotaMB",
+                "storageUsageMB",
+                "storageUsagePct",
+                "compatibilityLevel",
+                "sharingCapability",
+                "lockState",
+                "lastContentModifiedDate",
+                "hubSite",
+                "createdDate",
+                "websCount",
+            ]
+        )
 
         for site in sites:
             url = getattr(site, "url", "?")
@@ -70,7 +81,9 @@ def main():
             is_hub = getattr(site, "is_hub_site", False)
             webs = getattr(site, "webs_count", "?")
 
-            writer.writerow([url, title, template, owner, quota, usage, pct, compat, sharing, lock, last_mod, is_hub, created, webs])
+            writer.writerow(
+                [url, title, template, owner, quota, usage, pct, compat, sharing, lock, last_mod, is_hub, created, webs]
+            )
             print(f"  {title[:40]:40s}  {format_mb(usage):>10s} / {format_mb(quota):>10s}  ({pct}%)")
 
     print(f"\n✓ Exported {len(sites)} sites to {OUTPUT_FILE}")
