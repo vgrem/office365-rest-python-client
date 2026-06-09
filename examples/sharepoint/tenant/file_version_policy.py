@@ -50,16 +50,6 @@ def main():
     # Expiration.DeleteAfter: "AfterInterval" or "Never"
     # DeleteJobInterval:      how often the timer job runs (days)
 
-    new_policy = """<FileVersionPolicy>
-  <MajorVersionLimit>500</MajorVersionLimit>
-  <MajorWithMinorVersionsLimit>500</MajorWithMinorVersionsLimit>
-  <Expiration>
-    <Interval>180</Interval>
-    <DeleteAfter>AfterInterval</DeleteAfter>
-  </Expiration>
-  <DeleteJobInterval>7</DeleteJobInterval>
-</FileVersionPolicy>"""
-
     # Uncomment to apply:
     # tenant.set_file_version_policy(policy_xml=new_policy).execute_query()
     # print("✓ Tenant file version policy updated.")

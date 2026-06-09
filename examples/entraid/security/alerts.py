@@ -25,7 +25,6 @@ def main():
     alerts = client.security.alerts_v2
 
     # -- Step 1: list recent active alerts --
-    since = (datetime.now(timezone.utc) - timedelta(days=3)).isoformat()
     all_alerts = alerts.get().execute_query()
     print(f"Total alerts: {len(all_alerts)}\n")
 

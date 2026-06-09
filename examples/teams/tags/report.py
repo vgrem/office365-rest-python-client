@@ -13,6 +13,9 @@ https://learn.microsoft.com/en-us/graph/api/teamworktag-list
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
+_SAMPLE_MEMBERS = 3
+_DISPLAY_LIMIT = 10
+
 
 def get_tag_report() -> list[dict]:
     """Build a cross-tenant tag report."""
@@ -63,9 +66,9 @@ def main():
     print(f"Found {len(report)} tags across {len(set(r['team'] for r in report))} teams\n")
 
     for r in sorted(report, key=lambda x: (x["team"].lower(), x["tag"].lower())):
-        emails = ", ".join(r["members"][:3])
-        if len(r["members"]) > 3:
-            emails += f" … +{len(r['members']) - 3}"
+        emails = ", ".join(r["members"][:_SAMPLE_MEMBERS])
+        if len(r["members"]) > _SAMPLE_MEMBERS:
+            emails += f" … +{len(r['members']) - _SAMPLE_MEMBERS}"
         print(f"Team: {r['team']}")
         print(f"  Tag: {r['tag']}  ({r['member_count']} members)")
         print(f"  Members: {emails}")
@@ -85,10 +88,10 @@ def main():
     untagged = [g.display_name for g in groups if g.display_name not in tagged_teams]
     if untagged:
         print(f"\nTeams without any tags ({len(untagged)}):")
-        for name in untagged[:10]:
+        for name in untagged[:_DISPLAY_LIMIT]:
             print(f"  {name}")
-        if len(untagged) > 10:
-            print(f"  … and {len(untagged) - 10} more")
+        if len(untagged) > _DISPLAY_LIMIT:
+            print(f"  … and {len(untagged) - _DISPLAY_LIMIT} more")
 
 
 if __name__ == "__main__":

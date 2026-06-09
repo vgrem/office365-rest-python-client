@@ -35,7 +35,6 @@ def find_break_glass_accounts() -> dict:
     try:
         policies = client.identity.conditional_access.policies.get().execute_query()
         for policy in policies:
-            grant_controls = getattr(policy, "grant_controls", None)
             conditions = getattr(policy, "conditions", None)
             users_cond = getattr(conditions, "users", None) if conditions else None
             include_users = getattr(users_cond, "include_users", []) if users_cond else []
@@ -66,7 +65,6 @@ def find_break_glass_accounts() -> dict:
 
     # 2. Find permanently active Global Admins
     try:
-        roles = client.identity_providers  # placeholder — actual call
         role_assignments = client.identity_governance.role_management.directory.role_assignments.get().execute_query()
         for ra in role_assignments:
             role_def = (

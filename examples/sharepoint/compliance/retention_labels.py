@@ -22,7 +22,6 @@ def main():
     ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
     # -- Step 1: list all available compliance tags in the site --
-    web = ctx.web.get().execute_query()
     site = ctx.site.get().execute_query()
 
     tags = site.get_available_tags().execute_query()

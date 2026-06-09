@@ -19,6 +19,8 @@ https://learn.microsoft.com/en-us/graph/api/resources/agreement
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
+_DISPLAY_LIMIT = 5
+
 
 def main():
     client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
@@ -47,13 +49,10 @@ def main():
 
             print(f"    Accepted by: {len(accepted_users)} user(s)")
             if accepted_users:
-                for u in list(accepted_users)[:5]:
-                    displayed = u.properties.get(
-                        "displayName", u.properties.get("userPrincipalName", u.id if hasattr(u, "id") else str(u))
-                    )
+                for u in list(accepted_users)[:_DISPLAY_LIMIT]:
                     print(f"      {u}")
-                if len(accepted_users) > 5:
-                    print(f"      … and {len(accepted_users) - 5} more")
+                if len(accepted_users) > _DISPLAY_LIMIT:
+                    print(f"      … and {len(accepted_users) - _DISPLAY_LIMIT} more")
         except Exception:
             print("    (acceptances not accessible)")
 
@@ -94,10 +93,10 @@ def main():
         users_without = [u for u in users if (u.user_principal_name or "").upper() not in accepted_upns]
         if users_without:
             print(f"Users without acceptance: {len(users_without)} out of {len(users)}")
-            for u in users_without[:5]:
+            for u in users_without[:_DISPLAY_LIMIT]:
                 print(f"  {u.user_principal_name:35s}  {u.display_name or ''}")
-            if len(users_without) > 5:
-                print(f"  … and {len(users_without) - 5} more")
+            if len(users_without) > _DISPLAY_LIMIT:
+                print(f"  … and {len(users_without) - _DISPLAY_LIMIT} more")
 
 
 if __name__ == "__main__":

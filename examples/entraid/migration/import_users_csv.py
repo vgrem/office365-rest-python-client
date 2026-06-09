@@ -22,11 +22,13 @@ from io import StringIO
 from office365.graph_client import GraphClient
 from tests import create_unique_name, test_client_id, test_client_secret, test_tenant
 
-SAMPLE_CSV = """userPrincipalName,givenName,surname,displayName,department,jobTitle,officeLocation,city,country,mobilePhone,mail,password,accountEnabled
-user1@contoso.com,John,Doe,John Doe,Engineering,Developer,Seattle,Seattle,USA,+1-555-0101,,TempP@ss123,True
-user2@contoso.com,Jane,Smith,Jane Smith,Marketing,Manager,New York,New York,USA,+1-555-0102,,TempP@ss456,True
-user3@contoso.com,Bob,Johnson,Bob Johnson,Sales,Representative,Chicago,Chicago,USA,+1-555-0103,,TempP@ss789,True
-"""
+SAMPLE_CSV = (
+    "userPrincipalName,givenName,surname,displayName,department,jobTitle,"
+    "officeLocation,city,country,mobilePhone,mail,password,accountEnabled\n"
+    "user1@contoso.com,John,Doe,John Doe,Engineering,Developer,Seattle,Seattle,USA,+1-555-0101,,TempP@ss123,True\n"
+    "user2@contoso.com,Jane,Smith,Jane Smith,Marketing,Manager,New York,New York,USA,+1-555-0102,,TempP@ss456,True\n"
+    "user3@contoso.com,Bob,Johnson,Bob Johnson,Sales,Representative,Chicago,Chicago,USA,+1-555-0103,,TempP@ss789,True\n"
+)
 
 
 def import_users_from_csv(csv_content: str) -> list[dict]:

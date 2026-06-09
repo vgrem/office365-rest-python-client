@@ -60,7 +60,6 @@ def main():
     added = 0
     updated = 0
     deleted = 0
-    delta_token = None
 
     for item in changes:
         name = item.name or "(unnamed)"

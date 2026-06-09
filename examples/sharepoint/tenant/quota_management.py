@@ -18,6 +18,9 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
 
+_WARNING_PCT = 80
+_MAX_PCT = 100
+
 _KB = 1024
 
 
@@ -55,11 +58,11 @@ def main():
 
     total = len(report)
     exceeded = [r for r in report if r["usage_mb"] > r["quota_mb"]]
-    near_limit = [r for r in report if 80 <= r["usage_pct"] < 100]
+    near_limit = [r for r in report if _WARNING_PCT <= r["usage_pct"] < _MAX_PCT]
 
     print(f"Total sites: {total}")
     print(f"Exceeding quota: {len(exceeded)}")
-    print(f"Nearing limit (80%+): {len(near_limit)}\n")
+    print(f"Nearing limit ({_WARNING_PCT}%+): {len(near_limit)}\n")
 
     if near_limit:
         print(f"{'Title':40s} {'Used':15s} {'Quota':15s} {'Used %':>8s}")
