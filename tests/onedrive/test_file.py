@@ -69,7 +69,7 @@ class TestFile(GraphDelegatedTestCase):
 
         name = "New_" + uuid.uuid4().hex
         folder = drive.root.create_folder(name).execute_query()
-        self.assertEqual(folder.get_property("name"), name)
+        self.assertEqual(folder.name, name)
         TestFile.target_folder = folder
 
     @requires_delegated(
@@ -102,9 +102,9 @@ class TestFile(GraphDelegatedTestCase):
         name = "SharePoint User Guide.docx"
         path = f"{os.path.dirname(__file__)}/../data/{name}"
         file_item = drive.root.upload_file(path).execute_query()
-        self.assertIsNotNone(file_item.get_property("name"))
-        self.assertIsNotNone(file_item.get_property("webUrl"))
-        self.assertTrue(file_item.get_property("isFile"))
+        self.assertIsNotNone(file_item.name)
+        self.assertIsNotNone(file_item.web_url)
+        self.assertTrue(file_item.is_file)
         TestFile.target_file = file_item
 
     @requires_delegated(
@@ -136,7 +136,7 @@ class TestFile(GraphDelegatedTestCase):
 
         file_item.checkout().execute_query()
         target = file_item.get().select(["publication"]).execute_query()
-        self.assertEqual(target.get_property("publication")["level"], "checkout")
+        self.assertEqual(target.publication.level, "checkout")
 
     @requires_delegated(
         "Files.ReadWrite",
@@ -152,7 +152,7 @@ class TestFile(GraphDelegatedTestCase):
 
         file_item.checkin("").execute_query()
         target = file_item.get().select(["publication"]).execute_query()
-        self.assertEqual(target.get_property("publication")["level"], "published")
+        self.assertEqual(target.publication.level, "published")
 
     @requires_delegated(
         "Files.ReadWrite",
@@ -184,7 +184,7 @@ class TestFile(GraphDelegatedTestCase):
         name = "big_buck_bunny.mp4"
         path = f"{os.path.dirname(__file__)}/../data/{name}"
         file_item = drive.root.resumable_upload(path).get().execute_query()
-        self.assertIsNotNone(file_item.get_property("webUrl"))
+        self.assertIsNotNone(file_item.web_url)
 
     @requires_delegated(
         "Files.ReadWrite",

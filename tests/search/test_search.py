@@ -14,6 +14,7 @@ Tests cover:
 
 from __future__ import annotations
 
+from office365.runtime.client_value_collection import ClientValueCollection
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -103,15 +104,15 @@ class TestSearch(GraphDelegatedTestCase):
             self.skipTest("No search results returned")
 
         for response in responses:
-            containers = response.get_property("hitsContainers")
+            containers = response.hitsContainers
             if containers:
                 for container in containers:
-                    total = container.get_property("total")
-                    hits = container.get_property("hits")
+                    total = container.total
+                    hits = container.hits
                     if total is not None:
                         self.assertGreaterEqual(total, 0)
                     if hits is not None:
-                        self.assertIsInstance(hits, list)
+                        self.assertIsInstance(hits, ClientValueCollection)
                 break
 
     @requires_delegated(

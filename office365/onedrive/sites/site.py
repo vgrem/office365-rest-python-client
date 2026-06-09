@@ -32,7 +32,7 @@ class Site(BaseItem):
     """The site resource provides metadata and relationships for a SharePoint site."""
 
     def __str__(self):
-        return self.name or self.entity_type_name
+        return self.display_name or self.name or self.entity_type_name
 
     def __repr__(self):
         return self.name or self.web_url or self.id or self.entity_type_name

@@ -39,7 +39,7 @@ class TestSite(GraphDelegatedTestCase):
     )
     def test2_get_site_by_path(self):
         """Get a site by its server-relative path"""
-        result = self.client.sites.get_by_path("/sites/team").execute_query()
+        result = self.client.sites.get_by_path("/sites/project").execute_query()
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(

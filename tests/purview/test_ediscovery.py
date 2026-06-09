@@ -32,7 +32,6 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
         """Listing eDiscovery cases returns a valid collection."""
         result = self.client.security.cases.ediscovery_cases.top(10).get().execute_query()
         self.assertIsNotNone(result.resource_path)
-        # The collection is valid regardless of count
 
     @requires_delegated(
         *_EDISCOVERY_WRITE,

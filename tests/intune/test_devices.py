@@ -53,7 +53,7 @@ class TestDevices(GraphDelegatedTestCase):
         """Creating a new device should succeed."""
         result = self.client.devices.add("SDK Test Device", "linux", "1").execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertIsNotNone(result.get_property("id"))
+        self.assertIsNotNone(result.id)
         self.assertEqual(result.get_property("displayName"), "SDK Test Device")
         TestDevices.device = result
 

@@ -64,7 +64,7 @@ class TestTaskList(GraphDelegatedTestCase):
         if not tl:
             self.skipTest("No task list created from previous test")
 
-        self.assertIsNotNone(tl.get_property("displayName"))
+        self.assertIsNotNone(tl.display_name)
         self.assertIsNotNone(tl.get_property("wellknownListName"))
 
     @requires_delegated(
@@ -140,7 +140,7 @@ class TestTaskList(GraphDelegatedTestCase):
 
         item = task.checklist_items.add(displayName="SDK Subtask").execute_query()
         self.assertIsNotNone(item.resource_path)
-        self.assertEqual(item.get_property("displayName"), "SDK Subtask")
+        self.assertEqual(item.display_name, "SDK Subtask")
 
     @requires_delegated(
         "Tasks.Read",

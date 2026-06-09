@@ -118,6 +118,6 @@ class TestDrive(GraphDelegatedTestCase):
         drives = self.client.drives.top(1).get().execute_query()
         if len(drives) > 0:
             drive = drives[0]
-            self.assertIsNotNone(drive.get_property("id"))
-            self.assertIsNotNone(drive.get_property("driveType"))
-            self.assertIsNotNone(drive.get_property("webUrl"))
+            self.assertIsNotNone(drive.id)
+            self.assertIsNotNone(drive.drive_type)
+            self.assertIsNotNone(drive.web_url)
