@@ -22,6 +22,10 @@ directory roles, policies, and audit logs.
 | `Policy.Read.All` | Read tenant policies | [Policy permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#policy-permissions) |
 | `IdentityProvider.Read.All` | Read identity providers (SAML, social) | [IdentityProvider permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#identity-provider-permissions) |
 | `AuditLog.Read.All` | Read sign-in logs and audit logs | [AuditLog permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#audit-log-permissions) |
+| `IdentityRiskyUser.Read.All` | Read risky users and risk detections | [Identity Protection permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#identityprotection-permissions) |
+| `AccessReview.Read.All` | Read access reviews history | [Access review permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#access-review-permissions) |
+| `Domain.ReadWrite.All` | Add and verify custom domains | [Domain permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#domains-permissions) |
+| `UserAuthenticationMethod.Read.All` | Read registered MFA,FIDO2,passwordless methods | [Authentication methods permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#authentication-methods-permissions) |
 
 Admin consent is required for most permissions above.
 
@@ -143,6 +147,10 @@ tenant-level policies, and audit logs.
 | Operation | File | Required role | API reference |
 |---|---|---|---|
 | List user sign-in logs | [`audit/list_signins.py`](./audit/list_signins.py) | `AuditLog.Read.All` | [list signins](https://learn.microsoft.com/en-us/graph/api/signin-list) |
+| **Risky users** — Identity Protection review, risk detections, dismiss / confirm-compromise | [`protection/risky_users.py`](./protection/risky_users.py) | `IdentityRiskyUser.Read.All`, `IdentityRiskDetection.Read.All` | [risky users](https://learn.microsoft.com/en-us/graph/api/resources/riskyuser) |
+| **Access reviews** — history definitions, instances, decisions, compliance reporting | [`governance/access_reviews.py`](./governance/access_reviews.py) | `AccessReview.Read.All` | [access reviews](https://learn.microsoft.com/en-us/graph/api/resources/accessreviewsv2-overview) |
+| **Domain management** — add, verify DNS, check service records | [`domains/manage.py`](./domains/manage.py) | `Domain.ReadWrite.All` | [domains API](https://learn.microsoft.com/en-us/graph/api/resources/domain) |
+| **Auth methods** — tenant MFA/passwordless readiness, per-user methods (FIDO2, phone, Authenticator) | [`users/auth_methods.py`](./users/auth_methods.py) | `UserAuthenticationMethod.Read.All`, `AuditLog.Read.All` | [auth methods overview](https://learn.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview) |
 
 ---
 
