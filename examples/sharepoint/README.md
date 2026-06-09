@@ -27,6 +27,7 @@ prints clear output.
 | [`lists/`](./lists/) | List CRUD, import/export, paging |
 | [`migration/`](./migration/) | Migration assessment scanner |
 | [`navigation/`](./navigation/) | Top nav, Quick Launch |
+| [`operations/`](./operations/) | Long-running async operations (create/update/delete sites), SpoOperation polling |
 | [`pages/`](./pages/) | Modern site pages CRUD, news |
 | [`propertybag/`](./propertybag/) | Custom key-value pairs on webs |
 | [`permissions/`](./permissions/) | Grant, revoke, break inheritance |
