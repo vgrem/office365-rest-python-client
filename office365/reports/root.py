@@ -11,6 +11,7 @@ from office365.reports.security.root import SecurityReportsRoot
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class ReportRoot(Entity):
@@ -389,6 +390,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @odata(name="authenticationMethods")
     @property
     def authentication_methods(self) -> AuthenticationMethodsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""

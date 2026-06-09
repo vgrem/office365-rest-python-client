@@ -34,7 +34,7 @@ class TestOutlookUser(GraphDelegatedTestCase):
         result = self.client.me.outlook.supported_languages().execute_query()
         self.assertIsNotNone(result.value)
         if result.value:
-            self.assertIsNotNone(result.value[0].get_property("displayName"))
+            self.assertIsNotNone(result.value[0].displayName)
 
     @requires_delegated(
         "User.Read",
@@ -48,7 +48,7 @@ class TestOutlookUser(GraphDelegatedTestCase):
         result = self.client.me.outlook.supported_time_zones().execute_query()
         self.assertIsNotNone(result.value)
         if result.value:
-            self.assertIsNotNone(result.value[0].get_property("displayName"))
+            self.assertIsNotNone(result.value[0].displayName)
 
     @requires_delegated(
         "Mail.Read",
@@ -82,7 +82,7 @@ class TestOutlookUser(GraphDelegatedTestCase):
     def test_05_get_mailbox_settings(self):
         """Getting mailbox settings returns a valid settings object."""
         result = self.client.me.select(["MailboxSettings"]).get().execute_query()
-        self.assertIsNotNone(result.get_property("mailboxSettings"))
+        self.assertIsNotNone(result.mailbox_settings)
 
     @requires_delegated(
         "MailboxSettings.Read",
@@ -92,9 +92,9 @@ class TestOutlookUser(GraphDelegatedTestCase):
     def test_06_mailbox_settings_has_properties(self):
         """Mailbox settings expose automaticRepliesSetting and dateFormat."""
         result = self.client.me.select(["MailboxSettings"]).get().execute_query()
-        settings = result.get_property("mailboxSettings")
+        settings = result.mailbox_settings
         if settings:
-            self.assertIsNotNone(settings.get_property("automaticRepliesSetting"))
+            self.assertIsNotNone(settings.automaticRepliesSetting)
 
     @requires_delegated(
         "MailboxSettings.ReadWrite",

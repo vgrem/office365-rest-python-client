@@ -1,6 +1,7 @@
 from office365.directory.rolemanagement.application import RbacApplication
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class RoleManagement(Entity):
@@ -12,15 +13,16 @@ class RoleManagement(Entity):
     """
 
     @property
-    def directory(self):
+    def directory(self) -> RbacApplication:
         """"""
         return self.properties.get(
             "directory",
             RbacApplication(self.context, ResourcePath("directory", self.resource_path)),
         )
 
+    @odata(name="entitlementManagement")
     @property
-    def entitlement_management(self):
+    def entitlement_management(self) -> RbacApplication:
         """Container for roles and assignments for entitlement management resources."""
         return self.properties.get(
             "entitlementManagement",

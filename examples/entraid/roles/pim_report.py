@@ -15,7 +15,7 @@ from tests import test_client_id, test_client_secret, test_tenant
 client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
 # Directory roles (Global Admin, User Admin, etc.)
-roles = client.role_management.directory.role_assignments.get().execute_query()
+roles = client.role_management.directory.role_assignments.get().expand(["roleDefinition"]).execute_query()
 print(f"PIM directory role assignments ({len(roles)}):")
 for r in roles:
-    print(f"  Principal: {r.principal_id}  Role: {r.role_definition_id}")
+    print(f"  Principal: {r.principal_id}  Role: {r.role_definition}")

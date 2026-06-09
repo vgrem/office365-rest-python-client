@@ -92,7 +92,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
 
         event.subject = "Let's go for lunch (updated)"
         event.update().execute_query()
-
+        assert event.id is not None
         updated = self.client.me.calendar.events[event.id].get().execute_query()
         self.assertEqual(updated.get_property("subject"), "Let's go for lunch (updated)")
 

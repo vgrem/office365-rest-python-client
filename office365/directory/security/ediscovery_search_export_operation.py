@@ -1,0 +1,62 @@
+from __future__ import annotations
+
+from typing import Optional
+
+from office365.directory.security.cases.additionaloptions import AdditionalOptions
+from office365.directory.security.cases.exportcriteria import ExportCriteria
+from office365.directory.security.cases.exportformat import ExportFormat
+from office365.directory.security.cases.exportlocation import ExportLocation
+from office365.directory.security.cloudattachmentversion import CloudAttachmentVersion
+from office365.directory.security.search.documentversion import DocumentVersion
+from office365.entity import Entity
+
+
+class EdiscoverySearchExportOperation(Entity):
+    @property
+    def additional_options(self) -> AdditionalOptions:
+        """Gets the additionalOptions property"""
+        return self.properties.get("additionalOptions", AdditionalOptions.none)
+
+    @property
+    def cloud_attachment_version(self) -> CloudAttachmentVersion:
+        """Gets the cloudAttachmentVersion property"""
+        return self.properties.get("cloudAttachmentVersion", CloudAttachmentVersion.latest)
+
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
+    @property
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def document_version(self) -> DocumentVersion:
+        """Gets the documentVersion property"""
+        return self.properties.get("documentVersion", DocumentVersion.latest)
+
+    @property
+    def export_criteria(self) -> ExportCriteria:
+        """Gets the exportCriteria property"""
+        return self.properties.get("exportCriteria", ExportCriteria.searchHits)
+
+    @property
+    def export_format(self) -> ExportFormat:
+        """Gets the exportFormat property"""
+        return self.properties.get("exportFormat", ExportFormat.pst)
+
+    @property
+    def export_location(self) -> ExportLocation:
+        """Gets the exportLocation property"""
+        return self.properties.get("exportLocation", ExportLocation.responsiveLocations)
+
+    @property
+    def export_single_items(self) -> Optional[bool]:
+        """Gets the exportSingleItems property"""
+        return self.properties.get("exportSingleItems", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.EdiscoverySearchExportOperation"

@@ -5,7 +5,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management.mobileapps.mobile_app_category import MobileAppCategory
+from office365.intune.devices.management.mobileapps.category import MobileAppCategory
 from office365.intune.devices.management.mobileapps.publishingstate import MobileAppPublishingState
 from office365.runtime.paths.resource_path import ResourcePath
 

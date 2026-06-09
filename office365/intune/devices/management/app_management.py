@@ -5,9 +5,9 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.app.registration import ManagedAppRegistration
 from office365.intune.devices.management.managed.ebook.ebook import ManagedEBook
+from office365.intune.devices.management.mobileapps.category import MobileAppCategory
 from office365.intune.devices.management.mobileapps.mobile_app import MobileApp
-from office365.intune.devices.management.mobileapps.mobile_app_category import MobileAppCategory
-from office365.intune.devices.management.mobileapps.mobile_app_relationship import MobileAppRelationship
+from office365.intune.devices.management.mobileapps.relationship import MobileAppRelationship
 from office365.intune.devices.management.vpptokens.vpp_token import VppToken
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.paths.resource_path import ResourcePath

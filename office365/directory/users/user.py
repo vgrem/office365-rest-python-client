@@ -770,19 +770,19 @@ class User(DirectoryObject):
         )
 
     @property
-    def photo(self):
+    def photo(self) -> ProfilePhoto:
         """The user's profile photo. Read-only."""
         return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
     @property
-    def photos(self):
+    def photos(self) -> EntityCollection[ProfilePhoto]:
         """The collection of the user's profile photos in different sizes"""
         return self.properties.get(
             "photos", EntityCollection(self.context, ProfilePhoto, ResourcePath("photos", self.resource_path))
         )
 
     @property
-    def manager(self):
+    def manager(self) -> DirectoryObject:
         """The user or contact that is this user's manager"""
         return self.properties.get("manager", DirectoryObject(self.context, ResourcePath("manager", self.resource_path)))
 
@@ -793,13 +793,14 @@ class User(DirectoryObject):
         """
         return self.properties.get("preferredLanguage", None)
 
+    @odata(name="mailboxSettings")
     @property
-    def mailbox_settings(self):
+    def mailbox_settings(self) -> MailboxSettings:
         """Get the user's mailboxSettings."""
         return self.properties.get("mailboxSettings", MailboxSettings())
 
     @mailbox_settings.setter
-    def mailbox_settings(self, value):
+    def mailbox_settings(self, value: MailboxSettings):
         self.set_property("mailboxSettings", value)
 
     @property

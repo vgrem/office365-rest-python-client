@@ -18,4 +18,4 @@ class TestInvitations(GraphApplicationTestCase):
         """Creating an invitation for an external user returns a valid resource."""
         invitation = self.client.invitations.create("admin@fabrikam.com", "https://myapp.contoso.com").execute_query()
         self.assertIsNotNone(invitation.resource_path)
-        self.assertIsNotNone(invitation.get_property("invitedUserEmailAddress"))
+        self.assertIsNotNone(invitation.invited_user_email_address)

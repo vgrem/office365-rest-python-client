@@ -64,7 +64,7 @@ class TestServicePrincipal(GraphDelegatedTestCase):
             self.skipTest("Target app has no app_id")
         service_principal = self.client.service_principals.add(app_id).execute_query()
         self.assertIsNotNone(service_principal.resource_path)
-        self.assertIsNotNone(service_principal.get_property("id"))
+        self.assertIsNotNone(service_principal.id)
         TestServicePrincipal.target_object = service_principal
 
     @requires_delegated(

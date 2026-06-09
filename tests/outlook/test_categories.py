@@ -46,9 +46,9 @@ class TestOutlookCategories(GraphDelegatedTestCase):
         """Creating a master category with a displayName and color should succeed."""
         name = create_unique_name("SDK Test Category")
         result = self.client.me.outlook.master_categories.add(display_name=name, color="preset5").execute_query()
-        self.assertIsNotNone(result.get_property("id"))
-        self.assertEqual(result.get_property("displayName"), name)
-        self.assertEqual(result.get_property("color"), "preset5")
+        self.assertIsNotNone(result.id)
+        self.assertEqual(result.display_name, name)
+        self.assertEqual(result.color, "preset5")
 
     @requires_delegated(
         "Mail.ReadWrite",
@@ -59,7 +59,7 @@ class TestOutlookCategories(GraphDelegatedTestCase):
         result = self.client.me.outlook.master_categories.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         if len(result) > 0:
-            self.assertIsNotNone(result[0].get_property("displayName"))
+            self.assertIsNotNone(result[0].display_name)
 
     @requires_delegated(
         "Mail.ReadWrite",

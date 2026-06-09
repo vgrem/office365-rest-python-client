@@ -1,4 +1,6 @@
-from typing import Self, Union
+from typing import Union
+
+from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
