@@ -61,14 +61,15 @@ def main():
         return
 
     print(f"Found {len(report)} tags across {len(set(r['team'] for r in report))} teams\n")
-    print(f"{'Team':30s} {'Tag':25s} {'Members':>7s}  {'Member emails'}")
-    print("-" * 100)
 
     for r in sorted(report, key=lambda x: (x["team"].lower(), x["tag"].lower())):
         emails = ", ".join(r["members"][:3])
         if len(r["members"]) > 3:
             emails += f" … +{len(r['members']) - 3}"
-        print(f"{r['team'][:28]:30s} {r['tag'][:23]:25s} {r['member_count']:>7d}  {emails}")
+        print(f"Team: {r['team']}")
+        print(f"  Tag: {r['tag']}  ({r['member_count']} members)")
+        print(f"  Members: {emails}")
+        print()
 
     # Identify untagged teams
     tagged_teams = {r["team"] for r in report}
