@@ -22,9 +22,8 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 # — Active teams, filtered by archive status —
 
-groups = (
-    client.groups.get()
-    .filter("resourceProvisioningOptions/Any(x:x eq 'Team')")
+teams = (
+    client.teams.get_all()
     .select(["id", "displayName", "deletedDateTime"])
     .top(999)
     .execute_query()
@@ -33,12 +32,11 @@ groups = (
 archived = []
 active = []
 
-for group in groups:
-    team = client.teams[group.id].get().select(["isArchived"]).execute_query()
+for team in teams:
     if team.is_archived:
-        archived.append(group)
+        archived.append(team)
     else:
-        active.append(group)
+        active.append(team)
 
 print(f"Active teams : {len(active)}")
 print(f"Archived     : {len(archived)}\n")
@@ -61,11 +59,10 @@ deleted_groups = (
 print(f"\nRecently deleted (restorable): {len(deleted_groups)}")
 
 for g in deleted_groups:
-    deleted_at = g.properties.get("deletedDateTime")
     label = ""
-    if deleted_at:
-        dt = datetime.fromisoformat(deleted_at.replace("Z", ""))
-        days_ago = (datetime.now(timezone.utc) - dt).days
+    if g.deleted_datetime:
+        deleted_dt = g.deleted_datetime.replace(tzinfo=timezone.utc)
+        days_ago = (datetime.now(timezone.utc) - deleted_dt).days
         remaining = max(0, 30 - days_ago)
         label = f" (deleted {days_ago}d ago, {remaining}d to restore)"
     print(f"  {g.display_name}{label}")

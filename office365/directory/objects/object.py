@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class DirectoryObject(Entity):
@@ -86,10 +87,11 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="deletedDateTime")
     @property
-    def deleted_datetime(self) -> datetime | None:
+    def deleted_datetime(self) -> datetime:
         """Date and time when this object was deleted. Always null when the object hasn't been deleted."""
-        return self.properties.get("deletedDateTime", None)
+        return self.properties.get("deletedDateTime", datetime.min)
 
     @property
     def deleted_date_time(self) -> datetime:

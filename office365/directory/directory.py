@@ -11,6 +11,7 @@ from office365.directory.subscriptions.company import CompanySubscription
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Directory(Entity):
@@ -18,6 +19,7 @@ class Directory(Entity):
     "container". Deleted items will remain available to restore for up to 30 days. After 30 days, the items are
     permanently deleted."""
 
+    @odata(name="deviceLocalCredentials")
     @property
     def device_local_credentials(self) -> EntityCollection[DeviceLocalCredentialInfo]:
         """Conceptual container for user and group directory objects."""
@@ -30,6 +32,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="administrativeUnits")
     @property
     def administrative_units(self):
         """Conceptual container for user and group directory objects."""
@@ -42,6 +45,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="customSecurityAttributeDefinitions")
     @property
     def custom_security_attribute_definitions(self):
         """Conceptual container for customSecurityAttributeDefinition objects and their properties."""
@@ -54,6 +58,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="publicKeyInfrastructure")
     @property
     def public_key_infrastructure(self):
         """"""
@@ -77,7 +82,7 @@ class Directory(Entity):
             ),
         )
 
-    def deleted_items(self, entity_type=None):
+    def deleted_items(self, entity_type=None) -> DirectoryObjectCollection:
         """Recently deleted items. Read-only. Nullable."""
         if entity_type:
             return self.properties.get(
@@ -112,12 +117,3 @@ class Directory(Entity):
     def deleted_service_principals(self):
         """Recently deleted service Principals"""
         return self.deleted_items("microsoft.graph.servicePrincipal")
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "customSecurityAttributeDefinitions": self.custom_security_attribute_definitions,
-                "publicKeyInfrastructure": self.public_key_infrastructure,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

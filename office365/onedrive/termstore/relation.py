@@ -1,7 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.entity import Entity
-from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onedrive.termstore.sets.set import Set
 
 
 class Relation(Entity):
@@ -44,6 +50,7 @@ class Relation(Entity):
 
     @property
     def set_(self) -> Set:
+        from office365.onedrive.termstore.sets.set import Set
         """Gets the set property"""
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
 
