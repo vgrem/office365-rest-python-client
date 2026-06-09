@@ -3,6 +3,7 @@ from typing import Callable, Optional
 import requests
 from typing_extensions import Self
 
+from office365.directory.groups.collection import GroupCollection
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
@@ -20,11 +21,10 @@ class TeamCollection(EntityCollection[Team]):
     def get_all(self, page_size: Optional[int] = None, page_loaded: Optional[Callable[[Self], None]] = None) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
-        def _init_teams(groups) -> None:
+        def _init_teams(groups: GroupCollection) -> None:
             for grp in groups:
                 team = Team(self.context, ResourcePath(grp.id, self.resource_path))
-                for k, v in grp.properties.items():
-                    team.set_property(k, v)
+                team.copy_from(grp)
                 self.add_child(team)
 
         self.context.groups.filter("resourceProvisioningOptions/Any(x:x eq 'Team')").get_all(
