@@ -1,0 +1,79 @@
+"""
+Message lifecycle: reply, forward, move, and copy messages.
+
+Covers the most common post-receive operations:
+  - Reply to sender (with modified body)
+  - Forward to another recipient
+  - Move to a different folder
+  - Copy to a different folder
+
+The pattern: create a draft → optionally edit → save or send.
+
+Requires delegated permission ``Mail.ReadWrite`` and ``Mail.Send``.
+
+https://learn.microsoft.com/en-us/graph/api/message-createreply
+https://learn.microsoft.com/en-us/graph/api/message-forward
+https://learn.microsoft.com/en-us/graph/api/message-move
+https://learn.microsoft.com/en-us/graph/api/message-copy
+"""
+
+import sys
+
+from office365.graph_client import GraphClient
+from tests import test_client_id, test_password, test_tenant, test_username
+
+
+def get_latest_inbox_message(client: GraphClient):
+    """Return the most recent message in the inbox, or None."""
+    messages = client.me.mail_folders["inbox"].messages.top(1).get().execute_query()
+    return messages[0] if len(messages) > 0 else None
+
+
+def main():
+    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+
+    # -- Step 1: pick a message to work with --
+    message = get_latest_inbox_message(client)
+    if message is None:
+        sys.exit("No messages in inbox.")
+
+    # Load subject and body for display
+    message.select(["subject", "body"]).execute_query()
+    print(f"Source message: \"{message.subject}\"\n")
+
+    # -- Step 2: reply --
+    draft = message.create_reply().execute_query()
+    # Draft body is auto-populated; append a line
+    body = draft.body.get_property("content", "")
+    draft.set_property("body", {"contentType": "Text", "content": body + "\n\n---\nSent via Microsoft Graph SDK"})
+    draft.update().execute_query()
+    draft.send().execute_query()
+    print("✓ Reply sent (with appended signature).")
+
+    # -- Step 3: forward --
+    forward_to = "meganb@contoso.onmicrosoft.com"
+    message.forward(to_recipients=[forward_to], comment="FYI — see below.").execute_query()
+    print(f"✓ Forwarded to {forward_to}.")
+
+    # -- Step 4: move to a subfolder --
+    # Ensure a subfolder exists
+    inbox = client.me.mail_folders["inbox"]
+    child_folders = inbox.child_folders.get().execute_query()
+    archive_folder = next((f for f in child_folders if f.display_name == "Archive"), None)
+
+    if archive_folder is None:
+        archive_folder = inbox.child_folders.add("Archive").execute_query()
+        print(f"  (Created 'Archive' folder)")
+
+    moved = message.move(archive_folder.id).execute_query()
+    print(f"✓ Moved to '{archive_folder.display_name}' (new id: {moved.id})")
+
+    # -- Step 5: copy back to inbox --
+    inbox = client.me.mail_folders["inbox"]
+    # Refresh the message reference from its new location
+    copied = client.me.messages[moved.id].copy(inbox.id).execute_query()
+    print(f"✓ Copied back to Inbox.")
+
+
+if __name__ == "__main__":
+    main()
