@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import mimetypes
 import warnings
 from datetime import datetime
@@ -72,7 +74,7 @@ def deprecated(reason: str, version: str = "next"):
     return decorator
 
 
-def parse_enum(enum_type: type[Enum], value: int) -> Optional[Enum]:
+def parse_enum(enum_type: type[Enum], value: str | int) -> Optional[Enum]:
     """Safely converts a value to the specified enum type.
 
     Args:
@@ -85,14 +87,10 @@ def parse_enum(enum_type: type[Enum], value: int) -> Optional[Enum]:
     try:
         return enum_type(value)
     except ValueError:
-        import warnings
-
-        warnings.warn(
-            f"Invalid value '{value}' for enum {enum_type.__name__}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        return None
+        try:
+            return enum_type[str(value)]  # fallback: lookup by name
+        except KeyError:
+            return None
 
 
 def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
