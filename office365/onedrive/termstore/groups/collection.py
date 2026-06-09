@@ -14,9 +14,10 @@ class GroupCollection(EntityCollection[Group]):
         notes="Create a new term store group",
     )
     def add(self, display_name: str) -> Group:
-        """
-        Create a new group object in a term store.
-        :param str display_name: Name of the group to be created.
+        """Create a new group object in a term store.
+
+        Args:
+            display_name (str): Name of the group to be created.
         """
         props = {"displayName": display_name}
         return super().add(**props)

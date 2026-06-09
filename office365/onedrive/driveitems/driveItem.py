@@ -93,15 +93,10 @@ class DriveItem(BaseItem):
     ):
         """Asynchronously assign a sensitivity label to a driveItem.
 
-
-        :param justification_text: Justification text for audit purposes, and is required when downgrading/removing
-        a label.
-        :param sensitivity_label_id: Required. ID of the sensitivity label to be assigned, or empty string to remove
-        the sensitivity label.
-        :param assignment_method:  The assignment method of the label on the document. Indicates whether
-        the assignment of the label was done automatically, standard, or as a privileged operation
-        (the equivalent of an administrator operation).
-
+        Args:
+            justification_text: Justification text for audit purposes, and is required when downgrading/removing a label.
+            sensitivity_label_id: Required. ID of the sensitivity label to be assigned, or empty string to remove the sensitivity label.
+            assignment_method: The assignment method of the label on the document. Indicates whether the assignment of the label was done automatically, standard, or as a privileged operation (the equivalent of an administrator operation).
         """
         payload = {
             "sensitivityLabelId": sensitivity_label_id,
@@ -122,8 +117,10 @@ class DriveItem(BaseItem):
 
     def get_files(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
         """Retrieves files
-        :param bool recursive: Determines whether to enumerate folders recursively
-        :param int page_size: Page size
+
+        Args:
+            recursive (bool): Determines whether to enumerate folders recursively
+            page_size (int): Page size
         """
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
@@ -146,8 +143,10 @@ class DriveItem(BaseItem):
 
     def get_folders(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
         """Retrieves folders
-        :param bool recursive: Determines whether to enumerate folders recursively
-        :param int page_size: Page size
+
+        Args:
+            recursive (bool): Determines whether to enumerate folders recursively
+            page_size (int): Page size
         """
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
@@ -183,9 +182,10 @@ class DriveItem(BaseItem):
         return DriveItem(self.context, UrlPath(url_path, self.resource_path), self.children)
 
     def create_powerpoint(self, name: str) -> DriveItem:
-        """
-        Creates a PowerPoint file
-        :param str name: File name
+        """Creates a PowerPoint file
+
+        Args:
+            name (str): File name
         """
         return self.upload(name, None)
 
@@ -203,21 +203,17 @@ class DriveItem(BaseItem):
         message: str | None = None,
         retain_inherited_permissions: bool | None = None,
     ) -> Permission:
-        """
-        The createLink action will create a new sharing link if the specified link type doesn't already exist
+        """The createLink action will create a new sharing link if the specified link type doesn't already exist
         for the calling application. If a sharing link of the specified type already exists for the app,
         the existing sharing link will be returned.
 
-        :param str link_type: The type of sharing link to create. Either view, edit, or embed.
-        :param str scope:  The scope of link to create. Either anonymous or organization.
-        :param str or datetime.datetime expiration_datetime: A String with format of yyyy-MM-ddTHH:mm:ssZ of DateTime
-            indicate the expiration time of the permission.
-        :param str password: The password of the sharing link that is set by the creator. Optional
-            and OneDrive Personal only.
-        :param str message:
-        :param bool retain_inherited_permissions: Optional. If true (default), any existing inherited permissions
-            are retained on the shared item when sharing this item for the first time.
-            If false, all existing permissions are removed when sharing for the first time.
+        Args:
+            link_type (str): The type of sharing link to create. Either view, edit, or embed.
+            scope (str): The scope of link to create. Either anonymous or organization.
+            expiration_datetime (str or datetime.datetime): A String with format of yyyy-MM-ddTHH:mm:ssZ of DateTime indicate the expiration time of the permission.
+            password (str): The password of the sharing link that is set by the creator. Optional and OneDrive Personal only.
+            message (str):
+            retain_inherited_permissions (bool): Optional. If true (default), any existing inherited permissions are retained on the shared item when sharing this item for the first time. If false, all existing permissions are removed when sharing for the first time.
         """
         payload = {
             "type": link_type,
@@ -303,12 +299,11 @@ class DriveItem(BaseItem):
         notes="Check in a checked-out driveItem",
     )
     def checkin(self, comment: str, checkin_as: str | None = None) -> Self:
-        """
-        Check in a checked out driveItem resource, which makes the version of the document available to others.
+        """Check in a checked out driveItem resource, which makes the version of the document available to others.
 
-        :param str comment: comment to the new version of the file
-        :param str checkin_as: The status of the document after the check-in operation is complete.
-            Can be published or unspecified.
+        Args:
+            comment (str): comment to the new version of the file
+            checkin_as (str): The status of the document after the check-in operation is complete. Can be published or unspecified.
         """
         qry = ServiceOperationQuery[DriveItem](
             self, "checkin", None, {"comment": comment, "checkInAs": checkin_as or ""}
@@ -322,18 +317,18 @@ class DriveItem(BaseItem):
         chunk_size: int = 2000000,
         chunk_uploaded: Callable[[int], None] | None = None,
     ) -> DriveItem:
-        """
-        Create an upload session to allow your app to upload files up to the maximum file size.
+        """Create an upload session to allow your app to upload files up to the maximum file size.
         An upload session allows your app to upload ranges of the file in sequential API requests,
         which allows the transfer to be resumed if a connection is dropped while the upload is in progress.
 
         To upload a file using an upload session, there are two steps:
-            Create an upload session
-            Upload bytes to the upload session
+        Create an upload session
+        Upload bytes to the upload session
 
-        :param chunk_uploaded:
-        :param str source_path: File path
-        :param int chunk_size: chunk size
+        Args:
+            chunk_uploaded:
+            source_path (str): File path
+            chunk_size (int): chunk size
         """
 
         def _start_upload(result: Response) -> None:
@@ -412,11 +407,11 @@ class DriveItem(BaseItem):
         return self
 
     def get_content(self, format_name: str | None = None) -> ClientResult[AnyStr]:
-        """
-        Download the contents of the primary stream (file) of a DriveItem.
+        """Download the contents of the primary stream (file) of a DriveItem.
         Only driveItems with the file property can be downloaded.
 
-        :type format_name: str or None
+        Args:
+            format_name (str or None):
         """
         return_type = ClientResult[AnyStr](self.context)
         action_name = "content"
@@ -493,15 +488,15 @@ class DriveItem(BaseItem):
         chunk_downloaded: Callable[[int], None] | None = None,
         chunk_size: int | None = 1024 * 1024,
     ) -> Self:
-        """
-        By default, file gets downloaded immediately.
+        """By default, file gets downloaded immediately.
         For a large files reading the whole content of a file at once into memory should be avoided.
 
         This method allows to stream content into the file
 
-        :type file_object: typing.IO
-        :param (int)->None or None chunk_downloaded: A callback
-        :param int chunk_size: The number of bytes it should read into memory.
+        Args:
+            file_object (typing.IO):
+            chunk_downloaded ((int)->None or None): A callback
+            chunk_size (int): The number of bytes it should read into memory.
         """
 
         def _construct_request(request: RequestOptions) -> None:
@@ -530,8 +525,9 @@ class DriveItem(BaseItem):
     ) -> DriveItem:
         """Create a new folder or DriveItem in a Drive with a specified parent item or path.
 
-        :param str name: Folder name
-        :param str conflict_behavior: query parameter to customize the behavior when a conflict occurs.
+        Args:
+            name (str): Folder name
+            conflict_behavior (str): query parameter to customize the behavior when a conflict occurs.
         """
         return_type = DriveItem(self.context)
         self.children.add_child(return_type)
@@ -559,8 +555,8 @@ class DriveItem(BaseItem):
     def convert(self, format_name: str) -> ClientResult[AnyStr]:
         """Converts the contents of an item in a specific format
 
-        :param format_name: Specify the format the item's content should be downloaded as.
-        :type format_name: str
+        Args:
+            format_name (str): Specify the format the item's content should be downloaded as.
         """
         return self.get_content(format_name)
 
@@ -578,13 +574,10 @@ class DriveItem(BaseItem):
         """Asynchronously creates a copy of an driveItem (including any children), under a new parent item or with a
         new name.
 
-        :param str or None name: The new name for the copy. If this isn't provided, the same name will be used as the
-             original.
-        :param office365.onedrive.listitems.item_reference.ItemReference or DriveItem or None parent:  Reference to the
-             parent item the copy will be created in.
-        :param str conflict_behavior: query parameter to customize the behavior when a conflict occurs.
-
-        Returns location for details about how to monitor the progress of the copy, upon accepting the request.
+        Args:
+            name (str or None): The new name for the copy. If this isn't provided, the same name will be used as the original.
+            parent (office365.onedrive.listitems.item_reference.ItemReference or DriveItem or None): Reference to the parent item the copy will be created in.
+            conflict_behavior (str): query parameter to customize the behavior when a conflict occurs. Returns location for details about how to monitor the progress of the copy, upon accepting the request.
         """
         return_type = ClientResult(self.context, str())
 
@@ -629,11 +622,10 @@ class DriveItem(BaseItem):
         """To move a DriveItem to a new parent item, your app requests to update the parentReference of the DriveItem
         to move.
 
-        :param str name: The new name for the move. If this isn't provided, the same name will be used as the
-             original.
-        :param ItemReference or DriveItem or None parent: Reference to the
-             parent item the move will be created in.
-        :param str conflict_behavior: query parameter to customize the behavior when a conflict occurs.
+        Args:
+            name (str): The new name for the move. If this isn't provided, the same name will be used as the original.
+            parent (ItemReference or DriveItem or None): Reference to the parent item the move will be created in.
+            conflict_behavior (str): query parameter to customize the behavior when a conflict occurs.
         """
 
         return_type = DriveItem(self.context)
@@ -661,7 +653,9 @@ class DriveItem(BaseItem):
 
     def rename(self, new_name: str) -> DriveItem:
         """Rename a DriveItem
-        :param str new_name: The new name for the rename.
+
+        Args:
+            new_name (str): The new name for the rename.
         """
         return self.move(name=new_name)
 
@@ -681,7 +675,8 @@ class DriveItem(BaseItem):
         """Search the hierarchy of items for items matching a query. You can search within a folder hierarchy,
         a whole drive, or files shared with the current user.
 
-        :type query_text: str
+        Args:
+            query_text (str):
         """
         return_type = EntityCollection[DriveItem](self.context, DriveItem, ResourcePath("items", self.resource_path))
         qry = FunctionQuery(self, "search", {"q": query_text}, return_type)
@@ -708,14 +703,15 @@ class DriveItem(BaseItem):
         A sharing invitation provides permissions to the recipients and optionally
         sends them an email with a sharing link.
 
-        :param list[str] recipients: A list of recipients for the invitation.
-        :param str message: A plain text formatted message that is included in the invitation.
-        :param bool require_sign_in: Specifies whether the recipient of the invitation is required to sign in.
-        :param bool send_invitation: Specifies whether an email is sent to the recipient of the invitation.
-        :param list[str] roles: Specify the roles that are granted to the recipients of the sharing invitation.
-        :param datetime.datetime expiration_datetime: The dateTime after which the permission expires.
-        :param str password: Password set on the invite by the creator (OneDrive Personal only).
-        :param bool retain_inherited_permissions: If true, existing inherited permissions are retained.
+        Args:
+            recipients (list[str]): A list of recipients for the invitation.
+            message (str): A plain text formatted message that is included in the invitation.
+            require_sign_in (bool): Specifies whether the recipient of the invitation is required to sign in.
+            send_invitation (bool): Specifies whether an email is sent to the recipient of the invitation.
+            roles (list[str]): Specify the roles that are granted to the recipients of the sharing invitation.
+            expiration_datetime (datetime.datetime): The dateTime after which the permission expires.
+            password (str): Password set on the invite by the creator (OneDrive Personal only).
+            retain_inherited_permissions (bool): If true, existing inherited permissions are retained.
         """
         if roles is None:
             roles = ["read"]
@@ -740,13 +736,13 @@ class DriveItem(BaseItem):
         end_dt: datetime | None = None,
         interval: str | None = None,
     ) -> EntityCollection[ItemActivityStat]:
-        """
-        Get a collection of itemActivityStats resources for the activities that took place on this resource
+        """Get a collection of itemActivityStats resources for the activities that took place on this resource
         within the specified time interval.
 
-        :param datetime.datetime start_dt: The start time over which to aggregate activities.
-        :param datetime.datetime end_dt: The end time over which to aggregate activities.
-        :param str interval: The aggregation interval.
+        Args:
+            start_dt (datetime.datetime): The start time over which to aggregate activities.
+            end_dt (datetime.datetime): The end time over which to aggregate activities.
+            interval (str): The aggregation interval.
         """
         return_type = EntityCollection(self.context, ItemActivityStat, self.resource_path)
 
@@ -781,14 +777,12 @@ class DriveItem(BaseItem):
         notes="Restore a deleted driveItem from the recycle bin",
     )
     def restore(self, parent_reference: ItemReference | None = None, name: str | None = None) -> DriveItem:
-        """
-        Restore a driveItem that has been deleted and is currently in the recycle bin.
+        """Restore a driveItem that has been deleted and is currently in the recycle bin.
         NOTE: This functionality is currently only available for OneDrive Personal.
 
-        :param str name: Optional. The new name for the restored item. If this isn't provided,
-             the same name will be used as the original.
-        :param ItemReference or None parent_reference: Optional. Reference to the parent item the deleted item will
-             be restored to.
+        Args:
+            name (str): Optional. The new name for the restored item. If this isn't provided, the same name will be used as the original.
+            parent_reference (ItemReference or None): Optional. Reference to the parent item the deleted item will be restored to.
         """
         payload = {"name": name, "parentReference": parent_reference}
         return_type = DriveItem(self.context)
@@ -798,14 +792,12 @@ class DriveItem(BaseItem):
         return return_type
 
     def preview(self, page: str | int, zoom: int | None = None) -> ClientResult[ItemPreviewInfo]:
-        """
-        This action allows you to obtain a short-lived embeddable URL for an item in order
+        """This action allows you to obtain a short-lived embeddable URL for an item in order
         to render a temporary preview.
 
-        :param str or int page: Optional. Page number of document to start at, if applicable.
-            Specified as string for future use cases around file types such as ZIP.
-        :param int zoom: Optional. Zoom level to start at, if applicable.
-
+        Args:
+            page (str or int): Optional. Page number of document to start at, if applicable. Specified as string for future use cases around file types such as ZIP.
+            zoom (int): Optional. Zoom level to start at, if applicable.
         """
         return_type = ClientResult[ItemPreviewInfo](self.context, ItemPreviewInfo())
 

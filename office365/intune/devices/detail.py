@@ -10,9 +10,10 @@ class DeviceDetail(ClientValue):
     """Indicates device details associated with a device used for signing in. This includes information
     like device browser and operating system, and whether the device is Azure AD managed.
 
-    :param str browser: Indicates the browser information of the used for signing in.
-    :param str device_id: Refers to the UniqueID of the device used for signing in.
-    :param str display_name: Refers to the name of the device used for signing in.
+    Args:
+        browser (str): Indicates the browser information of the used for signing in.
+        device_id (str): Refers to the UniqueID of the device used for signing in.
+        display_name (str): Refers to the name of the device used for signing in.
     """
 
     browser: str | None = None

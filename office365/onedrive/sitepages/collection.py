@@ -33,11 +33,11 @@ class SitePageCollection(EntityCollection[SitePage]):
         return self.single(f"title eq '{title}'")
 
     def add(self, title: str, page_layout: str = "article"):
-        """
-        Create a new sitePage in the site pages list in a site.
+        """Create a new sitePage in the site pages list in a site.
 
-        :param str title:
-        :param str page_layout:
+        Args:
+            title (str):
+            page_layout (str):
         """
 
         def _construct_request(request: RequestOptions) -> None:

@@ -22,10 +22,11 @@ class CallRecordCollection(EntityCollection[CallRecord]):
     def get_direct_routing_calls(
         self, from_datetime: datetime | None = None, to_datetime: datetime | None = None
     ) -> ClientResult[ClientValueCollection[DirectRoutingLogRow]]:
-        """
-        Get a log of direct routing calls as a collection of directRoutingLogRow entries.
-        :param datetime from_datetime: Start of time range to query.
-        :param datetime to_datetime: End of time range to query
+        """Get a log of direct routing calls as a collection of directRoutingLogRow entries.
+
+        Args:
+            from_datetime (datetime): Start of time range to query.
+            to_datetime (datetime): End of time range to query
         """
         if to_datetime is None:
             to_datetime = datetime.now()

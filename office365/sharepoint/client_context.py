@@ -42,6 +42,7 @@ from office365.sharepoint.webs.context_web_information import ContextWebInformat
 from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
+    from requests import Session
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.portal.theme_manager import ThemeManager
     from office365.sharepoint.search.service import SearchService
@@ -167,10 +168,11 @@ class ClientContext(ClientRuntimeContext):
     def with_transport(
         self,
         proxies: dict[str, str] | None = None,
-        verify: bool | str | None = None,
+        verify: bool | str = True,
         timeout: int | tuple[int, int] | None = None,
+        session: requests.Session | None = None,
     ) -> Self:
-        """Configure the HTTP transport (proxy, SSL, timeout).
+        """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
         Note:
             MSAL authentication requests to ``login.microsoftonline.com`` use
@@ -181,11 +183,18 @@ class ClientContext(ClientRuntimeContext):
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
             timeout: Request timeout in seconds
+            session: Custom ``requests.Session`` with pre-configured adapters
+                   (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
 
         Returns:
             Self: Supports method chaining
         """
-        self.pending_request().with_transport(proxies=proxies, verify=verify, timeout=timeout)
+        self.pending_request().with_transport(
+            proxies=proxies,
+            verify=verify,
+            timeout=timeout,
+            session=session,
+        )
         return self
 
     def with_user_credentials(self, username: str, password: str) -> Self:

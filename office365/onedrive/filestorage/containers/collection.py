@@ -17,8 +17,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         notes="Create a container. Requires SharePoint Embedded Administrator role.",
     )
     def add(self, display_name: str, container_type_id: str | None = None) -> FileStorageContainer:
-        """
-        Create a new fileStorageContainer object.
+        """Create a new fileStorageContainer object.
 
         The container type identified by containerTypeId must be registered in the tenant.
         For delegated calls, the calling user is set as the owner of the fileStorageContainer.
@@ -26,8 +25,9 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         Requires ``FileStorageContainer.Selected`` delegated permission
         and either the SharePoint Embedded Administrator or Global Administrator role.
 
-        :param str display_name: The display name of the container.
-        :param str container_type_id: The identifier of the container type.
+        Args:
+            display_name (str): The display name of the container.
+            container_type_id (str): The identifier of the container type.
         """
         return_type = FileStorageContainer(self.context)
         self.add_child(return_type)
@@ -42,6 +42,7 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
     def get_by_container_type_id(self, container_type_id: str) -> FileStorageContainer:
         """Retrieve a container by its container type ID.
 
-        :param str container_type_id: The identifier of the container type.
+        Args:
+            container_type_id (str): The identifier of the container type.
         """
         return super().single(f"containerTypeId eq {container_type_id}")

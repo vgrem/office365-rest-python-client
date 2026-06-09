@@ -11,9 +11,9 @@ class BilledUsage(Entity):
     def export(self, invoice_id: str, attribute_set: Optional[str] = None) -> Operation:
         """Export the billed Azure usage data.
 
-        :param invoice_id: 	The invoice ID for which the partner requested to export data. Required.
-        :param attribute_set: Attributes that should be exported. Possible values are: full, basic, unknownFutureValue.
-           The default value is full. Choose full for a complete response or basic for a subset of attributes.
+        Args:
+            invoice_id: The invoice ID for which the partner requested to export data. Required.
+            attribute_set: Attributes that should be exported. Possible values are: full, basic, unknownFutureValue. The default value is full. Choose full for a complete response or basic for a subset of attributes.
         """
         payload = {"invoiceId": invoice_id, "attributeSet": attribute_set}
         return_type = Operation(self.context)

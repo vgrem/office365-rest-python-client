@@ -9,11 +9,12 @@ from office365.runtime.client_value import ClientValue
 class TeamMessagingSettings(ClientValue):
     """Settings to configure messaging and mentions in the team.
 
-    :param bool allow_user_edit_messages: If set to true, users can edit their messages.
-    :param bool allow_user_delete_messages: If set to true, users can delete their messages.
-    :param bool allow_owner_delete_messages: If set to true, owners can delete their messages.
-    :param bool allow_team_mentions: If set to true, owners can delete their messages.
-    :param bool allow_channel_mentions: If set to true, owners can delete their messages.
+    Args:
+        allow_user_edit_messages (bool): If set to true, users can edit their messages.
+        allow_user_delete_messages (bool): If set to true, users can delete their messages.
+        allow_owner_delete_messages (bool): If set to true, owners can delete their messages.
+        allow_team_mentions (bool): If set to true, owners can delete their messages.
+        allow_channel_mentions (bool): If set to true, owners can delete their messages.
     """
 
     allowUserEditMessages: bool = True

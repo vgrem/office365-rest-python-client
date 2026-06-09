@@ -13,9 +13,9 @@ class UrlPath(EntityPath):
     """Resource path for OneDrive entity path-based addressing"""
 
     def __init__(self, url: str, parent: ResourcePath | None, collection: ResourcePath | None = None) -> None:
-        """
-        :param str url: File or Folder server relative url
-        :type parent: office365.runtime.paths.resource_path.ResourcePath
+        """Args:
+            url (str): File or Folder server relative url
+            parent (office365.runtime.paths.resource_path.ResourcePath):
         """
         if isinstance(parent, UrlPath):
             url = "/".join([str(parent._key), url])

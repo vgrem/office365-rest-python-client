@@ -28,15 +28,13 @@ class SitePage(BaseSitePage):
     def get_web_parts_by_position(
         self, web_part_index=None, horizontal_section_id=None, is_in_vertical_section=None, column_id=None
     ):
-        """
-        Get a collection of webPart by providing webPartPosition information.
+        """Get a collection of webPart by providing webPartPosition information.
 
-        :param float web_part_index: Index of the current WebPart. Represents the order of WebPart in this column or
-             section. Only works if either columnId or isInVerticalSection is provided.
-        :param float horizontal_section_id: Indicate the horizontal section where the WebPart located in.
-        :param bool is_in_vertical_section: Indicate whether the WebPart located in the vertical section.
-        :param float column_id: Indicate the identifier of the column where the WebPart located in. Only works
-             if horizontalSectionId is provided.
+        Args:
+            web_part_index (float): Index of the current WebPart. Represents the order of WebPart in this column or section. Only works if either columnId or isInVerticalSection is provided.
+            horizontal_section_id (float): Indicate the horizontal section where the WebPart located in.
+            is_in_vertical_section (bool): Indicate whether the WebPart located in the vertical section.
+            column_id (float): Indicate the identifier of the column where the WebPart located in. Only works if horizontalSectionId is provided.
         """
         params = {
             "webPartIndex": web_part_index,

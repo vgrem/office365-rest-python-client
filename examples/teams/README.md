@@ -17,6 +17,9 @@ patterns.
 | `Chat.ReadWrite` (delegated) | Create and message in chats | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#teams-permissions) |
 | `TeamSettings.ReadWrite.All` (application) | Audit and remediate team settings | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#teams-permissions) |
 | `Directory.Read.All` (application) | Enumerate tenant-wide groups and deleted items | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#directory-permissions) |
+| `TeamworkTag.ReadWrite.All` (delegated) | Create and manage tags | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#teams-permissions) |
+| `ChannelMember.ReadWrite.All` (delegated/application) | Manage shared channel members | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#teams-permissions) |
+| `TeamworkTag.Read.All` (application) | Read tags across all teams | [Microsoft Graph permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#teams-permissions) |
 
 Admin consent is required for all permissions above.
 
@@ -68,6 +71,11 @@ conversations not tied to any team/channel.
 | **Usage report** — team counts and user activity over D7/D30/D90 | [`reports/usage.py`](./reports/usage.py) | Adoption tracking, chargeback, and inactivity detection across multiple time windows |
 | **Inactive channels** — channels with no recent messages across all teams | [`find_inactive_channels.py`](./find_inactive_channels.py) | Identify channel sprawl and candidates for archiving |
 | **App inventory** — report installed apps across all teams | [`apps/report.py`](./apps/report.py) | Detect shadow IT and track app adoption across the tenant |
+| **Create tag** — create a tag and assign members in a team | [`tags/create_and_assign.py`](./tags/create_and_assign.py) | Provision @mention groups for routing and alerts. Resolves users by email then creates tag with members |
+| **Tag inventory** — report all tags across every team with member count | [`tags/report.py`](./tags/report.py) | Shows which teams use tags, identifies untagged teams and stale tags across the tenant |
+| **Clone team** — clone channels, apps, tabs, settings, and/or members | [`clone_team.py`](./clone_team.py) | Bootstrap new projects from a template team. Uses `ClonableTeamParts` bitset + async polling with progress |
+| **Shared channel** — create shared channel, share with other team, manage access | [`channels/shared.py`](./channels/shared.py) | Cross-team collaboration via shared channels. Covers creation, sharing, allowed members, and access check |
+| **Archive lifecycle** — find inactive teams, archive with audit mode, unarchive | [`archive_lifecycle.py`](./archive_lifecycle.py) | Compliance workflow: scan teams for inactivity, archive candidates, with ready-to-paste unarchive snippet |
 
 ---
 ---

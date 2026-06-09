@@ -63,18 +63,15 @@ class UserTeamwork(Entity):
         )
 
     def send_activity_notification(self, topic, activity_type, chain_id, preview_text, template_parameters=None):
-        """
-        Send an activity feed notification in the scope of a team. For more details about sending notifications
+        """Send an activity feed notification in the scope of a team. For more details about sending notifications
         and the requirements for doing so, see sending Teams activity notifications.
 
-        :param TeamworkActivityTopic topic: Topic of the notification. Specifies the resource being talked about.
-        :param str activity_type: Activity type. This must be declared in the Teams app manifest.
-        :param int chain_id: Optional. Used to override a previous notification. Use the same chainId in subsequent
-            requests to override the previous notification.
-        :param ItemBody preview_text: Preview text for the notification. Microsoft Teams will only show first
-            150 characters.
-        :param dict template_parameters: Values for template variables defined in the activity feed entry corresponding
-            to activityType in Teams app manifest.
+        Args:
+            topic (TeamworkActivityTopic): Topic of the notification. Specifies the resource being talked about.
+            activity_type (str): Activity type. This must be declared in the Teams app manifest.
+            chain_id (int): Optional. Used to override a previous notification. Use the same chainId in subsequent requests to override the previous notification.
+            preview_text (ItemBody): Preview text for the notification. Microsoft Teams will only show first 150 characters.
+            template_parameters (dict): Values for template variables defined in the activity feed entry corresponding to activityType in Teams app manifest.
         """
         payload = {
             "topic": topic,

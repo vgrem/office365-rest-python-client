@@ -23,7 +23,8 @@ class TermCollection(EntityCollection[Term]):
     def add(self, label: str) -> Term:
         """Create a new term object.
 
-        :param str label: The name of the label.
+        Args:
+            label (str): The name of the label.
         """
         return_type = Term(self.context, EntityPath(None, self.resource_path))
         self.add_child(return_type)

@@ -9,9 +9,10 @@ from office365.runtime.client_value import ClientValue
 class ProvisionedPlan(ClientValue):
     """The provisionedPlans property of the user entity and the organization entity is a collection of provisionedPlan.
 
-    :param str service:
-    :param str provisioning_status:
-    :param str capability_status:
+    Args:
+        service (str):
+        provisioning_status (str):
+        capability_status (str):
     """
 
     service: str | None = None

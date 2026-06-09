@@ -12,8 +12,10 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
 
     def add(self, title: str, container: Union[str, Group]) -> PlannerPlan:
         """Creates a new plannerPlan.
-        :param str title: Plan title
-        :param str or Group container: Identifies the container of the plan.
+
+        Args:
+            title (str): Plan title
+            container (str or Group): Identifies the container of the plan.
         """
         return_type = PlannerPlan(self.context)
         self.add_child(return_type)

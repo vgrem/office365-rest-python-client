@@ -75,6 +75,12 @@ class ClientRuntimeContext(ABC):
                     failure_callback(retry, e)
                 sleep(timeout_secs)
 
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *args) -> None:
+        self.pending_request().transport.close()
+
     @abstractmethod
     def pending_request(self) -> ClientRequest:
         """Gets the pending client request."""

@@ -79,6 +79,7 @@ from office365.teams.viva.employee_experience import EmployeeExperience
 from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
+    from requests import Session
     from office365.directory.applications.roles.collection import AppRoleCollection
     from office365.directory.applications.roles.role import AppRole
     from office365.directory.groups.setting import GroupSetting
@@ -170,13 +171,27 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_username_and_password(client_id, username, password)
         return self
 
+    def with_device_flow(self, client_id: str) -> Self:
+        """
+        Initialize with device code flow authentication.
+
+        Useful for CLI tools and headless environments. The user authenticates
+        by visiting a URL on another device and entering the displayed code.
+
+        Args:
+            client_id: Application client ID
+        """
+        self.pending_request().with_device_flow(client_id)
+        return self
+
     def with_transport(
         self,
         proxies: dict[str, str] | None = None,
-        verify: bool | str | None = None,
+        verify: bool | str = True,
         timeout: int | tuple[int, int] | None = None,
+        session: Session | None = None,
     ) -> Self:
-        """Configure the HTTP transport (proxy, SSL, timeout).
+        """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
         Note:
             MSAL authentication requests to ``login.microsoftonline.com`` use
@@ -187,11 +202,18 @@ class GraphClient(ClientRuntimeContext):
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
             timeout: Request timeout in seconds
+            session: Custom ``requests.Session`` with pre-configured adapters
+                   (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
 
         Returns:
             Self: Supports method chaining
         """
-        self.pending_request().with_transport(proxies=proxies, verify=verify, timeout=timeout)
+        self.pending_request().with_transport(
+            proxies=proxies,
+            verify=verify,
+            timeout=timeout,
+            session=session,
+        )
         return self
 
     def execute_batch(
@@ -567,8 +589,9 @@ class GraphClient(ClientRuntimeContext):
     def has_delegated_permission(self, scope: str, app_id: str) -> bool:
         """Check if an app has a delegated permission on Microsoft Graph.
 
-        :param str scope: Permission scope name (e.g. 'Mail.Read')
-        :param str app_id: Application (client) ID of the app to check
+        Args:
+            scope (str): Permission scope name (e.g. 'Mail.Read')
+            app_id (str): Application (client) ID of the app to check
         """
         from office365.directory.permissions.guard import has_delegated_permission as _check
 
@@ -577,8 +600,9 @@ class GraphClient(ClientRuntimeContext):
     def has_app_permission(self, scope: str, app_id: str) -> bool:
         """Check if an app has an application permission on Microsoft Graph.
 
-        :param str scope: Permission scope name (e.g. 'Mail.Read')
-        :param str app_id: Application (client) ID of the app to check
+        Args:
+            scope (str): Permission scope name (e.g. 'Mail.Read')
+            app_id (str): Application (client) ID of the app to check
         """
         from office365.directory.permissions.guard import has_app_permission as _check
 
@@ -587,8 +611,9 @@ class GraphClient(ClientRuntimeContext):
     def grant_delegated_permissions(self, app_id: str, scope: AppRole | str) -> Self:
         """Grants a delegated permission on Microsoft Graph (AllPrincipals).
 
-        :param str app_id: Application (client) ID of the client app
-        :param AppRole or str scope: Permission scope to grant
+        Args:
+            app_id (str): Application (client) ID of the client app
+            scope (AppRole or str): Permission scope to grant
         """
         from office365.directory.permissions.resource_name import ResourceName
 
@@ -598,7 +623,8 @@ class GraphClient(ClientRuntimeContext):
     def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
         """Gets delegated permissions granted on Microsoft Graph.
 
-        :param str app_id: Application (client) ID of the client app
+        Args:
+            app_id (str): Application (client) ID of the client app
         """
         from office365.directory.permissions.resource_name import ResourceName
 
@@ -607,8 +633,9 @@ class GraphClient(ClientRuntimeContext):
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Grants an application permission on Microsoft Graph.
 
-        :param str app_id: Application (client) ID of the client app
-        :param AppRole or str app_role: App role to grant
+        Args:
+            app_id (str): Application (client) ID of the client app
+            app_role (AppRole or str): App role to grant
         """
         from office365.directory.permissions.resource_name import ResourceName
 
@@ -618,7 +645,8 @@ class GraphClient(ClientRuntimeContext):
     def get_application_permissions(self, app_id: str) -> ClientResult[AppRoleCollection]:
         """Gets application permissions granted on Microsoft Graph.
 
-        :param str app_id: Application (client) ID of the client app
+        Args:
+            app_id (str): Application (client) ID of the client app
         """
         from office365.directory.permissions.resource_name import ResourceName
 
@@ -627,8 +655,9 @@ class GraphClient(ClientRuntimeContext):
     def revoke_delegated_permissions(self, client_id: str, scope: str) -> Self:
         """Revokes a delegated permission on Microsoft Graph.
 
-        :param str client_id: Application (client) ID of the client app
-        :param str scope: Permission scope to revoke
+        Args:
+            client_id (str): Application (client) ID of the client app
+            scope (str): Permission scope to revoke
         """
         from office365.directory.permissions.resource_name import ResourceName
 
@@ -638,8 +667,9 @@ class GraphClient(ClientRuntimeContext):
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Revokes an application permission on Microsoft Graph.
 
-        :param str app_id: Application (client) ID of the client app
-        :param AppRole or str app_role: App role to revoke
+        Args:
+            app_id (str): Application (client) ID of the client app
+            app_role (AppRole or str): App role to revoke
         """
         from office365.directory.permissions.resource_name import ResourceName
 

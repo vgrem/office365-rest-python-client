@@ -16,6 +16,8 @@ Microsoft Graph.
 | `Mail.Read` (delegated) | Read mail tips and message properties | [Mail permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#mail-permissions) |
 | `Reports.Read.All` (delegated) | Access email and mailbox usage reports | [Reports permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#reports-permissions) |
 | `User.Read.All` (delegated or app) | Read user properties for mailbox audit, shared mailboxes, forwarding detection | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
+| `Contacts.ReadWrite` (delegated) | Create, read, update, delete personal contacts | [Contacts permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#contacts-permissions) |
+| `Place.Read.All` (delegated) | List rooms and room lists | [Places permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#places-permissions) |
 
 ---
 
@@ -61,6 +63,10 @@ flowchart LR
 | **Mailbox audit** — auto-replies, mailbox settings report | [`mailboxes/report.py`](./mailboxes/report.py) | Bulk audit of user mailbox configurations |
 | **Shared mailboxes** — list and check configuration | [`shared_mailboxes/report.py`](./shared_mailboxes/report.py) | Discover and validate shared mailbox setup |
 | **Mail flow audit** — detect external forwarding | [`mail_flow/forwarding_report.py`](./mail_flow/forwarding_report.py) | Security audit — identify users forwarding mail externally |
+| **Message lifecycle** — reply, forward, move, copy in one flow | [`messages/lifecycle.py`](./messages/lifecycle.py) | Common post-receive operations: create reply draft → edit → send, forward to someone else, move and copy across folders |
+| **Folder management** — create, empty, mark-all-read, permanent delete | [`messages/folders.py`](./messages/folders.py) | Mailbox cleanup and compliance: create folder tree, empty content (including subfolders), bulk mark read, hard delete |
+| **Contacts** — create, update, delete with contact folders | [`contacts/manage.py`](./contacts/manage.py) | Full personal contact CRUD with contact folder organization, multiple email addresses, and lifecycle management |
+| **Meeting finder + rooms** — suggest time slots, list rooms, check availability | [`calendars/meeting_finder.py`](./calendars/meeting_finder.py) | Scheduling assistant pattern: find meeting times with attendees and rooms, list places/room lists, room capacity info |
 
 ---
 

@@ -23,12 +23,11 @@ class Permission(Entity):
     """The Permission resource provides information about a sharing permission granted for a DriveItem resource."""
 
     def grant(self, recipients: List[str], roles: List[str]) -> PermissionCollection:
-        """
-        Grant users access to a link represented by a permission.
+        """Grant users access to a link represented by a permission.
 
-        :param list[str] recipients: A collection of recipients who will receive access.
-        :param list[str] roles: If the link is an "existing access" link, specifies roles to be granted to the users.
-            Otherwise must match the role of the link.
+        Args:
+            recipients (list[str]): A collection of recipients who will receive access.
+            roles (list[str]): If the link is an "existing access" link, specifies roles to be granted to the users. Otherwise must match the role of the link.
         """
         from office365.onedrive.permissions.collection import PermissionCollection
 
@@ -83,10 +82,10 @@ class Permission(Entity):
 
     @roles.setter
     def roles(self, value: List[str]) -> None:
-        """
-        Sets the type of permission
+        """Sets the type of permission
 
-        :type value: list[str]
+        Args:
+            value (list[str]):
         """
         self.set_property("roles", StringCollection(value))
 

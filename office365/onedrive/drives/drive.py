@@ -39,12 +39,11 @@ class Drive(BaseItem):
         return super().get()
 
     def create_bundle(self, name: str, children: list | None = None) -> DriveItem:
-        """
-        Add a new bundle to the user's drive.
+        """Add a new bundle to the user's drive.
 
-        :param str name: Bundle name
-        :param list children: the list of file facets if creating a files or a folder facets if creating a folder
-            or a remoteItem facets if adding a shared folders
+        Args:
+            name (str): Bundle name
+            children (list): the list of file facets if creating a files or a folder facets if creating a folder or a remoteItem facets if adding a shared folders
         """
         return_type = DriveItem(self.context)
         self.bundles.add_child(return_type)
@@ -61,7 +60,8 @@ class Drive(BaseItem):
     def search(self, query_text: str) -> EntityCollection[DriveItem]:
         """Search the hierarchy of items for items matching a query.
 
-        :type query_text: str
+        Args:
+            query_text (str):
         """
         return_type = EntityCollection(self.context, DriveItem, self.items.resource_path)
         qry = FunctionQuery(self, "search", {"q": query_text}, return_type)

@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
@@ -20,11 +21,10 @@ class AuthenticationContext:
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
     ):
-        """
-        :param str tenant: Tenant name, for example: contoso.onmicrosoft.com
-        :param list[str] or None scopes: Scopes requested to access an API
-        :param Any token_cache: Default cache is in memory only,
-            Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
+        """Args:
+            tenant (str): Tenant name, for example: contoso.onmicrosoft.com
+            scopes (list[str] or None): Scopes requested to access an API
+            token_cache (Any): Default cache is in memory only, Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
         """
         self._tenant = tenant
         if scopes is None:
@@ -47,13 +47,36 @@ class AuthenticationContext:
         self._token_callback = token_callback
         return self
 
-    def with_certificate(self, client_id: str, thumbprint: str, private_key: str):
-        """
-        Initializes the confidential client with client certificate
+    def with_device_flow(self, client_id: str) -> Self:
+        """Initializes the client via device code flow.
 
-        :param str client_id: The OAuth client id of the calling application.
-        :param str thumbprint: Thumbprint
-        :param str private_key: Private key
+        Useful for CLI tools and headless environments. The user authenticates
+        by visiting a URL on another device and entering the displayed code.
+
+        Args:
+            client_id: The OAuth client id of the calling application.
+        """
+        import msal
+
+        app = msal.PublicClientApplication(client_id, authority=self.authority_url)
+
+        def _acquire_token():
+            flow = app.initiate_device_flow(scopes=self._scopes)
+            if "user_code" not in flow:
+                raise ValueError(f"Failed to create device flow: {flow}")
+            print(flow["message"])
+            sys.stdout.flush()
+            return app.acquire_token_by_device_flow(flow)
+
+        return self.with_access_token(_acquire_token)
+
+    def with_certificate(self, client_id: str, thumbprint: str, private_key: str):
+        """Initializes the confidential client with client certificate
+
+        Args:
+            client_id (str): The OAuth client id of the calling application.
+            thumbprint (str): Thumbprint
+            private_key (str): Private key
         """
         import msal
 
@@ -75,11 +98,11 @@ class AuthenticationContext:
         return self.with_access_token(_acquire_token)
 
     def with_client_secret(self, client_id: str, client_secret: str) -> Self:
-        """
-        Initializes the confidential client with client secret
+        """Initializes the confidential client with client secret
 
-        :param str client_id: The OAuth client id of the calling application.
-        :param str client_secret: Client secret
+        Args:
+            client_id (str): The OAuth client id of the calling application.
+            client_secret (str): Client secret
         """
         import msal
 
@@ -96,12 +119,12 @@ class AuthenticationContext:
         return self.with_access_token(_acquire_token)
 
     def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> Self:
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
         Note: only works if your app is registered with redirect_uri as http://localhost
 
-        :param str client_id: The OAuth client id of the calling application.
-        :param str username: Typically a UPN in the form of an email address.
+        Args:
+            client_id (str): The OAuth client id of the calling application.
+            username (str): Typically a UPN in the form of an email address.
         """
         import msal
 
@@ -128,12 +151,12 @@ class AuthenticationContext:
         return self.with_access_token(_acquire_token)
 
     def with_username_and_password(self, client_id: str, username: str, password: str) -> Self:
-        """
-        Initializes the client via user credentials
+        """Initializes the client via user credentials
 
-        :param str client_id: The OAuth client id of the calling application.
-        :param str username: Typically a UPN in the form of an email address.
-        :param str password: The password.
+        Args:
+            client_id (str): The OAuth client id of the calling application.
+            username (str): Typically a UPN in the form of an email address.
+            password (str): The password.
         """
         import msal
 

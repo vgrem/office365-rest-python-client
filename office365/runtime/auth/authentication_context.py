@@ -244,8 +244,9 @@ class AuthenticationContext:
     ) -> Self:
         """Initializes authentication using browser-session cookies.
 
-        :param cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
-        :param ttl_seconds: Optional max age for cached cookies before reloading from source.
+        Args:
+            cookie_source: Callable returning Dict[str, str] or an AuthCookies instance.
+            ttl_seconds: Optional max age for cached cookies before reloading from source.
         """
         provider = CookieAuthProvider(cookie_source, ttl_seconds)
         self._authenticate = provider.authenticate_request
@@ -259,14 +260,14 @@ class AuthenticationContext:
         password: str,
         scopes: List[str] | None = None,
     ) -> Self:
-        """
-        Initializes Username and password authentication flow
+        """Initializes Username and password authentication flow
 
-        :param scopes:
-        :param str tenant:
-        :param str client_id: The OAuth client id of the calling application.
-        :param str username: Typically a UPN in the form of an email address.
-        :param str password: The password.
+        Args:
+            scopes:
+            tenant (str):
+            client_id (str): The OAuth client id of the calling application.
+            username (str): Typically a UPN in the form of an email address.
+            password (str): The password.
         """
         import msal
 
@@ -333,22 +334,22 @@ class AuthenticationContext:
         version="3.0",
     )
     def acquire_token_for_user(self, username: str, password: str) -> Self:
-        """
-        Initializes a client to acquire a token via user credentials
+        """Initializes a client to acquire a token via user credentials
 
-        :param str password: The user password
-        :param str username: Typically a UPN in the form of an email address
+        Args:
+            password (str): The user password
+            username (str): Typically a UPN in the form of an email address
         """
         provider = SamlTokenProvider(self.url, UserCredential(username, password), self._browser_mode)
         self._authenticate = provider.authenticate_request
         return self
 
     def acquire_token_for_app(self, client_id: str, client_secret: str) -> Self:
-        """
-        Initializes a client to acquire a token via client credentials (SharePoint App-Only)
+        """Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
-        :param str client_id: The OAuth client id of the calling application.
-        :param str client_secret: Secret string that the application uses to prove its identity when requesting a token
+        Args:
+            client_id (str): The OAuth client id of the calling application.
+            client_secret (str): Secret string that the application uses to prove its identity when requesting a token
         """
         provider = ACSTokenProvider(self.url, ClientCredential(client_id, client_secret))
         self._authenticate = provider.authenticate_request

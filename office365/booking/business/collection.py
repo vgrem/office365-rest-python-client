@@ -14,11 +14,12 @@ class BookingBusinessCollection(EntityCollection[BookingBusiness]):
     def add(
         self, display_name: str, address: Optional[PhysicalAddress] = None, email: Optional[str] = None
     ) -> BookingBusiness:
-        """
-        Create a new Microsoft Bookings business in a tenant.
-        :param str display_name: The business display name.
-        :param PhysicalAddress address: The business display name.
-        :param str email: The email address for the business.
+        """Create a new Microsoft Bookings business in a tenant.
+
+        Args:
+            display_name (str): The business display name.
+            address (PhysicalAddress): The business display name.
+            email (str): The email address for the business.
         """
         props = {"displayName": display_name, "address": address, "email": email}
         return super().add(**props)

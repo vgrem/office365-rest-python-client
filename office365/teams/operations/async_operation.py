@@ -25,16 +25,14 @@ class TeamsAsyncOperation(Entity):
         success_callback=None,
         failure_callback=None,
     ):
-        """
-        Poll to check for completion of an async Teams create call
+        """Poll to check for completion of an async Teams create call
 
-        :param int polling_interval_secs:
-        :param int max_polling_count:
-        :param str status_type: The status of a teamsAsyncOperation
-        :param (TeamsAsyncOperation)-> None success_callback: A callback to call
-            if the request executes successfully.
-        :param (TeamsAsyncOperation)-> None failure_callback: A callback to call if the request
-            fails to execute
+        Args:
+            polling_interval_secs (int):
+            max_polling_count (int):
+            status_type (str): The status of a teamsAsyncOperation
+            success_callback ((TeamsAsyncOperation)-> None): A callback to call if the request executes successfully.
+            failure_callback ((TeamsAsyncOperation)-> None): A callback to call if the request fails to execute
         """
 
         def _poll_for_status(polling_number: int) -> None:

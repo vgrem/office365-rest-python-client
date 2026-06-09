@@ -18,9 +18,10 @@ class DriveRecipient(ClientValue):
 
     @staticmethod
     def from_email(value: str):
-        """
-        Creates Drive recipient from email address
-        :type value: str
+        """Creates Drive recipient from email address
+
+        Args:
+            value (str):
         """
         return DriveRecipient(email=value)
 
