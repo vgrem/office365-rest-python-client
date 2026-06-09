@@ -51,8 +51,9 @@ def main():
     print(f"  Chat: {meeting2.allow_meeting_chat}")
     print(f"  Transcript: {meeting2.allow_transcription}")
 
-    fetched = client.me.online_meetings.get_by_join_web_url(meeting2.join_web_url).execute_query()
-    print(f"\nFetched by join URL: {fetched.subject}")
+    fetched = client.me.online_meetings.filter(f"joinWebUrl eq '{meeting2.join_web_url}'").top(1).get().execute_query()
+    if fetched:
+        print(f"\nFetched by join URL: {fetched[0].subject}")
 
     since = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
     recent = client.me.online_meetings.filter(f"startDateTime ge {since}").top(10).get().execute_query()
