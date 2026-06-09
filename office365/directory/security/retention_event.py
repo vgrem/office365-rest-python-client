@@ -1,17 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.directory.security.triggertypes.event_type import RetentionEventType
 from office365.entity import Entity
+from office365.runtime.paths.resource_path import ResourcePath
 
 
-class RetentionEventType(Entity):
-    """Represents a single group for the same type of retention events.
-
-    When a retention event is created, it's associated with a specific event type that in turn is associated
-    with a retention label. Only content with that retention label applied will be retained for the specified
-    retention period. For details, see Start retention when an event occurs."""
-
+class RetentionEvent(Entity):
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
@@ -33,6 +31,11 @@ class RetentionEventType(Entity):
         return self.properties.get("displayName", None)
 
     @property
+    def event_trigger_date_time(self) -> datetime:
+        """Gets the eventTriggerDateTime property"""
+        return self.properties.get("eventTriggerDateTime", datetime.min)
+
+    @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
         return self.properties.get("lastModifiedBy", IdentitySet())
@@ -43,5 +46,18 @@ class RetentionEventType(Entity):
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @property
+    def last_status_update_date_time(self) -> datetime:
+        """Gets the lastStatusUpdateDateTime property"""
+        return self.properties.get("lastStatusUpdateDateTime", datetime.min)
+
+    @property
+    def retention_event_type(self) -> RetentionEventType:
+        """Gets the retentionEventType property"""
+        return self.properties.get(
+            "retentionEventType",
+            RetentionEventType(self.context, ResourcePath("retentionEventType", self.resource_path)),
+        )
+
+    @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.security.RetentionEventType"
+        return "microsoft.graph.security.RetentionEvent"

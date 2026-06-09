@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.queries.client_query import ClientQuery, ReturnT
+from office365.runtime.queries.noop import NoOpQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 
@@ -61,7 +62,7 @@ class BatchQuery(ClientQuery[ReturnT]):
     @property
     def change_sets(self) -> list[ClientQuery]:
         """Gets all queries that modify data (non-GET operations)."""
-        return [qry for qry in self._queries if not isinstance(qry, ReadEntityQuery)]
+        return [qry for qry in self._queries if not isinstance(qry, (ReadEntityQuery, NoOpQuery))]
 
     @property
     def queries(self) -> list[ClientQuery]:
@@ -71,7 +72,7 @@ class BatchQuery(ClientQuery[ReturnT]):
     @property
     def get_queries(self) -> list[ClientQuery]:
         """Gets all read-only (GET) queries in the batch."""
-        return [qry for qry in self._queries if isinstance(qry, ReadEntityQuery)]
+        return [qry for qry in self._queries if isinstance(qry, (ReadEntityQuery, NoOpQuery))]
 
     @property
     def has_change_sets(self) -> bool:

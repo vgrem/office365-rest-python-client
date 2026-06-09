@@ -1,4 +1,11 @@
+from datetime import datetime
+from typing import Optional
+
+from office365.directory.security.intelligence_profile_indicator import IntelligenceProfileIndicator
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
+from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.collections import StringCollection
 
 
 class IntelligenceProfile(Entity):
@@ -13,3 +20,37 @@ class IntelligenceProfile(Entity):
     or industry. Users of the Microsoft Defender Threat Intelligence Profiles APIs have access to detailed threat
     actor intel profiles, including background information and interpretation guidance.
     """
+
+    @property
+    def aliases(self) -> StringCollection:
+        """Gets the aliases property"""
+        return self.properties.get("aliases", StringCollection(None))
+
+    @property
+    def first_active_date_time(self) -> datetime:
+        """Gets the firstActiveDateTime property"""
+        return self.properties.get("firstActiveDateTime", datetime.min)
+
+    @property
+    def targets(self) -> StringCollection:
+        """Gets the targets property"""
+        return self.properties.get("targets", StringCollection(None))
+
+    @property
+    def title(self) -> Optional[str]:
+        """Gets the title property"""
+        return self.properties.get("title", None)
+
+    @property
+    def indicators(self) -> EntityCollection[IntelligenceProfileIndicator]:
+        """Gets the indicators property"""
+        return self.properties.get(
+            "indicators",
+            EntityCollection[IntelligenceProfileIndicator](
+                self.context, IntelligenceProfileIndicator, ResourcePath("indicators", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.IntelligenceProfile"

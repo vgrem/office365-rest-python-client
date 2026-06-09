@@ -41,12 +41,11 @@ def main():
         print(f"Risk history for {user.user_principal_name} ({len(history)} events):")
         for h in history:
             dt = h.properties.get("activityDateTime", h.properties.get("detectedDateTime", ""))
-            print(f"  {dt}  detail={h.properties.get('riskDetail', '?')}  type={h.properties.get('riskEventType', '?')}")
+            print(f"  {dt}  detail={h.risk_detail}  type={h.properties.get('riskEventType', '?')}")
 
     since = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
     detections = (
-        client.identity_protection.risk_detections.filter(f"detectedDateTime ge {since}")
-        .top(20).get().execute_query()
+        client.identity_protection.risk_detections.filter(f"detectedDateTime ge {since}").top(20).get().execute_query()
     )
     print(f"\nRisk detections (last 7 days): {len(detections)}")
 

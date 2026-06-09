@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.protection.riskyusers.risk_detail import RiskDetail
 from office365.directory.protection.riskyusers.risklevel import RiskLevel

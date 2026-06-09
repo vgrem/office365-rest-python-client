@@ -22,13 +22,14 @@ class TeamCollection(EntityCollection[Team]):
 
         def _init_teams(groups) -> None:
             for grp in groups:
-                if "Team" in grp.properties["resourceProvisioningOptions"]:
-                    team = Team(self.context, ResourcePath(grp.id, self.resource_path))
-                    for k, v in grp.properties.items():
-                        team.set_property(k, v)
-                    self.add_child(team)
+                team = Team(self.context, ResourcePath(grp.id, self.resource_path))
+                for k, v in grp.properties.items():
+                    team.set_property(k, v)
+                self.add_child(team)
 
-        self.context.groups.get_all(page_size, page_loaded=_init_teams)
+        self.context.groups.filter("resourceProvisioningOptions/Any(x:x eq 'Team')").get_all(
+            page_size, page_loaded=_init_teams
+        )
         return self
 
     def create(self, display_name: str, description: Optional[str] = None):

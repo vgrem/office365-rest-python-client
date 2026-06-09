@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.directory.protection.riskyusers.activity import RiskUserActivity
 from office365.directory.protection.riskyusers.risky_user import RiskyUser
+from office365.runtime.types.odata_property import odata
 
 
 class RiskyUserHistoryItem(RiskyUser):
@@ -13,6 +14,7 @@ class RiskyUserHistoryItem(RiskyUser):
         """The activity related to user risk level change."""
         return self.properties.get("activity", RiskUserActivity())
 
+    @odata(name="initiatedBy")
     @property
     def initiated_by(self) -> Optional[str]:
         """The ID of actor that does the operation."""

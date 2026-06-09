@@ -1,9 +1,14 @@
+from datetime import datetime
 from typing import Optional
 
 from office365.communications.callrecords.session import Session
+from office365.communications.callrecords.type import CallType
+from office365.communications.calls.organizer import Organizer
+from office365.communications.calls.participant import Participant
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -28,6 +33,56 @@ class CallRecord(Entity):
         calls typically have at least one session per participant.
         """
         return self.properties.get(
-            "sessions",
-            EntityCollection(self.context, Session, ResourcePath("sessions", self.resource_path)),
+            "sessions", EntityCollection(self.context, Session, ResourcePath("sessions", self.resource_path))
         )
+
+    @property
+    def end_date_time(self) -> datetime:
+        """Gets the endDateTime property"""
+        return self.properties.get("endDateTime", datetime.min)
+
+    @property
+    def last_modified_date_time(self) -> datetime:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    @property
+    def participants(self) -> ClientValueCollection[IdentitySet]:
+        """Gets the participants property"""
+        return self.properties.get("participants", ClientValueCollection[IdentitySet](IdentitySet))
+
+    @property
+    def start_date_time(self) -> datetime:
+        """Gets the startDateTime property"""
+        return self.properties.get("startDateTime", datetime.min)
+
+    @property
+    def type_(self) -> CallType:
+        """Gets the type property"""
+        return self.properties.get("type", CallType.unknown)
+
+    @property
+    def version(self) -> Optional[int]:
+        """Gets the version property"""
+        return self.properties.get("version", None)
+
+    @property
+    def organizer_v2(self) -> Organizer:
+        """Gets the organizer_v2 property"""
+        return self.properties.get(
+            "organizer_v2", Organizer(self.context, ResourcePath("organizer_v2", self.resource_path))
+        )
+
+    @property
+    def participants_v2(self) -> EntityCollection[Participant]:
+        """Gets the participants_v2 property"""
+        return self.properties.get(
+            "participants_v2",
+            EntityCollection[Participant](
+                self.context, Participant, ResourcePath("participants_v2", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.callRecords.CallRecord"

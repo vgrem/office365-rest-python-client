@@ -1,4 +1,5 @@
 from office365.entity import Entity
+from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -40,3 +41,12 @@ class Relation(Entity):
         from office365.onedrive.termstore.sets.set import Set
 
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
+
+    @property
+    def set_(self) -> Set:
+        """Gets the set property"""
+        return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.termStore.Relation"

@@ -382,7 +382,7 @@ class List(SecurableObject):
             folder_path (str): The path within the current list at which to create the document.
             extension (str): The file extension without dot prefix.
         """
-        return_type: ClientResult[str] = ClientResult(self.context)
+        return_type: ClientResult[str] = ClientResult[str](self.context)
         payload = {"folderPath": folder_path, "extension": extension}
         qry = ServiceOperationQuery(self, "CreateDocumentWithDefaultName", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -390,7 +390,7 @@ class List(SecurableObject):
 
     def recycle(self) -> ClientResult[str]:
         """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -410,7 +410,7 @@ class List(SecurableObject):
             view_xml (str): Specifies the query as XML that conforms to the ViewDefinition type as specified in
                 [MS-WSSCAML] section 2.3.2.17.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bytes](self.context)
         payload = {"viewXml": view_xml}
         qry = ServiceOperationQuery(self, "RenderListData", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -1453,6 +1453,7 @@ class List(SecurableObject):
         """
         return self.properties.get("TemplateFeatureId", None)
 
+    @odata(name="TitleResource")
     @property
     def title_resource(self) -> UserResource:
         """Represents the title of this list."""

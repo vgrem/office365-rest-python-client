@@ -1,6 +1,12 @@
+from datetime import datetime
+from typing import Optional
+
+from office365.communications.callrecords.endpoint import Endpoint
+from office365.communications.callrecords.modality import Modality
 from office365.communications.callrecords.segment import Segment
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 
 
@@ -13,6 +19,39 @@ class Session(Entity):
         The list of segments involved in the session.
         """
         return self.properties.get(
-            "segments",
-            EntityCollection(self.context, Segment, ResourcePath("segments", self.resource_path)),
+            "segments", EntityCollection(self.context, Segment, ResourcePath("segments", self.resource_path))
         )
+
+    @property
+    def callee(self) -> Endpoint:
+        """Gets the callee property"""
+        return self.properties.get("callee", Endpoint())
+
+    @property
+    def caller(self) -> Endpoint:
+        """Gets the caller property"""
+        return self.properties.get("caller", Endpoint())
+
+    @property
+    def end_date_time(self) -> datetime:
+        """Gets the endDateTime property"""
+        return self.properties.get("endDateTime", datetime.min)
+
+    @property
+    def is_test(self) -> Optional[bool]:
+        """Gets the isTest property"""
+        return self.properties.get("isTest", None)
+
+    @property
+    def modalities(self) -> ClientValueCollection[Modality]:
+        """Gets the modalities property"""
+        return self.properties.get("modalities", ClientValueCollection[Modality](Modality))
+
+    @property
+    def start_date_time(self) -> datetime:
+        """Gets the startDateTime property"""
+        return self.properties.get("startDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.callRecords.Session"
