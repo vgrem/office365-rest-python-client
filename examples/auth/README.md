@@ -18,7 +18,7 @@ flowchart TD
 
     C --> G{User present to interact?}
     G -->|Yes| H[Interactive auth\nsupports MFA, SSO]
-    G -->|No, script or CI| I[ROPC (password grant)\nno MFA, legacy]
+    G -->|No, script or CI| I["ROPC (password grant)\nno MFA, legacy"]
 
     E --> J[with_certificate.py]
     F --> K[with_client_secret.py]
