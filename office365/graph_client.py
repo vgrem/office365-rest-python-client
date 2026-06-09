@@ -79,6 +79,7 @@ from office365.teams.viva.employee_experience import EmployeeExperience
 from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
+    from requests import Session
     from office365.directory.applications.roles.collection import AppRoleCollection
     from office365.directory.applications.roles.role import AppRole
     from office365.directory.groups.setting import GroupSetting
@@ -173,10 +174,11 @@ class GraphClient(ClientRuntimeContext):
     def with_transport(
         self,
         proxies: dict[str, str] | None = None,
-        verify: bool | str | None = None,
+        verify: bool | str = True,
         timeout: int | tuple[int, int] | None = None,
+        session: Session | None = None,
     ) -> Self:
-        """Configure the HTTP transport (proxy, SSL, timeout).
+        """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
         Note:
             MSAL authentication requests to ``login.microsoftonline.com`` use
@@ -187,11 +189,18 @@ class GraphClient(ClientRuntimeContext):
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
             timeout: Request timeout in seconds
+            session: Custom ``requests.Session`` with pre-configured adapters
+                   (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
 
         Returns:
             Self: Supports method chaining
         """
-        self.pending_request().with_transport(proxies=proxies, verify=verify, timeout=timeout)
+        self.pending_request().with_transport(
+            proxies=proxies,
+            verify=verify,
+            timeout=timeout,
+            session=session,
+        )
         return self
 
     def execute_batch(
